@@ -24,8 +24,11 @@ class VersionCompatibilityTest(MojomParserTestCase):
     checker = module.BackwardCompatibilityChecker()
     compatibility_map = {}
     for name in old:
-      compatibility_map[name] = checker.IsBackwardCompatible(
-          new[name], old[name])
+      try:
+        compatibility_map[name] = checker.IsBackwardCompatible(
+            new[name], old[name])
+      except Exception:
+        compatibility_map[name] = False
     return compatibility_map
 
   def assertBackwardCompatible(self, old_mojom, new_mojom):

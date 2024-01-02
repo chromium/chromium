@@ -1614,13 +1614,25 @@ class Enum(ValueKind):
     new_fields = buildVersionFieldMap(self)
 
     if new_fields.keys() != old_fields.keys() and not rhs.extensible:
-      return False
+      raise Exception("Non-extensible enum cannot be modified")
 
     for min_version, valid_values in old_fields.items():
-      if (min_version not in new_fields
-          or new_fields[min_version] != valid_values):
-        return False
+      if min_version not in new_fields:
+        raise Exception('New values added to an extensible enum '
+                        'do not specify MinVersion: %s' % new_fields)
 
+      if (new_fields[min_version] != valid_values):
+        if (len(new_fields[min_version]) < len(valid_values)):
+          raise Exception('Removing values for an existing MinVersion %s '
+                          'is not allowed' % min_version)
+
+        raise Exception(
+            'New values don\'t match old values'
+            'for an existing MinVersion %s,'
+            ' please specify MinVersion equal to "Next version" '
+            'in the enum description'
+            ' for the following values:\n%s' %
+            (min_version, new_fields[min_version].difference(valid_values)))
     return True
 
   def _tuple(self):
