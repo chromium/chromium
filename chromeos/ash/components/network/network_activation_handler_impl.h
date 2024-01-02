@@ -17,8 +17,7 @@ namespace ash {
 // The NetworkActivationHandlerImpl class allows making service specific
 // calls required for activation on mobile networks.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
-    : public NetworkActivationHandler,
-      public base::SupportsWeakPtr<NetworkActivationHandlerImpl> {
+    : public NetworkActivationHandler {
  public:
   NetworkActivationHandlerImpl(const NetworkActivationHandlerImpl&) = delete;
   NetworkActivationHandlerImpl& operator=(const NetworkActivationHandlerImpl&) =
@@ -39,6 +38,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkActivationHandlerImpl
   NetworkActivationHandlerImpl();
 
   void HandleShillSuccess(base::OnceClosure success_callback);
+
+  base::WeakPtrFactory<NetworkActivationHandlerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

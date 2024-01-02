@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
@@ -21,8 +22,7 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
     : public NetworkConnectionHandler,
       public NetworkCertLoader::Observer,
-      public NetworkStateHandlerObserver,
-      public base::SupportsWeakPtr<NetworkConnectionHandlerImpl> {
+      public NetworkStateHandlerObserver {
  public:
   NetworkConnectionHandlerImpl();
 
@@ -204,6 +204,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
 
   // Track certificate loading state.
   bool certificates_loaded_ = false;
+
+  base::WeakPtrFactory<NetworkConnectionHandlerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace ash
