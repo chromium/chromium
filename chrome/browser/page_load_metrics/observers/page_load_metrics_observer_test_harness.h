@@ -48,6 +48,9 @@ class PageLoadMetricsObserverTestHarness
   PageLoadMetricsObserverTester* tester() { return tester_.get(); }
   const PageLoadMetricsObserverTester* tester() const { return tester_.get(); }
 
+ protected:
+  virtual bool IsNonTabWebUI() const;
+
  private:
   void InitializeFeatureList();
 

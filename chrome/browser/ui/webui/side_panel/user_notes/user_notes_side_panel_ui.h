@@ -35,6 +35,8 @@ class UserNotesSidePanelUI
 
   void set_browser(Browser* browser) { browser_ = browser; }
 
+  static constexpr std::string GetWebUIName() { return "UserNotesSidePanel"; }
+
  private:
   // user_notes::mojom::UserNotesPageHandlerFactory
   void CreatePageHandler(

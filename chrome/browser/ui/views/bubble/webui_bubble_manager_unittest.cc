@@ -42,7 +42,8 @@ class BubbleContentsWrapperT<TestWebUIController>
                               browser_context,
                               task_manager_string_id,
                               webui_resizes_host,
-                              esc_closes_ui) {}
+                              esc_closes_ui,
+                              "Test") {}
   void ReloadWebContents() override {}
   base::WeakPtr<BubbleContentsWrapper> GetWeakPtr() override {
     return AsWeakPtr();

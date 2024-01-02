@@ -6282,6 +6282,7 @@ if (!is_fuchsia) {
       "../browser/page_load_metrics/observers/loading_predictor_page_load_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/multi_tab_loading_page_load_metrics_observer_unittest.cc",
+      "../browser/page_load_metrics/observers/non_tab_webui_page_load_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/page_anchors_metrics_observer_unittest.cc",
       "../browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.cc",
       "../browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h",

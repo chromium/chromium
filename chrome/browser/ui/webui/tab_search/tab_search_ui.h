@@ -46,6 +46,8 @@ class TabSearchUI : public ui::MojoBubbleWebUIController,
     return page_handler_.get();
   }
 
+  static constexpr std::string GetWebUIName() { return "TabSearch"; }
+
  private:
   // tab_search::mojom::PageHandlerFactory
   void CreatePageHandler(

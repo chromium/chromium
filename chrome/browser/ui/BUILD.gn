@@ -17,6 +17,7 @@ import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
+import("//components/metrics/generate_histograms_variants_allowlist.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/services/screen_ai/buildflags/features.gni")
@@ -30,6 +31,13 @@ import("//rlz/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
+
+generate_histograms_variants_allowlist("webui_name_variants") {
+  namespace = "views_metrics"
+  input_xml_file = "//tools/metrics/histograms/metadata/page/histograms.xml"
+  output_file = "webui_name_variants.h"
+  allow_list_name = "WebUIName"
+}
 
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
@@ -6159,7 +6167,10 @@ static_library("ui") {
       "window_name_prompt/window_name_prompt.cc",
     ]
 
+    sources += get_target_outputs(":webui_name_variants")
+
     deps += [
+      ":webui_name_variants",
       "side_search:side_search_tab_data_proto",
       "//base",
       "//chrome/browser/apps:icon_standardizer",

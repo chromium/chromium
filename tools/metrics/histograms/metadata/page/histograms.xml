@@ -84,6 +84,24 @@ chromium-metrics-reviews@google.com.
   <variant name="xslt"/>
 </variants>
 
+<variants name="WebUIName">
+  <variant name=""/>
+  <variant name=".BookmarksSidePanel"/>
+  <variant name=".CompanionSidePanelUntrusted"/>
+  <variant name=".Compose"/>
+  <variant name=".CustomizeChrome"/>
+  <variant name=".Emoji"/>
+  <variant name=".Feed"/>
+  <variant name=".HistoryClustersSidePanel"/>
+  <variant name=".MakoUntrusted"/>
+  <variant name=".PerformanceSidePanel"/>
+  <variant name=".ReadAnythingUntrusted"/>
+  <variant name=".ReadingList"/>
+  <variant name=".ShoppingInsightsSidePanel"/>
+  <variant name=".TabSearch"/>
+  <variant name=".UserNotesSidePanel"/>
+</variants>
+
 <variants name="Window">
   <variant name="SessionWindow"/>
 </variants>
@@ -3141,6 +3159,21 @@ chromium-metrics-reviews@google.com.
     See PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for more
     information.
   </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.NonTabWebUI{WebUIName}"
+    units="ms" expires_after="2024-04-28">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@chromium.org</owner>
+  <summary>
+    Measures the time from navigation timing's navigation start to the time the
+    largest content (text or image) is first painted, for main frame documents
+    of non-tab webUI pages, such as side-panel content. See
+    PageLoad.PaintTiming.NavigationToLargestContentfulPaint2 for more
+    information.
+  </summary>
+  <token key="WebUIName" variants="WebUIName"/>
 </histogram>
 
 <histogram

@@ -103,6 +103,8 @@ class CustomizeChromeUI
           side_panel::customize_chrome::mojom::WallpaperSearchHandlerFactory>
           pending_receiver);
 
+  static constexpr std::string GetWebUIName() { return "CustomizeChrome"; }
+
  private:
   // side_panel::mojom::CustomizeChromePageHandlerFactory
   void CreatePageHandler(

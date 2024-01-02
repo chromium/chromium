@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/webui_name_variants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
@@ -64,7 +65,8 @@ class BubbleContentsWrapper : public content::WebContentsDelegate,
                         content::BrowserContext* browser_context,
                         int task_manager_string_id,
                         bool webui_resizes_host,
-                        bool esc_closes_ui);
+                        bool esc_closes_ui,
+                        const std::string& webui_name);
   ~BubbleContentsWrapper() override;
 
   // content::WebContentsDelegate:
@@ -144,8 +146,12 @@ class BubbleContentsWrapperT : public BubbleContentsWrapper {
                               browser_context,
                               task_manager_string_id,
                               webui_resizes_host,
-                              esc_closes_ui),
-        webui_url_(webui_url) {}
+                              esc_closes_ui,
+                              T::GetWebUIName()),
+        webui_url_(webui_url) {
+    static_assert(
+        views_metrics::IsValidWebUINameVariant("." + T::GetWebUIName()));
+  }
 
   void ReloadWebContents() override {
     web_contents()->GetController().LoadURL(webui_url_, content::Referrer(),

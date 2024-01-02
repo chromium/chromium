@@ -63,6 +63,8 @@ class BookmarksSidePanelUI
   commerce::ShoppingListContextMenuController*
   GetShoppingListContextMenuController();
 
+  static constexpr std::string GetWebUIName() { return "BookmarksSidePanel"; }
+
  private:
   // side_panel::mojom::BookmarksPageHandlerFactory:
   void CreateBookmarksPageHandler(

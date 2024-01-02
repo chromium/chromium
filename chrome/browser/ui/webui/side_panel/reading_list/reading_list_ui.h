@@ -47,6 +47,8 @@ class ReadingListUI : public ui::MojoBubbleWebUIController,
 
   void SetActiveTabURL(const GURL& url);
 
+  static constexpr std::string GetWebUIName() { return "ReadingList"; }
+
  private:
   // reading_list::mojom::PageHandlerFactory:
   void CreatePageHandler(mojo::PendingRemote<reading_list::mojom::Page> page,

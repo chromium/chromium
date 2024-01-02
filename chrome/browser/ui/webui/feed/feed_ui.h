@@ -27,6 +27,8 @@ class FeedUI : public ui::UntrustedBubbleWebUIController,
   void BindInterface(
       mojo::PendingReceiver<feed::mojom::FeedSidePanelHandlerFactory> factory);
 
+  static constexpr std::string GetWebUIName() { return "Feed"; }
+
  private:
   void CreateFeedSidePanelHandler(
       mojo::PendingReceiver<feed::mojom::FeedSidePanelHandler> handler,

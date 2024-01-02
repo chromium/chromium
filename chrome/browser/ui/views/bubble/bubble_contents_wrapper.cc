@@ -13,6 +13,8 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
 
+#include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
+
 namespace {
 
 bool IsEscapeEvent(const content::NativeWebKeyboardEvent& event) {
@@ -58,7 +60,8 @@ BubbleContentsWrapper::BubbleContentsWrapper(
     content::BrowserContext* browser_context,
     int task_manager_string_id,
     bool webui_resizes_host,
-    bool esc_closes_ui)
+    bool esc_closes_ui,
+    const std::string& webui_name)
     : webui_resizes_host_(webui_resizes_host),
       esc_closes_ui_(esc_closes_ui),
       web_contents_(content::WebContents::Create(
@@ -67,6 +70,8 @@ BubbleContentsWrapper::BubbleContentsWrapper(
   WebContentsObserver::Observe(web_contents_.get());
 
   PrefsTabHelper::CreateForWebContents(web_contents_.get());
+  chrome::InitializePageLoadMetricsForNonTabWebUI(web_contents_.get(),
+                                                  webui_name);
   task_manager::WebContentsTags::CreateForToolContents(web_contents_.get(),
                                                        task_manager_string_id);
 }

@@ -39,6 +39,8 @@ class MakoUntrustedUI : public ui::UntrustedBubbleWebUIController {
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 
+  static constexpr std::string GetWebUIName() { return "MakoUntrusted"; }
+
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 

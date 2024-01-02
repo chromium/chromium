@@ -63,6 +63,8 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   void CreatePageHandler(mojo::PendingReceiver<emoji_picker::mojom::PageHandler>
                              receiver) override;
 
+  static constexpr std::string GetWebUIName() { return "Emoji"; }
+
  private:
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<EmojiPageHandler> page_handler_;
