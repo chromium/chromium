@@ -1138,18 +1138,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.Initializer.LoadV8Snapshot.Result"
-    enum="V8InitializerLoadV8SnapshotResult" expires_after="M77">
-  <owner>oth@chromium.org</owner>
-  <summary>Results from snapshot loading.</summary>
-</histogram>
-
-<histogram name="V8.Initializer.OpenV8File.Result"
-    enum="V8InitializerOpenV8FileResult" expires_after="2020-05-10">
-  <owner>oth@chromium.org</owner>
-  <summary>Results from opening V8 snapshot files.</summary>
-</histogram>
-
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
     expires_after="2024-05-12">
   <owner>ecmziegler@chromium.org</owner>
