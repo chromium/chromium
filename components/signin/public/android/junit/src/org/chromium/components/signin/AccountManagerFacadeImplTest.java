@@ -170,15 +170,49 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    public void testAccountFetching() throws Exception {
+        AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
+        doReturn(new Account[] {accountHolder.getAccount()})
+                .when(mDelegate)
+                .getAccountsSynchronous();
+        HistogramWatcher retriesHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Signin.GetAccountsBackoffRetries")
+                        .build();
+        HistogramWatcher successHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Signin.GetAccountsBackoffSuccess")
+                        .build();
+
+        mDelegate.callOnCoreAccountInfoChanged();
+        // Called once on AccountManagerFacade creation and a second time when
+        // onCoreAccountInfoChanged is called.
+        verify(mDelegate, times(2)).getAccountsSynchronous();
+
+        Assert.assertTrue(mPostTaskRunner.mRunnables.isEmpty());
+        retriesHistogram.assertExpected();
+        successHistogram.assertExpected();
+    }
+
+    @Test
     public void testErrorFetchingAccounts() throws Exception {
         AccountHolder accountHolder = AccountHolder.createFromEmail("test@gmail.com");
         doThrow(AccountManagerDelegateException.class)
                 .doReturn(new Account[] {accountHolder.getAccount()})
                 .when(mDelegate)
                 .getAccountsSynchronous();
+        HistogramWatcher retriesHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Signin.GetAccountsBackoffRetries", /* retries= */ 1)
+                        .build();
+        HistogramWatcher successHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Signin.GetAccountsBackoffSuccess", true)
+                        .build();
 
         mDelegate.callOnCoreAccountInfoChanged();
-        // Called once on AccountManagerFacade creation and a second time when the account is added.
+        // Called once on AccountManagerFacade creation and a second time when
+        // onCoreAccountInfoChanged is called..
         // TODO(crbug.com/1502123): Add verification that getCoreAccountInfos isn't fulfilled until
         // getAccountsSynchronous stops throwing exceptions (and that it is correctly fulfilled when
         // it stops throwing).
@@ -188,14 +222,25 @@ public class AccountManagerFacadeImplTest {
         // the mock).
         mPostTaskRunner.runAll();
         verify(mDelegate, times(3)).getAccountsSynchronous();
+        retriesHistogram.assertExpected();
+        successHistogram.assertExpected();
     }
 
     @Test
     public void testErrorFetchingAccounts_maxNumberOfRetries() throws Exception {
         doThrow(AccountManagerDelegateException.class).when(mDelegate).getAccountsSynchronous();
+        HistogramWatcher retriesHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Signin.GetAccountsBackoffRetries")
+                        .build();
+        HistogramWatcher successHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord("Signin.GetAccountsBackoffSuccess", false)
+                        .build();
 
         mDelegate.callOnCoreAccountInfoChanged();
-        // Called once on AccountManagerFacade creation and a second time when the account is added.
+        // Called once on AccountManagerFacade creation and a second time when
+        // onCoreAccountInfoChanged is called.
         verify(mDelegate, times(2)).getAccountsSynchronous();
 
         // The delegate call fails indefinitely but is only retried MAXIMUM_RETRIES times (plus the
@@ -203,6 +248,8 @@ public class AccountManagerFacadeImplTest {
         mPostTaskRunner.runAll();
         verify(mDelegate, times(AccountManagerFacadeImpl.MAXIMUM_RETRIES + 2))
                 .getAccountsSynchronous();
+        retriesHistogram.assertExpected();
+        successHistogram.assertExpected();
     }
 
     // If this test starts flaking, please re-open crbug.com/568636 and make sure there is some sort

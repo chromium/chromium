@@ -837,9 +837,31 @@ prefs when the profile is loaded.  -->
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <summary>
-    Reconds finished access token requests during Chrome reconcile, both
+    Records finished access token requests during Chrome reconcile, both
     successful or not, and return the GoogleAuthError state NONE is a success,
     other values are failures.
+  </summary>
+</histogram>
+
+<histogram name="Signin.GetAccountsBackoffRetries" units="retries"
+    expires_after="2024-05-14">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Android only. The number of backoff retries necessary before fetching user
+    accounts information from Google Play services succeeded. Recorded after
+    every successful accounts fetching.
+  </summary>
+</histogram>
+
+<histogram name="Signin.GetAccountsBackoffSuccess"
+    enum="BooleanGetAccountsSucceeded" expires_after="2024-05-14">
+  <owner>samarchehade@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Android only. Whether account fetching succeeded or not. Recorded either
+    after user accounts were successfully retrieved from Google Play or after
+    failing after a maximum number of retries.
   </summary>
 </histogram>
 

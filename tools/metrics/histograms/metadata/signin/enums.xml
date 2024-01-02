@@ -148,6 +148,11 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="With signed in, no match"/>
 </enum>
 
+<enum name="BooleanGetAccountsSucceeded">
+  <int value="0" label="Account fetching failed"/>
+  <int value="1" label="Account fetching succeeded"/>
+</enum>
+
 <enum name="BooleanHadSyncAccount">
   <int value="0" label="Did not have a sync-enabled account before"/>
   <int value="1" label="Had at least one sync-enabled account before"/>
