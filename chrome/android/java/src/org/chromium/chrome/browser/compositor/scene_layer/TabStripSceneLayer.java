@@ -58,10 +58,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     }
 
     /**
-     * Pushes all relevant {@link StripLayoutTab}s to the CC Layer tree.
-     * This also pushes any other assets required to draw the Tab Strip.  This should only be called
-     * when the Compositor has disabled ScheduleComposite calls as this will change the tree and
-     * could subsequently cause unnecessary follow up renders.
+     * Pushes all relevant {@link StripLayoutTab}s to the CC Layer tree. This also pushes any other
+     * assets required to draw the Tab Strip. This should only be called when the Compositor has
+     * disabled ScheduleComposite calls as this will change the tree and could subsequently cause
+     * unnecessary follow up renders.
      *
      * @param layoutHelper A layout helper for the tab strip.
      * @param layerTitleCache A layer title cache.
@@ -70,7 +70,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
      * @param yOffset Current browser controls offset in dp.
      * @param selectedTabId The ID of the selected tab.
      * @param hoveredTabId The ID of the hovered tab, if any. If no tab is hovered on, this ID will
-     *         be invalid.
+     *     be invalid.
+     * @param scrimColor The color of the scrim overlay that covers the tab strip.
+     * @param scrimOpacity The opacity of the scrim overlay that covers the tab strip.
      */
     public void pushAndUpdateStrip(
             StripLayoutHelperManager layoutHelper,
@@ -79,7 +81,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             StripLayoutTab[] stripLayoutTabsToRender,
             float yOffset,
             int selectedTabId,
-            int hoveredTabId) {
+            int hoveredTabId,
+            int scrimColor,
+            float scrimOpacity) {
         if (mNativePtr == 0) return;
         final boolean visible = yOffset > -layoutHelper.getHeight();
         // This will hide the tab strips if necessary.
@@ -87,7 +91,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 .beginBuildingFrame(mNativePtr, TabStripSceneLayer.this, visible);
         // When strip tabs are completely off screen, we don't need to update it.
         if (visible) {
-            pushButtonsAndBackground(layoutHelper, resourceManager, yOffset);
+            pushButtonsAndBackground(
+                    layoutHelper, resourceManager, yOffset, scrimColor, scrimOpacity);
             pushStripTabs(
                     layoutHelper,
                     layerTitleCache,
@@ -100,7 +105,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
     }
 
     private void pushButtonsAndBackground(
-            StripLayoutHelperManager layoutHelper, ResourceManager resourceManager, float yOffset) {
+            StripLayoutHelperManager layoutHelper,
+            ResourceManager resourceManager,
+            float yOffset,
+            @ColorInt int scrimColor,
+            float scrimOpacity) {
         final int width = Math.round(layoutHelper.getWidth() * mDpToPx);
         final int height = Math.round(layoutHelper.getHeight() * mDpToPx);
         TabStripSceneLayerJni.get()
@@ -110,7 +119,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                         width,
                         height,
                         yOffset * mDpToPx,
-                        layoutHelper.getBackgroundColor());
+                        layoutHelper.getBackgroundColor(),
+                        scrimColor,
+                        scrimOpacity);
 
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         CompositorButton modelSelectorButton = layoutHelper.getModelSelectorButton();
@@ -245,7 +256,9 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 int width,
                 int height,
                 float yOffset,
-                @ColorInt int backgroundColor);
+                @ColorInt int backgroundColor,
+                @ColorInt int scrimColor,
+                float scrimOpacity);
 
         void updateNewTabButton(
                 long nativeTabStripSceneLayer,

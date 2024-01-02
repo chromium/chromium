@@ -1718,24 +1718,20 @@ public class ToolbarManager
         if (stripLayoutHelperManager != null) {
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
+            mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
             stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
-
-            mTabStripHeightObserver =
-                    new TabStripHeightObserver() {
-                        @Override
-                        public void onHeightTransitionRequested(int newHeight) {
-                            // TODO(crbug.com/1509013): Supplier can have an inconsistent value
-                            //  with mToolbar.getTabStripHeight().
-                            mTabStripHeightSupplier.set(newHeight);
-                        }
-
-                        @Override
-                        public void onHeightChanged(int newHeight) {
-                            stripLayoutHelperManager.setIsTabStripHidden(newHeight == 0);
-                        }
-                    };
-            mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
         }
+
+        mTabStripHeightObserver =
+                new TabStripHeightObserver() {
+                    @Override
+                    public void onTransitionRequested(int newHeight) {
+                        // TODO(crbug.com/1509013): Supplier can have an inconsistent value
+                        //  with mToolbar.getTabStripHeight().
+                        mTabStripHeightSupplier.set(newHeight);
+                    }
+                };
+        mToolbar.addTabStripHeightObserver(mTabStripHeightObserver);
 
         if (mMenuStateObserver != null) {
             UpdateMenuItemHelper.getInstance().registerObserver(mMenuStateObserver);

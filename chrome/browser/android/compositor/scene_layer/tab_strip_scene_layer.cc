@@ -34,6 +34,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
       right_fade_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_(cc::slim::UIResourceLayer::Create()),
       model_selector_button_background_(cc::slim::UIResourceLayer::Create()),
+      scrim_layer_(cc::slim::SolidColorLayer::Create()),
       write_index_(0),
       content_tree_(nullptr) {
   new_tab_button_->SetIsDrawable(true);
@@ -43,6 +44,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
 
   left_fade_->SetIsDrawable(true);
   right_fade_->SetIsDrawable(true);
+  scrim_layer_->SetIsDrawable(true);
 
   // When the ScrollingStripStacker is used, the new tab button and tabs scroll,
   // while the incognito button and left/ride fade stay fixed. Put the new tab
@@ -57,6 +59,8 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
   tab_strip_layer_->AddChild(model_selector_button_background_);
   model_selector_button_background_->AddChild(model_selector_button_);
   tab_strip_layer_->AddChild(new_tab_button_background_);
+  tab_strip_layer_->AddChild(scrim_layer_);
+
   layer()->AddChild(tab_strip_layer_);
 }
 
@@ -109,7 +113,9 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
                                              jint width,
                                              jint height,
                                              jfloat y_offset,
-                                             jint background_color) {
+                                             jint background_color,
+                                             jint scrim_color,
+                                             jfloat scrim_opacity) {
   gfx::RectF content(0, y_offset, width, height);
   layer()->SetPosition(gfx::PointF(0, y_offset));
   tab_strip_layer_->SetBounds(gfx::Size(width, height));
@@ -119,6 +125,20 @@ void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
   // Content tree should not be affected by tab strip scene layer visibility.
   if (content_tree_)
     content_tree_->layer()->SetPosition(gfx::PointF(0, -y_offset));
+
+  // Hide scrim layer if it's not visible.
+  if (scrim_opacity == 0.f) {
+    scrim_layer_->SetHideLayerAndSubtree(true);
+    return;
+  }
+
+  // Set opacity and color
+  scrim_layer_->SetOpacity(scrim_opacity);
+  scrim_layer_->SetBounds(tab_strip_layer_->bounds());
+  scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(scrim_color));
+
+  // Ensure layer is visible.
+  scrim_layer_->SetHideLayerAndSubtree(false);
 }
 
 void TabStripSceneLayer::UpdateNewTabButton(

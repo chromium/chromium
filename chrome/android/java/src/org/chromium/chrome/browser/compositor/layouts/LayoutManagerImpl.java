@@ -332,11 +332,11 @@ public class LayoutManagerImpl
         Class[] overlayOrder =
                 new Class[] {
                     HistoryNavigationCoordinator.getSceneOverlayClass(),
-                    TopToolbarOverlayCoordinator.class,
                     // StripLayoutHelperManager should be updated before
                     // ScrollingBottomViewSceneLayer Since ScrollingBottomViewSceneLayer change
                     // the container size, it causes relocation tab strip scene layer.
                     StripLayoutHelperManager.class,
+                    TopToolbarOverlayCoordinator.class,
                     ScrollingBottomViewSceneLayer.class,
                     StatusIndicatorCoordinator.getSceneOverlayClass(),
                     ContextualSearchPanel.class,

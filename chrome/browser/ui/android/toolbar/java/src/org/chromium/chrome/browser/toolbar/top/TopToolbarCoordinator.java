@@ -375,7 +375,7 @@ public class TopToolbarCoordinator implements Toolbar {
             addTabStripHeightObserver(
                     new TabStripHeightObserver() {
                         @Override
-                        public void onHeightTransitionRequested(int newHeight) {
+                        public void onTransitionRequested(int newHeight) {
                             // Invalid the snapshot to make sure the tab strip is rendering
                             // correctly.
                             mControlContainer.invalidateBitmap();

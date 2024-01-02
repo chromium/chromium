@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.view.ViewStub;
+import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -64,12 +65,14 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
+import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.url.GURL;
 
@@ -79,7 +82,8 @@ import java.util.List;
  * This class handles managing which {@link StripLayoutHelper} is currently active and dispatches
  * all input and model events to the proper destination.
  */
-public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNativeObserver {
+public class StripLayoutHelperManager
+        implements SceneOverlay, PauseResumeWithNativeObserver, TabStripHeightObserver {
 
     /**
      * POD type that contains the necessary tab model info on startup. Used in the startup flicker
@@ -119,6 +123,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE = 48.f;
 
+    @VisibleForTesting
+    static final Interpolator TAB_STRIP_TRANSITION_INTERPOLATOR =
+            Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR;
+
     // Fade constants.
     static final float FADE_SHORT_WIDTH_DP = 60;
     static final float FADE_MEDIUM_WIDTH_DP = 72;
@@ -147,6 +155,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     private Context mContext;
     private boolean mBrowserScrimShowing;
     private boolean mIsHidden;
+    private boolean mIsTransitioning;
     private TabStripSceneLayer mTabStripTreeProvider;
     private TabStripEventHandler mTabStripEventHandler;
     private TabSwitcherLayoutObserver mTabSwitcherLayoutObserver;
@@ -547,7 +556,23 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 getActiveStripLayoutHelper().getLastHoveredTab() == null
                         ? TabModel.INVALID_TAB_INDEX
                         : getActiveStripLayoutHelper().getLastHoveredTab().getId();
-        if (mIsHidden) {
+
+        float scrimOpacity = 0.0f;
+        // When tab strip is hiding, animation will trigger the toolbar moving up and tab
+        // strip fade-out in place. In this case the tab strip should not move at all.
+        if (duringTabStripTransition()) {
+            // During tab strip transition, make the yOffset stick to the top of the browser
+            // controls. This assumes on tablet there are no other components on top of the control
+            // container.
+            float visibleHeight = yOffset;
+            if (visibleHeight < 0) visibleHeight += getHeight();
+
+            // The fade-out is implemented by adding a scrim layer on top of the tab strip, with the
+            // same bg as the toolbar background color.
+            scrimOpacity = calculateScrimOpacityDuringTransition(visibleHeight);
+
+            yOffset = 0;
+        } else if (mIsHidden) {
             // When tab strip is hidden, the stable offset of this scene layer should be a negative
             // value.
             yOffset -= getHeight();
@@ -559,7 +584,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 getActiveStripLayoutHelper().getStripLayoutTabsToRender(),
                 yOffset,
                 selectedTabId,
-                hoveredTabId);
+                hoveredTabId,
+                // TODO(crbug.com/1498252): Use the toolbar background color for scrim.
+                getBackgroundColor(),
+                scrimOpacity);
         return mTabStripTreeProvider;
     }
 
@@ -598,6 +626,33 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
         mStripFilterArea.set(0, 0, mWidth, Math.min(getHeight(), visibleViewportOffsetY));
         mEventFilter.setEventArea(mStripFilterArea);
+    }
+
+    // Implements TabStripHeightObserver
+
+    @Override
+    public void onHeightChanged(int newHeight) {
+        mIsTransitioning = true;
+        mIsHidden = newHeight == 0;
+    }
+
+    @Override
+    public void onTransitionFinished() {
+        mIsTransitioning = false;
+    }
+
+    private boolean duringTabStripTransition() {
+        return mIsTransitioning;
+    }
+
+    private float calculateScrimOpacityDuringTransition(float visibleHeight) {
+        if (!duringTabStripTransition()) {
+            return 0.0f;
+        }
+
+        // Otherwise, the alpha fraction is based on the percent of the tab strip visibility.
+        float ratio = 1 - visibleHeight / mHeight;
+        return TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(ratio);
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
