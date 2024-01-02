@@ -19,7 +19,7 @@ BASE_FEATURE(kLauncherKeywordExtractionScoring,
 
 BASE_FEATURE(kLauncherQueryFederatedAnalyticsPHH,
              "LauncherQueryFederatedAnalyticsPHH",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLauncherFuzzyMatchAcrossProviders,
              "LauncherFuzzyMatchAcrossProviders",

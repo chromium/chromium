@@ -1095,7 +1095,7 @@ BASE_FEATURE(kFeatureManagementTimeOfDayWallpaper,
 // user first login.
 BASE_FEATURE(kFederatedService,
              "FederatedService",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the federated service to schedule tasks. If disabled, federated
 // service works as a simple example receiver and storage.
@@ -1104,7 +1104,7 @@ BASE_FEATURE(kFederatedService,
 // much resources while example storage is supposed to be cheap and safe.
 BASE_FEATURE(kFederatedServiceScheduleTasks,
              "FederatedServiceScheduleTasks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the federated strings service.
 BASE_FEATURE(kFederatedStringsService,
@@ -1118,12 +1118,12 @@ BASE_FEATURE(kFederatedStringsServiceScheduleTasks,
 
 BASE_FEATURE(kFederatedTimezoneCodePhh,
              "FederatedTimezoneCodePhh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables scheduling of launcher query federated analytics tasks.
 BASE_FEATURE(kFederatedLauncherQueryAnalyticsTask,
              "FederatedLauncherQueryAnalyticsTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables experimental UI features in Files app.
 BASE_FEATURE(kFilesAppExperimental,
