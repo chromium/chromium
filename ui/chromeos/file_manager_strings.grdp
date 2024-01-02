@@ -805,6 +805,9 @@
   <message name="IDS_FILE_BROWSER_OPEN_TRASHED_FILES_ERROR_DESC" desc="Description of message informing users they can't open files from the Trash folder">
     Restore the items or drag them to a new folder outside of trash
   </message>
+  <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY" desc="Summary message for a single error above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
+    1 error.
+  </message>
   <message name="IDS_FILE_BROWSER_ERROR_PROGRESS_SUMMARY_PLURAL" desc="Summary message for multiple errors above the progress bar. This message may be placed at the next to ohter *_PROGERSS_SUMMARY messages.">
     <ph name="COUNT">$1<ex>10</ex></ph> errors.
   </message>

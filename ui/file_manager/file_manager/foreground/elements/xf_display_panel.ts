@@ -180,15 +180,15 @@ export class DisplayPanel extends HTMLElement {
       // Both errors and warnings: show the error indicator, along with counts
       // of both.
       summaryPanel.status = 'failure';
-      summaryPanel.primaryText = strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors) +
-          ' ' + this.generateWarningMessage_(warnings);
+      summaryPanel.primaryText = this.generateErrorMessage_(errors) + ' ' +
+          this.generateWarningMessage_(warnings);
       return;
     }
 
     if (errors > 0) {
       // Only errors, but no warnings.
       summaryPanel.status = 'failure';
-      summaryPanel.primaryText = strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
+      summaryPanel.primaryText = this.generateErrorMessage_(errors);
       if (warnings > 0) {
         summaryPanel.primaryText +=
             ' ' + this.generateWarningMessage_(warnings);
@@ -363,6 +363,21 @@ export class DisplayPanel extends HTMLElement {
     this.items_ = [];
     this.setAriaHidden_();
     this.updateSummaryPanel();
+  }
+
+  /**
+   * Generates the summary panel title message based on the number of errors.
+   * @param errors Number of error subpanels.
+   * @return Title text.
+   */
+  private generateErrorMessage_(errors: number): string {
+    if (errors <= 0) {
+      console.warn(
+          `generateWarningMessage_ expected errors > 0, but got ${errors}.`);
+      return '';
+    }
+    return errors == 1 ? str('ERROR_PROGRESS_SUMMARY_SINGLE') :
+                         strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
   }
 
   /**

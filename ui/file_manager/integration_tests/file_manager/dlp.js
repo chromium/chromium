@@ -1095,7 +1095,7 @@ testcase.mixedSummaryDisplayPanel = async () => {
   await remoteCall.waitForElementsCount(
       appId, ['#progress-panel', 'xf-panel-item'], 3);
   await verifyPanelItem(
-      appId, PanelType.SUMMARY, '1 errors. 1 warning.', null,
+      appId, PanelType.SUMMARY, '1 error. 1 warning.', null,
       StatusIndicator.FAILURE);
   // Expand the summary panel if needed, in order to click on the individual
   // ones.
