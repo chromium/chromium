@@ -143,7 +143,7 @@ TEST_P(QRCodeGeneratorTest, ManySizes) {
                                                          // 9-M covered above
                                                          // 12-M covered above
     EXPECT_EQ(max_input_length_for_qr_size[97], 666u);   // 20-M
-    EXPECT_EQ(max_input_length_for_qr_size[101], 700u);  // 21-M (not at max)
+    EXPECT_EQ(max_input_length_for_qr_size[101], 701u);  // 21-M (not at max)
     // Other versions skipped - otherwise the test would timeout.
   } else {
     // C++ only supports 5 QR versions: 2-L, 5-M, 7-M, 9-M, 12-M.
@@ -287,9 +287,39 @@ TEST(QRCodeGenerator, SegmentationValid) {
 }
 
 TEST_P(QRCodeGeneratorTest, HugeInput) {
-  std::vector<uint8_t> huge_input(QRCodeGenerator::kMaxInputSize + 1);
+  bool is_old_impl =
+      !base::FeatureList::IsEnabled(kRustyQrCodeGeneratorFeature);
+
+  // The numbers below have been taken from
+  // https://www.qrcode.com/en/about/version.html, for version = 40,
+  // ECC level = M.
+  const size_t kMaxInputSizeForNumericInputVersion40 = 5596;
+  const size_t kMaxInputSizeForBinaryInputVersion40 = 2331;
+
+  std::vector<uint8_t> huge_numeric_input(kMaxInputSizeForNumericInputVersion40,
+                                          '0');
+  std::vector<uint8_t> huge_binary_input(kMaxInputSizeForBinaryInputVersion40,
+                                         '\0');
+
   QRCodeGenerator qr;
-  ASSERT_FALSE(qr.Generate(huge_input));
+  if (is_old_impl) {
+    // The old C++ implementation can only generate QR codes up to version 12
+    // (and consequently cannot support big input sizes).
+    ASSERT_FALSE(qr.Generate(huge_numeric_input));
+    ASSERT_FALSE(qr.Generate(huge_binary_input));
+  } else {
+    // The Rust implementation can generate QR codes up to version 40.
+    ASSERT_TRUE(qr.Generate(huge_numeric_input));
+    ASSERT_TRUE(qr.Generate(huge_binary_input));
+  }
+
+  // Adding another character means that the inputs will no longer fit into QR
+  // code version 40 (as of year 2023 there are no further versions defined by
+  // the spec).
+  huge_numeric_input.push_back('0');
+  huge_binary_input.push_back('\0');
+  ASSERT_FALSE(qr.Generate(huge_numeric_input));
+  ASSERT_FALSE(qr.Generate(huge_binary_input));
 }
 
 TEST_P(QRCodeGeneratorTest, InvalidMinVersion) {

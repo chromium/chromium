@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/qr_code_generator/dino_image.h"
+#include "components/qr_code_generator/features.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/canvas.h"
@@ -279,14 +280,15 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     return;
   }
 
-  // TODO(lukasza): Consider increasing `kLengthMax` - according to
-  // https://www.qrcode.com/en/about/version.html 177x177 QR code can encode up
-  // to 7089 digits.
-  constexpr size_t kLengthMax = 288;
-  if (request->data.length() > kLengthMax) {
-    response->error_code = mojom::QRCodeGeneratorError::INPUT_TOO_LONG;
-    std::move(callback).Run(std::move(response));
-    return;
+  if (!qr_code_generator::IsRustyQrCodeGeneratorFeatureEnabled()) {
+    // TODO(lukasza): Remove the `kLengthMax` check once the old, C++
+    // implementation of QR Code Generation is removed from Chromium.
+    constexpr size_t kLengthMax = 288;
+    if (request->data.length() > kLengthMax) {
+      response->error_code = mojom::QRCodeGeneratorError::INPUT_TOO_LONG;
+      std::move(callback).Run(std::move(response));
+      return;
+    }
   }
 
   absl::optional<qr_code_generator::QRCodeGenerator::GeneratedCode> qr_data;

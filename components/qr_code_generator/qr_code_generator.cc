@@ -613,12 +613,12 @@ QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(
     base::span<const uint8_t> in,
     absl::optional<int> min_version) {
-  if (in.size() > kMaxInputSize) {
-    return absl::nullopt;
-  }
-
   if (IsRustyQrCodeGeneratorFeatureEnabled()) {
     return GenerateQrCodeUsingRust(in, min_version);
+  }
+
+  if (in.size() > kMaxInputSize) {
+    return absl::nullopt;
   }
 
   std::vector<Segment> segments;

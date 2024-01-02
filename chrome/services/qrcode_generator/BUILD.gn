@@ -16,6 +16,7 @@ source_set("qrcode_generator") {
     "//base",
     "//chrome:strings",
     "//components/qr_code_generator",
+    "//components/qr_code_generator:qr_code_generator_features",
     "//components/vector_icons",
     "//mojo/public/cpp/bindings",
     "//net",

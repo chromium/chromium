@@ -27,6 +27,7 @@ source_set("qr_code_generator_features") {
   visibility = [
     ":qr_code_generator",
     ":unit_tests",
+    "//chrome/services/qrcode_generator",
     "//chrome/services/qrcode_generator/public/cpp:cpp",
   ]
 }
