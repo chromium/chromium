@@ -1,7 +1,8 @@
 # Setting up a new builder
 
-This doc describes how to set up a new builder on LUCI. It's focused
-on Chromium builders, but parts may be applicable to other projects.
+This doc describes how to set up a new builder on LUCI. It's focused on Chromium
+builders, but parts may be applicable to other projects. If you find terms
+you're not familiar with in this doc, consult the infra [glossary][30].
 
 [TOC]
 
@@ -10,11 +11,10 @@ on Chromium builders, but parts may be applicable to other projects.
 For a typical chromium builder using the chromium recipe, you'll need to file a
 bug for tracking purposes, acquire a host, and then land **two** CLs:
 
-1. in [infradata/config][16], modifying `chromium.star`.
+1. in [infradata/config][16], modifying either [ci.star][31] for CI bots or
+   [try.star][32] for trybots.
 1. in [chromium/src][18], modifying all of the following:
-    1. LUCI service configurations and recipe configurations in
-        `//infra/config`
-    1. Compile configuration in `//tools/mb`
+    1. LUCI service + recipe + compile configurations in `//infra/config`
     1. Test configuration in `//testing/buildbot`
 
 ## Background
@@ -32,33 +32,20 @@ builder's definition) and run the same set of tests/compile the same set of
 targets. However, they can be configured to use slightly different GN args
 (usually to enable DCHECKs on release builders) and (rarely) to run different
 tests or run them with different flags. [ We enable dchecks on the release
-builders as a compromise between the speed of a release builder and the coverage
-of a debug builder]. Note that differences between the try builders and the CI
-builders can cause changes to land that break the CI builders, which is
+try builders as a compromise between the speed of a release builder and the
+coverage of a debug builder]. Note that differences between the try builders and
+the CI builders can cause changes to land that break the CI builders, which is
 unfortunate, but a known tradeoff we make.
 
-Every try builder should mirror a CI builder, to help identify when failures
+Every try builder must mirror a CI builder, to help identify when failures
 are specific to a given patch, or happening more generally, and, if the latter,
 that some sheriff is looking at the failures.
 
-[ Sometimes it's okay to have an "optional" try builder that doesn't have a
-matching CI builder, but make sure to discuss that on the bug you're using
-for this work. ]
-
-Every CI builder should normally also have a mirrored try builder, so that you
+Every CI builder must normally also have a mirrored try builder, so that you
 can test changes that will affect the CI builder before landing. The only time
 you would set up a CI builder that didn't have a matching try builder should be
 if you couldn't set one up for some reason (e.g., we don't have enough capacity
 for both, or some other limitation of the infrastructure).
-
-> **Note:** not every CI builder that should have a matching try builder
-> currently does, unfortunately (see
-> [crbug.com/709214](https://crbug.com/709214)). Also, it can be hard to figure
-> out what the corresponding builders are for builders that have not been
-> migrated src-side: you have to look at [trybots.py][25] for the mapping
-> (embedded in the code). For CI builders with config specified src-side, the
-> generated properties file will have the builders that mirror them identified
-> in the `mirroring_builder_group_and_names` field.
 
 All CQ builders *must* have mirrored CI builders.
 
@@ -647,82 +634,6 @@ not branching a builder that runs tests on a very small set of machines: with
 limited capacity, it would be overwhelmed with additional builds happening on
 the branch.
 
-## Recipe-based config
-
-If for some reason you can't use the chromium\_tests\_builder\_config module
-properties for defining your new builder, then you'll have to modify the recipe
-itself. Such cases should be rare, please contact gbeaty@ if you think you have
-such a use case.
-
-Modifying the recipe involves making a change in the [chromium/tools/build][17]
-repo. If the builder being added is a tester that will be triggered by an
-existing builder, the change to the recipe should be made after defining the
-builder in chromium/src. Otherwise, the change to the recipe should be made
-before defining the builder in chromium/src.
-
-To configure a chromium CI builder, you'll want to add a config block to the
-file in [recipe\_modules/chromium\_tests\_builder\_config][5] corresponding to
-your new builder's builder group. The format is somewhat in flux and is not very
-consistent among the different builder groups, but something like this should
-suffice:
-
-``` py
-'your-new-builder': builder_spec.BuilderSpec.create(
-  chromium_config='chromium',
-  gclient_config='chromium',
-  chromium_apply_config=['mb', 'ninja_confirm_noop'],
-  chromium_config_kwargs={
-    'BUILD_CONFIG': 'Release', # or 'Debug', as appropriate
-    'TARGET_BITS': 64, # or 32, for some mobile builders
-  },
-  simulation_platform='$PLATFORM',  # one of 'mac', 'win', or 'linux'
-
-  # There are a variety of other options; most of them are unnecessary in most
-  # cases. If you think one may be applicable, please reach out or ask your
-  # reviewer.
-)
-```
-
-For chromium try builders, you'll also want to set up mirroring.
-You can do so by adding your new try builder to [trybots.py][21].
-
-A typical entry will just reference the matching CI builder, e.g.:
-
-``` py
-TRYBOTS = try_spec.TryDatabase.create({
-  # ...
-
-  'tryserver.chromium.example': {
-      # If you want to build and test the same targets as one
-      # CI builder, you can just do this:
-      'your-new-builder': try_spec.TrySpec.create_for_single_mirror(
-          builder_group='chromium.example',
-          buildername='your-new-builder',
-      ),
-
-      # If you want to build the same targets as one CI builder
-      # but not test anything, you can do this:
-      'your-new-compile-builder': try_spec.TrySpec.create_for_single_mirror(
-          builder_group='chromium.example',
-          buildername='your-new-builder',
-          analyze_mode='compile',
-      ),
-
-      # If you want to build and test the same targets as a builder/tester
-      # CI pair, you can do this:
-      'your-new-tester': try_spec.TrySpec.create_for_single_mirror(
-          builder_group='chromium.example',
-          buildername='your-new-builder',
-          tester='your-new-tester',
-      ),
-
-      # If you want to mirror multiple try bots, please reach out.
-    },
-
-  # ...
-})
-```
-
 ## Questions? Feedback?
 
 If you're in need of further assistance, if you're not sure about
@@ -747,7 +658,6 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [17]: https://chromium.googlesource.com/chromium/tools/build
 [18]: /
 [19]: https://g.co/bugatrooper
-[21]: https://chromium.googlesource.com/chromium/tools/build/+/HEAD/recipes/recipe_modules/chromium_tests_builder_config/trybots.py
 [22]: /infra/config/main.star
 [23]: /infra/config/subprojects/chromium
 [24]: /infra/config/lib/builders.star
@@ -756,3 +666,6 @@ reach out to infra-dev@chromium.org or [file a bug][19]!
 [27]: https://luci-config.appspot.com/schemas/projects:commit-queue.cfg
 [28]: /infra/config/lib/gn_args.star
 [29]: /infra/config/gn_args
+[30]: /docs/infra/glossary.md
+[31]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/ci/ci.star
+[32]: https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/main/configs/chromium-swarm/starlark/bots/chromium/try.star
