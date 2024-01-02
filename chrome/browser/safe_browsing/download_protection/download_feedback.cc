@@ -8,7 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/task_runner.h"
-#include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
@@ -38,8 +39,8 @@ class DownloadFeedbackImpl : public DownloadFeedback {
  public:
   DownloadFeedbackImpl(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      base::TaskRunner* file_task_runner,
       const base::FilePath& file_path,
+      uint64_t file_size,
       const std::string& ping_request,
       const std::string& ping_response);
 
@@ -62,34 +63,31 @@ class DownloadFeedbackImpl : public DownloadFeedback {
   // Callback for TwoPhaseUploader completion.  Relays the result to the
   // |finish_callback|.
   void FinishedUpload(base::OnceClosure finish_callback,
-                      TwoPhaseUploader::State state,
-                      int net_error,
+                      bool success,
                       int response_code,
                       const std::string& response);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  scoped_refptr<base::TaskRunner> file_task_runner_;
   const base::FilePath file_path_;
-  int64_t file_size_;
+  uint64_t file_size_;
 
   // The safebrowsing request and response of checking that this binary is
   // unsafe.
   std::string ping_request_;
   std::string ping_response_;
 
-  std::unique_ptr<TwoPhaseUploader> uploader_;
+  std::unique_ptr<MultipartUploadRequest> uploader_;
 };
 
 DownloadFeedbackImpl::DownloadFeedbackImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::TaskRunner* file_task_runner,
     const base::FilePath& file_path,
+    uint64_t file_size,
     const std::string& ping_request,
     const std::string& ping_response)
     : url_loader_factory_(url_loader_factory),
-      file_task_runner_(file_task_runner),
       file_path_(file_path),
-      file_size_(-1),
+      file_size_(file_size),
       ping_request_(ping_request),
       ping_response_(ping_response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -106,8 +104,9 @@ DownloadFeedbackImpl::~DownloadFeedbackImpl() {
     uploader_.reset();
   }
 
-  file_task_runner_->PostTask(FROM_HERE,
-                              base::GetDeleteFileCallback(file_path_));
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT})
+      ->PostTask(FROM_HERE, base::GetDeleteFileCallback(file_path_));
 }
 
 void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
@@ -127,7 +126,6 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
   r = report_metadata.mutable_download_response()->ParseFromString(
       ping_response_);
   DCHECK(r);
-  file_size_ = report_metadata.download_request().length();
 
   std::string metadata_string;
   bool ok = report_metadata.SerializeToString(&metadata_string);
@@ -167,22 +165,19 @@ void DownloadFeedbackImpl::Start(base::OnceClosure finish_callback) {
           }
         })");
 
-  uploader_ = TwoPhaseUploader::Create(
-      url_loader_factory_, file_task_runner_.get(), GURL(kSbFeedbackURL),
-      metadata_string, file_path_,
+  uploader_ = MultipartUploadRequest::CreateFileRequest(
+      url_loader_factory_, GURL(kSbFeedbackURL), metadata_string, file_path_,
+      file_size_, traffic_annotation,
       base::BindOnce(&DownloadFeedbackImpl::FinishedUpload,
-                     base::Unretained(this), std::move(finish_callback)),
-      traffic_annotation);
+                     base::Unretained(this), std::move(finish_callback)));
   uploader_->Start();
 }
 
 void DownloadFeedbackImpl::FinishedUpload(base::OnceClosure finish_callback,
-                                          TwoPhaseUploader::State state,
-                                          int net_error,
+                                          bool success,
                                           int response_code,
                                           const std::string& response_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DVLOG(1) << __func__ << " " << state << " rlen=" << response_data.size();
 
   uploader_.reset();
 
@@ -205,18 +200,16 @@ DownloadFeedbackFactory* DownloadFeedback::factory_ = nullptr;
 // static
 std::unique_ptr<DownloadFeedback> DownloadFeedback::Create(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::TaskRunner* file_task_runner,
     const base::FilePath& file_path,
+    uint64_t file_size,
     const std::string& ping_request,
     const std::string& ping_response) {
   if (!factory_) {
-    return base::WrapUnique(
-        new DownloadFeedbackImpl(url_loader_factory, file_task_runner,
-                                 file_path, ping_request, ping_response));
+    return base::WrapUnique(new DownloadFeedbackImpl(
+        url_loader_factory, file_path, file_size, ping_request, ping_response));
   }
   return DownloadFeedback::factory_->CreateDownloadFeedback(
-      url_loader_factory, file_task_runner, file_path, ping_request,
-      ping_response);
+      url_loader_factory, file_path, file_size, ping_request, ping_response);
 }
 
 }  // namespace safe_browsing
