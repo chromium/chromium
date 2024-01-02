@@ -5,6 +5,45 @@
 GEN_INCLUDE(['../../common/testing/e2e_test_base.js']);
 GEN_INCLUDE(['../../common/testing/mock_accessibility_private.js']);
 
+/** A class that helps initialize FaceGaze with a configuration. */
+class Config {
+  constructor() {
+    /** @type {?chrome.accessibilityPrivate.ScreenPoint} */
+    this.mouseLocation = null;
+    /** @type {?Map<FacialGesture, Action>} */
+    this.gestureToAction = null;
+    /** @type {?Map<FacialGesture, number>} */
+    this.gestureToConfidence = null;
+  }
+
+  /**
+   * @param {!chrome.accessibilityPrivate.ScreenPoint} mouseLocation
+   * @return {!Config}
+   */
+  withMouseLocation(mouseLocation) {
+    this.mouseLocation = mouseLocation;
+    return this;
+  }
+
+  /**
+   * @param {!Map<FacialGesture, Action>} gestureToAction
+   * @return {!Config}
+   */
+  withGestureToAction(gestureToAction) {
+    this.gestureToAction = gestureToAction;
+    return this;
+  }
+
+  /**
+   * @param {!Map<FacialGesture, number>} gestureToConfidence
+   * @return {!Config}
+   */
+  withGestureToConfidence(gestureToConfidence) {
+    this.gestureToConfidence = gestureToConfidence;
+    return this;
+  }
+}
+
 /** A class that represents a fake FaceLandmarkerResult. */
 class MockFaceLandmarkerResult {
   constructor() {
@@ -99,20 +138,22 @@ FaceGazeTestBase = class extends E2ETestBase {
     return accessibilityCommon.getFaceGazeForTest();
   }
 
-  /**
-   * @param {!FacialGesture} gesture
-   * @return {Action|undefined}
-   */
-  getActionForGesture(gesture) {
-    return this.getFaceGaze().gestureToAction_.get(gesture);
-  }
+  /** @param {!Config} config */
+  configureFaceGaze(config) {
+    if (config.mouseLocation) {
+      // TODO(b/309121742): Set the mouse location using a fake automation
+      // event.
+      this.getFaceGaze().mouseController_.mouseLocation_ = config.mouseLocation;
+    }
 
-  /**
-   * TODO(b/309121742): Set the mouse location using a fake automation event.
-   * @param {!chrome.accessibilityPrivate.ScreenPoint} location
-   */
-  setMouseLocation(location) {
-    this.getFaceGaze().mouseController_.mouseLocation_ = location;
+    if (config.gestureToAction) {
+      this.getFaceGaze().gestureToAction_ = new Map(config.gestureToAction);
+    }
+
+    if (config.gestureToConfidence) {
+      this.getFaceGaze().gestureToConfidence_ =
+          new Map(config.gestureToConfidence);
+    }
   }
 
   /** @param {!MockFaceLandmarkerResult} result */
