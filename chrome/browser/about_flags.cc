@@ -3181,25 +3181,6 @@ const FeatureEntry::FeatureVariation
          std::size(kMemorySavingsReportingVeryFrequent), nullptr},
 };
 
-const FeatureEntry::FeatureParam kProbabilisticMemorySaverSimulated[] = {
-    {"proactive_discarding_target_false_positive_percent", "35"},
-    {"proactive_discarding_sampling_interval", "10m"},
-    {"proactive_discarding_simulation_mode", "true"},
-};
-
-const FeatureEntry::FeatureParam kProbabilisticMemorySaverActive[] = {
-    {"proactive_discarding_target_false_positive_percent", "35"},
-    {"proactive_discarding_sampling_interval", "10m"},
-    {"proactive_discarding_simulation_mode", "false"},
-};
-
-const FeatureEntry::FeatureVariation kProbabilisticMemorySaverMode[] = {
-    {"Simulated", kProbabilisticMemorySaverSimulated,
-     std::size(kProbabilisticMemorySaverSimulated), nullptr},
-    {"Active", kProbabilisticMemorySaverActive,
-     std::size(kProbabilisticMemorySaverActive), nullptr},
-};
-
 const FeatureEntry::FeatureParam kModalMemorySaverConservative[] = {
     {"modal_memory_saver_mode", "1"}};
 const FeatureEntry::FeatureParam kModalMemorySaverMedium[] = {
@@ -9755,14 +9736,6 @@ const FeatureEntry kFeatureEntries[] = {
          performance_manager::features::kMemorySavingsReportingImprovements,
          kMemorySaverMemorySavingsReportingVariations,
          "MemorySavingsReportingImprovements")},
-
-    {"probabilistic-memory-saver",
-     flag_descriptions::kProbabilisticMemorySaverName,
-     flag_descriptions::kProbabilisticMemorySaverDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         performance_manager::features::kProbabilisticProactiveDiscarding,
-         kProbabilisticMemorySaverMode,
-         "ProbabilisticProactiveDiscarding")},
 
     {"modal-memory-saver", flag_descriptions::kModalMemorySaverName,
      flag_descriptions::kModalMemorySaverDescription, kOsDesktop,
