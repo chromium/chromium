@@ -704,6 +704,11 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
 
   if (on_compute_scroll_called_ || !rwhva_->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kWebViewSuppressTapDuringFling)) {
+    // If we are not ticking flings ourselves, also reset the tracking state for
+    // fling so the first tap during / after fling is not suppressed.
+    rwhva_->host()->StopFling();
   }
 
   if (needs_begin_frame) {

@@ -805,6 +805,8 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.BACK_FORWARD_CACHE, "Controls if back/forward cache is enabled."),
         Flag.baseFeature(
+                ContentFeatures.WEBVIEW_SUPPRESS_TAP_DURING_FLING, "Supress tap during fling."),
+        Flag.baseFeature(
                 VizFeatures.INVALIDATE_LOCAL_SURFACE_ID_PRE_COMMIT,
                 "When enabled, invalidates the LocalSurfaceId of the DelegatedFrameHostAndroid when"
                         + " the old page is about to be unloaded."),
