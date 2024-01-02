@@ -6,6 +6,7 @@
  * @fileoverview Polymer element that displays a single grid item.
  */
 
+import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
