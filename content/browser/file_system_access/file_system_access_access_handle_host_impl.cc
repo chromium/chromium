@@ -67,7 +67,10 @@ FileSystemAccessAccessHandleHostImpl::~FileSystemAccessAccessHandleHostImpl() =
 
 void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!close_callback_);
+  if (close_callback_) {
+    receiver_.ReportBadMessage("Close already called on SyncAccessHandle.");
+    return;
+  }
 
   // Run `callback` when this instance is destroyed, after capacity allocation
   // has been released.
@@ -79,6 +82,12 @@ void FileSystemAccessAccessHandleHostImpl::Close(CloseCallback callback) {
 
 void FileSystemAccessAccessHandleHostImpl::OnDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (close_callback_) {
+    // A call has already been made to
+    // `FileSystemAccessManagerImpl::RemoveAccessHandleHost`.
+    return;
+  }
 
   // No need to reset `receiver_` after it disconnected.
   // Removes `this`.
