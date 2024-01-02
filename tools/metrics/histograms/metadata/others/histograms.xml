@@ -6273,16 +6273,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InstanceID.GetToken.NetErrorCode" enum="NetErrorCodes"
-    expires_after="M94">
-  <owner>peter@chromium.org</owner>
-  <owner>platform-capabilities@chromium.org</owner>
-  <summary>
-    Net error code from an Instance ID GetToken attempt. Recorded when URL
-    loading completes.
-  </summary>
-</histogram>
-
 <histogram name="InstanceID.GetToken.RequestStatus"
     enum="GCMRegistrationRequestStatus" expires_after="2024-02-20">
   <owner>peter@chromium.org</owner>
