@@ -11,6 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -37,9 +38,8 @@
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
-class OmniboxPopupViewViews::AutocompletePopupWidget
-    : public ThemeCopyingWidget,
-      public base::SupportsWeakPtr<AutocompletePopupWidget> {
+class OmniboxPopupViewViews::AutocompletePopupWidget final
+    : public ThemeCopyingWidget {
  public:
   // TODO(tapted): Remove |role_model| when the omnibox is completely decoupled
   // from NativeTheme.
@@ -134,6 +134,10 @@ class OmniboxPopupViewViews::AutocompletePopupWidget
 
   bool is_setting_popup_bounds() const { return is_setting_popup_bounds_; }
 
+  base::WeakPtr<AutocompletePopupWidget> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::unique_ptr<ui::ScopedLayerAnimationSettings>
   GetScopedAnimationSettings() {
@@ -154,6 +158,8 @@ class OmniboxPopupViewViews::AutocompletePopupWidget
 
   // True if the popup's bounds are currently being set.
   bool is_setting_popup_bounds_ = false;
+
+  base::WeakPtrFactory<AutocompletePopupWidget> weak_ptr_factory_{this};
 };
 
 OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
