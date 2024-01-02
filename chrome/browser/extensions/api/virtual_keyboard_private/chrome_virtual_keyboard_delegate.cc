@@ -15,6 +15,7 @@
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
+#include "chromeos/services/machine_learning/public/cpp/ml_switches.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -172,6 +174,33 @@ extensions::EventRouter* GetRouterForEventName(content::BrowserContext* context,
     return nullptr;
   }
   return router;
+}
+
+// Returns whether the `ondevice_handwriting` USE flag has been set.
+// Adapted from
+// `//chromeos/services/machine_learning/cpp/ash/handwriting_model_loader.cc`.
+// This flag is set from the CrOS side in
+// https://crsrc.org/o/src/platform2/login_manager/chrome_setup.cc;l=1014;drc=e44a81d180823c2a0758c52f0520862d0545b98d
+bool IsOndeviceHandwritingEnabledViaCommandLine() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  return command_line->HasSwitch(::switches::kOndeviceHandwritingSwitch) &&
+         command_line->GetSwitchValueASCII(
+             ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
+}
+
+bool IsHandwritingLegacyRecognitionEnabled() {
+  // Disable handwriting DLC flags if device does not have on-device handwriting
+  // (see b/316981973).
+  return IsOndeviceHandwritingEnabledViaCommandLine() &&
+         base::FeatureList::IsEnabled(
+             ash::features::kHandwritingLegacyRecognition);
+}
+
+bool IsHandwritingLibraryDlcEnabled() {
+  // Disable handwriting DLC flags if device does not have on-device handwriting
+  // (see b/316981973).
+  return IsOndeviceHandwritingEnabledViaCommandLine() &&
+         base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc);
 }
 
 }  // namespace
@@ -501,10 +530,8 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "handwritinggestureediting",
       base::FeatureList::IsEnabled(ash::features::kHandwritingGestureEditing)));
-  features.Append(
-      GenerateFeatureFlag("handwritinglegacyrecognition",
-                          base::FeatureList::IsEnabled(
-                              ash::features::kHandwritingLegacyRecognition)));
+  features.Append(GenerateFeatureFlag("handwritinglegacyrecognition",
+                                      IsHandwritingLegacyRecognitionEnabled()));
   features.Append(GenerateFeatureFlag(
       "hindiinscriptlayout",
       base::FeatureList::IsEnabled(ash::features::kHindiInscriptLayout)));
@@ -530,9 +557,8 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
-  features.Append(GenerateFeatureFlag(
-      "handwritinglibrarydlc",
-      base::FeatureList::IsEnabled(ash::features::kHandwritingLibraryDlc)));
+  features.Append(GenerateFeatureFlag("handwritinglibrarydlc",
+                                      IsHandwritingLibraryDlcEnabled()));
   features.Append(
       GenerateFeatureFlag("jelly", chromeos::features::IsJellyEnabled()));
   features.Append(GenerateFeatureFlag(

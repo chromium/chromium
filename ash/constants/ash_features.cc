@@ -1339,11 +1339,15 @@ BASE_FEATURE(kHandwritingGestureEditing,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables new on-device recognition for legacy handwriting input.
+// This flag should be OVERRIDDEN for devices which do not have on-device
+// handwriting (b/316981973). Please check before using this flag.
 BASE_FEATURE(kHandwritingLegacyRecognition,
              "HandwritingLegacyRecognition",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables downloading the handwriting libraries via DLC.
+// This flag should be OVERRIDDEN for devices which do not have on-device
+// handwriting (b/316981973). Please check before using this flag.
 BASE_FEATURE(kHandwritingLibraryDlc,
              "HandwritingLibraryDlc",
              base::FEATURE_ENABLED_BY_DEFAULT);
