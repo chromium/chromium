@@ -16,7 +16,7 @@
 
 namespace sync_file_system {
 
-class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
+class TaskLogger final {
  public:
   struct TaskLog {
     int log_id;
@@ -59,10 +59,15 @@ class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
 
   const LogList& GetLog() const;
 
+  base::WeakPtr<TaskLogger> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   LogList log_history_;
 
   base::ObserverList<Observer>::Unchecked observers_;
+  base::WeakPtrFactory<TaskLogger> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_file_system

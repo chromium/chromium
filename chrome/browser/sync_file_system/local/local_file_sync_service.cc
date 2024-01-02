@@ -141,7 +141,7 @@ void LocalFileSyncService::MaybeInitializeFileSystemContext(
   sync_context_->MaybeInitializeFileSystemContext(
       app_origin, file_system_context,
       base::BindOnce(&LocalFileSyncService::DidInitializeFileSystemContext,
-                     AsWeakPtr(), app_origin,
+                     weak_ptr_factory_.GetWeakPtr(), app_origin,
                      base::RetainedRef(file_system_context),
                      std::move(callback)));
 }
@@ -171,8 +171,8 @@ void LocalFileSyncService::ProcessLocalChange(SyncFileCallback callback) {
 
   sync_context_->GetFileForLocalSync(
       origin_to_contexts_[origin],
-      base::BindOnce(&LocalFileSyncService::DidGetFileForLocalSync, AsWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&LocalFileSyncService::DidGetFileForLocalSync,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LocalFileSyncService::SetLocalChangeProcessor(
@@ -257,7 +257,8 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     MaybeInitializeFileSystemContext(
         url.origin().GetURL(), file_system_context.get(),
         base::BindOnce(&LocalFileSyncService::DidInitializeForRemoteSync,
-                       AsWeakPtr(), url, base::RetainedRef(file_system_context),
+                       weak_ptr_factory_.GetWeakPtr(), url,
+                       base::RetainedRef(file_system_context),
                        std::move(callback)));
     return;
   }
@@ -281,8 +282,8 @@ void LocalFileSyncService::ApplyRemoteChange(const FileChange& change,
 
   sync_context_->ApplyRemoteChange(
       origin_to_contexts_[url.origin().GetURL()], change, local_path, url,
-      base::BindOnce(&LocalFileSyncService::DidApplyRemoteChange, AsWeakPtr(),
-                     std::move(callback)));
+      base::BindOnce(&LocalFileSyncService::DidApplyRemoteChange,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void LocalFileSyncService::FinalizeRemoteSync(
@@ -429,8 +430,8 @@ void LocalFileSyncService::DidGetFileForLocalSync(
           next_change, sync_file_info.local_file_path, sync_file_info.metadata,
           sync_file_info.url,
           base::BindOnce(&LocalFileSyncService::ProcessNextChangeForURL,
-                         AsWeakPtr(), std::move(callback), std::move(snapshot),
-                         sync_file_info, next_change,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                         std::move(snapshot), sync_file_info, next_change,
                          sync_file_info.changes.PopAndGetNewList()));
 }
 
@@ -452,7 +453,7 @@ void LocalFileSyncService::ProcessNextChangeForURL(
             processed_change, sync_file_info.local_file_path,
             sync_file_info.metadata, sync_file_info.url,
             base::BindOnce(&LocalFileSyncService::ProcessNextChangeForURL,
-                           AsWeakPtr(), std::move(callback),
+                           weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                            std::move(snapshot), sync_file_info,
                            processed_change, changes));
     return;
@@ -478,8 +479,9 @@ void LocalFileSyncService::ProcessNextChangeForURL(
       changes.front(), sync_file_info.local_file_path, sync_file_info.metadata,
       url,
       base::BindOnce(&LocalFileSyncService::ProcessNextChangeForURL,
-                     AsWeakPtr(), std::move(callback), std::move(snapshot),
-                     sync_file_info, next_change, changes.PopAndGetNewList()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(snapshot), sync_file_info, next_change,
+                     changes.PopAndGetNewList()));
 }
 
 LocalChangeProcessor* LocalFileSyncService::GetLocalChangeProcessor(

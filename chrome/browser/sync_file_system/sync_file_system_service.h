@@ -51,13 +51,12 @@ class SyncEventObserver;
 // Service implementing the chrome.syncFileSystem() API for the deprecated
 // Chrome Apps platform.
 // https://developer.chrome.com/docs/extensions/reference/syncFileSystem/
-class SyncFileSystemService
+class SyncFileSystemService final
     : public KeyedService,
       public SyncProcessRunner::Client,
       public syncer::SyncServiceObserver,
       public FileStatusObserver,
-      public extensions::ExtensionRegistryObserver,
-      public base::SupportsWeakPtr<SyncFileSystemService> {
+      public extensions::ExtensionRegistryObserver {
  public:
   using DumpFilesCallback = base::OnceCallback<void(base::Value::List)>;
   using ExtensionStatusMapCallback =
@@ -194,6 +193,7 @@ class SyncFileSystemService
 
   bool promoting_demoted_changes_;
   base::OnceClosure idle_callback_;
+  base::WeakPtrFactory<SyncFileSystemService> weak_ptr_factory_{this};
 };
 
 }  // namespace sync_file_system

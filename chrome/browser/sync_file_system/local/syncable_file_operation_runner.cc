@@ -39,9 +39,7 @@ void SyncableFileOperationRunner::Task::Start(LocalFileSyncStatus* status) {
 SyncableFileOperationRunner::SyncableFileOperationRunner(
     int64_t max_inflight_tasks,
     LocalFileSyncStatus* sync_status)
-    : sync_status_(sync_status),
-      max_inflight_tasks_(max_inflight_tasks),
-      num_inflight_tasks_(0) {
+    : sync_status_(sync_status), max_inflight_tasks_(max_inflight_tasks) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   sync_status_->AddObserver(this);
 }
