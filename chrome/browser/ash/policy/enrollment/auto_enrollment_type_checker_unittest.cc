@@ -468,9 +468,7 @@ class AutoEnrollmentTypeCheckerInitializationTest
     AutoEnrollmentTypeCheckerTest::SetUp();
     AutoEnrollmentTypeChecker::
         ClearUnifiedStateDeterminationKillSwitchForTesting();
-    test_shared_loader_factory_ =
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_);
+    test_shared_loader_factory_ = test_url_loader_factory_.GetSafeWeakWrapper();
   }
 
  protected:
