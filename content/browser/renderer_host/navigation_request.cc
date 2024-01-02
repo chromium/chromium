@@ -4856,15 +4856,6 @@ NavigationRequest::ComputeErrorPageProcess() {
   if (frame_tree_node_->IsErrorPageIsolationEnabled())
     return ErrorPageProcess::kIsolatedProcess;
 
-  // <webview> guests do not currently support committing error pages with
-  // an unknown URL scheme (such as when navigating a guest to an external
-  // protocol) in the process computed for the destination URL. Therefore,
-  // leave such cases in the original process. See https://crbug.com/1366450.
-  if (net_error_ == net::ERR_UNKNOWN_URL_SCHEME &&
-      frame_tree_node_->current_frame_host()->GetSiteInstance()->IsGuest()) {
-    return ErrorPageProcess::kCurrentProcess;
-  }
-
   // Decide whether to leave the error page in the original process.
   // * If this was a renderer-initiated navigation, and the request is blocked
   //   because the initiating document wasn't allowed to make the request,

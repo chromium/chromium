@@ -6109,6 +6109,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
   // crash the browser.
   content::RenderFrameHost* guest_subframe =
       ChildFrameAt(GetGuestRenderFrameHost(), 0);
+  int initial_process_id = guest_subframe->GetProcess()->GetID();
   const GURL error_url = GURL("unknownscheme:foo");
   {
     content::TestFrameNavigationObserver load_observer(guest_subframe);
@@ -6124,6 +6125,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageInSubframe) {
     url::Origin error_origin = error_rfh->GetLastCommittedOrigin();
     EXPECT_TRUE(error_origin.opaque());
     EXPECT_FALSE(error_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
+
+    // The error page should not load in the initiator's process.
+    EXPECT_NE(initial_process_id, error_rfh->GetProcess()->GetID());
   }
 }
 
