@@ -2418,7 +2418,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
 // TODO(crbug.com/1377079): Flaky, please re-enable once fixed.
-- (void)DISABLED_testAutoScroll {
+- (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
@@ -2432,9 +2432,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
       performAction:grey_tap()];
 
+  NSString* const kAddedDomain = @"zexample.com";
+
   // Fill form.
   [[EarlGrey selectElementWithMatcher:AddPasswordWebsite()]
-      performAction:grey_replaceText(@"https://zexample.com")];
+      performAction:grey_replaceText([NSString
+                        stringWithFormat:@"https://%@", kAddedDomain])];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"zconcrete username")];
@@ -2445,12 +2448,17 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [[EarlGrey selectElementWithMatcher:AddPasswordSaveButton()]
       performAction:grey_tap()];
 
-  // The newly created credential exists.
-  [[self interactionForSinglePasswordEntryWithDomain:@"zexample.com"]
-      performAction:grey_tap()];
-
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
-      performAction:grey_tap()];
+  // Verify that the added credential was automatically scrolled at and visible.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityID(kAddedDomain)]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
+      @"Didn't scroll to the added credential item");
 }
 
 // Tests that adding new password credential where the username and website
