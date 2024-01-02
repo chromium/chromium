@@ -20,6 +20,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
 namespace test {
@@ -289,9 +290,10 @@ AppListTestModel::CreateAndAddWebAppShortcutItemWithHostBadge(
   std::unique_ptr<AppListTestItem> test_item(CreateItem(id));
   const int badge_icon_dimension = 48;
   const gfx::ImageSkia fake_badge_icon =
-      CreateImageSkia(badge_icon_dimension, badge_icon_dimension);
+      gfx::test::CreateImageSkia(badge_icon_dimension, SK_ColorCYAN);
   test_item->UpdateAppHostBadgeForTesting(fake_badge_icon);
   AppListItem* item = AppListModel::AddItem(std::move(test_item));
+  SetItemName(item, id);
   return static_cast<AppListTestItem*>(item);
 }
 
