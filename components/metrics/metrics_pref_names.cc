@@ -49,8 +49,8 @@ const char kMetricsInitialLogsMetadata[] =
 
 // A serialized representation of a base::UnguessableToken, used for randomizing
 // limited entropy field trials.
-const char kMetricsLimitedEntropySource[] =
-    "user_experience_metrics.limited_entropy_source";
+const char kMetricsLimitedEntropyRandomizationSource[] =
+    "user_experience_metrics.limited_entropy_randomization_source";
 
 // A counter tracking the most recently used log record id. Increment this value
 // by one (1) for each newly created log.

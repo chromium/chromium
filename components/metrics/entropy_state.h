@@ -61,10 +61,11 @@ class EntropyState final {
   // the |old_low_entropy_source_| comment for more info.
   int GetOldLowEntropySource();
 
-  // Returns the limited randomization source that is used to randomize
+  // Returns the limited entropy randomization source that is used to randomize
   // field trials in a limited entropy layer. Generates a new value if there is
-  // none. See the |limited_entropy_source_| comment for more info.
-  std::string_view GetLimitedEntropySource();
+  // none. See the |limited_entropy_randomization_source_| comment for more
+  // info.
+  std::string_view GetLimitedEntropyRandomizationSource();
 
   // The argument used to generate a non-identifying entropy source. We want no
   // more than 13 bits of entropy, so use this max to return a number in the
@@ -82,8 +83,10 @@ class EntropyState final {
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, HaveOnlyOldLowEntropySource);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, CorruptNewLowEntropySources);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, CorruptOldLowEntropySources);
-  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, ValidLimitedEntropySource);
-  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, InvalidLimitedEntropySource);
+  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest,
+                           ValidLimitedEntropyRandomizationSource);
+  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest,
+                           InvalidLimitedEntropyRandomizationSource);
 
   // Default value for prefs::kMetricsLowEntropySource.
   static constexpr int kLowEntropySourceNotSet = -1;
@@ -94,22 +97,23 @@ class EntropyState final {
   // |old_low_entropy_source_| may still be |kLowEntropySourceNotSet|.
   void UpdateLowEntropySources();
 
-  // Returns the limited entropy source value if one is already set.
-  // Otherwise, attempts to generate a new one either when there isn't a
+  // Returns the limited entropy randomization source value if one is already
+  // set. Otherwise, attempts to generate a new one either when there isn't a
   // previously set one stored in prefs, or when the command line flag
   // --reset-variation-state is set. In both cases, the newly generated value
   // will be set and stored stored in prefs before returning.
-  void UpdateLimitedEntropySource();
+  void UpdateLimitedEntropyRandomizationSource();
 
   // Checks whether a value is on the range of allowed low entropy source
   // values.
   static bool IsValidLowEntropySource(int value);
 
-  // Checks whether the given value is a valid limited entropy source.
-  static bool IsValidLimitedEntropySource(std::string_view value);
+  // Checks whether the given value is a valid limited entropy randomization
+  // source.
+  static bool IsValidLimitedEntropyRandomizationSource(std::string_view value);
 
-  // Generates a new limited entropy source.
-  std::string GenerateLimitedEntropySource();
+  // Generates a new limited entropy randomization source.
+  std::string GenerateLimitedEntropyRandomizationSource();
 
   // The local state prefs store.
   const raw_ptr<PrefService> local_state_;
@@ -137,11 +141,11 @@ class EntropyState final {
   // limited entropy layer. During startup this value is set to one that's
   // previously set. If a previously set value is not available, it will
   // generate a new one. See more in the comments of
-  // |UpdateLimitedEntropySource|.
+  // |UpdateLimitedEntropyRandomizationSource|.
   //
   // Similar to the |low_entropy_source_| above, this value won't be changed
   // within the session, even after calling |ClearPrefs|.
-  std::string limited_entropy_source_;
+  std::string limited_entropy_randomization_source_;
 };
 
 }  // namespace metrics
