@@ -212,6 +212,16 @@ AppListFolderItem* AppListTestModel::CreateSingleItemFolder(
   return static_cast<AppListFolderItem*>(folder_item);
 }
 
+AppListFolderItem* AppListTestModel::CreateSingleWebAppShortcutItemFolder(
+    const std::string& folder_id,
+    const std::string& item_id) {
+  AppListTestItem* item = CreateWebAppShortcutItem(item_id);
+  AddItemToFolder(item, folder_id);
+  AppListItem* folder_item = FindItem(folder_id);
+  DCHECK(folder_item->GetItemType() == AppListFolderItem::kItemType);
+  return static_cast<AppListFolderItem*>(folder_item);
+}
+
 void AppListTestModel::PopulateAppWithId(int id) {
   CreateAndAddItem(GetItemName(id));
 }
@@ -225,9 +235,7 @@ std::string AppListTestModel::GetModelContent() {
   return base::JoinString(ids, ",");
 }
 
-AppListTestModel::AppListTestItem* AppListTestModel::CreateItem(
-    const std::string& id) {
-  AppListTestItem* item = new AppListTestItem(id, this);
+syncer::StringOrdinal AppListTestModel::CalculatePosition() {
   size_t nitems = top_level_item_list()->item_count();
   syncer::StringOrdinal position;
   if (nitems == 0) {
@@ -236,9 +244,28 @@ AppListTestModel::AppListTestItem* AppListTestModel::CreateItem(
     position =
         top_level_item_list()->item_at(nitems - 1)->position().CreateAfter();
   }
-  item->SetPosition(position);
+  return position;
+}
+
+AppListTestModel::AppListTestItem* AppListTestModel::CreateItem(
+    const std::string& id) {
+  AppListTestItem* item = new AppListTestItem(id, this);
+  item->SetPosition(CalculatePosition());
   SetItemName(item, id);
   return item;
+}
+
+AppListTestModel::AppListTestItem* AppListTestModel::CreateWebAppShortcutItem(
+    const std::string& id) {
+  AppListTestItem* test_item = new AppListTestItem(id, this);
+  const int badge_icon_dimension = 48;
+  const gfx::ImageSkia fake_badge_icon =
+      CreateImageSkia(badge_icon_dimension, badge_icon_dimension);
+  test_item->UpdateAppHostBadgeForTesting(fake_badge_icon);
+  test_item->SetPosition(CalculatePosition());
+  SetItemName(test_item, id);
+
+  return test_item;
 }
 
 AppListTestModel::AppListTestItem* AppListTestModel::CreateAndAddItem(
@@ -252,6 +279,18 @@ AppListTestModel::AppListTestItem* AppListTestModel::CreateAndAddPromiseItem(
     const std::string& id) {
   std::unique_ptr<AppListTestItem> test_item(CreateItem(id));
   test_item->UpdateAppStatusForTesting(AppStatus::kPending);
+  AppListItem* item = AppListModel::AddItem(std::move(test_item));
+  return static_cast<AppListTestItem*>(item);
+}
+
+AppListTestModel::AppListTestItem*
+AppListTestModel::CreateAndAddWebAppShortcutItemWithHostBadge(
+    const std::string& id) {
+  std::unique_ptr<AppListTestItem> test_item(CreateItem(id));
+  const int badge_icon_dimension = 48;
+  const gfx::ImageSkia fake_badge_icon =
+      CreateImageSkia(badge_icon_dimension, badge_icon_dimension);
+  test_item->UpdateAppHostBadgeForTesting(fake_badge_icon);
   AppListItem* item = AppListModel::AddItem(std::move(test_item));
   return static_cast<AppListTestItem*>(item);
 }

@@ -1940,6 +1940,10 @@ ProgressIndicator* AppListItemView::GetProgressIndicatorForTest() const {
   return progress_indicator_.get();
 }
 
+views::ImageView* AppListItemView::GetHostBadgeIconViewForTest() const {
+  return host_badge_icon_view_.get();
+}
+
 void AppListItemView::OnMenuClosed() {
   views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
                                             nullptr);

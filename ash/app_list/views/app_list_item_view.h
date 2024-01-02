@@ -341,6 +341,7 @@ class ASH_EXPORT AppListItemView : public views::Button,
   bool is_promise_app() const { return is_promise_app_; }
   std::optional<size_t> item_counter_count_for_test() const;
   ProgressIndicator* GetProgressIndicatorForTest() const;
+  views::ImageView* GetHostBadgeIconViewForTest() const;
 
  private:
   class FolderIconView;
