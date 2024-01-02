@@ -769,15 +769,6 @@ template("chrome_public_test_apk_tmpl") {
   }
 }
 
-# TODO(https://crbug.com/1427610): Remove.
-template("monochrome_public_common_apk_or_module_tmpl") {
-  chrome_common_apk_or_module_tmpl(target_name) {
-    forward_variables_from(invoker, "*")
-    if (!defined(is_monochrome)) {
-      is_trichrome = true
-    }
-  }
-}
 template("chrome_public_common_apk_or_module_tmpl") {
   chrome_common_apk_or_module_tmpl(target_name) {
     forward_variables_from(invoker, "*")
