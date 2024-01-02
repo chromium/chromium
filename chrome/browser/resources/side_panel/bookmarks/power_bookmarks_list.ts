@@ -776,10 +776,14 @@ export class PowerBookmarksListElement extends PolymerElement {
   private setAvailableProductInfo_(productInfo: BookmarkProductInfo) {
     const bookmarkId = productInfo.bookmarkId.toString();
     this.availableProductInfos_.set(bookmarkId, productInfo);
-    if (productInfo.info.imageUrl.url !== '') {
-      const bookmark = this.bookmarksService_.findBookmarkWithId(bookmarkId)!;
-      this.setImageUrl(bookmark, productInfo.info.imageUrl.url);
+    if (productInfo.info.imageUrl.url === '') {
+      return;
     }
+    const bookmark = this.bookmarksService_.findBookmarkWithId(bookmarkId)!;
+    if (!bookmark) {
+      return;
+    }
+    this.setImageUrl(bookmark, productInfo.info.imageUrl.url);
   }
 
   /**
