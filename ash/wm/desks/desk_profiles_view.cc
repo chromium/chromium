@@ -276,10 +276,11 @@ void DeskProfilesButton::OnDeskDestroyed(const Desk* desk) {
   desk_ = nullptr;
 }
 
-void DeskProfilesButton::OnMouseReleased(const ui::MouseEvent& event) {
+bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
   if (event.IsLeftMouseButton()) {
     CreateMenu(event);
   }
+  return ImageButton::OnMousePressed(event);
 }
 
 void DeskProfilesButton::OnGestureEvent(ui::GestureEvent* event) {
