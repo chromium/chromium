@@ -84,7 +84,7 @@ TabSearchContainer::TabSearchContainer(TabStripController* tab_strip_controller,
                                       : Edge::kNone));
     tab_organization_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                           views::LayoutAlignment::kCenter);
-    const int space_between_buttons = 4;
+    const int space_between_buttons = 2;
     gfx::Insets margin = gfx::Insets();
     if (before_tab_strip) {
       margin.set_left(space_between_buttons);
