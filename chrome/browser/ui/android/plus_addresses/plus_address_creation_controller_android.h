@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
 #include "chrome/browser/ui/plus_addresses/plus_address_creation_controller.h"
+#include "components/plus_addresses/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +43,9 @@ class PlusAddressCreationControllerAndroid
   // Validate storage and clearing of `plus_profile_`.
   std::optional<PlusProfile> get_plus_profile_for_testing();
 
+  // For setting custom `clock_` during test.
+  void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
+
  private:
   // WebContentsUserData:
   explicit PlusAddressCreationControllerAndroid(
@@ -65,6 +69,15 @@ class PlusAddressCreationControllerAndroid
   // This is set by OnPlusAddressReserved and cleared when it's confirmed or
   // when the dialog is closed or cancelled.
   std::optional<PlusProfile> plus_profile_;
+
+  // Record the time between `modal_shown_time_` and now as modal shown duration
+  // and clear `modal_shown_time_`.
+  void RecordModalShownDuration(
+      const PlusAddressMetrics::PlusAddressModalCompletionStatus status);
+
+  raw_ptr<base::Clock> clock_ = base::DefaultClock::GetInstance();
+  // This is set on `OfferCreation`.
+  absl::optional<base::Time> modal_shown_time_;
 
   base::WeakPtrFactory<PlusAddressCreationControllerAndroid> weak_ptr_factory_{
       this};
