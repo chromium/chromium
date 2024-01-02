@@ -72,6 +72,9 @@ public class ReadAloudPrefs {
      * @param speed Playback speed to store.
      */
     public static void setSpeed(PrefService prefs, float speed) {
+        if (speed != getSpeed(prefs)) {
+            ReadAloudMetrics.recordSpeedChange(speed);
+        }
         prefs.setDouble(SPEED_PATH, (double) speed);
     }
 

@@ -80,6 +80,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what speed setting a user selects for the ReadAloud
+    playback. Emitted when the ReadAloud speed pref is changed.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

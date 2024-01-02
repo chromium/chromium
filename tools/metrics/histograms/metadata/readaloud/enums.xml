@@ -35,6 +35,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Default search engine is not Google"/>
 </enum>
 
+<enum name="ReadAloudSpeed">
+  <int value="0" label="0.5x"/>
+  <int value="1" label="0.8x"/>
+  <int value="2" label="1.0x"/>
+  <int value="3" label="1.2x"/>
+  <int value="4" label="1.5x"/>
+  <int value="5" label="2.0x"/>
+  <int value="6" label="3.0x"/>
+  <int value="7" label="4.0x"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>
