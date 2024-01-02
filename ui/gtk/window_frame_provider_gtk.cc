@@ -5,6 +5,7 @@
 #include "ui/gtk/window_frame_provider_gtk.h"
 
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
@@ -83,7 +84,7 @@ GtkCssContext HeaderContext(bool solid_frame, bool focused) {
 }
 
 SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
-                     const gfx::Rect& render_bounds,
+                     const gfx::RectF& render_bounds,
                      GtkCssContext context,
                      float scale) {
   SkBitmap bitmap;
@@ -93,18 +94,16 @@ SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
   CairoSurface surface(bitmap);
   cairo_t* cr = surface.cairo();
 
-  auto bounds = render_bounds;
-
   double opacity = GetOpacityFromContext(context);
   if (opacity < 1) {
     cairo_push_group(cr);
   }
 
   cairo_scale(cr, scale, scale);
-  gtk_render_background(context, cr, bounds.x(), bounds.y(), bounds.width(),
-                        bounds.height());
-  gtk_render_frame(context, cr, bounds.x(), bounds.y(), bounds.width(),
-                   bounds.height());
+  gtk_render_background(context, cr, render_bounds.x(), render_bounds.y(),
+                        render_bounds.width(), render_bounds.height());
+  gtk_render_frame(context, cr, render_bounds.x(), render_bounds.y(),
+                   render_bounds.width(), render_bounds.height());
 
   if (opacity < 1) {
     cairo_pop_group_to_source(cr);
@@ -119,8 +118,8 @@ SkBitmap PaintBitmap(const gfx::Size& bitmap_size,
 SkBitmap PaintHeaderbar(const gfx::Size& size,
                         GtkCssContext context,
                         float scale) {
-  gfx::Rect tabstrip_bounds_dip(0, 0, size.width() / scale,
-                                size.height() / scale);
+  gfx::RectF tabstrip_bounds_dip(0, 0, size.width() / scale,
+                                 size.height() / scale);
   return PaintBitmap(size, tabstrip_bounds_dip, context, scale);
 }
 
@@ -141,9 +140,10 @@ int ComputeTopCornerRadius() {
     border-top-right-radius: 0;
   })");
   gfx::Size size_dip{kMaxCornerRadiusDip, kMaxCornerRadiusDip};
-  auto bitmap = GtkCheckVersion(4)
-                    ? PaintBitmap(size_dip, {{0, 0}, size_dip}, context, 1)
-                    : PaintHeaderbar(size_dip, context, 1);
+  auto bitmap =
+      GtkCheckVersion(4)
+          ? PaintBitmap(size_dip, {{0, 0}, gfx::SizeF(size_dip)}, context, 1)
+          : PaintHeaderbar(size_dip, context, 1);
   DCHECK_EQ(bitmap.width(), bitmap.height());
   for (int i = 0; i < bitmap.width(); ++i) {
     if (SkColorGetA(bitmap.getColor(0, i)) == 255 &&
@@ -325,8 +325,9 @@ void WindowFrameProviderGtk::PaintWindowFrame(
              effective_frame_thickness_px.right(), 1, client_bounds_px.right(),
              corner_insets.top(), effective_frame_thickness_px.right(), edge_h);
 
-  int top_area_height_px =
-      top_area_height_dip * scale - effective_frame_thickness_px.top();
+  const int top_area_bottom_dip = rect_dip.y() + top_area_height_dip;
+  const int top_area_bottom_px = base::ClampCeil(top_area_bottom_dip * scale);
+  const int top_area_height_px = top_area_bottom_px - client_bounds_px.y();
 
   auto header = PaintHeaderbar({client_bounds_px.width(), top_area_height_px},
                                HeaderContext(solid_frame_, focused), scale);
@@ -366,10 +367,10 @@ void WindowFrameProviderGtk::MaybeUpdateBitmaps(float scale) {
   frame_bounds_dip.Inset(-GtkStyleContextGetPadding(focused_context));
   frame_bounds_dip.Inset(-GtkStyleContextGetBorder(focused_context));
   gfx::Size bitmap_size(BitmapSizePx(asset), BitmapSizePx(asset));
-  asset.focused_bitmap =
-      PaintBitmap(bitmap_size, frame_bounds_dip, focused_context, scale);
+  asset.focused_bitmap = PaintBitmap(bitmap_size, gfx::RectF(frame_bounds_dip),
+                                     focused_context, scale);
   asset.unfocused_bitmap =
-      PaintBitmap(bitmap_size, frame_bounds_dip,
+      PaintBitmap(bitmap_size, gfx::RectF(frame_bounds_dip),
                   DecorationContext(solid_frame_, false), scale);
 
   // In GTK4, there's no way to obtain the frame thickness from CSS values
