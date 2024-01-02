@@ -74,8 +74,9 @@ export class RecentlyUsedStore {
    *    otherwise.
    */
   savePreferredVariant(variant: string, baseEmoji?: string) {
+    // If `baseEmoji == undefined`, then variant itself is a base emoji.
     if (!baseEmoji) {
-      return false;
+      baseEmoji = variant;
     }
 
     const preference = this.store.data.preference;
