@@ -29,6 +29,8 @@ class QuickStartView : public base::SupportsWeakPtr<QuickStartView> {
   virtual void SetPIN(const std::string pin) = 0;
   virtual void SetQRCode(base::Value::List blob) = 0;
   virtual void SetDiscoverableName(const std::string& discoverable_name) = 0;
+  virtual void ShowInitialUiStep() = 0;
+  virtual void ShowConnectingToPhoneStep() = 0;
   virtual void ShowConnectingToWifi() = 0;
   virtual void ShowConfirmGoogleAccount() = 0;
   virtual void ShowSigningInStep() = 0;
@@ -57,6 +59,8 @@ class QuickStartScreenHandler : public QuickStartView,
   void SetPIN(const std::string pin) override;
   void SetQRCode(base::Value::List blob) override;
   void SetDiscoverableName(const std::string& discoverable_name) override;
+  void ShowInitialUiStep() override;
+  void ShowConnectingToPhoneStep() override;
   void ShowConnectingToWifi() override;
   void ShowConfirmGoogleAccount() override;
   void ShowSigningInStep() override;

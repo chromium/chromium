@@ -30,7 +30,8 @@ import {getTemplate} from './quick_start.html.js';
  * @enum {string}
  */
 export const QuickStartUIState = {
-  LOADING: 'loading',
+  DEFAULT: 'default',
+  CONNECTING_TO_PHONE: 'connecting_to_phone',
   VERIFICATION: 'verification',
   CONNECTING_TO_WIFI: 'connecting_to_wifi',
   CONNECTED_TO_WIFI: 'connected_to_wifi',
@@ -108,6 +109,8 @@ class QuickStartScreen extends QuickStartScreenBase {
     return [
       'setQRCode',
       'setPin',
+      'showInitialUiStep',
+      'showConnectingToPhoneStep',
       'showConnectingToWifi',
       'setDiscoverableName',
       'showConfirmGoogleAccount',
@@ -153,7 +156,15 @@ class QuickStartScreen extends QuickStartScreenBase {
 
   /** @override */
   defaultUIStep() {
-    return QuickStartUIState.LOADING;
+    return QuickStartUIState.DEFAULT;
+  }
+
+  showInitialUiStep() {
+    this.setUIStep(this.defaultUIStep());
+  }
+
+  showConnectingToPhoneStep() {
+    this.setUIStep(QuickStartUIState.CONNECTING_TO_PHONE);
   }
 
   showConnectingToWifi() {

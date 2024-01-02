@@ -66,7 +66,7 @@ class QuickStartController
     // UI State that is used for dictating what the QuickStartScreen should
     // show.
     enum class UiState {
-      LOADING,
+      CONNECTING_TO_PHONE,
       SHOWING_QR,
       SHOWING_PIN,
       CONNECTING_TO_WIFI,

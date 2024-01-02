@@ -216,8 +216,7 @@ void QuickStartController::OnStatusChanged(
           QuickStartMetrics::ScreenName::kSetUpAndroidPhone);
       return;
     case Step::ADVERTISING_WITHOUT_QR_CODE:
-      // TODO(b/282934168): Implement these screens fully
-      QS_LOG(INFO) << "Hit screen which is not implemented. Continuing";
+      UpdateUiState(UiState::CONNECTING_TO_PHONE);
       return;
     case Step::PIN_VERIFICATION:
       CHECK(absl::holds_alternative<Pin>(status.payload));
@@ -321,9 +320,10 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
 
   // No ongoing setup. Entering the screen via entry point.
   if (!IsSetupOngoing()) {
-    // Start by setting the UI to show a loading spinner with a cancel button.
+    // Initially there is no UI step. TargetDeviceBootstrapController
+    // then determines whether a loading spinner (for the PIN case),
+    // or the QR code will be shown.
     CHECK(!ui_state_.has_value()) << "Found UI state without ongoing setup!";
-    UpdateUiState(UiState::LOADING);
 
     // Request advertising to start.
     controller_state_ = ControllerState::INITIALIZING;

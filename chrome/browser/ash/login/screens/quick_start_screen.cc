@@ -74,6 +74,10 @@ void QuickStartScreen::ShowImpl() {
   if (!view_) {
     return;
   }
+
+  // Show the initial UI step which is just blank. The controller
+  // then updates the UI via the local observer 'OnUiUpdateRequested'.
+  view_->ShowInitialUiStep();
   view_->Show();
 }
 
@@ -134,8 +138,8 @@ void QuickStartScreen::OnUiUpdateRequested(
     case ash::quick_start::QuickStartController::UiState::SETUP_COMPLETE:
       view_->ShowSetupCompleteStep();
       break;
-    case ash::quick_start::QuickStartController::UiState::LOADING:
-      // TODO(b:283724988) - Add method to view to show the loading spinner.
+    case ash::quick_start::QuickStartController::UiState::CONNECTING_TO_PHONE:
+      view_->ShowConnectingToPhoneStep();
       break;
     case ash::quick_start::QuickStartController::UiState::EXIT_SCREEN:
       // Controller requested the flow to be aborted.

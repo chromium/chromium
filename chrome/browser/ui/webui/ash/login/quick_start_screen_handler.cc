@@ -33,6 +33,14 @@ void QuickStartScreenHandler::SetDiscoverableName(
   CallExternalAPI("setDiscoverableName", discoverable_name);
 }
 
+void QuickStartScreenHandler::ShowInitialUiStep() {
+  CallExternalAPI("showInitialUiStep");
+}
+
+void QuickStartScreenHandler::ShowConnectingToPhoneStep() {
+  CallExternalAPI("showConnectingToPhoneStep");
+}
+
 void QuickStartScreenHandler::ShowConnectingToWifi() {
   CallExternalAPI("showConnectingToWifi");
 }

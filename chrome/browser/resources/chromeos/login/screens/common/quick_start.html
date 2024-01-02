@@ -131,8 +131,11 @@ found in the LICENSE file.
     height: auto;
   }
 </style>
+<!-- INITIAL UI STEP - EMPTY -->
+<oobe-adaptive-dialog for-step="default">
+</oobe-adaptive-dialog>
 <!-- WAITING FOR INITIAL CONNECTION | ADVERTISING -->
-<oobe-loading-dialog id="loadingDialog" for-step="loading"
+<oobe-loading-dialog id="loadingDialog" for-step="connecting_to_phone"
     title-key="quickStartStartAfterResumeTitle"
     subtitle-key="quickStartStartAfterResumeSubtitle"
     on-cancel-loading="onCancelClicked_" can-cancel>
