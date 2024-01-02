@@ -381,10 +381,13 @@ class UnitTest(unittest.TestCase):
 
     try:
       prev_env = os.environ.copy()
-      os.environ = env if env else prev_env
+      if env:
+        os.environ.clear()
+        os.environ.update(env)
       actual_ret = mbw.Main(args)
     finally:
-      os.environ = prev_env
+      os.environ.clear()
+      os.environ.update(prev_env)
     self.assertEqual(
         actual_ret, ret,
         "ret: %s, out: %s, err: %s" % (actual_ret, mbw.out, mbw.err))
