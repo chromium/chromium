@@ -61,14 +61,14 @@ jobs:
           mkdir -p out/site
           cp out/wptreport.html out/site/index.html
       - name: Setup Pages
-        uses: actions/configure-pages@f156874f8191504dae5b037505266ed5dda6c382 # v3.0.6
+        uses: actions/configure-pages@1f0c5cde4bc74cd7e1254d0cb4de8d49e9068c7d # v4.0.0
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@a753861a5debcf57bf8b404356158c8e1e33150c # v2.0.0
+        uses: actions/upload-pages-artifact@0252fc4ba7626f0298f0cf00902a25c6afc77fa8 # v3.0.0
         with:
           path: out/site
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@de14547edc9944350dc0481aa5b7afb08e75f254 # v2.0.5
+        uses: actions/deploy-pages@7a9bd943aa5e5175aeb8502edcc6c1c02d398e10 # v4.0.2
   wpt-auto-commit:
     name: WPT auto-commit expectations
     needs: wpt
@@ -120,7 +120,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@8f152de45cc393bb48ce5d89d36b731f54556e65 # v4.0.0
+        uses: actions/setup-node@b39b52d1213e96004bfcb1c61a8a6fa8ab84f3e8 # v4.0.1
         with:
           node-version: lts/*
           cache: npm
@@ -130,7 +130,7 @@ jobs:
       - name: Setup dirs
         run: mkdir -p out
       - name: Set up Python
-        uses: actions/setup-python@65d7f2d534ac1bc67fcd62888c5f4f3d2cb2b236 # v4.7.1
+        uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -201,13 +201,13 @@ jobs:
           out/wptreport.html
       - name: Upload expectations
         if: success() || failure()
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-wpt-metadata
           path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         if: success() || failure()
-        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
           path: |
