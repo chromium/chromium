@@ -244,9 +244,13 @@ using NonConfigurableActionsMap =
 
 using AcceleratorLayoutMap = std::map<uint32_t, AcceleratorLayoutDetails>;
 
+using ReservedAcceleratorsMap = std::map<ui::Accelerator, uint32_t>;
+
 const NonConfigurableActionsMap& GetNonConfigurableActionsMap();
 
 const AcceleratorLayoutMap& GetAcceleratorLayoutMap();
+
+const ReservedAcceleratorsMap& GetReservedAcceleratorsMap();
 
 std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id);
 

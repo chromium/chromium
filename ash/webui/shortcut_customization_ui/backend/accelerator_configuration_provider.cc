@@ -72,131 +72,6 @@ constexpr char kAddAcceleratorHistogramName[] =
 constexpr char kRemoveDefaultAcceleratorHistogramName[] =
     "Ash.ShortcutCustomization.RemoveDefaultAccelerator.";
 
-// The following map are accelerators that will not appear in the app and cannot
-// be used as a custom accelerator. For example, if you have an accelerator
-// that has a complex text-based instruction that uses a particular accelerator
-// this list is useful to reserve those keys.
-// TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-static const auto kReservedAccelerators =
-    base::MakeFixedFlatMapNonConsteval<ui::Accelerator, int>({
-        // NonConfigurableActions::kAmbientCycleForwardMRU.
-        {ui::Accelerator(ui::VKEY_TAB,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_FORWARD_MRU},
-        // NonConfigurableActions::kAmbientCycleBackwardMRU.
-        {ui::Accelerator(ui::VKEY_TAB,
-                         ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_CYCLE_BACKWARD_MRU},
-        // The following are already included in the app as
-        // `NonConfigurableActions::kAmbientLaunchNumberedApp1.
-        {ui::Accelerator(ui::VKEY_1,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_2,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_3,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_4,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_5,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_6,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_7,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        {ui::Accelerator(ui::VKEY_8,
-                         ui::EF_ALT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_LAUNCH_NUMBERED_APP},
-        // The following are already included in the app as
-        // `NonConfigurableActions::kBrowserSelectTabByIndex`.
-        {ui::Accelerator(ui::VKEY_1,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_2,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_3,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_4,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_5,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_6,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_7,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        {ui::Accelerator(ui::VKEY_8,
-                         ui::EF_CONTROL_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_GO_TO_TAB_IN_RANGE},
-        // The following are already included in the app as
-        // `NonConfigurableActions::kAmbientActivateIndexedDesk`.
-        {ui::Accelerator(ui::VKEY_1,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_2,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_3,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_4,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_5,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_6,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_7,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_8,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_AMBIENT_ACCELERATOR_DESCRIPTION_ACTIVATE_INDEXED_DESK},
-        {ui::Accelerator(ui::VKEY_ESCAPE,
-                         ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
-                         ui::Accelerator::KeyState::PRESSED),
-         IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN},
-    });
-
 // Raw accelerator data may result in the same shortcut being displayed multiple
 // times in the frontend. GetHiddenAcceleratorMap() is used to collect such
 // accelerators and hide them from display.
@@ -356,8 +231,8 @@ bool IsAcceleratorHidden(AcceleratorActionId action_id,
 
 std::optional<std::u16string> GetReservedAcceleratorName(
     ui::Accelerator accelerator) {
-  const auto* iter = kReservedAccelerators.find(accelerator);
-  if (iter == kReservedAccelerators.end()) {
+  const auto iter = GetReservedAcceleratorsMap().find(accelerator);
+  if (iter == GetReservedAcceleratorsMap().end()) {
     return std::nullopt;
   }
   return l10n_util::GetStringUTF16(iter->second);
