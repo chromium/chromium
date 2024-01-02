@@ -750,6 +750,13 @@ const CompositorFrameMetadata& Surface::GetActiveFrameMetadata() const {
   return active_frame_data_->frame.metadata;
 }
 
+void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
+  CHECK(active_frame_data_.has_value());
+  CHECK(!interpolated_frame_.has_value());
+
+  active_frame_data_->frame = std::move(frame);
+}
+
 void Surface::SetInterpolatedFrame(CompositorFrame frame) {
   interpolated_frame_.emplace(std::move(frame));
 }

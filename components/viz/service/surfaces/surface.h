@@ -208,9 +208,15 @@ class VIZ_SERVICE_EXPORT Surface final {
   const CompositorFrame& GetActiveFrame() const;
   const CompositorFrameMetadata& GetActiveFrameMetadata() const;
 
+  // ViewTransition needs to interpolate a new CompositorFrame from the active
+  // one of this Surface. The interpolated new frame replaces the currently
+  // active one via this API.
+  void SetActiveFrameForViewTransition(CompositorFrame frame);
+
   void SetInterpolatedFrame(CompositorFrame frame);
   const CompositorFrame& GetActiveOrInterpolatedFrame() const;
   bool HasInterpolatedFrame() const;
+
   // Returns true if the active or interpolated frame has damage due to a
   // surface animation. This means that the damage should be respected even if
   // the active frame index has not changed.

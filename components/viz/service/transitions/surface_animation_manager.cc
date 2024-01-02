@@ -272,7 +272,7 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   // A frame created by resolving ViewTransitionElementResourceIds to their
   // corresponding static or live snapshot.
   DCHECK(!surface->HasInterpolatedFrame())
-      << "Can not override interpolated frame";
+      << "Interpolated frame is being deprecated.";
   CompositorFrame resolved_frame;
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
@@ -303,7 +303,8 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 
-  surface->SetInterpolatedFrame(std::move(resolved_frame));
+  RefResources(resolved_frame.resource_list);
+  surface->SetActiveFrameForViewTransition(std::move(resolved_frame));
 }
 
 void SurfaceAnimationManager::CompleteSaveForTesting() {
