@@ -933,8 +933,6 @@ component("ash") {
     "multi_capture/multi_capture_service_client.h",
     "multi_device_setup/multi_device_notification_presenter.cc",
     "multi_device_setup/multi_device_notification_presenter.h",
-    "multi_profile_uma.cc",
-    "multi_profile_uma.h",
     "multi_user/multi_user_window_manager_impl.cc",
     "multi_user/multi_user_window_manager_impl.h",
     "multi_user/user_switch_animator.cc",

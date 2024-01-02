@@ -20,7 +20,6 @@
 #include "ash/debug.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
-#include "ash/multi_profile_uma.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/shell.h"
@@ -1301,14 +1300,10 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::SwitchToNextIme();
       break;
     case AcceleratorAction::kSwitchToNextUser:
-      MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Next_User"));
       accelerators::CycleUser(CycleUserDirection::NEXT);
       break;
     case AcceleratorAction::kSwitchToPreviousUser:
-      MultiProfileUMA::RecordSwitchActiveUser(
-          MultiProfileUMA::SwitchActiveUserAction::kByAccelerator);
       base::RecordAction(UserMetricsAction("Accel_Switch_To_Previous_User"));
       accelerators::CycleUser(CycleUserDirection::PREVIOUS);
       break;
