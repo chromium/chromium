@@ -228,8 +228,8 @@ DispatchEventResult EventDispatcher::Dispatch() {
       soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
           SoftNavigationHeuristics::From(*window),
           is_unfocused_keyboard_event
-              ? SoftNavigationHeuristics::EventScopeType::Keyboard
-              : SoftNavigationHeuristics::EventScopeType::Click,
+              ? SoftNavigationHeuristics::EventScopeType::kKeyboard
+              : SoftNavigationHeuristics::EventScopeType::kClick,
           is_new_interaction);
     }
     // A genuine mouse click cannot be triggered by script so we don't expect

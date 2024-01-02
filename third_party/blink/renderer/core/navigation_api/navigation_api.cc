@@ -839,7 +839,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     // as potential soft navigation tasks.
     soft_navigation_scope = std::make_unique<SoftNavigationEventScope>(
         soft_navigation_heuristics,
-        SoftNavigationHeuristics::EventScopeType::Navigate,
+        SoftNavigationHeuristics::EventScopeType::kNavigate,
         /*is_new_interaction=*/true);
   }
   auto* navigate_event = NavigateEvent::Create(

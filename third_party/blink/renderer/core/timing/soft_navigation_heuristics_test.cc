@@ -45,7 +45,7 @@ TEST_F(SoftNavigationHeuristicsTest,
        EarlyReturnOnInvalidPendingInteractionTimestamp) {
   auto* test_heuristics = CreateSoftNavigationHeuristicsForTest();
   test_heuristics->InteractionCallbackCalled(
-      GetScriptStateForTest(), SoftNavigationHeuristics::EventScopeType::Click,
+      GetScriptStateForTest(), SoftNavigationHeuristics::EventScopeType::kClick,
       true);
   // Since pending_interaction_timestamp_ is not set, the execution of
   // InteractionCallbackCalled would return early. As a result, the

@@ -529,7 +529,7 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
   InteractionCallbackCalled(script_state, current_event_parameters_->type,
                             current_event_parameters_->is_new_interaction);
   if (current_event_parameters_->type ==
-      SoftNavigationHeuristics::EventScopeType::Navigate) {
+      SoftNavigationHeuristics::EventScopeType::kNavigate) {
     SameDocumentNavigationStarted(script_state);
   }
 }

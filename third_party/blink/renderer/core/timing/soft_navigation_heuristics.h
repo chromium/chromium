@@ -55,7 +55,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   virtual ~SoftNavigationHeuristics() = default;
   static SoftNavigationHeuristics* From(LocalDOMWindow&);
 
-  enum class EventScopeType { Keyboard, Click, Navigate };
+  enum class EventScopeType { kKeyboard, kClick, kNavigate };
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
@@ -154,7 +154,7 @@ class CORE_EXPORT SoftNavigationHeuristics
         : is_new_interaction(is_new_interaction), type(type) {}
 
     bool is_new_interaction = false;
-    EventScopeType type = EventScopeType::Click;
+    EventScopeType type = EventScopeType::kClick;
   };
   EventParameters top_event_parameters_;
   WTF::Deque<EventParameters> nested_event_parameters_;
