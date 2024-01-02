@@ -28,8 +28,8 @@ import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_p
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
-import {GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
-import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, GifSubcategoryData, PreferenceMapping, SubcategoryData} from './types.js';
+import {EmojiPreferencesStore, GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
+import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, Gender, GifSubcategoryData, PreferenceMapping, SubcategoryData, Tone} from './types.js';
 
 export interface EmojiPickerApp {
   $: {
@@ -572,8 +572,18 @@ export class EmojiPickerApp extends PolymerElement {
         // and there's an error when trying to fetch gifs.
         return;
       }
+
+      if (this.variantGroupingSupport && category === CategoryEnum.EMOJI) {
+        emojiGroup.emoji.forEach((emoji) => {
+          this.fillEmojiVariantAttributes(emoji);
+        });
+
+        this.categoryHistoryUpdated(CategoryEnum.EMOJI);
+      }
+
       const tabIndex = baseIndex + index;
       const tabCategory = this.allCategoryTabs[tabIndex]?.category;
+
       categoriesGroupElements.push(
           this.createEmojiGroupElement(
               emojiGroup.emoji, this.getEmojiGroupPreference(category), false,
@@ -628,6 +638,34 @@ export class EmojiPickerApp extends PolymerElement {
           },
       );
     }
+  }
+
+  /**
+   * Fills any gaps in the tone and gender information for variants of the
+   * emoji; the build script omits this information in some cases to reduce
+   * build size. Variant and grouping information is also copied to the
+   * corresponding history emoji, if it exists, because existing store data
+   * may not have the information.
+   */
+  private fillEmojiVariantAttributes(emoji: EmojiVariants) {
+    const {base, alternates, groupedTone, groupedGender} = emoji;
+
+    if (!base.name || !alternates || !(groupedTone || groupedGender)) {
+      return;
+    }
+
+    alternates.forEach((variant) => {
+      if (groupedTone) {
+        variant.tone ??= Tone.DEFAULT;
+      }
+
+      if (groupedGender) {
+        variant.gender ??= Gender.DEFAULT;
+      }
+    });
+
+    this.categoriesHistory[CategoryEnum.EMOJI]?.fillEmojiVariantAttributes(
+        base.name, alternates, groupedTone, groupedGender);
   }
 
   private onSearchChanged(newValue: string) {
@@ -1104,6 +1142,8 @@ export class EmojiPickerApp extends PolymerElement {
                    name: emoji.base.name,
                    visualContent: emoji.base.visualContent,
                    keywords: [],
+                   tone: emoji.base.tone,
+                   gender: emoji.base.gender,
                  },
                  alternates: emoji.alternates?.map(
                                  (alternate: Emoji):
@@ -1113,9 +1153,13 @@ export class EmojiPickerApp extends PolymerElement {
                                          name: alternate.name,
                                          keywords:
                                              [...(alternate.keywords ?? [])],
+                                         tone: alternate.tone,
+                                         gender: alternate.gender,
                                        };
                                      }) ??
                      [],
+                 groupedTone: emoji.groupedTone,
+                 groupedGender: emoji.groupedGender,
                })) ??
         [];
   }
@@ -1174,15 +1218,45 @@ export class EmojiPickerApp extends PolymerElement {
       return;
     }
 
-    const {text, baseEmoji, alternates, name} = item;
+    const {
+      text,
+      baseEmoji,
+      alternates,
+      name,
+      tone,
+      gender,
+      groupedTone,
+      groupedGender,
+    } = item;
 
-    this.categoriesHistory[category]?.bumpItem(
-        category, {base: {string: text, name}, alternates});
+    this.categoriesHistory[category]?.bumpItem(category, {
+      base: {string: text, name, tone, gender},
+      alternates,
+      groupedTone,
+      groupedGender,
+    });
 
-    const preferenceUpdated =
-        this.categoriesHistory[category]?.savePreferredVariant(text, baseEmoji);
+    let preferenceUpdated = false;
+
+    if (!this.variantGroupingSupport || !(groupedTone || groupedGender)) {
+      preferenceUpdated =
+          !!this.categoriesHistory[category]?.savePreferredVariant(
+              text, baseEmoji);
+    }
 
     this.categoryHistoryUpdated(category, true, preferenceUpdated);
+
+    if (!this.variantGroupingSupport) {
+      return;
+    }
+
+    if (tone !== undefined) {
+      EmojiPreferencesStore.setTone(tone);
+    }
+
+    if (gender !== undefined) {
+      EmojiPreferencesStore.setGender(gender);
+    }
   }
 
   /**

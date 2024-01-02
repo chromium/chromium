@@ -4,7 +4,7 @@
 
 import {EmojiPickerApiProxy} from 'emoji_picker_api_proxy.js';
 
-import {CategoryEnum, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
+import {CategoryEnum, Emoji, EmojiVariants, Gender, PreferenceMapping, Tone, VisualContent} from './types.js';
 
 const MAX_RECENTS = 10;
 
@@ -159,6 +159,29 @@ export class RecentlyUsedStore {
       // setting length is sufficient to truncate an array.
       history.length = MAX_RECENTS;
     }
+    this.store.save();
+  }
+
+  /**
+   * Fills any gaps in the variant and grouping information for emojis with the
+   * given name, because existing store data may not have the information.
+   */
+  fillEmojiVariantAttributes(
+      name: string, alternates: Emoji[], groupedTone = false,
+      groupedGender = false) {
+    const matchingEmojis =
+        this.store.data.history.filter(emoji => emoji.base.name === ' ' + name);
+
+    if (matchingEmojis.length == 0) {
+      return;
+    }
+
+    matchingEmojis.forEach(emoji => {
+      emoji.alternates = alternates;
+      emoji.groupedTone = groupedTone;
+      emoji.groupedGender = groupedGender;
+    });
+
     this.store.save();
   }
 
