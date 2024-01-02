@@ -231,6 +231,12 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
              "-Key %s -ValueName %s") % (key, policy_name)
       self.clients[instance_name].RunPowershell(cmd)
 
+  def GetFileFromGCSBucket(self, path):
+    """Get file from GCS bucket"""
+    path = "gs://%s/%s" % (self.gsbucket, path)
+    cmd = r'gsutil cat ' + path
+    return self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
+
   def InstallWebDriver(self, instance_name):
     self.RunCommand(instance_name, r'md -Force c:\temp')
     self.EnsurePythonInstalled(instance_name)
@@ -269,8 +275,8 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     args = subprocess.list2cmdline(args)
     self._pythonExecutablePath[instance_name] = (
         r'C:\ProgramData\chocolatey\lib\python\tools\python.exe')
-    cmd = r'%s %s %s' % (self._pythonExecutablePath[instance_name], file_name,
-                         args)
+    cmd = r'%s -u %s %s' % (self._pythonExecutablePath[instance_name],
+                            file_name, args)
     return self.RunCommand(instance_name, cmd).decode()
 
   def EnableHistogramSupport(self, instance_name, base_path):
@@ -305,9 +311,11 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
     cmd = r'New-Item -ItemType Directory -Force -Path ' + dest_path
     self.clients[instance_name].RunPowershell(cmd)
 
-    # Install Microsoft Visual C++ Redistributable package as demo agent's dependency
+    # Install Visual C++ Redistributable package as demo agent's dependency
     gspath = "gs://%s/%s" % (self.gsbucket, 'secrets/VC_redist.x64.exe')
     cmd = r'gsutil cp ' + gspath + ' ' + dest_path
+
+    self.RunCommand(instance_name, cmd)
 
     cmd = r'C:\temp\demo_agent\VC_redist.x64.exe /passive'
     self.RunCommand(instance_name, cmd)
