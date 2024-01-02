@@ -483,13 +483,14 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
   // `child_frame` (all of `other_process`).
   // See the diagram in
   // components/performance_manager/test_support/mock_graphs.h.
+  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
   const auto kExpectedResidentSetSize =
-      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
           {mock_source_id, 1230 / 2},
           {mock_source_id2, 1230 / 2 + 4560},
       });
   const auto kExpectedPrivateFootprint =
-      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
           {mock_source_id, 0},
           {mock_source_id2, 7890},
       });
@@ -497,7 +498,7 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
   // `process` contains `frame` and `other_frame` -> each gets 25%
   // `other_process` contains `child_frame` -> 50%
   const auto kExpectedCPUUsage =
-      base::MakeFixedFlatMap<ukm::SourceId, int64_t>({
+      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
           // `page` contains `frame`
           {mock_source_id, 2500},
           // `other_page` gets the sum of `other_frame` and `child_frame`

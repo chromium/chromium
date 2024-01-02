@@ -190,8 +190,10 @@ class TestToolbarController : public ToolbarController {
 
   std::u16string GetMenuText(const ToolbarController::ResponsiveElementInfo&
                                  element_info) const override {
+    // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
     static const auto kToolbarToMenuTextMap =
-        base::MakeFixedFlatMap<ui::ElementIdentifier, std::u16string>({
+        base::MakeFixedFlatMapNonConsteval<ui::ElementIdentifier,
+                                           std::u16string>({
             {kDummyButton1, u"DummyButton1"},
             {kDummyButton2, u"DummyButton2"},
             {kDummyButton3, u"DummyButton3"},

@@ -24,11 +24,12 @@ namespace {
 
 // New clients should define their switches in ash/constants/ash_features.h/cc,
 // and adds entries {client_name, switch} to `kClientFeatureMap`.
+// TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
 const auto kClientFeatureMap =
-    base::MakeFixedFlatMap<std::string, const base::Feature*>({
-        {"timezone_code_phh", &features::kFederatedTimezoneCodePhh},
+    base::MakeFixedFlatMapNonConsteval<std::string, const base::Feature*>({
         {"launcher_query_analytics_v1",
          &features::kFederatedLauncherQueryAnalyticsTask},
+        {"timezone_code_phh", &features::kFederatedTimezoneCodePhh},
     });
 
 // A client with empty launch stage ("") in the return value means

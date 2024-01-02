@@ -97,20 +97,18 @@ class SupportToolUiUtilsTest : public ::testing::Test {
   std::string GetExpectedPIIDefinitionString(
       const redaction::PIIType& pii_type) {
     // PII types with the definition strings.
-    const auto kExpectedPiiTypeDefinitions =
-        base::MakeFixedFlatMap<redaction::PIIType, std::string>(
-            {{redaction::PIIType::kIPAddress,
-              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_IP_ADDRESS)},
-             {redaction::PIIType::kURL,
-              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_URLS)},
+    static constexpr auto kExpectedPiiTypeDefinitions =
+        base::MakeFixedFlatMap<redaction::PIIType, int>(
+            {{redaction::PIIType::kIPAddress, IDS_SUPPORT_TOOL_IP_ADDRESS},
+             {redaction::PIIType::kURL, IDS_SUPPORT_TOOL_URLS},
              {redaction::PIIType::kStableIdentifier,
-              l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_STABLE_IDENTIDIERS)}});
+              IDS_SUPPORT_TOOL_STABLE_IDENTIDIERS}});
     // fixed_flat_map uses std::array<T> as the backing container, which has
     // std::array::iterator<T> = T*, thus the iterator of the
     // `kExpectedPiiTypeDefinitions` is a pointer.
     auto* it = kExpectedPiiTypeDefinitions.find(pii_type);
     EXPECT_NE(kExpectedPiiTypeDefinitions.end(), it);
-    std::string definition = it->second;
+    std::string definition = l10n_util::GetStringUTF8(it->second);
     return definition;
   }
 

@@ -81,8 +81,10 @@ constexpr char kLacrosMetadataVersionKey[] = "version";
 
 // The conversion map for LacrosDataBackwardMigrationMode policy data. The
 // values must match the ones from LacrosDataBackwardMigrationMode.yaml.
+// TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
 constexpr auto kLacrosDataBackwardMigrationModeMap =
-    base::MakeFixedFlatMap<base::StringPiece, LacrosDataBackwardMigrationMode>({
+    base::MakeFixedFlatMapNonConsteval<base::StringPiece,
+                                       LacrosDataBackwardMigrationMode>({
         {kLacrosDataBackwardMigrationModePolicyNone,
          LacrosDataBackwardMigrationMode::kNone},
         {kLacrosDataBackwardMigrationModePolicyKeepNone,
@@ -214,8 +216,9 @@ std::optional<std::string> GetLacrosStabilitySwitchValue() {
 //   1. From the kLacrosStabilitySwitch command line flag if present.
 //   2. From the current ash channel.
 Channel GetStatefulLacrosChannel() {
+  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
   static const auto kStabilitySwitchToChannelMap =
-      base::MakeFixedFlatMap<base::StringPiece, Channel>({
+      base::MakeFixedFlatMapNonConsteval<base::StringPiece, Channel>({
           {browser_util::kLacrosStabilityChannelCanary, Channel::CANARY},
           {browser_util::kLacrosStabilityChannelDev, Channel::DEV},
           {browser_util::kLacrosStabilityChannelBeta, Channel::BETA},
@@ -559,8 +562,9 @@ std::optional<LacrosSelection> DetermineLacrosSelection() {
 
 ComponentInfo GetLacrosComponentInfoForChannel(version_info::Channel channel) {
   // We default to the Dev component for UNKNOWN channels.
+  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
   static const auto kChannelToComponentInfoMap =
-      base::MakeFixedFlatMap<Channel, const ComponentInfo*>({
+      base::MakeFixedFlatMapNonConsteval<Channel, const ComponentInfo*>({
           {Channel::UNKNOWN, &kLacrosDogfoodDevInfo},
           {Channel::CANARY, &kLacrosDogfoodCanaryInfo},
           {Channel::DEV, &kLacrosDogfoodDevInfo},

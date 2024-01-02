@@ -83,7 +83,8 @@ TEST(FixedFlatMapTest, UnsortableValues) {
 TEST(FixedFlatMapTest, RepeatedKeys) {
   // Note: The extra pair of parens is needed to escape the nested commas in the
   // type list.
-  EXPECT_CHECK_DEATH((MakeFixedFlatMap<StringPiece, int>(
+  // Need to use NonConsteval since CHECK(false) is not constexpr.
+  EXPECT_CHECK_DEATH((MakeFixedFlatMapNonConsteval<StringPiece, int>(
       {{"foo", 1}, {"bar", 2}, {"foo", 3}})));
 }
 

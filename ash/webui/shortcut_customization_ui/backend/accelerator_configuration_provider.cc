@@ -76,8 +76,9 @@ constexpr char kRemoveDefaultAcceleratorHistogramName[] =
 // be used as a custom accelerator. For example, if you have an accelerator
 // that has a complex text-based instruction that uses a particular accelerator
 // this list is useful to reserve those keys.
+// TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
 static const auto kReservedAccelerators =
-    base::MakeFixedFlatMap<ui::Accelerator, int>({
+    base::MakeFixedFlatMapNonConsteval<ui::Accelerator, int>({
         // NonConfigurableActions::kAmbientCycleForwardMRU.
         {ui::Accelerator(ui::VKEY_TAB,
                          ui::EF_ALT_DOWN,

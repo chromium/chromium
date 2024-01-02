@@ -120,8 +120,10 @@ enum {
 
 const auto& SyncablePreferences() {
   // List of syncable preferences common across platforms.
+  // TODO(crbug.com/1512537): Convert to MakeFixedFlatMap().
   static const auto kCommonSyncablePrefsAllowlist =
-      base::MakeFixedFlatMap<base::StringPiece, SyncablePrefMetadata>({
+      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
+                                         SyncablePrefMetadata>({
           {autofill::prefs::kAutofillCreditCardEnabled,
            {syncable_prefs_ids::kAutofillCreditCardEnabled, syncer::PREFERENCES,
             PrefSensitivity::kNone, MergeBehavior::kNone}},
