@@ -21,6 +21,8 @@ enum class AuthenticatorAttachment;
 }
 
 class AuthenticatorResponse;
+class PublicKeyCredentialCreationOptions;
+class PublicKeyCredentialCreationOptionsJSON;
 class ScriptPromise;
 class ScriptState;
 class V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON;
@@ -46,6 +48,10 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       ScriptState*);
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
   static ScriptPromise isConditionalMediationAvailable(ScriptState*);
+  static const PublicKeyCredentialCreationOptions* parseCreationOptionsFromJSON(
+      ScriptState*,
+      const PublicKeyCredentialCreationOptionsJSON*,
+      ExceptionState&);
   const V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON* toJSON(
       ScriptState*) const;
 
