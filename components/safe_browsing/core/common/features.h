@@ -43,10 +43,6 @@ BASE_DECLARE_FEATURE(kClientSideDetectionModelTag);
 // `kClientSideDetectionModelHighMemoryTag`.
 const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 
-// Enables force request CSD-P ping when RT Lookup Response has FORCE_REQUEST in
-// the client_side_detection_type field
-BASE_DECLARE_FEATURE(kClientSideDetectionTypeForceRequest);
-
 // Creates and sends CSBRRs when warnings are first shown to users.
 BASE_DECLARE_FEATURE(kCreateWarningShownClientSafeBrowsingReports);
 

@@ -621,24 +621,22 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
 
     bool force_request_from_rt_url_lookup = false;
 
-    if (base::FeatureList::IsEnabled(kClientSideDetectionTypeForceRequest)) {
-      if (cache_manager) {
-        safe_browsing::ClientSideDetectionType cached_csd_type =
-            cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
-                current_url_);
-        force_request_from_rt_url_lookup =
-            cached_csd_type ==
-                safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
-            IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
-        if (force_request_from_rt_url_lookup) {
-          verdict->set_client_side_detection_type(
-              safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
-        }
+    if (cache_manager) {
+      safe_browsing::ClientSideDetectionType cached_csd_type =
+          cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+              current_url_);
+      force_request_from_rt_url_lookup =
+          cached_csd_type ==
+              safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
+          IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
+      if (force_request_from_rt_url_lookup) {
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
       }
-
-      base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
-                                force_request_from_rt_url_lookup);
     }
+
+    base::UmaHistogramBoolean("SBClientPhishing.RTLookupForceRequest",
+                              force_request_from_rt_url_lookup);
 
     // We only send a phishing verdict if the verdict is phishing OR we get a
     // FORCE_REQUEST from a RTLookupResponse for a SBER/ESB user.
