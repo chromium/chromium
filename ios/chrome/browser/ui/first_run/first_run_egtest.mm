@@ -291,7 +291,7 @@ void DismissScreensAfterSigninAndSync() {
 
 // Tests FRE with UMA default value and without sign-in.
 - (void)testWithUMACheckedAndNoSignin {
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Skip sign-in.
@@ -310,7 +310,7 @@ void DismissScreensAfterSigninAndSync() {
 
 // Tests FRE with UMA off and without sign-in.
 - (void)testWithUMAUncheckedAndNoSignin {
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Scroll down and open the UMA dialog.
@@ -348,7 +348,7 @@ void DismissScreensAfterSigninAndSync() {
 
 // Tests FRE with UMA off, reopen UMA dialog and close the FRE without sign-in.
 - (void)testUMAUncheckedWhenOpenedSecondTime {
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Scroll down and open the UMA dialog.
@@ -413,7 +413,7 @@ void DismissScreensAfterSigninAndSync() {
 #define MAYBE_testUMAUncheckedAndCheckItAgain testUMAUncheckedAndCheckItAgain
 #endif
 - (void)MAYBE_testUMAUncheckedAndCheckItAgain {
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Scroll down and open the UMA dialog.
@@ -471,7 +471,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Scroll down and open the UMA dialog.
@@ -518,7 +518,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
@@ -546,7 +546,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
@@ -578,7 +578,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
@@ -656,7 +656,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
@@ -692,7 +692,7 @@ void DismissScreensAfterSigninAndSync() {
 - (void)testSignInDisabledByPolicy {
   // Configure the policy to disable SignIn.
   [self relaunchAppWithBrowserSigninMode:BrowserSigninMode::kDisabled];
-  // Verify 2 step FRE with disabled sign-in policy.
+  // Verify 2 steps FRE with disabled sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninDisabledByPolicy];
   // Accept FRE.
@@ -716,7 +716,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with forced sign-in policy.
+  // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
   // Accept sign-in.
@@ -749,7 +749,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with forced sign-in policy.
+  // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninForcedByPolicy];
   // Accept sign-in.
@@ -786,7 +786,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with forced sign-in policy.
+  // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithSyncDisabledPolicy];
   // Accept sign-in.
@@ -815,7 +815,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with forced sign-in policy.
+  // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
   // Accept sign-in.
@@ -868,7 +868,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with forced sign-in policy.
+  // Verify 2 steps FRE with forced sign-in policy.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithPolicy];
   // Refuse sign-in.
@@ -894,7 +894,7 @@ void DismissScreensAfterSigninAndSync() {
   // Add identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  // Verify 2 step FRE with no UMA footer.
+  // Verify 2 steps FRE with no UMA footer.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentSigninWithUMAReportingDisabledPolicy];
   // Accept sign-in.
@@ -925,7 +925,7 @@ void DismissScreensAfterSigninAndSync() {
   [SigninEarlGrey setIsSubjectToParentalControls:YES
                                      forIdentity:fakeSupervisedIdentity];
 
-  // Verify 2 step FRE.
+  // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
   // Accept sign-in.
