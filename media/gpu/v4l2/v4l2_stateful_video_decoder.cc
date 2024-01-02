@@ -380,11 +380,11 @@ void V4L2StatefulVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // This will also Deallocate() all buffers and issue a VIDIOC_STREAMOFF.
     OUTPUT_queue_.reset();
     CAPTURE_queue_.reset();
-
-    framerate_control_ = std::make_unique<V4L2FrameRateControl>(
-        base::BindRepeating(&HandledIoctl, device_fd_.get()),
-        base::SequencedTaskRunner::GetCurrentDefault());
   }
+
+  framerate_control_ = std::make_unique<V4L2FrameRateControl>(
+      base::BindRepeating(&HandledIoctl, device_fd_.get()),
+      base::SequencedTaskRunner::GetCurrentDefault());
 
   // At this point we initialize the |OUTPUT_queue_| only, following
   // instructions in e.g. [1]. The decoded video frames queue configuration
