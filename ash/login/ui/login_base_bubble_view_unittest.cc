@@ -24,9 +24,15 @@ namespace {
 // Total width of the bubble view.
 constexpr int kBubbleTotalWidthDp = 192;
 
-class AnchorView : public views::View,
-                   public base::SupportsWeakPtr<AnchorView> {
+class AnchorView : public views::View {
+ public:
+  base::WeakPtr<AnchorView> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
   METADATA_HEADER(AnchorView, views::View)
+  base::WeakPtrFactory<AnchorView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(AnchorView)
