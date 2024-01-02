@@ -238,12 +238,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.PageLoadInPortrait" enum="DeviceOrientation"
-    expires_after="M85">
-  <owner>marq@chromium.org</owner>
-  <summary>[iOS] The orientation of the device. Recorded on page load.</summary>
-</histogram>
-
 <histogram name="Tab.PageLoadsSinceLastSwitchToEvictedTab" units="units"
     expires_after="2024-03-18">
   <owner>dtrainor@chromium.org</owner>
