@@ -436,6 +436,12 @@ const CommandCallbacks = {
   "CSS.getAppliedRules": CSS_getAppliedRules
 };
 
+function executeCommand(method, params) {
+  VerboseCommands && log(`[Command ${method}] Handling command, params=${JSON_stringify(params)}...`);
+  const result = CommandCallbacks[method](params);
+  VerboseCommands && log(`[Command ${method}] Handled command, result=${JSON_stringify(result)}`);
+  return result;
+}
 
 function commandCallback(method, params) {
   if (!CommandCallbacks[method]) {
@@ -444,10 +450,7 @@ function commandCallback(method, params) {
   }
 
   try {
-    VerboseCommands && log(`[Command ${method}] Handling command, params=${JSON_stringify(params)}...`);
-    const result = CommandCallbacks[method](params);
-    VerboseCommands && log(`[Command ${method}] Handled command, result=${JSON_stringify(result)}`);
-    return result;
+    return executeCommand(method, params);
   } catch (e) {
     log(`[RuntimeError][Command ${method}] ${e?.stack || e}`);
     // Pass the error up to V8; it can (for now) decide how to handle itself, whether
@@ -460,7 +463,6 @@ function commandCallback(method, params) {
     };
   }
 }
-const executeCommand = commandCallback;
 
 function Target_evaluatePrivileged({ expression }) {
   const result = eval(expression);
@@ -1454,7 +1456,7 @@ ProtocolObjectPreview.prototype = {
     }
 
     // Add data for blink objects
-    this.extra = previewBlinkObject(this.cdpObj) || {};
+    this.extra = getExtraObjectPreviewData(this.cdpObj, cdpProperties) || {};
 
     if (!isPrototype(this.raw)) { // Ignore prototype itself.
       // Add class-specific data.
@@ -1536,21 +1538,32 @@ function getDescriptionCount(description) {
   }
 }
 
-function previewBlinkObject(cdpObject, cdpProperties) {
+function getExtraObjectPreviewData(cdpObject, cdpProperties) {
   const cdpId = cdpObject.objectId;
   const rrpId = gRrpIdByCdpId.get(cdpId);
   assert(rrpId);
-  const plainObject = getPlainObjectByRrpId(rrpId);
-
-  if (isBlinkInstanceOf(plainObject, Node)) {
+  
+  if (isCdpObjectProxy(cdpObject)) {
+    let targetCdpObj = getInternalProp(cdpProperties, '[[Target]]')?.value;
+    let handlerCdpObj = getInternalProp(cdpProperties, '[[Handler]]')?.value;
     return {
-      node: previewBlinkNode(plainObject)
+      proxyState: {
+        target: buildRrpObjectFromCdpObject(targetCdpObj),
+        handler: buildRrpObjectFromCdpObject(handlerCdpObj)
+      }
+    };
+  } else {
+    const plainObject = getPlainObjectByRrpId(rrpId);
+    if (isBlinkInstanceOf(plainObject, Node)) {
+      return {
+        node: previewBlinkNode(plainObject)
+      }
     }
-  }
 
-  if (isBlinkInstanceOf(plainObject, CSSStyleDeclaration)) {
-    return {
-      style: previewBlinkStyle(plainObject)
+    if (isBlinkInstanceOf(plainObject, CSSStyleDeclaration)) {
+      return {
+        style: previewBlinkStyle(plainObject)
+      }
     }
   }
 }
@@ -3085,6 +3098,7 @@ __RECORD_REPLAY_ARGUMENTS__.internal = {
   getPlainObjectByRrpId,
   registerPlainObject,
   gLastBoundingClientRectsByNodeRrpId,
+  sendCDPMessage: sendMessage,
   getNextStackingContextId: () => gNextStackingContextId,
   setNextStackingContextId: (id) => { gNextStackingContextId = id; },
   updateNextStackingContextId: (f) => { gNextStackingContextId = f(gNextStackingContextId); },
