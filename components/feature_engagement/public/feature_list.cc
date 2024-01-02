@@ -68,7 +68,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHKeyboardAccessoryPaymentOfferFeature,
     &kIPHLowUserEngagementDetectorFeature,
     &kIPHMicToolbarFeature,
-    &kIPHNewTabPageHomeButtonFeature,
     &kIPHPageInfoFeature,
     &kIPHPageInfoStoreInfoFeature,
     &kIPHPageZoomFeature,

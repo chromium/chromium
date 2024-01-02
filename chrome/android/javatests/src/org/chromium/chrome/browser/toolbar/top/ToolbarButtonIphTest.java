@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -42,7 +41,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -81,22 +79,6 @@ public class ToolbarButtonIphTest {
         // the test case will fail. See https://crbug.com/1144328.
         mActivityTestRule.startMainActivityWithURL(
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html"));
-    }
-
-    @Test
-    @MediumTest
-    public void testNewTabButtonIph() throws InterruptedException {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE))
-                .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(
-                        FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE))
-                .thenReturn(new TriggerDetails(true, false));
-
-        mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        onView(withId(R.id.home_button)).check(matches(withHighlight(false)));
-
-        mActivityTestRule.loadUrl("about:blank");
-        onView(withId(R.id.home_button)).check(matches(withHighlight(true)));
     }
 
     @Test

@@ -40903,7 +40903,7 @@ should be able to be added at any place in this file.
   <suffix name="NewTab" label="For NewTab feature."/>
   <suffix name="NewTabPageButton" label="Deprecated in M79-."/>
   <suffix name="NewTabPageHomeButton"
-      label="For NewTabPageHomeButton feature."/>
+      label="For NewTabPageHomeButton feature. (obsolete)"/>
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>

@@ -58,7 +58,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.FEATURE_NOTIFICATION_GUIDE_NTP_SUGGESTION_CARD_HELP_BUBBLE_FEATURE,
     FeatureConstants.FEATURE_NOTIFICATION_GUIDE_SIGN_IN_HELP_BUBBLE_FEATURE,
     FeatureConstants.FEATURE_NOTIFICATION_GUIDE_VOICE_SEARCH_HELP_BUBBLE_FEATURE,
-    FeatureConstants.NEW_TAB_PAGE_HOME_BUTTON_FEATURE,
     FeatureConstants.SHOPPING_LIST_MENU_ITEM_FEATURE,
     FeatureConstants.SHOPPING_LIST_SAVE_FLOW_FEATURE,
     FeatureConstants.TAB_GROUPS_QUICKLY_COMPARE_PAGES_FEATURE,
@@ -188,9 +187,6 @@ public @interface FeatureConstants {
      * to try voice.
      */
     String IPH_MIC_TOOLBAR_FEATURE = "IPH_MicToolbar";
-
-    /** An IPH feature to prompt users to open the new tab page after a navigation. */
-    String NEW_TAB_PAGE_HOME_BUTTON_FEATURE = "IPH_NewTabPageHomeButton";
 
     /** An IPH that shows in the bookmark save flow when bookmarking a product. */
     String SHOPPING_LIST_SAVE_FLOW_FEATURE = "IPH_ShoppingListSaveFlow";

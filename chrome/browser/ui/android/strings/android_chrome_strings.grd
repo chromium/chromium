@@ -4721,18 +4721,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_IPH_IDENTITY_DISC_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text prompting the user that tapping identity disc will navigate to 'Sync and Google services' settings page.">
         To manage your Google account, tap the "Manage account" button
       </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites.">
-        See your top sites
-      </message>
-      <message name="IDS_IPH_NTP_WITHOUT_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see your top sites, tap the Home button
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_TEXT" desc="The in-product-help message to open the new tab page with personalized top sites and stories.">
-        See top sites and stories for you
-      </message>
-      <message name="IDS_IPH_NTP_WITH_FEED_ACCESSIBILITY_TEXT" desc="The in-product-help accessibility text to open the new tab page with personalized top sites and stories. The 'Home' button name should match TC ID 2821179408673282599.">
-        To see top sites and stories for you, tap the Home button
-      </message>
       <message name="IDS_IPH_TAB_SWITCHER_TEXT" desc="The in-product-help message to open the tab switcher.">
         Open tabs to visit different pages at the same time
       </message>

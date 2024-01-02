@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.dragdrop.toolbar.ToolbarDragDropCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.findinpage.FindToolbarObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -1403,15 +1402,10 @@ public class ToolbarManager
                     new HomeButtonCoordinator(
                             mActivity,
                             homeButton,
-                            mUserEducationHelper,
-                            mIncognitoStateProvider::isIncognitoSelected,
-                            mPromoShownOneshotSupplier,
-                            HomepageManager::isHomepageNonNtp,
-                            FeedFeatures::isFeedEnabled,
-                            mActivityTabProvider,
                             this::onHomeButtonMenuClick,
                             HomepagePolicyManager::isHomepageManagedByPolicy);
         }
+
         return toolbar;
     }
 
@@ -1951,10 +1945,6 @@ public class ToolbarManager
             mOverviewModeMenuButtonCoordinator = null;
         }
 
-        if (mHomeButtonCoordinator != null) {
-            mHomeButtonCoordinator.destroy();
-            mHomeButtonCoordinator = null;
-        }
         if (mToggleTabStackButtonCoordinator != null) {
             mToggleTabStackButtonCoordinator.destroy();
             mToggleTabStackButtonCoordinator = null;

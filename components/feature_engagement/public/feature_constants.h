@@ -147,7 +147,6 @@ BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentFillingFeature);
 BASE_DECLARE_FEATURE(kIPHKeyboardAccessoryPaymentOfferFeature);
 BASE_DECLARE_FEATURE(kIPHLowUserEngagementDetectorFeature);
 BASE_DECLARE_FEATURE(kIPHMicToolbarFeature);
-BASE_DECLARE_FEATURE(kIPHNewTabPageHomeButtonFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoFeature);
 BASE_DECLARE_FEATURE(kIPHPageInfoStoreInfoFeature);
 BASE_DECLARE_FEATURE(kIPHPageZoomFeature);

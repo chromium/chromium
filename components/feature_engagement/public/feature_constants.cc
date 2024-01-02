@@ -359,9 +359,6 @@ BASE_FEATURE(kIPHKeyboardAccessoryPaymentOfferFeature,
 BASE_FEATURE(kIPHLowUserEngagementDetectorFeature,
              "IPH_LowUserEngagementDetector",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHNewTabPageHomeButtonFeature,
-             "IPH_NewTabPageHomeButton",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHMicToolbarFeature,
              "IPH_MicToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
