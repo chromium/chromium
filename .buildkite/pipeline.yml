@@ -60,6 +60,7 @@ steps:
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
+      - "arch=x86_64"
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/x86_64/**"
@@ -91,6 +92,7 @@ steps:
     agents:
       - "runtimeType=chromiumbuild"
       - "os=macos"
+      - "arch=x86_64"
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/arm64/**"
