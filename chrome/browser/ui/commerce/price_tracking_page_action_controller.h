@@ -33,39 +33,6 @@ namespace commerce {
 struct CommerceSubscription;
 class ShoppingService;
 
-// TODO(b:301440117): Once the tab helper uses this class, move this annotation
-//                    to an anonymous namespace.
-inline constexpr net::NetworkTrafficAnnotationTag
-    kShoppingListTrafficAnnotation =
-        net::DefineNetworkTrafficAnnotation("shopping_list_ui_image_fetcher",
-                                            R"(
-        semantics {
-          sender: "Product image fetcher for the shopping list feature."
-          description:
-            "Retrieves the image for a product that is displayed on the active "
-            "web page. This will be shown to the user as part of the "
-            "bookmarking or price tracking action."
-          trigger:
-            "On navigation, if the URL of the page is determined to be a "
-            "product that can be price tracked, we will attempt to fetch the "
-            "image for it."
-          data:
-            "An image of a product that can be price tracked."
-          destination: WEBSITE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "This fetch is enabled for any user with the 'Shopping List' "
-            "feature enabled."
-          chrome_policy {
-            ShoppingListEnabled {
-              policy_options {mode: MANDATORY}
-              ShoppingListEnabled: true
-            }
-          }
-        })");
-
 class PriceTrackingPageActionController : public CommercePageActionController,
                                           public SubscriptionsObserver {
  public:
@@ -97,6 +64,7 @@ class PriceTrackingPageActionController : public CommercePageActionController,
   const gfx::Image& GetLastFetchedImage();
   const GURL& GetLastFetchedImageUrl();
   bool IsPriceTrackingCurrentProduct();
+  void SetImageFetcherForTesting(image_fetcher::ImageFetcher* image_fetcher);
 
  private:
   void HandleProductInfoResponse(const GURL& url,

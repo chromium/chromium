@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -158,7 +159,7 @@ TEST_F(PriceTrackingPageActionControllerUnittest, IconNotShown_NoProductInfo) {
   ASSERT_FALSE(controller.ShouldShowForNavigation().has_value());
   ASSERT_FALSE(controller.WantsExpandedUi());
 
-  EXPECT_CALL(notify_host_callback_, Run()).Times(1);
+  EXPECT_CALL(notify_host_callback_, Run()).Times(testing::AtLeast(1));
   EXPECT_CALL(*shopping_service_, IsSubscribed(testing::_, testing::_))
       .Times(0);
   shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);

@@ -159,7 +159,8 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     tab_helper_ = static_cast<commerce::CommerceUiTabHelper*>(
         commerce::CommerceUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
-    tab_helper_->SetImageFetcherForTesting(image_fetcher_.get());
+    tab_helper_->GetPriceTrackingControllerForTesting()
+        ->SetImageFetcherForTesting(image_fetcher_.get());
 
     product_info_ = commerce::ProductInfo();
     product_info_->title = "Product";

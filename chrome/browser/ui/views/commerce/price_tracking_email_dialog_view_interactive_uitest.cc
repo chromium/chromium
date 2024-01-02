@@ -120,8 +120,6 @@ class PriceTrackingEmailDialogConsentViewInteractiveTest
         .WillByDefault(
             testing::ReturnRef(mock_tab_helper->GetValidProductImage()));
 
-    mock_tab_helper->SetShoppingServiceForTesting(mock_shopping_service);
-
     EXPECT_CALL(*mock_shopping_service, GetProductInfoForUrl)
         .Times(testing::AnyNumber());
 
