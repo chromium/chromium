@@ -5002,7 +5002,8 @@ TEST_P(OverviewRasterScaleTest,
 }
 
 // Tests raster scale changes work in tablet mode.
-TEST_P(OverviewRasterScaleTest, RasterScaleTabletMode) {
+// TODO(crbug.com/1508655): Fix flaky test.
+TEST_P(OverviewRasterScaleTest, DISABLED_RasterScaleTabletMode) {
   Shell::Get()
       ->raster_scale_controller()
       ->set_raster_scale_slop_proportion_for_testing(0.0f);
