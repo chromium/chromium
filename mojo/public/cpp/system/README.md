@@ -135,7 +135,8 @@ This new handle can be cloned arbitrarily many times by using the underlying
 handle's `Clone` method:
 
 ``` cpp
-mojo::ScopedSharedBufferHandle another_handle = buffer->Clone();
+mojo::ScopedSharedBufferHandle another_handle =
+    buffer->Clone(mojo::SharedBufferHandle::AccessMode::READ_WRITE);
 mojo::ScopedSharedBufferHandle read_only_handle =
     buffer->Clone(mojo::SharedBufferHandle::AccessMode::READ_ONLY);
 ```
