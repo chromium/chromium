@@ -201,7 +201,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 }
 
 - (void)presentShareButtonHelpBubbleIfEligible {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }
@@ -453,7 +453,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   self.engagementTracker->NotifyEvent(
       feature_engagement::events::kIOSMultiGestureRefreshUsed);
   BOOL userEligibleForPullToRefreshIPH =
-      iph_for_new_chrome_user::IsUserEligible(
+      iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher) &&
       self.engagementTracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSPullToRefreshFeature);
@@ -547,7 +547,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 // `nil` and no bubble is shown. This method requires that `self.browserState`
 // is not NULL.
 - (void)presentNewTabToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }
@@ -622,7 +622,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 // `nil` and no bubble is shown. This method requires that `self.browserState`
 // is not NULL.
 - (void)presentTabGridToolbarItemBubble {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return;
   }

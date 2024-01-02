@@ -342,7 +342,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // Queries the feature engagement tracker to see if IPH can currently be
 // displayed. Once this is returning YES, the IPH MUST be shown and dismissed.
 - (BOOL)canShowIPHForPopupMenu {
-  if (!iph_for_new_chrome_user::IsUserEligible(
+  if (!iph_for_new_chrome_user::IsUserNewSafariSwitcher(
           _deviceSwitcherResultDispatcher)) {
     return NO;
   }

@@ -122,11 +122,3 @@ void RecordMetricsReportingDefaultState() {
             : metrics::EnableMetricsDefault::OPT_IN);
   });
 }
-
-std::optional<base::Time> GetFirstRunTime() {
-  std::optional<base::File::Info> info = FirstRun::GetSentinelInfo();
-  if (info.has_value()) {
-    return info.value().creation_time;
-  }
-  return std::nullopt;
-}
