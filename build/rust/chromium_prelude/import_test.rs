@@ -4,7 +4,7 @@
 
 mod test_direct {
     chromium::import! {
-        "//build/rust/lib:import_test_lib";
+        "//build/rust/chromium_prelude:import_test_lib";
     }
 
     pub fn import_test() {
@@ -14,7 +14,7 @@ mod test_direct {
 
 mod test_as {
     chromium::import! {
-        "//build/rust/lib:import_test_lib" as library;
+        "//build/rust/chromium_prelude:import_test_lib" as library;
     }
 
     pub fn import_test() {
@@ -24,7 +24,7 @@ mod test_as {
 
 mod test_pub {
     chromium::import! {
-        pub "//build/rust/lib:import_test_lib" as library;
+        pub "//build/rust/chromium_prelude:import_test_lib" as library;
     }
 }
 
