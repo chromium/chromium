@@ -712,8 +712,7 @@ TEST_F(SessionStorageImplTest, RecreateOnCommitFailure) {
     std::vector<uint8_t> old_value = value;
     value[0]++;
     area_o1->Put(StringViewToUint8Vector("key"), value, absl::nullopt, "source",
-                 base::BindLambdaForTesting(
-                     [&](bool success) { EXPECT_TRUE(success); }));
+                 base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area_o1.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
@@ -821,8 +820,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     area->Put(StringViewToUint8Vector("key"), value, old_value, "source",
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
@@ -854,8 +852,7 @@ TEST_F(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     area->Put(StringViewToUint8Vector("key"), value, old_value, "source",
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+              base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area.FlushForTesting();
     RunUntilIdle();
     // And we need to flush after every change. Otherwise changes get batched up
