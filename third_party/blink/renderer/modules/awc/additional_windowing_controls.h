@@ -29,10 +29,10 @@ class AdditionalWindowingControls {
   static ScriptPromise restore(ScriptState*,
                                LocalDOMWindow&,
                                ExceptionState& exception_state);
-  static void setResizable(ScriptState*,
-                           LocalDOMWindow&,
-                           bool resizable,
-                           ExceptionState& exception_state);
+  static ScriptPromise setResizable(ScriptState*,
+                                    LocalDOMWindow&,
+                                    bool resizable,
+                                    ExceptionState& exception_state);
 };
 
 }  // namespace blink

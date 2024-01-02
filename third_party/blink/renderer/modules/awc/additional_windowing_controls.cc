@@ -148,6 +148,26 @@ void OnRestorePermissionRequestComplete(ScriptPromiseResolver* resolver,
   resolver->Resolve();
 }
 
+void OnSetResizablePermissionRequestComplete(
+    ScriptPromiseResolver* resolver,
+    LocalDOMWindow* window,
+    bool resizable,
+    mojom::blink::PermissionStatus status) {
+  if (!IsPermissionGranted(resolver, status)) {
+    return;
+  }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  ChromeClient& chrome_client = window->GetFrame()->GetChromeClient();
+  chrome_client.SetResizable(resizable, *window->GetFrame());
+#endif
+
+  // TODO(crbug.com/1505666): Add wait for the resizability change to be
+  // completed before resolving the promise.
+
+  resolver->Resolve();
+}
+
 }  // namespace
 
 // static
@@ -199,19 +219,21 @@ ScriptPromise AdditionalWindowingControls::restore(
 }
 
 // static
-void AdditionalWindowingControls::setResizable(
+ScriptPromise AdditionalWindowingControls::setResizable(
     ScriptState* script_state,
     LocalDOMWindow& window,
     bool resizable,
     ExceptionState& exception_state) {
   if (!CanUseWindowingControls(&window, exception_state)) {
-    return;
+    return ScriptPromise();
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  ChromeClient& chrome_client = window.GetFrame()->GetChromeClient();
-  chrome_client.SetResizable(resizable, *window.GetFrame());
-#endif
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  return MaybePromptWindowManagementPermission(
+      &window, resolver,
+      WTF::BindOnce(&OnSetResizablePermissionRequestComplete,
+                    WrapPersistent(resolver), WrapPersistent(&window),
+                    resizable));
 }
 
 }  // namespace blink

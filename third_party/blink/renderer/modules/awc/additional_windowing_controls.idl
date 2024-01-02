@@ -14,7 +14,5 @@
   [CallWith=ScriptState, RaisesException] Promise<undefined> maximize();
   [CallWith=ScriptState, RaisesException] Promise<undefined> minimize();
   [CallWith=ScriptState, RaisesException] Promise<undefined> restore();
-
-  // TODO(laurila): Make this return promise as well.
-  [CallWith=ScriptState, RaisesException] void setResizable(boolean resizable);
+  [CallWith=ScriptState, RaisesException] Promise<undefined> setResizable(boolean resizable);
 };
