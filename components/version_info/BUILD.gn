@@ -36,14 +36,10 @@ static_library("version_string") {
     "version_string.h",
   ]
 
-  deps = [
-    ":version_info",
-    "//components/strings",
-  ]
+  deps = [ ":version_info" ]
 
   if (use_unofficial_version_number) {
     defines = [ "USE_UNOFFICIAL_VERSION_NUMBER" ]
-    deps += [ "//ui/base" ]
   }
 }
 

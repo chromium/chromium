@@ -4,12 +4,7 @@
 
 #include "components/version_info/version_string.h"
 
-#include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
-
-#if defined(USE_UNOFFICIAL_VERSION_NUMBER)
-#include "ui/base/l10n/l10n_util.h"  // nogncheck
-#endif  // USE_UNOFFICIAL_VERSION_NUMBER
 
 namespace version_info {
 
@@ -17,9 +12,7 @@ std::string GetVersionStringWithModifier(const std::string& modifier) {
   std::string current_version;
   current_version += GetVersionNumber();
 #if defined(USE_UNOFFICIAL_VERSION_NUMBER)
-  current_version += " (";
-  current_version += l10n_util::GetStringUTF8(IDS_VERSION_UI_UNOFFICIAL);
-  current_version += " ";
+  current_version += " (Developer Build ";
   current_version += GetLastChange();
   current_version += " ";
   current_version += GetOSType();
