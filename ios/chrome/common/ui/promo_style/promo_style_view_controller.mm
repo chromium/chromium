@@ -37,6 +37,7 @@ constexpr CGFloat kNoBackgroundHeaderImageBottomMargin = 5;
 constexpr CGFloat kHeaderImageBackgroundTopMarginPercentage = 0.1;
 constexpr CGFloat kHeaderImageBackgroundBottomMargin = 34;
 constexpr CGFloat kTitleHorizontalMargin = 18;
+constexpr CGFloat kTitleNoHeaderTopMargin = 56;
 constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
@@ -1351,7 +1352,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   if (!_titleLabelNoHeaderTopMargin) {
     _titleLabelNoHeaderTopMargin = [_titleLabel.topAnchor
         constraintEqualToAnchor:_scrollContentView.topAnchor
-                       constant:kDefaultMargin];
+                       constant:kTitleNoHeaderTopMargin];
   }
   _titleLabelNoHeaderTopMargin.active = YES;
   _headerBackgroundImageViewTopMargin.active = NO;
