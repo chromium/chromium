@@ -481,3 +481,29 @@ ci.builder(
     ),
     contact_team_email = "cronet-team@google.com",
 )
+
+ci.builder(
+    name = "android-webview-13-x64-dbg-hostside",
+    description_html = (
+        "This temporary builder/tester runs WebView host-driven CTS.<br/>" +
+        "This builder should be removed after adding the test suite to" +
+        "android-12-x64-rel required CQ builder. b/267730567."
+    ),
+    builder_spec = builder_config.copy_from("ci/Android x64 Builder All Targets (dbg)"),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder",
+            "debug_static_builder",
+            "reclient",
+            "x64",
+            "webview_trichrome",
+            "webview_shell",
+        ],
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|x86",
+        short_name = "64",
+    ),
+    contact_team_email = "woa-engprod@google.com",
+    execution_timeout = 7 * time.hour,
+)

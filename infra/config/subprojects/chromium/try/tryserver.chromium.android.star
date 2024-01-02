@@ -771,6 +771,27 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-webview-13-x64-dbg-hostside",
+    description_html = (
+        "This try builder mirrors android-webview-13-x64-dbg-hostside" +
+        "builder/tester to trial run WebView host-driven CTS.<br/>" +
+        "This builder should be removed after adding the test suite to" +
+        "android-12-x64-rel required CQ builder. b/267730567."
+    ),
+    mirrors = [
+        "ci/android-webview-13-x64-dbg-hostside",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-webview-13-x64-dbg-hostside",
+            "debug_try_builder",
+        ],
+    ),
+    contact_team_email = "woa-engprod@google.com",
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-webview-pie-x86-wpt-fyi-rel",
     mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
     gn_args = "ci/android-webview-pie-x86-wpt-fyi-rel",
