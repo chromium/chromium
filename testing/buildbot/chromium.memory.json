@@ -1415,7 +1415,8 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "blink_unittests_v2",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
@@ -8983,7 +8984,8 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 3
         },
         "test": "blink_unittests_v2",
         "test_id_prefix": "ninja://third_party/blink/renderer/controller:blink_unittests_v2/"
