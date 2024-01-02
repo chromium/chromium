@@ -3992,7 +3992,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MediaRecorder.HasCorrectAV1CodecString"
-    enum="BooleanCorrect" expires_after="2023-12-31">
+    enum="BooleanCorrect" expires_after="2024-06-30">
   <owner>hiroh@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <summary>
