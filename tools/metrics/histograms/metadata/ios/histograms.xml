@@ -556,7 +556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserFullscreenPromo"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-04-28">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2024-06-30">
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
