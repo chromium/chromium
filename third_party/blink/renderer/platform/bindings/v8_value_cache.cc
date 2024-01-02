@@ -94,7 +94,7 @@ void StringCache::Dispose() {
 static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
                                                 const String& string) {
   if (string.Is8Bit()) {
-    StringResource8* string_resource = new StringResource8(string);
+    StringResource8* string_resource = new StringResource8(isolate, string);
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
@@ -104,7 +104,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
     return new_string;
   }
 
-  StringResource16* string_resource = new StringResource16(string);
+  StringResource16* string_resource = new StringResource16(isolate, string);
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
@@ -117,7 +117,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
 static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
                                                 const ParkableString& string) {
   if (string.Is8Bit()) {
-    auto* string_resource = new ParkableStringResource8(string);
+    auto* string_resource = new ParkableStringResource8(isolate, string);
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
@@ -127,7 +127,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
     return new_string;
   }
 
-  auto* string_resource = new ParkableStringResource16(string);
+  auto* string_resource = new ParkableStringResource16(isolate, string);
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
