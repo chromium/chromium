@@ -161,6 +161,7 @@ if (is_android) {
     testonly = true
     resources_package = "org.chromium.chrome.browser.supervised_user"
     sources = [
+      "android/javatests/src/org/chromium/chrome/browser/supervised_user/FamilyLinkControlsTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/IncognitoSignInInteractionTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserCriticalJourneysIntegrationTest.java",
       "android/javatests/src/org/chromium/chrome/browser/supervised_user/SupervisedUserSettingsTestUtils.java",
@@ -175,6 +176,7 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//chrome/android:chrome_java",
+      "//chrome/android:chrome_test_java",
       "//chrome/browser/flags:java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/signin/services/android:java",
@@ -189,12 +191,17 @@ if (is_android) {
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/bottomsheet/android:manager_java",
       "//components/browser_ui/bottomsheet/android/test:java",
+      "//components/browser_ui/settings/android:java",
+      "//components/browser_ui/site_settings/android:java",
+      "//components/content_settings/android:content_settings_enums_java",
       "//components/signin/public/android:java",
       "//components/signin/public/android:signin_java_test_support",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
       "//net/android:net_java_test_support",
       "//third_party/android_deps:espresso_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
+      "//third_party/androidx:androidx_preference_preference_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
