@@ -414,6 +414,13 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::CapturedWheelActionPtr action,
       base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
           callback);
+
+  void GetZoomLevel(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      base::OnceCallback<
+          void(absl::optional<int> zoom_level,
+               blink::mojom::CapturedSurfaceControlResult result)> callback);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void RegisterDispatcherHost(
@@ -524,6 +531,11 @@ class CONTENT_EXPORT MediaStreamManager
   // Control APIs pass the label instead.
   DeviceRequest* FindRequestByVideoSessionId(
       const base::UnguessableToken& session_id) const;
+
+  CapturedSurfaceController* GetCapturedSurfaceController(
+      GlobalRenderFrameHostId capturer_rfh_id,
+      const base::UnguessableToken& session_id,
+      blink::mojom::CapturedSurfaceControlResult& result);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Clones an existing device identified by |existing_device_session_id| and

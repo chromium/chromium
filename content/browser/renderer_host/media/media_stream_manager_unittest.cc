@@ -354,6 +354,7 @@ class TestVideoCaptureHost : public media::mojom::VideoCaptureHost {
 // TODO(crbug.com/1466247): Add other APIs (setZoomLevel, getZoomLevel).
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
+  kGetZoomLevel,
 };
 
 // Make an arbitrary valid CapturedWheelAction.
@@ -1688,6 +1689,8 @@ class MediaStreamManagerCapturedSurfaceControlTest
                                                               captured_wc_id);
           captured_surface_controller->SetSendWheelResponse(
               CapturedSurfaceControlResult::kSuccess);
+          captured_surface_controller->SetGetZoomLevelResponse(
+              100, CapturedSurfaceControlResult::kSuccess);
           return base::WrapUnique<CapturedSurfaceController>(
               captured_surface_controller.release());
         }));
@@ -1712,12 +1715,36 @@ class MediaStreamManagerCapturedSurfaceControlTest
         MakeCapturedWheelActionPtr(), MakeCallback());
   }
 
+  base::OnceCallback<void(absl::optional<int>, CapturedSurfaceControlResult)>
+  MakeGetZoomLevelCallback() {
+    return base::BindOnce(
+        [](absl::optional<CapturedSurfaceControlResult>* result_opt,
+           absl::optional<int>, CapturedSurfaceControlResult result) {
+          CHECK(result_opt);
+          EXPECT_FALSE(result_opt->has_value());
+          *result_opt = result;
+        },
+        &result_);
+  }
+
+  void GetZoomLevel(
+      GlobalRenderFrameHostId gdm_rfhid,
+      absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
+    media_stream_manager_->GetZoomLevel(
+        gdm_rfhid, session_id.value_or(video_device_.session_id()),
+        MakeGetZoomLevelCallback());
+  }
+
   void RunTestedAction(
       GlobalRenderFrameHostId gdm_rfhid,
       absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
     switch (tested_api_) {
       case CapturedSurfaceControlAPI::kSendWheel: {
         SendWheel(gdm_rfhid, session_id);
+        return;
+      }
+      case CapturedSurfaceControlAPI::kGetZoomLevel: {
+        GetZoomLevel(gdm_rfhid, session_id);
         return;
       }
     }
@@ -1735,7 +1762,8 @@ class MediaStreamManagerCapturedSurfaceControlTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     MediaStreamManagerCapturedSurfaceControlTest,
-    testing::Values(CapturedSurfaceControlAPI::kSendWheel));
+    testing::Values(CapturedSurfaceControlAPI::kSendWheel,
+                    CapturedSurfaceControlAPI::kGetZoomLevel));
 
 TEST_P(MediaStreamManagerCapturedSurfaceControlTest, SuccessfulIfValid) {
   SCOPED_TRACE("SuccessfulIfValid");

@@ -2312,6 +2312,32 @@ MediaStreamManager::FindRequestByVideoSessionId(
 
   return nullptr;
 }
+
+CapturedSurfaceController* MediaStreamManager::GetCapturedSurfaceController(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const base::UnguessableToken& session_id,
+    blink::mojom::CapturedSurfaceControlResult& result) {
+  DeviceRequest* const request = FindRequestByVideoSessionId(session_id);
+  if (!request) {
+    result = CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
+    return nullptr;
+  }
+
+  if (request->requesting_render_frame_host_id != capturer_rfh_id) {
+    result = CapturedSurfaceControlResult::kUnknownError;
+    return nullptr;
+  }
+
+  CapturedSurfaceController* const controller =
+      request->GetCapturedSurfaceController();
+  if (!controller) {
+    result = blink::mojom::CapturedSurfaceControlResult::kUnknownError;
+    return nullptr;
+  }
+
+  result = blink::mojom::CapturedSurfaceControlResult::kSuccess;
+  return controller;
+}
 #endif
 
 absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
@@ -4101,25 +4127,34 @@ void MediaStreamManager::SendWheel(
     base::OnceCallback<void(CapturedSurfaceControlResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  DeviceRequest* const request = FindRequestByVideoSessionId(session_id);
-  if (!request) {
-    std::move(callback).Run(
-        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-    return;
-  }
-  if (request->requesting_render_frame_host_id != capturer_rfh_id) {
-    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
-    return;
-  }
-
+  CapturedSurfaceControlResult result;
   CapturedSurfaceController* const controller =
-      request->GetCapturedSurfaceController();
+      GetCapturedSurfaceController(capturer_rfh_id, session_id, result);
   if (!controller) {
-    std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+    std::move(callback).Run(result);
     return;
   }
 
   controller->SendWheel(std::move(action), std::move(callback));
+}
+
+void MediaStreamManager::GetZoomLevel(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const base::UnguessableToken& session_id,
+    base::OnceCallback<void(absl::optional<int> zoom_level,
+                            blink::mojom::CapturedSurfaceControlResult result)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  CapturedSurfaceControlResult result;
+  CapturedSurfaceController* const controller =
+      GetCapturedSurfaceController(capturer_rfh_id, session_id, result);
+  if (!controller) {
+    std::move(callback).Run(absl::nullopt, result);
+    return;
+  }
+
+  controller->GetZoomLevel(std::move(callback));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

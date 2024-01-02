@@ -10,9 +10,11 @@
 #include "base/run_loop.h"
 #include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
 namespace content {
@@ -71,6 +73,22 @@ base::OnceCallback<void(CSCResult)> MakeCallbackExpectingResult(
       run_loop, expected_result);
 }
 
+// Make a callback that expects `result` and then unblock `run_loop`.
+base::OnceCallback<void(absl::optional<int>, CSCResult)>
+MakeGetZoomLevelCallbackExpectingResult(base::RunLoop* run_loop,
+                                        absl::optional<int> expected_zoom_level,
+                                        CSCResult expected_result) {
+  return base::BindOnce(
+      [](base::RunLoop* run_loop, absl::optional<int> expected_zoom_level,
+         CSCResult expected_result, absl::optional<int> zoom_level,
+         CSCResult result) {
+        EXPECT_EQ(zoom_level, expected_zoom_level);
+        EXPECT_EQ(result, expected_result);
+        run_loop->Quit();
+      },
+      run_loop, expected_zoom_level, expected_result);
+}
+
 class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
  public:
   ~CapturedSurfaceControllerTestBase() override = default;
@@ -116,6 +134,23 @@ class CapturedSurfaceControllerTestBase : public RenderViewHostTestHarness {
   std::unique_ptr<TestWebContents> capturing_wc_;
   std::unique_ptr<TestWebContents> captured_wc_;
 };
+
+TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelSuccess) {
+  content::HostZoomMap::SetZoomLevel(captured_wc_.get(),
+                                     blink::PageZoomFactorToZoomLevel(0.9));
+  base::RunLoop run_loop;
+  controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
+      &run_loop, 90, CSCResult::kSuccess));
+  run_loop.Run();
+}
+
+TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelUnknownError) {
+  base::RunLoop run_loop;
+  captured_wc_.reset();
+  controller_->GetZoomLevel(MakeGetZoomLevelCallbackExpectingResult(
+      &run_loop, absl::nullopt, CSCResult::kCapturedSurfaceNotFoundError));
+  run_loop.Run();
+}
 
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
