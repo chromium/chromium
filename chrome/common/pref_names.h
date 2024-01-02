@@ -3986,6 +3986,11 @@ inline constexpr char kReadAloudHighlightingEnabled[] =
 // not.
 inline constexpr char kListenToThisPageEnabled[] =
     "readaloud.listen_to_this_page_enabled";
+
+// Dictionary storing details about past synthetic trials. Key is (feature name,
+// synthetic trial suffix) and value is a field trial name. sessions.
+inline constexpr char kReadAloudSyntheticTrials[] =
+    "readaloud.synthetic_trials";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(CHROME_CERTIFICATE_POLICIES_SUPPORTED)

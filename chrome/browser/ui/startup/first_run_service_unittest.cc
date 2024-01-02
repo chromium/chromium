@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/startup/first_run_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/scoped_metrics_service_for_synthetic_trials.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -47,86 +48,6 @@
 #endif
 
 namespace {
-
-class ScopedTestingMetricsService {
- public:
-  // Sets up a `metrics::MetricsService` instance and makes it available in its
-  // scope via `testing_browser_process->metrics_service()`.
-  //
-  // This service only supports feature related to the usage of synthetic field
-  // trials.
-  //
-  // Requires:
-  // - the local state prefs to be usable from `testing_browser_process`
-  // - a task runner to be available (see //docs/threading_and_tasks_testing.md)
-  explicit ScopedTestingMetricsService(
-      TestingBrowserProcess* testing_browser_process)
-      : browser_process_(testing_browser_process) {
-    CHECK(browser_process_);
-
-    auto* local_state = browser_process_->local_state();
-    CHECK(local_state)
-        << "Error: local state prefs are required. In a unit test, this can be "
-           "set up using base::test::ScopedFeatureList.";
-
-    // The `SyntheticTrialsActiveGroupIdProvider` needs to be notified of
-    // changes from the registry for them to be used through the variations API.
-    synthetic_trial_registry_observation_.Observe(&synthetic_trial_registry_);
-
-    metrics_service_client_.set_synthetic_trial_registry(
-        &synthetic_trial_registry_);
-
-    metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        local_state, &enabled_state_provider_,
-        /*backup_registry_key=*/std::wstring(),
-        /*user_data_dir=*/base::FilePath());
-
-    // Needs to be set up, will be updated at each synthetic trial change.
-    variations::InitCrashKeys();
-
-    // Required by `MetricsService` to record UserActions. We don't rely on
-    // these here, since we never make it start recording metrics, but the task
-    // runner is still required during the shutdown sequence.
-    base::SetRecordActionTaskRunner(
-        base::SingleThreadTaskRunner::GetCurrentDefault());
-
-    metrics_service_ = std::make_unique<metrics::MetricsService>(
-        metrics_state_manager_.get(), &metrics_service_client_, local_state);
-
-    browser_process_->SetMetricsService(metrics_service_.get());
-  }
-
-  ~ScopedTestingMetricsService() {
-    // The scope is closing, undo the set up that was done in the constuctor:
-    // `MetricsService` and other necessary parts like crash keys.
-    browser_process_->SetMetricsService(nullptr);
-    variations::ClearCrashKeysInstanceForTesting();
-
-    // Note: Clears all the synthetic trials, not juste the ones registered
-    // during the lifetime of this object.
-    variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()
-        ->ResetForTesting();
-  }
-
-  metrics::MetricsService* Get() { return metrics_service_.get(); }
-
- private:
-  raw_ptr<TestingBrowserProcess> browser_process_ = nullptr;
-
-  metrics::TestEnabledStateProvider enabled_state_provider_{/*consent=*/true,
-                                                            /*enabled=*/true};
-
-  variations::SyntheticTrialRegistry synthetic_trial_registry_;
-  base::ScopedObservation<variations::SyntheticTrialRegistry,
-                          variations::SyntheticTrialObserver>
-      synthetic_trial_registry_observation_{
-          variations::SyntheticTrialsActiveGroupIdProvider::GetInstance()};
-
-  metrics::TestMetricsServiceClient metrics_service_client_;
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-
-  std::unique_ptr<metrics::MetricsService> metrics_service_;
-};
 
 struct FirstRunFieldTrialTestParams {
   double entropy_value;
@@ -329,7 +250,7 @@ class FirstRunCohortSetupTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_{
       TestingBrowserProcess::GetGlobal()};
-  ScopedTestingMetricsService testing_metrics_service_{
+  ScopedMetricsServiceForSyntheticTrials testing_metrics_service_{
       TestingBrowserProcess::GetGlobal()};
 };
 

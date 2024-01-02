@@ -105,6 +105,10 @@ namespace SearchEngineChoiceClientSideTrial {
 void RegisterSyntheticTrials();
 }
 
+namespace readaloud {
+class SyntheticTrial;
+}
+
 // This class limits and documents access to metrics service helper methods.
 // Since these methods are private, each user has to be explicitly declared
 // as a 'friend' below.
@@ -168,6 +172,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
   friend class tpcd::experiment::ExperimentManagerImpl;
+  friend class readaloud::SyntheticTrial;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ChromeCameraAppUIDelegate;

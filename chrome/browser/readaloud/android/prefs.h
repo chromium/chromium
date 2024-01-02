@@ -12,6 +12,8 @@ namespace readaloud {
 // Should be called once during startup in browser_prefs.cc.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+void RegisterLocalPrefs(PrefRegistrySimple* registry);
+
 }  // namespace readaloud
 
 #endif  // CHROME_BROWSER_READALOUD_ANDROID_PREFS_H_
