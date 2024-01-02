@@ -415,7 +415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent"
-    enum="SubmissionIndicatorEvent" expires_after="2024-02-04">
+    enum="SubmissionIndicatorEvent" expires_after="2024-08-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -818,9 +818,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
-    enum="PasswordCheckResolutionAction" expires_after="2024-01-07">
-  <owner>kolos@chromium.org</owner>
-  <owner>battre@chromium.org</owner>
+    enum="PasswordCheckResolutionAction" expires_after="2024-07-15">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
   <summary>
     Resolution action to fix a compromised credential when there is no
     &quot;Change password automatically&quot; button. Starting with M110, no
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.MediationRequired"
-    enum="CredentialManagerGetResult" expires_after="2024-02-04">
+    enum="CredentialManagerGetResult" expires_after="2024-08-15">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -3005,7 +3005,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.RequirementsSpecFetcher.Result"
-    enum="PasswordRequirementsFetcherResult" expires_after="2024-02-15">
+    enum="PasswordRequirementsFetcherResult" expires_after="2024-08-15">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -3548,7 +3548,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.UnifiedPasswordManager.ActiveStatus2"
-    enum="UnifiedPasswordManagerActiveStatus" expires_after="M123">
+    enum="UnifiedPasswordManagerActiveStatus" expires_after="M129">
   <owner>kazinova@google.com</owner>
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
