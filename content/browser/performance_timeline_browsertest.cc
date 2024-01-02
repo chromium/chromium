@@ -120,8 +120,13 @@ class PerformanceTimelineLCPStartTimePrecisionBrowserTest
   int32_t precision_ = 10;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_LCPStartTimePrecision DISABLED_LCPStartTimePrecision
+#else
+#define MAYBE_LCPStartTimePrecision LCPStartTimePrecision
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceTimelineLCPStartTimePrecisionBrowserTest,
-                       LCPStartTimePrecision) {
+                       MAYBE_LCPStartTimePrecision) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/lcp-start-time-precision.html"));

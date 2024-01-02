@@ -51,8 +51,13 @@ class LargestContentfulPaintTestBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NonTAOImageLCPRenderTime DISABLED_NonTAOImageLCPRenderTime
+#else
+#define MAYBE_NonTAOImageLCPRenderTime NonTAOImageLCPRenderTime
+#endif
 IN_PROC_BROWSER_TEST_F(LargestContentfulPaintTestBrowserTest,
-                       NonTAOImageLCPRenderTime) {
+                       MAYBE_NonTAOImageLCPRenderTime) {
   const GURL url1(embedded_test_server()->GetURL(
       "a.com", "/performance_timeline/cross-origin-non-tao-image.html"));
 
