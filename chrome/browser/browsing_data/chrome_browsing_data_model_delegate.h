@@ -17,7 +17,8 @@ namespace content {
 class StoragePartition;
 }  // namespace content
 
-class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
+class ChromeBrowsingDataModelDelegate final
+    : public BrowsingDataModel::Delegate {
  public:
   // Storage types which are represented by the model. Some types have
   // incomplete implementations, and are marked as such.
@@ -59,6 +60,7 @@ class ChromeBrowsingDataModelDelegate : public BrowsingDataModel::Delegate {
       const BrowsingDataModel::DataKey& data_key,
       BrowsingDataModel::StorageType storage_type) const override;
   bool IsCookieDeletionDisabled(const GURL& url) override;
+  base::WeakPtr<BrowsingDataModel::Delegate> AsWeakPtr() override;
 
  private:
   ChromeBrowsingDataModelDelegate(Profile* profile,

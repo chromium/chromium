@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/feature_list.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -364,7 +365,7 @@ TEST_F(BrowsingDataModelTest, DelegateDataDeleted) {
 
 // A BrowsingDataModel::Delegate that marks all Origin-keyed data belonging
 // to a given host as being owned by its origin rather than its host.
-class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
+class OriginOwnershipDelegate final : public BrowsingDataModel::Delegate {
  public:
   explicit OriginOwnershipDelegate(const std::string& origin_owned_host)
       : origin_owned_host_(origin_owned_host) {}
@@ -399,8 +400,13 @@ class OriginOwnershipDelegate : public BrowsingDataModel::Delegate {
 
   bool IsCookieDeletionDisabled(const GURL& url) override { return false; }
 
+  base::WeakPtr<Delegate> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   std::string origin_owned_host_;
+  base::WeakPtrFactory<OriginOwnershipDelegate> weak_ptr_factory_{this};
 };
 
 TEST_F(BrowsingDataModelTest, DelegateDataCanBeOriginOwned) {
