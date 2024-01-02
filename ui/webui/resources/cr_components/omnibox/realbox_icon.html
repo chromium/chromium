@@ -41,8 +41,8 @@
     background-color: var(--color-realbox-answer-icon-background);
   }
 
-  :host([is-weather-answer]) #container {
-    background-color: var(--color-realbox-background);
+  :host([is-weather-answer]:not([in-searchbox])) #container {
+    background-color: var(--color-realbox-results-background);
   }
 
   #image {
