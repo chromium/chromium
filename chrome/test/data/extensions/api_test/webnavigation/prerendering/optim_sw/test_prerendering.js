@@ -1,20 +1,16 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const inServiceWorker = 'ServiceWorkerGlobalScope' in self;
+// TODO(crbug.com/1467015): Combine this with
+// chrome/test/data/extensions/api_test/webnavigation/prerendering/
+//   test_prerendering.js when start optimization is the default.
+
 const scriptUrl = '_test_resources/api_test/webnavigation/framework.js';
 let ready;
 const onScriptLoad = chrome.test.loadScript(scriptUrl);
 
-if (inServiceWorker) {
-  ready = onScriptLoad;
-} else {
-  let onWindowLoad = new Promise((resolve) => {
-    window.onload = resolve;
-  });
-  ready = Promise.all([onWindowLoad, onScriptLoad]);
-}
+ready = onScriptLoad;
 
 ready.then(async function() {
   const config = await promise(chrome.test.getConfig);
@@ -24,7 +20,7 @@ ready.then(async function() {
   // and the prerender activation. The order of the first prerendering
   // navigation is onBeforeNavigate => onCommitted, and the one of the
   // prerendering activation is onBeforeNavigate => onCommitted =>
-  // onDOMContentLoaded => onCompleted. DOMContentLoaded is dipatched on
+  // onDOMContentLoaded => onCompleted. DOMContentLoaded is dispatched on
   // activation, because this is to avoid notifying observers about a load event
   // triggered from an inactive RenderFrameHost.
   chrome.test.runTests([
@@ -192,29 +188,25 @@ ready.then(async function() {
 
       let expectedPrerenderedOrder = ['onBeforeNavigate-2', 'onCommitted-2'];
 
-      if (!inServiceWorker) {
-        expectedEvents.push(
-          // TODO(crbug.com/373579): Remove this expectation when the crbug
-          // is fixed.
-          {
-            label: 'onCommitted-2-activation-callback',
-            event: 'onCommitted',
-            details: {
-              documentId: 2,
-              documentLifecycle: 'prerender',
-              frameId: 1,
-              frameType: 'outermost_frame',
-              parentFrameId: -1,
-              processId: 1,
-              tabId: 0,
-              timeStamp: 0,
-              transitionQualifiers:[],
-              transitionType:"link",
-              url: prerenderTargetUrl
-            }
-          });
-          expectedPrerenderedOrder.push('onCommitted-2-activation-callback');
-      }
+      expectedEvents.push(
+        {
+          label: 'onCommitted-2-activation-callback',
+          event: 'onCommitted',
+          details: {
+            documentId: 2,
+            documentLifecycle: 'prerender',
+            frameId: 1,
+            frameType: 'outermost_frame',
+            parentFrameId: -1,
+            processId: 1,
+            tabId: 0,
+            timeStamp: 0,
+            transitionQualifiers:[],
+            transitionType:"link",
+            url: prerenderTargetUrl
+          }
+        });
+        expectedPrerenderedOrder.push('onCommitted-2-activation-callback');
 
       expect(
           expectedEvents,

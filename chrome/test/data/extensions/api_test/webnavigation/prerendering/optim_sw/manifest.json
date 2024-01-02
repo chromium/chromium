@@ -1,0 +1,11 @@
+{
+  "name": "webNavigation",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webNavigation API events - prerendering.",
+  "background": {
+    "scripts": ["test_prerendering.js"],
+    "persistent": false
+  },
+  "permissions": ["webNavigation", "tabs", "<all_urls>"]
+}

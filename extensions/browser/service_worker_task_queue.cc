@@ -33,6 +33,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -354,9 +355,15 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
 
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(BrowserContext* context,
                                                const Extension* extension) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::
+              kExtensionsServiceWorkerOptimizedEventDispatch)) {
+    return !IsReadyToRunTasks(context, extension);
+  }
+
   // We call StartWorker every time we want to dispatch an event to an extension
   // Service worker.
-  // TODO(lazyboy): Is that a problem?
+  // TODO(crbug.com/1467015): This is a problem.
   return true;
 }
 
@@ -413,8 +420,10 @@ void ServiceWorkerTaskQueue::AddPendingTask(
     return;
   }
 
-  // Start worker if there isn't any request to start worker with |context_id|
-  // is in progress.
+  // Start worker if there aren't any tasks to dispatch to the worker (with
+  // `context_id`) in progress. Otherwise, assume the presence of pending tasks
+  // means we've started the worker and our start worker callback will run the
+  // pending tasks for us later.
   if (needs_start_worker)
     RunTasksAfterStartWorker(context_id);
 }

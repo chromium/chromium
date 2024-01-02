@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "content/public/browser/service_worker_context.h"
@@ -14,6 +15,7 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
@@ -143,9 +145,15 @@ class TestExtensionServiceWorkerRunningStatusObserver
   base::OnceCallback<void()> test_event_dispatch_callback_;
 };
 
-class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
+class ServiceWorkerEventDispatchingBrowserTest
+    : public ExtensionBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  ServiceWorkerEventDispatchingBrowserTest() = default;
+  ServiceWorkerEventDispatchingBrowserTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch,
+        GetParam());
+  }
 
   ServiceWorkerEventDispatchingBrowserTest(
       const ServiceWorkerEventDispatchingBrowserTest&) = delete;
@@ -178,11 +186,12 @@ class ServiceWorkerEventDispatchingBrowserTest : public ExtensionBrowserTest {
 
  protected:
   raw_ptr<content::ServiceWorkerContext> sw_context_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that dispatching an event to a worker with status
 // `blink::EmbeddedWorkerStatus::kRunning` succeeds.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToRunningWorker) {
   TestServiceWorkerContextObserver sw_started_observer(profile(),
                                                        kTestExtensionId);
@@ -249,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 // `blink::EmbeddedWorkerStatus::kStopped` succeeds. This logic is laid out
 // differently than in the other test cases because we can't currently detect
 // precisely when a worker enters the stopped status.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppedWorker) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -311,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 // TODO(jlulejian): If we suspect or see worker bugs that occur on extension
 // install then create test cases where we dispatch events immediately on
 // extension install.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStartingWorker) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
@@ -374,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
 
 // Tests that dispatching an event to a
 // worker with status `blink::EmbeddedWorkerStatus::kStopping` succeeds.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+IN_PROC_BROWSER_TEST_P(ServiceWorkerEventDispatchingBrowserTest,
                        DispatchToStoppingWorker) {
   TestServiceWorkerContextObserver sw_started_observer(profile(),
                                                        kTestExtensionId);
@@ -425,6 +434,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       "Extensions.Events.DispatchToAckTime.ExtensionServiceWorker2",
       /*expected_count=*/1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerEventDispatchingBrowserTest,
+    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
+       enabled status */
+    testing::Bool());
 
 // TODO(crbug.com/1467015): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.

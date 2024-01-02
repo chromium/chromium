@@ -186,6 +186,12 @@ class ServiceWorkerTestHelper::ServiceWorkerVersionStateManager
     scoped_observation_.Observe(sw_version_);
   }
 
+  ~ServiceWorkerVersionStateManager() override {
+    // Release potential dangling pointers.
+    sw_version_ = nullptr;
+    parent_ = nullptr;
+  }
+
  private:
   // ServiceWorkerVersion::Observer
   void OnRunningStateChanged(ServiceWorkerVersion* version) override {
