@@ -256,6 +256,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   // with choice screen requirements.
   OwnedTemplateURLVector GetTemplateURLsForChoiceScreen();
 
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the list prepopulated template URLs for `country_code`.
+  // `country_code` is a two-character uppercase ISO 3166-1 country code.
+  // Usage restricted to Android. Other platforms should rely on the other
+  // functions that will return this data for the profile's current country.
+  OwnedTemplateURLDataVector GetTemplateURLsForCountry(
+      const std::string& country_code);
+#endif
+
   // Increment the usage count of a keyword.
   // Called when a URL is loaded that was generated from a keyword.
   void IncrementUsageCount(TemplateURL* url);

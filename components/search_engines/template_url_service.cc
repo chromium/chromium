@@ -12,6 +12,7 @@
 #include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
@@ -778,6 +779,14 @@ TemplateURLService::GetTemplateURLsForChoiceScreen() {
   }
   return result;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TemplateURLService::OwnedTemplateURLDataVector
+TemplateURLService::GetTemplateURLsForCountry(const std::string& country_code) {
+  return TemplateURLPrepopulateData::GetLocalPrepopulatedEngines(
+      country_code, CHECK_DEREF(prefs_.get()));
+}
+#endif
 
 void TemplateURLService::IncrementUsageCount(TemplateURL* url) {
   DCHECK(url);
