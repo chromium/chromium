@@ -128,7 +128,8 @@
           [[getUnifiedDesktopText_(unifiedDesktopMode_)]]
         </div>
       </div>
-      <cr-toggle checked="[[unifiedDesktopMode_]]"
+      <cr-toggle id="displayUnifiedDesktopToggle"
+          checked="[[unifiedDesktopMode_]]"
           on-click="onUnifiedDesktopClick_"
           aria-labelledby="displayUnifiedDesktopCheckboxLabel"
           deep-link-focus-id$="[[Setting.kAllowWindowsToSpanDisplays]]">

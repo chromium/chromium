@@ -1281,6 +1281,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     getDisplayApi()
         .setDisplayProperties(this.primaryDisplayId, properties)
         .then(() => this.setPropertiesCallback_());
+    this.displaySettingsProvider.recordChangingDisplaySettings(
+        DisplaySettingsType.kUnifiedMode, /*value=*/ {});
   }
 
   private onOverscanClick_(e: Event): void {
