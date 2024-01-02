@@ -22,9 +22,7 @@ class PaymentRequestDelegate;
 class PaymentRequestSpec;
 
 // A helper class to facilitate the creation of the PaymentResponse.
-class PaymentResponseHelper
-    : public PaymentApp::Delegate,
-      public base::SupportsWeakPtr<PaymentResponseHelper> {
+class PaymentResponseHelper final : public PaymentApp::Delegate {
  public:
   class Delegate {
    public:
