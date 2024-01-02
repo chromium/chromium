@@ -332,7 +332,7 @@ absl::optional<size_t> SavedTabGroupBar::GetDropIndex() const {
 void SavedTabGroupBar::HandleDrop() {
   saved_tab_group_model_->ReorderGroupLocally(drag_data_->guid(),
                                               GetDropIndex().value());
-  drag_data_.release();
+  drag_data_.reset();
   SchedulePaint();
 }
 
@@ -393,12 +393,6 @@ int SavedTabGroupBar::OnDragUpdated(const ui::DropTargetEvent& event) {
 
 void SavedTabGroupBar::OnDragExited() {
   drag_data_.release();
-  SchedulePaint();
-}
-
-void SavedTabGroupBar::OnDragDone() {
-  drag_data_.release();
-  HideOverflowMenu();
   SchedulePaint();
 }
 
@@ -480,6 +474,7 @@ void SavedTabGroupBar::Layout() {
   const int last_visible_button_index =
       CalculateLastVisibleButtonIndexForWidth(width());
   UpdateButtonVisibilities(should_show_overflow, last_visible_button_index);
+  UpdateOverflowMenu();
 }
 
 int SavedTabGroupBar::CalculatePreferredWidthRestrictedBy(int max_width) const {
@@ -540,15 +535,13 @@ void SavedTabGroupBar::SavedTabGroupAdded(const base::Uuid& guid) {
   }
   AddTabGroupButton(*saved_tab_group_model_->Get(guid), index.value());
 
-  HideOverflowMenu();
-  PreferredSizeChanged();
+  InvalidateLayout();
 }
 
 void SavedTabGroupBar::SavedTabGroupRemoved(const base::Uuid& guid) {
   RemoveTabGroupButton(guid);
 
-  HideOverflowMenu();
-  PreferredSizeChanged();
+  InvalidateLayout();
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
@@ -563,8 +556,7 @@ void SavedTabGroupBar::SavedTabGroupUpdated(const base::Uuid& guid) {
 
   button->UpdateButtonData(*group);
 
-  HideOverflowMenu();
-  PreferredSizeChanged();
+  InvalidateLayout();
 }
 
 void SavedTabGroupBar::SavedTabGroupReordered() {
@@ -589,8 +581,7 @@ void SavedTabGroupBar::SavedTabGroupReordered() {
   // Ensure the overflow button is the last button in the view hierarchy.
   ReorderChildView(overflow_button_, children().size());
 
-  HideOverflowMenu();
-  PreferredSizeChanged();
+  InvalidateLayout();
 }
 
 void SavedTabGroupBar::LoadAllButtonsFromModel() {
@@ -654,33 +645,11 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
     return;
   }
 
-  // 1. Build the vertical list of buttons in the over flow menu.
   auto overflow_menu = std::make_unique<OverflowMenu>(*this);
   overflow_menu->SetProperty(views::kElementIdentifierKey,
                              kSavedTabGroupOverflowMenuId);
 
-  // Add all buttons that are not currently visible to the overflow menu.
-  for (const auto* const child : children()) {
-    if (child->GetVisible() ||
-        !views::IsViewClass<SavedTabGroupButton>(child)) {
-      continue;
-    }
-
-    const SavedTabGroupButton* const button =
-        views::AsViewClass<SavedTabGroupButton>(child);
-    const SavedTabGroup* const group =
-        saved_tab_group_model_->Get(button->guid());
-
-    overflow_menu->AddChildView(std::make_unique<SavedTabGroupButton>(
-        *group,
-        base::BindRepeating(&SavedTabGroupBar::page_navigator,
-                            base::Unretained(this)),
-        base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
-                            base::Unretained(this), group->saved_guid()),
-        browser_, animations_enabled_));
-  }
-
-  // Make the list of buttons vertical.
+  // 1. Layout the menu as a vertical list.
   const gfx::Insets insets = gfx::Insets::TLBR(16, 16, 16, 48);
   auto box = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, insets,
@@ -706,16 +675,48 @@ void SavedTabGroupBar::MaybeShowOverflowMenu() {
   overflow_menu_ =
       views::AsViewClass<OverflowMenu>(bubble_delegate->GetContentsView());
 
-  // 3. Display the menu.
+  // 3. Populate the menu.
+  UpdateOverflowMenu();
+
+  // 4. Display the menu.
   auto* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate));
   widget_observation_.Observe(widget);
   widget->Show();
 }
 
-void SavedTabGroupBar::HideOverflowMenu() {
-  if (bubble_delegate_) {
-    bubble_delegate_->CancelDialog();
+void SavedTabGroupBar::UpdateOverflowMenu() {
+  // Don't update the overflow menu if it doesn't exist.
+  if (!overflow_menu_) {
+    return;
+  }
+
+  // Remove all existing children.
+  overflow_menu_->RemoveAllChildViews();
+
+  // Add all buttons that are not currently visible to the overflow menu.
+  for (const auto* const child : children()) {
+    if (child->GetVisible() ||
+        !views::IsViewClass<SavedTabGroupButton>(child)) {
+      continue;
+    }
+
+    const SavedTabGroupButton* const button =
+        views::AsViewClass<SavedTabGroupButton>(child);
+    const SavedTabGroup* const group =
+        saved_tab_group_model_->Get(button->guid());
+
+    overflow_menu_->AddChildView(std::make_unique<SavedTabGroupButton>(
+        *group,
+        base::BindRepeating(&SavedTabGroupBar::page_navigator,
+                            base::Unretained(this)),
+        base::BindRepeating(&SavedTabGroupBar::OnTabGroupButtonPressed,
+                            base::Unretained(this), group->saved_guid()),
+        browser_, animations_enabled_));
+  }
+
+  if (overflow_menu_->GetWidget()) {
+    bubble_delegate_->SizeToContents();
   }
 }
 

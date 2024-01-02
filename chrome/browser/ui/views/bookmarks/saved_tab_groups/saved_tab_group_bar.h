@@ -63,7 +63,6 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   void OnDragEntered(const ui::DropTargetEvent& event) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
   void OnDragExited() override;
-  void OnDragDone() override;
   views::View::DropCallback GetDropCallback(
       const ui::DropTargetEvent& event) override;
   void OnPaint(gfx::Canvas* canvas) override;
@@ -142,8 +141,8 @@ class SavedTabGroupBar : public views::AccessiblePaneView,
   // group into the tabstrip.
   void MaybeShowOverflowMenu();
 
-  // Hides the overflow menu if it is open.
-  void HideOverflowMenu();
+  // Updates the contents of the overflow menu if it is open.
+  void UpdateOverflowMenu();
 
   // TODO: Move implementation inside of STGOverflowButton.
   void HideOverflowButton();

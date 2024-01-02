@@ -145,6 +145,26 @@ class SavedTabGroupInteractiveTest : public InteractiveBrowserTest {
     });
   }
 
+  StepBuilder SaveGroupViaModel(const tab_groups::TabGroupId local_group) {
+    return Do([=]() {
+      SavedTabGroupKeyedService* const service =
+          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+      service->SaveGroup(local_group);
+      ASSERT_NE(nullptr, service->model()->Get(local_group));
+    });
+  }
+
+  StepBuilder UnsaveGroupViaModel(const tab_groups::TabGroupId local_group) {
+    return Do([=]() {
+      SavedTabGroupKeyedService* const service =
+          SavedTabGroupServiceFactory::GetForProfile(browser()->profile());
+
+      service->model()->Remove(local_group);
+      ASSERT_EQ(nullptr, service->model()->Get(local_group));
+    });
+  }
+
   std::unique_ptr<content::WebContents> CreateWebContents() {
     return content::WebContents::Create(
         content::WebContents::CreateParams(browser()->profile()));
@@ -521,4 +541,99 @@ IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
   SavedTabGroupModel* model =
       SavedTabGroupServiceFactory::GetForProfile(browser()->profile())->model();
   EXPECT_EQ(1, model->GetIndexOf(group_id_1).value());
+}
+
+IN_PROC_BROWSER_TEST_F(SavedTabGroupInteractiveTest,
+                       OverflowMenuUpdatesWhileOpen) {
+  // Add 5 additional tabs to the browser.
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  ASSERT_EQ(6, browser()->tab_strip_model()->count());
+
+  // Add each tab to a separate group.
+  const tab_groups::TabGroupId group_1 =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  const tab_groups::TabGroupId group_2 =
+      browser()->tab_strip_model()->AddToNewGroup({1});
+  const tab_groups::TabGroupId group_3 =
+      browser()->tab_strip_model()->AddToNewGroup({2});
+  const tab_groups::TabGroupId group_4 =
+      browser()->tab_strip_model()->AddToNewGroup({3});
+  const tab_groups::TabGroupId group_5 =
+      browser()->tab_strip_model()->AddToNewGroup({4});
+  const tab_groups::TabGroupId group_6 =
+      browser()->tab_strip_model()->AddToNewGroup({5});
+
+  int menu_widget_height;
+
+  RunTestSequence(
+      // Show the bookmarks bar where the buttons will be displayed.
+      FinishTabstripAnimations(), ShowBookmarksBar(),
+      // Ensure no saved group buttons in the bookmarks bar are present.
+      EnsureNotPresent(kSavedTabGroupButtonElementId),
+
+      // Add views until we get an overflow button.
+      SaveGroupAndCloseEditorBubble(group_1), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_2), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_3), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_4), FinishTabstripAnimations(),
+      SaveGroupAndCloseEditorBubble(group_5), FinishTabstripAnimations(),
+      WaitForShow(kSavedTabGroupOverflowButtonElementId), FlushEvents(),
+
+      // Show the overflow menu.
+      PressButton(kSavedTabGroupOverflowButtonElementId),
+      WaitForShow(kSavedTabGroupOverflowMenuId, true), Do([=]() {
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      FlushEvents(),
+      CheckView(kSavedTabGroupOverflowMenuId,
+                [&menu_widget_height](views::View* el) {
+                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  return true;
+                }),
+
+      // Verify the overflow menu expands if another group is added.
+      SaveGroupViaModel(group_6), Do([=]() {
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      FlushEvents(),
+      CheckView(kSavedTabGroupOverflowMenuId,
+                [&menu_widget_height](views::View* el) {
+                  const int old_height = menu_widget_height;
+                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  return menu_widget_height > old_height;
+                }),
+
+      // Verify the overflow menu shrinks if a group is removed.
+      UnsaveGroupViaModel(group_6), Do([=]() {
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
+      FlushEvents(),
+      CheckView(kSavedTabGroupOverflowMenuId,
+                [&menu_widget_height](views::View* el) {
+                  const int old_height = menu_widget_height;
+                  menu_widget_height = el->GetWidget()->GetSize().height();
+                  return menu_widget_height < old_height;
+                }),
+
+      // Hide the overflow menu.
+      FlushEvents(),
+      SendAccelerator(
+          kSavedTabGroupOverflowMenuId,
+          ui::Accelerator(ui::KeyboardCode::VKEY_ESCAPE, ui::EF_NONE)),
+      WaitForHide(kSavedTabGroupOverflowMenuId));
 }
