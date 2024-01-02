@@ -256418,6 +256418,19 @@
        {}
       ]
      ],
+     "svg-feimage-002.html": [
+      "b462ba91ad0b5847304e2a190ca0985aa8ace886",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/reference/svg-feimage-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "svg-feoffset-001.html": [
       "3d8118b387d938b588e8e88ad5ec87a5343e4f72",
       [
