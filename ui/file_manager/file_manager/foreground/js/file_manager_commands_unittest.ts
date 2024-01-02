@@ -17,8 +17,8 @@ import {addVolume, convertVolumeInfoAndMetadataToVolume, updateIsInteractiveVolu
 import {createMyFilesDataWithVolumeEntry} from '../../state/ducks/volumes_unittest.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../../state/for_tests.js';
 
-import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
 import type {FilesCommandId} from './command_handler.js';
+import {CommandHandler, ValidMenuCommandsForUma} from './command_handler.js';
 import {CanExecuteEvent, Command} from './ui/command.js';
 
 let mockMetrics: MockMetrics;
@@ -28,7 +28,11 @@ function getMetricName(metricIndex: number): string|undefined {
 }
 
 interface ExtraCanExecuteCommandProperties {
-  target: {entry?: DirectoryEntry, parentElement?: {contextElement: null}};
+  target: {
+    entry?: DirectoryEntry,
+    classList?: {contains: () => boolean},
+    parentElement?: {contextElement: null},
+  };
 }
 
 interface CurrentSelection {
@@ -553,6 +557,7 @@ export async function testCommandsForNonInteractiveVolumeAndNoEntries() {
     // Mock `Event`.
     const event = createMockEvent(commandName, {
       target: {
+        classList: {contains: () => false},
         parentElement: {
           contextElement: null,
         },
