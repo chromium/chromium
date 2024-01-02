@@ -2315,9 +2315,7 @@ TEST_F(LayerTreeImplTest, DebugRectHistoryLayoutShiftWithoutHud) {
 
 namespace {
 
-class PersistentSwapPromise
-    : public SwapPromise,
-      public base::SupportsWeakPtr<PersistentSwapPromise> {
+class PersistentSwapPromise final : public SwapPromise {
  public:
   PersistentSwapPromise() = default;
   ~PersistentSwapPromise() override = default;
@@ -2331,11 +2329,16 @@ class PersistentSwapPromise
     return DidNotSwapAction::KEEP_ACTIVE;
   }
   int64_t GetTraceId() const override { return 0; }
+
+  base::WeakPtr<PersistentSwapPromise> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<PersistentSwapPromise> weak_ptr_factory_{this};
 };
 
-class NotPersistentSwapPromise
-    : public SwapPromise,
-      public base::SupportsWeakPtr<NotPersistentSwapPromise> {
+class NotPersistentSwapPromise final : public SwapPromise {
  public:
   NotPersistentSwapPromise() = default;
   ~NotPersistentSwapPromise() override = default;
@@ -2349,6 +2352,13 @@ class NotPersistentSwapPromise
     return DidNotSwapAction::BREAK_PROMISE;
   }
   int64_t GetTraceId() const override { return 0; }
+
+  base::WeakPtr<NotPersistentSwapPromise> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<NotPersistentSwapPromise> weak_ptr_factory_{this};
 };
 
 }  // namespace
