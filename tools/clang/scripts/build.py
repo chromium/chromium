@@ -86,7 +86,7 @@ def GetWinSDKDir():
     return win_sdk_dir
 
   # Don't let vs_toolchain overwrite our environment.
-  environ_bak = os.environ
+  environ_bak = dict(os.environ)
 
   sys.path.append(os.path.join(CHROMIUM_DIR, 'build'))
   import vs_toolchain
@@ -102,7 +102,8 @@ def GetWinSDKDir():
       vs_path = os.environ['GYP_MSVS_OVERRIDE_PATH']
     dia_path = os.path.join(vs_path, 'DIA SDK', 'bin', 'amd64')
 
-  os.environ = environ_bak
+  os.environ.clear()
+  os.environ.update(environ_bak)
   return win_sdk_dir
 
 
