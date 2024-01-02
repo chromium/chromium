@@ -104,7 +104,7 @@ void ResolvedFrameData::ForceReleaseResource() {
 
 void ResolvedFrameData::UpdateForActiveFrame(
     AggregatedRenderPassId::Generator& render_pass_id_generator) {
-  auto& compositor_frame = surface_->GetActiveOrInterpolatedFrame();
+  auto& compositor_frame = surface_->GetActiveFrame();
   auto& resource_list = compositor_frame.resource_list;
   auto& render_passes = compositor_frame.render_pass_list;
   size_t num_render_pass = render_passes.size();

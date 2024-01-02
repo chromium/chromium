@@ -269,10 +269,6 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(Surface* surface) {
   if (!active_frame.metadata.has_shared_element_resources)
     return;
 
-  // A frame created by resolving ViewTransitionElementResourceIds to their
-  // corresponding static or live snapshot.
-  DCHECK(!surface->HasInterpolatedFrame())
-      << "Interpolated frame is being deprecated.";
   CompositorFrame resolved_frame;
   resolved_frame.metadata = active_frame.metadata.Clone();
   resolved_frame.resource_list = active_frame.resource_list;
