@@ -86,6 +86,7 @@
 #include "content/browser/renderer_host/cursor_manager.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -10526,6 +10527,28 @@ void WebContentsImpl::UpdateAttributionSupportAllRenderers() {
   for (WebContentsImpl* web_contents : GetAllWebContents()) {
     web_contents->UpdateAttributionSupportRenderer();
   }
+}
+
+void WebContentsImpl::GetMediaCaptureRawDeviceIdsOpened(
+    blink::mojom::MediaStreamType type,
+    base::OnceCallback<void(std::vector<std::string>)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK(type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+        type == blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+  MediaStreamManager* media_stream_manager =
+      BrowserMainLoop::GetInstance()->media_stream_manager();
+  if (!media_stream_manager) {
+    std::move(callback).Run({});
+    return;
+  }
+
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&MediaStreamManager::GetRawDeviceIdsOpenedForFrame,
+                     base::Unretained(media_stream_manager),
+                     GetPrimaryMainFrame(), type,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 }  // namespace content

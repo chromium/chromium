@@ -306,6 +306,16 @@ class CONTENT_EXPORT MediaStreamManager
   blink::MediaStreamDevices GetDevicesOpenedByRequest(
       const std::string& label) const;
 
+  using GetRawDeviceIdsOpenedForFrameCallback =
+      base::OnceCallback<void(std::vector<std::string> active_device_ids)>;
+  // Returns all device IDs currently opened for `render_frame_host_id` and its
+  // descendants with `type`. If no request exists that matches the constraints,
+  // an empty array is returned.
+  void GetRawDeviceIdsOpenedForFrame(
+      RenderFrameHost* render_frame_host,
+      blink::mojom::MediaStreamType type,
+      GetRawDeviceIdsOpenedForFrameCallback) const;
+
   // This object gets deleted on the UI thread after the IO thread has been
   // destroyed. So we need to know when IO thread is being destroyed so that
   // we can delete VideoCaptureManager and AudioInputDeviceManager.
@@ -748,6 +758,11 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label,
       const MediaDeviceEnumeration& enumeration,
       DeviceRequest* request);
+
+  void GetRawDeviceIdsOpenedForFrameIds(
+      blink::mojom::MediaStreamType type,
+      GetRawDeviceIdsOpenedForFrameCallback callback,
+      base::flat_set<GlobalRenderFrameHostId> render_frame_host_ids) const;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Defines a window of opportunity for the Web-application to decide

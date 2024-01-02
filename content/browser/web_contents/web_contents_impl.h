@@ -892,6 +892,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateAttributionSupportRenderer() override;
   static void UpdateAttributionSupportAllRenderers();
 
+  void GetMediaCaptureRawDeviceIdsOpened(
+      blink::mojom::MediaStreamType type,
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
+
   // NavigatorDelegate ---------------------------------------------------------
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override;

@@ -44,6 +44,7 @@
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "third_party/blink/public/mojom/media/capture_handle_config.mojom-forward.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-forward.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -1484,6 +1485,11 @@ class WebContents : public PageNavigator,
   // Sends the attribution support state to all renderer processes for the
   // current page.
   virtual void UpdateAttributionSupportRenderer() = 0;
+
+  // Return all currently streaming devices of `type` via `callback`.
+  virtual void GetMediaCaptureRawDeviceIdsOpened(
+      blink::mojom::MediaStreamType type,
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
 
  private:
   // This interface should only be implemented inside content.

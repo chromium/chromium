@@ -657,6 +657,16 @@ class MediaStreamManager::DeviceRequest {
 
   MediaStreamType video_type() const { return video_type_; }
 
+  void SetAudioRawId(std::string id) { audio_raw_id_ = std::move(id); }
+  const std::optional<std::string>& audio_raw_id() const {
+    return audio_raw_id_;
+  }
+
+  void SetVideoRawId(std::string id) { video_raw_id_ = std::move(id); }
+  const std::optional<std::string>& video_raw_id() const {
+    return video_raw_id_;
+  }
+
   // Creates a MediaStreamRequest object that is used by this request when UI
   // is asked for permission and device selection.
   void CreateUIRequest(const std::string& requested_audio_device_id,
@@ -1029,8 +1039,10 @@ class MediaStreamManager::DeviceRequest {
   std::vector<TransferMap> transfer_status_map_;
   MediaStreamRequestType request_type_;
   StreamControls stream_controls_;
-  MediaStreamType audio_type_;
-  MediaStreamType video_type_;
+  MediaStreamType audio_type_ = MediaStreamType::NO_SERVICE;
+  std::optional<std::string> audio_raw_id_;
+  MediaStreamType video_type_ = MediaStreamType::NO_SERVICE;
+  std::optional<std::string> video_raw_id_;
   GlobalRenderFrameHostId target_render_frame_host_id_;
   std::string label_;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2841,6 +2853,58 @@ MediaStreamDevices MediaStreamManager::GetDevicesOpenedByRequest(
   return blink::ToMediaStreamDevicesList(request->stream_devices_set);
 }
 
+void MediaStreamManager::GetRawDeviceIdsOpenedForFrame(
+    RenderFrameHost* render_frame_host,
+    blink::mojom::MediaStreamType type,
+    GetRawDeviceIdsOpenedForFrameCallback callback) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK(render_frame_host);
+  auto collect_all_render_frame_host_ids = base::BindOnce(
+      [](RenderFrameHost* render_frame_host) {
+        base::flat_set<GlobalRenderFrameHostId> all_render_frame_host_ids;
+        render_frame_host->ForEachRenderFrameHost(
+            [&all_render_frame_host_ids](RenderFrameHost* render_frame_host) {
+              all_render_frame_host_ids.insert(
+                  render_frame_host->GetGlobalId());
+            });
+        return all_render_frame_host_ids;
+      },
+      render_frame_host);
+
+  GetUIThreadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE, std::move(collect_all_render_frame_host_ids),
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&MediaStreamManager::GetRawDeviceIdsOpenedForFrameIds,
+                         base::Unretained(this), type, std::move(callback))));
+}
+
+void MediaStreamManager::GetRawDeviceIdsOpenedForFrameIds(
+    blink::mojom::MediaStreamType type,
+    GetRawDeviceIdsOpenedForFrameCallback callback,
+    base::flat_set<GlobalRenderFrameHostId> render_frame_host_ids) const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  std::vector<std::string> device_ids;
+  for (const auto& [label, request] : requests_) {
+    if (request->state(type) != MediaRequestState::MEDIA_REQUEST_STATE_DONE) {
+      continue;
+    }
+
+    if (!render_frame_host_ids.contains(
+            request->requesting_render_frame_host_id)) {
+      continue;
+    }
+
+    if (request->audio_type() == type && request->audio_raw_id()) {
+      device_ids.push_back(request->audio_raw_id().value());
+    } else if (request->video_type() == type && request->video_raw_id()) {
+      device_ids.push_back(request->video_raw_id().value());
+    }
+  }
+
+  std::move(callback).Run(device_ids);
+}
+
 bool MediaStreamManager::FindExistingRequestedDevice(
     const DeviceRequest& new_request,
     const MediaStreamDevice& new_device,
@@ -3533,6 +3597,11 @@ void MediaStreamManager::HandleAccessRequestResponse(
         }
       }
       device.set_session_id(GetDeviceManager(device.type)->Open(device));
+      if (device.type == request->audio_type()) {
+        request->SetAudioRawId(device.id);
+      } else if (device.type == request->video_type()) {
+        request->SetVideoRawId(device.id);
+      }
       TranslateDeviceIdToSourceId(request, &device);
       SetRequestDevice(
           *request->stream_devices_set.stream_devices[stream_index], device);
