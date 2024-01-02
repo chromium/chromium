@@ -44,6 +44,15 @@ namespace crash_helper {
 
 namespace {
 
+// Disable all crash uploading (including during safe mode) if the
+// kIOSCrashUploadKillSwitch is enabled. By revoking upload consent Crashpad
+// will mark any pending reports as skipped. By disabling UserEnabledUploading
+// safe mode crashes will be ignored. This also disables the main thread freeze
+// detector.
+BASE_FEATURE(kIOSCrashUploadKillSwitch,
+             "IOSCrashUploadKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
 
@@ -163,6 +172,9 @@ void Start() {
 }
 
 void SetEnabled(bool enabled) {
+  if (base::FeatureList::IsEnabled(kIOSCrashUploadKillSwitch)) {
+    enabled = false;
+  }
   // Caches the uploading flag in NSUserDefaults, so that we can access the
   // value immediately on startup, such as in safe mode or extensions.
   crash_helper::common::SetUserEnabledUploading(enabled);
