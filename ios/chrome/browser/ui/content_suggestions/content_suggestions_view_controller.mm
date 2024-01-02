@@ -1418,6 +1418,12 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 // situations where modules can become available to show in the Magic Stack
 // after initial view construction in no predictable order.
 - (void)insertModuleIntoMagicStack:(MagicStackModuleContainer*)moduleToInsert {
+  if (!_magicStack) {
+    // If the MagicStack hasn't been instantiated yet, the module will be
+    // inserted later.
+    return;
+  }
+
   NSUInteger insertingModuleOrderIndex =
       [self indexForMagicStackModule:moduleToInsert.type];
 
