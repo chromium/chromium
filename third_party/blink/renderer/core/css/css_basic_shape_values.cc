@@ -653,9 +653,16 @@ void CSSBasicShapeXYWHValue::Validate() const {
   DCHECK(x_);
   DCHECK(y_);
   DCHECK(width_);
-  DCHECK_GE(width_->GetFloatValue(), 0);
   DCHECK(height_);
-  DCHECK_GE(height_->GetFloatValue(), 0);
+
+  // The spec requires non-negative width and height but we can only validate
+  // numeric literals here.
+  if (width_->IsNumericLiteralValue()) {
+    DCHECK_GE(width_->GetFloatValue(), 0);
+  }
+  if (height_->IsNumericLiteralValue()) {
+    DCHECK_GE(height_->GetFloatValue(), 0);
+  }
 }
 
 }  // namespace cssvalue
