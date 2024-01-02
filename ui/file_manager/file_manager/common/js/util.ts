@@ -8,6 +8,8 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
+import type {ActionFactory} from '../../lib/base_store.js';
+
 import {promisify} from './api.js';
 
 export function iconSetToCSSBackgroundImageValue(
@@ -269,3 +271,10 @@ type Builtin = Date|Function|Uint8Array|string|number|boolean|undefined;
 export type DeepPartial<T> = T extends Builtin ? T : T extends {} ?
     {[K in keyof T]?: DeepPartial<T[K]>} :
     Partial<T>;
+
+
+/**
+ * Get Payload's type from ActionFactory<Payload>.
+ */
+export type GetActionFactoryPayload<A extends ActionFactory<any>> =
+    A extends ActionFactory<infer T>? T : unknown;

@@ -5,6 +5,7 @@
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
+import type {GetActionFactoryPayload} from '../common/js/util.js';
 
 import type {ActionsProducerGen} from './actions_producer.js';
 import {BaseStore, Slice} from './base_store.js';
@@ -290,7 +291,7 @@ export function testSliceReducerSplitting() {
 
   slice2.addReducer(
       doThing.type,
-      (state: TestState, payload: typeof doThing.PAYLOAD) =>
+      (state: TestState, payload: GetActionFactoryPayload<typeof doThing>) =>
           ({...state, numVisitors: state.numVisitors! + payload * 2}));
 
   const store = new BaseStore<TestState>({}, [slice1, slice2]);

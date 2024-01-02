@@ -5,34 +5,33 @@
 import {type ActionsProducerGen, ConcurrentActionInvalidatedError, isActionsProducer} from './actions_producer.js';
 import {type Selector, SelectorEmitter, SelectorNode} from './selector.js';
 
+/** The Payload type for Action. */
+type PayloadType = Object|void;
+
 /**
  * Actions are handled by the store according to their name and payload,
  * triggering reducers.
  */
-export interface Action {
+export interface Action<Payload extends PayloadType = any> {
   type: string;
-  payload?: any;
+  payload?: Payload;
 }
 
 /**
  * A callable object that generates actions of a given type while enforcing the
  * payload typing for that type of action.
  *
- * For convenience and debugging purposes, it also includes the action type and
- * the payload typing.
+ * For convenience and debugging purposes, it also includes the action type.
  *
- * Note: PAYLOAD does not hold any useful value. It's exclusively used to
- * conveniently carry the payload type along with the factory callable.
  */
-export interface ActionFactory<Payload = void> {
-  (payload: Payload): (Action&{type: string, payload: Payload});
-  type: Action['type'];
-  PAYLOAD: Payload;
+export interface ActionFactory<Payload extends PayloadType> {
+  (payload: Payload): (Action<Payload>);
+  type: Action<Payload>['type'];
 }
 
 /** Reducers generate a new state from the current state and a payload. */
-export type Reducer<State, Payload = void> = (state: State, payload: Payload) =>
-    State;
+export type Reducer<State, Payload extends PayloadType> =
+    (state: State, payload: Payload) => State;
 
 type ReducerMap<State> = Map<Action['type'], Reducer<State, any>>;
 type ReducersMap<State> = Map<Action['type'], Array<Reducer<State, any>>>;
@@ -89,7 +88,7 @@ export class Slice<State, LocalState> {
    *     typing of the actions it produces. Those can be used to register
    *     reducers in other slices with the same action type.
    */
-  addReducer<Payload = void>(
+  addReducer<Payload extends PayloadType>(
       localType: Action['type'],
       reducer: Reducer<State, Payload>): ActionFactory<Payload> {
     const type = this.prependSliceName_(localType);
@@ -101,10 +100,9 @@ export class Slice<State, LocalState> {
     this.reducers.set(type, reducer);
 
     const actionFactory = (payload: Payload) => ({type, payload});
-    // Include action type and payload typing so different slices can register
-    // reducers for the same action type.
+    // Include action type so different slices can register reducers for the
+    // same action type.
     actionFactory.type = type;
-    actionFactory.PAYLOAD = null as Payload;
 
     return actionFactory;
   }

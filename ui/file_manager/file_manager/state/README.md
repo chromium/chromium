@@ -134,7 +134,7 @@ slice.addReducer(
 
 function updateDeviceConnectionStateReducer(
   currentState: State,
-  payload: typeof updateDeviceConnectionState.PAYLOAD
+  payload: GetActionFactoryPayload<typeof updateDeviceConnectionState>
 ): State {
   // ...
 }
