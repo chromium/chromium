@@ -285593,6 +285593,19 @@
         {}
        ]
       ],
+      "use-encoding.svg": [
+       "e376fa18b776fac3af12cd159de0307cb1ac5f6d",
+       [
+        null,
+        [
+         [
+          "/svg/struct/reftests/reference/green-100x100.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "use-external-resource-with-revalidation.tentative.html": [
        "d899165fa9ccef15d893b599ec6a8f4e005bcb36",
        [
