@@ -17,6 +17,8 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+enum class NearbyShareError;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
@@ -190,5 +192,7 @@ void RecordNearbyShareStartSendFilesToAllFilesSentDuration(
     base::TimeDelta delta);
 
 void RecordNearbyShareInitiatedToAllFilesSentDuration(base::TimeDelta delta);
+
+void RecordNearbyShareError(NearbyShareError error_code);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_NEARBY_SHARE_METRICS_H_

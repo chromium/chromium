@@ -1020,6 +1020,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Nearby.Share.Error" enum="NearbyShareError"
+    expires_after="2024-07-10">
+  <owner>cclem@google.com</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records a unique error code for every site in the code where an error
+    condition is recognized.
+  </summary>
+</histogram>
+
 <histogram name="Nearby.Share.IsKnownContact" enum="BooleanKnown"
     expires_after="2024-07-10">
   <owner>pushi@google.com</owner>

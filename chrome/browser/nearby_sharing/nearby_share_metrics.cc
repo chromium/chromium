@@ -10,6 +10,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
+#include "chrome/browser/nearby_sharing/nearby_share_error.h"
 #include "chrome/browser/nearby_sharing/nearby_share_feature_status.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
@@ -926,4 +927,8 @@ void RecordNearbyShareStartSendFilesToAllFilesSentDuration(
 void RecordNearbyShareInitiatedToAllFilesSentDuration(base::TimeDelta delta) {
   base::UmaHistogramLongTimes(
       "Nearby.Share.TransferDuration.Sender.InitiatedToAllFilesSent", delta);
+}
+
+void RecordNearbyShareError(NearbyShareError error_code) {
+  base::UmaHistogramEnumeration("Nearby.Share.Error", error_code);
 }
