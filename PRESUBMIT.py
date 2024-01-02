@@ -4287,6 +4287,7 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
         files_to_skip=cr_log_check_excluded_paths)
 
     tag_decl_errors = []
+    tag_length_errors = []
     tag_errors = []
     tag_with_dot_errors = []
     util_log_errors = []
@@ -4324,6 +4325,8 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
             tag_name = match.group('name') if match else None
             if not tag_name:
                 tag_decl_errors.append(f.LocalPath())
+            elif len(tag_name) > 20:
+                tag_length_errors.append(f.LocalPath())
             elif '.' in tag_name:
                 tag_with_dot_errors.append(f.LocalPath())
 
@@ -4335,6 +4338,12 @@ def _CheckAndroidCrLogUsage(input_api, output_api):
                 '"private static final String TAG = "<package tag>".\n'
                 'They will be prepended with "cr_" automatically.\n' + REF_MSG,
                 tag_decl_errors))
+
+    if tag_length_errors:
+        results.append(
+            output_api.PresubmitError(
+                'The tag length is restricted by the system to be at most '
+                '20 characters.\n' + REF_MSG, tag_length_errors))
 
     if tag_errors:
         results.append(

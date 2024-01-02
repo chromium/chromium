@@ -1719,8 +1719,8 @@ class LogUsageTest(unittest.TestCase):
     msgs = PRESUBMIT._CheckAndroidCrLogUsage(
         mock_input_api, mock_output_api)
 
-    self.assertEqual(4, len(msgs),
-                     'Expected %d items, found %d: %s' % (4, len(msgs), msgs))
+    self.assertEqual(5, len(msgs),
+                     'Expected %d items, found %d: %s' % (5, len(msgs), msgs))
 
     # Declaration format
     nb = len(msgs[0].items)
@@ -1729,29 +1729,36 @@ class LogUsageTest(unittest.TestCase):
     self.assertTrue('HasNoTagDecl.java' in msgs[0].items)
     self.assertTrue('HasIncorrectTagDecl.java' in msgs[0].items)
 
-    # Tag must be a variable named TAG
+    # Tag length
     nb = len(msgs[1].items)
-    self.assertEqual(3, nb,
-                     'Expected %d items, found %d: %s' % (3, nb, msgs[1].items))
-    self.assertTrue('HasBothLog.java:5' in msgs[1].items)
-    self.assertTrue('HasInlineTag.java:4' in msgs[1].items)
-    self.assertTrue('HasInlineTagWithSpace.java:4' in msgs[1].items)
+    self.assertEqual(2, nb,
+                     'Expected %d items, found %d: %s' % (2, nb, msgs[1].items))
+    self.assertTrue('HasTooLongTag.java' in msgs[1].items)
+    self.assertTrue('HasTooLongTagWithNoLogCallsInDiff.java' in msgs[1].items)
 
-    # Util Log usage
+    # Tag must be a variable named TAG
     nb = len(msgs[2].items)
     self.assertEqual(3, nb,
                      'Expected %d items, found %d: %s' % (3, nb, msgs[2].items))
-    self.assertTrue('HasAndroidLog.java:3' in msgs[2].items)
-    self.assertTrue('HasExplicitUtilLog.java:2' in msgs[2].items)
-    self.assertTrue('IsInBasePackageButImportsLog.java:4' in msgs[2].items)
+    self.assertTrue('HasBothLog.java:5' in msgs[2].items)
+    self.assertTrue('HasInlineTag.java:4' in msgs[2].items)
+    self.assertTrue('HasInlineTagWithSpace.java:4' in msgs[2].items)
 
-    # Tag must not contain
+    # Util Log usage
     nb = len(msgs[3].items)
     self.assertEqual(3, nb,
-                     'Expected %d items, found %d: %s' % (2, nb, msgs[3].items))
-    self.assertTrue('HasDottedTag.java' in msgs[3].items)
-    self.assertTrue('HasDottedTagPublic.java' in msgs[3].items)
-    self.assertTrue('HasOldTag.java' in msgs[3].items)
+                     'Expected %d items, found %d: %s' % (3, nb, msgs[3].items))
+    self.assertTrue('HasAndroidLog.java:3' in msgs[3].items)
+    self.assertTrue('HasExplicitUtilLog.java:2' in msgs[3].items)
+    self.assertTrue('IsInBasePackageButImportsLog.java:4' in msgs[3].items)
+
+    # Tag must not contain
+    nb = len(msgs[4].items)
+    self.assertEqual(3, nb,
+                     'Expected %d items, found %d: %s' % (2, nb, msgs[4].items))
+    self.assertTrue('HasDottedTag.java' in msgs[4].items)
+    self.assertTrue('HasDottedTagPublic.java' in msgs[4].items)
+    self.assertTrue('HasOldTag.java' in msgs[4].items)
 
 
 class GoogleAnswerUrlFormatTest(unittest.TestCase):
