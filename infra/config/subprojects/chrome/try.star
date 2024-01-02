@@ -141,6 +141,10 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    builder = "fuchsia-smoke-astro",
+)
+
+chrome_internal_verifier(
     builder = "fuchsia-smoke-nelson",
 )
 
