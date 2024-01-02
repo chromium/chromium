@@ -770,8 +770,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHost* rfh,
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
           receiver) override;
-  bool HasSeenRecentScreenOrientationChange() override;
-  bool IsTransientAllowFullscreenActive() const override;
+  bool IsTransientActivationRequiredForHtmlFullscreen() override;
   bool IsBackForwardCacheSupported() override;
   RenderWidgetHostImpl* CreateNewPopupWidget(
       base::SafeRef<SiteInstanceGroup> site_instance_group,

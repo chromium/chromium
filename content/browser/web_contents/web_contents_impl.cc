@@ -9859,16 +9859,24 @@ void WebContentsImpl::BindScreenOrientation(
   screen_orientation_provider_->BindScreenOrientation(rfh, std::move(receiver));
 }
 
-bool WebContentsImpl::HasSeenRecentScreenOrientationChange() {
+bool WebContentsImpl::IsTransientActivationRequiredForHtmlFullscreen() {
+  // Allow fullscreen if the screen orientation changed in the last 1 second.
   static constexpr base::TimeDelta kMaxInterval = base::Seconds(1);
-  base::TimeDelta delta =
+  const base::TimeDelta delta =
       ui::EventTimeForNow() - last_screen_orientation_change_time_;
-  // Return whether a screen orientation change happened in the last 1 second.
-  return delta <= kMaxInterval;
-}
+  if (delta <= kMaxInterval) {
+    return false;
+  }
 
-bool WebContentsImpl::IsTransientAllowFullscreenActive() const {
-  return transient_allow_fullscreen_.IsActive();
+  RenderFrameHost* host = GetPrimaryMainFrame();
+  if (base::FeatureList::IsEnabled(
+          blink::features::kWindowPlacementFullscreenOnScreensChange) &&
+      IsWindowManagementGranted(host) &&
+      transient_allow_fullscreen_.IsActive()) {
+    return false;
+  }
+
+  return true;
 }
 
 bool WebContentsImpl::IsBackForwardCacheSupported() {

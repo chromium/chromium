@@ -235,9 +235,9 @@ interface WebTestControlHost {
   // Trigger a loadURL navigation on the main WebView.
   LoadURLForFrame(url.mojom.Url url, string frame_name);
 
-  // Mark the orientation changed in the browser process for the layout tests
+  // Simulate an orientation change in the browser process for the layout tests
   // that request fullscreen on screen orientation change.
-  SetScreenOrientationChanged();
+  SimulateScreenOrientationChanged();
 
   // Sets the permission for |name| to |status| when queried or requested in
   // |origin| from |embedding_origin|.

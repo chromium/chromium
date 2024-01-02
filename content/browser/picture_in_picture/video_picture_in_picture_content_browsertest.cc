@@ -113,7 +113,6 @@ class TestContentBrowserClient : public ContentBrowserTestContentBrowserClient {
       VideoPictureInPictureWindowController* controller) override {
     return std::make_unique<TestVideoOverlayWindow>();
   }
-  bool CanEnterFullscreenWithoutUserActivation() override { return true; }
 };
 
 class TestWebContentsDelegate : public WebContentsDelegate {

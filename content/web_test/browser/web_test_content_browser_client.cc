@@ -301,11 +301,6 @@ void WebTestContentBrowserClient::ResetMockClipboardHosts() {
     mock_clipboard_host_->Reset();
 }
 
-void WebTestContentBrowserClient::SetScreenOrientationChanged(
-    bool screen_orientation_changed) {
-  screen_orientation_changed_ = screen_orientation_changed;
-}
-
 std::unique_ptr<FakeBluetoothChooser>
 WebTestContentBrowserClient::GetNextFakeBluetoothChooser() {
   if (!fake_bluetooth_chooser_factory_)
@@ -569,10 +564,6 @@ void WebTestContentBrowserClient::ResetFakeBluetoothDelegate() {
 
 content::TtsPlatform* WebTestContentBrowserClient::GetTtsPlatform() {
   return WebTestTtsPlatform::GetInstance();
-}
-
-bool WebTestContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
-  return screen_orientation_changed_;
 }
 
 void WebTestContentBrowserClient::BindClipboardHost(

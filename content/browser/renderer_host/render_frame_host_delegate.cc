@@ -143,12 +143,8 @@ void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 
-bool RenderFrameHostDelegate::HasSeenRecentScreenOrientationChange() {
-  return false;
-}
-
-bool RenderFrameHostDelegate::IsTransientAllowFullscreenActive() const {
-  return false;
+bool RenderFrameHostDelegate::IsTransientActivationRequiredForHtmlFullscreen() {
+  return true;
 }
 
 bool RenderFrameHostDelegate::IsBackForwardCacheSupported() {

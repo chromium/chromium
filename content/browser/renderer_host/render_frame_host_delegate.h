@@ -570,13 +570,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       mojo::PendingAssociatedReceiver<device::mojom::ScreenOrientation>
           receiver) {}
 
-  // Return true if we have seen a recent orientation change, which is used to
-  // decide if we should consume user activation when entering fullscreen.
-  virtual bool HasSeenRecentScreenOrientationChange();
-
-  // Return true if the page has a transient affordance to enter fullscreen
-  // without consuming user activation.
-  virtual bool IsTransientAllowFullscreenActive() const;
+  // Return whether HTML Fullscreen requires transient activation.
+  virtual bool IsTransientActivationRequiredForHtmlFullscreen();
 
   // Return true if the back forward cache is supported. This is not an
   // indication that the cache will be used.

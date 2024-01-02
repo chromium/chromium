@@ -3275,7 +3275,7 @@ void TestRunner::SetMockScreenOrientation(blink::WebView* view,
   bool changed =
       fake_screen_orientation_impl_.UpdateDeviceOrientation(view, orientation);
   if (changed)
-    GetWebTestControlHostRemote()->SetScreenOrientationChanged();
+    GetWebTestControlHostRemote()->SimulateScreenOrientationChanged();
 }
 
 void TestRunner::DisableMockScreenOrientation(blink::WebView* view) {

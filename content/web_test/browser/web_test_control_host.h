@@ -226,7 +226,7 @@ class WebTestControlHost : public WebContentsObserver,
       GetBluetoothManualChooserEventsCallback reply) override;
   void SetPopupBlockingEnabled(bool block_popups) override;
   void LoadURLForFrame(const GURL& url, const std::string& frame_name) override;
-  void SetScreenOrientationChanged() override;
+  void SimulateScreenOrientationChanged() override;
   void SetPermission(const std::string& name,
                      blink::mojom::PermissionStatus status,
                      const GURL& origin,

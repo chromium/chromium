@@ -7365,29 +7365,22 @@ void RenderFrameHostImpl::EnterFullscreen(
     return;
   }
 
-  // Entering fullscreen requires a transient user activation, a fullscreen
-  // capability delegation token, a user-generated screen orientation change, or
-  // another feature-specific transient allowance.
-  // CanEnterFullscreenWithoutUserActivation is only ever true in tests, to
-  // allow fullscreen when mocking screen orientation changes.
-  if (!delegate_->HasSeenRecentScreenOrientationChange() &&
-      !WindowManagementAllowsFullscreen() && !HasSeenRecentXrOverlaySetup() &&
-      !GetContentClient()
-           ->browser()
-           ->CanEnterFullscreenWithoutUserActivation()) {
-    // Consume any transient user activation and delegated fullscreen token.
+  // Entering fullscreen generally requires a transient user activation signal,
+  // or another feature-specific transient allowance.
+  if (delegate_->IsTransientActivationRequiredForHtmlFullscreen() &&
+      !HasSeenRecentXrOverlaySetup()) {
     // Reject requests made without transient user activation or a token.
     // TODO(lanwei): Investigate whether we can terminate the renderer when
     // transient user activation and the delegated token are both inactive.
     CHECK(owner_);  // See `owner_` invariants about `IsActive()`.
+    // Consume any transient user activation and delegated fullscreen token.
     const bool consumed_activation = owner_->UpdateUserActivationState(
         blink::mojom::UserActivationUpdateType::kConsumeTransientActivation,
         blink::mojom::UserActivationNotificationType::kNone);
     const bool consumed_token = fullscreen_request_token_.ConsumeIfActive();
     if (!consumed_activation && !consumed_token) {
-      DLOG(ERROR) << "Cannot enter fullscreen because there is no transient "
-                  << "user activation, orientation change, XR overlay, nor "
-                  << "capability delegation.";
+      DLOG(ERROR) << "Cannot enter fullscreen without a transient activation, "
+                  << "orientation change, XR overlay, or delegated capability.";
       std::move(callback).Run(/*granted=*/false);
       return;
     }
@@ -11331,11 +11324,6 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // earlier, when they are received from the renderer.
   if (request->common_params().post_data)
     GrantFileAccessFromResourceRequestBody(*request->common_params().post_data);
-}
-
-bool RenderFrameHostImpl::WindowManagementAllowsFullscreen() {
-  return IsWindowManagementGranted(this) &&
-         delegate_->IsTransientAllowFullscreenActive();
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>

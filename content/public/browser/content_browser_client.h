@@ -2471,11 +2471,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                       size_t data_size_in_bytes,
                                       std::u16string& replacement_data);
 
-  // Allows the embedder to override normal user activation checks done when
-  // entering fullscreen. For example, it is used in layout tests to allow
-  // fullscreen when mock screen orientation changes.
-  virtual bool CanEnterFullscreenWithoutUserActivation();
-
 #if BUILDFLAG(ENABLE_VR)
   // Allows the embedder to provide mechanisms to integrate with WebXR
   // functionality.

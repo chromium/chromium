@@ -708,7 +708,6 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
   should_override_prefs_ = false;
   WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(true);
   WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
-  WebTestContentBrowserClient::Get()->SetScreenOrientationChanged(false);
   WebTestContentBrowserClient::Get()->ResetFakeBluetoothDelegate();
   WebTestContentBrowserClient::Get()
       ->GetWebTestBrowserContext()
@@ -1463,8 +1462,10 @@ void WebTestControlHost::SetPopupBlockingEnabled(bool block_popups) {
   WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(block_popups);
 }
 
-void WebTestControlHost::SetScreenOrientationChanged() {
-  WebTestContentBrowserClient::Get()->SetScreenOrientationChanged(true);
+void WebTestControlHost::SimulateScreenOrientationChanged() {
+  content::WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(main_window_->web_contents());
+  web_contents->DidChangeScreenOrientation();
 }
 
 void WebTestControlHost::SetPermission(const std::string& name,

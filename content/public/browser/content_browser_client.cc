@@ -1436,10 +1436,6 @@ bool ContentBrowserClient::IsClipboardCopyAllowed(
   return true;
 }
 
-bool ContentBrowserClient::CanEnterFullscreenWithoutUserActivation() {
-  return false;
-}
-
 #if BUILDFLAG(ENABLE_VR)
 XrIntegrationClient* ContentBrowserClient::GetXrIntegrationClient() {
   return nullptr;
