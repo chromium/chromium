@@ -62,6 +62,19 @@ NSUInteger HashInt(int32_t identifier) {
   return _hash;
 }
 
+#pragma mark - Debugging
+
+- (NSString*)description {
+  switch (_type) {
+    case GridItemType::Tab:
+      return [NSString
+          stringWithFormat:@"Tab ID: %d",
+                           self.tabSwitcherItem.identifier.identifier()];
+    case GridItemType::SuggestedActions:
+      return [NSString stringWithFormat:@"Suggested Action identifier."];
+  }
+}
+
 #pragma mark - Private
 
 - (BOOL)isEqualToItemIdentifier:(GridItemIdentifier*)itemIdentifier {
