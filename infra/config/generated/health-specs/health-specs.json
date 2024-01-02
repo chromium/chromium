@@ -374,15 +374,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -390,9 +384,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -406,15 +398,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -422,9 +408,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -581,15 +565,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -597,9 +575,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -613,15 +589,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -629,9 +599,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -2492,12 +2460,8 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
+              "fail_rate": {},
+              "infra_fail_rate": {},
               "pending_time": {}
             }
           },
@@ -2896,15 +2860,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -2912,9 +2870,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -2928,15 +2884,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -2944,9 +2894,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -2960,15 +2908,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -2976,9 +2918,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -2992,15 +2932,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3008,9 +2942,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3024,15 +2956,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3040,9 +2966,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3056,15 +2980,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3072,9 +2990,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3088,15 +3004,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3104,9 +3014,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3120,15 +3028,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3136,9 +3038,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3152,15 +3052,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3168,9 +3062,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3184,15 +3076,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3200,9 +3086,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3216,15 +3100,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3232,9 +3110,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3248,15 +3124,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3264,9 +3134,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3280,15 +3148,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3296,9 +3158,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3312,15 +3172,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3328,9 +3182,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3344,15 +3196,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3360,9 +3206,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3376,15 +3220,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3392,9 +3230,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3408,15 +3244,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3424,9 +3254,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3440,15 +3268,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3456,9 +3278,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3472,15 +3292,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3488,9 +3302,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3504,15 +3316,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3520,9 +3326,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3536,15 +3340,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3552,9 +3350,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3568,15 +3364,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3584,9 +3374,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3600,15 +3388,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3616,9 +3398,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3632,15 +3412,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3648,9 +3422,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3664,15 +3436,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3680,9 +3446,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3696,15 +3460,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3712,9 +3470,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3728,15 +3484,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3744,9 +3494,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3760,15 +3508,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3776,9 +3518,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3792,15 +3532,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3808,9 +3542,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3824,15 +3556,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3840,9 +3566,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3856,15 +3580,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3872,9 +3590,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3888,15 +3604,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3904,9 +3614,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3920,15 +3628,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3936,9 +3638,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3952,15 +3652,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -3968,9 +3662,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -3984,15 +3676,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4000,9 +3686,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -4016,15 +3700,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4032,9 +3710,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -4048,15 +3724,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4064,9 +3734,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -4080,15 +3748,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4096,9 +3758,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -4112,15 +3772,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4128,9 +3782,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -4144,15 +3796,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -4160,9 +3806,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]
@@ -6768,15 +6412,9 @@
               "build_time": {
                 "p50_mins": 150
               },
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -7020,15 +6658,9 @@
               "build_time": {
                 "p50_mins": 240
               },
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -7219,15 +6851,9 @@
             "score": 5,
             "thresholds": {
               "build_time": {},
-              "fail_rate": {
-                "average": 0.2
-              },
-              "infra_fail_rate": {
-                "average": 0.05
-              },
-              "pending_time": {
-                "p50_mins": 20
-              }
+              "fail_rate": {},
+              "infra_fail_rate": {},
+              "pending_time": {}
             }
           },
           {
@@ -7235,9 +6861,7 @@
             "period_days": 90,
             "score": 1,
             "thresholds": {
-              "fail_rate": {
-                "average": 0.99
-              }
+              "fail_rate": {}
             }
           }
         ]

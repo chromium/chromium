@@ -487,10 +487,8 @@ ci.builder(
     ),
     contact_team_email = "chrome-sanitizer-builder-owners@google.com",
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
-            pending_time = struct(
-                p50_mins = None,  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
-            ),
+        "Unhealthy": health_spec.unhealthy_thresholds(
+            pending_time = struct(),  # exception added because this builder has a pool of 1 machine and 2 concurrent invocations
         ),
     }),
 )

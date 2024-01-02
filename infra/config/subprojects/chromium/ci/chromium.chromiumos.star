@@ -994,7 +994,7 @@ ci.builder(
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chromeos-sw-engprod@google.com",
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
+        "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
                 p50_mins = 150,
             ),

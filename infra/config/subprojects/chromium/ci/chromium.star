@@ -541,7 +541,7 @@ ci.builder(
     ),
     execution_timeout = 7 * time.hour,
     health_spec = health_spec.modified_default({
-        "Unhealthy": struct(
+        "Unhealthy": health_spec.unhealthy_thresholds(
             build_time = struct(
                 p50_mins = 240,
             ),
