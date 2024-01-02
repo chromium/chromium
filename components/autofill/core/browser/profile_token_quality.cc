@@ -147,9 +147,19 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       // The field was not autofilled or autofilled with a different profile.
       continue;
     }
+    if (!field.autofilled_type()) {
+      // TODO(b/311604770): Field-by-field filling doesn't support
+      // `autofilled_type()`.
+      continue;
+    }
+    if (!GetSupportedTypes(*profile_).contains(*field.autofilled_type())) {
+      // If the user changed the country of their profile before submission, the
+      // `autofilled_type()` might not be supported anymore.
+      continue;
+    }
 
     const ServerFieldType stored_type =
-        profile_->GetStorableTypeOf(field.Type().GetStorableType());
+        profile_->GetStorableTypeOf(*field.autofilled_type());
     const FormSignatureHash hash =
         GetFormSignatureHash(form_structure.form_signature());
     if (auto observations = observations_.find(stored_type);
@@ -202,7 +212,6 @@ void ProfileTokenQuality::SaveObservationsForFilledFormForAllSubmittedProfiles(
 std::vector<ObservationType>
 ProfileTokenQuality::GetObservationTypesForFieldType(
     ServerFieldType type) const {
-  CHECK(GetSupportedTypes(*profile_).contains(type));
   const auto it = observations_.find(profile_->GetStorableTypeOf(type));
   if (it == observations_.end()) {
     return {};
