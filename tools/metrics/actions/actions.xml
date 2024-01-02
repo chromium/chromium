@@ -30059,6 +30059,44 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ReviewAccountSettings_Impression_FromBookmarkManager"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when showing review account settings promo in the bookmark manager.
+    iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Impression_FromReadingListManager"
+    not_user_triggered="true">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when showing review account settings promo in the reading list
+    manager. iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Tapped_FromBookmarkManager">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when the user taps the button to review account settings in the
+    bookmark manager. iOS only.
+  </description>
+</action>
+
+<action name="ReviewAccountSettings_Tapped_FromReadingListManager">
+  <owner>jood@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <description>
+    Recorded when the user taps the button to review account settings in the
+    reading list manager. iOS only.
+  </description>
+</action>
+
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
