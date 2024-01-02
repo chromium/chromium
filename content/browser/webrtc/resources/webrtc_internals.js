@@ -392,18 +392,26 @@ function addStandardStats(data) {
     if (activeCandidatePair.localCandidateId) {
       localCandidate = stats.get(activeCandidatePair.localCandidateId);
     }
-    if (localCandidate && localCandidate.address &&
-        localCandidate.address.indexOf(':') !== -1) {
-      // Show IPv6 in []
-      candidateElement.innerText =
-          '[' + localCandidate.address + ']:' + localCandidate.port
-          + ' <=> [' + remoteCandidate.address + ']:' + remoteCandidate.port;
-    } else {
-      candidateElement.innerText =
-          localCandidate.address + ':' + localCandidate.port
-          + ' <=> ' + remoteCandidate.address + ':' + remoteCandidate.port;
-    }
+    candidateElement.innerText = '';
+    if (localCandidate && remoteCandidate) {
+      if (localCandidate.address &&
+          localCandidate.address.indexOf(':') !== -1) {
+        // Show IPv6 in []
+        candidateElement.innerText +='[' + localCandidate.address + ']';
+      } else {
+        candidateElement.innerText += localCandidate.address || '(not set)';
+      }
+      candidateElement.innerText += ':' + localCandidate.port + ' <=> ';
 
+      if (remoteCandidate.address &&
+          remoteCandidate.address.indexOf(':') !== -1) {
+        // Show IPv6 in []
+        candidateElement.innerText +='[' + remoteCandidate.address + ']';
+      } else {
+        candidateElement.innerText += remoteCandidate.address || '(not set)';
+      }
+      candidateElement.innerText += ':' + remoteCandidate.port;
+    }
     // Mark active local-candidate, remote candidate and candidate pair
     // bold in the table.
     // Disable getElementById restriction here, since |peerConnectionElement|
