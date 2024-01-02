@@ -90,6 +90,7 @@ int Truncate(sqlite3_file* sqlite_file, sqlite3_int64 size)
 
 int Sync(sqlite3_file* sqlite_file, int flags)
 {
+  SCOPED_UMA_HISTOGRAM_TIMER("Sql.vfs.SyncTime");
   sqlite3_file* wrapped_file = GetWrappedFile(sqlite_file);
   return wrapped_file->pMethods->xSync(wrapped_file, flags);
 }

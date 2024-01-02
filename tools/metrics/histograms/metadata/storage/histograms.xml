@@ -325,6 +325,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sql.vfs.SyncTime" units="ms" expires_after="2024-12-08">
+  <owner>etienneb@chromium.org</owner>
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The time it takes to sync SQLite data to disk. The metric is recorded once
+    per flush. A SQLite operation may require multiple sync operation to ensure
+    database consistency.
+  </summary>
+</histogram>
+
 <histogram name="Storage.BlacklistedImportantSites.Reason"
     enum="ClearDataSiteBlacklistCrossedReason" expires_after="2024-08-01">
   <owner>ayui@chromium.org</owner>
