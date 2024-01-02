@@ -71,10 +71,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     kCancelled = 7,
     // SessionImpl was destroyed while waiting for a response.
     kDestroyedWhileWaitingForResponse = 8,
-    // On-device was used, it completed successfully, but the output is
-    // considered unsafe.
-    kUsedOnDeviceOutputUnsafe = 9,
-    kMaxValue = kUsedOnDeviceOutputUnsafe,
+    kMaxValue = kDestroyedWhileWaitingForResponse,
   };
 
   SessionImpl(StartSessionFn start_session_fn,
@@ -101,19 +98,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
 
  private:
   class ContextProcessor;
-
-  // Type of response.
-  enum class ResponseType {
-    // This is a partial response. That is, one of `kComplete` or
-    // `kCompleteUnsafeOutput` will follow.
-    kPartial,
-
-    // The response completed successfully.
-    kComplete,
-
-    // The response completed, but the output is considered unsafe.
-    kCompleteUnsafeOutput,
-  };
 
   // Used to log the result of ExecuteModel.
   class ExecuteModelHistogramLogger {
@@ -182,7 +166,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void OnDisconnect();
 
   // Sends `current_response_` to the client.
-  void SendResponse(ResponseType response_type);
+  void SendResponse(bool is_complete);
 
   void DestroyOnDeviceStateAndFallbackToRemote(ExecuteModelResult result);
 
