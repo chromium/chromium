@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -46,7 +46,7 @@ const char kTestOrigin[] = "http://www.test.com";
 
 // Helper functions to manipulate RenderFrameHosts.
 
-void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {
+void SimulateNavigation(raw_ptr<RenderFrameHost>* rfh, const GURL& url) {
   auto navigation_simulator =
       NavigationSimulator::CreateRendererInitiated(url, *rfh);
   navigation_simulator->Commit();
@@ -174,9 +174,7 @@ class CdmStorageTest
     return cdm_storage_manager;
   }
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION RenderFrameHost* rfh_ = nullptr;
+  raw_ptr<RenderFrameHost> rfh_ = nullptr;
   mojo::Remote<CdmStorage> cdm_storage_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
