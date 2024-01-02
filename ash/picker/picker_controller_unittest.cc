@@ -77,14 +77,14 @@ TEST_F(PickerControllerTest, ToggleWidgetShowsWidgetIfOpenedThenClosed) {
   EXPECT_TRUE(controller.widget_for_testing());
 }
 
-TEST_F(PickerControllerTest, SetClientToNullDestroysWidgetImmediately) {
+TEST_F(PickerControllerTest, SetClientToNullKeepsWidget) {
   PickerController controller;
   TestPickerClient client(&controller);
   controller.ToggleWidget();
 
   controller.SetClient(nullptr);
 
-  EXPECT_FALSE(controller.widget_for_testing());
+  EXPECT_TRUE(controller.widget_for_testing());
 }
 
 TEST_F(PickerControllerTest, ShowWidgetRecordsInputReadyLatency) {

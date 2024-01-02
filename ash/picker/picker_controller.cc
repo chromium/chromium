@@ -49,44 +49,15 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
   return PickerFeatureKeyType::kNone;
 }
 
-class PickerViewDelegateImpl : public PickerViewDelegate {
- public:
-  explicit PickerViewDelegateImpl(PickerClient* client)
-      : client_(client),
-        should_paint_(MatchPickerFeatureKeyHash() ==
-                      PickerFeatureKeyType::kDev) {}
-
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override {
-    return client_->CreateWebView(params);
-  }
-
-  void StartSearch(const std::u16string& query,
-                   SearchResultsCallback callback) override {
-    // TODO(b/310088338): Do a real search.
-    callback.Run(PickerSearchResults({{
-        PickerSearchResults::Section(
-            u"Matching expressions",
-            {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
-    }}));
-  }
-
-  void InsertResult(const PickerSearchResult& result) override {}
-
-  bool ShouldPaint() override { return should_paint_; }
-
- private:
-  raw_ptr<PickerClient> client_ = nullptr;
-  bool should_paint_;
-};
-
 }  // namespace
 
-PickerController::PickerController() = default;
+PickerController::PickerController()
+    : should_paint_(MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kDev) {
+}
 
 PickerController::~PickerController() {
-  // `widget_` depends on `client_`, which is only valid for the lifetime of
-  // this class. Destroy the widget synchronously to avoid a dangling pointer.
+  // `widget_` depends on `this`. Destroy the widget synchronously to avoid a
+  // dangling pointer.
   if (widget_) {
     widget_->CloseNow();
   }
@@ -102,12 +73,6 @@ bool PickerController::IsFeatureKeyMatched() {
 }
 
 void PickerController::SetClient(PickerClient* client) {
-  // The widget depends on `client_`, so destroy it synchronously to avoid a
-  // dangling pointer.
-  if (widget_) {
-    widget_->CloseNow();
-  }
-
   client_ = client;
 }
 
@@ -118,11 +83,30 @@ void PickerController::ToggleWidget(
   if (widget_) {
     widget_->Close();
   } else {
-    widget_ = PickerView::CreateWidget(
-        std::make_unique<PickerViewDelegateImpl>(client_),
-        trigger_event_timestamp);
+    widget_ = PickerView::CreateWidget(this, trigger_event_timestamp);
     widget_->Show();
   }
+}
+
+std::unique_ptr<AshWebView> PickerController::CreateWebView(
+    const AshWebView::InitParams& params) {
+  return client_->CreateWebView(params);
+}
+
+void PickerController::StartSearch(const std::u16string& query,
+                                   SearchResultsCallback callback) {
+  // TODO(b/310088338): Do a real search.
+  callback.Run(PickerSearchResults({{
+      PickerSearchResults::Section(
+          u"Matching expressions",
+          {{PickerSearchResult(u"👍"), PickerSearchResult(u"😊")}}),
+  }}));
+}
+
+void PickerController::InsertResult(const PickerSearchResult& result) {}
+
+bool PickerController::ShouldPaint() {
+  return should_paint_;
 }
 
 }  // namespace ash

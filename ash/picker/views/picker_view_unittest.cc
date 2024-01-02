@@ -77,8 +77,8 @@ PickerView* GetPickerViewFromWidget(views::Widget& widget) {
 }
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
 
   // Widget should contain a NonClientView, which has a NonClientFrameView for
   // borders and shadows, and a ClientView with a sole child of the PickerView.
@@ -91,15 +91,15 @@ TEST_F(PickerViewTest, CreateWidgetHasCorrectHierarchy) {
 }
 
 TEST_F(PickerViewTest, CreateWidgetHasCorrectBorder) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
 
   EXPECT_TRUE(widget->non_client_view()->frame_view()->GetBorder());
 }
 
 TEST_F(PickerViewTest, BackgroundIsCorrect) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
   PickerView* view = GetPickerViewFromWidget(*widget);
 
   ASSERT_TRUE(view);
@@ -110,8 +110,8 @@ TEST_F(PickerViewTest, BackgroundIsCorrect) {
 }
 
 TEST_F(PickerViewTest, SizeIsCorrect) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -119,8 +119,8 @@ TEST_F(PickerViewTest, SizeIsCorrect) {
 }
 
 TEST_F(PickerViewTest, ShowsZeroStateView) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
   PickerView* view = GetPickerViewFromWidget(*widget);
 
   EXPECT_THAT(view->search_field_view_for_testing(),
@@ -132,8 +132,8 @@ TEST_F(PickerViewTest, ShowsZeroStateView) {
 }
 
 TEST_F(PickerViewTest, NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
 
@@ -146,8 +146,8 @@ TEST_F(PickerViewTest, NonEmptySearchFieldContentsSwitchesToSearchResultsView) {
 }
 
 TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
-  auto widget =
-      PickerView::CreateWidget(std::make_unique<FakePickerViewDelegate>());
+  FakePickerViewDelegate delegate;
+  auto widget = PickerView::CreateWidget(&delegate);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -162,9 +162,7 @@ TEST_F(PickerViewTest, EmptySearchFieldContentsSwitchesToZeroStateView) {
 
 TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   base::test::TestFuture<void> future;
-  // TODO(b/317111483): Change the delegate a raw pointer to make this less
-  // awkward.
-  auto delegate = std::make_unique<FakePickerViewDelegate>(
+  FakePickerViewDelegate delegate(
       base::BindLambdaForTesting([&](std::u16string_view query) {
         future.SetValue();
         return PickerSearchResults({{
@@ -172,8 +170,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
                                          {{PickerSearchResult(u"result")}}),
         }});
       }));
-  auto* delegate_ptr = delegate.get();
-  auto widget = PickerView::CreateWidget(std::move(delegate));
+  auto widget = PickerView::CreateWidget(&delegate);
   widget->Show();
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
@@ -183,7 +180,7 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   // view.
   LeftClickOn(&view->search_results_view_for_testing());
 
-  EXPECT_THAT(delegate_ptr->last_inserted_result(),
+  EXPECT_THAT(delegate.last_inserted_result(),
               Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
 }
 

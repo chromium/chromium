@@ -6,6 +6,7 @@
 #define ASH_PICKER_PICKER_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/picker/views/picker_view_delegate.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -13,12 +14,12 @@ namespace ash {
 class PickerClient;
 
 // Controls a Picker widget.
-class ASH_EXPORT PickerController {
+class ASH_EXPORT PickerController : public PickerViewDelegate {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
   PickerController& operator=(const PickerController&) = delete;
-  ~PickerController();
+  ~PickerController() override;
 
   // Whether the provided feature key for Picker can enable the feature.
   static bool IsFeatureKeyMatched();
@@ -41,9 +42,18 @@ class ASH_EXPORT PickerController {
   // Returns the Picker widget for tests.
   views::Widget* widget_for_testing() { return widget_.get(); }
 
+  // PickerViewDelegate:
+  std::unique_ptr<AshWebView> CreateWebView(
+      const AshWebView::InitParams& params) override;
+  void StartSearch(const std::u16string& query,
+                   SearchResultsCallback callback) override;
+  void InsertResult(const PickerSearchResult& result) override;
+  bool ShouldPaint() override;
+
  private:
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
+  bool should_paint_ = false;
 };
 
 }  // namespace ash

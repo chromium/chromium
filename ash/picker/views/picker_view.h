@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/picker/picker_session_metrics.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -34,7 +35,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
  public:
   METADATA_HEADER(PickerView);
 
-  explicit PickerView(std::unique_ptr<PickerViewDelegate> delegate,
+  // `delegate` must remain valid for the lifetime of this class.
+  explicit PickerView(PickerViewDelegate* delegate,
                       base::TimeTicks trigger_event_timestamp);
   PickerView(const PickerView&) = delete;
   PickerView& operator=(const PickerView&) = delete;
@@ -44,8 +46,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   // Widget to be created. For example, if the feature was triggered by a mouse
   // click, then it should be the timestamp of the click. By default, the
   // timestamp is the time this function is called.
+  // `delegate` must remain valid for the lifetime of the created Widget.
   static views::UniqueWidgetPtr CreateWidget(
-      std::unique_ptr<PickerViewDelegate> delegate,
+      PickerViewDelegate* delegate,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
   // views::WidgetDelegateView:
@@ -75,12 +78,15 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void SelectSearchResult(const PickerSearchResult& result);
 
   PickerSessionMetrics session_metrics_;
-  std::unique_ptr<PickerViewDelegate> delegate_;
+  raw_ptr<PickerViewDelegate> delegate_ = nullptr;
+
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerContentsView> contents_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
   raw_ptr<PickerUserEducationView> user_education_view_ = nullptr;
+
+  base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

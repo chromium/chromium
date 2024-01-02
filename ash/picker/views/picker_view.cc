@@ -45,10 +45,9 @@ std::unique_ptr<views::BubbleBorder> CreateBorder() {
 
 }  // namespace
 
-PickerView::PickerView(std::unique_ptr<PickerViewDelegate> delegate,
+PickerView::PickerView(PickerViewDelegate* delegate,
                        const base::TimeTicks trigger_event_timestamp)
-    : session_metrics_(trigger_event_timestamp),
-      delegate_(std::move(delegate)) {
+    : session_metrics_(trigger_event_timestamp), delegate_(delegate) {
   SetShowCloseButton(false);
   SetBackground(views::CreateThemedSolidBackground(kBackgroundColor));
   SetPreferredSize(kPickerSize);
@@ -88,12 +87,11 @@ PickerView::PickerView(std::unique_ptr<PickerViewDelegate> delegate,
 PickerView::~PickerView() = default;
 
 views::UniqueWidgetPtr PickerView::CreateWidget(
-    std::unique_ptr<PickerViewDelegate> delegate,
+    PickerViewDelegate* delegate,
     const base::TimeTicks trigger_event_timestamp) {
   views::Widget::InitParams params;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.delegate =
-      new PickerView(std::move(delegate), trigger_event_timestamp);
+  params.delegate = new PickerView(delegate, trigger_event_timestamp);
   params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.type = views::Widget::InitParams::TYPE_BUBBLE;
@@ -126,10 +124,9 @@ void PickerView::StartSearch(const std::u16string& query) {
     contents_view_->SetActivePage(zero_state_view_);
   } else {
     contents_view_->SetActivePage(search_results_view_);
-    // `base::Unretained` is safe here because this class owns `delegate_`.
     delegate_->StartSearch(
         query, base::BindRepeating(&PickerView::PublishSearchResults,
-                                   base::Unretained(this)));
+                                   weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
