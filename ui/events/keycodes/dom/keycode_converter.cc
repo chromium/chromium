@@ -50,13 +50,18 @@ struct DomKeyMapEntry {
   const char* string;
 };
 
-#define DOM_KEY_MAP_DECLARATION constexpr DomKeyMapEntry kDomKeyMappings[] =
-#define DOM_KEY_UNI(key, id, value) {DomKey::id, key}
-#define DOM_KEY_MAP(key, id, value) {DomKey::id, key}
+#define DOM_KEY_MAP_DECLARATION_START \
+  constexpr DomKeyMapEntry kDomKeyMappings[] = {
+#define DOM_KEY_UNI(key, id, value) {DomKey::id, key},
+#define DOM_KEY_MAP(key, id, value) {DomKey::id, key},
+#define DOM_KEY_MAP_DECLARATION_END \
+  }                                 \
+  ;
 #include "ui/events/keycodes/dom/dom_key_data.inc"
-#undef DOM_KEY_MAP_DECLARATION
+#undef DOM_KEY_MAP_DECLARATION_START
 #undef DOM_KEY_MAP
 #undef DOM_KEY_UNI
+#undef DOM_KEY_MAP_DECLARATION_END
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
