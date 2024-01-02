@@ -312,6 +312,7 @@ Websites können Cookies nicht verwenden, um deine Browseraktivitäten auf ander
 <translation id="2664621323652615289">Beenden</translation>
 <translation id="2666092431469916601">Oben</translation>
 <translation id="2669454659051515572">Alle Personen, die dieses Gerät nutzen, können heruntergeladene Dateien sehen</translation>
+<translation id="2681158575552244226">wird in Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="2690858294534178585">Kamera wird verwendet</translation>
 <translation id="2691653761409724435">Nicht offline verfügbar</translation>
 <translation id="2695507686909505111">Seite ist übersetzt</translation>
@@ -1086,6 +1087,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="6685259053455152195">Verknüpfungen zum schnellen Anpassen der Einstellungen oder Zugreifen auf Funktionen über die Adressleiste.</translation>
 <translation id="6710079714193676716">Von deiner Organisation verwaltet. Einige Funktionen sind möglicherweise nicht verfügbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">in Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
 <translation id="672735642903863329">Lesezeichen, Passwörter und andere Daten auf allen deinen Geräten aufrufen.</translation>
 <translation id="6730682669179532099">Passwörter können nicht exportiert werden</translation>
 <translation id="6732087373923685049">Kamera</translation>
@@ -1159,6 +1161,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7102005569666697658">Wird heruntergeladen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108762695052995889">Zur Website</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Voller Name</translation>
 <translation id="7136892417564438900">Kamera ist nicht verfügbar</translation>
 <translation id="7141960840225504692">Deine Tabs werden geschlossen und die Browserdaten werden gelöscht</translation>

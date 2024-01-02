@@ -627,6 +627,7 @@
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
 <translation id="449126573531210296">የሰመረውን የይለፍ ቃላት ከGoogle መለያዎች ጋር ይመስጥሩ</translation>
 <translation id="4491323382106587961">መለያ ይምረጡ። አሁን <ph name="EMAIL" /> ተመርጧል።</translation>
+<translation id="4494806687727322324">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ በርቷል</translation>
 <translation id="4508528996305412043">የምግብ ካርድ ምናሌ ተከፍቷል</translation>
 <translation id="4509501256689523862">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር <ph name="BEGIN_LINK_1" />የማስታወቂያ ርዕሶች<ph name="END_LINK_1" />፣ በእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> ላይ እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ ይወሰናል</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{ከ# ቀን በፊት}one{ከ# ቀኖች በፊት}other{ከ# ቀኖች በፊት}}</translation>
@@ -796,6 +797,7 @@
 <translation id="5292796745632149097">ላክ ወደ</translation>
 <translation id="5304593522240415983">ይህ መስክ ባዶ ሊሆን አይችልም</translation>
 <translation id="5308380583665731573">ይገናኙ</translation>
+<translation id="5316947901395241499">የይለፍ ቃል ማስቀመጥ በእርስዎ አስተዳዳሪ ጠፍቷል</translation>
 <translation id="5317780077021120954">አስቀምጥ</translation>
 <translation id="5319359161174645648">Google Chromeን ይመክራል</translation>
 <translation id="5320351714793324716">ኩኪዎችን ከፈቀዱ Chrome ቅድሚያ በመጫን ጊዜ ሊጠቀምባቸው ይችላል</translation>

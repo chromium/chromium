@@ -88,6 +88,8 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3146109040683991651">Iestatīt Chrome par noklusējuma pārlūku</translation>
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="3173834708294760622">Google Chrome lapa</translation>
+<translation id="3209155060213569278">Varat <ph name="BEGIN_LINK" />pārvaldīt, kādi Chrome dati tiek saglabāti<ph name="END_LINK" /> Google kontā.
+Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas iespēju uzlabošanai, pārejiet uz sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Lai izmantotu un saglabātu Chrome datus savā Google kontā, ievadiet ieejas frāzi.</translation>
 <translation id="3282568296779691940">Pierakstīties pārlūkā Chrome</translation>
 <translation id="3340938510625667914">Chrome darbības</translation>
@@ -161,6 +163,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="5527026824954593399">Pieskarieties vienumam “Skatīt ar Google Maps pārlūkā Chrome”.</translation>
 <translation id="5552137475244467770">Pārlūkā Chrome tiek periodiski pārbaudītas jūsu paroles, salīdzinot tās ar tiešsaistē publicētiem sarakstiem. Šo pārbaužu laikā paroles un lietotājvārdi ir šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="5554520618550346933">Pārlūkā Chrome tiek parādīts brīdinājums, ja izmantojat paroli, kas ir publicēta tiešsaistē. To darot, jūsu paroles un lietotājvārdi tiek šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
+<translation id="5601180634394228718">Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas iespēju uzlabošanai, pārejiet uz sadaļu <ph name="BEGIN_LINK" />Google pakalpojumi<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Atveriet sadaļu Iestatījumi &gt; Konfidencialitāte &gt; Kamera &gt; Google Chrome un ieslēdziet kameru.</translation>
 <translation id="5642200033778930880">Google Chrome nevar izmantot kameru dalītā skata režīmā.</translation>
 <translation id="5661521615548540542">Google paroļu pārvaldnieks nevarēja pārbaudīt visas paroles. Vēlāk mēģiniet vēlreiz.</translation>

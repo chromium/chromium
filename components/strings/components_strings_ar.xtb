@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">تمّت زيارة صفحة</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ما مِن مواقع إلكترونية تستخدم ملفات تعريف ارتباط.}=1{‏ملفات تعريف ارتباط من موقع إلكتروني واحد (لن يتم تسجيل الخروج من حسابكِ على Google)}two{‏ملفات تعريف ارتباط من موقعَين إلكترونيَّين (لن يتم تسجيل الخروج من حسابك على Google)}few{‏ملفات تعريف ارتباط من # مواقع إلكترونية (لن يتم تسجيل الخروج من حسابك على Google)}many{‏ملفات تعريف ارتباط من # موقعًا إلكترونيًا (لن يتم تسجيل الخروج من حسابك على Google)}other{‏ملفات تعريف ارتباط من # موقع إلكتروني (لن يتم تسجيل الخروج من حسابك على Google)}}</translation>
 <translation id="1165852471352757509">أفلام وثائقية وواقعية تلفزيونية</translation>
+<translation id="1167877250265821930">تعذَّر تنزيل حزمة اللغة <ph name="LANGUAGE" />.</translation>
 <translation id="1174644974616730562">ظرف صيني رقم 1</translation>
 <translation id="1174723505405632867">هل تريد السماح للموقع الإلكتروني <ph name="EMBEDDED_URL" /> باستخدام بيانات الموقع الإلكتروني وملفات تعريف الارتباط على <ph name="TOP_LEVEL_URL" />؟
 
@@ -516,6 +517,7 @@
 <translation id="1975457531113383421">دُرج الإدخال</translation>
 <translation id="1975584088563498795">صندوق البريد الإلكتروني 10</translation>
 <translation id="1978555033938440688">إصدار البرامج الثابتة</translation>
+<translation id="1979156660928743046">معلومات الوسائط</translation>
 <translation id="1988881251331415125">إذا تم التأكُد من عدم ورود أخطاء إملائية، يُرجى <ph name="BEGIN_LINK" />محاولة تشغيل بيانات التشخيص لمشاكل الاتصال<ph name="END_LINK" />.</translation>
 <translation id="1991453785879639515">تسلق الجبال</translation>
 <translation id="1991830984769263878">تأمين على السيارات</translation>
@@ -597,6 +599,7 @@
 <translation id="2126374524350484896">‏التطبيق الذي أنشأ مستند PDF:</translation>
 <translation id="2130448033692577677">‏قد لا يتم تطبيق النماذج التي حدّدتها بسبب عدم ضبط سياسة DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">جارٍ تنزيل حزمة اللغة <ph name="LANGUAGE" />…%<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">ملابس رجال</translation>
 <translation id="2137891579555018930">في انتظار الحصول على الإذن...</translation>
 <translation id="213826338245044447">الإشارات المرجعية على الجوّال</translation>
@@ -654,6 +657,7 @@
 <translation id="2233745931693710080">قرص مضغوط</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
+<translation id="2239114457614475014">تعديل الإدخال</translation>
 <translation id="2241693394036365668">تم تنزيل ملف</translation>
 <translation id="2246264294482514010">10 × 12 بوصة</translation>
 <translation id="2246480341630108201">لم نحصل على موافقة أحد الوالدَين بعد.</translation>
@@ -989,6 +993,7 @@
 <translation id="2959113999220720579">العناية بالوجه والجسم</translation>
 <translation id="2962073860865348475">12 × 18 بوصة</translation>
 <translation id="2968103128155246731">شاحنات وشاحنات صغيرة</translation>
+<translation id="2971483124699139256">عند النقر على زر "رائع"، يتم إرسال ملاحظات بأنّ النص الذي تم إنشاؤه قد نال إعجابك.</translation>
 <translation id="2972581237482394796">إعا&amp;دة</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، تم اختياره حاليًا. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">أوبرا</translation>
@@ -1525,6 +1530,7 @@
 <translation id="4050599136622776556">‏يحاول Chromium تعديل طُرق الدفع.</translation>
 <translation id="405399507749852140">يمكنك الحصول على تنبيهات في حال انخفاض السعر على أي موقع إلكتروني</translation>
 <translation id="4056223980640387499">بني داكن</translation>
+<translation id="4059523390906550209">مزيد من المعلومات حول حماية البيانات الحسّاسة</translation>
 <translation id="4063063121357725926">‏السماح لشركة Google بمساعدتك في البحث عن الخصومات لتظهر في سلّات التسوّق</translation>
 <translation id="406358100705415968">مستلزمات حماية أثناء العمل</translation>
 <translation id="4063924980214801036">استخدام فتح قفل الجهاز للتأكُّد من البطاقات بشكلٍ أسرع</translation>
@@ -1573,6 +1579,7 @@
 <translation id="4132448310531350254">تم رصد أكثر من معالج لامتداد الملف "<ph name="FILE_EXTENSION" />" ضِمن التطبيقات التالية: "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">إنشاء مستند</translation>
 <translation id="413544239732274901">مزيد من المعلومات</translation>
+<translation id="4139859738677203214">عند النقر على زر "لا يعجبني"، يتم فتح نموذج لإرسال ملاحظات مفصّلة حول سبب عدم إعجابك بالنص الذي تم إنشاؤه.</translation>
 <translation id="4140905530744469899">رقم تعريف الملف الشخصي:</translation>
 <translation id="4142935452406587478">الدُرج 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -1683,6 +1690,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">حظر (تلقائي)</translation>
 <translation id="4314815835985389558">إدارة المزامنة</translation>
+<translation id="4316057107946726368">يُرجى إدخال رسالة تبرير لا تزيد عن <ph name="MAX_CHAR_COUNT" /> حرف. وتم استخدام <ph name="ACTUAL_CHAR_COUNT" /> من إجمالي <ph name="MAX_CHAR_COUNT" /> حرف.</translation>
 <translation id="4318213823155573975">أغطية رأس</translation>
 <translation id="4318312030194671742">‏خدمة Paint Preview Compositor</translation>
 <translation id="4318566738941496689">اسم جهازك وعنوان الشبكة</translation>
@@ -2673,6 +2681,7 @@
 <translation id="6355392890578844978">‏لا تتم إدارة هذا المتصفِّح من خلال شركة أو مؤسسة أخرى. وقد تتم إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6358088212770985041">تعديل طُرق الدفع.</translation>
 <translation id="6358450015545214790">ماذا تعني هذه الأقسام؟</translation>
+<translation id="6360213755783740931">مزيد من المعلومات حول الحماية من البرامج الضارة</translation>
 <translation id="6361757823711327522">B7</translation>
 <translation id="6363786367719063276">عرض السجلّات</translation>
 <translation id="6364095313648930329"><ph name="BEGIN_LINK" />التحقّق من ضبط الخادم الوكيل والجدار الناري ونظام أسماء النطاقات الآمن<ph name="END_LINK" /></translation>
@@ -2730,6 +2739,7 @@
 <translation id="6443406338865242315">الإضافات والمكوّنات الإضافية التي تثبّتها</translation>
 <translation id="6446608382365791566">إضافة مزيد من المعلومات</translation>
 <translation id="6447842834002726250">ملفّات تعريف الارتباط</translation>
+<translation id="6448371595882710519">مزيد من المعلومات حول عناصر التحكّم بالبيانات</translation>
 <translation id="6450077999570164268">Quarto</translation>
 <translation id="6450212216969386944">‏ظرف Chou 40</translation>
 <translation id="6451458296329894277">تأكيد إعادة إرسال النموذج</translation>
@@ -3988,6 +3998,7 @@
 <translation id="8877780815363510165">صيد أسماك</translation>
 <translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="8888187300091017436">فراش</translation>
+<translation id="8890048757975398817">يمكنك التحكّم في "<ph name="READERNAME" />" والوصول إلى البطاقة الذكية من خلاله.</translation>
 <translation id="8891727572606052622">وضع الخادم الوكيل غير صالح.</translation>
 <translation id="8894794286471754040">الحافة الطويلة أولًا</translation>
 <translation id="8897428486789851669">سباحة</translation>

@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
 <translation id="1626771852476987600">有 <ph name="COUNT" /> 个重复使用的密码</translation>
 <translation id="1641113438599504367">安全浏览</translation>
+<translation id="1641316430523156212">关注</translation>
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">点按“开始记录”按钮即可从所有标签页中收集日后的 JavaScript 控制台日志和错误。系统会一直收集（并仅在内存中存储）日志，直到用户关闭此页面或点按“停止记录”。</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">开启价格变更提醒？</translation>
 <translation id="2139867232736819575">搜索您复制的文字</translation>
 <translation id="214201757571129614">登录…</translation>
+<translation id="2145004670974387485">选择您要使用哪个账号来保存“<ph name="FILENAME" />”</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149973817440762519">修改书签</translation>
 <translation id="2175927920773552910">二维码</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">顶部</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
+<translation id="2681158575552244226">正在保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
 <translation id="2690858294534178585">相机正在使用中</translation>
 <translation id="2691653761409724435">无法离线查看</translation>
 <translation id="2695507686909505111">网页翻译完毕</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">打开一个标签页即可浏览网络。</translation>
 <translation id="3519905498307021260">{count,plural, =1{打开标签页}other{打开 {count} 个标签页}}</translation>
 <translation id="3523789730715594198">您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
+<translation id="3526783603136816353">选择您要使用哪个账号来保存“<ph name="FILENAME" />”(<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">文件夹</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530206579861815432">在所有已同步的设备上快速找到当前打开的和最近关闭的标签页。</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">创建时间：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
+<translation id="375773422023477320">书签</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3771033907050503522">无痕模式标签页</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">地址</translation>
 <translation id="3955822496205734389">您有安全系数低的密码。</translation>
 <translation id="3959736869653157332">菜单 → 打开新的无痕式标签页</translation>
+<translation id="3962326069546168954">保存</translation>
 <translation id="3967822245660637423">下载完毕</translation>
 <translation id="3968505803272650567">管理感兴趣的主题</translation>
 <translation id="3989635538409502728">退出</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">在地址栏中输入快捷字词，即可快速修改设置以及使用某些功能。</translation>
 <translation id="6710079714193676716">由贵组织管理。未必能使用所有功能。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">已保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
 <translation id="672735642903863329">获取您在所有设备上保存的书签、密码等信息。</translation>
 <translation id="6730682669179532099">无法导出密码</translation>
 <translation id="6732087373923685049">摄像头</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">不久之后，当打开新标签页时，您会看到来自<ph name="CHANNEL_NAME" />的故事。</translation>
 <translation id="6797885426782475225">语音搜索</translation>
 <translation id="6800349425672670802">您可在标签页切换器中访问您所有已打开的标签页。</translation>
+<translation id="6805179248725678418">保存在 Google 云端硬盘中</translation>
 <translation id="6807889908376551050">全部显示...</translation>
 <translation id="681368974849482173">书签已创建</translation>
 <translation id="6822587385560699678">当此设置处于开启状态时，密码会保存到 <ph name="ACCOUNT" /> 中。当此设置处于关闭状态时，密码只会保存在此设备上。</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隐藏</translation>
 <translation id="7108762695052995889">访问网站</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">全称</translation>
 <translation id="7136892417564438900">无法使用相机</translation>
 <translation id="7141960840225504692">标签页将被关闭，而且您的浏览数据将被删除</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">无法下载</translation>
 <translation id="7859704718976024901">浏览记录</translation>
 <translation id="7866501058614003444">已成功取消跟踪此包裹。</translation>
+<translation id="7866872729285243843">若要将阅读清单同步到您的所有设备上，请在设置中开启“阅读清单”。</translation>
 <translation id="7866993391592926595">隐藏此卡片会关闭包裹跟踪功能，并移除您的所有数据</translation>
 <translation id="7870750252270996949">使用智能镜头搜索所复制的图片</translation>
 <translation id="7879275349003161544">显示下载内容</translation>

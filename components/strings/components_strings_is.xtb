@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Síða var opnuð</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ekkert}=1{Af 1 vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}one{Af # vefsvæði (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}other{Af # vefsvæðum (þú verður áfram skráð(ur) inn á Google-reikninginn þinn)}}</translation>
 <translation id="1165852471352757509">Heimildarmyndir og sannsögulegar frásagnir</translation>
+<translation id="1167877250265821930">Ekki tókst að sækja „<ph name="LANGUAGE" />“</translation>
 <translation id="1174644974616730562">Umslag: kínverskt #1</translation>
 <translation id="1174723505405632867">Viltu leyfa <ph name="EMBEDDED_URL" /> að nota fótspor og vefsvæðisgögn á <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2126374524350484896">PDF-breytir:</translation>
 <translation id="2130448033692577677">Hugsanlega er ekki hægt að nota sniðmátin sem þú tilgreindir vegna þess að reglan DnsOverHttpsMode hefur ekki verið valin.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Sækir tungumálapakka fyrir „<ph name="LANGUAGE" />“…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Herrafatnaður</translation>
 <translation id="2137891579555018930">Bíður heimildar…</translation>
 <translation id="213826338245044447">Bókamerki fartækis</translation>
@@ -655,6 +657,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2233745931693710080">Geisladiskur</translation>
 <translation id="2235344399760031203">Lokað er á fótspor frá þriðju aðilum</translation>
 <translation id="2239100178324503013">Senda núna</translation>
+<translation id="2239114457614475014">Breyta innslætti</translation>
 <translation id="2241693394036365668">Skrá er sótt</translation>
 <translation id="2246264294482514010">10 x 12 to.</translation>
 <translation id="2246480341630108201">Foreldri þitt hefur ekki samþykkt þetta</translation>
@@ -989,6 +992,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2959113999220720579">Umhirða andlits og líkama</translation>
 <translation id="2962073860865348475">12 x 18 to.</translation>
 <translation id="2968103128155246731">Sendiferðabílar og smárútur</translation>
+<translation id="2971483124699139256">Þumall upp sendir ábendingu um að þér líki textinn sem búinn var til.</translation>
 <translation id="2972581237482394796">Endurge&amp;ra</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, valin. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -1573,6 +1577,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4132448310531350254">Afrita hjálparforrit fyrir skráarendinguna „<ph name="FILE_EXTENSION" />“ sem er tilgreind af forritunum „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Búa til skjal</translation>
 <translation id="413544239732274901">Frekari upplýsingar</translation>
+<translation id="4139859738677203214">Þumall niður opnar eyðublað þar sem þú getur sent ítarlega ábendingu um hvers vegna þér líkar ekki textinn sem búinn var til.</translation>
 <translation id="4140905530744469899">Prófílauðkenni:</translation>
 <translation id="4142935452406587478">Bakki 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8877780815363510165">Stangveiði</translation>
 <translation id="8884537526797090108">Ekki hægt að taka upp trúnaðarefni</translation>
 <translation id="8888187300091017436">Dýnur</translation>
+<translation id="8890048757975398817">Stjórna <ph name="READERNAME" /> og fá aðgang að tengdu snjallkorti.</translation>
 <translation id="8891727572606052622">Ógild proxy-stilling.</translation>
 <translation id="8894794286471754040">Langhlið fyrst</translation>
 <translation id="8897428486789851669">Sund</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">যেসব পৃষ্ঠা ভিজিট করা হয়েছে</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{একটিও নয়}=1{১টি সাইট থেকে (আপনি নিজের Google অ্যাকাউন্টে সাইন-ইন করে থেকে যাবেন)}one{#টি সাইট থেকে (আপনি নিজের Google অ্যাকাউন্টে সাইন-ইন করে থেকে যাবেন)}other{#টি সাইট থেকে (আপনি নিজের Google অ্যাকাউন্টে সাইন-ইন করে থেকে যাবেন)}}</translation>
 <translation id="1165852471352757509">টিভি ডকুমেন্টারি এবং ননফিকশন</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ডাউনলোড করা যায়নি</translation>
 <translation id="1174644974616730562">এনভেলপ চিনা #১</translation>
 <translation id="1174723505405632867">আপনি কি <ph name="EMBEDDED_URL" />-কে <ph name="TOP_LEVEL_URL" />-এ কুকি ও সাইট ডেটা ব্যবহার করতে দেবেন?
 
@@ -599,6 +600,7 @@
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ভাষা সংক্রান্ত প্যাক ডাউনলোড করা চলছে...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">পুরুষদের পোশাক</translation>
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
@@ -656,6 +658,7 @@
 <translation id="2233745931693710080">কমপ্যাক্ট ডিস্ক</translation>
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2239100178324503013">এখনই পাঠান</translation>
+<translation id="2239114457614475014">ইনপুট এডিট করুন</translation>
 <translation id="2241693394036365668">ফাইল ডাউনলোড করা হয়েছে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
 <translation id="2246480341630108201">আপনার অভিভাবক এখনও বলেননি এটা ঠিক আছে</translation>
@@ -990,6 +993,7 @@
 <translation id="2959113999220720579">মুখ ও দেহের যত্ন</translation>
 <translation id="2962073860865348475">১২ x ১৮ ইঞ্চি</translation>
 <translation id="2968103128155246731">ভ্যান ও মিনিভ্যান</translation>
+<translation id="2971483124699139256">আপনি তৈরি করা টেক্সট পছন্দ করেন, 'থাম্বস-আপ' আইকন সেই মতামত জমা দেয়।</translation>
 <translation id="2972581237482394796">&amp;পুনরায় করুন</translation>
 <translation id="2977665033722899841">এখন <ph name="ROW_NAME" /> বেছে নিয়েছেন। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">অপেরা</translation>
@@ -1574,6 +1578,7 @@
 <translation id="4132448310531350254">অ্যাপ "<ph name="POLICY_IDS_LIST" />" দ্বারা রেফারেন্স দেওয়া হয়েছে এমন file_extension "<ph name="FILE_EXTENSION" />"-এর ডুপ্লিকেট হ্যান্ডলার।</translation>
 <translation id="4134123981501319574">ডক তৈরি করুন</translation>
 <translation id="413544239732274901">আরও জানুন</translation>
+<translation id="4139859738677203214">'থাম্বস-ডাউন' আইকন এমন একটি ফর্ম খোলে, যেখানে তৈরি করা টেক্সট কেন আপনার পছন্দ হয়নি সেই সম্পর্কিত বিশদ মতামত জমা দেওয়া যায়।</translation>
 <translation id="4140905530744469899">প্রোফাইল আইডি:</translation>
 <translation id="4142935452406587478">ট্রে ১০</translation>
 <translation id="4148925816941278100">আমেরিকান এক্সপ্রেস</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">মাছ ধরা</translation>
 <translation id="8884537526797090108">গোপনীয় কন্টেন্ট রেকর্ড করা যাচ্ছে না</translation>
 <translation id="8888187300091017436">তোষকগুলি</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> নিয়ন্ত্রণ করুন এবং ডিভাইসে অ্যাক্সেসযোগ্য স্মার্ট কার্ডে অ্যাক্সেস পান।</translation>
 <translation id="8891727572606052622">ভুল প্রক্সি মোড৷</translation>
 <translation id="8894794286471754040">আগে দীর্ঘ প্রান্ত</translation>
 <translation id="8897428486789851669">সাঁতার শিক্ষা</translation>

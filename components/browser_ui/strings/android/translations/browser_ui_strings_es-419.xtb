@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Esta acción borrará todos los datos y cookies almacenados por <ph name="ORIGIN" /> o su app que aparece en la pantalla principal.</translation>
 <translation id="5100237604440890931">Contraído; haz clic para expandir.</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Reducción de precio en las pestañas abiertas}other{Reducciones de precio en las pestañas abiertas}}</translation>
 <translation id="5186036860380548585">Esta opción está disponible cerca de la parte superior de la pantalla.</translation>
 <translation id="5197729504361054390">Los contactos que selecciones se compartirán con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>

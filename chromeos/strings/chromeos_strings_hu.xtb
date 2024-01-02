@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Megszakítva</translation>
 <translation id="1020274983236703756">Exkluzív <ph name="PRODUCT_NAME" />-elemek váltak hozzáférhetővé</translation>
 <translation id="1022628058306505708">A Föld mozgása</translation>
+<translation id="103306827243002956">Legutóbbi háttérképek</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> szál, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Új funkciók állnak rendelkezésre. További információért használja a felfelé mutató nyilat.</translation>
 <translation id="1059913517121127803">Nem sikerült elindítani a szkennelést</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Legalább egy Művészeti albumot ki kell választani</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Továbbiak létrehozása</translation>
 <translation id="2236746079896696523">Billentyűzet háttérvilágításának be- vagy kikapcsolása</translation>
 <translation id="2240366984605217732">Kiosztásváltó</translation>
 <translation id="225692081236532131">Aktiválás állapota</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Bejelentkezési kép</translation>
 <translation id="2640549051766135490">A következő album kiválasztva: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">diktálás be- vagy kikapcsolása</translation>
+<translation id="2656001153562991489">Kizárólag Chromebook Plus esetén</translation>
 <translation id="267442004702508783">frissítés</translation>
 <translation id="268270014981824665">billentyűzet halványítása</translation>
 <translation id="2712812801627182647">TLS-hitelesítési kulcs</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Vissza</translation>
 <translation id="3858860766373142691">Név</translation>
 <translation id="3862598938296403232">A leírás megadása kötelező</translation>
+<translation id="386280020966669610">Inspiráció</translation>
 <translation id="3865289341173661845">A súgótartalom nem áll rendelkezésre.</translation>
 <translation id="3865414814144988605">Felbontás</translation>
 <translation id="3866249974567520381">Leírás</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">Új APN</translation>
 <translation id="4093865285251893588">Profilkép</translation>
 <translation id="409427325554347132">Tesztadatok mentése</translation>
+<translation id="409469431304488632">Kísérlet</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">A következő album kiválasztása: <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-érintőpad</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Diavetítés</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
+<translation id="4305367063258930534">A háttérképet a Google biztosítja</translation>
 <translation id="4333390807948134856">A következő gomb van megnyomva: <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">billentyű</translation>
 <translation id="4361257691546579041">Az APN típusa: alapértelmezett.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Szerver gépneve</translation>
 <translation id="5089810972385038852">Állam</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Rokon értelmű:</translation>
 <translation id="5137451382116112100">Teljes</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
 <translation id="5145081769226915336">Szeretné a sötét mód automatikus bekapcsolását?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Töltés. (<ph name="TIME_VALUE" /> a teljes feltöltésig.)</translation>
 <translation id="7066538517128343186">a következő gomb: <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Az eszköz előkészítése</translation>
+<translation id="7076851914315147928">Háttérkép kiválasztása</translation>
 <translation id="708426984172631313">LEÁLLÍTVA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Világos mód</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7805768142964895445">Állapot</translation>
+<translation id="7819831665603418705">Sablon használata</translation>
 <translation id="7819857487979277519">PSK (WPA vagy RSN)</translation>
 <translation id="7841134249932030522">Sötét mód engedélyezése</translation>
 <translation id="7846634333498149051">Billentyűzet</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8329018942023753850">számológép alkalmazás</translation>
 <translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
+<translation id="8339024191194156249">További információ az automatikus indításról</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> vagy <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8349826889576450703">indító</translation>

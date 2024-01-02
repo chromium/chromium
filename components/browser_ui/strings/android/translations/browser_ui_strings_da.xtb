@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Denne handling sletter alle data og cookies, som er gemt af <ph name="ORIGIN" /> eller de tilhørende apps på din startside.</translation>
 <translation id="5100237604440890931">Skjult – klik for at udvide.</translation>
 <translation id="5123685120097942451">Inkognitofane</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prisfald på dine åbne faner}one{Prisfald på dine åbne faner}other{Prisfald på dine åbne faner}}</translation>
 <translation id="5186036860380548585">Se valgmuligheden øverst på skærmen</translation>
 <translation id="5197729504361054390">De kontakter, du vælger, deles med <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">අවලංගු විය</translation>
 <translation id="1020274983236703756">සුවිශේෂී <ph name="PRODUCT_NAME" /> වත්කම් දැන් ලබා ගත හැක</translation>
 <translation id="1022628058306505708">පෘථිවි ප්‍රවාහය</translation>
+<translation id="103306827243002956">මෑත වෝල්පේපර</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (පොටවල් <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="1059913517121127803">ස්කෑන් කිරීම ආරම්භ කිරීමට නොහැකි විය</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
 <translation id="2230005943220647148">සෙල්සියස්</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">තව තනන්න</translation>
 <translation id="2236746079896696523">යතුරු පුවරු පසු ආලෝකය ටොගල කිරීම</translation>
 <translation id="2240366984605217732">පිරිසැලසුම් මාරුව</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">පුරන රූපය</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ඇල්බමය තෝරන ලදි</translation>
 <translation id="2652403576514495859">අනුලේඛනය සබල කරන්න හෝ ටොගල් කරන්න</translation>
+<translation id="2656001153562991489">Chromebook Plus සඳහා සුවිශේෂී</translation>
 <translation id="267442004702508783">නැවුම් කිරීම</translation>
 <translation id="268270014981824665">යතුරු පුවරුව අඳුරු</translation>
 <translation id="2712812801627182647">TLS සත්‍යාපන යතුර</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858860766373142691">නම</translation>
 <translation id="3862598938296403232">විස්තරය අවශ්‍ය වේ</translation>
+<translation id="386280020966669610">මාව පොළඹවන්න</translation>
 <translation id="3865289341173661845">උදවු අන්තර්ගතය නොමැත.</translation>
 <translation id="3865414814144988605">විභේදනය</translation>
 <translation id="3866249974567520381">විස්තරය</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">නව APN</translation>
 <translation id="4093865285251893588">පැතිකඩ රූපය</translation>
 <translation id="409427325554347132">පරීක්ෂණ විස්තර පෙන්වන්න</translation>
+<translation id="409469431304488632">අත්හදා බැලීම</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ඇල්බමය තෝරන්න <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ස්පර්ශ පුවරුව</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
+<translation id="4305367063258930534">Google විසින් බලගන්වන ලද වෝල්පේපරය</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="4354430579665871434">යතුර</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">සේවාදායක ධාරක නම</translation>
 <translation id="5089810972385038852">ජනපදය</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">සමාන:</translation>
 <translation id="5137451382116112100">පූර්ණ</translation>
 <translation id="5142961317498132443">සත්‍යාපනය</translation>
 <translation id="5145081769226915336">අඳුරු ප්‍රකාරය ස්වයංක්‍රීයව ක්‍රියාත්මක කරන්න ද?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">ආරෝපණය වෙමින්, සම්පූර්ණ වන තෙක් <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> යතුර</translation>
 <translation id="7068619307603204412">ඔබගේ උපාංගය සූදානම් කරන්න</translation>
+<translation id="7076851914315147928">වෝල්පේපරයක් තෝරා ගන්න</translation>
 <translation id="708426984172631313">නවත්වන ලදි</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">අසාර්ථක විය - අනුමැතිය දීම අසාර්ථක විය</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">ආලෝක ප්‍රකාරය</translation>
 <translation id="780301667611848630">එපා, ස්තූතියි</translation>
 <translation id="7805768142964895445">තත්වය</translation>
+<translation id="7819831665603418705">අච්චුවක් භාවිත කරන්න</translation>
 <translation id="7819857487979277519">PSK (WPA හෝ RSN)</translation>
 <translation id="7841134249932030522">අඳුරු ප්‍රකාරය සබල කරන්න</translation>
 <translation id="7846634333498149051">යතුරු පුවරුව</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">රූප නැත</translation>
 <translation id="8329018942023753850">ගණක යෙදුම</translation>
 <translation id="8336739000755212683">උපාංග ගිණුම් රූපය මාරු කරන්න</translation>
+<translation id="8339024191194156249">ස්වයං දියත් කිරීම පිළිබඳව තව දැන ගන්න</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> හෝ <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
 <translation id="8349826889576450703">දියත්කරණය</translation>

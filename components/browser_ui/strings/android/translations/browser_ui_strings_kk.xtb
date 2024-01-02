@@ -239,6 +239,7 @@
 <translation id="5099358668261120049"><ph name="ORIGIN" /> сақтаған немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="5100237604440890931">Жиылған – жаю үшін басыңыз.</translation>
 <translation id="5123685120097942451">Инкогнито қойындысы</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ашық қойындыларда бағаның төмендеуі туралы хабарландыру}other{Ашық қойындыларда бағаның төмендеуі туралы хабарландырулар}}</translation>
 <translation id="5186036860380548585">Опциялар экранның жоғарғы жағында тұрады</translation>
 <translation id="5197729504361054390">Сіз таңдаған контактілер <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтымен бөлісіледі.</translation>
 <translation id="5216942107514965959">Соңғы кіру: бүгін</translation>

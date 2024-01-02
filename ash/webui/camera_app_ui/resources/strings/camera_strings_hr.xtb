@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Pomicanje udesno</translation>
 <translation id="3081586908890909590">Prijeđi na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 okv/s</translation>
+<translation id="3158534262962737808">Pridruži se mreži <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Veza je kopirana</translation>
 <translation id="3354465018370944241">Postavke fotografija</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Omjer fotografije</translation>
 <translation id="5057360777601936059">Vaš fotoaparat trenutačno nije dostupan.
         Provjerite je li fotoaparat pravilno povezan.</translation>
+<translation id="5157591164390831335">Otkriven je URL.</translation>
 <translation id="5163387177077603948">Kreće se udesno</translation>
 <translation id="5235304959032763950">16 naprema 9</translation>
 <translation id="5266635337630551423">Gornji lijevi kut dokumenta</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Zahvaljujemo na povratnim informacijama o aplikaciji Fotoaparat.
 
 Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite primjer fotografije ili videozapisa i opišite što nije u redu. (Na primjer, fotografija je pretamna ili objekt nije fokusiran.)</translation>
+<translation id="6519884562954018934">Pridruži se mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="6617916774429601017">Prikaži sve razlučivosti</translation>
 <translation id="6631515515009660915">Isključite zrcaljenje</translation>
@@ -158,6 +161,7 @@ Ako su vaše povratne informacije o kvaliteti slika ili videozapisa, priložite 
 <translation id="8711011893539266636">Prebacivanje isključivanja zvuka mikrofona. Isključivanje zvuka je uključeno</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Pregled metapodataka</translation>
+<translation id="874854738381978209">Otkrivena je Wi-Fi mreža.</translation>
 <translation id="8815966864175525708">Prijeđi na snimanje portretne fotografije</translation>
 <translation id="8828441885228359828">Nastavljanje snimanja</translation>
 <translation id="8870695351537079478">Pokretanje snimanja nije uspjelo</translation>

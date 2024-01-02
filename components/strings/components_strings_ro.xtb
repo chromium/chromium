@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Este accesată o pagină</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Niciunul}=1{De pe un site (vei rămâne conectat(ă) la Contul Google)}few{De pe # site-uri (vei rămâne conectat(ă) la Contul Google)}other{De pe # de site-uri (vei rămâne conectat(ă) la Contul Google)}}</translation>
 <translation id="1165852471352757509">Documentare și emisiuni TV de nonficțiune</translation>
+<translation id="1167877250265821930">Nu s-a descărcat limba <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Plic chinezesc 1</translation>
 <translation id="1174723505405632867">Permiți ca <ph name="EMBEDDED_URL" /> să folosească date privind site-urile și cookie-uri pe <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Se descarcă pachetul lingvistic pentru <ph name="LANGUAGE" />...<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Îmbrăcăminte bărbați</translation>
 <translation id="2137891579555018930">Se așteaptă permisiunea…</translation>
 <translation id="213826338245044447">Marcaje mobile</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">Disc compact</translation>
 <translation id="2235344399760031203">Cookie-urile terță parte sunt blocate</translation>
 <translation id="2239100178324503013">Trimite acum</translation>
+<translation id="2239114457614475014">Modifică intrarea</translation>
 <translation id="2241693394036365668">Fișierul este descărcat</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Părintele tău încă nu a spus că este în regulă</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">Îngrijirea feței și a corpului</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
 <translation id="2968103128155246731">Dube și furgonete</translation>
+<translation id="2971483124699139256">Butonul Îmi place arată că apreciezi textul generat.</translation>
 <translation id="2972581237482394796">&amp;Repetă</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selectat(ă). <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Operă</translation>
@@ -1573,6 +1577,7 @@
 <translation id="4132448310531350254">Handlere dublură pentru extensia de fișier <ph name="FILE_EXTENSION" /> la care fac referire aplicațiile <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Creează un document</translation>
 <translation id="413544239732274901">Află mai multe</translation>
+<translation id="4139859738677203214">Butonul Nu îmi place deschide un formular pentru a trimite feedback detaliat despre motivul pentru care nu îți place textul generat.</translation>
 <translation id="4140905530744469899">Codul profilului:</translation>
 <translation id="4142935452406587478">Tava 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3987,6 +3992,7 @@ Detalii suplimentare:
 <translation id="8877780815363510165">Pescuit</translation>
 <translation id="8884537526797090108">Conținutul confidențial nu se poate înregistra</translation>
 <translation id="8888187300091017436">Saltele</translation>
+<translation id="8890048757975398817">Controlează cititorul <ph name="READERNAME" /> și primește acces la cardul inteligent accesibil pentru acesta.</translation>
 <translation id="8891727572606052622">Mod proxy nevalid.</translation>
 <translation id="8894794286471754040">Cu latura lungă înainte</translation>
 <translation id="8897428486789851669">Înot</translation>

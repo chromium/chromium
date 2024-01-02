@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1020274983236703756">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ <ph name="PRODUCT_NAME" /> ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿವೆ</translation>
 <translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
+<translation id="103306827243002956">ಇತ್ತೀಚಿನ ವಾಲ್‌ಪೇಪರ್‌ಗಳು</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">ಕನಿಷ್ಠ ಒಂದು ಆರ್ಟ್ ಗ್ಯಾಲರಿ ಆಲ್ಬಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಬೇಕಾಗುತ್ತದೆ</translation>
 <translation id="2230005943220647148">ಸೆಲ್ಸಿಯಸ್</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">ಇನ್ನಷ್ಟು ರಚಿಸಿ</translation>
 <translation id="2236746079896696523">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಟಾಗಲ್</translation>
 <translation id="2240366984605217732">ಲೇಔಟ್ ಸ್ವಿಚ್</translation>
 <translation id="225692081236532131">ಸಕ್ರಿಯ ಸ್ಥಿತಿ</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">ಸೈನ್ ಇನ್ ಚಿತ್ರ</translation>
 <translation id="2640549051766135490">ಆಲ್ಬಮ್ <ph name="TITLE" /> <ph name="DESC" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="2652403576514495859">ಉಕ್ತಲೇಖನವನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ ಅಥವಾ ಟಾಗಲ್ ಮಾಡಿ</translation>
+<translation id="2656001153562991489">ವಿಶೇಷವಾಗಿ Chromebook Plus ಗಾಗಿ</translation>
 <translation id="267442004702508783">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="268270014981824665">ಕೀಬೋರ್ಡ್ ಡಿಮ್</translation>
 <translation id="2712812801627182647">TLS ಪ್ರಮಾಣೀಕರಣ ಕೀ</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">ಹಿಂದೆ</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
 <translation id="3862598938296403232">ವಿವರಣೆ ಅಗತ್ಯವಿದೆ</translation>
+<translation id="386280020966669610">ನನ್ನನ್ನು ಉತ್ತೇಜಿಸಿ</translation>
 <translation id="3865289341173661845">ಸಹಾಯ ಕಂಟೆಂಟ್‌ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="3865414814144988605">ರೆಸಲ್ಯೂಶನ್</translation>
 <translation id="3866249974567520381">ವಿವರಣೆ</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">ಹೊಸ APN</translation>
 <translation id="4093865285251893588">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
+<translation id="409469431304488632">ಪ್ರಯೋಗ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">ಆಲ್ಬಮ್ ಆಯ್ಕೆ ಮಾಡಿ <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB ಟಚ್‌ಪ್ಯಾಡ್</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">ಸ್ಲೈಡ್ ಶೋ</translation>
 <translation id="4297501883039923494">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ಚಿತ್ರಗಳು</translation>
+<translation id="4305367063258930534">Google ನಿಂದ ಸಂಚಾಲಿತವಾದ ವಾಲ್‌ಪೇಪರ್</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> ಕೀ ಒತ್ತಲಾಗಿದೆ</translation>
 <translation id="4354430579665871434">ಕೀ</translation>
 <translation id="4361257691546579041">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">ಸರ್ವರ್ ಹೋಸ್ಟ್ ಹೆಸರು</translation>
 <translation id="5089810972385038852">ರಾಜ್ಯ</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">ಸಮಾನ:</translation>
 <translation id="5137451382116112100">ಸಂಪೂರ್ಣ</translation>
 <translation id="5142961317498132443">ಪ್ರಮಾಣೀಕರಣ</translation>
 <translation id="5145081769226915336">ಡಾರ್ಕ್ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆನ್ ಮಾಡಬೇಕೆ?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">ಚಾರ್ಜಿಂಗ್ ಆಗುತ್ತಿದೆ, ಸಂಪೂರ್ಣವಾಗಿ ಚಾರ್ಜ್ ಆಗಲು <ph name="TIME_VALUE" /> ಸಮಯ ಬೇಕು</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> ಕೀ</translation>
 <translation id="7068619307603204412">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಸಿದ್ಧಪಡಿಸಿ</translation>
+<translation id="7076851914315147928">ವಾಲ್‌ಪೇಪರ್‌ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="708426984172631313">ನಿಲ್ಲಿಸಲಾಗಿದೆ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">ಬೆಳಕಿನ ಮೋಡ್</translation>
 <translation id="780301667611848630">ಬೇಡ, ಧನ್ಯವಾದಗಳು</translation>
 <translation id="7805768142964895445">ಸ್ಥಿತಿ</translation>
+<translation id="7819831665603418705">ಟೆಂಪ್ಲೇಟ್‌ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="7819857487979277519">PSK (WPA ಅಥವಾ RSN)</translation>
 <translation id="7841134249932030522">ಕತ್ತಲೆ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="7846634333498149051">ಕೀಬೋರ್ಡ್</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">ಯಾವುದೇ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="8329018942023753850">ಕ್ಯಾಲ್ಕ್ಯುಲೇಟರ್ ಆ್ಯಪ್</translation>
 <translation id="8336739000755212683">ಸಾಧನದ ಖಾತೆ ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</translation>
+<translation id="8339024191194156249">ಸ್ವಯಂ ಪ್ರಾರಂಭದ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ಅಥವಾ <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">ಮುದ್ರಣ ಕಾರ್ಯಗಳು</translation>
 <translation id="8349826889576450703">ಲಾಂಚರ್</translation>

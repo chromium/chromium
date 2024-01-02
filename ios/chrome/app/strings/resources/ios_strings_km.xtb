@@ -314,6 +314,7 @@
 <translation id="2664621323652615289">បញ្ឈប់</translation>
 <translation id="2666092431469916601">ខាងលើ</translation>
 <translation id="2669454659051515572">អ្នក​ដែល​ប្រើប្រាស់​ឧបករណ៍​នេះ​អាច​មើលឃើញ​ឯកសារ​ដែលបានទាញយក</translation>
+<translation id="2681158575552244226">កំពុងរក្សាទុកក្នុងថាសសម្រាប់ <ph name="USER_EMAIL" />។</translation>
 <translation id="2690858294534178585">កាមេរ៉ាកំពុងត្រូវបានប្រើ</translation>
 <translation id="2691653761409724435">មិន​អាច​ប្រើ​បាន​ពេល​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="2695507686909505111">​បានបកប្រែទំព័រហើយ</translation>
@@ -1091,6 +1092,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="6685259053455152195">ផ្លូវកាត់​សម្រាប់កែប្រែ​ការកំណត់​រហ័ស និង​ប្រើប្រាស់​មុខងារ​ពី​របារអាសយដ្ឋាន។</translation>
 <translation id="6710079714193676716">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក​។ មុខងារមួយចំនួន​ប្រហែលជាមិន​អាចប្រើ​បានទេ។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">កម្មវិធី Google</translation>
+<translation id="6716730056313760676">បានរក្សាទុកក្នុងថាសសម្រាប់ <ph name="USER_EMAIL" />។</translation>
 <translation id="672735642903863329">ទទួលបាន​ចំណាំ ពាក្យសម្ងាត់ និងអ្វីៗជាច្រើនទៀត​របស់អ្នក​នៅលើឧបករណ៍ទាំងអស់​របស់អ្នក។</translation>
 <translation id="6730682669179532099">មិន​អាច​នាំ​ពាក្យសម្ងាត់​ចេញ​បាន​ទេ</translation>
 <translation id="6732087373923685049">កាមេរ៉ា</translation>
@@ -1165,6 +1167,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7102005569666697658">កំពុង​ទាញយក… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">លាក់</translation>
 <translation id="7108762695052995889">ចូលមើល​គេហទំព័រ</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">ឈ្មោះពេញ</translation>
 <translation id="7136892417564438900">កាមេរ៉ាមិនអាចប្រើបានទេ</translation>
 <translation id="7141960840225504692">ផ្ទាំងរបស់អ្នកនឹងត្រូវបានបិទ ហើយទិន្នន័យរុករកនឹងត្រូវបានលុប</translation>

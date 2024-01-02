@@ -2730,6 +2730,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3043581297103810752">Fra <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Dette nettstedet har lastet ned flere filer automatisk</translation>
 <translation id="3046178388369461825">Linux har kritisk lite lagringsplass.</translation>
+<translation id="304644035656848980">Forhåndsvisning av mikrofon</translation>
 <translation id="3046910703532196514">Nettside, fullstendig</translation>
 <translation id="304747341537320566">Talemotorer</translation>
 <translation id="3048336643003835855">HID-enheter fra leverandøren <ph name="VENDOR_ID" /></translation>
@@ -3456,6 +3457,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3659929705630080526">Du har oppgitt feil tilgangskode for mange ganger. Prøv på nytt senere</translation>
 <translation id="3660234220361471169">Uklarert</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Fant 1 eksisterende passord}other{Fant {NUM_PASSWORDS} eksisterende passord}}</translation>
+<translation id="3662207097851752847">Bekreft Google-kontoen din på telefonen</translation>
 <translation id="3664511988987167893">Utvidelsesikon</translation>
 <translation id="3665100783276035932">De fleste nettsteder skal fungere som forventet</translation>
 <translation id="3665301845536101715">Åpne i sidepanelet</translation>
@@ -4991,6 +4993,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4862642413395066333">Signering av OCSP-svar</translation>
 <translation id="4863702650881330715">Utvid kompatibilitet</translation>
 <translation id="4863769717153320198">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /> (standard)</translation>
+<translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4864805589453749318">Velg den forelderen som gir tillatelse til å legge til en skolekonto.</translation>
 <translation id="486505726797718946">Spart minne</translation>
 <translation id="486635084936119914">Åpne visse filtyper automatisk når de lastes ned</translation>
@@ -6841,7 +6844,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6350821834561350243">Gi en tydelig beskrivelse av problemet og fremgangsmåten for å gjenskape problemet (hvis det er mulig)</translation>
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kjent som ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Henter Google-kontoinformasjon …</translation>
 <translation id="635609604405270300">Hold enheten påslått</translation>
 <translation id="63566973648609420">Bare de som har passordfrasen din, kan lese de krypterte dataene dine. Passordfrasen blir verken sendt til Google eller lagret av oss. Hvis du glemmer passordfrasen eller vil endre denne innstillingen, må du <ph name="BEGIN_LINK" />tilbakestille synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Sveip opp for å flytte siden ned</translation>
@@ -7205,7 +7207,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6657180931610302174">Vil du legge til et brukernavn?</translation>
 <translation id="6657585470893396449">Passord</translation>
 <translation id="6659213950629089752">Denne siden ble zoomet inn av utvidelsen «<ph name="NAME" />»</translation>
-<translation id="6659594942844771486">Fane</translation>
+<translation id="6659594942844771486">Tab</translation>
 <translation id="6660099350750552197"><ph name="WINDOW_TITLE" /> – kameraopptak</translation>
 <translation id="6660819301598582123">Høvdingens kjære squaw får litt pizza i Mexico by.</translation>
 <translation id="666099631117081440">Utskriftstjenere</translation>
@@ -8173,6 +8175,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7416263748877373774">Vilkårene for bruk kan ikke lastes inn. Kontroller nettverkstilkoblingen, og prøv på nytt.</translation>
 <translation id="7416362041876611053">Ukjent nettverksfeil.</translation>
 <translation id="741906494724992817">Denne appen krever ingen spesielle tillatelser.</translation>
+<translation id="7419142833919893307">Brukernavn mangler</translation>
 <translation id="7419565702166471774">Bruk alltid sikre tilkoblinger</translation>
 <translation id="742130257665691897">Bokmerkene er fjernet</translation>
 <translation id="7421925624202799674">&amp;Vis sidekilde</translation>
@@ -8483,6 +8486,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7659154729610375585">Vil du avslutte Inkognitomodus likevel?</translation>
 <translation id="7659336857671800422">Gjennomgå personvernveiledningen</translation>
 <translation id="7659584679870740384">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med administratoren for å få tillatelse til å logge på.</translation>
+<translation id="7660116474961254898">Følg veiledningen på telefonen</translation>
 <translation id="7660146600670077843">Høyreklikk på en fane, og velg «Legg fanen til i en ny gruppe»</translation>
 <translation id="7661259717474717992">La nettsteder lagre og lese data i informasjonskapsler</translation>
 <translation id="7661451191293163002">Kunne ikke anskaffe noe registreringssertifikat.</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">पेजला भेट दिली</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{None}=1{१ साइटवरून (तुम्ही तुमच्या Google खाते मध्ये साइन इन केलेले राहाल)}other{# साइटवरून (तुम्ही तुमच्या Google खाते मध्ये साइन इन केलेले राहाल)}}</translation>
 <translation id="1165852471352757509">टीव्हीवरील माहितीपट, वास्तविक कार्यक्रम</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> डाउनलोड करता आली नाही</translation>
 <translation id="1174644974616730562">एन्व्हलप चायनीज #१</translation>
 <translation id="1174723505405632867">तुम्हाला <ph name="TOP_LEVEL_URL" /> वरील कुकी आणि साइट डेटा <ph name="EMBEDDED_URL" /> ला वापरण्याची अनुमती द्यायची आहे का?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">पीडीएफ निर्माता:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode धोरण सेट केले नसल्यामुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> भाषा पॅक डाउनलोड करत आहे...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">पुरुषांचे कपडे</translation>
 <translation id="2137891579555018930">परवानगीची प्रतीक्षा करत आहे...</translation>
 <translation id="213826338245044447">Mobile बुकमार्क</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">कॉम्पॅक्ट डिस्क</translation>
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="2239100178324503013">आता पाठवा</translation>
+<translation id="2239114457614475014">इनपुट संपादित करा</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
 <translation id="2246264294482514010">१० x १२ इं</translation>
 <translation id="2246480341630108201">तुमच्या पालकांनी अद्याप परवानगी दिलेली नाही</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">चेहरा आणि शरीराची निगा</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
 <translation id="2968103128155246731">व्हॅन आणि मिनीव्हॅन</translation>
+<translation id="2971483124699139256">थंब्स अपवर क्लिक केल्यावर तुम्हाला तयार केलेला मजकूर आवडला आहे असा फीडबॅक सबमिट केला जातो.</translation>
 <translation id="2972581237482394796">&amp;पुन्हा करा</translation>
 <translation id="2977665033722899841">सध्या निवडलेली <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ऑपेरा</translation>
@@ -1572,6 +1576,7 @@
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />". अ‍ॅप्सद्वारे संदर्भ दिलेल्या file_extension "<ph name="FILE_EXTENSION" />" साठी डुप्लिकेट हँडलर.</translation>
 <translation id="4134123981501319574">दस्तऐवज तयार करा</translation>
 <translation id="413544239732274901">आणखी जाणून घ्या</translation>
+<translation id="4139859738677203214">थंब्स डाउन प्रेस केल्यावर एक फॉर्म उघडतो, ज्यामध्ये तुम्हाला तयार केलेला मजकूर का आवडला नाही याबद्दल तपशीलवार फीडबॅक सबमिट करता येतो.</translation>
 <translation id="4140905530744469899">प्रोफाइल आयडी:</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">मासेमारी</translation>
 <translation id="8884537526797090108">गोपनीय आशय रेकॉर्ड करू शकत नाही</translation>
 <translation id="8888187300091017436">गाद्या</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> नियंत्रित करा आणि त्यामध्ये अ‍ॅक्सेस करण्यायोग्य स्मार्ट कार्डचा अ‍ॅक्सेस मिळवा.</translation>
 <translation id="8891727572606052622">चुकीचे प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">सर्वात प्रथम लॉंग एज</translation>
 <translation id="8897428486789851669">पोहणे</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">페이지를 방문함</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{없음}=1{사이트 1개(Google 계정에 로그인된 상태가 유지됨)}other{사이트 #개(Google 계정에 로그인된 상태가 유지됨)}}</translation>
 <translation id="1165852471352757509">TV 다큐멘터리 및 논픽션</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" />를 다운로드할 수 없습니다</translation>
 <translation id="1174644974616730562">봉투 Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" />에서 <ph name="TOP_LEVEL_URL" />의 쿠키와 사이트 데이터를 사용하도록 허용할까요?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF 변환 프로그램:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode 정책이 설정되지 않았기 때문에 지정한 템플릿이 적용되지 않을 수 있습니다.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> 언어 팩 다운로드 중…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">남성 의류</translation>
 <translation id="2137891579555018930">권한을 기다리는 중…</translation>
 <translation id="213826338245044447">모바일 북마크</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
+<translation id="2239114457614475014">입력 수정</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
 <translation id="2246264294482514010">10x12인치</translation>
 <translation id="2246480341630108201">아직 부모님이 허락하지 않았습니다.</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">얼굴 및 몸 관리</translation>
 <translation id="2962073860865348475">12x18인치</translation>
 <translation id="2968103128155246731">밴 및 미니밴</translation>
+<translation id="2971483124699139256">좋아요를 누르면 생성된 텍스트가 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />이(가) 현재 선택되어 있습니다. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">오페라</translation>
@@ -1573,6 +1577,7 @@
 <translation id="4132448310531350254">앱 "<ph name="POLICY_IDS_LIST" />"에서 참조하는 파일 확장자(file_extension) "<ph name="FILE_EXTENSION" />"의 핸들러가 중복됩니다.</translation>
 <translation id="4134123981501319574">문서 만들기</translation>
 <translation id="413544239732274901">자세히 알아보기</translation>
+<translation id="4139859738677203214">싫어요를 누르면 생성된 텍스트가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="4140905530744469899">프로필 ID:</translation>
 <translation id="4142935452406587478">트레이 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3985,6 +3990,7 @@
 <translation id="8877780815363510165">낚시</translation>
 <translation id="8884537526797090108">기밀 콘텐츠는 녹화할 수 없음</translation>
 <translation id="8888187300091017436">매트리스</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />를 제어하고 액세스할 수 있도록 스마트 카드 액세스 권한을 얻습니다.</translation>
 <translation id="8891727572606052622">프록시 모드가 잘못되었습니다.</translation>
 <translation id="8894794286471754040">긴쪽 먼저</translation>
 <translation id="8897428486789851669">수영</translation>

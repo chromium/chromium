@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ <ph name="ORIGIN" /> หรือแอปที่อยู่ในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="5100237604440890931">ยุบ - คลิกเพื่อขยาย</translation>
 <translation id="5123685120097942451">แท็บที่ไม่ระบุตัวตน</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ราคาต่ำลงในแท็บที่เปิดอยู่}other{ราคาต่ำลงในแท็บที่เปิดอยู่}}</translation>
 <translation id="5186036860380548585">ตัวเลือกอยู่ตรงบริเวณด้านบนของหน้าจอ</translation>
 <translation id="5197729504361054390">ระบบจะแชร์รายชื่อติดต่อที่คุณเลือกกับ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /></translation>
 <translation id="5216942107514965959">เข้าชมล่าสุดวันนี้</translation>

@@ -2718,6 +2718,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3043581297103810752">À partir de <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Ce site a automatiquement téléchargé plusieurs fichiers</translation>
 <translation id="3046178388369461825">L'espace disque Linux est presque saturé</translation>
+<translation id="304644035656848980">Aperçu de votre microphone</translation>
 <translation id="3046910703532196514">Page Web, terminé</translation>
 <translation id="304747341537320566">Moteurs de reconnaissance vocale</translation>
 <translation id="3048336643003835855">Appareils HID du fournisseur <ph name="VENDOR_ID" /></translation>
@@ -3440,6 +3441,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3659929705630080526">Vous avez entré un trop grand nombre de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3660234220361471169">Non fiable</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{un ancien mot de passe trouvé}one{{NUM_PASSWORDS} mots de passe existants trouvés}other{{NUM_PASSWORDS} mots de passe existants trouvés}}</translation>
+<translation id="3662207097851752847">Confirmez votre compte Google sur votre téléphone</translation>
 <translation id="3664511988987167893">Icône de l'extension</translation>
 <translation id="3665100783276035932">La plupart des sites devraient fonctionner comme prévu</translation>
 <translation id="3665301845536101715">Ouvrir dans le panneau latéral</translation>
@@ -4973,6 +4975,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4862642413395066333">Réponses OCSP de signature</translation>
 <translation id="4863702650881330715">Améliorer la compatibilité</translation>
 <translation id="4863769717153320198">Semblable à <ph name="WIDTH" /> x <ph name="HEIGHT" /> (résolution par défaut)</translation>
+<translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4864805589453749318">Sélectionne le parent qui t'accorde l'autorisation d'ajouter un compte scolaire.</translation>
 <translation id="486505726797718946">Mémoire enregistrée</translation>
 <translation id="486635084936119914">Ouvrir automatiquement certains types de fichiers après le téléchargement</translation>
@@ -6823,7 +6826,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6350821834561350243">Décrivez clairement le problème et indiquez les étapes à suivre pour reproduire le problème (si possible)</translation>
 <translation id="6351178441572658285">Langues de l'application</translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (aussi appelée ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Obtention des informations du compte Google...</translation>
 <translation id="635609604405270300">Laissez l'appareil allumé</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit pas la phrase de passe et ne la stocke pas. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Faites défiler l'écran vers le haut pour déplacer la page vers le bas</translation>
@@ -8150,6 +8152,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7416263748877373774">Impossible de charger les conditions d'utilisation. Veuillez vérifier votre connexion réseau, puis réessayer.</translation>
 <translation id="7416362041876611053">Erreur réseau inconnue.</translation>
 <translation id="741906494724992817">Cette application fonctionne sans autorisation spéciale.</translation>
+<translation id="7419142833919893307">Aucun nom d'utilisateur ajouté</translation>
 <translation id="7419565702166471774">Toujours utiliser des connexions sécurisées</translation>
 <translation id="742130257665691897">Favoris supprimés</translation>
 <translation id="7421925624202799674">Affic&amp;her le code source de la page</translation>
@@ -8459,6 +8462,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7659154729610375585">Quitter le mode de navigation privée quand même?</translation>
 <translation id="7659336857671800422">Passer en revue le guide sur la confidentialité</translation>
 <translation id="7659584679870740384">Vous n'êtes pas autorisé(e) à utiliser cet appareil. Pour obtenir l'autorisation de vous y connecter, veuillez communiquer avec l'administrateur.</translation>
+<translation id="7660116474961254898">Suivez les instructions sur votre téléphone</translation>
 <translation id="7660146600670077843">Faites un clic droit sur un onglet et sélectionnez « Ajouter l'onglet au nouveau groupe »</translation>
 <translation id="7661259717474717992">Autoriser les sites à enregistrer et à lire les données des fichiers témoins</translation>
 <translation id="7661451191293163002">Impossible d'obtenir un certificat d'enregistrement.</translation>

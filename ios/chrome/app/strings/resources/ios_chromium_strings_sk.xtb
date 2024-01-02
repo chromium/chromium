@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Tip pre Chromium</translation>
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
 <translation id="2178608107313874732">Chromium momentálne nemôže použiť váš fotoaparát</translation>
+<translation id="219374086636266276">Vo svojom účte Google môžete <ph name="BEGIN_LINK" />spravovať, ktoré údaje prehliadača Chromium sa ukladajú<ph name="END_LINK" />.
+Ďalšie nastavenia, ktoré zlepšujú prostredie prehliadača Chromium pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2218146227246548550">Vaša organizácia vyžaduje, aby ste sa na používanie prehliadača Chromium prihlásili. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Táto adresa je momentálne uložená v prehliadači Chromium. Ak ju chcete používať v službách Googlu, uložte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
@@ -76,9 +78,10 @@
 <translation id="328933489847748230">{count,plural, =1{Práve sa zobrazuje 1 okno prehliadača Chromium}few{Práve sa zobrazujú {count} okná prehliadača Chromium}many{Now showing {count} Chromium windows}other{Práve sa zobrazuje {count} okien prehliadača Chromium}}</translation>
 <translation id="3344973607274501920">Prehliadaču Chromium sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
 <translation id="3366305173356742781">Údaje prehliadača Chromium vo vašom účte</translation>
-<translation id="3387107508582892610">{THRESHOLD,plural, =1{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minútu. Môže to zahŕňať históriu a automatické dopĺňanie.}few{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}many{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}other{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minút. Môže to zahŕňať históriu a automatické dopĺňanie.}}</translation>
+<translation id="3387107508582892610">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu. Môže to zahŕňať históriu a automatické dopĺňanie.}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút. Môže to zahŕňať históriu a automatické dopĺňanie.}}</translation>
 <translation id="3472200483164753384">Nepodporované vo verzii Chromium Canary</translation>
 <translation id="3478750326643748149">Skryť text Využívajte Chromium naplno</translation>
+<translation id="347967311580159871">Ďalšie nastavenia, ktoré zlepšujú prostredie prehliadača Chromium pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Vaše heslo nebolo zdieľané. Skontrolujte internetové pripojenie a uistite sa, že ste sa prihlásili do prehliadača Chromium. Potom to skúste znova.</translation>
 <translation id="3554027294407525061">Vymazanie dát prehliadania v prehliadači Chromium.</translation>
 <translation id="3567399274263440288">Ak chcete využívať Chromium naplno, prihláste sa doň svojím účtom Google.</translation>
@@ -284,7 +287,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje prehl
 <translation id="8909995017390087892">Chromium pre iOS</translation>
 <translation id="8924617840944134898">Otvoriť kartu inkognito v prehliadači Chromium</translation>
 <translation id="894437814105052438">Keď sa odhlásite, Chromium prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>
-<translation id="8950326149985259075">{THRESHOLD,plural, =1{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minútu}few{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minúty}many{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minúty}other{Dôjde k nej, keď Chromium nepoužívate {THRESHOLD} minút}}</translation>
+<translation id="8950326149985259075">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút}}</translation>
 <translation id="8963279154877372067">Povoľte upozornenia prehliadača Chromium, aby ste mohli dostávať upozornenia na pokles ceny</translation>
 <translation id="900560297598578021">Prihlásili ste sa ako <ph name="EMAIL" />.
 

@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">ການດຳເນີນການນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ <ph name="ORIGIN" /> ຫຼື ແອັບທີ່ຢູ່ໃນໜ້າຈໍຫຼັກຂອງທ່ານຈັດເກັບໄວ້.</translation>
 <translation id="5100237604440890931">ຫຍໍ້ລົງແລ້ວ - ຄລິກ​ເພື່ອ​ຂະ​ຫຍາຍ.</translation>
 <translation id="5123685120097942451">ແຖບທີ່ບໍ່ເຜີຍຕົວຕົນ</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}other{ລາຄາຫຼຸດລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ}}</translation>
 <translation id="5186036860380548585">ຕົວເລືອກມີໃຫ້ນຳໃຊ້ຢູ່ໃກ້ສ່ວນເທິງສຸດຂອງໜ້າຈໍ</translation>
 <translation id="5197729504361054390">ລາຍຊື່ຜູ້ຕິດຕໍ່ທີ່ທ່ານເລືອກຈະຖືກແບ່ງປັນກັບ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">ເຂົ້າເບິ່ງມື້ນີ້</translation>

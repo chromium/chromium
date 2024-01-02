@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Lehte külastatakse</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Puudub}=1{1 saidilt (jääte oma Google'i kontole sisselogituks)}other{# saidilt (jääte oma Google'i kontole sisselogituks)}}</translation>
 <translation id="1165852471352757509">Dokumentaalsed telesaated</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> keele allalaadimine ebaõnnestus</translation>
 <translation id="1174644974616730562">Ümbrik Hiina nr 1</translation>
 <translation id="1174723505405632867">Kas soovite lubada saidil <ph name="EMBEDDED_URL" /> ülataseme URL-il <ph name="TOP_LEVEL_URL" /> kasutada küpsisefaile ja saidi andmeid?
 
@@ -598,6 +599,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2126374524350484896">PDF-i looja:</translation>
 <translation id="2130448033692577677">Teie määratud malle ei pruugita rakendada, kuna reeglit DnsOverHttpsMode pole määratud.</translation>
 <translation id="2130699163006053678">A3 × 7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> keele paketi allalaadimine... <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Meesteriided</translation>
 <translation id="2137891579555018930">Heakskiidu ootel …</translation>
 <translation id="213826338245044447">Mobiili järjehoidjad</translation>
@@ -655,6 +657,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
+<translation id="2239114457614475014">Sisendi muutmine</translation>
 <translation id="2241693394036365668">Fail on alla laaditud</translation>
 <translation id="2246264294482514010">10 × 12 tolli</translation>
 <translation id="2246480341630108201">Sinu vanem pole seda veel lubanud</translation>
@@ -989,6 +992,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2959113999220720579">Näo- ja kehahooldus</translation>
 <translation id="2962073860865348475">12 × 18 tolli</translation>
 <translation id="2968103128155246731">Kaubikud ja minikaubikud</translation>
+<translation id="2971483124699139256">Meeldivaks märkimine saadab tagasiside, et genereeritud tekst meeldib teile.</translation>
 <translation id="2972581237482394796">&amp;Tee uuesti</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, praegu valitud. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ooper</translation>
@@ -1573,6 +1577,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4132448310531350254">Failinimelaienduse „<ph name="FILE_EXTENSION" />“ töötlejaks on määratud mitu rakendust: „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Loo dokument</translation>
 <translation id="413544239732274901">Lisateave</translation>
+<translation id="4139859738677203214">Mittemeeldivaks märkimine avab vormi üksikasjaliku tagasiside saatmiseks selle kohta, miks genereeritud tekst teile ei meeldi.</translation>
 <translation id="4140905530744469899">Profiili ID:</translation>
 <translation id="4142935452406587478">Salv 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Lisateave:
 <translation id="8877780815363510165">Kalapüük</translation>
 <translation id="8884537526797090108">Konfidentsiaalset sisu ei saa salvestada</translation>
 <translation id="8888187300091017436">Madratsid</translation>
+<translation id="8890048757975398817">Juhi lugejat <ph name="READERNAME" /> ja hangi juurdepääs sellele juurdepääsetavale kiipkaardile.</translation>
 <translation id="8891727572606052622">Kehtetu puhverserveri režiim.</translation>
 <translation id="8894794286471754040">Pikem serv enne</translation>
 <translation id="8897428486789851669">Ujumine</translation>

@@ -657,6 +657,7 @@
 <translation id="2233745931693710080">Compact Disc (CD)</translation>
 <translation id="2235344399760031203">Τα cookie τρίτου μέρους αποκλείστηκαν.</translation>
 <translation id="2239100178324503013">Αποστολή τώρα</translation>
+<translation id="2239114457614475014">Επεξεργασία εισαγωγής</translation>
 <translation id="2241693394036365668">Το αρχείο κατέβηκε</translation>
 <translation id="2246264294482514010">10 x 12 ίντσες</translation>
 <translation id="2246480341630108201">Ο γονέας σου δεν έχει δώσει ακόμα την έγκρισή του</translation>
@@ -991,6 +992,7 @@
 <translation id="2959113999220720579">Περιποίηση προσώπου και σώματος</translation>
 <translation id="2962073860865348475">12 x 18 ίντσες</translation>
 <translation id="2968103128155246731">Βαν και μίνιβαν</translation>
+<translation id="2971483124699139256">Με την επιλογή "Μου αρέσει" υποβάλετε ένα σχόλιο ότι σας αρέσει το κείμενο που δημιουργήθηκε.</translation>
 <translation id="2972581237482394796">&amp;Επανάληψη ενέργειας</translation>
 <translation id="2977665033722899841">Έχει επιλεγεί ο λογαριασμός <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Όπερα</translation>
@@ -1575,6 +1577,7 @@
 <translation id="4132448310531350254">Διπλότυποι δείκτες χειρισμού για το file_extension <ph name="FILE_EXTENSION" /> που αναφέρεται από τις εφαρμογές <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Δημιουργία εγγράφου</translation>
 <translation id="413544239732274901">Μάθετε περισσότερα</translation>
+<translation id="4139859738677203214">Με την επιλογή "Δεν μου αρέσει" ανοίγει μια φόρμα για την υποβολή λεπτομερών σχολίων σχετικά με τους λόγους για τους οποίους δεν σας αρέσει το κείμενο που δημιουργήθηκε.</translation>
 <translation id="4140905530744469899">Αναγνωριστικό προφίλ:</translation>
 <translation id="4142935452406587478">Δίσκος 10</translation>
 <translation id="4148925816941278100">American Express</translation>

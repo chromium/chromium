@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Наведваецца старонка</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Сайтаў няма}=1{З 1 сайта (вы застаняцеся ва Уліковым запісе Google)}one{З # сайта (вы застаняцеся ва Уліковым запісе Google)}few{З # сайтаў (вы застаняцеся ва Уліковым запісе Google)}many{З # сайтаў (вы застаняцеся ва Уліковым запісе Google)}other{З # сайта (вы застаняцеся ва Уліковым запісе Google)}}</translation>
 <translation id="1165852471352757509">Дакументальныя і навукова-папулярныя фільмы</translation>
+<translation id="1167877250265821930">Не ўдалося спампаваць пакет: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Канверт Chinese № 1</translation>
 <translation id="1174723505405632867">Дазволіць сайту <ph name="EMBEDDED_URL" /> выкарыстоўваць файлы cookie і даныя сайта <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">Пераўтваральнік PDF:</translation>
 <translation id="2130448033692577677">Зададзеныя вамі шаблоны могуць не прымяніцца, бо палітыка DnsOverHttpsMode не вызначана.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Спампоўваецца моўны пакет для наступнай мовы: <ph name="LANGUAGE" />…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Мужчынскае адзенне</translation>
 <translation id="2137891579555018930">Чакаем дазволу...</translation>
 <translation id="213826338245044447">Мабільныя закладкі</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">Кампакт-дыск</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2239100178324503013">Адправіць</translation>
+<translation id="2239114457614475014">Змяніць уведзеныя даныя</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
 <translation id="2246264294482514010">10 x 12 цаляў</translation>
 <translation id="2246480341630108201">Твой бацька (твая маці) яшчэ не ўхваліў(-ла) гэты сайт</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">Догляд твару і цела</translation>
 <translation id="2962073860865348475">12 x 18 цаляў</translation>
 <translation id="2968103128155246731">Мікрааўтобусы і мінівэны</translation>
+<translation id="2971483124699139256">Калі націснуць кнопку "Падабаецца", будзе адпраўлены водгук аб тым, што вам спадабаўся згенерыраваны тэкст.</translation>
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, радок выбраны. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1572,6 +1576,7 @@
 <translation id="4132448310531350254">У спісе "<ph name="POLICY_IDS_LIST" />" праграм зададзена некалькі апрацоўшчыкаў для файлаў з пашырэннем "<ph name="FILE_EXTENSION" />".</translation>
 <translation id="4134123981501319574">Стварыць дакумент</translation>
 <translation id="413544239732274901">Даведацца больш</translation>
+<translation id="4139859738677203214">Калі націснуць кнопку "Не падабаецца", будзе адкрыта форма для адпраўкі падрабязнага водгуку аб тым, чаму вам не спадабаўся згенерыраваны тэкст.</translation>
 <translation id="4140905530744469899">Ідэнтыфікатар профілю:</translation>
 <translation id="4142935452406587478">Латок 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">Рыбалка</translation>
 <translation id="8884537526797090108">Немагчыма зрабіць запіс з-за наяўнасці на экране прыватнага змесціва</translation>
 <translation id="8888187300091017436">Матрацы</translation>
+<translation id="8890048757975398817">кантраляваць прыладу "<ph name="READERNAME" />" і атрымаць доступ да разумнай карткі, звязанай з ёй.</translation>
 <translation id="8891727572606052622">Няправільны рэжым проксі-сервера.</translation>
 <translation id="8894794286471754040">Спачатку доўгі край</translation>
 <translation id="8897428486789851669">Плаванне</translation>

@@ -88,6 +88,8 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3146109040683991651">Imposta Chrome come browser predefinito</translation>
 <translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3173834708294760622">Pagina di Google Chrome</translation>
+<translation id="3209155060213569278">Puoi <ph name="BEGIN_LINK" />gestire quali dati di Chrome salvare<ph name="END_LINK" /> nel tuo Account Google.
+Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase.</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3340938510625667914">Azioni di Chrome</translation>
@@ -161,6 +163,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="5527026824954593399">Tocca l'opzione "Visualizza con Google Maps su Chrome".</translation>
 <translation id="5552137475244467770">Chrome confronta periodicamente le tue password con gli elenchi pubblicati online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="5554520618550346933">Quando utilizzi una password, Chrome ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
+<translation id="5601180634394228718">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Apri impostazioni &gt; Privacy &gt; Fotocamera &gt; Google Chrome e attiva la videocamera.</translation>
 <translation id="5642200033778930880">Google Chrome non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
 <translation id="5661521615548540542">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova più tardi.</translation>

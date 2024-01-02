@@ -199,6 +199,7 @@
 <translation id="4148957013307229264">מתקין...</translation>
 <translation id="4149882025268051530">‏המתקין נכשל בביצוע דחיסה לארכיון. יש להוריד שוב את Google Chrome.</translation>
 <translation id="4153934450158521343">‏Chrome ייסגר בקרוב והנתונים שבו יימחקו</translation>
+<translation id="4173512894976930765">‏סביר להניח שאתרים יפעלו כצפוי. אם סוגרים את כל החלונות של Chrome, מתבצעת יציאה מהחשבון ברוב האתרים, חוץ מחשבון Google אם הוא מחובר ל-Chrome.</translation>
 <translation id="4175922240926474352">‏ההורדה הזו נחסמה על ידי Chrome כי האתר לא משתמש בחיבור מאובטח ויכול להיות שבוצעו שינויים לא מורשים בקובץ</translation>
 <translation id="4191857738314598978">{0,plural, =1{‏צריך להפעיל מחדש את Chrome תוך יום אחד}one{‏צריך להפעיל מחדש את Chrome תוך # ימים}two{‏צריך להפעיל מחדש את Chrome תוך # ימים}other{‏צריך להפעיל מחדש את Chrome תוך # ימים}}</translation>
 <translation id="4205939740494406371">‏Chrome לא יכול לבדוק את הסיסמאות שלך. יש לנסות שוב בעוד 24 שעות או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google<ph name="END_LINK" />.</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">పేజీని సందర్శించినప్పుడు</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ఏవీ లేవు}=1{1 సైట్ నుండి (మీ Google ఖాతాకు సైన్ ఇన్ అయి ఉంటారు)}other{# సైట్‌ల నుండి (మీ Google ఖాతాకు సైన్ ఇన్ చేసి ఉంటారు)}}</translation>
 <translation id="1165852471352757509">టీవీ డాక్యుమెంటరీ &amp; వాస్తవికం</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> డౌన్‌లోడ్ చేయడం విఫలమైంది</translation>
 <translation id="1174644974616730562">ఎన్వలప్ చైనీస్ #1</translation>
 <translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" />లోని కుక్కీలను, సైట్ డేటాను ఉపయోగించడానికి మీరు <ph name="EMBEDDED_URL" />ను అనుమతించాలనుకుంటున్నారా?
 
@@ -593,6 +594,7 @@
 <translation id="2126374524350484896">PDF ప్రొడ్యూసర్:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> భాషకు సంబంధించిన ప్యాక్‌ను డౌన్‌లోడ్ చేస్తోంది...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">పురుషుల దుస్తులు</translation>
 <translation id="2137891579555018930">అనుమతి కోసం వేచి ఉంది...</translation>
 <translation id="213826338245044447">మొబైల్ బుక్‌మార్క్‌లు</translation>
@@ -650,6 +652,7 @@
 <translation id="2233745931693710080">కాంపాక్ట్ డిస్క్</translation>
 <translation id="2235344399760031203">థర్డ్-పార్టీ కుక్కీలు బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="2239100178324503013">ఇప్పుడే పంపండి</translation>
+<translation id="2239114457614475014">ఇన్‌పుట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="2241693394036365668">ఫైల్ డౌన్‌లోడ్ చేసినప్పుడు</translation>
 <translation id="2246264294482514010">10 x 12 అంగుళాలు</translation>
 <translation id="2246480341630108201">మీ తల్లి/తండ్రి ఈ సైట్‌ను యాక్సెస్ చేయడానికి ఇంకా అనుమతి ఇవ్వలేదు</translation>
@@ -984,6 +987,7 @@
 <translation id="2959113999220720579">ముఖం &amp; శరీర సంరక్షణ</translation>
 <translation id="2962073860865348475">12 x 18 అంగుళాలు</translation>
 <translation id="2968103128155246731">వ్యాన్‌లు &amp; మినీ వ్యాన్‌లు</translation>
+<translation id="2971483124699139256">జెనరేట్ టెక్స్ట్ మీకు నచ్చింది అనే ఫీడ్‌బ్యాక్‌ను 'బాగుంది' ఆప్షన్ సబ్మిట్ చేస్తుంది.</translation>
 <translation id="2972581237482394796">&amp;పునరావృతం</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ప్రస్తుతం ఎంచుకోబడింది. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ఓప్రా</translation>
@@ -1568,6 +1572,7 @@
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" యాప్‌ల ద్వారా రెఫర్ చేయబడిన file_extension "<ph name="FILE_EXTENSION" />"కు డూప్లికేట్ హ్యాండ్లర్‌లు ఉన్నాయి.</translation>
 <translation id="4134123981501319574">డాక్‌ను క్రియేట్ చేయండి</translation>
 <translation id="413544239732274901">మరింత తెలుసుకోండి</translation>
+<translation id="4139859738677203214">జెనరేట్ చేసిన టెక్స్ట్‌ను మీరు ఎందుకు డిస్‌లైక్ చేస్తున్నారు అనే దానిపై వివరణాత్మక ఫీడ్‌బ్యాక్‌ను సబ్మిట్ చేయడం కోసం 'బాగా లేదు' ఆప్షన్ ఒక ఫారమ్‌ను తెరుస్తుంది.</translation>
 <translation id="4140905530744469899">ప్రొఫైల్ ID:</translation>
 <translation id="4142935452406587478">ట్రే 10</translation>
 <translation id="4148925816941278100">అమెరికన్ ఎక్స్‌ప్రెస్</translation>
@@ -3981,6 +3986,7 @@
 <translation id="8877780815363510165">చేపలు పట్టడం</translation>
 <translation id="8884537526797090108">గోప్యమైన కంటెంట్‌ను రికార్డ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="8888187300091017436">పరుపులు</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />‌ను కంట్రోల్ చేసి, దానికి యాక్సెస్ చేయగల స్మార్ట్ కార్డ్‌‌కు యాక్సెస్ పొందండి.</translation>
 <translation id="8891727572606052622">చెల్లని ప్రాక్సీ మోడ్.</translation>
 <translation id="8894794286471754040">పేజీని సాధారణంగా ప్రింట్ చేయి</translation>
 <translation id="8897428486789851669">ఈత</translation>

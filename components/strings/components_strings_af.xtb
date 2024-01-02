@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Bladsy is besoek</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 werf af (jy sal by jou Google-rekening aangemeld bly)}other{Van # werwe af (jy sal by jou Google-rekening aangemeld bly)}}</translation>
 <translation id="1165852471352757509">TV-dokumentêr en -niefiksie</translation>
+<translation id="1167877250265821930">Kon nie <ph name="LANGUAGE" /> aflaai nie</translation>
 <translation id="1174644974616730562">Koevert Chinees #1</translation>
 <translation id="1174723505405632867">Wil jy <ph name="EMBEDDED_URL" /> toelaat om webkoekies en werfdata te gebruik op <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2126374524350484896">PDF-skepper:</translation>
 <translation id="2130448033692577677">Die template wat jy gespesifiseer het, kan dalk nie toegepas word die omdat die DnsOverHttpsMode-beleid nie gestel is nie.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Laai tans taalpakket vir <ph name="LANGUAGE" /> af … <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Mansklere</translation>
 <translation id="2137891579555018930">Wag tans vir toestemming …</translation>
 <translation id="213826338245044447">Mobiele boekmerke</translation>
@@ -655,6 +657,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2233745931693710080">Laserskyf</translation>
 <translation id="2235344399760031203">Derdepartywebkoekies word geblokkeer</translation>
 <translation id="2239100178324503013">Stuur nou</translation>
+<translation id="2239114457614475014">Wysig invoer</translation>
 <translation id="2241693394036365668">Lêer is afgelaai</translation>
 <translation id="2246264294482514010">10x12 dm.</translation>
 <translation id="2246480341630108201">Jou ouer het nog nie gesê dat dit OK is nie</translation>
@@ -989,6 +992,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2959113999220720579">Gesig- en liggaamsorg</translation>
 <translation id="2962073860865348475">12x18 dm.</translation>
 <translation id="2968103128155246731">Vervoer- en miniwaens</translation>
+<translation id="2971483124699139256">Opduim stuur terugvoer dat jy van genereerde teks hou.</translation>
 <translation id="2972581237482394796">Herdoen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tans gekies. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4132448310531350254">Duplikaathanteerders vir file_extension "<ph name="FILE_EXTENSION" />" waarna programme "<ph name="POLICY_IDS_LIST" />" verwys.</translation>
 <translation id="4134123981501319574">Skep dokument</translation>
 <translation id="413544239732274901">Kom meer te wete</translation>
+<translation id="4139859738677203214">Afduim maak ’n vorm oop vir die indien van gedetailleerde terugvoer oor hoekom jy nie van genereerde teks hou nie.</translation>
 <translation id="4140905530744469899">Profiel-ID:</translation>
 <translation id="4142935452406587478">Laai 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Bykomende besonderhede:
 <translation id="8877780815363510165">Visvang</translation>
 <translation id="8884537526797090108">Kan nie vertroulike inhoud opneem nie</translation>
 <translation id="8888187300091017436">Matrasse</translation>
+<translation id="8890048757975398817">Beheer <ph name="READERNAME" /> en kry toegang tot die slimkaart wat daarvoor toeganklik is.</translation>
 <translation id="8891727572606052622">Ongeldige instaanbedienermodus.</translation>
 <translation id="8894794286471754040">Lang kant eerste</translation>
 <translation id="8897428486789851669">Swem</translation>

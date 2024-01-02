@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Binisita ang page</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Wala}=1{Mula sa 1 site (mananatili kang naka-sign in sa iyong Google Account)}one{Mula sa # site (mananatili kang naka-sign in sa iyong Google Account)}other{Mula sa # na site (mananatili kang naka-sign in sa iyong Google Account)}}</translation>
 <translation id="1165852471352757509">Dokumentaryo at nonfiction sa TV</translation>
+<translation id="1167877250265821930">Hindi na-download ang <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">Gusto mo bang payagan ang <ph name="EMBEDDED_URL" /> na gumamit ng cookies at data ng site sa <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2126374524350484896">Producer ng PDF:</translation>
 <translation id="2130448033692577677">Posibleng hindi mailapat ang mga template na tinukoy mo dahil hindi naitakda ang patakarang DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Dina-download ang <ph name="LANGUAGE" /> language pack...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Mga panlalaking damit</translation>
 <translation id="2137891579555018930">Naghihintay ng pahintulot...</translation>
 <translation id="213826338245044447">Mga Bookmark sa Mobile</translation>
@@ -655,6 +657,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Bina-block ang third-party na cookies</translation>
 <translation id="2239100178324503013">Ipadala ngayon</translation>
+<translation id="2239114457614475014">I-edit ang input</translation>
 <translation id="2241693394036365668">Nag-download ng file</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Hindi pa nagsasabi ng OK ang iyong magulang</translation>
@@ -989,6 +992,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2959113999220720579">Pangangalaga ng mukha at katawan</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
 <translation id="2968103128155246731">Mga van at minivan</translation>
+<translation id="2971483124699139256">Nagsusumite ang thumbs up ng feedback na gusto mo ang binuong text.</translation>
 <translation id="2972581237482394796">&amp;I-redo</translation>
 <translation id="2977665033722899841">Kasalukuyang napili ang <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4132448310531350254">Duplicate na mga tagapangasiwa para sa file_extension na "<ph name="FILE_EXTENSION" />" na ni-reference ng mga app na "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Gumawa ng doc</translation>
 <translation id="413544239732274901">Matuto pa</translation>
+<translation id="4139859738677203214">Nagbubukas ang thumbs down ng form para sa pagsusumite ng detalyadong feedback tungkol sa kung bakit hindi mo gusto ang binuong text.</translation>
 <translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">Tray 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Mga karagdagang detalye:
 <translation id="8877780815363510165">Pangingisda</translation>
 <translation id="8884537526797090108">Hindi puwedeng mag-record ng kumpidensyal na content</translation>
 <translation id="8888187300091017436">Mga Mattress</translation>
+<translation id="8890048757975398817">Kontrolin ang <ph name="READERNAME" /> at magkaroon ng access sa smart card na naa-access nito.</translation>
 <translation id="8891727572606052622">Di-wastong mode ng proxy.</translation>
 <translation id="8894794286471754040">Long edge muna</translation>
 <translation id="8897428486789851669">Paglangoy</translation>

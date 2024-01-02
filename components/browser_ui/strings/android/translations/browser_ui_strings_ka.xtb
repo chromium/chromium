@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">ეს მოქმედება წაშლის <ph name="ORIGIN" />-ის ან მისი აპის მიერ თქვენს მთავარ ეკრანზე შენახულ ყველა მონაცემს.</translation>
 <translation id="5100237604440890931">ჩაკეცილია — დააწკაპუნეთ გასაშლელად.</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{ფასის კლება თქვენს გახსნილ ჩანართებში}other{ფასთა კლება თქვენს გახსნილ ჩანართებში}}</translation>
 <translation id="5186036860380548585">ვარიანტი ხელმისაწვდომია ეკრანის ზედა ნაწილთან</translation>
 <translation id="5197729504361054390">თქვენ მიერ არჩეული კონტაქტები გაზიარდება <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-თან.</translation>
 <translation id="5216942107514965959">ბოლო ვიზიტი იყო დღეს</translation>

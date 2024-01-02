@@ -88,6 +88,8 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3146109040683991651">Gosod Chrome fel Porwr Diofyn</translation>
 <translation id="3167189358072330585">Nid yw'ch cyfrif yn gweithio ar Google Chrome. Cysylltwch â'ch gweinyddwr parth neu defnyddiwch Gyfrif Google rheolaidd i fewngofnodi.</translation>
 <translation id="3173834708294760622">Tudalen Google Chrome</translation>
+<translation id="3209155060213569278">Gallwch <ph name="BEGIN_LINK" />reoli pa ddata Chrome sy'n cael eu cadw<ph name="END_LINK" /> yn eich Cyfrif Google.
+Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">I ddefnyddio a chadw data Chrome yn eich Cyfrif Google, rhowch eich cyfrinymadrodd.</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3340938510625667914">Chrome Actions</translation>
@@ -161,6 +163,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="5527026824954593399">Tapio "Gweld gyda Google Maps ar Chrome."</translation>
 <translation id="5552137475244467770">Mae Chrome o bryd i'w gilydd yn gwirio'ch cyfrineiriau yn erbyn rhestrau sydd wedi'u cyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddwyr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
 <translation id="5554520618550346933">Pan fyddwch yn defnyddio cyfrinair, mae Chrome yn eich rhybuddio os yw wedi'i gyhoeddi ar-lein. Wrth wneud hyn, mae eich cyfrineiriau a'ch enwau defnyddiwr wedi'u hamgryptio, felly ni all unrhyw un, gan gynnwys Google, eu darllen.</translation>
+<translation id="5601180634394228718">Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph name="BEGIN_LINK" />Gwasanaethau Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Agorwch Gosodiadau &gt; Preifatrwydd &gt; Camera &gt; Google Chrome a throwch y camera ymlaen.</translation>
 <translation id="5642200033778930880">Ni all Google Chrome ddefnyddio'ch camera yn y modd Gwedd Hollt</translation>
 <translation id="5661521615548540542">Ni allai Rheolwr Cyfrineiriau Google wirio pob cyfrinair. Rhowch gynnig arall arni'n nes ymlaen.</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Bekor qilindi</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> ekskluziv resurslari chiqdi</translation>
 <translation id="1022628058306505708">Yer</translation>
+<translation id="103306827243002956">Oxirgi fon rasmlari</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ta oqim, <ph name="CPU_MAX_CLOCK_SPEED" /> GGs)</translation>
 <translation id="1047773237499189053">Yangi funksiya chiqdi, batafsil axborot uchun tepaga strelkani bosing</translation>
 <translation id="1059913517121127803">Skanerlash ishga tushmadi</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Kamida bitta fotoalbom tanlanishi kerak</translation>
 <translation id="2230005943220647148">Selsiy</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Yana yaratish</translation>
 <translation id="2236746079896696523">Klaviatura orqa chirogʻini yoqish/oʻchirish</translation>
 <translation id="2240366984605217732">Sxemani almashtirish</translation>
 <translation id="225692081236532131">Aktivatsiya holati</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Kirish sahifasidagi rasm</translation>
 <translation id="2640549051766135490">Albom: <ph name="TITLE" /> <ph name="DESC" /> tanlandi</translation>
 <translation id="2652403576514495859">ovoz bilan yozishni yoqish yoki almashtirish</translation>
+<translation id="2656001153562991489">Chromebook Plus uchun ekskluziv</translation>
 <translation id="267442004702508783">yangilash</translation>
 <translation id="268270014981824665">klaviatura xiraligi</translation>
 <translation id="2712812801627182647">TLS autentifikatsiya kaliti</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3858860766373142691">Ism</translation>
 <translation id="3862598938296403232">Tavsif kiritish shart</translation>
+<translation id="386280020966669610">Menga ilhom ber</translation>
 <translation id="3865289341173661845">Yordam kontenti mavjud emas.</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">Yangi APN</translation>
 <translation id="4093865285251893588">Profil rasmi</translation>
 <translation id="409427325554347132">Test tafsilotlarini saqlash</translation>
+<translation id="409469431304488632">Tajriba</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> nomli albomni tanlang</translation>
 <translation id="4111761024568264522">USB sensorli panel</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Slayd-shou</translation>
 <translation id="4297501883039923494">Toʻxtatildi – Notanish xato</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ta rasm</translation>
+<translation id="4305367063258930534">Google yaratgan fon rasmi</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tugmasi bosildi</translation>
 <translation id="4354430579665871434">tugma</translation>
 <translation id="4361257691546579041">APN standart tur.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Server hosti nomi</translation>
 <translation id="5089810972385038852">Shtat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Oʻxshash:</translation>
 <translation id="5137451382116112100">Toʻliq</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
 <translation id="5145081769226915336">Tungi mavzu avtomatik yoqilsinmi?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Quvvat olmoqda (<ph name="TIME_VALUE" /> qoldi)</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> tugmasi</translation>
 <translation id="7068619307603204412">Qurilma tayyorlanmoqda</translation>
+<translation id="7076851914315147928">Fon rasmini tanlang</translation>
 <translation id="708426984172631313">TOʻXTATILDI</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Bajarilmadi — Hisob tekshiruvi bajarilmadi</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Kunduzgi rejim</translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7805768142964895445">Holat</translation>
+<translation id="7819831665603418705">Andoza ishlatish</translation>
 <translation id="7819857487979277519">PSK (WPA yoki RSN)</translation>
 <translation id="7841134249932030522">Tungi rejimni yoqish</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Rasmlarsiz</translation>
 <translation id="8329018942023753850">kalkulyator ilovasi</translation>
 <translation id="8336739000755212683">Qurilmadagi hisob rasmini almashtirish</translation>
+<translation id="8339024191194156249">Avtomatik ishga tushirish haqida batafsil</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> yoki <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Chop etish vazifalari</translation>
 <translation id="8349826889576450703">launcher</translation>

@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">با این کار همه داده‌ها و کوکی‌هایی که <ph name="ORIGIN" /> و برنامه آن در صفحه اصلی ذخیره کرده‌اند حذف می‌شود.</translation>
 <translation id="5100237604440890931">کوچک شده - برای بزرگ کردن کلیک کنید.</translation>
 <translation id="5123685120097942451">برگه ناشناس</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{کاهش قیمت در برگه‌های باز}one{کاهش قیمت در برگه‌های باز}other{کاهش قیمت‌ها در برگه‌های باز}}</translation>
 <translation id="5186036860380548585">گزینه مربوطه در نزدیکی بالای صفحه دردسترس است</translation>
 <translation id="5197729504361054390">مخاطبین انتخابی شما با <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> هم‌رسانی می‌شود.</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>

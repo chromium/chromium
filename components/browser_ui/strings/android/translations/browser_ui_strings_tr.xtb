@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Bu işlem, Ana ekranınızdaki <ph name="ORIGIN" /> sitesi ve sitenin uygulaması tarafından depolanan tüm verileri ve çerezleri temizleyecek.</translation>
 <translation id="5100237604440890931">Daraltıldı - Genişletmek için tıklayın.</translation>
 <translation id="5123685120097942451">Gizli sekme</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Açık sekmelerinizde fiyat düşüşü}other{Açık sekmelerinizde fiyat düşüşleri}}</translation>
 <translation id="5186036860380548585">Seçenek, ekranın üst kısmına yakın bir yerdedir</translation>
 <translation id="5197729504361054390">Seçtiğiniz kişiler <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ile paylaşılacak.</translation>
 <translation id="5216942107514965959">En son bugün ziyaret edildi</translation>

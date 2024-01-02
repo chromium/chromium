@@ -314,6 +314,7 @@ Tapak tidak boleh menggunakan kuki untuk melihat aktiviti penyemakan imbas anda 
 <translation id="2664621323652615289">Berhenti</translation>
 <translation id="2666092431469916601">Atas</translation>
 <translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
+<translation id="2681158575552244226">menyimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Kamera sedang digunakan</translation>
 <translation id="2691653761409724435">Tidak tersedia di luar talian</translation>
 <translation id="2695507686909505111">Halaman Diterjemahkan</translation>
@@ -1091,6 +1092,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="6685259053455152195">Pintasan untuk mengubah suai tetapan dengan pantas dan menggunakan ciri daripada bar alamat.</translation>
 <translation id="6710079714193676716">Diurus oleh organisasi anda. Sesetengah ciri mungkin tidak tersedia. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">disimpan dalam Drive untuk <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Dapatkan penanda halaman, kata laluan dan pelbagai lagi pada semua peranti anda.</translation>
 <translation id="6730682669179532099">Tidak Dapat Mengeskport Kata Laluan</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1165,6 +1167,7 @@ Semasa dalam mod Inkognito, laman tidak boleh menggunakan kuki untuk melihat akt
 <translation id="7102005569666697658">Memuat turun… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Sembunyikan</translation>
 <translation id="7108762695052995889">Lawati Laman</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nama Penuh</translation>
 <translation id="7136892417564438900">Kamera tidak tersedia</translation>
 <translation id="7141960840225504692">Tab anda akan ditutup dan data semakan imbas dipadamkan</translation>

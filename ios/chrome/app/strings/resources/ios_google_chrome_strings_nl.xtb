@@ -88,6 +88,8 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3146109040683991651">Chrome instellen als standaardbrowser</translation>
 <translation id="3167189358072330585">Je account werkt niet in Google Chrome. Neem contact op met je domeinbeheerder of gebruik een gewoon Google-account om je aan te melden.</translation>
 <translation id="3173834708294760622">Google Chrome-pagina</translation>
+<translation id="3209155060213569278">Je kunt <ph name="BEGIN_LINK" />beheren welke Chrome-gegevens worden opgeslagen<ph name="END_LINK" /> in je Google-account.
+Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
 <translation id="322254490661677575">Geef je wachtwoordzin op als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account.</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3340938510625667914">Chrome-acties</translation>
@@ -161,6 +163,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="5527026824954593399">Tik op 'Bekijken met Google Maps in Chrome'.</translation>
 <translation id="5552137475244467770">Chrome vergelijkt periodiek je wachtwoorden met lijsten die online zijn gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (inclusief Google) kunnen worden gelezen.</translation>
 <translation id="5554520618550346933">Als je een wachtwoord gebruikt, waarschuwt Chrome je als het online is gepubliceerd. Als dit wordt gedaan, zijn je wachtwoorden en gebruikersnamen versleuteld, zodat ze door niemand (ook niet Google) kunnen worden gelezen.</translation>
+<translation id="5601180634394228718">Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer instellingen die gegevens gebruiken om je Chrome-functionaliteit te verbeteren.</translation>
 <translation id="5639704535586432836">Open Instellingen &gt; Privacy &gt; Camera &gt; Google Chrome en zet de camera aan.</translation>
 <translation id="5642200033778930880">Google Chrome kan je camera niet gebruiken in de modus 'Gesplitste weergave'</translation>
 <translation id="5661521615548540542">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>

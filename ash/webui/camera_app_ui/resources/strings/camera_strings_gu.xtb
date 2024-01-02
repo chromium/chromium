@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">જમણી બાજુએ ફેરવો</translation>
 <translation id="3081586908890909590">વીડિયો રેકોર્ડ કરવા માટે સ્વિચ કરો</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"માં જોડાઓ</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3240426699337459095">લિંક કૉપિ કરી</translation>
 <translation id="3354465018370944241">ફોટો સેટિંગ</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">ફોટોનો સાપેક્ષ ગુણોત્તર</translation>
 <translation id="5057360777601936059">તમારો કૅમેરા હાલમાં ઉપલબ્ધ નથી.
 કૃપા કરીને તપાસો કે કૅમેરા યોગ્ય રીતે કનેક્ટ થયેલો છે.</translation>
+<translation id="5157591164390831335">URLની ભાળ મળી.</translation>
 <translation id="5163387177077603948">જમણી દિશામાં ખસેડી રહ્યાં છીએ</translation>
 <translation id="5235304959032763950">16 જેમ 9</translation>
 <translation id="5266635337630551423">દસ્તાવેજનો સૌથી ઉપરનો ડાબો ખૂણો</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Camera ઍપ વિશે પ્રતિસાદ આપવા બદલ આપનો આભાર.
 
 જો તમારો પ્રતિસાદ કોઈ છબી અથવા વીડિયો ક્વૉલિટી વિશે હોય, તો કૃપા કરીને ફોટો અથવા વીડિયોનો કોઈ નમૂનો શામેલ કરો અને સમસ્યાનું વર્ણન કરો. (ઉદાહરણ તરીકે, ફોટો ઘણા ઓછા પ્રકાશમાં લેવામાં આવ્યો છે અથવા તે ફોકસમાં નથી.)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />માં જોડાઓ</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6617916774429601017">બધા નિરાકરણો બતાવો</translation>
 <translation id="6631515515009660915">મિરર કરવાનું બંધ કરો</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">માઇક્રોફોનને મ્યૂટ કરવાનું બટન ટૉગલ કરો. મ્યૂટ બટન ચાલુ છે</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
 <translation id="8732462232047530626">મેટાડેટાનું પ્રીવ્યૂ કરો</translation>
+<translation id="874854738381978209">વાઇ-ફાઇ નેટવર્કની ભાળ મળી.</translation>
 <translation id="8815966864175525708">પોર્ટ્રેટ ફોટો લેવા માટે સ્વિચ કરો</translation>
 <translation id="8828441885228359828">રેકોર્ડિંગ ફરી શરૂ કરો</translation>
 <translation id="8870695351537079478">રેકોર્ડિંગ શરૂ કરી શકતાં નથી</translation>

@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Selecteer Toevoegen aan Google Agenda of Toevoegen aan Apple Agenda.</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> hergebruikte wachtwoorden</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641316430523156212">Volgen</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="165008673352427892">Nieuwe functie</translation>
 <translation id="1650222530560417226">Tik op de knop 'Logboekregistratie starten' om toekomstige logboeken van JavaScript-console en fouten van alle tabbladen te verzamelen. Er worden logboeken verzameld (en alleen opgeslagen in het geheugen) totdat de pagina wordt gesloten of op 'Logboekregistratie stoppen' wordt getikt.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Prijsmeldingen aanzetten?</translation>
 <translation id="2139867232736819575">Zoeken naar gekopieerde tekst</translation>
 <translation id="214201757571129614">Inloggen…</translation>
+<translation id="2145004670974387485">Selecteer het account dat je wilt gebruiken om <ph name="FILENAME" /> op te slaan</translation>
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2149973817440762519">Bookmark bewerken</translation>
 <translation id="2175927920773552910">QR-code</translation>
@@ -312,6 +314,7 @@ Sites mogen geen cookies gebruiken om je browse-activiteit op verschillende site
 <translation id="2664621323652615289">Stoppen</translation>
 <translation id="2666092431469916601">Boven</translation>
 <translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
+<translation id="2681158575552244226">in Drive opslaan voor <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Camera wordt gebruikt</translation>
 <translation id="2691653761409724435">Niet offline beschikbaar</translation>
 <translation id="2695507686909505111">Pagina vertaald</translation>
@@ -478,6 +481,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3519193562722059437">Open een tabblad om op internet te surfen.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Het tabblad openen}other{{count} tabbladen openen}}</translation>
 <translation id="3523789730715594198">Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
+<translation id="3526783603136816353">Selecteer het account dat je wilt gebruiken om <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) op te slaan</translation>
 <translation id="3527085408025491307">Map</translation>
 <translation id="3529024052484145543">Niet beveiligd</translation>
 <translation id="3530206579861815432">Vind snel geopende en recent gesloten tabbladen op je gesynchroniseerde apparaten.</translation>
@@ -515,6 +519,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3738428049780661523">Gemaakt: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Downloads verbergen</translation>
 <translation id="3745190878148784130">Tekst zoomen verbergen</translation>
+<translation id="375773422023477320">Bookmarks</translation>
 <translation id="3762232513783804601">Ontworpen voor je iPad</translation>
 <translation id="3768725474733206671">Laatst gesloten tabblad opnieuw openen</translation>
 <translation id="3771033907050503522">Incognitotabbladen</translation>
@@ -553,6 +558,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3929457972718048006">Adressen</translation>
 <translation id="3955822496205734389">Je hebt zwakke wachtwoorden.</translation>
 <translation id="3959736869653157332">Menu → Nieuw incognitotabblad</translation>
+<translation id="3962326069546168954">Opslaan</translation>
 <translation id="3967822245660637423">Downloaden voltooid</translation>
 <translation id="3968505803272650567">Interesses beheren</translation>
 <translation id="3989635538409502728">Afmelden</translation>
@@ -1086,6 +1092,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6685259053455152195">Snelkoppelingen om snel instellingen te wijzigen en functies te gebruiken via de adresbalk.</translation>
 <translation id="6710079714193676716">Beheerd door je organisatie. Sommige functies zijn mogelijk niet beschikbaar. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">in Drive opgeslagen voor <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Gebruik je bookmarks, wachtwoorden en meer op al je apparaten.</translation>
 <translation id="6730682669179532099">Wachtwoorden kunnen niet worden geëxporteerd</translation>
 <translation id="6732087373923685049">camera</translation>
@@ -1104,6 +1111,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="6790502149545262384">Binnenkort zie je artikelen van <ph name="CHANNEL_NAME" /> als je een nieuw tabblad opent.</translation>
 <translation id="6797885426782475225">Gesproken zoekopdracht</translation>
 <translation id="6800349425672670802">Via de Tabbladschakelaar heb je toegang tot al je geopende tabbladen.</translation>
+<translation id="6805179248725678418">Opslaan in Google Drive</translation>
 <translation id="6807889908376551050">Alles bekijken...</translation>
 <translation id="681368974849482173">Item gemaakt</translation>
 <translation id="6822587385560699678">Als dit aanstaat, worden wachtwoorden opgeslagen in <ph name="ACCOUNT" />. Als dit uitstaat, worden wachtwoorden alleen opgeslagen op dit apparaat.</translation>
@@ -1159,6 +1167,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7102005569666697658">Downloaden… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Verbergen</translation>
 <translation id="7108762695052995889">Site bezoeken</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Volledige naam</translation>
 <translation id="7136892417564438900">Camera is niet beschikbaar</translation>
 <translation id="7141960840225504692">Je tabbladen worden gesloten en browsegegevens worden verwijderd</translation>
@@ -1286,6 +1295,7 @@ Als je de incognitomodus gebruikt, kunnen sites geen cookies gebruiken om je bro
 <translation id="7856733331829174190">Kan niet downloaden</translation>
 <translation id="7859704718976024901">Browsegeschiedenis</translation>
 <translation id="7866501058614003444">Dit pakket wordt niet meer gevolgd.</translation>
+<translation id="7866872729285243843">Als je je leeslijst op al je apparaten wilt krijgen, zet je Leeslijst aan in de instellingen.</translation>
 <translation id="7866993391592926595">Als je deze kaart verbergt, wordt verzendstatus bijhouden uitgezet en worden al je gegevens verwijderd</translation>
 <translation id="7870750252270996949">Afbeelding gekopieerd door Lens</translation>
 <translation id="7879275349003161544">Downloads tonen</translation>

@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">‏בוחרים באפשרות 'הוספה ליומן Google' או 'הוספה ל-Apple Calendar'.</translation>
 <translation id="1626771852476987600">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
+<translation id="1641316430523156212">מעקב</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="165008673352427892">תכונה חדשה</translation>
 <translation id="1650222530560417226">‏אפשר להקיש על הלחצן "התחלת הרישום ביומן" כדי לאסוף רשומות יומן ושגיאות של לוח JavaScript מכל הכרטיסיות. רשומות היומן ייאספו (ויישמרו רק בזיכרון) עד לסגירת הדף הזה, או להקשה על "הפסקת הרישום ביומן".</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">להפעיל התראות על שינוי במחיר?</translation>
 <translation id="2139867232736819575">חיפוש טקסט שהעתקת</translation>
 <translation id="214201757571129614">כניסה…</translation>
+<translation id="2145004670974387485">צריך לבחור את החשבון שבו רוצים להשתמש כדי לשמור את <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">היום</translation>
 <translation id="2149973817440762519">עריכת סימניות</translation>
 <translation id="2175927920773552910">‏קוד QR</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">עצירה</translation>
 <translation id="2666092431469916601">למעלה</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
+<translation id="2681158575552244226">‏מתבצעת שמירה ב-Drive של <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">המצלמה נמצאת בשימוש</translation>
 <translation id="2691653761409724435">לא זמין במצב אופליין</translation>
 <translation id="2695507686909505111">הדף תורגם</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">אפשר לפתוח כרטיסייה כדי לגלוש באינטרנט.</translation>
 <translation id="3519905498307021260">{count,plural, =1{פתיחת הכרטיסייה}one{פתיחת {count} הכרטיסיות}two{פתיחת {count} הכרטיסיות}other{פתיחת {count} הכרטיסיות}}</translation>
 <translation id="3523789730715594198">‏אפשר לעדכן את ההגדרות, בכל רגע, כדי להפסיק את הסנכרון. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
+<translation id="3526783603136816353">צריך לבחור את החשבון שבו רוצים להשתמש כדי לשמור את <ph name="FILENAME" />‏ (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">תיקייה</translation>
 <translation id="3529024052484145543">לא מאובטח</translation>
 <translation id="3530206579861815432">איתור מהיר של כרטיסיות פתוחות וכאלה שנסגרו לאחרונה בכל המכשירים המסונכרנים.</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">תאריך היצירה: <ph name="DATE" /></translation>
 <translation id="374357899112510277">הסתרת ההורדות</translation>
 <translation id="3745190878148784130">הסתרה של 'הגדלת הטקסט'</translation>
+<translation id="375773422023477320">סימניות</translation>
 <translation id="3762232513783804601">‏מותאם ל-iPad שלך</translation>
 <translation id="3768725474733206671">פתיחה מחדש של הכרטיסייה האחרונה שנסגרה</translation>
 <translation id="3771033907050503522">כרטיסיות אנונימיות</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">כתובות</translation>
 <translation id="3955822496205734389">יש לך סיסמאות חלשות.</translation>
 <translation id="3959736869653157332">תפריט ← כרטיסייה פרטית חדשה</translation>
+<translation id="3962326069546168954">שמירה</translation>
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3968505803272650567">ניהול תחומי עניין</translation>
 <translation id="3989635538409502728">יציאה</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">קיצורי דרך לשינויים מהירים בהגדרות ולשימוש בתכונות דרך סרגל הכתובות.</translation>
 <translation id="6710079714193676716">מנוהל על-ידי הארגון שלך. ייתכן שחלק מהתכונות לא יהיו זמינות. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">‏הקובץ נשמר ב-Drive של <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">גישה לסימניות, לסיסמאות ולנתונים נוספים בכל המכשירים שלך</translation>
 <translation id="6730682669179532099">אי אפשר לייצא סיסמאות</translation>
 <translation id="6732087373923685049">מצלמה</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
 <translation id="6797885426782475225">חיפוש קולי</translation>
 <translation id="6800349425672670802">אפשר לגשת לכל הכרטיסיות הפתוחות דרך 'כלי למעבר בין כרטיסיות'.</translation>
+<translation id="6805179248725678418">‏שמירה ב-Google Drive</translation>
 <translation id="6807889908376551050">הצגת הכול...</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6822587385560699678">כשההגדרה מופעלת, הסיסמאות נשמרות בחשבון <ph name="ACCOUNT" />. כשההגדרה מושבתת, הסיסמאות נשמרות רק במכשיר הזה.</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">ההורדה מתבצעת… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">הסתרה</translation>
 <translation id="7108762695052995889">כניסה לאתר</translation>
+<translation id="713215255510512027">‫<ph name="FILENAME" /> ‏(<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">שם מלא</translation>
 <translation id="7136892417564438900">המצלמה לא זמינה</translation>
 <translation id="7141960840225504692">הכרטיסיות ייסגרו ונתוני הגלישה יימחקו</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">ההורדה נכשלה</translation>
 <translation id="7859704718976024901">היסטוריית הגלישה</translation>
 <translation id="7866501058614003444">המעקב אחרי החבילה הזו בוטל.</translation>
+<translation id="7866872729285243843">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, עליך להפעיל את האפשרות 'רשימת קריאה' בהגדרות.</translation>
 <translation id="7866993391592926595">הסתרת הכרטיס הזה תוביל להשבתת המעקב אחר חבילות ולהסרת כל הנתונים שלך</translation>
 <translation id="7870750252270996949">‏תמונה שהועתקה מ-Lens</translation>
 <translation id="7879275349003161544">הצגת ההורדות</translation>

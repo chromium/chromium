@@ -314,6 +314,7 @@
 <translation id="2664621323652615289">Διακοπή</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
 <translation id="2669454659051515572">Όλοι όσοι χρησιμοποιούν αυτήν τη συσκευή θα μπορούν να βλέπουν τα αρχεία που έχετε κατεβάσει</translation>
+<translation id="2681158575552244226">αποθηκεύεται στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Η κάμερα χρησιμοποιείται</translation>
 <translation id="2691653761409724435">Μη διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="2695507686909505111">Μεταφρασμένη σελίδα</translation>
@@ -1092,6 +1093,7 @@
 <translation id="6685259053455152195">Συντομεύσεις για γρήγορη τροποποίηση ρυθμίσεων και χρήση λειτουργιών από τη γραμμή διευθύνσεων.</translation>
 <translation id="6710079714193676716">Διαχειριζόμενο από τον οργανισμό σας. Ορισμένες λειτουργίες ενδέχεται να μην είναι διαθέσιμες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">αποθηκεύτηκε στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Μεταφέρετε τους σελιδοδείκτες, τους κωδικούς πρόσβασης και πολλά άλλα σε όλες τις συσκευές σας.</translation>
 <translation id="6730682669179532099">Δεν είναι δυνατή η εξαγωγή κωδικών πρόσβασης</translation>
 <translation id="6732087373923685049">κάμερα</translation>
@@ -1166,6 +1168,7 @@
 <translation id="7102005569666697658">Λήψη… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Απόκρυψη</translation>
 <translation id="7108762695052995889">Επίσκεψη στον ιστότοπο</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Ονοματεπώνυμο</translation>
 <translation id="7136892417564438900">Η κάμερα δεν είναι διαθέσιμη</translation>
 <translation id="7141960840225504692">Οι καρτέλες σας θα κλείσουν και τα δεδομένα περιήγησης θα διαγραφούν</translation>

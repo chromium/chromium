@@ -201,6 +201,7 @@
 <translation id="4148957013307229264">Đang cài đặt...</translation>
 <translation id="4149882025268051530">Trình cài đặt không thể giải nén lưu trữ được. Vui lòng tải xuống lại Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome sắp đóng và xoá dữ liệu</translation>
+<translation id="4173512894976930765">Các trang web có thể sẽ hoạt động như dự kiến. Khi đóng tất cả các cửa sổ Chrome, bạn sẽ bị đăng xuất khỏi hầu hết các trang web, ngoại trừ Tài khoản Google nếu bạn đã đăng nhập vào Chrome.</translation>
 <translation id="4175922240926474352">Chrome đã chặn tệp tải xuống này vì trang web không sử dụng kết nối an toàn và tệp có thể đã bị can thiệp</translation>
 <translation id="4191857738314598978">{0,plural, =1{Khởi động lại Chrome trong vòng một ngày}other{Khởi động lại Chrome trong vòng # ngày}}</translation>
 <translation id="4205939740494406371">Chrome không thể kiểm tra mật khẩu của bạn. Hãy thử lại sau 24 giờ hoặc <ph name="BEGIN_LINK" />kiểm tra các mật khẩu trong Tài khoản Google của bạn<ph name="END_LINK" />.</translation>

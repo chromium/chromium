@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Chromium সম্পর্কিত পরামর্শ</translation>
 <translation id="2168108852149185974">কিছু অ্যাড-অনের কারণে Chromium ক্র্যাশ করতে পারে৷ দয়া করে আনইনস্টল করুন:</translation>
 <translation id="2178608107313874732">Chromium এই মুহূর্তে আপনার ক্যামেরা ব্যবহার করতে পারছে না</translation>
+<translation id="219374086636266276">আপনার Google অ্যাকাউন্টে <ph name="BEGIN_LINK" />Chromium-এর কোন ডেটা সেভ করা হবে তা ম্যানেজ<ph name="END_LINK" /> করতে পারবেন।
+আপনার Chromium ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="2195025571279539885">আপনি কি এরপর থেকে এই সাইটের <ph name="LANGUAGE_NAME" /> পৃষ্ঠাগুলিকে অনুবাদ করে দেওয়ার জন্য Chromium থেকে প্রম্পট পেতে চান?</translation>
 <translation id="2218146227246548550">Chromium ব্যবহার করতে আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে সাইন-ইন করতে হবে। <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">এই ঠিকানাটি বর্তমানে Chromium-এ সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্ট, <ph name="USER_EMAIL" />-এ এটি সেভ করুন।</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}one{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}other{Chromium {THRESHOLD} মিনিট ধরে ব্যবহার না করা হলে এমনটি হয়। এর মধ্যে ইতিহাস ও অটোফিল অন্তর্ভুক্ত থাকতে পারে।}}</translation>
 <translation id="3472200483164753384">এই সুবিধা 'Chromium ক্যানারি'তে কাজ করে না</translation>
 <translation id="3478750326643748149">"Chromium থেকে সবচেয়ে বেশি সুবিধা পান" মেনু লুকান</translation>
+<translation id="347967311580159871">আপনার Chromium ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
 <translation id="3512168799938877162">আপনার পাসওয়ার্ড শেয়ার করা হয়নি। আপনার ইন্টারনেট কানেকশন চেক করুন এবং Chromium-এ সাইন-ইন করে আছেন কিনা তা ভালোভাবে দেখে নিন। তারপর, আবার চেষ্টা করুন।</translation>
 <translation id="3554027294407525061">Chromium-এ ব্রাউজ করা ডেটা মুছুন।</translation>
 <translation id="3567399274263440288">Chromium থেকে সবচেয়ে বেশি সুবিধা পেতে, আপনার Google অ্যাকাউন্ট দিয়ে Chromium-এ সাইন-ইন করুন।</translation>

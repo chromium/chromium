@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Recursos exclusivos de <ph name="PRODUCT_NAME" /> ya disponibles</translation>
 <translation id="1022628058306505708">Movimiento de la Tierra</translation>
+<translation id="103306827243002956">Fondos de pantalla recientes</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de la galería de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Crear más</translation>
 <translation id="2236746079896696523">Interruptor de retroiluminación de teclado</translation>
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="225692081236532131">Estado de la activación</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Imagen de inicio de sesión</translation>
 <translation id="2640549051766135490">Álbum <ph name="TITLE" /> <ph name="DESC" /> seleccionado</translation>
 <translation id="2652403576514495859">habilitar o alternar el dictado</translation>
+<translation id="2656001153562991489">Exclusivo de Chromebook Plus</translation>
 <translation id="267442004702508783">actualizar</translation>
 <translation id="268270014981824665">atenuación de teclado</translation>
 <translation id="2712812801627182647">Clave de autenticación TLS</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Volver</translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3862598938296403232">Se necesita una descripción</translation>
+<translation id="386280020966669610">Inspírame</translation>
 <translation id="3865289341173661845">El contenido de ayuda no está disponible.</translation>
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3866249974567520381">Descripción</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">Nuevo APN</translation>
 <translation id="4093865285251893588">Imagen de perfil</translation>
 <translation id="409427325554347132">Guardar detalles de la prueba</translation>
+<translation id="409469431304488632">Experimento</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Seleccionar álbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Panel táctil USB</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
+<translation id="4305367063258930534">Fondo de pantalla creado por Google</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pulsada</translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">El APN es de tipo predeterminado.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Nombre de host del servidor</translation>
 <translation id="5089810972385038852">Estado/provincia</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Similares:</translation>
 <translation id="5137451382116112100">Pantalla completa</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5145081769226915336">¿Activar el modo Oscuro automáticamente?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar la carga)</translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepara tu dispositivo</translation>
+<translation id="7076851914315147928">Elige un fondo de pantalla</translation>
 <translation id="708426984172631313">DETENIDA</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Se ha producido un error de autorización</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Modo Claro</translation>
 <translation id="780301667611848630">No, gracias</translation>
 <translation id="7805768142964895445">Estado</translation>
+<translation id="7819831665603418705">Usar una plantilla</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7841134249932030522">Habilitar modo Oscuro</translation>
 <translation id="7846634333498149051">Teclado</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Sin imágenes</translation>
 <translation id="8329018942023753850">aplicación Calculadora</translation>
 <translation id="8336739000755212683">Cambiar imagen de cuenta de dispositivo</translation>
+<translation id="8339024191194156249">Más información sobre el inicio automático</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8349826889576450703">menú de aplicaciones</translation>

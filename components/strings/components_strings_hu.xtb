@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Oldallátogatás történt</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nincs}=1{1 webhelyen (bejelentkezve marad Google-fiókjában)}other{# webhelyen (bejelentkezve marad Google-fiókjában)}}</translation>
 <translation id="1165852471352757509">Tévés dokumentum- és ismeretterjesztő műsorok</translation>
+<translation id="1167877250265821930">Nem sikerült a következő nyelvi csomag letöltése: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">1. kínai boríték</translation>
 <translation id="1174723505405632867">Engedélyezi a(z) <ph name="EMBEDDED_URL" /> számára, hogy cookie-kat és webhelyadatokat használjon a következő webhelyen: <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2126374524350484896">PDF-konvertáló:</translation>
 <translation id="2130448033692577677">A megadott sablonok nem alkalmazhatók, mert nincs beállítva a DnsOverHttpsMode házirend.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">A(z) <ph name="LANGUAGE" /> nyelvi csomag letöltése folyamatban van… <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Férfi ruházat</translation>
 <translation id="2137891579555018930">Várakozás az engedélyre…</translation>
 <translation id="213826338245044447">Mobilos könyvjelzők</translation>
@@ -655,6 +657,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2233745931693710080">Kompakt lemez</translation>
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="2239100178324503013">Küldés most</translation>
+<translation id="2239114457614475014">Bevitel szerkesztése</translation>
 <translation id="2241693394036365668">Letöltés történt</translation>
 <translation id="2246264294482514010">10 × 12 hüvelyk</translation>
 <translation id="2246480341630108201">A szülőd még nem mondta, hogy rendben van</translation>
@@ -989,6 +992,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2959113999220720579">Arc- és testápolás</translation>
 <translation id="2962073860865348475">12 × 18 hüvelyk</translation>
 <translation id="2968103128155246731">Mikrobuszok és kisbuszok</translation>
+<translation id="2971483124699139256">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy tetszik Önnek a generált szöveg.</translation>
 <translation id="2972581237482394796">&amp;Újra</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> van jelenleg kiválasztva. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1571,6 +1575,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4132448310531350254">A(z) „<ph name="POLICY_IDS_LIST" />” alkalmazások által hivatkozott „<ph name="FILE_EXTENSION" />” file_extension ismétlődő kezelői.</translation>
 <translation id="4134123981501319574">Dokumentum létrehozása</translation>
 <translation id="413544239732274901">További információ</translation>
+<translation id="4139859738677203214">A „Nem tetszik” értékelésre kattintva megnyit egy űrlapot, amelyen részletes visszajelzést adhat arról, hogy miért nem tetszik Önnek a generált szöveg.</translation>
 <translation id="4140905530744469899">Profilazonosító:</translation>
 <translation id="4142935452406587478">10. tálca</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3985,6 +3990,7 @@ További részletek:
 <translation id="8877780815363510165">Halászat és horgászat</translation>
 <translation id="8884537526797090108">Nem lehet rögzíteni bizalmas tartalmakat</translation>
 <translation id="8888187300091017436">Matracok</translation>
+<translation id="8890048757975398817">Szeretné irányítani a(z) <ph name="READERNAME" /> eszközt, és szeretne hozzáférni az általa hozzáférhető intelligens kártyához?</translation>
 <translation id="8891727572606052622">Érvénytelen proxymód.</translation>
 <translation id="8894794286471754040">Hosszú él először</translation>
 <translation id="8897428486789851669">Úszás</translation>

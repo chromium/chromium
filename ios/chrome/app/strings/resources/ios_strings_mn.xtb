@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">“Google Календарьт нэмэх“ эсвэл “Apple Calendar-т нэмэх“-ийг сонгоно уу.</translation>
 <translation id="1626771852476987600">Дахин ашигласан <ph name="COUNT" /> нууц үг</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
+<translation id="1641316430523156212">Дагалт</translation>
 <translation id="1644574205037202324">Түүх</translation>
 <translation id="165008673352427892">Шинэ онцлог</translation>
 <translation id="1650222530560417226">JavaScript-н цаашдын консолын лог болон бүх табын алдааг цуглуулахын тулд "Логийг эхлүүлэх" товчлуурыг товшино уу. Логийг энэ хуудсыг хаах эсвэл "Логийг зогсоох" товчлуурыг товших хүртэл цуглуулна (зөвхөн санах ойд хадгална).</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Үнийн дохиог асаах уу?</translation>
 <translation id="2139867232736819575">Хуулсан текстээ хайх</translation>
 <translation id="214201757571129614">Нэвтрэх…</translation>
+<translation id="2145004670974387485"><ph name="FILENAME" />-г хадгалахад ашиглахыг хүсэж буй бүртгэлээ сонгоно уу</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2149973817440762519">Хадгалагдсан хуудсыг засах</translation>
 <translation id="2175927920773552910">QR код</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">Зогсоох</translation>
 <translation id="2666092431469916601">Дээд</translation>
 <translation id="2669454659051515572">Энэ төхөөрөмжийг ашиглаж байгаа дурын хүн татсан файлуудыг харах боломжтой</translation>
+<translation id="2681158575552244226"><ph name="USER_EMAIL" />-н Драйвт хадгалж байна.</translation>
 <translation id="2690858294534178585">Камерыг ашиглаж байна</translation>
 <translation id="2691653761409724435">Офлайн үед боломжгүй</translation>
 <translation id="2695507686909505111">Хуудсыг орчуулсан</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">Веб-д зочлохын тулд цонх нээнэ үү.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Табыг нээх}other{{count} табыг нээх}}</translation>
 <translation id="3523789730715594198">Та тохиргоонд хүссэн үедээ синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
+<translation id="3526783603136816353">Та <ph name="FILENAME" />-г (<ph name="FILE_SIZE" />) хадгалахад ашиглахыг хүсэж буй бүртгэлээ сонгоно уу</translation>
 <translation id="3527085408025491307">Хавтас</translation>
 <translation id="3529024052484145543">Аюултай</translation>
 <translation id="3530206579861815432">Синк хийсэн төхөөрөмжүүд дээрээ нээлттэй бөгөөд саяхан хаасан табуудыг шуурхай олоорой.</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523"><ph name="DATE" />-д үүсгэсэн</translation>
 <translation id="374357899112510277">Татаж авсан файлыг нуух</translation>
 <translation id="3745190878148784130">Текстийг томруулахыг нуух</translation>
+<translation id="375773422023477320">Хавчуурга</translation>
 <translation id="3762232513783804601">Таны iPad-д зориулан бүтээсэн</translation>
 <translation id="3768725474733206671">Хамгийн сүүлд хаасан табыг дахин нээх</translation>
 <translation id="3771033907050503522">Мэдээний нууцлалтай цонх</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">Хаягууд</translation>
 <translation id="3955822496205734389">Танд сул нууц үгнүүд байна.</translation>
 <translation id="3959736869653157332">Цэс → Шинэ нууцлалтай таб</translation>
+<translation id="3962326069546168954">Хадгалах</translation>
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3968505803272650567">Сонирхлыг удирдах</translation>
 <translation id="3989635538409502728">Гарах</translation>
@@ -1086,6 +1092,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6685259053455152195">Тохиргоог шуурхай өөрчлөх болон хаяг оруулах хэсгээс онцлогуудыг ашиглах товчлол.</translation>
 <translation id="6710079714193676716">Танай байгууллагаас удирддаг. Зарим онцлог боломжгүй байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Апп</translation>
+<translation id="6716730056313760676"><ph name="USER_EMAIL" />-н Драйвт хадгалсан.</translation>
 <translation id="672735642903863329">Хавчуурга, нууц үг болон бусад зүйлийг бүгдийг төхөөрөмжүүддээ аваарай.</translation>
 <translation id="6730682669179532099">Нууц үгийг экспортлох боломжгүй</translation>
 <translation id="6732087373923685049">камер</translation>
@@ -1104,6 +1111,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="6790502149545262384">Удахгүй та шинэ таб нээх үедээ <ph name="CHANNEL_NAME" />-с мэдээ, нийтлэл харна.</translation>
 <translation id="6797885426782475225">Дуут хайлт</translation>
 <translation id="6800349425672670802">Та бүх нээлттэй табдаа Таб хооронд шилжүүлэгчээс хандах боломжтой.</translation>
+<translation id="6805179248725678418">Google Драйвт хадгалах</translation>
 <translation id="6807889908376551050">Бүгдийг үзүүл...</translation>
 <translation id="681368974849482173">Үүссэн зүйл</translation>
 <translation id="6822587385560699678">Асаалттай үед нууц үгнүүдийг <ph name="ACCOUNT" />-д хадгалдаг. Унтраалттай үед нууц үгнүүдийг зөвхөн энэ төхөөрөмжид хадгалдаг.</translation>
@@ -1159,6 +1167,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7102005569666697658">Татаж байна… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Нуух</translation>
 <translation id="7108762695052995889">Сайтад зочлох</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Овог нэр</translation>
 <translation id="7136892417564438900">Камер боломжгүй</translation>
 <translation id="7141960840225504692">Таны табуудыг хаах бөгөөд интернэтээр үзсэн өгөгдлийг устгана</translation>
@@ -1286,6 +1295,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7856733331829174190">Татаж чадсангүй</translation>
 <translation id="7859704718976024901">Хайлтын түүх</translation>
 <translation id="7866501058614003444">Энэ илгээмжийг амжилттай хянахаа больсон.</translation>
+<translation id="7866872729285243843">Унших жагсаалтаа бүх төхөөрөмждөө авахын тулд тохиргоонд “Унших жагсаалт”-ыг асаана уу.</translation>
 <translation id="7866993391592926595">Энэ картыг нуух нь Илгээмж хянахыг унтрааж, таны бүх өгөгдлийг хасна</translation>
 <translation id="7870750252270996949">Таны хуулсан Lens-н зураг</translation>
 <translation id="7879275349003161544">Таталтуудыг харуулах</translation>

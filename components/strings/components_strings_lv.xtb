@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Apmeklēta lapa</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nav}=1{No vienas vietnes (joprojām būsiet pierakstījies Google kontā)}zero{No # vietnēm (joprojām būsiet pierakstījies Google kontā)}one{No # vietnes (joprojām būsiet pierakstījies Google kontā)}other{No # vietnēm (joprojām būsiet pierakstījies Google kontā)}}</translation>
 <translation id="1165852471352757509">Dokumentālas TV pārraides</translation>
+<translation id="1167877250265821930">Neizdevās lejupielādēt šādu valodas pakotni: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Ķīniešu aploksne 1</translation>
 <translation id="1174723505405632867">Vai vēlaties atļaut vietnei <ph name="EMBEDDED_URL" /> izmantot sīkfailus un vietnes datus šeit: <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2126374524350484896">PDF izveides rīks:</translation>
 <translation id="2130448033692577677">Norādītās veidnes, iespējams, netiks lietotas, jo nav iestatīta politika DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Notiek šādas valodas pakotnes lejupielāde: <ph name="LANGUAGE" /> (<ph name="PERCENT" />%)…</translation>
 <translation id="2135799067377889518">Vīriešu apģērbs</translation>
 <translation id="2137891579555018930">Tiek gaidīta atļauja…</translation>
 <translation id="213826338245044447">Mobilās grāmatzīmes</translation>
@@ -655,6 +657,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2233745931693710080">Kompaktdisks</translation>
 <translation id="2235344399760031203">Trešo pušu sīkfaili ir bloķēti</translation>
 <translation id="2239100178324503013">Sūtīt tūlīt</translation>
+<translation id="2239114457614475014">Rediģēt ievadīto saturu</translation>
 <translation id="2241693394036365668">Fails tiek lejupielādēts</translation>
 <translation id="2246264294482514010">10 x 12 collas</translation>
 <translation id="2246480341630108201">Jūsu vecāks vēl nav to atļāvis</translation>
@@ -989,6 +992,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2959113999220720579">Sejas un ķermeņa kopšana</translation>
 <translation id="2962073860865348475">12 x 18 collas</translation>
 <translation id="2968103128155246731">Furgoni un minifurgoni</translation>
+<translation id="2971483124699139256">Nospiežot pogu “Patīk”, varat norādīt, ka jums patīk ģenerētais teksts.</translation>
 <translation id="2972581237482394796">&amp;Pāratsaukt</translation>
 <translation id="2977665033722899841">Pašlaik ir atlasīta rinda “<ph name="ROW_NAME" />”. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1572,6 +1576,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4132448310531350254">Faila paplašinājumam “<ph name="FILE_EXTENSION" />” ir dublēti apdarinātāji, kas norādīti lietotnēs: “<ph name="POLICY_IDS_LIST" />”.</translation>
 <translation id="4134123981501319574">Izveidot dokumentu</translation>
 <translation id="413544239732274901">Uzzināt vairāk</translation>
+<translation id="4139859738677203214">Nospiežot pogu “Nepatīk”, tiek atvērta veidlapa, kurā varat sniegt detalizētas atsauksmes par to, kāpēc jums nepatīk ģenerētais teksts.</translation>
 <translation id="4140905530744469899">Profila ID:</translation>
 <translation id="4142935452406587478">10. paplāte</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Papildu informācija:
 <translation id="8877780815363510165">Makšķerēšana</translation>
 <translation id="8884537526797090108">Konfidenciālu saturu nevar ierakstīt</translation>
 <translation id="8888187300091017436">Matrači</translation>
+<translation id="8890048757975398817">Pārvaldīt ierīci <ph name="READERNAME" /> un iegūt piekļuvi viedkartei, kas ierīcei ir pieejama.</translation>
 <translation id="8891727572606052622">Nederīgs starpniekservera režīms.</translation>
 <translation id="8894794286471754040">Vispirms garākā mala</translation>
 <translation id="8897428486789851669">Peldēšana</translation>

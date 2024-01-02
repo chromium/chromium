@@ -627,6 +627,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
 <translation id="449126573531210296">Šifruoti sinchronizuotus slaptažodžius naudojant „Google“ paskyrą</translation>
 <translation id="4491323382106587961">Pasirinkite paskyrą. Šiuo metu pasirinkta: <ph name="EMAIL" />.</translation>
+<translation id="4494806687727322324">Administratorius įjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4509501256689523862">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK_1" />skelbimų temų<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />slapukų nustatymų<ph name="END_LINK_2" /> ir nuo to, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
@@ -796,6 +797,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5292796745632149097">Siųsti į</translation>
 <translation id="5304593522240415983">Šis laukas negali būti tuščias</translation>
 <translation id="5308380583665731573">Prisijungti</translation>
+<translation id="5316947901395241499">Administratorius išjungė slaptažodžių išsaugojimo funkciją</translation>
 <translation id="5317780077021120954">Išsaugoti</translation>
 <translation id="5319359161174645648">„Google“ rekomenduoja „Chrome“</translation>
 <translation id="5320351714793324716">Jei leisite slapukus, „Chrome“ gali naudoti juos iš anksto įkeldama puslapius</translation>

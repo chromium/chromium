@@ -2737,6 +2737,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3043581297103810752">Daripada <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Tapak ini memuat turun berbilang fail secara automatik</translation>
 <translation id="3046178388369461825">Ruang cakera Linux terlalu sedikit</translation>
+<translation id="304644035656848980">Pratonton mikrofon anda</translation>
 <translation id="3046910703532196514">Haaman Web, Lengkap</translation>
 <translation id="304747341537320566">Enjin Pertuturan</translation>
 <translation id="3048336643003835855">Peranti HID daripada vendor <ph name="VENDOR_ID" /></translation>
@@ -3463,6 +3464,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3659929705630080526">Anda telah memasukkan kod akses yang salah terlalu banyak kali. Cuba sebentar lagi</translation>
 <translation id="3660234220361471169">Tidak Dipercayai</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 kata laluan sedia ada ditemukan}other{{NUM_PASSWORDS} kata laluan sedia ada ditemukan}}</translation>
+<translation id="3662207097851752847">Sahkan Google Account anda pada telefon anda</translation>
 <translation id="3664511988987167893">Ikon Sambungan</translation>
 <translation id="3665100783276035932">Kebanyakan laman harus berfungsi seperti yang dijangkakan</translation>
 <translation id="3665301845536101715">Buka dalam panel sisi</translation>
@@ -5001,6 +5003,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4862642413395066333">Menandatangan Respons OCSP</translation>
 <translation id="4863702650881330715">Lanjutkan keserasian</translation>
 <translation id="4863769717153320198">Kelihatan seperti <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Lalai)</translation>
+<translation id="4864369630010738180">Sedang log masuk...</translation>
 <translation id="4864805589453749318">Pilih ibu/bapa yang memberikan kebenaran untuk menambah akaun sekolah.</translation>
 <translation id="486505726797718946">Kenangan Disimpan</translation>
 <translation id="486635084936119914">Buka jenis fail tertentu secara automatik selepas memuat turun</translation>
@@ -6854,7 +6857,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6350821834561350243">Sediakan perihalan yang jelas tentang masalah dan langkah untuk menghasilkan semula masalah tersebut (jika boleh)</translation>
 <translation id="6351178441572658285">Bahasa apl</translation>
 <translation id="6354918092619878358">Lengkung eliptik SECG secp256r1 (alias ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Mendapatkan maklumat Google Account...</translation>
 <translation id="635609604405270300">Sentiasa hidupkan peranti</translation>
 <translation id="63566973648609420">Hanya orang yang tahu ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu <ph name="BEGIN_LINK" />menetapkan semula penyegerakan<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Tatal ke atas untuk menggerakkan halaman ke bawah</translation>
@@ -8186,6 +8188,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7416263748877373774">Syarat Perkhidmatan tidak dapat dimuatkan. Sila periksa sambungan rangkaian dan cuba semula.</translation>
 <translation id="7416362041876611053">Ralat rangkaian tidak diketahui</translation>
 <translation id="741906494724992817">Apl ini tidak memerlukan kebenaran khas.</translation>
+<translation id="7419142833919893307">Tiada nama pengguna yang ditambahkan</translation>
 <translation id="7419565702166471774">Sentiasa gunakan sambungan selamat</translation>
 <translation id="742130257665691897">Penanda halaman dialih keluar</translation>
 <translation id="7421925624202799674">&amp;Lihat Sumber Halaman</translation>
@@ -8496,6 +8499,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7659154729610375585">Keluar daripada mod Inkognito juga?</translation>
 <translation id="7659336857671800422">Semak Panduan Privasi</translation>
 <translation id="7659584679870740384">Anda tiada kebenaran untuk menggunakan peranti ini. Sila hubungi pentadbir untuk mendapatkan kebenaran log masuk.</translation>
+<translation id="7660116474961254898">Ikut arahan pada telefon anda</translation>
 <translation id="7660146600670077843">Klik kanan pada tab dan pilih "Tambahkan Tab pada Kumpulan Baharu”</translation>
 <translation id="7661259717474717992">Benarkan tapak menyimpan dan membaca data kuki</translation>
 <translation id="7661451191293163002">Tidak boleh mendapatkan sijil pendaftaran.</translation>

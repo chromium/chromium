@@ -88,6 +88,8 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3146109040683991651">Ezarri Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="3167189358072330585">Kontua ez dabil Google Chrome-n. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
 <translation id="3173834708294760622">Google Chrome-ko orri bat</translation>
+<translation id="3209155060213569278"><ph name="BEGIN_LINK" />Chrome-ko zein datu gordetzen diren<ph name="END_LINK" /> kudea dezakezu Google Kontua atalean.
+Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="322254490661677575">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia.</translation>
 <translation id="3282568296779691940">Hasi saioa Chrome-n</translation>
 <translation id="3340938510625667914">Chrome-ren Ekintzak</translation>
@@ -161,6 +163,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="5527026824954593399">Sakatu "Ikusi Google Maps-ekin Chrome-n".</translation>
 <translation id="5552137475244467770">Sarean argitaratu diren zerrendetan zure pasahitzak dauden egiaztatzen du noizean behin Chrome-k. Hori egiteko, pasahitzak eta erabiltzaile-izenak enkriptatu egiten ditu, inork ezin ditzan irakurri, Google barne.</translation>
 <translation id="5554520618550346933">Pasahitz bat erabiltzen duzunean, Chrome-k sarean argitaratu den ala ez jakinarazten dizu. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
+<translation id="5601180634394228718">Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
 <translation id="5639704535586432836">Ireki Ezarpenak &gt; Pribatutasuna &gt; Kamera &gt; Google Chrome, eta aktibatu kamera.</translation>
 <translation id="5642200033778930880">Google Chrome-k ezin du erabili kamera Ikuspegi zatitua moduan</translation>
 <translation id="5661521615548540542">Google-ren Pasahitz-kudeatzailea zerbitzuak ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>

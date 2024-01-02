@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Нажмите "Добавить в Google Календарь" или "Добавить в календарь Apple".</translation>
 <translation id="1626771852476987600">Повторяющихся паролей: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
+<translation id="1641316430523156212">Подписаться</translation>
 <translation id="1644574205037202324">История</translation>
 <translation id="165008673352427892">Новая функция</translation>
 <translation id="1650222530560417226">Чтобы фиксировать журналы консоли JavaScript и ошибки на всех вкладках, нажмите кнопку "Начать запись журнала". Журналы будут записываться и храниться в памяти, пока вы не закроете страницу или не нажмете кнопку "Остановить запись журнала".</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Включить оповещения об изменении цен?</translation>
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="214201757571129614">Войти</translation>
+<translation id="2145004670974387485">Выберите аккаунт, в котором нужно сохранить файл "<ph name="FILENAME" />".</translation>
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2149973817440762519">Закладка</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">Остановить</translation>
 <translation id="2666092431469916601">Наверх</translation>
 <translation id="2669454659051515572">Скачанные файлы будут доступны всем пользователям этого устройства.</translation>
+<translation id="2681158575552244226">Сохраняется на Диске пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Камера уже используется</translation>
 <translation id="2691653761409724435">Недоступно в офлайн-режиме</translation>
 <translation id="2695507686909505111">Страница переведена</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">Чтобы просматривать веб-страницы, откройте вкладку.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Открыть вкладку}one{Открыть {count} вкладку}few{Открыть {count} вкладки}many{Открыть {count} вкладок}other{Открыть {count} вкладки}}</translation>
 <translation id="3523789730715594198">Синхронизацию можно в любой момент отключить в настройках. Google может использовать историю браузера для персонализации Поиска и других сервисов.</translation>
+<translation id="3526783603136816353">Выберите аккаунт, в котором нужно сохранить файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />).</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Автозаполнение не используется</translation>
 <translation id="3530206579861815432">Быстро находите открытые и недавно закрытые вкладки на синхронизированных устройствах.</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">Создано <ph name="DATE" /></translation>
 <translation id="374357899112510277">Скрыть загрузки</translation>
 <translation id="3745190878148784130">Скрыть действие "Изменить масштаб текста"</translation>
+<translation id="375773422023477320">Закладки</translation>
 <translation id="3762232513783804601">Создан специально для iPad</translation>
 <translation id="3768725474733206671">Открыть последнюю закрытую вкладку</translation>
 <translation id="3771033907050503522">Вкладки инкогнито</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">Адреса</translation>
 <translation id="3955822496205734389">У вас есть простые пароли.</translation>
 <translation id="3959736869653157332">Меню → Новая вкладка инкогнито</translation>
+<translation id="3962326069546168954">Сохранить</translation>
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968505803272650567">Настроить интересы</translation>
 <translation id="3989635538409502728">Выйти</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">Сочетания клавиш для быстрого изменения настроек и использования функций из адресной строки.</translation>
 <translation id="6710079714193676716">Браузером управляет ваша организация. Некоторые функции могут быть недоступны. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">Сохранено на Диске пользователя <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Синхронизируйте закладки, пароли и другую информацию на своих устройствах.</translation>
 <translation id="6730682669179532099">Не удалось экспортировать пароли</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">Скоро, открывая новую вкладку, вы будете видеть статьи с сайта "<ph name="CHANNEL_NAME" />".</translation>
 <translation id="6797885426782475225">Голосовой поиск</translation>
 <translation id="6800349425672670802">Все открытые вкладки можно найти в переключателе вкладок.</translation>
+<translation id="6805179248725678418">Сохранить на Google Диске</translation>
 <translation id="6807889908376551050">Показать все…</translation>
 <translation id="681368974849482173">Сохранено</translation>
 <translation id="6822587385560699678">Если эта функция включена, пароли сохраняются в аккаунте <ph name="ACCOUNT" />. Иначе они сохраняются только на этом устройстве.</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">Скачивание… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Скрыть</translation>
 <translation id="7108762695052995889">Открыть сайт</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Полное имя</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7141960840225504692">Вкладки будут закрыты, а данные о работе в браузере удалены</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">Не удалось скачать файл</translation>
 <translation id="7859704718976024901">История браузера</translation>
 <translation id="7866501058614003444">Эта посылка больше не отслеживается.</translation>
+<translation id="7866872729285243843">Чтобы синхронизировать список для чтения на всех своих устройствах, включите параметр "Список для чтения" в настройках.</translation>
 <translation id="7866993391592926595">Если вы скроете эту карточку, отслеживание заказов прекратится, а все данные будут удалены</translation>
 <translation id="7870750252270996949">Поиск по изображению из буфера</translation>
 <translation id="7879275349003161544">Показать скачанные файлы</translation>

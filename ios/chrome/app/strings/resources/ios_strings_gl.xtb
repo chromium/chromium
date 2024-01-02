@@ -314,6 +314,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2664621323652615289">Deter</translation>
 <translation id="2666092431469916601">Parte superior</translation>
 <translation id="2669454659051515572">Calquera que use este dispositivo pode ver os ficheiros descargados</translation>
+<translation id="2681158575552244226">está gardándose en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Estase utilizando a cámara</translation>
 <translation id="2691653761409724435">Non dispoñible sen conexión</translation>
 <translation id="2695507686909505111">Traduciuse a páxina</translation>
@@ -1091,6 +1092,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="6685259053455152195">Atallos para modificar rapidamente a configuración e usar funcións desde a barra de enderezos.</translation>
 <translation id="6710079714193676716">Xestionado pola túa organización. É posible que algunhas funcións non estean dispoñibles. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">gardouse en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Accede aos teus marcadores, contrasinais e moito máis en todos os dispositivos.</translation>
 <translation id="6730682669179532099">Non se puideron exportar os contrasinais</translation>
 <translation id="6732087373923685049">cámara</translation>
@@ -1165,6 +1167,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108762695052995889">Visitar sitio</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nome completo</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>

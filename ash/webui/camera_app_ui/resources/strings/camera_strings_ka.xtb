@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">მარჯვნივ პანირება</translation>
 <translation id="3081586908890909590">ვიდეოს ჩაწერაზე გადართვა</translation>
 <translation id="313467653172006084">30 კადრი/წმ</translation>
+<translation id="3158534262962737808">შეუერთდით „<ph name="WIFINAME" />“-ს</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3240426699337459095">ბმული დაკოპირდა</translation>
 <translation id="3354465018370944241">ფოტოს პარამეტრები</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">ფოტოს თანაფარდობა</translation>
 <translation id="5057360777601936059">თქვენი კამერა ამჟამად მიუწვდომელია.
         შეამოწმეთ, რომ კამერა სწორად არის დაკავშირებული.</translation>
+<translation id="5157591164390831335">აღმოჩენილია URL.</translation>
 <translation id="5163387177077603948">გადატანა ხდება მარჯვენა მიმართულებით</translation>
 <translation id="5235304959032763950">თექვსმეტი ცხრაზე</translation>
 <translation id="5266635337630551423">დოკუმენტის ზედა მარცხენა კუთხე</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">გმადლობთ კამერის აპის თაობაზე გამოხმაურებისთვის.
 
 თუ თქვენი გამოხმაურება გამოსახულების ან ვიდეოს ხარისხს ეხება, მაგალითის სახით დაურთეთ ფოტო ან ვიდეო და აღწერეთ პრობლემა (მაგალითად, ფოტო ზედმეტად მუქია ან ობიექტი არ არის მოქცეული ფოკუსში).</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />-თან შეერთება</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="6617916774429601017">ყველა გარჩევადობის ჩვენება</translation>
 <translation id="6631515515009660915">არეკვლის გამორთვა</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">მიკროფონის დადუმების გადართვა. დადუმების რეჟიმი ჩართულია</translation>
 <translation id="8730621377337864115">მზადაა</translation>
 <translation id="8732462232047530626">მეტამონაცემების გადახედვა</translation>
+<translation id="874854738381978209">აღმოჩენილია Wi-Fi ქსელი.</translation>
 <translation id="8815966864175525708">ფოტოს პორტრეტის რეჟიმში გადაღებაზე გადართვა</translation>
 <translation id="8828441885228359828">ჩაწერის გაგრძელება</translation>
 <translation id="8870695351537079478">ჩაწერის დაწყება ვერ მოხერხდა</translation>

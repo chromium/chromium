@@ -88,6 +88,8 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="3146109040683991651">Chrome'u Varsayılan Tarayıcı olarak ayarla</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
 <translation id="3173834708294760622">Google Chrome Sayfası</translation>
+<translation id="3209155060213569278">Google Hesabınıza <ph name="BEGIN_LINK" />hangi Chrome verilerinin kaydedileceğini yönetebilirsiniz<ph name="END_LINK" />.
+Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="322254490661677575">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
 <translation id="3282568296779691940">Chrome'da oturum aç</translation>
 <translation id="3340938510625667914">Chrome İşlemler</translation>
@@ -161,6 +163,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="5527026824954593399">"Chrome'da Google Haritalar ile görüntüle"ye dokunun.</translation>
 <translation id="5552137475244467770">Chrome, internette yayınlanan listelerle karşılaştırarak şifrelerinizi belirli aralıklarla kontrol eder. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
 <translation id="5554520618550346933">Kullandığınız bir şifre internette yayınlanmışsa Chrome sizi uyarır. Bu işlem sırasında şifreleriniz ve kullanıcı adlarınız şifrelendiğinden, Google dahil olmak üzere hiç kimse tarafından okunamaz.</translation>
+<translation id="5601180634394228718">Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <ph name="BEGIN_LINK" />Google Hizmetleri<ph name="END_LINK" />'ne gidin.</translation>
 <translation id="5639704535586432836">Ayarlar &gt; Gizlilik &gt; Kamera &gt; Google Chrome'a gidin ve kamerayı açın.</translation>
 <translation id="5642200033778930880">Google Chrome, kameranızı Bölünmüş Görünüm modunda kullanamıyor</translation>
 <translation id="5661521615548540542">Google Şifre Yöneticisi, şifrelerin tümünü kontrol edemedi. Daha sonra tekrar deneyin.</translation>

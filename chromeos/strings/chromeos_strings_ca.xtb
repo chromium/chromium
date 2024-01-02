@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">S'ha cancel·lat</translation>
 <translation id="1020274983236703756">Els recursos exclusius de <ph name="PRODUCT_NAME" /> ja estan disponibles</translation>
 <translation id="1022628058306505708">Moviment de la Terra</translation>
+<translation id="103306827243002956">Fons de pantalla recents</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">S'ha de seleccionar un àlbum de la galeria d'art com a mínim</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Crea'n més</translation>
 <translation id="2236746079896696523">Commutador del teclat amb retroil·luminació</translation>
 <translation id="2240366984605217732">Canvi de disseny</translation>
 <translation id="225692081236532131">Estat d'activació</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Imatge d'inici de sessió</translation>
 <translation id="2640549051766135490">S'ha seleccionat l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">activa o commuta el dictat</translation>
+<translation id="2656001153562991489">Exclusiu per a Chromebook Plus</translation>
 <translation id="267442004702508783">actualitza</translation>
 <translation id="268270014981824665">atenuació del teclat</translation>
 <translation id="2712812801627182647">Clau d'autenticació TLS</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Enrere</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3862598938296403232">La descripció és obligatòria</translation>
+<translation id="386280020966669610">Inspira'm</translation>
 <translation id="3865289341173661845">El contingut d'ajuda no està disponible.</translation>
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3866249974567520381">Descripció</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">APN nou</translation>
 <translation id="4093865285251893588">Imatge de perfil</translation>
 <translation id="409427325554347132">Desa els detalls de la prova</translation>
+<translation id="409469431304488632">Experiment</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Selecciona l'àlbum <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Ratolí tàctil USB</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Presentació de diapositives</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
+<translation id="4305367063258930534">Fons de pantalla amb la tecnologia de Google</translation>
 <translation id="4333390807948134856">S'ha premut la tecla <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">L'APN és de tipus predeterminat.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Nom d'amfitrió del servidor</translation>
 <translation id="5089810972385038852">Estat</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Similars:</translation>
 <translation id="5137451382116112100">Complet</translation>
 <translation id="5142961317498132443">Autenticació</translation>
 <translation id="5145081769226915336">Vols activar el mode fosc automàticament?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="7066538517128343186">la tecla <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Prepara el dispositiu</translation>
+<translation id="7076851914315147928">Tria un fons de pantalla</translation>
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Mode clar</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7805768142964895445">Estat</translation>
+<translation id="7819831665603418705">Utilitza una plantilla</translation>
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7841134249932030522">Activa el mode fosc</translation>
 <translation id="7846634333498149051">Teclat</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
+<translation id="8339024191194156249">Obtén més informació sobre l'inici automàtic</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> o <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8349826889576450703">menú d'aplicacions</translation>

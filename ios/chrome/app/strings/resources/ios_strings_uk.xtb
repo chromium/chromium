@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Виберіть "Додати до Google Календаря" або "Додати до Календаря Apple".</translation>
 <translation id="1626771852476987600">Повторно використаних паролів: <ph name="COUNT" /></translation>
 <translation id="1641113438599504367">Безпечний перегляд</translation>
+<translation id="1641316430523156212">Підписатися</translation>
 <translation id="1644574205037202324">Історія</translation>
 <translation id="165008673352427892">Нова функція</translation>
 <translation id="1650222530560417226">Натисніть кнопку "Почати запис у журналі", щоб у майбутньому збирати журнали консолі JavaScript і дані про помилки з усіх вкладок. Журнали збиратимуться (і зберігатимуться лише в пам’яті), доки ви не закриєте цю сторінку або не виберете опцію "Припинити запис у журналі".</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Увімкнути сповіщення про змінення цін?</translation>
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="214201757571129614">Увійти…</translation>
+<translation id="2145004670974387485">Виберіть обліковий запис, у якому ви хочете зберегти файл "<ph name="FILENAME" />"</translation>
 <translation id="2148716181193084225">Сьогодні</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
 <translation id="2175927920773552910">QR-код</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">Зупинити</translation>
 <translation id="2666092431469916601">Верх</translation>
 <translation id="2669454659051515572">Усі користувачі цього пристрою можуть бачити завантажені файли</translation>
+<translation id="2681158575552244226">Зберігання на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Камера використовується</translation>
 <translation id="2691653761409724435">Недоступно в режимі офлайн</translation>
 <translation id="2695507686909505111">Сторінку перекладено</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">Щоб переглядати веб-сторінки, відкрийте вкладку.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Відкрити вкладку}one{Відкрити {count} вкладку}few{Відкрити {count} вкладки}many{Відкрити {count} вкладок}other{Відкрити {count} вкладки}}</translation>
 <translation id="3523789730715594198">Синхронізацію можна будь-коли вимкнути в налаштуваннях. Google може персоналізувати Пошук і інші сервіси на основі вашої історії.</translation>
+<translation id="3526783603136816353">Виберіть обліковий запис, у якому ви хочете зберегти файл "<ph name="FILENAME" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Папка</translation>
 <translation id="3529024052484145543">Небезпечно</translation>
 <translation id="3530206579861815432">Швидко знаходьте відкриті та нещодавно закриті вкладки на всіх синхронізованих пристроях.</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">Створено <ph name="DATE" /></translation>
 <translation id="374357899112510277">Сховати опцію "Завантаження"</translation>
 <translation id="3745190878148784130">Сховати опцію "Масштабувати текст"</translation>
+<translation id="375773422023477320">Закладки</translation>
 <translation id="3762232513783804601">Створено для iPad</translation>
 <translation id="3768725474733206671">Відкрити останню закриту вкладку</translation>
 <translation id="3771033907050503522">Анонімні вкладки</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">Адреси</translation>
 <translation id="3955822496205734389">У вас є ненадійні паролі.</translation>
 <translation id="3959736869653157332">Меню → Нова анонімна вкладка</translation>
+<translation id="3962326069546168954">Зберегти</translation>
 <translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968505803272650567">Керувати інтересами</translation>
 <translation id="3989635538409502728">Вийти</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">Швидкі команди, за допомогою яких можна змінювати налаштування й використовувати функції з адресного рядка.</translation>
 <translation id="6710079714193676716">Веб-переглядачем керує ваша організація. Деякі функції можуть бути недоступними. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">Збережено на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Отримайте доступ до закладок, паролів і інших даних на всіх пристроях.</translation>
 <translation id="6730682669179532099">Не вдалось експортувати паролі</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">Незабаром, відкривши нову вкладку, ви бачитимете історії із сайту <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Голосовий пошук</translation>
 <translation id="6800349425672670802">Доступ до всіх відкритих вкладок можна отримати за допомогою функції перемикача вкладок.</translation>
+<translation id="6805179248725678418">Зберегти на Google Диску</translation>
 <translation id="6807889908376551050">Показати всі...</translation>
 <translation id="681368974849482173">Закладку творено</translation>
 <translation id="6822587385560699678">Якщо ввімкнути цю функцію, паролі зберігатимуться в обліковому записі <ph name="ACCOUNT" />. Якщо її вимкнути, паролі зберігатимуться лише на цьому пристрої.</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">Завантаження файлу… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Сховати</translation>
 <translation id="7108762695052995889">Перейти на сайт</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Повне ім’я</translation>
 <translation id="7136892417564438900">Камера недоступна</translation>
 <translation id="7141960840225504692">Ваші вкладки буде закрито, а дані веб-перегляду – видалено</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">Не вдалося завантажити</translation>
 <translation id="7859704718976024901">Історія веб-перегляду</translation>
 <translation id="7866501058614003444">Це відправлення більше не відстежується.</translation>
+<translation id="7866872729285243843">Щоб мати доступ до списку читання на всіх своїх пристроях, увімкніть опцію "Список читання" в налаштуваннях.</translation>
 <translation id="7866993391592926595">Якщо сховати цю картку, відстеження замовлень буде вимкнено, а всі ваші дані – вилучено</translation>
 <translation id="7870750252270996949">Шукати скопійоване зображення через Об’єктив</translation>
 <translation id="7879275349003161544">Показати завантаження</translation>

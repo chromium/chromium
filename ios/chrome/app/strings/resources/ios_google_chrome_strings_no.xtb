@@ -87,6 +87,8 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3146109040683991651">Angi Chrome som standardnettleser</translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-side</translation>
+<translation id="3209155060213569278">Du kan <ph name="BEGIN_LINK" />administrere hvilke Chrome-data som lagres<ph name="END_LINK" /> i Google-kontoen din.
+For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3340938510625667914">Chrome-handlinger</translation>
@@ -159,6 +161,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="5527026824954593399">Trykk på «Se med Google Maps i Chrome».</translation>
 <translation id="5552137475244467770">Chrome sjekker passordene dine regelmessig mot lister som er lagt ut på nett. Når dette gjøres, er passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
 <translation id="5554520618550346933">Når du bruker et passord, advarer Chrome deg hvis passordet er publisert på nettet. Denne funksjonen holder passordene og brukernavnene dine kryptert. Det betyr at ingen kan lese dem, ikke engang Google.</translation>
+<translation id="5601180634394228718">For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Åpne Innstillinger &gt; Personvern &gt; Kamera &gt; Google Chrome, og slå på kameraet.</translation>
 <translation id="5642200033778930880">Google Chrome kan ikke bruke kameraet i modus for delt visning</translation>
 <translation id="5661521615548540542">Google Passordlagring kunne ikke sjekke alle passordene. Prøv igjen senere.</translation>

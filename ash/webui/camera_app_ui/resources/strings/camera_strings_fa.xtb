@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
 <translation id="313467653172006084">۳۰ FPS</translation>
+<translation id="3158534262962737808">پیوستن به «<ph name="WIFINAME" />»</translation>
 <translation id="3227137524299004712">میکروفن</translation>
 <translation id="3240426699337459095">پیوند کپی شد</translation>
 <translation id="3354465018370944241">تنظیمات عکس</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">نسبت ابعادی عکس</translation>
 <translation id="5057360777601936059">درحال‌حاضر دوربینتان دردسترس نیست.
         مطمئن شوید دوربین درست وصل شده باشد.</translation>
+<translation id="5157591164390831335">نشانی وب شناسایی شد.</translation>
 <translation id="5163387177077603948">درحال انتقال به‌سمت راست</translation>
 <translation id="5235304959032763950">۱۶ به ۹</translation>
 <translation id="5266635337630551423">گوشه بالا سمت چپ سند</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">از بازخورد شما درباره برنامه «دوربین» متشکریم.
 
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
+<translation id="6519884562954018934">پیوستن به <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
 <translation id="6631515515009660915">قرینه‌سازی خاموش</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون بی‌صدا است</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>
+<translation id="874854738381978209">‏شبکه Wi-Fi شناسایی شد.</translation>
 <translation id="8815966864175525708">تغییر وضعیت به گرفتن عکس چهره</translation>
 <translation id="8828441885228359828">ازسرگیری ضبط</translation>
 <translation id="8870695351537079478">شروع ضبط انجام نشد</translation>

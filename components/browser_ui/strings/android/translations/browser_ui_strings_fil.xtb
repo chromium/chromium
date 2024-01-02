@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Ide-delete nito ang lahat ng data at cookies na na-store ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen.</translation>
 <translation id="5100237604440890931">Naka-collapse - i-click upang palawakin</translation>
 <translation id="5123685120097942451">Tab na incognito</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Pagbaba ng presyo sa iyong mga nakabukas na tab}one{Pagbaba ng presyo sa iyong mga nakabukas na tab}other{na Pagbaba ng presyo sa iyong mga nakabukas na tab}}</translation>
 <translation id="5186036860380548585">Available ang opsyon malapit sa bandang itaas ng screen</translation>
 <translation id="5197729504361054390">Ibabahagi sa <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ang mga contact na pipiliin mo.</translation>
 <translation id="5216942107514965959">Huling binisita ngayong araw</translation>

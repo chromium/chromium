@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Stranica je posjećena</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ništa}=1{S 1 web lokacije (ostat ćete prijavljeni na Google račun)}one{S # web lokacije (ostat ćete prijavljeni na Google račun)}few{S # web lokacije (ostat ćete prijavljeni na Google račun)}other{S # web lokacija (ostat ćete prijavljeni na Google račun)}}</translation>
 <translation id="1165852471352757509">TV dokumentarni filmovi i literatura</translation>
+<translation id="1167877250265821930">Preuzimanje jezika <ph name="LANGUAGE" /> nije uspjelo</translation>
 <translation id="1174644974616730562">Koverta Chinese #1</translation>
 <translation id="1174723505405632867">Želite li dozvoliti web lokaciji <ph name="EMBEDDED_URL" /> da koristi kolačiće i podatke web lokacije na <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2126374524350484896">Aplikacija za kreiranje PDF-a:</translation>
 <translation id="2130448033692577677">Šabloni koje ste naveli neće se primijeniti jer pravilo DnsOverHttpsMode nije postavljeno.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Preuzimanje jezičkog paketa za <ph name="LANGUAGE" />…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Muška odjeća</translation>
 <translation id="2137891579555018930">Čeka se odobrenje…</translation>
 <translation id="213826338245044447">Mobilne oznake</translation>
@@ -655,7 +657,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2233745931693710080">Kompaktni disk</translation>
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2239100178324503013">Pošaljite sada</translation>
-<translation id="2239114457614475014">Uredi unos</translation>
+<translation id="2239114457614475014">Izmjena unosa</translation>
 <translation id="2241693394036365668">Fajl je preuzet</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Roditelj još uvijek nije odobrio</translation>
@@ -990,7 +992,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2959113999220720579">Njega lica i tijela</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
 <translation id="2968103128155246731">Kombi i minikombi vozila</translation>
-<translation id="2971483124699139256">Palac gore šalje povratne informacije da vam se sviđa generirani tekst.</translation>
+<translation id="2971483124699139256">Oznaka "Sviđa mi se" šalje povratne informacije da vam se sviđa generirani tekst.</translation>
 <translation id="2972581237482394796">&amp;Ponovi</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, trenutno odabrano. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1575,7 +1577,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4132448310531350254">Duplicirani obrađivači za stavku file_extension "<ph name="FILE_EXTENSION" />" koja se spominje u pravilima aplikacija "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Kreiraj dokument</translation>
 <translation id="413544239732274901">Saznajte više</translation>
-<translation id="4139859738677203214">Palac dolje otvara obrazac za slanje detaljnih povratnih informacija o tome zašto vam se generirani tekst ne sviđa.</translation>
+<translation id="4139859738677203214">Oznaka "Ne sviđa mi se" otvara obrazac za slanje detaljnih povratnih informacija o tome zašto vam se generirani tekst ne sviđa.</translation>
 <translation id="4140905530744469899">ID profila:</translation>
 <translation id="4142935452406587478">Ladica 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3989,6 +3991,7 @@ Dodatni detalji:
 <translation id="8877780815363510165">Pecanje</translation>
 <translation id="8884537526797090108">Nije moguće snimiti povjerljivi sadržaj</translation>
 <translation id="8888187300091017436">Madraci</translation>
+<translation id="8890048757975398817">Kontrolirajte uređaj <ph name="READERNAME" /> i ostvarite pristup pametnoj kartici koja mu je dostupna.</translation>
 <translation id="8891727572606052622">Nevažeći način rada proksija.</translation>
 <translation id="8894794286471754040">Najprije duga strana</translation>
 <translation id="8897428486789851669">Plivanje</translation>

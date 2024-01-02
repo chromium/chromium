@@ -88,6 +88,8 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3146109040683991651">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3167189358072330585">Tu cuenta no funciona en Google Chrome. Ponte en contacto con el administrador del dominio o utiliza una cuenta de Google normal para iniciar sesión.</translation>
 <translation id="3173834708294760622">Página de Google Chrome</translation>
+<translation id="3209155060213569278">Puedes <ph name="BEGIN_LINK" />gestionar qué datos de Chrome se guardan<ph name="END_LINK" /> en tu cuenta de Google.
+Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Para usar y guardar los datos de Chrome en tu cuenta de Google, debes introducir tu frase de contraseña.</translation>
 <translation id="3282568296779691940">Iniciar sesión en Chrome</translation>
 <translation id="3340938510625667914">Acciones de Chrome</translation>
@@ -161,6 +163,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="5527026824954593399">Toca Ver con Google Maps en Chrome.</translation>
 <translation id="5552137475244467770">Chrome comprueba de forma periódica si tus contraseñas se encuentran en alguna lista publicada en Internet. Cuando lo hace, se cifran tus contraseñas y nombres de usuario para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
+<translation id="5601180634394228718">Si quieres ver más ajustes que usan datos para mejorar tu experiencia con Chrome, ve a los <ph name="BEGIN_LINK" />servicios de Google<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Abre Ajustes &gt; Privacidad &gt; Cámara &gt; Google Chrome y activa la cámara.</translation>
 <translation id="5642200033778930880">Google Chrome no puede usar la cámara en el modo Vista dividida</translation>
 <translation id="5661521615548540542">El Gestor de contraseñas de Google no ha podido comprobar todas las contraseñas. Inténtalo de nuevo más tarde.</translation>

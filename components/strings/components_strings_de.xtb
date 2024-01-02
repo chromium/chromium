@@ -655,6 +655,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
+<translation id="2239114457614475014">Eingabe bearbeiten</translation>
 <translation id="2241693394036365668">Datei heruntergeladen</translation>
 <translation id="2246264294482514010">10 × 12 Zoll</translation>
 <translation id="2246480341630108201">Dein Elternteil hat noch nicht zugestimmt</translation>
@@ -989,6 +990,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2959113999220720579">Gesichts- und Körperpflege</translation>
 <translation id="2962073860865348475">12 x 18 Zoll</translation>
 <translation id="2968103128155246731">Vans und Minivans</translation>
+<translation id="2971483124699139256">Mit „Mag ich“ gibst du an, dass dir der generierte Text gefällt.</translation>
 <translation id="2972581237482394796">&amp;Wiederholen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuell ausgewählt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Oper</translation>
@@ -1205,7 +1207,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3399952811970034796">Lieferadresse</translation>
 <translation id="3402261774528610252">Diese Website wurde unter Verwendung von TLS 1.0 oder TLS 1.1 geladen. Diese Versionen wurden eingestellt und werden zukünftig deaktiviert. Sobald sie deaktiviert wurden, können Nutzer diese Website nicht mehr aufrufen. Auf dem Server sollte TLS 1.2 oder höher laufen.</translation>
 <translation id="3405664148539009465">Schriftarten anpassen</translation>
-<translation id="3407789382767355356">Drittanbieter-Anmeldung</translation>
+<translation id="3407789382767355356">Anmeldung über Drittanbieter</translation>
 <translation id="3409896703495473338">Sicherheitseinstellungen verwalten</translation>
 <translation id="3414952576877147120">Größe:</translation>
 <translation id="341513675006332771">Schaltfläche „Chrome Dino spielen“ – aktivieren, um Chrome Dino zu spielen</translation>
@@ -1433,7 +1435,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="3823402221513322552">Dein Browser wird von <ph name="BROWSER_DOMAIN" /> verwaltet, dein Profil von <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">Falls du einen Proxyserver verwendest...</translation>
-<translation id="3826050100957962900">Drittanbieter-Anmeldung</translation>
+<translation id="3826050100957962900">Anmeldung über Drittanbieter</translation>
 <translation id="3827112369919217609">Absolut</translation>
 <translation id="3827666161959873541">Filme für die ganze Familie</translation>
 <translation id="3828924085048779000">Eine leere Passphrase ist nicht zulässig.</translation>
@@ -1571,6 +1573,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4132448310531350254">Doppelte Handler für die Dateierweiterung „<ph name="FILE_EXTENSION" />“, referenziert durch die Apps „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Dokument erstellen</translation>
 <translation id="413544239732274901">Weitere Informationen</translation>
+<translation id="4139859738677203214">Wenn du „Mag ich nicht“ auswählst, wird ein Formular geöffnet, über das du detailliertes Feedback dazu geben kannst, warum dir dieser generierte Text nicht gefällt.</translation>
 <translation id="4140905530744469899">Profil-ID:</translation>
 <translation id="4142935452406587478">Fach 10</translation>
 <translation id="4148925816941278100">American Express</translation>

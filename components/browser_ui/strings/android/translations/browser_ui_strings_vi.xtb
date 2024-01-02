@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ.</translation>
 <translation id="5100237604440890931">Đã thu gọn - nhấp để mở rộng.</translation>
 <translation id="5123685120097942451">Thẻ ẩn danh</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Ưu đãi giảm giá trên các thẻ đang mở}other{Ưu đãi giảm giá trên các thẻ đang mở}}</translation>
 <translation id="5186036860380548585">Tùy chọn này ở gần đầu màn hình</translation>
 <translation id="5197729504361054390">Những người liên hệ bạn chọn sẽ được chia sẻ với <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Lần truy cập gần đây nhất: hôm nay</translation>

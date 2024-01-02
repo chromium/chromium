@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Всички съхранявани от <ph name="ORIGIN" /> или от съответното приложение на началния екран данни и „бисквитки“ ще бъдат изтрити.</translation>
 <translation id="5100237604440890931">Свито – кликнете за разгъване.</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Понижение на цена в отворените ви раздели}other{Понижения на цени в отворените ви раздели}}</translation>
 <translation id="5186036860380548585">Опцията е в горната част на екрана</translation>
 <translation id="5197729504361054390">Избраните от вас контакти ще бъдат споделени със сайта <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>

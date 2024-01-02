@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ページがアクセスされた</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{なし}=1{1 件のサイトから（Google アカウントへのログイン状態は維持されます）}other{# 件のサイトから（Google アカウントへのログイン状態は維持されます）}}</translation>
 <translation id="1165852471352757509">ドキュメンタリー番組、ノンフィクション番組</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" />をダウンロードできませんでした</translation>
 <translation id="1174644974616730562">中国 #1 封筒</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> が <ph name="TOP_LEVEL_URL" /> で Cookie とサイトデータを使用することを許可しますか？
 
@@ -438,7 +439,7 @@
 <translation id="1803020234906945288">健康的な食事</translation>
 <translation id="1803351196216024260">マイクの使用を要求できる</translation>
 <translation id="1806174020048213474">このアプリは Wi-Fi 認証情報のインストール権限をリクエストしています。セットアップが完了すると、<ph name="DEVICE_TYPE" /> は登録されている Wi-Fi ネットワークに自動的に接続します。これらの認証情報を削除するには、アプリをアンインストールします。</translation>
-<translation id="1807246157184219062">軽い</translation>
+<translation id="1807246157184219062">明</translation>
 <translation id="1807528111851433570">開始シート</translation>
 <translation id="180757923930449935">（64 ビット エミュレーション）</translation>
 <translation id="180991881384371158">CVC コードはカードの裏面に記載されています。署名ボックスの右上にある末尾 3 桁のコードです。</translation>
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF 変換アプリケーション:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ポリシーが設定されていないため、指定したテンプレートを適用できない可能性があります。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" />の言語パックをダウンロードしています...<ph name="PERCENT" />% 完了</translation>
 <translation id="2135799067377889518">紳士服</translation>
 <translation id="2137891579555018930">承認待ち...</translation>
 <translation id="213826338245044447">モバイルのブックマーク</translation>
@@ -3991,6 +3993,7 @@
 <translation id="8877780815363510165">釣り</translation>
 <translation id="8884537526797090108">機密コンテンツは録画できません</translation>
 <translation id="8888187300091017436">マットレス</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> を管理し、挿入またはかざされたスマートカードにアクセスできるようにします。</translation>
 <translation id="8891727572606052622">プロキシ モードが無効です。</translation>
 <translation id="8894794286471754040">長辺から</translation>
 <translation id="8897428486789851669">水泳</translation>

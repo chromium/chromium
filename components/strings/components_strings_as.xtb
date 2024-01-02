@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">পৃষ্ঠাখনলৈ গ’লে</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{একো নাই}=1{১ টা ছাইটৰ পৰা (আপুনি আপোনাৰ Google একাউণ্টত ছাইন ইন হৈ থাকিব)}one{# টা ছাইটৰ পৰা (আপুনি আপোনাৰ Google একাউণ্টত ছাইন ইন হৈ থাকিব)}other{# টা ছাইটৰ পৰা (আপুনি আপোনাৰ Google একাউণ্টত ছাইন ইন হৈ থাকিব)}}</translation>
 <translation id="1165852471352757509">টিভিৰ তথ্যচিত্ৰ আৰু অকাল্পনিক সমল</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ডাউলন’ড কৰিব পৰা নগ’ল</translation>
 <translation id="1174644974616730562">এনভেল’প চীনা #১</translation>
 <translation id="1174723505405632867">আপুনি <ph name="EMBEDDED_URL" />ক <ph name="TOP_LEVEL_URL" />ত কুকীসমূহ আৰু ছাইটৰ ডেটা ব্যৱহাৰ কৰিবলৈ অনুমতি দিব বিচাৰেনে?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF সৃষ্টিকৰ্তা:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতিটো ছেট নকৰাৰ বাবে আপুনি নির্দিষ্ট কৰা টেমপ্লেটসমূহ প্ৰয়োগ কৰা নহ’ব পাৰে।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ভাষাৰ পেক ডাউনল’ড কৰি থকা হৈছে...<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">পুৰুষৰ পোছাক</translation>
 <translation id="2137891579555018930">অনুমতিৰ বাবে অপেক্ষা কৰি থকা হৈছে...</translation>
 <translation id="213826338245044447">ম’বাইল বুকমার্ক</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">কমপেক্ট ডিস্ক</translation>
 <translation id="2235344399760031203">তৃতীয় পক্ষৰ কুকিসমূহ অৱৰোধ কৰা হৈছে</translation>
 <translation id="2239100178324503013">এতিয়াই পঠিয়াওক</translation>
+<translation id="2239114457614475014">ইনপুট সম্পাদনা কৰক</translation>
 <translation id="2241693394036365668">ফাইল ডাউনল’ড কৰিলে</translation>
 <translation id="2246264294482514010">১০ x ১২ ইঞ্চি</translation>
 <translation id="2246480341630108201">আপোনাৰ অভিভাৱকে এতিয়ালৈকে অনুমতি দিয়া নাই</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">মুখাৱয়ব আৰু শৰীৰৰ যত্ন</translation>
 <translation id="2962073860865348475">১২ x ১৮ ইঞ্চি</translation>
 <translation id="2968103128155246731">ৱেন্ আৰু মিনিৱেন্</translation>
+<translation id="2971483124699139256">থাম্বছ আপ দিয়াটোৱে সৃষ্টি হোৱা পাঠখিনি আপুনি পচন্দ কৰা বুলি মতামত দাখিল কৰে।</translation>
 <translation id="2972581237482394796">&amp;ৰিডু কৰক</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, বর্তমান বাছনি কৰা হৈছে। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">অ’পেৰা</translation>
@@ -1570,6 +1574,7 @@
 <translation id="4132448310531350254">এপৰ "<ph name="POLICY_IDS_LIST" />"এ উল্লেখ কৰা file_extension "<ph name="FILE_EXTENSION" />"ৰ বাবে ডুপ্লিকেট নিয়ন্ত্ৰক।</translation>
 <translation id="4134123981501319574">নথি সৃষ্টি কৰক</translation>
 <translation id="413544239732274901">অধিক জানক</translation>
+<translation id="4139859738677203214">থাম্বছ ডাউন দিয়াটোৱে সৃষ্টি হোৱা পাঠখিনি আপোনাৰ কিয় পচন্দ হোৱা নাই তাৰ সবিশেষ মতামত দাখিল কৰাৰ বাবে এখন ফৰ্ম খোলে।</translation>
 <translation id="4140905530744469899">প্ৰ’ফাইল আইডি:</translation>
 <translation id="4142935452406587478">ট্ৰে’ ১০</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3981,6 +3986,7 @@
 <translation id="8877780815363510165">মাছ ধৰা</translation>
 <translation id="8884537526797090108">গোপনীয় সমল ৰেকৰ্ড কৰিব নোৱাৰি</translation>
 <translation id="8888187300091017436">তুলী</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />ৰ নিয়ন্ত্ৰণ আৰু ই এক্সেছ কৰিব পৰা স্মাৰ্ট কাৰ্ডৰ এক্সেছ লাভ কৰক।</translation>
 <translation id="8891727572606052622">প্ৰ’ক্সিৰ ম’ড অমান্য।</translation>
 <translation id="8894794286471754040">দীঘলীয়া কাষটো প্ৰথমে</translation>
 <translation id="8897428486789851669">সাঁতোৰ</translation>

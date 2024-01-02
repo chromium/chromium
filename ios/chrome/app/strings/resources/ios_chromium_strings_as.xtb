@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Chromium ব্যৱহাৰ সম্পৰ্কীয় কিটিপ</translation>
 <translation id="2168108852149185974">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি ইয়াক আনইনষ্টল কৰক:</translation>
 <translation id="2178608107313874732">এই মুহূৰ্তত Chromiumএ আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
+<translation id="219374086636266276">আপুনি আপোনাৰ Google একাউণ্টত <ph name="BEGIN_LINK" />Chromiumৰ কি ডেটা ছেভ কৰা হয় সেয়া পৰিচালনা কৰিব<ph name="END_LINK" /> পাৰে।
+আপোনাৰ Chromiumৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="2195025571279539885">আপুনি এই ছাইটবোৰৰ <ph name="LANGUAGE_NAME" /> পৃষ্ঠাবোৰ Chromiumএ অনুবাদ কৰি দিয়াটো বিচাৰিবনে?</translation>
 <translation id="2218146227246548550">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">এই ঠিকনাটো বৰ্তমান Chromiumত ছেভ কৰা আছে। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়। ইয়াত ইতিহাস আৰু স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধা অন্তৰ্ভুক্ত হ’ব পাৰে।}}</translation>
 <translation id="3472200483164753384">Chromium Canaryত সমৰ্থিত নহয়</translation>
 <translation id="3478750326643748149">“Chromiumৰ পৰা পাৰ্যমানে উপকৃত হওক” লুকুৱাওক</translation>
+<translation id="347967311580159871">আপোনাৰ Chromiumৰ অভিজ্ঞতা উন্নত কৰিবলৈ আপোনাৰ ডেটা ব্যৱহাৰ কৰা অধিক ছেটিং পাবলৈ <ph name="BEGIN_LINK" />Google সেৱাসমূহ<ph name="END_LINK" />লৈ যাওক।</translation>
 <translation id="3512168799938877162">আপোনাৰ পাছৱৰ্ড শ্বেয়াৰ কৰা হোৱা নাই। আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক আৰু আপুনি Chromiumত ছাইন ইন হৈ থকাটো নিশ্চিত কৰক। তাৰ পাছত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3554027294407525061">Chromiumত ব্ৰাউজিঙৰ ডেটা মচক।</translation>
 <translation id="3567399274263440288">Chromium পাৰ্যমানে ব্যৱহাৰ কৰিবলৈ আপোনাৰ Google একাউণ্টটোৰ জৰিয়তে Chromiumত ছাইন ইন কৰক।</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Sivulla on käyty</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ei yhtään}=1{1 sivustolta (pysyt kirjautuneena Google-tilillesi)}other{# sivustolta (pysyt kirjautuneena Google-tilillesi)}}</translation>
 <translation id="1165852471352757509">TV-dokumentit ja tiedesarjat</translation>
+<translation id="1167877250265821930">Lataaminen epäonnistui: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Kirjekuori kiinalainen #1</translation>
 <translation id="1174723505405632867">Haluatko, että <ph name="EMBEDDED_URL" /> saa käyttää evästeitä ja sivustodataa (<ph name="TOP_LEVEL_URL" />)?
 
@@ -598,6 +599,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2126374524350484896">PDF-luontiohjelma:</translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131200882015008178">Ladataan kielipakettia <ph name="LANGUAGE" />…<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Miesten vaatteet</translation>
 <translation id="2137891579555018930">Odotetaan lupaa…</translation>
 <translation id="213826338245044447">Mobiilikirjanmerkit</translation>
@@ -655,6 +657,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2233745931693710080">CD-levy</translation>
 <translation id="2235344399760031203">Kolmannen osapuolen evästeet on estetty</translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
+<translation id="2239114457614475014">Muokkaa tekstiä</translation>
 <translation id="2241693394036365668">Tiedosto on ladattu</translation>
 <translation id="2246264294482514010">10 x 12 tuumaa</translation>
 <translation id="2246480341630108201">Vanhempasi ei ole vielä antanut lupaa</translation>
@@ -989,6 +992,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2959113999220720579">Kasvojen ja vartalon hoito</translation>
 <translation id="2962073860865348475">12 x 18 tuumaa</translation>
 <translation id="2968103128155246731">Pakettiautot ja tila-autot</translation>
+<translation id="2971483124699139256">Tykkään-painike lähettää palautetta ja kertoo, että pidät luodusta tekstistä.</translation>
 <translation id="2972581237482394796">&amp;Tee uudelleen</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, tällä hetkellä valittuna. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ooppera</translation>
@@ -1574,6 +1578,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4132448310531350254">Sovellukset (<ph name="POLICY_IDS_LIST" />) viittaavat päällekkäisiin tiedostotunnisteen "<ph name="FILE_EXTENSION" />" käsittelijöihin</translation>
 <translation id="4134123981501319574">Luo dokumentti</translation>
 <translation id="413544239732274901">Lisätietoja</translation>
+<translation id="4139859738677203214">En tykkää ‐painike avaa lomakkeen, jolla voit antaa yksityiskohtaista palautetta siitä, miksi et pidä luotusta tekstistä.</translation>
 <translation id="4140905530744469899">Profiilin tunnus:</translation>
 <translation id="4142935452406587478">Lokero 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3988,6 +3993,7 @@ Lisätietoja:
 <translation id="8877780815363510165">Kalastus</translation>
 <translation id="8884537526797090108">Luottamuksellista sisältöä ei voi tallentaa</translation>
 <translation id="8888187300091017436">Patjat</translation>
+<translation id="8890048757975398817">Ohjaa lukijaa (<ph name="READERNAME" />) ja saa pääsy älykorttiin, jolla sitä käytetään.</translation>
 <translation id="8891727572606052622">Virheellinen välityspalvelimen tila.</translation>
 <translation id="8894794286471754040">Pitkä reuna ensin</translation>
 <translation id="8897428486789851669">Uinti</translation>

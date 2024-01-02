@@ -2731,6 +2731,7 @@
 <translation id="3043581297103810752">ከ <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">ይህ ጣቢያ በርካታ ፋይሎችን በራስ-ሰር አውርዷል</translation>
 <translation id="3046178388369461825">የLinux ዲስክ ቦታ በጣም ዝቅተኛ ነው</translation>
+<translation id="304644035656848980">የማይክሮፎንዎ ቅድመ እይታ</translation>
 <translation id="3046910703532196514">ድረ-ገፅ፣ ሙሉ</translation>
 <translation id="304747341537320566">የንግግር ፕሮግራሞች</translation>
 <translation id="3048336643003835855">የኤችአይዲ መሳሪያዎች ከአቅራቢ <ph name="VENDOR_ID" /></translation>
@@ -3457,6 +3458,7 @@
 <translation id="3659929705630080526">የተሳሳተ የመዳረሻ ኮድ ብዙ ጊዜ አስገብተዋል። ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3660234220361471169">የማይታመን</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 ነባር የይለፍ ቃል ተገኝቷል}one{{NUM_PASSWORDS} ነባር የይለፍ ቃል ተገኝቷል}other{{NUM_PASSWORDS} ነባር የይለፍ ቃላት ተገኝተዋል}}</translation>
+<translation id="3662207097851752847">የGoogle መለያዎን በስልክዎ ላይ ያረጋግጡ</translation>
 <translation id="3664511988987167893">የቅጥያ አዶ</translation>
 <translation id="3665100783276035932">አብዛኞቹ ጣቢያዎች እንደተጠበቀው መሥራት አለባቸው</translation>
 <translation id="3665301845536101715">የጎን ፓነል ውስጥ ክፈት</translation>
@@ -4992,6 +4994,7 @@
 <translation id="4862642413395066333">OCSP ምላሾችን መፈረም</translation>
 <translation id="4863702650881330715">ተኳዃኝነትን አራዝም</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ነባሪ)</translation>
+<translation id="4864369630010738180">በመግባት ላይ...</translation>
 <translation id="4864805589453749318">የትምህርት ቤት መለያ ለማከል ፈቃድ እየሰጠ ያለውን ወላጅ ይምረጡ።</translation>
 <translation id="486505726797718946">ማህደረ ትውስታ ተቀምጧል</translation>
 <translation id="486635084936119914">ካወረዱ በኋላ የተወሰኑ የፋይል አይነቶችን ክፈት</translation>
@@ -6845,7 +6848,6 @@
 <translation id="6350821834561350243">የችግሩን ግልጽ መግለጫ እና ችግሩን ለማባዛት እርምጃዎችን ያቅርቡ (የሚቻል ከሆነ)</translation>
 <translation id="6351178441572658285">የመተግበሪያ ቋንቋዎች</translation>
 <translation id="6354918092619878358">የSECG ሞላላ ጥምዝ secp256r1 (እንዲሁም ANSI X9.62 prime256v1, NIST P-256 በመባት የሚታወቅ)</translation>
-<translation id="6355395056805388423">የGoogle መለያ መረጃን በማግኘት ላይ...</translation>
 <translation id="635609604405270300">መሣሪያውን እንደበራ አቆየው</translation>
 <translation id="63566973648609420">የእርስዎን የይለፍ ሐረግ ያለው ሰው ብቻ ነው የተመሰጠረ ውሂብዎን ማየት የሚችለው። የይለፍ ሐረጉ ለGoogle አይላክም ወይም በእሱ አይከማችም። የይለፍ ሐረግዎን ከረሱት <ph name="BEGIN_LINK" />ስምረትን ዳግም ማስጀመር<ph name="END_LINK" /> ይኖርብዎታል።</translation>
 <translation id="6356718524173428713">ገፁን ወደታች ለማንቀሳቀስ ወደላይ ያሸብልሉ</translation>
@@ -8179,6 +8181,7 @@
 <translation id="7416263748877373774">የአገልግሎት ውሉ ሊጫን አልቻለም። እባክዎ የእርስዎን አውታረ መረብ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
 <translation id="7416362041876611053">ያልታወቀ የአውታረ መረብ ስህተት።</translation>
 <translation id="741906494724992817">ይህ መተግበሪያ ምንም ልዩ ፈቃዶች አይፈልግም።</translation>
+<translation id="7419142833919893307">ምንም የተጠቃሚ ስም አልታከለም</translation>
 <translation id="7419565702166471774">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
 <translation id="742130257665691897">ዕልባቶች ተወግደዋል</translation>
 <translation id="7421925624202799674">&amp;የገጹን መነሻ አሳይ</translation>
@@ -8489,6 +8492,7 @@
 <translation id="7659154729610375585">ለማንኛውም ማንነት ከማያሳውቅ ሁነታ ይውጡ?</translation>
 <translation id="7659336857671800422">የግላዊነት መመሪያውን ውሰድ</translation>
 <translation id="7659584679870740384">ይህን መሣሪያ ለመጠቀም ስልጣን አልተሰጠዎትም። የመግባት ፍቃድ ለማግኘት አስተዳዳሪውን ያነጋግሩ።</translation>
+<translation id="7660116474961254898">በስልክዎ ላይ የተሰጡትን መመሪያዎች ይከተሉ</translation>
 <translation id="7660146600670077843">ትር ላይ በቀኝ ጠቅ ያድርጉ እና «ትር ወደ አዲስ ቡድን አክል»ን ይምረጡ</translation>
 <translation id="7661259717474717992">ጣቢያዎች የኩኪ ውሂብ እንዲስቀምጡ እና እንዲያነብቡ ፍቀድ</translation>
 <translation id="7661451191293163002">የምዝገባ እውቅና ማረጋገጫ ሊገኝ አልቻለም።</translation>

@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">इससे <ph name="ORIGIN" /> या आपकी होम स्क्रीन पर मौजूद इसके ऐप्लिकेशन के ज़रिए सेव किया गया सारा डेटा और सभी कुकी मिट जाएंगी.</translation>
 <translation id="5100237604440890931">छोटा किया गया - पूरा खोलने के लिए क्लिक करें.</translation>
 <translation id="5123685120097942451">गुप्त टैब</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{आपके खुले हुए टैब पर कीमत में गिरावट}one{आपके खुले हुए टैब पर कीमत में गिरावट}other{आपके खुले हुए टैब पर कीमत में गिरावट}}</translation>
 <translation id="5186036860380548585">यह विकल्प, स्क्रीन के सबसे ऊपरी हिस्से में उपलब्ध है</translation>
 <translation id="5197729504361054390">आप जो संपर्क चुनेंगे उन्हें <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> के साथ शेयर किया जाएगा.</translation>
 <translation id="5216942107514965959">साइट पर पिछली बार आज गए</translation>

@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Dit sal alle data en webkoekies uitvee wat deur <ph name="ORIGIN" /> of deur sy app op jou tuisskerm geberg is.</translation>
 <translation id="5100237604440890931">Ingevou – klik om uit te vou.</translation>
 <translation id="5123685120097942451">Incognito-oortjie</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prysdaling op jou oop oortjies}other{Prys daal op jou oop oortjies}}</translation>
 <translation id="5186036860380548585">Opsie is naby die bokant van die skerm beskikbaar</translation>
 <translation id="5197729504361054390">Die kontakte wat jy kies, sal gedeel word met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laas vandag besoek</translation>

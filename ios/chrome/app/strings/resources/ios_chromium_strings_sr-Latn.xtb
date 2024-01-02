@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Chromium savet</translation>
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
+<translation id="219374086636266276">Možete da <ph name="BEGIN_LINK" />upravljate time koji Chromium podaci se čuvaju<ph name="END_LINK" /> na Google nalogu.
+Još podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2218146227246548550">Organizacija zahteva da se prijavite da biste koristili Chromium. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ova adresa je trenutno sačuvana u Chromium-u. Da biste je koristili u svim Google proizvodima, sačuvajte je na Google nalogu, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}one{To se dešava kada se Chromium ne koristi {THRESHOLD} minut. To može da obuhvata istoriju i automatsko popunjavanje.}few{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}other{To se dešava kada se Chromium ne koristi {THRESHOLD} minuta. To može da obuhvata istoriju i automatsko popunjavanje.}}</translation>
 <translation id="3472200483164753384">Nije podržano u verziji Chromium Canary</translation>
 <translation id="3478750326643748149">Sakrijte „Iskoristite Chromium na najbolji način“</translation>
+<translation id="347967311580159871">Više podešavanja koja koriste podatke za poboljšanje doživljaja Chromium-a potražite u <ph name="BEGIN_LINK" />Google uslugama<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Lozinka se ne deli. Proverite internet vezu i uverite se da ste prijavljeni u Chromium. Onda probajte ponovo.</translation>
 <translation id="3554027294407525061">Obrišite podatke pregledanja u Chromium-u.</translation>
 <translation id="3567399274263440288">Da biste koristili Chromium na najbolji način, prijavite se na Chromium pomoću Google naloga.</translation>

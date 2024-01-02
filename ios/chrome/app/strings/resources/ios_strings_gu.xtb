@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">“Google Calendarમાં ઉમેરો“ અથવા “Apple Calendar પર ઉમેરો“ પસંદ કરો.</translation>
 <translation id="1626771852476987600">ફરીથી ઉપયોગમાં લેવાયેલા <ph name="COUNT" /> પાસવર્ડ</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
+<translation id="1641316430523156212">ફૉલો કરો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="165008673352427892">નવી સુવિધા</translation>
 <translation id="1650222530560417226">ભાવિ JavaScript કન્સોલ લૉગ અને બધા ટૅબની ભૂલોને ભેગી કરવા માટે "લૉગ કરવાનું શરૂ" બટનને ટૅપ કરો. લૉગ ત્યારે ભેગા કરવામાં આવશે (અને માત્ર મેમરીમાં સાચવવામાં આવશે), જ્યાં સુધી કે આ પેજ બંધ ન કરવામાં આવે અથવા પછી "લૉગ કરવાનું બંધ કરો" પર ટૅપ કરવામાં ન આવે.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">'કિંમતમાં ફેરફાર'ની સુવિધા ચાલુ કરીએ?</translation>
 <translation id="2139867232736819575">તમે કૉપિ કરેલી ટેક્સ્ટ માટે શોધ કરો</translation>
 <translation id="214201757571129614">સાઇન ઇન કરો…</translation>
+<translation id="2145004670974387485">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" />ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2149973817440762519">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="2175927920773552910">QR કોડ</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">રોકો</translation>
 <translation id="2666092431469916601">ઉપર</translation>
 <translation id="2669454659051515572">આ ડિવાઇસનો ઉપયોગ કરનારી કોઈપણ વ્યક્તિ ડાઉનલોડ કરેલી ફાઇલો જોઈ શકે છે</translation>
+<translation id="2681158575552244226"><ph name="USER_EMAIL" /> માટે Driveમાં સાચવવામાં આવી રહી છે.</translation>
 <translation id="2690858294534178585">કૅમેરા ઉપયોગમાં છે</translation>
 <translation id="2691653761409724435">ઑફલાઇન ઉપલબ્ધ નથી</translation>
 <translation id="2695507686909505111">પેજનો અનુવાદ કર્યો</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">વેબ બ્રાઉઝ કરવા ટેબ ખોલો.</translation>
 <translation id="3519905498307021260">{count,plural, =1{ટૅબ ખોલો}one{{count} ટૅબ ખોલો}other{{count} ટૅબ ખોલો}}</translation>
 <translation id="3523789730715594198">તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ રોકી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
+<translation id="3526783603136816353">જેનો ઉપયોગ કરીને તમે <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)ને સાચવવા માગો છો, તે એકાઉન્ટ પસંદ કરો</translation>
 <translation id="3527085408025491307">ફોલ્ડર</translation>
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
 <translation id="3530206579861815432">તમારા સિંક કરેલા બધા ડિવાઇસ પર ખુલ્લા અને તાજેતરમાં બંધ કરેલા બધા ટૅબને ઝડપથી શોધો.</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523"><ph name="DATE" />ના રોજ બનાવ્યું</translation>
 <translation id="374357899112510277">ડાઉનલોડ છુપાવો</translation>
 <translation id="3745190878148784130">'ટેક્સ્ટ નાની-મોટી કરો' છુપાવો</translation>
+<translation id="375773422023477320">Bookmarks</translation>
 <translation id="3762232513783804601">તમારા iPad માટે બનાવાયેલું</translation>
 <translation id="3768725474733206671">છેલ્લે બંધ કરેલું ટૅબ ફરીથી ખોલો</translation>
 <translation id="3771033907050503522">છૂપા ટેબ્સ</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">સરનામાં</translation>
 <translation id="3955822496205734389">તમારી પાસે નબળા પાસવર્ડ છે.</translation>
 <translation id="3959736869653157332">મેનૂ → નવી છૂપી ટૅબ</translation>
+<translation id="3962326069546168954">સાચવો</translation>
 <translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3968505803272650567">રુચિઓ મેનેજ કરો</translation>
 <translation id="3989635538409502728">સાઇન આઉટ</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">સેટિંગમાં ઝડપથી ફેરફાર કરવા અને ઍડ્રેસ બારમાંથી સુવિધાઓનો ઉપયોગ કરવા માટે શૉર્ટકટ.</translation>
 <translation id="6710079714193676716">તમારી સંસ્થા દ્વારા મેનેજ કરવામાં આવે છે. અમુક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676"><ph name="USER_EMAIL" /> માટે Driveમાં સાચવી.</translation>
 <translation id="672735642903863329">તમારા તમામ ડિવાઇસ પર તમારા બુકમાર્ક્સ, પાસવર્ડ અને બીજું ઘણું મેળવો.</translation>
 <translation id="6730682669179532099">બધા પાસવર્ડ નિકાસ કરી શકાતાં નથી</translation>
 <translation id="6732087373923685049">કૅમેરા</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">ટૂંક સમયમાં, જ્યારે તમે નવું ટૅબ ખોલશો ત્યારે તમને <ph name="CHANNEL_NAME" /> પરથી સ્ટોરી દેખાશે.</translation>
 <translation id="6797885426782475225">વૉઇસ શોધ</translation>
 <translation id="6800349425672670802">તમે ટૅબ સ્વિચર મારફતે તમારા બધા ખુલ્લા ટૅબ ઍક્સેસ કરી શકો છો.</translation>
+<translation id="6805179248725678418">Google Driveમાં સાચવો</translation>
 <translation id="6807889908376551050">બધું બતાવો...</translation>
 <translation id="681368974849482173">આઇટમ બનાવી</translation>
 <translation id="6822587385560699678">જ્યારે આ ચાલુ હોય, ત્યારે પાસવર્ડ <ph name="ACCOUNT" />માં સાચવવામાં આવે છે. જ્યારે આ બંધ હોય, ત્યારે પાસવર્ડ માત્ર આ ડિવાઇસ પર સાચવવામાં આવે છે.</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">ડાઉનલોડ કરી રહ્યાં છીએ… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">છુપાવો</translation>
 <translation id="7108762695052995889">સાઇટની મુલાકાત લો</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">આખું નામ</translation>
 <translation id="7136892417564438900">કૅમેરા અનુપલબ્ધ છે</translation>
 <translation id="7141960840225504692">તમારી ટૅબ બંધ કરવામાં આવશે અને બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવશે</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">ડાઉનલોડ ન કરી શક્યાં</translation>
 <translation id="7859704718976024901">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="7866501058614003444">આ પૅકેજને ટ્રૅક કરવાનું સફળતાપૂર્વક બંધ કરવામાં આવ્યું.</translation>
+<translation id="7866872729285243843">તમારા બધા ડિવાઇસ પર તમારી વાંચન સૂચિ મેળવવા માટે, સેટિંગમાં "વાંચન સૂચિ" ચાલુ કરો.</translation>
 <translation id="7866993391592926595">આ કાર્ડ છુપાવવાથી પૅકેજ ટ્રૅકિંગની સુવિધા બંધ થઈ જશે અને તમારો બધો ડેટા કાઢી નાખવામાં આવશે</translation>
 <translation id="7870750252270996949">લેન્સની કૉપિ કરેલી છબી</translation>
 <translation id="7879275349003161544">ડાઉનલોડ કરેલી આઇટમ બતાવો</translation>

@@ -199,6 +199,7 @@
 <translation id="4148957013307229264">Memasang...</translation>
 <translation id="4149882025268051530">Instalatur gagal mendekompresi arsip. Download kembali Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome akan segera ditutup serta menghapus data</translation>
+<translation id="4173512894976930765">Situs mungkin akan berfungsi seperti yang diharapkan. Anda akan logout dari sebagian besar situs saat menutup semua jendela Chrome, kecuali Akun Google Anda jika Anda login ke Chrome.</translation>
 <translation id="4175922240926474352">Chrome memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="4191857738314598978">{0,plural, =1{Luncurkan ulang Chrome dalam satu hari}other{Luncurkan ulang Chrome dalam # hari}}</translation>
 <translation id="4205939740494406371">Chrome tidak dapat memeriksa sandi Anda. Coba lagi setelah 24 jam atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>

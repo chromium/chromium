@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">पृष्ठ खोलिएको छ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{कुनै पनि साइटले कुकी प्रयोग गर्दैन}=1{एउटा साइटबाट (तपाईं आफ्नो Google खातामा साइन इन अवस्थामा रहिरहनु हुने छ)}other{# वटा साइटबाट (तपाईं आफ्नो Google खातामा साइन इन अवस्थामा रहिरहनु हुने छ)}}</translation>
 <translation id="1165852471352757509">टिभी वृत्तचित्र तथा गैरआख्यान</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> डाउनलोड गर्न सकिएन</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">तपाईं <ph name="EMBEDDED_URL" /> लाई <ph name="TOP_LEVEL_URL" /> का कुकी र साइटको डेटा प्रयोग गर्ने अनुमति दिन चाहनुहुन्छ?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF निर्माता:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode नीति निर्धारण नगरिएकाले तपाईंले तोक्नुभएका टेम्प्लेटहरू लागू नहुन सक्छन्।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ल्याङ्ग्वेज प्याक डाउनलोड गरिँदै छ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">पुरुषको पोसाक</translation>
 <translation id="2137891579555018930">अनुमति प्राप्त गर्न बाँकी छ…</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्कहरू</translation>
@@ -633,7 +635,7 @@
 <translation id="219906046732893612">घरको स्तरोन्नति</translation>
 <translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
 <translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
-<translation id="2207770355672215546">जुनसुकै कार्ड प्रयोग गरेर सधैँ अनुमति दिनुहोस्</translation>
+<translation id="2207770355672215546">जुनसुकै कार्ड सधैँ प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="2208053750671792556">कोड प्राप्त गर्नुभएन? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड गर्नुहोस्</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">कम्प्याक्ट डिस्क</translation>
 <translation id="2235344399760031203">तेस्रो पक्षीय कुकीहरूमाथि रोक लगाइएको छ</translation>
 <translation id="2239100178324503013">अहिले पठाउनुहोस्</translation>
+<translation id="2239114457614475014">इनपुट सम्पादन गर्नुहोस्</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड गरिँदा</translation>
 <translation id="2246264294482514010">१० x १२ इन्च</translation>
 <translation id="2246480341630108201">तपाईंका अभिभावकले अहिलेसम्म पनि "ठिक छ" भन्नुभएको छैन</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">अनुहार तथा शरीरको हेरचाह</translation>
 <translation id="2962073860865348475">१२ x १८ इन्च</translation>
 <translation id="2968103128155246731">भ्यान तथा मिनिभ्यानहरू</translation>
+<translation id="2971483124699139256">थम्ज अपले तपाईंलाई सिर्जना गरिएको टेक्स्ट मन पर्छ भन्ने प्रतिक्रिया पेस गर्छ।</translation>
 <translation id="2972581237482394796">&amp;फेरि गर्नुहोस्</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, हाल चयन गरिएको छ। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ओपेरा</translation>
@@ -1571,6 +1575,7 @@
 <translation id="4132448310531350254">एपहरू "<ph name="POLICY_IDS_LIST" />" सँग सम्बन्धित file_extension "<ph name="FILE_EXTENSION" />" का नक्कली ह्यान्ड्लरहरू।</translation>
 <translation id="4134123981501319574">डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="413544239732274901">थप जान्नुहोस्</translation>
+<translation id="4139859738677203214">थम्ब्स डाउनले तपाईंलाई सिर्जना गरिएको टेक्स्ट मन नपर्नुको कारणसहित विस्तृत प्रतिक्रिया पेस गर्ने फारम खोल्छ।</translation>
 <translation id="4140905530744469899">प्रोफाइलको आइडी:</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
 <translation id="4148925816941278100">अमेरिकन एक्स्प्रेस</translation>
@@ -3984,6 +3989,7 @@
 <translation id="8877780815363510165">माछा मार्ने कार्य</translation>
 <translation id="8884537526797090108">गोप्य सामग्री रेकर्ड गर्न मिल्दैन</translation>
 <translation id="8888187300091017436">डसनाहरू</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> नियन्त्रण गर्नुहोस् र यसमार्फत एक्सेस गर्न सकिने स्मार्ट कार्ड प्रयोग गर्नुहोस्।</translation>
 <translation id="8891727572606052622">अवैध प्रोक्सी मोड।</translation>
 <translation id="8894794286471754040">पहिले लामो किनारा</translation>
 <translation id="8897428486789851669">पौडी</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">გაუქმდა</translation>
 <translation id="1020274983236703756">თქვენთვის ამიერიდან ხელმისაწვდომია <ph name="PRODUCT_NAME" />-ისთვის ექსკლუზიური რესურსები</translation>
 <translation id="1022628058306505708">ხმელეთის ნაკადი</translation>
+<translation id="103306827243002956">ბოლოდროინდელი ფონები</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ნაკადი, <ph name="CPU_MAX_CLOCK_SPEED" /> გჰც)</translation>
 <translation id="1047773237499189053">ხელმისაწვდომია ახალი ფუნქცია, დამატებითი ინფორმაციისთვის გამოიყენეთ კლავიში ზემოთ მიმართული ისრით.</translation>
 <translation id="1059913517121127803">სკანირების დაწყება ვერ მოხერხდა</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">ასარჩევია ხელოვნების გალერეის მინიმუმ ერთი ალბომი</translation>
 <translation id="2230005943220647148">ცელსიუსი</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">მეტის შექმნა</translation>
 <translation id="2236746079896696523">კლავიატურის შენათების გადართვა</translation>
 <translation id="2240366984605217732">განლაგების გადართვა</translation>
 <translation id="225692081236532131">აქტივაციის სტატუსი</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">შესვლის სურათი</translation>
 <translation id="2640549051766135490">არჩეულია ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="2652403576514495859">კარნახის ჩართვა ან გადართვა</translation>
+<translation id="2656001153562991489">ექსკლუზიურად Chromebook Plus-ისთვის</translation>
 <translation id="267442004702508783">განახლება</translation>
 <translation id="268270014981824665">ბნელი კლავიატურა</translation>
 <translation id="2712812801627182647">TLS ავტორიზაციის გასაღები</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">უკან</translation>
 <translation id="3858860766373142691">სახელი</translation>
 <translation id="3862598938296403232">აღწერილობა სავალდებულოა</translation>
+<translation id="386280020966669610">შთაგონების მიღება</translation>
 <translation id="3865289341173661845">დამხმარე კონტენტი მიუწვდომელია.</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">ახალი APN</translation>
 <translation id="4093865285251893588">პროფილის სურათი</translation>
 <translation id="409427325554347132">შემოწმების დეტალების შენახვა</translation>
+<translation id="409469431304488632">ექსპერიმენტი</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">აირჩიეთ ალბომი <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB სენსორული პანელი</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">სლაიდშოუ</translation>
 <translation id="4297501883039923494">გაჩერდა — უცნობი შეცდომა</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> სურათი</translation>
+<translation id="4305367063258930534">Google-ის მიერ უზრუნველყოფილი ფონი</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> კლავიში დაჭერილია</translation>
 <translation id="4354430579665871434">კლავიში</translation>
 <translation id="4361257691546579041">APN-ის ტიპია „ნაგულისხმევი“.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">სერვერის სახელი</translation>
 <translation id="5089810972385038852">შტატი</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">სინონიმური:</translation>
 <translation id="5137451382116112100">სრულ ეკრანზე</translation>
 <translation id="5142961317498132443">ავტორიზაცია</translation>
 <translation id="5145081769226915336">გსურთ, ავტომატურად ჩაირთოს მუქი რეჟიმი?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186"><ph name="KEY" /> კლავიში</translation>
 <translation id="7068619307603204412">მოამზადეთ თქვენი მოწყობილობა</translation>
+<translation id="7076851914315147928">აირჩიეთ ფონი</translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">წარუმატებელია — ავტორიზაცია ვერ მოხერხდა</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">ღია რეჟიმი</translation>
 <translation id="780301667611848630">არა, მადლობთ</translation>
 <translation id="7805768142964895445">სტატუსი</translation>
+<translation id="7819831665603418705">გამოიყენეთ შაბლონი</translation>
 <translation id="7819857487979277519">PSK (WPA ან RSN)</translation>
 <translation id="7841134249932030522">მუქი რეჟიმის ჩართვა</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8329018942023753850">კალკულატორის აპი</translation>
 <translation id="8336739000755212683">მოწყობილობის ანგარიშის სურათის შეცვლა</translation>
+<translation id="8339024191194156249">შეიტყვეთ მეტი ავტომატური გაშვების შესახებ</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ან <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">ბეჭდვის დავალებები</translation>
 <translation id="8349826889576450703">გამშვები</translation>

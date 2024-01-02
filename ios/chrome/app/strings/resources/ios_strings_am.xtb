@@ -314,6 +314,7 @@
 <translation id="2664621323652615289">አቁም</translation>
 <translation id="2666092431469916601">ላይ</translation>
 <translation id="2669454659051515572">ይህን መሣሪያ የሚጠቀም ማንኛውም ሰው የወረዱ ፋይሎችን መመልከት ይችላል</translation>
+<translation id="2681158575552244226">በDrive ውስጥ ለ<ph name="USER_EMAIL" /> በማስቀመጥ ላይ።</translation>
 <translation id="2690858294534178585">ካሜራ ሥራ ላይ ነው</translation>
 <translation id="2691653761409724435">ከመስመር ውጭ አይገኝም</translation>
 <translation id="2695507686909505111">ገፅ ተተርጉሟል</translation>
@@ -1091,6 +1092,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6685259053455152195">ቅንብሮችን በፍጥነት ለማሻሻል እና ከአድራሻ አሞሌው ላይ ባህሪዎችን ለመጠቀም አቋራጮች።</translation>
 <translation id="6710079714193676716">በእርስዎ ድርጅት የሚተዳደር። አንዳንድ ባህሪዎች ላይገኙ ይችላሉ <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">በDrive ውስጥ ለ<ph name="USER_EMAIL" /> በማስቀመጥ ላይ።</translation>
 <translation id="672735642903863329">የእርስዎን እልባቶች፣ የይለፍ ቃላት እና ሌሎችን በሁሉም መሣሪያዎችዎ ላይ ያግኙ።</translation>
 <translation id="6730682669179532099">የይለፍ ቃላትን ወደ ውጭ መላክ አልተቻለም</translation>
 <translation id="6732087373923685049">ካሜራ</translation>
@@ -1165,6 +1167,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7102005569666697658">በማውረድ ላይ… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ደብቅ</translation>
 <translation id="7108762695052995889">ጣቢያ ይጎብኙ</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">ሙሉ ስም</translation>
 <translation id="7136892417564438900">ካሜራ አይገኝም</translation>
 <translation id="7141960840225504692">የእርስዎ ትሮች ይዘጋሉ እና የአሰሳ ውሂብ ይሰረዛሉ</translation>

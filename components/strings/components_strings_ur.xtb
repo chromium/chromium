@@ -92,6 +92,7 @@
 <translation id="1165174597379888365">صفحہ کا ملاحظہ کیا جاتا ہے</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{کوئی نہیں}=1{‏1 سائٹ سے (آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے)}other{‏# سائٹس سے (آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے)}}</translation>
 <translation id="1165852471352757509">‏TV ڈاکیومنٹری اور غیر افسانہ</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ڈاؤن لوڈ کرنے میں ناکام</translation>
 <translation id="1174644974616730562">‏Chinese #1 لفافہ</translation>
 <translation id="1174723505405632867">کیا آپ <ph name="EMBEDDED_URL" /> کو <ph name="TOP_LEVEL_URL" /> پر کوکیز اور سائٹ کا ڈيٹا استعمال کرنے کی اجازت دینا چاہتے ہیں؟
 
@@ -599,6 +600,7 @@
 <translation id="2126374524350484896">‏PDF پروڈیوسر:</translation>
 <translation id="2130448033692577677">‏ہو سکتا ہے کہ آپ کے ذریعے متعینہ تمثیلات DnsOverHttpsMode پالیسی سیٹ نہ ہونے کی وجہ سے لاگو نہ ہو۔</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> زبان کا پیک ڈاؤن لوڈ ہو رہا ہے...%<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">مردوں کا لباس</translation>
 <translation id="2137891579555018930">اجازت کا انتظار ہے...</translation>
 <translation id="213826338245044447">موبائل بُک مارکس</translation>
@@ -656,6 +658,7 @@
 <translation id="2233745931693710080">کمپیکٹ ڈسک</translation>
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
+<translation id="2239114457614475014">ان پٹ میں ترمیم کریں</translation>
 <translation id="2241693394036365668">فائل ڈاؤن لوڈ کی جاتی ہے</translation>
 <translation id="2246264294482514010">‏‎10 x 12 انچ</translation>
 <translation id="2246480341630108201">آپ کے والدین نے ابھی تک یہ نہیں کہا ہے کہ یہ ٹھیک ہے</translation>
@@ -990,6 +993,7 @@
 <translation id="2959113999220720579">چہرے اور جسم کی نگہداشت</translation>
 <translation id="2962073860865348475">‏‎12 x 18 انچ</translation>
 <translation id="2968103128155246731">وینز اور منی وینز</translation>
+<translation id="2971483124699139256">اظہار پسندیدگی یہ تاثرات جمع کراتا ہے کہ آپ کو تخلیق کردہ ٹیکسٹ پسند ہے۔</translation>
 <translation id="2972581237482394796">&amp;واپس لائیں</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، فی الحال منتخب کردہ۔ <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">اوپیرا</translation>
@@ -1575,6 +1579,7 @@
 <translation id="4132448310531350254">‏file_extension "<ph name="FILE_EXTENSION" />" کے لیے ڈپلیکیٹ ہینڈلرز جس کا حوالہ ایپس "<ph name="POLICY_IDS_LIST" />" کے ذریعے دیا گیا ہے۔</translation>
 <translation id="4134123981501319574">دستاویز تخلیق کریں</translation>
 <translation id="413544239732274901">مزید جانیں</translation>
+<translation id="4139859738677203214">اظہار ناپسندیدگی اس بارے میں تفصیلی تاثرات جمع کرانے کے لیے ایک فارم کھولتا ہے کہ آپ کو کیوں تخلیق کردہ ٹیکسٹ پسند نہیں ہے۔</translation>
 <translation id="4140905530744469899">‏پروفائل کی ID:</translation>
 <translation id="4142935452406587478">ٹرے 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3989,6 +3994,7 @@
 <translation id="8877780815363510165">ماہی گیری</translation>
 <translation id="8884537526797090108">رازدارانہ مواد کو ریکارڈ نہیں کیا جا سکتا</translation>
 <translation id="8888187300091017436">گدے</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> کو کنٹرول کر کے قابل رسائی اسمارٹ کارڈ تک رسائی حاصل کریں۔</translation>
 <translation id="8891727572606052622">پراکسی کی غلط وضع۔</translation>
 <translation id="8894794286471754040">طویل کنارہ پہلے</translation>
 <translation id="8897428486789851669">تیراکی</translation>

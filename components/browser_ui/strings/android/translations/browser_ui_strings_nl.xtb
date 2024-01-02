@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Hiermee verwijder je alle gegevens en cookies die zijn opgeslagen door <ph name="ORIGIN" /> of de bijbehorende app op je startscherm.</translation>
 <translation id="5100237604440890931">Samengevouwen; klik om uit te vouwen.</translation>
 <translation id="5123685120097942451">Incognitotabblad</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Prijsdaling op je geopende tabbladen}other{Prijsdalingen op je geopende tabbladen}}</translation>
 <translation id="5186036860380548585">Optie beschikbaar boven aan het scherm</translation>
 <translation id="5197729504361054390">De contacten die je selecteert, worden gedeeld met <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Laatst bezocht: vandaag</translation>

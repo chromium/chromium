@@ -368,7 +368,7 @@
 <translation id="1277020343994096713">Учурдагы PIN кодуңуздан айырмаланган жаңы PIN кодду түзүңүз</translation>
 <translation id="1277597051786235230">Жаңы өтмөктө <ph name="SEARCH_ENGINE" /> аркылуу “<ph name="SEARCH_TERMS" />” &amp;издөө</translation>
 <translation id="1278859221870828664">Google Play колдонмолору менен кызматтарын карап чыгуу</translation>
-<translation id="127946606521051357">Nearby түзмөгү файлдарын бөлүшүүдө</translation>
+<translation id="127946606521051357">Жакын жердеги түзмөк файлдарын бөлүшүүдө</translation>
 <translation id="1280965841156951489">Файлдарды түзөтүү</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Файл ачылбай жатат}other{Файлдар ачылбай жатат}}</translation>
 <translation id="1282311502488501110">Кирбейм</translation>
@@ -2737,6 +2737,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="3043581297103810752"><ph name="ORIGIN" /> сайтынан алынды</translation>
 <translation id="3045447014237878114">Бул сайт бир нече файлды автоматтык түрдө жүктөп алды</translation>
 <translation id="3046178388369461825">Linux'та өтө аз орун калды</translation>
+<translation id="304644035656848980">Микрофонуңузду алдын ала көрүү</translation>
 <translation id="3046910703532196514">Веб баракча, Бүттү</translation>
 <translation id="304747341537320566">Кеп синтезаторлору</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> камсыздаган HID түзмөктөрү</translation>
@@ -5001,6 +5002,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="4862642413395066333">OCSP Жоопторуна кол коюу</translation>
 <translation id="4863702650881330715">Кеңейтүүнүн шайкештиги</translation>
 <translation id="4863769717153320198"><ph name="WIDTH" /> x <ph name="HEIGHT" /> сыяктуу көрүнөт (демейки дааналыгы)</translation>
+<translation id="4864369630010738180">Кирүүдө…</translation>
 <translation id="4864805589453749318">Мектеп аккаунтун кошуу үчүн уруксат берип жаткан ата-энени тандаңыз.</translation>
 <translation id="486505726797718946">Эстутум үнөмдөлдү</translation>
 <translation id="486635084936119914">Айрым файл форматтары жүктөлүп алынгандан кийин автоматтык түрдө ачуу</translation>
@@ -6854,7 +6856,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6350821834561350243">Маселени жана ал пайда болгон кадамдарды так сүрөттөп бериңиз (мүмкүн болсо)</translation>
 <translation id="6351178441572658285">Колдонмонун тилдери</translation>
 <translation id="6354918092619878358">SECG эллиптикалык ийри сызыгы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Google аккаунтунун маалыматы алынууда...</translation>
 <translation id="635609604405270300">Түзмөктү өчүрбөңүз</translation>
 <translation id="63566973648609420">Шифрленген дайын-даректериңизди купуя сөз айкашын билген адам гана окуй алат. Бул купуя сөз айкашы Google'га жөнөтүлбөйт же анда сакталбайт. Эгер купуя сөз айкашыңызды унутуп калсаңыз, <ph name="BEGIN_LINK" />шайкештирүүнү баштапкы абалга келтиришиңиз<ph name="END_LINK" /> керек болот.</translation>
 <translation id="6356718524173428713">Баракты ылдый жылдыруу үчүн экранды өйдө сыдырыңыз</translation>

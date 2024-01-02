@@ -88,6 +88,8 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3146109040683991651">Chrome'u Defolt Brauzer edin</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome üzərində işləmir. Domen administratorunuzla əlaqə saxlayın, və ya adi Google Hesab girişi istifadə edin.</translation>
 <translation id="3173834708294760622">Google Chrome Səhifəsi</translation>
+<translation id="3209155060213569278">Google Hesabında <ph name="BEGIN_LINK" />yadda saxlanan Chrome datasını idarə edə<ph name="END_LINK" /> bilərsiniz.
+Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən daha çox ayar üçün <ph name="BEGIN_LINK" />Google Xidmətlərinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="322254490661677575">Google Hesabında Chrome datasını istifadə etmək və saxlamaq üçün parol ifadəsi daxil edin.</translation>
 <translation id="3282568296779691940">Chrome'a daxil olun</translation>
 <translation id="3340938510625667914">Chrome əməliyyatları</translation>
@@ -161,6 +163,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="5527026824954593399">"Chrome-da Google Xəritə ilə baxın" üzərinə toxunun.</translation>
 <translation id="5552137475244467770">Chrome müntəzəm olaraq onlayn yayımlanan siyahılar əsasında parollarınızı yoxlayır. Bunu edərkən, parollar və istifadəçi adları şifrələnir ki, Google daxil olmaqla, heç kim onları oxuya bilməsin.</translation>
 <translation id="5554520618550346933">İstifadə edilən parol onlayn yayımlanıbsa, Chrome xəbərdarlıq edir. Parol və istifadəçi adları şifrələnir və hətta Google-a da görünmür.</translation>
+<translation id="5601180634394228718">Chrome təcrübənizi təkmilləşdirmək məqsədilə datadan istifadə edən daha çox ayar üçün <ph name="BEGIN_LINK" />Google Xidmətlərinə<ph name="END_LINK" /> keçin.</translation>
 <translation id="5639704535586432836">Kameranı aktiv etmək üçün Ayarlar &gt; Gizlilik &gt; Kamera &gt; Google Chrome bölməsini açın.</translation>
 <translation id="5642200033778930880">Google Chrome kameranızı Bölünmüş Görüntü rejimində istifadə edə bilməz</translation>
 <translation id="5661521615548540542">Google Parol Meneceri bütün parolları yoxlaya bilmədi. Sonra cəhd edin.</translation>

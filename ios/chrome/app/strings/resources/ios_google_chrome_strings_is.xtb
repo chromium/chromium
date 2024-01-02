@@ -88,6 +88,8 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3146109040683991651">Nota Chrome sem sjálfgefinn vafra</translation>
 <translation id="3167189358072330585">Reikningurinn þinn virkar ekki í Google Chrome. Hafðu samband við stjórnanda lénsins eða notaðu venjulegan Google reikning til að skrá þig inn.</translation>
 <translation id="3173834708294760622">Google Chrome síða</translation>
+<translation id="3209155060213569278">Þú getur <ph name="BEGIN_LINK" />stjórnað því hvaða Chrome-gögn eru vistuð<ph name="END_LINK" /> á Google-reikningnum þínum.
+Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Sláðu inn aðgangsorðið þitt til að nota og vista Chrome-gögn á Google-reikningnum þínum.</translation>
 <translation id="3282568296779691940">Skráðu þig inn á Chrome</translation>
 <translation id="3340938510625667914">Chrome-aðgerðir</translation>
@@ -161,6 +163,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="5527026824954593399">Ýttu á „Skoða með Google-kortum í Chrome“.</translation>
 <translation id="5552137475244467770">Chrome athugar aðgangsorðin þín reglulega og ber þau saman við lista sem hafa verið birtir á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfn dulkóðuð svo enginn geti lesið þau, þ.m.t. ekki Google.</translation>
 <translation id="5554520618550346933">Þegar þú notar aðgangsorð varar Chrome þig við ef það hefur verið birt á netinu. Meðan á þessu stendur eru aðgangsorðin þín og notandanöfnin dulkóðuð svo enginn geti lesið þau, þ.m.t. Google.</translation>
+<translation id="5601180634394228718">Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chrome og kveiktu á myndavélinni.</translation>
 <translation id="5642200033778930880">Google Chrome getur ekki notað myndavélina á tvískiptum skjá</translation>
 <translation id="5661521615548540542">Google-aðgangsorðastjórnun gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>

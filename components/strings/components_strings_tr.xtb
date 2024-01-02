@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Sayfa ziyaret edildi</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Yok}=1{1 siteden (Google Hesabınızın oturumu açık kalır)}other{# siteden (Google Hesabınızın oturumu açık kalır)}}</translation>
 <translation id="1165852471352757509">TV belgeselleri ve kurmaca olmayan TV programları</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> indirilemedi</translation>
 <translation id="1174644974616730562">Zarf Chinese #1</translation>
 <translation id="1174723505405632867"><ph name="EMBEDDED_URL" /> sitesinin, <ph name="TOP_LEVEL_URL" /> üzerinde çerezleri ve site verilerini kullanmasına izin vermek istiyor musunuz?
 
@@ -598,6 +599,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2126374524350484896">PDF üreticisi:</translation>
 <translation id="2130448033692577677">Belirttiğiniz şablonlar, DnsOverHttpsMode politikası ayarlanmadığı için uygulanamayabilir.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> dil paketi indiriliyor...%<ph name="PERCENT" /></translation>
 <translation id="2135799067377889518">Erkek giyim</translation>
 <translation id="2137891579555018930">İzin bekleniyor...</translation>
 <translation id="213826338245044447">Mobil Yer İşaretleri</translation>
@@ -655,6 +657,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2233745931693710080">Kompakt Disk</translation>
 <translation id="2235344399760031203">Üçüncü taraf çerezleri engelleniyor</translation>
 <translation id="2239100178324503013">Şimdi gönder</translation>
+<translation id="2239114457614475014">Girişi düzenle</translation>
 <translation id="2241693394036365668">Dosya indirme</translation>
 <translation id="2246264294482514010">10 x 12 inç</translation>
 <translation id="2246480341630108201">Ebeveyniniz henüz onaylamadı</translation>
@@ -989,6 +992,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2959113999220720579">Yüz ve vücut bakımı</translation>
 <translation id="2962073860865348475">12 x 18 inç</translation>
 <translation id="2968103128155246731">Karavanlar ve minivanlar</translation>
+<translation id="2971483124699139256">Beğenme düğmesini tıkladığınızda, oluşturulan metnin hoşunuza gittiğine dair geri bildirim gönderilir.</translation>
 <translation id="2972581237482394796">&amp;Yinele</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, şu anda seçili. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />" uygulamaları tarafından başvurulan "<ph name="FILE_EXTENSION" />" dosya uzantısı için kopya işleyiciler.</translation>
 <translation id="4134123981501319574">Doküman oluştur</translation>
 <translation id="413544239732274901">Daha fazla bilgi</translation>
+<translation id="4139859738677203214">Beğenmeme düğmesini tıkladığınızda, oluşturulan metni neden beğenmediğinize dair ayrıntılı geri bildirim gönderebileceğiniz bir form açılır.</translation>
 <translation id="4140905530744469899">Profil kimliği:</translation>
 <translation id="4142935452406587478">Tepsi 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3987,6 +3992,7 @@ Ek ayrıntılar:
 <translation id="8877780815363510165">Balıkçılık</translation>
 <translation id="8884537526797090108">Gizli içerik kaydedilemez</translation>
 <translation id="8888187300091017436">Yataklar</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> kontrol edilip içindeki akıllı karta erişim elde edilsin.</translation>
 <translation id="8891727572606052622">Geçersiz proxy modu.</translation>
 <translation id="8894794286471754040">Önce uzun kenar</translation>
 <translation id="8897428486789851669">Yüzme</translation>

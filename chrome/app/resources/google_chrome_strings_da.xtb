@@ -199,6 +199,7 @@
 <translation id="4148957013307229264">Installerer...</translation>
 <translation id="4149882025268051530">Installationsprogrammet kunne ikke pakke arkivet ud. Download Google Chrome igen.</translation>
 <translation id="4153934450158521343">Chrome lukkes snart, og dataene slettes</translation>
+<translation id="4173512894976930765">Websites fungerer sandsynligvis som forventet. Du logges ud af de fleste websites, når du lukker alle Chrome-vinduer, med undtagelse af din Google-konto, hvis du er logget ind i Chrome.</translation>
 <translation id="4175922240926474352">Chrome har blokeret denne download, fordi websitet ikke anvender en sikker forbindelse, og der kan være blevet manipuleret med filen</translation>
 <translation id="4191857738314598978">{0,plural, =1{Genstart Chrome inden for én dag}one{Genstart Chrome inden for # dag}other{Genstart Chrome inden for # dage}}</translation>
 <translation id="4205939740494406371">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>

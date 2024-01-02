@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Pagina is bezocht</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Geen}=1{Van 1 site (je blijft ingelogd op je Google-account)}other{Van # sites (je blijft ingelogd op je Google-account)}}</translation>
 <translation id="1165852471352757509">Tv-documentaires en non-fictie</translation>
+<translation id="1167877250265821930">Kan <ph name="LANGUAGE" /> niet downloaden</translation>
 <translation id="1174644974616730562">Envelop Chinees #1</translation>
 <translation id="1174723505405632867">Wil je toestaan dat <ph name="EMBEDDED_URL" /> cookies en sitegegevens gebruikt op <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2126374524350484896">Pdf gemaakt met:</translation>
 <translation id="2130448033692577677">De gespecificeerde templates worden misschien niet toegepast omdat het beleid DnsOverHttpsMode niet is ingesteld.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Taalpakket voor <ph name="LANGUAGE" /> downloaden…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Herenkleding</translation>
 <translation id="2137891579555018930">Wachten op toestemming...</translation>
 <translation id="213826338245044447">Mobiele bookmarks</translation>
@@ -655,6 +657,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2239100178324503013">Nu verzenden</translation>
+<translation id="2239114457614475014">Invoer bewerken</translation>
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
 <translation id="2246480341630108201">Je ouder heeft nog niet aangegeven dat het goed is</translation>
@@ -989,6 +992,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2959113999220720579">Gezichts- en lichaamsverzorging</translation>
 <translation id="2962073860865348475">12 x 18 inch</translation>
 <translation id="2968103128155246731">Bestelauto's en minibestelauto's</translation>
+<translation id="2971483124699139256">Met Leuk stuur je feedback dat je de gegenereerde tekst leuk vindt.</translation>
 <translation id="2972581237482394796">&amp;Opnieuw</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, momenteel geselecteerd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1568,6 +1572,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4132448310531350254">Dubbele handlers voor bestandsextensie <ph name="FILE_EXTENSION" /> waarnaar wordt verwezen door apps <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Document maken</translation>
 <translation id="413544239732274901">Meer informatie</translation>
+<translation id="4139859738677203214">Met Niet leuk wordt een formulier geopend waarmee je gedetailleerde feedback kunt sturen over waarom je de gegenereerde tekst niet leuk vindt.</translation>
 <translation id="4140905530744469899">Profiel-ID:</translation>
 <translation id="4142935452406587478">Lade 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3980,6 +3985,7 @@ Aanvullende informatie:
 <translation id="8877780815363510165">Vissen</translation>
 <translation id="8884537526797090108">Kan geen vertrouwelijke content opnemen</translation>
 <translation id="8888187300091017436">Matrassen</translation>
+<translation id="8890048757975398817">Beheer <ph name="READERNAME" /> en krijg toegang tot de smartcard die er toegang toe heeft.</translation>
 <translation id="8891727572606052622">Ongeldige proxymodus.</translation>
 <translation id="8894794286471754040">Lange zijde eerst</translation>
 <translation id="8897428486789851669">Zwemmen</translation>

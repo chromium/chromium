@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Halaman dikunjungi</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs (Anda akan tetap login ke Akun Google Anda)}other{Dari # situs (Anda akan tetap login ke Akun Google Anda)}}</translation>
 <translation id="1165852471352757509">Program TV dokumenter &amp; nonfiksi</translation>
+<translation id="1167877250265821930">Gagal mendownload <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">Anda ingin mengizinkan <ph name="EMBEDDED_URL" /> menggunakan cookie dan data situs di <ph name="TOP_LEVEL_URL" />?
 
@@ -599,6 +600,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2126374524350484896">Pembuat PDF:</translation>
 <translation id="2130448033692577677">Template yang telah Anda tentukan mungkin tidak diterapkan karena kebijakan DnsOverHttpsMode tidak ditetapkan.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Mendownload paket bahasa <ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Pakaian pria</translation>
 <translation id="2137891579555018930">Menunggu izin ...</translation>
 <translation id="213826338245044447">Bookmark Seluler</translation>
@@ -656,6 +658,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2233745931693710080">Cakram Padat</translation>
 <translation id="2235344399760031203">Cookie pihak ketiga diblokir</translation>
 <translation id="2239100178324503013">Kirim sekarang</translation>
+<translation id="2239114457614475014">Edit input</translation>
 <translation id="2241693394036365668">File didownload</translation>
 <translation id="2246264294482514010">10 x 12 inci (25 x 30 cm)</translation>
 <translation id="2246480341630108201">Orang tuamu belum memperbolehkannya</translation>
@@ -990,6 +993,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2959113999220720579">Perawatan wajah &amp; tubuh</translation>
 <translation id="2962073860865348475">12 x 18 inci (30 x 45 cm)</translation>
 <translation id="2968103128155246731">Van &amp; minivan</translation>
+<translation id="2971483124699139256">Memberi tanda Suka akan mengirim masukan bahwa Anda menyukai teks yang dihasilkan.</translation>
 <translation id="2972581237482394796">&amp;Ulang</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, saat ini yang dipilih. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4132448310531350254">Pengendali duplikat untuk file_extension "<ph name="FILE_EXTENSION" />" yang direferensikan oleh aplikasi "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Buat dokumen</translation>
 <translation id="413544239732274901">Pelajari lebih lanjut</translation>
+<translation id="4139859738677203214">Memberi tanda Tidak suka akan membuka formulir untuk mengirim masukan mendetail tentang alasan Anda tidak menyukai teks yang dihasilkan.</translation>
 <translation id="4140905530744469899">ID Profil:</translation>
 <translation id="4142935452406587478">Baki 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3982,6 +3987,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8877780815363510165">Memancing</translation>
 <translation id="8884537526797090108">Tidak dapat merekam konten rahasia</translation>
 <translation id="8888187300091017436">Matras</translation>
+<translation id="8890048757975398817">Kontrol <ph name="READERNAME" /> dan dapatkan akses ke smart card yang dapat diakses.</translation>
 <translation id="8891727572606052622">Mode proxy tidak valid.</translation>
 <translation id="8894794286471754040">Tepi panjang lebih dulu</translation>
 <translation id="8897428486789851669">Renang</translation>

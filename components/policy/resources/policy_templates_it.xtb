@@ -78,6 +78,7 @@ Per <ph name="PRODUCT_OS_NAME" />, vedi <ph name="DEVICE_METRICS_REPORTING_ENABL
 
       Se non viene configurato, per impostazione predefinita, la funzionalità non è consentita per gli utenti gestiti, ma può essere utilizzata dagli altri utenti.</translation>
 <translation id="1035860095382451169">Attiva l'icona lucchetto nella omnibox per le connessioni sicure</translation>
+<translation id="1037426296070139784">Certificati TLS che <ph name="PRODUCT_NAME" /> dovrebbe considerare non attendibili per l'autenticazione del server</translation>
 <translation id="1037470927044831850">Consenti ai siti di richiedere all'utente la condivisione di un video stream del suo schermo</translation>
 <translation id="1038049732032297658">Consente di attivare o disattivare la funzionalità di correzione automatica sulla tastiera fisica.
 
@@ -400,6 +401,7 @@ Se il criterio viene disattivato o se non viene configurato, gli elementi da avv
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
 <translation id="13356285923490863">Nome criterio</translation>
+<translation id="1336073690474326987">Disattiva completamente la funzionalità</translation>
 <translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
 
       Per impostazione predefinita, il selettore profilo non viene mostrato quando il browser si avvia in modalità ospite o di navigazione in incognito, quando una directory e/o gli URL del profilo sono specificati da una riga di comando, quando è richiesta esplicitamente l'apertura di un'app, quando il browser è stato lanciato da una notifica nativa, quando c'è un solo profilo disponibile o quando il criterio ForceBrowserSignin è impostato su Vero.
@@ -926,6 +928,7 @@ Indipendentemente dal valore, l'utente potrà decidere se mantenere o meno i dat
 
 Questo criterio non ha effetto se l'opzione per mantenere i dati di navigazione esistenti non è disponibile. Questo accade se viene applicata in modo forzato la separazione dei profili aziendali o se i dati provengono da un profilo già gestito.
 </translation>
+<translation id="1795025936135166305">Consenti l'utilizzo della funzionalità per l'organizzazione</translation>
 <translation id="1795105105645381965">
       Se il criterio viene impostato su Attivato (True), <ph name="PRODUCT_NAME" /> chiede il consenso degli utenti gestiti prima di condividere gli indicatori dei dispositivi sui dispositivi non gestiti per ottenere l'accesso.
 
@@ -1974,6 +1977,13 @@ Se questo criterio viene impostato su False, la funzionalità di insiemi di siti
 <translation id="26023406105317310">Configura account Kerberos</translation>
 <translation id="2603382859270873566">Attiva il supporto dell'API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configura le norme relative alla funzione Condivisioni file di rete</translation>
+<translation id="2604211069017399189">Questo criterio consente di controllare il modo in cui vengono gestiti i dati della tua organizzazione con la funzionalità Crea temi di <ph name="PRODUCT_NAME" />. Questo criterio avrà la precedenza su qualsiasi criterio generale futuro.
+
+Se il criterio viene impostato su "Consentito", sarà consentito l'utilizzo della funzionalità per l'organizzazione.
+
+Se il criterio viene impostato su "Consenti senza raccolta di dati", viene disattivata la raccolta dei dati aziendali per l'addestramento del modello. Questa impostazione disattiva anche la condivisione di dati tramite la finestra di dialogo Feedback integrata e l'invio di dati per la valutazione da parte di persone fisiche. Di conseguenza, Google non utilizza i contenuti degli utenti aziendali (inclusi prompt, input, output e materiali originali) per l'addestramento dei modelli. Questo assicura che Google non utilizzi i dati degli utenti aziendali per addestrare o migliorare i propri modelli di AI. Google non salva i contenuti degli utenti aziendali, inclusi messaggi, materiali originali, input o output. Tieni presente che questi dati possono essere archiviati per un massimo di 24 ore per conservare un riferimento contestuale. Questo assicura che Google non raccolga né memorizzi alcun dato inserito o generato da una funzionalità di IA. Sono inclusi input dell'utente, output generati e feedback dell'utente.
+
+Se il criterio viene impostato su "Disattivato", la funzionalità verrà disattivata completamente.</translation>
 <translation id="2608039968712973520">Chiedi all'utente l'autorizzazione a eseguire il plug-in <ph name="FLASH_PLUGIN_NAME" /> obsoleto</translation>
 <translation id="2608535066974278204">Il periodo di tempo (in minuti) che specifica la durata dell'intervallo di tempo per il riavvio.</translation>
 <translation id="2608887839902987727">Impedisci all'autenticazione captive portal di ignorare le impostazioni del proxy</translation>
@@ -2558,7 +2568,7 @@ Attiva <ph name="CHROME_ENTERPRISE_DEVICE_TRUST_CONNECTOR" /> per un elenco di U
 
 La configurazione di questo criterio consente di specificare gli URL che <ph name="PRODUCT_NAME" /> fornirà per avviare il flusso di attestazione. Il secondo consente a questi siti web di ricevere dal dispositivo un insieme attestato di indicatori sensibili al contesto.
 
-Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare il flusso di attestazione o ricevere segnali dal dispositivo.
+Se questo criterio non viene impostato o se viene lasciato vuoto, nessun sito web potrà avviare il flusso di attestazione o ricevere indicatori dal dispositivo.
 
 Per <ph name="PRODUCT_OS_NAME" />, questo criterio è correlato all'attestazione remota, in cui un certificato viene generato e caricato automaticamente sul server. Per utilizzare il flusso di attestazione nella schermata di accesso del dispositivo, utilizza il criterio <ph name="DEVICE_LOGIN_SCREEN_CONTEXT_AWARE_ACCESS_SIGNALS_ALLOWLIST_POLICY_NAME" />.
 
@@ -2825,6 +2835,13 @@ Su <ph name="MS_WIN_NAME" />, questo criterio è disponibile soltanto per le ist
       Se viene impostato su Disattivato, la sicurezza e la stabilità di <ph name="PRODUCT_NAME" /> diminuiranno, poiché verrà ridotta la sandbox usata dai processi del renderer. Disattivalo solo se si verificano dei problemi di compatibilità con software di terze parti che devono essere eseguiti all'interno dei processi del renderer.
 
       Nota: scopri di più sui criteri relativi alla mitigazione dei processi (https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies).</translation>
+<translation id="3338231005114367157">Questo criterio consente di controllare il modo in cui vengono gestiti i dati della tua organizzazione con l'organizzatore di schede di <ph name="PRODUCT_NAME" />. Questo criterio avrà la precedenza su qualsiasi criterio generale futuro.
+
+Se il criterio viene impostato su "Consentito", sarà consentito l'utilizzo della funzionalità per l'organizzazione.
+
+Se il criterio viene impostato su "Consenti senza raccolta di dati", viene disattivata la raccolta dei dati aziendali per l'addestramento del modello. Questa impostazione disattiva anche la condivisione di dati tramite la finestra di dialogo Feedback integrata e l'invio di dati per la valutazione da parte di persone fisiche. Di conseguenza, Google non utilizza i contenuti degli utenti aziendali (inclusi prompt, input, output e materiali originali) per l'addestramento dei modelli. Questo assicura che Google non utilizzi i dati degli utenti aziendali per addestrare o migliorare i propri modelli di AI. Google non salva i contenuti degli utenti aziendali, inclusi messaggi, materiali originali, input o output. Tieni presente che questi dati possono essere archiviati per un massimo di 24 ore per conservare un riferimento contestuale. Questo assicura che Google non raccolga né memorizzi alcun dato inserito o generato da una funzionalità di IA. Sono inclusi input dell'utente, output generati e feedback dell'utente.
+
+Se il criterio viene impostato su "Disattivato", la funzionalità verrà disattivata completamente.</translation>
 <translation id="3338431256935927407">Consente di gestire le impostazioni relative alla funzionalità Cloud Upload.</translation>
 <translation id="3339271789059866414">Consente di configurare la disponibilità del servizio proxy di sistema e le credenziali proxy dei servizi di sistema.
       Se il criterio non viene impostato, il servizio proxy di sistema non sarà disponibile.</translation>
@@ -3792,6 +3809,7 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
 <translation id="4140646780789794190">Disattiva la condivisione dei dati diagnostici con PluginVm</translation>
+<translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Rendi la modalità Desktop unificato disponibile per l'utente</translation>
 <translation id="4147818922357566987">Attiva solo le varianti relative alle correzioni critiche</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -4752,6 +4770,7 @@ La disattivazione della decodifica video con accelerazione hardware non è consi
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, un'app web kiosk può usare solo la finestra principale del browser e non può aprire una nuova finestra. Le chiamate a qualsiasi funzione JavaScript per l'apertura di una nuova finestra verranno ignorate.</translation>
 <translation id="4980635395568992380">Tipo di dati:</translation>
+<translation id="4981523774025330439">Certificati TLS che non sono considerati attendibili né non attendibili, ma che possono essere utilizzati nella creazione di percorsi per l'autenticazione del server</translation>
 <translation id="4981831669478419057">La funzionalità della lista della spesa non sarà a disposizione degli utenti.</translation>
 <translation id="4983201894483989687">Consenti esecuzione dei plug-in obsoleti</translation>
 <translation id="4986560318567565414">Percorso a Chrome per cambiare il browser alternativo.</translation>
@@ -5047,6 +5066,7 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
 <translation id="5252995168844634755">Se il criterio viene impostato su True, viene attivata la modalità Desktop unificato, che consente di visualizzare le applicazioni su più schermi. Gli utenti possono disattivare questa modalità per singoli schermi.
 
       Se il criterio viene impostato su False o non viene impostato, la modalità Desktop unificato viene disattivata e gli utenti non possono attivarla.</translation>
+<translation id="525500830356475308">Consenti Aiutami a scrivere</translation>
 <translation id="5255162913209987122">Può essere consigliata</translation>
 <translation id="525543707238275321">Disattiva i report sulle informazioni relative alla CPU del dispositivo</translation>
 <translation id="5255790642269910630">La configurazione del criterio comporta la rotazione di ogni display nell'orientamento specificato a ogni riavvio e la prima volta che viene eseguita la connessione del display dopo la modifica del valore del criterio. Gli utenti possono modificare la rotazione del display tramite la pagina delle impostazioni dopo aver eseguito l'accesso, ma la rotazione tornerà allo stato precedente al riavvio successivo. Questo criterio si applica ai display primari e secondari.
@@ -6120,6 +6140,7 @@ Se il criterio non viene configurato, viene utilizzato il valore predefinito glo
 Il sale deve essere una stringa con una lunghezza compresa tra 8 e 32 caratteri.
 
 Dalla versione 114 in poi, questo criterio è facoltativo se viene configurato il criterio <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />. Se il criterio non viene configurato, gli identificatori negli URI del modello configurati tramite il criterio <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> vengono sottoposti ad hashing senza sale.</translation>
+<translation id="622197575020133151">Consente di configurare le varie funzionalità che usano l'IA generativa.</translation>
 <translation id="6224070048795197148">Consenti agli utenti di usare il browser senza accedere</translation>
 <translation id="6224304369267200483">URL/domini per cui è consentita automaticamente l'attestazione diretta dei token di sicurezza</translation>
 <translation id="6225938950222983458">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
@@ -6736,6 +6757,7 @@ Se questo criterio viene impostato su Falso, viene attivato il comportamento pre
 
       Se questo criterio non viene configurato, per impostazione predefinita la funzionalità è consentita sia per gli utenti gestiti a livello aziendale sia per quelli non gestiti.</translation>
 <translation id="6640748114867542396">Non consentire alle estensioni gestite di utilizzare l'API Enterprise Hardware Platform</translation>
+<translation id="6641109870010271671">Certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibili per l'autenticazione del server</translation>
 <translation id="6641981670621198190">Disattiva supporto per le API grafiche 3D</translation>
 <translation id="6646912445796087001">Consente di attivare o disattivare diverse funzionalità per la tastiera sullo schermo. Questo criterio viene applicato soltanto se è attivato il criterio "VirtualKeyboardEnabled".
 
@@ -7424,6 +7446,11 @@ Se il criterio viene impostato su Disattivato, gli utenti non possono eludere l'
 <translation id="7167436895080860385">Consenti agli utenti di mostrare le password in Gestione password (ritirata)</translation>
 <translation id="7172046613126456732">Consenti l'avvio di Chrome se non hai eseguito la registrazione a Chrome Browser Cloud Management</translation>
 <translation id="7173856672248996428">Profilo temporaneo</translation>
+<translation id="7174158612490351828">Un elenco di chiavi pubbliche dei certificati che <ph name="PRODUCT_NAME" /> dovrebbe considerare non attendibile per l'autenticazione
+del server.
+
+Il valore del criterio è un elenco di certificati X.509 codificati in base64. Nessun
+certificato con un SPKI (SubjectPublicKeyInfo) corrispondente sarà ritenuto attendibile.</translation>
 <translation id="717630378807352957">Consenti tutte le stampanti del file di configurazione.</translation>
 <translation id="7177293255621000064">L'impostazione del criterio su True rende tutti i tipi di supporti di archiviazione esterni (unità flash USB, dischi rigidi esterni, schede di memoria SD e di altro tipo, memorie ottiche) non disponibili nel browser di file. L'impostazione del criterio su False o la mancata impostazione implica che gli utenti possano utilizzare spazi di archiviazione esterni sul loro dispositivo.
 
@@ -7547,6 +7574,7 @@ Se questo criterio viene disattivato o se non viene configurato, le impostazioni
       Se il criterio è impostato su false o se non viene impostato, <ph name="PRODUCT_NAME" /> utilizza le impostazioni di controllo delle revoche online esistenti.
 
       Questo criterio non ha effetto su <ph name="MAC_OS_NAME" /> se il criterio <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> viene impostato su false.</translation>
+<translation id="7278164481614262110">Crea temi con l'IA</translation>
 <translation id="7278854311116092134">Nomi degli host di messaggi nativi da escludere dalla lista bloccata</translation>
 <translation id="7291084543582732020">Se attivi questa impostazione, gli utenti potranno utilizzare la funzione Smart Lock se ne vengono soddisfatti i requisiti.
 
@@ -7928,6 +7956,13 @@ Se configuri questo criterio, il criterio <ph name="PRIVACY_SANDBOX_PROMPT_ENABL
       Se viene impostato su Falso o se non viene configurato, la generazione di rapporti viene disattivata.
       Le regole definite con limitazioni a livello ALLOW nel criterio DataLeakPreventionRulesList non genereranno rapporti sugli eventi in nessun caso.</translation>
 <translation id="7648907905084499629">Usa il comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> per i cookie su tutti i siti</translation>
+<translation id="7650618519247719562">Questo criterio consente di controllare il modo in cui vengono gestiti i dati della tua organizzazione con la funzionalità Aiutami a scrivere di <ph name="PRODUCT_NAME" />. Questo criterio avrà la precedenza su qualsiasi criterio generale futuro.
+
+Se il criterio viene impostato su "Consentito", sarà consentito l'utilizzo della funzionalità per l'organizzazione.
+
+Se il criterio viene impostato su "Consenti senza raccolta di dati", viene disattivata la raccolta dei dati aziendali per l'addestramento del modello. Questa impostazione disattiva anche la condivisione di dati tramite la finestra di dialogo Feedback integrata e l'invio di dati per la valutazione da parte di persone fisiche. Di conseguenza, Google non utilizza i contenuti degli utenti aziendali (inclusi prompt, input, output e materiali originali) per l'addestramento dei modelli. Questo assicura che Google non utilizzi i dati degli utenti aziendali per addestrare o migliorare i propri modelli di AI. Google non salva i contenuti degli utenti aziendali, inclusi messaggi, materiali originali, input o output. Tieni presente che questi dati possono essere archiviati per un massimo di 24 ore per conservare un riferimento contestuale. Questo assicura che Google non raccolga né memorizzi alcun dato inserito o generato da una funzionalità di IA. Sono inclusi input dell'utente, output generati e feedback dell'utente.
+
+Se il criterio viene impostato su "Disattivato", la funzionalità verrà disattivata completamente.</translation>
 <translation id="765347139142030086">Se il criterio viene impostato su Attivato, i criteri associati a un account <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> hanno la precedenza in caso di conflitto con i criteri <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
       Soltanto i criteri derivanti da utenti sicuri possono ottenere la precedenza. Un utente sicuro è affiliato all'organizzazione che gestisce il suo browser usando <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Tutti gli altri criteri a livello di utente hanno la precedenza per impostazione predefinita.
@@ -7970,6 +8005,7 @@ Se il criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> può selezio
 
           Il valore del criterio deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di disattivazione dello schermo (se impostato) e al ritardo di inattività.</translation>
 <translation id="7680437377926096177">Impedisci la visualizzazione della finestra di dialogo di disconnessione nell'ultima finestra chiusa.</translation>
+<translation id="7683729067082687012">Consenti senza raccolta di dati</translation>
 <translation id="7683777542468165012">Aggiornamento dinamico delle norme</translation>
 <translation id="7687943045976362719">Se questa norma viene impostata, i tipi di contenuto specificati vengono gestiti da <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -8403,6 +8439,7 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 
       Questo comportamento non viene attivato se la Navigazione sicura viene disattivata (tramite il criterio o dall'utente). Per forzare l'attivazione della Navigazione sicura, utilizza il criterio <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Disattiva <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> in tutte le pagine web</translation>
+<translation id="8043616595863371483">Consenti l'organizzatore di schede</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="80453040817068401">Rendi disponibile il browser <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Consenti l'uso del debug remoto</translation>
@@ -8802,6 +8839,8 @@ Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph n
       Le origini devono corrispondere alle applicazioni web con installazione forzata tramite il criterio <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o configurate come app kiosk. Per le specifiche dell'API Device Attributes, visita la pagina https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Blocca l'accesso di scrittura di file e directory su questi siti</translation>
 <translation id="8378266419596669629">Blocca l'autorizzazione per i caratteri locali su questi siti</translation>
+<translation id="8379281645427937253">Un elenco di certificati TLS che <ph name="PRODUCT_NAME" /> deve considerare attendibile per l'autenticazione del server.
+I certificati devono essere codificati in base64.</translation>
 <translation id="8379317372795444261">L'autenticazione <ph name="BASIC_AUTH" /> è consentita per le connessioni HTTP</translation>
 <translation id="8381678031726288574">Applica le impostazioni predefinite per il ritiro dell'API U2F.</translation>
 <translation id="8381774264911275515">Disattiva il trasferimento dei cookie SSO SAML nella sessione utente durante l'accesso</translation>
@@ -9629,6 +9668,8 @@ Nota: se il dispositivo viene riavviato, la cache viene svuotata. Anche i dati r
 
 Se non viene configurato, si applica il criterio <ph name="ASK_NOTIFICATIONS_POLICY_NAME" />, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="9110251436602897914">Segnala informazioni sulle periferiche collegate al dispositivo</translation>
+<translation id="9110485853581788150">Un elenco di certificati che <ph name="PRODUCT_NAME" /> non considera attendibili né non attendibili,
+ma che possono essere usati come suggerimenti per la creazione di percorsi. I certificati devono essere codificati in base64.</translation>
 <translation id="9111850884577810507">Questo campo deve corrispondere a una delle stringhe che rappresentano una stampante supportata da <ph name="PRODUCT_NAME" />. La stringa verrà usata per identificare e installare il file PPD appropriato per la stampante. È possibile trovare ulteriori informazioni all'indirizzo https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">File di configurazione delle stampanti aziendali</translation>
 <translation id="9113058104383612727">Attiva gli strumenti per la risoluzione dei problemi relativi a Kiosk</translation>

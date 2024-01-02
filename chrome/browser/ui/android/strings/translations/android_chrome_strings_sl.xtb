@@ -627,6 +627,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
 <translation id="449126573531210296">Šifriranje sinhroniziranih gesel z računom Google</translation>
 <translation id="4491323382106587961">Izberite račun. Trenutno izbrano: <ph name="EMAIL" />.</translation>
+<translation id="4494806687727322324">Skrbnik je vklopil shranjevanje gesel</translation>
 <translation id="4508528996305412043">Meni kartice vira je odprt</translation>
 <translation id="4509501256689523862">Ali je med brskanjem oglas, ki je prikazan, osebno prilagojen, je odvisno od te nastavitve, nastavitve <ph name="BEGIN_LINK_1" />tem oglasov<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitve piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Pred # dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
@@ -796,6 +797,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5292796745632149097">Pošiljanje v napravo</translation>
 <translation id="5304593522240415983">To polje ne sme biti prazno</translation>
 <translation id="5308380583665731573">Povezovanje</translation>
+<translation id="5316947901395241499">Skrbnik je izklopil shranjevanje gesel</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319359161174645648">Google priporoča Chrome</translation>
 <translation id="5320351714793324716">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje</translation>

@@ -312,6 +312,7 @@ Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Topp</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
+<translation id="2681158575552244226">lagres i Disk for <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Kameraet er i bruk</translation>
 <translation id="2691653761409724435">Ikke tilgjengelig uten nett</translation>
 <translation id="2695507686909505111">Siden er oversatt</translation>
@@ -1082,6 +1083,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="6685259053455152195">Hurtigtaster for å endre innstillinger raskt og bruke funksjoner fra adressefeltet.</translation>
 <translation id="6710079714193676716">Administreres av organisasjonen din. Noen funksjoner er kanskje ikke tilgjengelige. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">lagret i Disk for <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Få bokmerker, passord med mer på alle enhetene dine.</translation>
 <translation id="6730682669179532099">Kan ikke eksportere passordene</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1155,6 +1157,7 @@ Når du er i Inkognito, kan ikke nettsteder bruke informasjonskapsler til å se 
 <translation id="7102005569666697658">Laster ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108762695052995889">Besøk nettstedet</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Fullt navn</translation>
 <translation id="7136892417564438900">Kameraet er utilgjengelig</translation>
 <translation id="7154343200458623869">Fullfør oppgaven din.</translation>

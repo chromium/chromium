@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Уключыць або выключыць Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Не ўдаецца выканаць уваход на прыладзе Chromebook</translation>
 <translation id="2367972762794486313">Паказаць праграмы</translation>
+<translation id="2368828502825385061">Знайсці</translation>
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
 <translation id="2382875860893882175">Трансляцыя цяпер прыпынена. Вы можаце ўзнавіць або спыніць трансляцыю ў любы час.</translation>
 <translation id="2386292613071805067">Вылучыць усё на старонцы</translation>
@@ -1909,7 +1910,7 @@
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
 <translation id="8763883995157866248">Перавесці прыладу ў рэжым сну</translation>
-<translation id="877404052021108314">90°F у °C</translation>
+<translation id="877404052021108314">90 °F у °C</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, усталяваная праграма, заблакіравана</translation>
 <translation id="8785070478575117577">Падключыцца да сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

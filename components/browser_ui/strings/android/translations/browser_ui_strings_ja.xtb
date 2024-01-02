@@ -239,6 +239,7 @@
 <translation id="5099358668261120049"><ph name="ORIGIN" /> またはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます。</translation>
 <translation id="5100237604440890931">折りたたまれています - クリックすると展開します。</translation>
 <translation id="5123685120097942451">シークレット タブ</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{開いているタブの値下げ情報}other{開いているタブの値下げ情報}}</translation>
 <translation id="5186036860380548585">設定は画面上部にあります</translation>
 <translation id="5197729504361054390">選択した連絡先が <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> と共有されます。</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>

@@ -314,6 +314,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 <translation id="2664621323652615289">Stopp</translation>
 <translation id="2666092431469916601">Överst</translation>
 <translation id="2669454659051515572">Alla som använder enheten kan se nedladdade filer</translation>
+<translation id="2681158575552244226">sparas i Drive för <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Kameran används</translation>
 <translation id="2691653761409724435">Ej tillgänglig offline</translation>
 <translation id="2695507686909505111">Sidan har översatts</translation>
@@ -1091,6 +1092,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="6685259053455152195">Genvägar till att snabbt ändra inställningar och använda funktioner från adressfältet.</translation>
 <translation id="6710079714193676716">Hanteras av organisationen. Vissa funktioner kanske inte är tillgängliga. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">har sparats i Drive för <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Använd samma bokmärken, lösenord med mera på alla enheter.</translation>
 <translation id="6730682669179532099">Det gick inte att exportera lösenord</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1165,6 +1167,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="7102005569666697658">Laddar ned … <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Dölj</translation>
 <translation id="7108762695052995889">Besök webbplats</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Fullständigt namn</translation>
 <translation id="7136892417564438900">Kameran är inte tillgänglig</translation>
 <translation id="7141960840225504692">Flikarna stängs och webbinformationen rensas</translation>

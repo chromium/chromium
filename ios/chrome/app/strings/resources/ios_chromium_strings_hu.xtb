@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Chromium-tipp</translation>
 <translation id="2168108852149185974">Bizonyos bővítmények a Chromium összeomlását eredményezik. Távolítsa el a következőket:</translation>
 <translation id="2178608107313874732">A Chromium jelenleg nem tudja használni a kamerát</translation>
+<translation id="219374086636266276"><ph name="BEGIN_LINK" />Kezelheti, hogy milyen Chromium-adatokat mentsen<ph name="END_LINK" /> a rendszer az Ön Google-fiókjába.
+Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="2195025571279539885">Szeretné, hogy a Chromium a jövőben felajánlja e webhely <ph name="LANGUAGE_NAME" /> nyelvű oldalainak fordítását?</translation>
 <translation id="2218146227246548550">Szervezete megköveteli a bejelentkezést a Chromium használatához. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ezt a címet jelenleg a Chromiumba menti a rendszer. Ha szeretné más Google-termékekben is használni, mentse saját Google-fiókjába (<ph name="USER_EMAIL" />).</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}other{Erre akkor kerül sor, ha a Chromium {THRESHOLD} percig nincs használatban. Ide tartozhatnak az előzmények és az automatikus kitöltés adatai is.}}</translation>
 <translation id="3472200483164753384">A Chromium Canary nem támogatja</translation>
 <translation id="3478750326643748149">A „Hozza ki a legtöbbet a Chromiumból” kártya elrejtése</translation>
+<translation id="347967311580159871">Az adatokat a Chromium-élmény javítására használó további beállításokért keresse fel a <ph name="BEGIN_LINK" />Google-szolgáltatások<ph name="END_LINK" /> oldalát.</translation>
 <translation id="3512168799938877162">A jelszó megosztása nem sikerült. Ellenőrizze az internetkapcsolatot, és győződjön meg arról, hogy be van jelentkezve a Chromiumba. Ezután próbálja újra.</translation>
 <translation id="3554027294407525061">A Chromiumban lévő böngészési adatok törlése.</translation>
 <translation id="3567399274263440288">Annak érdekében, hogy a legtöbbet hozhassa ki a Chromiumból, jelentkezzen be Google-fiókjával a Chromiumba.</translation>

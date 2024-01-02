@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Перемістити вправо</translation>
 <translation id="3081586908890909590">Перейти в режим запису відео</translation>
 <translation id="313467653172006084">30 кадрів/с</translation>
+<translation id="3158534262962737808">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3240426699337459095">Посилання скопійовано</translation>
 <translation id="3354465018370944241">Налаштування фотографій</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Формат фотографії</translation>
 <translation id="5057360777601936059">Камера зараз недоступна.
         Перевірте, чи правильно її під’єднано.</translation>
+<translation id="5157591164390831335">Виявлено URL-адресу.</translation>
 <translation id="5163387177077603948">Переміщення вправо</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Верхній лівий кут документа</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Дякуємо за ваш відгук про додаток Камера.
 
 Якщо ви хочете поділитися враженнями про якість зображення чи відео, долучіть зразок і опишіть проблему (наприклад, "фотографія надто темна" або "об'єкт на зображенні розмитий").</translation>
+<translation id="6519884562954018934">Підключитися до мережі "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6617916774429601017">Показати всі варіанти роздільної здатності</translation>
 <translation id="6631515515009660915">Режим віддзеркалення вимкнено</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">Увімкнути або вимкнути мікрофон. Мікрофон вимкнено</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8732462232047530626">Переглянути метадані</translation>
+<translation id="874854738381978209">Виявлено мережу Wi-Fi.</translation>
 <translation id="8815966864175525708">Перейти в режим портретного фото</translation>
 <translation id="8828441885228359828">Відновити запис</translation>
 <translation id="8870695351537079478">Не вдалося почати запис</translation>

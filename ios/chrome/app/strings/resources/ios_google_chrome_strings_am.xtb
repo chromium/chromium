@@ -88,6 +88,8 @@
 <translation id="3146109040683991651">Chromeን እንደ ነባሪ አሳሽ ያቀናብሩ</translation>
 <translation id="3167189358072330585">መለያዎ በGoogle Chrome ላይ አይሠራም። እባክዎ የጎራዎ አስተዳዳሪውን ያነጋግሩ ወይም ለመግባት መደበኛ የሆነ የGoogle መለያ ይጠቀሙ።</translation>
 <translation id="3173834708294760622">የGoogle Chrome ገፅ</translation>
+<translation id="3209155060213569278">በGoogle መለያዎ ውስጥ <ph name="BEGIN_LINK" />ምን አይነት የChrome ውሂብ እንደሚቀመጥ<ph name="END_LINK" /> ማስተዳደር ይችላሉ።
+የChrome ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="322254490661677575">በGoogle መለያዎ ውስጥ የChrome ውሂብን ለመጠቀም እና ለማስቀመጥ የእርስዎን የይለፍ ሐረግ ያስገቡ።</translation>
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3340938510625667914">Chrome እርምጃዎች</translation>
@@ -161,6 +163,7 @@
 <translation id="5527026824954593399">«በChrome ላይ በGoogle ካርታዎች ይመልከቱ» የሚለው ላይ መታ ያድርጉ</translation>
 <translation id="5552137475244467770">Chrome በተወሰነ ጊዜ ልዩነት በመስመር ላይ ከታተሙ ዝርዝሮች አንጻር የእርስዎን የይለፍ ቃላት ይፈትሻል። ይህን በሚያደርግበት ጊዜ፣ የእርስዎ የይለፍ ቃላት እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንም ሌላ ወገን እንዳይነበቡ ይመሣጠራሉ።</translation>
 <translation id="5554520618550346933">የይለፍ ቃል ሲጠቀሙ Chrome በመስመር ላይ ታትሞ ከነበረ ያስጠነቅቅዎታል። ይህን በሚያደርግበት ጊዜ የእርስዎ የይለፍ ቃሎች እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንኛውም ሰው እንዳይነበቡ ይመሰጠራሉ።</translation>
+<translation id="5601180634394228718">የChrome ተሞክሮዎን ለማሻሻል ውሂብን ለሚጠቀሙ ተጨማሪ ቅንብሮች ወደ <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" /> ይሂዱ።</translation>
 <translation id="5639704535586432836">ቅንብሮች &gt; ግላዊነት &gt; ካሜራ &gt; Google Chromeን ይክፈቱና ካሜራውን ያብሩ።</translation>
 <translation id="5642200033778930880">Google Chrome ካሜራዎን በተከፈለ ዕይታ ሁነታ መጠቀም አይችልም</translation>
 <translation id="5661521615548540542">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">সোঁফাললৈ পেন কৰক</translation>
 <translation id="3081586908890909590">ভিডিঅ' ৰেকৰ্ড কৰিবলৈ সলনি কৰক</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
+<translation id="3158534262962737808">"<ph name="WIFINAME" />"ত যোগদান কৰক</translation>
 <translation id="3227137524299004712">মাইক্ৰ’ফ’ন</translation>
 <translation id="3240426699337459095">লিংকটোৰ প্ৰতিলিপি কৰা হ’ল</translation>
 <translation id="3354465018370944241">ফট’ ছেটিং</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">ফট’ৰ আকাৰৰ অনুপাত</translation>
 <translation id="5057360777601936059">আপোনাৰ কেমেৰা বৰ্তমান উপলব্ধ নহয়।
         অনুগ্ৰহ কৰি কেমেৰাটো সঠিক ধৰণে সংযুক্ত হৈ আছেনে নাই পৰীক্ষা কৰক।</translation>
+<translation id="5157591164390831335">URL চিনাক্ত কৰা হৈছে।</translation>
 <translation id="5163387177077603948">সোঁফাললৈ গতি কৰি আছে</translation>
 <translation id="5235304959032763950">১৬:৯</translation>
 <translation id="5266635337630551423">নথিৰ একেবাৰে ওপৰৰ বাওঁফালৰ চুক</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">কেমেৰা এপ্‌টোত মতামত দিয়াৰ বাবে ধন্যবাদ।
 
 যদি আপোনাৰ মতামতটো প্ৰতিচ্ছবি অথবা ভিডিঅ’ৰ গুণগত মান সম্পৰ্কীয়, অনুগ্ৰহ কৰি নমুনা হিচাপে এখন ফট’ অথবা এটা ভিডিঅ’ সংলগ্ন কৰক আৰু কি সমস্যা হৈছে বৰ্ণনা কৰক। (উদাহৰণস্বৰূপে, ফট’খন বহুত ক’লা হৈছে অথবা মূল বস্তুটো ফ’কাছত নাই।)</translation>
+<translation id="6519884562954018934"><ph name="WIFINAME" />ত যোগদান কৰক</translation>
 <translation id="6527303717912515753">শ্বেয়াৰ কৰক</translation>
 <translation id="6617916774429601017">আটাইবোৰ ৰিজ’লিউশ্বন দেখুৱাওক</translation>
 <translation id="6631515515009660915">মিৰ’ৰ অফ</translation>
@@ -158,6 +161,7 @@
 <translation id="8711011893539266636">মাইক্ৰ’ফ’ন মিউট কৰাৰ বুটামটো ট’গল কৰক। মিউট অন কৰা হৈছে</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8732462232047530626">মেটাডেটা পূৰ্বদৰ্শন কৰক</translation>
+<translation id="874854738381978209">ৱাই-ফাই নেটৱৰ্ক চিনাক্ত কৰা হৈছে</translation>
 <translation id="8815966864175525708">প'ৰ্ট্ৰেইট ফট' ল'বলৈ সলনি কৰক</translation>
 <translation id="8828441885228359828">ৰেকৰ্ডিং পুনৰ আৰম্ভ কৰক</translation>
 <translation id="8870695351537079478">ৰেকৰ্ডিং আৰম্ভ কৰিব পৰা নগ'ল</translation>

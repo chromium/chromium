@@ -203,6 +203,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4148957013307229264">Diegiama...</translation>
 <translation id="4149882025268051530">Diegimo programai nepavyko išpakuoti archyvo. Atsisiųskite „Google Chrome“ dar kartą.</translation>
 <translation id="4153934450158521343">„Chrome“ netrukus bus uždaryta ir ištrins duomenis</translation>
+<translation id="4173512894976930765">Svetainės tikriausiai veiks kaip numatyta. Būsite atjungti nuo daugelio svetainių, kai uždarysite visus „Chrome“ langus, išskyrus „Google“ paskyrą, jei esate prisijungę prie „Chrome“.</translation>
 <translation id="4175922240926474352">„Chrome“ užblokavo šį atsisiuntimą, nes svetainėje nenaudojamas saugus ryšys ir failas gali būti sugadintas</translation>
 <translation id="4191857738314598978">{0,plural, =1{„Chrome“ paleidimas iš naujo po dienos}one{„Chrome“ paleidimas iš naujo po # dienos}few{„Chrome“ paleidimas iš naujo po # dienų}many{„Chrome“ paleidimas iš naujo po # dienos}other{„Chrome“ paleidimas iš naujo po # dienų}}</translation>
 <translation id="4205939740494406371">„Chrome“ negali patikrinti jūsų slaptažodžių. Bandykite dar kartą po 24 val. arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>

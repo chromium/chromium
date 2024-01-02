@@ -3467,6 +3467,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3659929705630080526">Prevečkrat ste vnesli napačno kodo za dostop. Poskusite znova pozneje.</translation>
 <translation id="3660234220361471169">Ni vredno zaupanja</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Najdeno je bilo 1 obstoječe geslo}one{Najdeno je bilo {NUM_PASSWORDS} obstoječe geslo}two{Najdeni sta bili {NUM_PASSWORDS} obstoječi gesli}few{Najdena so bila {NUM_PASSWORDS} obstoječa gesla}other{Najdenih je bilo {NUM_PASSWORDS} obstoječih gesel}}</translation>
+<translation id="3662207097851752847">Potrdite račun Google v telefonu</translation>
 <translation id="3664511988987167893">Ikona razširitve</translation>
 <translation id="3665100783276035932">Večina spletnih mest bi morala delovati po pričakovanjih</translation>
 <translation id="3665301845536101715">Odpri v stranskem podoknu</translation>
@@ -5005,6 +5006,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4862642413395066333">Podpisovanje odgovorov OCSP</translation>
 <translation id="4863702650881330715">Razširi združljivost</translation>
 <translation id="4863769717153320198">Videti je <ph name="WIDTH" /> x <ph name="HEIGHT" /> (privzeta)</translation>
+<translation id="4864369630010738180">Prijavljanje ...</translation>
 <translation id="4864805589453749318">Izberite starša, ki odobrava dovoljenje za dodajanje šolskega računa.</translation>
 <translation id="486505726797718946">Prihranjeno pomnilnika</translation>
 <translation id="486635084936119914">Samodejno odpiranje nekaterih vrst datotek po prenosu</translation>
@@ -6860,7 +6862,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6350821834561350243">Jasno opišite težavo in korake za njeno poustvaritev (če je mogoče)</translation>
 <translation id="6351178441572658285">Jeziki aplikacij</translation>
 <translation id="6354918092619878358">Eliptična krivulja SECG secp256r1 (oziroma ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Pridobivanje podatkov o računu Google …</translation>
 <translation id="635609604405270300">Naprava naj ostane vklopljena</translation>
 <translation id="63566973648609420">Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali če želite spremeniti to nastavitev, boste morali <ph name="BEGIN_LINK" />sinhronizacijo ponastaviti<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Pomaknite se navzgor, če želite premakniti stran navzdol</translation>
@@ -8198,6 +8199,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7416263748877373774">Pogojev storitve ni mogoče naložiti. Preverite omrežno povezavo in poskusite znova.</translation>
 <translation id="7416362041876611053">Neznana napaka v omrežju.</translation>
 <translation id="741906494724992817">Ta aplikacija ne zahteva posebnih dovoljenj.</translation>
+<translation id="7419142833919893307">Ni vnesenega uporabniškega imena</translation>
 <translation id="7419565702166471774">Vedno dovoli varne povezave</translation>
 <translation id="742130257665691897">Odstranjeni zaznamki</translation>
 <translation id="7421925624202799674">&amp;Prikaz izvorne kode strani</translation>
@@ -8508,6 +8510,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7659154729610375585">Ali želite vseeno zapustiti anonimni način?</translation>
 <translation id="7659336857671800422">Zaženite vodnika po zasebnosti</translation>
 <translation id="7659584679870740384">Nimate dovoljenja za uporabo te naprave. Za dovoljenje za prijavo se obrnite na skrbnika.</translation>
+<translation id="7660116474961254898">Upoštevajte navodila v telefonu</translation>
 <translation id="7660146600670077843">Z desno miškino tipko kliknite zavihek in izberite »Dodaj zavihek novi skupini«.</translation>
 <translation id="7661259717474717992">Spletnim mestom dovoli shranjevanje in branje podatkov piškotkov</translation>
 <translation id="7661451191293163002">Potrdila za registracijo ni bilo mogoče pridobiti.</translation>

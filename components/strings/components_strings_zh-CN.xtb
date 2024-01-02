@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">访问过的网页</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{无}=1{来自 1 个网站（您的 Google 账号仍会保持登录状态）}other{来自 # 个网站（您的 Google 账号仍会保持登录状态）}}</translation>
 <translation id="1165852471352757509">电视纪录片与纪实片</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" />下载失败</translation>
 <translation id="1174644974616730562">中式 #1 信封</translation>
 <translation id="1174723505405632867">您想允许 <ph name="EMBEDDED_URL" /> 在 <ph name="TOP_LEVEL_URL" /> 上使用 Cookie 和网站数据吗？
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF 制作工具：</translation>
 <translation id="2130448033692577677">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策未设置。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">正在下载<ph name="LANGUAGE" />语言包…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">男装</translation>
 <translation id="2137891579555018930">正在等待授权…</translation>
 <translation id="213826338245044447">移动设备书签</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2239100178324503013">立即发送</translation>
+<translation id="2239114457614475014">修改输入</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
 <translation id="2246480341630108201">你的家长尚未表示同意</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">面部与身体护理</translation>
 <translation id="2962073860865348475">12 x 18 英寸</translation>
 <translation id="2968103128155246731">货车与小型货车</translation>
+<translation id="2971483124699139256">选择“我喜欢”，会提交表明您喜欢所生成的文本的反馈。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌剧</translation>
@@ -1569,6 +1573,7 @@
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />”政策中指定的应用所引用的文件扩展名“<ph name="FILE_EXTENSION" />”被分配了多个处理程序。</translation>
 <translation id="4134123981501319574">创建文档</translation>
 <translation id="413544239732274901">了解详情</translation>
+<translation id="4139859738677203214">选择“不喜欢”会打开一个表单，您可以通过该表单提供详细的反馈，说明您为什么不喜欢所生成的文本。</translation>
 <translation id="4140905530744469899">个人资料 ID：</translation>
 <translation id="4142935452406587478">纸匣 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3982,6 +3987,7 @@
 <translation id="8877780815363510165">钓鱼</translation>
 <translation id="8884537526797090108">无法录制机密内容</translation>
 <translation id="8888187300091017436">床垫</translation>
+<translation id="8890048757975398817">控制 <ph name="READERNAME" />，并获得对该设备可访问的智能卡的访问权限。</translation>
 <translation id="8891727572606052622">代理模式无效。</translation>
 <translation id="8894794286471754040">长边先入</translation>
 <translation id="8897428486789851669">游泳</translation>

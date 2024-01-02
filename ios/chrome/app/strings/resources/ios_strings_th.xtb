@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">เลือก "เพิ่มใน Google ปฏิทิน" หรือ "เพิ่มใน Apple Calendar"</translation>
 <translation id="1626771852476987600">มีรหัสผ่านที่ใช้ซ้ำ <ph name="COUNT" /> รหัส</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
+<translation id="1641316430523156212">ติดตาม</translation>
 <translation id="1644574205037202324">ประวัติการเข้าชม</translation>
 <translation id="165008673352427892">ฟีเจอร์ใหม่</translation>
 <translation id="1650222530560417226">แตะปุ่ม "เริ่มบันทึก" เพื่อรวบรวมบันทึกและข้อผิดพลาดของคอนโซล JavaScript ในอนาคตจากทุกแท็บ ระบบจะรวบรวมบันทึก (และเก็บไว้ในหน่วยความจำเท่านั้น) จนกว่าหน้านี้จะปิดหรือมีการแตะ "หยุดบันทึก"</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">เปิดการแจ้งเตือนราคาไหม</translation>
 <translation id="2139867232736819575">ค้นหาข้อความที่คุณคัดลอก</translation>
 <translation id="214201757571129614">กำลังลงชื่อเข้าใช้…</translation>
+<translation id="2145004670974387485">เลือกบัญชีที่ต้องการใช้เพื่อบันทึก <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">หยุด</translation>
 <translation id="2666092431469916601">ด้านบน</translation>
 <translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
+<translation id="2681158575552244226">กำลังบันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /></translation>
 <translation id="2690858294534178585">ใช้กล้องถ่ายรูปอยู่</translation>
 <translation id="2691653761409724435">ไม่สามารถใช้ออฟไลน์</translation>
 <translation id="2695507686909505111">แปลหน้าเว็บแล้ว</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">เปิดแท็บเพื่อท่องเว็บ</translation>
 <translation id="3519905498307021260">{count,plural, =1{เปิดแท็บ}other{เปิด {count} แท็บ}}</translation>
 <translation id="3523789730715594198">คุณหยุดการซิงค์ได้ทุกเมื่อในการตั้งค่า Google อาจปรับเปลี่ยน Search และบริการอื่นๆ ให้เหมาะกับคุณโดยอิงจากประวัติการเข้าชม</translation>
+<translation id="3526783603136816353">เลือกบัญชีที่ต้องการใช้เพื่อบันทึก <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">โฟลเดอร์</translation>
 <translation id="3529024052484145543">ไม่ปลอดภัย</translation>
 <translation id="3530206579861815432">ค้นหาแท็บที่เปิดอยู่และแท็บที่เพิ่งปิดได้อย่างรวดเร็วในอุปกรณ์ที่ซิงค์</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="374357899112510277">ซ่อน "ดาวน์โหลด"</translation>
 <translation id="3745190878148784130">ซ่อน "ซูมข้อความ"</translation>
+<translation id="375773422023477320">บุ๊กมาร์ก</translation>
 <translation id="3762232513783804601">สร้างมาเพื่อ iPad ของคุณ</translation>
 <translation id="3768725474733206671">เปิดแท็บที่ปิดไปล่าสุดอีกครั้ง</translation>
 <translation id="3771033907050503522">แท็บที่ไม่ระบุตัวตน</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">ที่อยู่</translation>
 <translation id="3955822496205734389">คุณมีรหัสผ่านที่ไม่รัดกุม</translation>
 <translation id="3959736869653157332">เมนู → แท็บใหม่ที่ไม่ระบุตัวตน</translation>
+<translation id="3962326069546168954">บันทึก</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="3968505803272650567">จัดการความสนใจ</translation>
 <translation id="3989635538409502728">ออกจากระบบ</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">ทางลัดเพื่อแก้ไขการตั้งค่าและใช้ฟีเจอร์ต่างๆ จากแถบที่อยู่ได้อย่างรวดเร็ว</translation>
 <translation id="6710079714193676716">จัดการโดยองค์กร ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">บันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /> แล้ว</translation>
 <translation id="672735642903863329">รับบุ๊กมาร์ก รหัสผ่าน และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6730682669179532099">ส่งออกรหัสผ่านไม่ได้</translation>
 <translation id="6732087373923685049">กล้อง</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">เร็วๆ นี้คุณจะเห็นเรื่องราวจาก <ph name="CHANNEL_NAME" /> เมื่อเปิดแท็บใหม่</translation>
 <translation id="6797885426782475225">ค้นหาด้วยเสียง</translation>
 <translation id="6800349425672670802">คุณเข้าถึงแท็บที่เปิดอยู่ทั้งหมดได้จากตัวสลับแท็บ</translation>
+<translation id="6805179248725678418">บันทึกใน Google ไดรฟ์</translation>
 <translation id="6807889908376551050">แสดงทั้งหมด...</translation>
 <translation id="681368974849482173">สร้างรายการแล้ว</translation>
 <translation id="6822587385560699678">เมื่อเปิด ระบบจะบันทึกรหัสผ่านใน <ph name="ACCOUNT" /> เมื่อปิด ระบบจะบันทึกรหัสผ่านในอุปกรณ์นี้เท่านั้น</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">กำลังดาวน์โหลด… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">ซ่อน</translation>
 <translation id="7108762695052995889">เข้าชมเว็บไซต์</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">ชื่อและนามสกุล</translation>
 <translation id="7136892417564438900">กล้องถ่ายรูปไม่พร้อมใช้งาน</translation>
 <translation id="7141960840225504692">แท็บจะปิดไป และข้อมูลการท่องเว็บจะถูกลบ</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">ดาวน์โหลดไม่ได้</translation>
 <translation id="7859704718976024901">ประวัติการเข้าชม</translation>
 <translation id="7866501058614003444">เลิกติดตามพัสดุนี้เรียบร้อยแล้ว</translation>
+<translation id="7866872729285243843">หากต้องการรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง ให้เปิด "เรื่องรออ่าน" ในการตั้งค่า</translation>
 <translation id="7866993391592926595">การซ่อนการ์ดนี้จะปิดการติดตามพัสดุภัณฑ์และนำข้อมูลทั้งหมดของคุณออก</translation>
 <translation id="7870750252270996949">รูปภาพที่คัดลอกด้วย Lens</translation>
 <translation id="7879275349003161544">แสดงการดาวน์โหลด</translation>

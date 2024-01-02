@@ -200,6 +200,7 @@
 <translation id="4148957013307229264">O‘rnatilmoqda..</translation>
 <translation id="4149882025268051530">Fayllarni arxivdan chiqarib bo‘lmadi. Google Chrome‘ni qayta yuklab oling.</translation>
 <translation id="4153934450158521343">Chrome tez orada yopiladi va brauzer maʼlumotlari oʻchib ketadi</translation>
+<translation id="4173512894976930765">Saytlar kutilganidek ishlashi mumkin. Barcha Chrome oynalari yopilganda aksariyat saytlardan chiqib ketasiz, ammo Chrome hisobingizga kirganingizda Google hisobingizdan chiqmaysiz.</translation>
 <translation id="4175922240926474352">Chrome bu yuklamani blokladi, chunki sayt xavfsiz ulanishdan foydalanmayapti va fayl oʻzgartirilgan boʻlishi mumkin.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Chrome brauzerini 1 kun ichida qayta ishga tushiring}other{Chrome brauzerini # kun ichida qayta ishga tushiring}}</translation>
 <translation id="4205939740494406371">Chrome parollaringizni tekshira olmadi. 24 soatdan keyin qayta urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring<ph name="END_LINK" />.</translation>

@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1020274983236703756">Vipengee vya kipekee vya <ph name="PRODUCT_NAME" /> sasa vinapatikana</translation>
 <translation id="1022628058306505708">Kulingana na Dunia</translation>
+<translation id="103306827243002956">Mandhari ya hivi majuzi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Unahitaji kuchagua angalau albamu moja ya matunzio ya Sanaa</translation>
 <translation id="2230005943220647148">Selisiasi</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Buni mandhari zaidi</translation>
 <translation id="2236746079896696523">Kipengele cha kuzima/kuwasha mwangaza wa kibodi</translation>
 <translation id="2240366984605217732">Swichi ya muundo</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Picha ya akaunti kwenye kifaa</translation>
 <translation id="2640549051766135490">Albamu ya <ph name="TITLE" /> <ph name="DESC" /> imechaguliwa</translation>
 <translation id="2652403576514495859">washa au ugeuze kipengele cha kuandika kwa kutamka</translation>
+<translation id="2656001153562991489">Inatumika kwenye Chromebook Plus pekee</translation>
 <translation id="267442004702508783">onyesha upya</translation>
 <translation id="268270014981824665">mwangaza hafifu wa kibodi</translation>
 <translation id="2712812801627182647">Ufunguo wa uthibitishaji wa TLS</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858860766373142691">Jina</translation>
 <translation id="3862598938296403232">Ni sharti ujaze maelezo</translation>
+<translation id="386280020966669610">Nihamasishe</translation>
 <translation id="3865289341173661845">Maudhui ya usaidizi hayapatikani.</translation>
 <translation id="3865414814144988605">Ubora</translation>
 <translation id="3866249974567520381">Maelezo</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">APN Mpya</translation>
 <translation id="4093865285251893588">Picha ya wasifu</translation>
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
+<translation id="409469431304488632">Jaribio</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Chagua albamu ya <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Padi ya kugusa yenye USB</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Onyesho la slaidi</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
+<translation id="4305367063258930534">Mandhari haya yanaendeshwa na Google</translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
 <translation id="4354430579665871434">bonyeza vitufe</translation>
 <translation id="4361257691546579041">APN ni ya chaguomsingi.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Jina la seva pangishi</translation>
 <translation id="5089810972385038852">Jimbo</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Yanayofanana:</translation>
 <translation id="5137451382116112100">Skrini nzima</translation>
 <translation id="5142961317498132443">Uthibitishaji</translation>
 <translation id="5145081769226915336">Ungependa kuwasha hali nyeusi kiotomatiki?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Inachaji, imebakisha <ph name="TIME_VALUE" /> ijae</translation>
 <translation id="7066538517128343186">kitufe cha <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Tayarisha kifaa chako</translation>
+<translation id="7076851914315147928">Chagua mandhari</translation>
 <translation id="708426984172631313">LIMESIMAMISHWA</translation>
 <translation id="7086440545492620869"><ph name="DISPLAY_NAME" /> <ph name="VALUE" /></translation>
 <translation id="710028965487274708">Haijafaulu - Imeshindwa Kuidhinisha</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Hali ya mwangaza</translation>
 <translation id="780301667611848630">Hapana</translation>
 <translation id="7805768142964895445">Hali</translation>
+<translation id="7819831665603418705">Tumia kiolezo</translation>
 <translation id="7819857487979277519">PSK (WPA au RSN)</translation>
 <translation id="7841134249932030522">Washa hali nyeusi</translation>
 <translation id="7846634333498149051">Kibodi</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Hakuna Picha</translation>
 <translation id="8329018942023753850">programu ya kikokotoo</translation>
 <translation id="8336739000755212683">Badilisha picha ya akaunti ya kifaa</translation>
+<translation id="8339024191194156249">Pata maelezo zaidi kuhusu kuanzisha kiotomatiki</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> au <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Kazi za kuchapisha</translation>
 <translation id="8349826889576450703">kifungua programu</translation>

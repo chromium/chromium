@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ਪੰਨਾ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ਕੋਈ ਨਹੀਂ}=1{1 ਸਾਈਟ ਤੋਂ (ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰਹੋਗੇ)}other{# ਸਾਈਟਾਂ ਤੋਂ (ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਰਹੋਗੇ)}}</translation>
 <translation id="1165852471352757509">ਟੀਵੀ ਦਸਤਾਵੇਜ਼ੀ ਅਤੇ ਗੈਰ-ਗਲਪ</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="1174644974616730562">ਚੀਨੀ #1 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="1174723505405632867">ਕੀ ਤੁਸੀਂ <ph name="EMBEDDED_URL" /> ਵੱਲੋਂ <ph name="TOP_LEVEL_URL" /> 'ਤੇ ਕੁਕੀਜ਼ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਵਰਤਣ ਨੂੰ ਮਨਜ਼ੂਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF ਨਿਰਮਾਤਾ:</translation>
 <translation id="2130448033692577677">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਸੈੱਟ ਨਾ ਕੀਤੇ ਜਾਣ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ਭਾਸ਼ਾ ਪੈਕ ਨੂੰ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">ਮਰਦਾਂ ਦੇ ਕੱਪੜੇ</translation>
 <translation id="2137891579555018930">ਇਜਾਜ਼ਤ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="213826338245044447">ਮੋਬਾਈਲ ਬੁੱਕਮਾਰਕਸ</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">ਕੌਮਪੈਕਟ ਡਿਸਕ</translation>
 <translation id="2235344399760031203">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="2239100178324503013">ਹੁਣੇ ਭੇਜੋ</translation>
+<translation id="2239114457614475014">ਇਨਪੁੱਟ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="2241693394036365668">ਫ਼ਾਈਲ ਡਾਊਨਲੋਡ ਕੀਤੀ ਗਈ ਹੈ</translation>
 <translation id="2246264294482514010">10 x 12 ਇੰਚ</translation>
 <translation id="2246480341630108201">ਤੁਹਾਡੇ ਮਾਂ-ਪਿਓ ਨੇ ਹਾਲੇ ਤੱਕ ਇਸ ਸਾਈਟ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਨਹੀਂ ਦਿੱਤੀ ਹੈ</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">ਚਿਹਰੇ ਅਤੇ ਸਰੀਰ ਦੀ ਦੇਖਭਾਲ</translation>
 <translation id="2962073860865348475">12 x 18 ਇੰਚ</translation>
 <translation id="2968103128155246731">ਵੈਨ ਅਤੇ ਮਿਨੀਵੈਨ</translation>
+<translation id="2971483124699139256">'ਸਲਾਹੋ' ਇਹ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਸਿਰਜੀ ਗਈ ਲਿਖਤ ਪਸੰਦ ਹੈ।</translation>
 <translation id="2972581237482394796">&amp;ਰੀਡੂ</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ਵਰਤਮਾਨ ਵਿੱਚ ਚੁਣਿਆ ਗਿਆ। <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ਓਪੇਰਾ</translation>
@@ -1570,6 +1574,7 @@
 <translation id="4132448310531350254">ਐਪਾਂ "<ph name="POLICY_IDS_LIST" />" ਵੱਲੋਂ ਰੈਫਰ ਕੀਤੀ ਗਈ file_extension "<ph name="FILE_EXTENSION" />" ਲਈ ਡੁਪਲੀਕੇਟ ਹੈਂਡਲਰ</translation>
 <translation id="4134123981501319574">ਡੌਕ ਬਣਾਓ</translation>
 <translation id="413544239732274901">ਹੋਰ ਜਾਣੋ</translation>
+<translation id="4139859738677203214">'ਨਾ ਸਲਾਹੋ' ਨਾਲ ਇੱਕ ਫ਼ਾਰਮ ਖੁੱਲ੍ਹਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਤੁਸੀਂ ਸਿਰਜੀ ਗਈ ਲਿਖਤ ਨੂੰ ਨਾਪਸੰਦ ਕਰਨ ਸੰਬੰਧੀ ਵਿਸਤਾਰ ਨਾਲ ਵਿਚਾਰ ਸਪੁਰਦ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="4140905530744469899">ਪ੍ਰੋਫਾਈਲ ਆਈਡੀ:</translation>
 <translation id="4142935452406587478">ਟ੍ਰੇਅ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -1642,7 +1647,7 @@
 <translation id="4250716950689692560">A4x4</translation>
 <translation id="4250937007454749162">ਟੀ-ਸ਼ਰਟਾਂ</translation>
 <translation id="4253168017788158739">ਨੋਟ</translation>
-<translation id="4255487295905690262">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਤੁਹਾਨੂੰ ਈਮੇਲ ਸੁਚੇਤਨਾਵਾਂ ਪ੍ਰਾਪਤ ਹੋਣਗੀਆਂ।</translation>
+<translation id="4255487295905690262">ਕਿਸੇ ਵੀ ਸਾਈਟ 'ਤੇ ਕੀਮਤਾਂ ਘਟਣ 'ਤੇ ਤੁਹਾਨੂੰ ਈਮੇਲ ਅਲਰਟ ਪ੍ਰਾਪਤ ਹੋਣਗੇ।</translation>
 <translation id="425582637250725228">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਕੀਤੇ ਗਏ ਬਦਲਾਅ ਰੱਖਿਅਤ ਨਾ ਕੀਤੇ ਜਾਣ।</translation>
 <translation id="4258748452823770588">ਖ਼ਰਾਬ ਹਸਤਾਖਰ</translation>
 <translation id="4261046003697461417">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਐਨੋਟੇਟ ਨਹੀਂ ਕਰ ਸਕਦੇ</translation>
@@ -3982,6 +3987,7 @@
 <translation id="8877780815363510165">ਮੱਛੀ ਫੜ੍ਹਨਾ</translation>
 <translation id="8884537526797090108">ਗੁਪਤ ਸਮੱਗਰੀ ਨੂੰ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="8888187300091017436">ਗੱਦੇ</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> ਨੂੰ ਕੰਟਰੋਲ ਕਰ ਕੇ ਇਸ ਤੱਕ ਪਹੁੰਚਯੋਗ ਸਮਾਰਟ ਕਾਰਡ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8891727572606052622">ਅਵੈਧ ਪ੍ਰੌਕਸੀ ਮੋਡ।</translation>
 <translation id="8894794286471754040">ਪਹਿਲਾਂ ਵੱਡੇ ਕਿਨਾਰੇ ਵਾਲੇ</translation>
 <translation id="8897428486789851669">ਤੈਰਾਕੀ</translation>

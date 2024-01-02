@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">এটি আপনার হোম স্ক্রিনে <ph name="ORIGIN" /> বা তার অ্যাপের মাধ্যমে সেভ হওয়া সব ডেটা এবং কুকি মুছে দেবে।</translation>
 <translation id="5100237604440890931">সঙ্কুচিত - প্রসারিত করতে ক্লিক করুন৷</translation>
 <translation id="5123685120097942451">ছদ্মবেশী ট্যাব</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{আপনার খোলা ট্যাবে দাম কমার তথ্য}one{আপনার খোলা ট্যাবে দাম কমার তথ্য}other{আপনার খোলা ট্যাবে দাম কমার তথ্য}}</translation>
 <translation id="5186036860380548585">স্ক্রিনের উপরের দিকে বিকল্পগুলি দেখানো হয়েছে</translation>
 <translation id="5197729504361054390">আপনার বেছে নেওয়া পরিচিতি <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-এর সাথে শেয়ার করা হবে।</translation>
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>

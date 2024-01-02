@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Ikhasi livakashelwe</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Lutho}=1{Kusuka kusayithi elingu-1 (uzohlala ungene ngemvume ku-Google Account yakho)}one{Kusuka kumasayithi angu-# (uzohlala ungene ngemvume ku-Google Account yakho)}other{Kusuka kumasayithi angu-# (uzohlala ungene ngemvume ku-Google Account yakho)}}</translation>
 <translation id="1165852471352757509">Idokhumentari ye-TV nokungekona kwenganekwane</translation>
+<translation id="1167877250265821930">Yehlulekile ukudawuniloda <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Imvilophu ye-Chinese #1</translation>
 <translation id="1174723505405632867">Ingabe uyafuna ukuvumela i-<ph name="EMBEDDED_URL" /> ukuthi isebenzise amakhukhi nedatha yesayithi ku-<ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2126374524350484896">Isikhiqizi se-PDF:</translation>
 <translation id="2130448033692577677">Amathempulethi owacacisile angahle angafakwa ngenxa yenqubomgomo ye-DnsOverHttpsMode engasethiwe.</translation>
 <translation id="2130699163006053678">I-A3x7</translation>
+<translation id="2131200882015008178">Idawuniloda iphakheji yolimi yesi-<ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Izingubo zamadoda</translation>
 <translation id="2137891579555018930">Ilinde imvume...</translation>
 <translation id="213826338245044447">Amabhukhimakhi weselula</translation>
@@ -655,6 +657,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2233745931693710080">I-Compact Disc</translation>
 <translation id="2235344399760031203">Amakhukhi enkampani yangaphandle avinjiwe</translation>
 <translation id="2239100178324503013">Thumela manje</translation>
+<translation id="2239114457614475014">Hlela okokufaka</translation>
 <translation id="2241693394036365668">Ifayela lilandiwe</translation>
 <translation id="2246264294482514010">U-10 x 12 phakathi</translation>
 <translation id="2246480341630108201">Umzali wakho akakasho ukuthi kulungile</translation>
@@ -989,6 +992,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2959113999220720579">Ukunakekelwa kobuso nomzimba</translation>
 <translation id="2962073860865348475">U-12 x 18 phakathi</translation>
 <translation id="2968103128155246731">Amaveni namaveni amancane</translation>
+<translation id="2971483124699139256">Okushaphu kuthumela impendulo yokuthi uyawuthanda umbhalo okhiqiziwe.</translation>
 <translation id="2972581237482394796">&amp;Yenza futhi</translation>
 <translation id="2977665033722899841">I-<ph name="ROW_NAME" />, manje ikhethiwe. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">I-Opera</translation>
@@ -1570,6 +1574,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="4132448310531350254">Izibambi eziyimpinda ze-file_extension"<ph name="FILE_EXTENSION" />" okubhekiselwa kuzo ama-app "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Dala idokhumenti</translation>
 <translation id="413544239732274901">Funda kabanzi</translation>
+<translation id="4139859738677203214">Izithupha phansi zivula ifomu lokuhambisa impendulo enemininingwane yokuthi kungani ungawuthandi umbhalo okhiqiziwe.</translation>
 <translation id="4140905530744469899">I-ID yephrofayela</translation>
 <translation id="4142935452406587478">Ithileyi elingu-10</translation>
 <translation id="4148925816941278100">I-American Express</translation>
@@ -3983,6 +3988,7 @@ Imininingwane engeziwe:
 <translation id="8877780815363510165">Ukudoba</translation>
 <translation id="8884537526797090108">Ayikwazi ukurekhoda okuqukethwe okuyimfihlo</translation>
 <translation id="8888187300091017436">Omatilasi</translation>
+<translation id="8890048757975398817">Lawula okuthi <ph name="READERNAME" /> futhi ukwazi ukufinyelela ikhadi elismathi elifinyeleleka kuyi.</translation>
 <translation id="8891727572606052622">Imodi yommeleli engavumelekile.</translation>
 <translation id="8894794286471754040">Umkhawulo omude kuqala</translation>
 <translation id="8897428486789851669">Ukubhukuda</translation>

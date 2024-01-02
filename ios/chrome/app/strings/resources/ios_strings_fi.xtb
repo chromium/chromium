@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Valitse "Lisää Google Kalenteriin" tai "Lisää Apple-kalenteriin".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> uudelleenkäytettyä salasanaa</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
+<translation id="1641316430523156212">Seuraa</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="165008673352427892">Uusi ominaisuus</translation>
 <translation id="1650222530560417226">Aloita JavaScript-konsolilokien ja kaikilla välilehdillä havaittujen virheiden kerääminen valitsemalla Kirjausten käynnistys. Lokeja kerätään (niitä säilytetään vain muistissa), kunnes suljet tämän sivun tai valitset Kirjauksen lopetus.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Laitetaanko hintahälytykset päälle?</translation>
 <translation id="2139867232736819575">Hae kopioitua tekstiä</translation>
 <translation id="214201757571129614">Kirjaudu sisään…</translation>
+<translation id="2145004670974387485">Valitse tili, jolle <ph name="FILENAME" /> tallennetaan</translation>
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2149973817440762519">Muokkaa kirjanmerkkiä</translation>
 <translation id="2175927920773552910">QR-koodi</translation>
@@ -312,6 +314,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2664621323652615289">Lopeta</translation>
 <translation id="2666092431469916601">Yleisin</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
+<translation id="2681158575552244226">tallennetaan Driveen tilille <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Kamera on käytössä</translation>
 <translation id="2691653761409724435">Ei offline-käytössä</translation>
 <translation id="2695507686909505111">Sivu käännetty</translation>
@@ -478,6 +481,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3519193562722059437">Avaa välilehti selailua varten.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Avaa välilehti}other{Avaa {count} välilehteä}}</translation>
 <translation id="3523789730715594198">Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
+<translation id="3526783603136816353">Valitse tili, jolle <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) tallennetaan</translation>
 <translation id="3527085408025491307">Kansio</translation>
 <translation id="3529024052484145543">Ei turvallinen</translation>
 <translation id="3530206579861815432">Löydä kaikilla synkronoiduilla laitteilla auki olevia tai äskettäin suljettuja välilehtiä nopeasti.</translation>
@@ -515,6 +519,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3738428049780661523">Luotu <ph name="DATE" /></translation>
 <translation id="374357899112510277">Piilota "Lataukset"</translation>
 <translation id="3745190878148784130">Piilota Zoomaa tekstiä</translation>
+<translation id="375773422023477320">Kirjanmerkit</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
 <translation id="3768725474733206671">Avaa viimeksi suljettu välilehti uudelleen</translation>
 <translation id="3771033907050503522">Incognito</translation>
@@ -553,6 +558,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3929457972718048006">Osoitteet</translation>
 <translation id="3955822496205734389">Sinulla on heikkoja salasanoja.</translation>
 <translation id="3959736869653157332">Valikko → Uusi incognito-välilehti</translation>
+<translation id="3962326069546168954">Tallenna</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
 <translation id="3968505803272650567">Ylläpidä kiinnostuksen kohteita</translation>
 <translation id="3989635538409502728">Kirjaudu ulos</translation>
@@ -1086,6 +1092,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6685259053455152195">Pikakuvakkeilla voit muuttaa asetuksia ja käyttää ominaisuuksia osoitepalkin kautta nopeasti.</translation>
 <translation id="6710079714193676716">Organisaatiosi ylläpitämä. Kaikki ominaisuudet eivät välttämättä ole saatavilla. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">tallennettu Driveen tilille <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Kirjanmerkkien, salasanojen ja muiden tietojen käyttäminen kaikilla laitteilla</translation>
 <translation id="6730682669179532099">Salasanojen vienti epäonnistui</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1104,6 +1111,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="6790502149545262384">Näet pian tarinoita täältä avatessasi uuden välilehden: <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Puhehaku</translation>
 <translation id="6800349425672670802">Voit käyttää kaikkia avoimia välilehtiä Välilehtien vaihtajasta.</translation>
+<translation id="6805179248725678418">Tallenna Google Driveen</translation>
 <translation id="6807889908376551050">Näytä kaikki...</translation>
 <translation id="681368974849482173">Kohde luotiin</translation>
 <translation id="6822587385560699678">Kun asetus on päällä, salasanat tallennetaan tänne: <ph name="ACCOUNT" />. Kun asetus on pois päältä, salasanat tallennetaan vain tälle laitteelle.</translation>
@@ -1159,6 +1167,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7102005569666697658">Ladataan… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Piilota</translation>
 <translation id="7108762695052995889">Siirry sivustolle</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Koko nimi</translation>
 <translation id="7136892417564438900">Kamera ei ole käytettävissä</translation>
 <translation id="7141960840225504692">Välilehdet suljetaan ja selausdata poistetaan</translation>
@@ -1286,6 +1295,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7856733331829174190">Lataus epäonnistui</translation>
 <translation id="7859704718976024901">Selaushistoria</translation>
 <translation id="7866501058614003444">Paketin seuranta on lopetettu.</translation>
+<translation id="7866872729285243843">Jos haluat käyttää lukulistaa kaikilla laitteillasi, laita Lukulista päälle asetuksista.</translation>
 <translation id="7866993391592926595">Tämän kortin piilottaminen laittaa lähetyksen seurannan pois päältä ja poistaa kaiken datan</translation>
 <translation id="7870750252270996949">Kopioitu Lens-kuva</translation>
 <translation id="7879275349003161544">Näytä lataukset</translation>

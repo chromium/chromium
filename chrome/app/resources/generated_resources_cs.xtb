@@ -3451,6 +3451,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3659929705630080526">Zadali jste příliš mnohokrát nesprávný přístupový kód. Zkuste to znovu později</translation>
 <translation id="3660234220361471169">Nedůvěryhodný</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Bylo nalezeno 1 existující heslo}few{Byla nalezena {NUM_PASSWORDS} existující hesla}many{Bylo nalezeno {NUM_PASSWORDS} existujícího hesla}other{Bylo nalezeno {NUM_PASSWORDS} existujících hesel}}</translation>
+<translation id="3662207097851752847">Potvrďte na telefonu svůj účet Google</translation>
 <translation id="3664511988987167893">Ikona rozšíření</translation>
 <translation id="3665100783276035932">Většina webů by měla fungovat podle očekávání</translation>
 <translation id="3665301845536101715">Otevřít v bočním panelu</translation>
@@ -4987,6 +4988,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4862642413395066333">Podepisování odpovědí OCSP</translation>
 <translation id="4863702650881330715">Rozšířit kompatibilitu</translation>
 <translation id="4863769717153320198">Vypadá jako <ph name="WIDTH" /> × <ph name="HEIGHT" /> (výchozí)</translation>
+<translation id="4864369630010738180">Přihlašování...</translation>
 <translation id="4864805589453749318">Vyberte, který rodič uděluje oprávnění k přidání školního účtu.</translation>
 <translation id="486505726797718946">Úspora paměti</translation>
 <translation id="486635084936119914">Určité typy souborů po stažení automaticky otevírat</translation>
@@ -6837,7 +6839,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6350821834561350243">Jasně problém popište a uveďte, jak jej vyvolat (pokud je to možné)</translation>
 <translation id="6351178441572658285">Jazyky aplikací</translation>
 <translation id="6354918092619878358">Eliptická křivka SECG secp256r1 (neboli ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Načítání informací o účtu Google…</translation>
 <translation id="635609604405270300">Ponechat zařízení zapnuté</translation>
 <translation id="63566973648609420">Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslovou frázi. Heslová fráze se neodesílá do Googlu a není na Googlu uložena. Pokud heslovou frázi zapomenete nebo toto nastavení budete chtít změnit, budete muset <ph name="BEGIN_LINK" />synchronizaci resetovat<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Při posunutí nahoru posunout stránku dolů</translation>
@@ -8173,6 +8174,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7416263748877373774">Smluvní podmínky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="7416362041876611053">Neznámá chyba sítě.</translation>
 <translation id="741906494724992817">Tato aplikace nevyžaduje žádná speciální oprávnění.</translation>
+<translation id="7419142833919893307">Nebylo přidáno žádné uživatelské jméno</translation>
 <translation id="7419565702166471774">Vždy používat zabezpečená připojení</translation>
 <translation id="742130257665691897">Záložky byly odstraněny</translation>
 <translation id="7421925624202799674">Zobrazit zdrojo&amp;vý kód stránky</translation>
@@ -8482,6 +8484,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7659154729610375585">Přesto anonymní režim ukončit?</translation>
 <translation id="7659336857671800422">Spustit průvodce ochranou soukromí</translation>
 <translation id="7659584679870740384">Nemáte oprávnění používat toto zařízení. Kontaktujte administrátora a požádejte jej o oprávnění k přihlášení.</translation>
+<translation id="7660116474961254898">Postupujte podle pokynů na telefonu</translation>
 <translation id="7660146600670077843">Klikněte pravým tlačítkem myši na kartu a vyberte Přidat kartu do nové skupiny</translation>
 <translation id="7661259717474717992">Povolit webům ukládat a číst data souborů cookie</translation>
 <translation id="7661451191293163002">Nepodařilo se získat registrační certifikát.</translation>

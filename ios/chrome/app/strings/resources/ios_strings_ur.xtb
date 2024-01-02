@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">‏"Google کیلنڈر میں شامل کریں" یا "Apple کیلنڈر میں شامل کریں" کو منتخب کریں۔</translation>
 <translation id="1626771852476987600">دوبارہ استعمال کردہ <ph name="COUNT" /> پاس ورڈز</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
+<translation id="1641316430523156212">پیروی کریں</translation>
 <translation id="1644574205037202324">سرگزشت</translation>
 <translation id="165008673352427892">نئی خصوصیت</translation>
 <translation id="1650222530560417226">‏مستقبل کے JavaScript کونسول لاگز اور تمام ٹیبز کی خرابیاں جمع کرنے کیلئے، "لاگنگ شروع کریں" بٹن پر تھپتھپائیں۔ لاگز اس وقت تک جمع (اور صرف میموری میں اسٹور) کئے جائیں گے جب تک یہ صفحہ بند نہ ہو جائے یا "لاگنگ بند کریں" پر نہ تھپتھپایا جائے۔</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">قیمت کے الرٹس کو آن کریں؟</translation>
 <translation id="2139867232736819575">وہ متن تلاش کریں جسے آپ نے کاپی کیا ہے</translation>
 <translation id="214201757571129614">سائن ان کریں…</translation>
+<translation id="2145004670974387485"><ph name="FILENAME" /> کو محفوظ کرنے کے لیے آپ جس اکاؤنٹ کا استعمال کرنا چاہتے ہیں اسے منتخب کریں</translation>
 <translation id="2148716181193084225">آج</translation>
 <translation id="2149973817440762519">بک مارک میں ترمیم کریں</translation>
 <translation id="2175927920773552910">‏QR کوڈ</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">روکیں</translation>
 <translation id="2666092431469916601">سرفہرست</translation>
 <translation id="2669454659051515572">اس آلے کا استعمال کرنے والا کوئی بھی شخص ڈاؤن لوڈ کردہ فائلز کو دیکھ سکتا ہے</translation>
+<translation id="2681158575552244226">‏<ph name="USER_EMAIL" /> کے لیے Drive میں محفوظ کیا جا رہا ہے۔</translation>
 <translation id="2690858294534178585">کیمرا زیر استعمال ہے</translation>
 <translation id="2691653761409724435">آف لائن دستیاب نہیں ہے</translation>
 <translation id="2695507686909505111">صفحہ کا ترجمہ ہو گیا</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">ویب براؤز کرنے کیلئے ایک ٹیب کھولیں۔</translation>
 <translation id="3519905498307021260">{count,plural, =1{ٹیب کھولیں}other{{count} ٹیبز کھولیں}}</translation>
 <translation id="3523789730715594198">‏آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو روک سکتے ہیں۔ Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
+<translation id="3526783603136816353">(<ph name="FILE_SIZE" />) <ph name="FILENAME" /> کو محفوظ کرنے کے لیے آپ جس اکاؤنٹ کا استعمال کرنا چاہتے ہیں اسے منتخب کریں</translation>
 <translation id="3527085408025491307">فولڈر</translation>
 <translation id="3529024052484145543">محفوظ نہیں</translation>
 <translation id="3530206579861815432">اپنے مطابقت پذیر آلات پر کھلے اور حال ہی میں بند ٹیبز کو تیزی سے تلاش کریں۔</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523"><ph name="DATE" /> کو تخلیق کیا گیا</translation>
 <translation id="374357899112510277">ڈاؤن لوڈز کو چھپائیں</translation>
 <translation id="3745190878148784130">ٹیکسٹ زوم کریں کو چھپائیں</translation>
+<translation id="375773422023477320">بُک مارکس</translation>
 <translation id="3762232513783804601">‏آپ کے iPad کے لیے بنایا گیا</translation>
 <translation id="3768725474733206671">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
 <translation id="3771033907050503522">پوشیدگی ٹیبز</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">پتے</translation>
 <translation id="3955822496205734389">آپ کے پاس کمزور پاس ورڈز ہیں۔</translation>
 <translation id="3959736869653157332">مینیو ← نیا پوشیدگی ٹیب</translation>
+<translation id="3962326069546168954">محفوظ کریں</translation>
 <translation id="3967822245660637423">ڈاؤن لوڈ مکمل ہوگیا ہے</translation>
 <translation id="3968505803272650567">دلچسپیوں کا نظم کریں</translation>
 <translation id="3989635538409502728">سائن آؤٹ کریں</translation>
@@ -1086,6 +1092,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6685259053455152195">ترتیبات میں تیزی سے ترمیم کرنے اور ایڈریس بار سے خصوصیات کو استعمال کرنے کے لیے شارٹ کٹس۔</translation>
 <translation id="6710079714193676716">آپ کی تنظیم کے زیر انتظام۔ ہو سکتا ہے کہ کچھ خصوصیات دستیاب نہ ہوں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">‏<ph name="USER_EMAIL" /> کے لیے Drive میں محفوظ کیا گیا۔</translation>
 <translation id="672735642903863329">اپنے تمام آلات پر اپنے بُک مارکس، پاس ورڈز وغیرہ حاصل کریں۔</translation>
 <translation id="6730682669179532099">پاسورڈز برآمد نہیں ہو سکے</translation>
 <translation id="6732087373923685049">کیمرا</translation>
@@ -1104,6 +1111,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="6790502149545262384">جلد ہی، نیا ٹیب کھولنے پر آپ کو <ph name="CHANNEL_NAME" /> سے کہانیاں دکھائی دیں گی۔</translation>
 <translation id="6797885426782475225">صوتی تلاش</translation>
 <translation id="6800349425672670802">آپ ٹیب سوئچر سے اپنے تمام کھلے ہوئے ٹیبز تک رسائی حاصل کر سکتے ہیں۔</translation>
+<translation id="6805179248725678418">‏Google Drive میں محفوظ کریں</translation>
 <translation id="6807889908376551050">سبھی دکھائیں…</translation>
 <translation id="681368974849482173">آئٹم بنایا گیا</translation>
 <translation id="6822587385560699678">آن ہونے پر پاس ورڈز <ph name="ACCOUNT" /> میں محفوظ ہوتے ہیں۔ آف ہونے پر پاس ورڈز صرف اس آلے پر محفوظ ہوتے ہیں۔</translation>
@@ -1159,6 +1167,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7102005569666697658">ڈاؤن لوڈ ہو رہی ہے… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">چھپائیں</translation>
 <translation id="7108762695052995889">سائٹ ملاحظہ کریں</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">پورا نام</translation>
 <translation id="7136892417564438900">کیمرا دستیاب نہیں ہے</translation>
 <translation id="7141960840225504692">آپ کے ٹیبز بند ہو جائیں گے اور براؤزنگ ڈیٹا حذف ہو جائے گا</translation>
@@ -1286,6 +1295,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="7856733331829174190">ڈاؤن لوڈ نہیں ہو سکی</translation>
 <translation id="7859704718976024901">براؤزنگ سرگزشت</translation>
 <translation id="7866501058614003444">اس پیکیج سے ٹریک کو کامیابی سے ہٹا دیا گیا ہے۔</translation>
+<translation id="7866872729285243843">اپنے تمام آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے، ترتیبات میں "پڑھنے کی فہرست" کو آن کریں۔</translation>
 <translation id="7866993391592926595">اس کارڈ کو چھپانے سے پیکیج ٹریکنگ آف ہو جائے گی اور آپ کا سارا ڈیٹا ہٹا دیا جائے گا</translation>
 <translation id="7870750252270996949">لینز نے تصویر کو کاپی کیا</translation>
 <translation id="7879275349003161544">ڈاؤن لوڈز دکھائیں</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">มีการเข้าชมหน้าเว็บ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ไม่มี}=1{จาก 1 เว็บไซต์ (แต่คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่)}other{จาก # เว็บไซต์ (คุณจะยังลงชื่อเข้าใช้บัญชี Google อยู่)}}</translation>
 <translation id="1165852471352757509">รายการให้ความรู้และสารคดีทางโทรทัศน์</translation>
+<translation id="1167877250265821930">ดาวน์โหลด<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
 <translation id="1174644974616730562">Envelope Chinese #1</translation>
 <translation id="1174723505405632867">คุณต้องการอนุญาตให้ <ph name="EMBEDDED_URL" /> ใช้คุกกี้และข้อมูลเว็บไซต์ใน <ph name="TOP_LEVEL_URL" /> ไหม
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">โปรแกรมสร้าง PDF:</translation>
 <translation id="2130448033692577677">เทมเพลตที่คุณระบุอาจใช้ไม่ได้เนื่องจากไม่มีการตั้งค่านโยบาย DnsOverHttpsMode ไว้</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">กำลังดาวน์โหลดแพ็กภาษา<ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">เสื้อผ้าบุรุษ</translation>
 <translation id="2137891579555018930">กำลังรอการอนุญาต...</translation>
 <translation id="213826338245044447">บุ๊กมาร์กบนอุปกรณ์เคลื่อนที่</translation>
@@ -3989,6 +3991,7 @@
 <translation id="8877780815363510165">การตกปลา</translation>
 <translation id="8884537526797090108">บันทึกเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="8888187300091017436">ฟูก</translation>
+<translation id="8890048757975398817">ควบคุม <ph name="READERNAME" /> และรับสิทธิ์เข้าถึงสมาร์ทการ์ดที่เครื่องอ่านบัตรดังกล่าวเข้าถึงได้</translation>
 <translation id="8891727572606052622">โหมดพร็อกซีไม่ถูกต้อง</translation>
 <translation id="8894794286471754040">ด้านขอบยาวก่อน</translation>
 <translation id="8897428486789851669">ว่ายน้ำ</translation>

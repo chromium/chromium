@@ -202,6 +202,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4148957013307229264">Installation...</translation>
 <translation id="4149882025268051530">Échec de la décompression de l'archive par le programme d'installation. Veuillez télécharger de nouveau Google Chrome.</translation>
 <translation id="4153934450158521343">Chrome se fermera bientôt et supprimera les données</translation>
+<translation id="4173512894976930765">Les sites fonctionneront probablement comme prévu. Lorsque vous fermerez toutes les fenêtres Chrome, vous serez déconnecté de la plupart des sites, à l'exception de votre compte Google si vous êtes connecté à Chrome.</translation>
 <translation id="4175922240926474352">Chrome a bloqué ce téléchargement, car le site n'utilise pas une connexion sécurisée et le fichier a peut-être été altéré</translation>
 <translation id="4191857738314598978">{0,plural, =1{Relancer Chrome d'ici un jour}one{Relancer Chrome d'ici # jour}other{Relancer Chrome d'ici # jours}}</translation>
 <translation id="4205939740494406371">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez dans 24 heures ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>

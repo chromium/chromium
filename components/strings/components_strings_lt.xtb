@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Puslapyje apsilankyta</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nėra}=1{Iš vienos svetainės (liksite prisijungę prie „Google“ paskyros)}one{Iš # svetainės (liksite prisijungę prie „Google“ paskyros)}few{Iš # svetainių (liksite prisijungę prie „Google“ paskyros)}many{Iš # svetainės (liksite prisijungę prie „Google“ paskyros)}other{Iš # svetainių (liksite prisijungę prie „Google“ paskyros)}}</translation>
 <translation id="1165852471352757509">TV dokumentika ir negrožinė kūryba</translation>
+<translation id="1167877250265821930">Nepavyko atsisiųsti <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Nr. 1 kinietiškas vokas</translation>
 <translation id="1174723505405632867">Ar norite leisti <ph name="EMBEDDED_URL" /> naudoti slapukus ir svetainės duomenis <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2126374524350484896">PDF failo rengėjas:</translation>
 <translation id="2130448033692577677">Jūsų nurodyti šablonai gali būti netaikomi dėl to, kad nenustatyta „DnsOverHttpsMode“ politika.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Atsisiunčiamas <ph name="LANGUAGE" /> k. paketas...<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Vyrų apranga</translation>
 <translation id="2137891579555018930">Laukiama leidimo...</translation>
 <translation id="213826338245044447">Žymės mobiliesiems</translation>
@@ -655,6 +657,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2233745931693710080">Kompaktinis diskas</translation>
 <translation id="2235344399760031203">Trečiųjų šalių slapukai užblokuoti</translation>
 <translation id="2239100178324503013">Siųsti dabar</translation>
+<translation id="2239114457614475014">Redaguoti įvestį</translation>
 <translation id="2241693394036365668">Atsisiųstas failas</translation>
 <translation id="2246264294482514010">10 x 12 col.</translation>
 <translation id="2246480341630108201">Vienas iš tėvų dar nepateikė patvirtinimo</translation>
@@ -989,6 +992,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2959113999220720579">Veido ir kūno priežiūra</translation>
 <translation id="2962073860865348475">12 x 18 col.</translation>
 <translation id="2968103128155246731">Furgonai ir vienatūriai</translation>
+<translation id="2971483124699139256">Spustelėjus „Patinka“ pateikiamas atsiliepimas, kad jums patinka sugeneruotas tekstas.</translation>
 <translation id="2972581237482394796">&amp;Atlikti iš naujo</translation>
 <translation id="2977665033722899841">„<ph name="ROW_NAME" />“, šiuo metu pasirinkta. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1574,6 +1578,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4132448310531350254">Pasikartojančios failo plėtinio „<ph name="FILE_EXTENSION" />“ doroklės, kurias nurodo programos „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Sukurti dokumentą</translation>
 <translation id="413544239732274901">Sužinokite daugiau</translation>
+<translation id="4139859738677203214">Spustelėjus „Nepatinka“ atidaroma forma, skirta pateikti išsamų atsiliepimą, kodėl jums nepatinka sugeneruotas tekstas.</translation>
 <translation id="4140905530744469899">Profilio ID:</translation>
 <translation id="4142935452406587478">10 dėklas</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3988,6 +3993,7 @@ Papildoma išsami informacija:
 <translation id="8877780815363510165">Žvejyba</translation>
 <translation id="8884537526797090108">Negalima įrašyti konfidencialaus turinio</translation>
 <translation id="8888187300091017436">Čiužiniai</translation>
+<translation id="8890048757975398817">Valdyti „<ph name="READERNAME" />“ ir gauti prieigą prie jame pasiekiamos išmaniosios kortelės.</translation>
 <translation id="8891727572606052622">Netinkamas įgaliotojo serverio režimas.</translation>
 <translation id="8894794286471754040">Pirmiau ilgasis kraštas</translation>
 <translation id="8897428486789851669">Plaukimas</translation>

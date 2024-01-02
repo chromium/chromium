@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಿದಾಗ</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{ಯಾವುದೂ ಇಲ್ಲ}=1{1 ಸೈಟ್‌ನಿಂದ (ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಆಗಿರುತ್ತೀರಿ)}one{# ಸೈಟ್‌ಗಳಿಂದ (ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಆಗಿರುತ್ತೀರಿ)}other{# ಸೈಟ್‌ಗಳಿಂದ (ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಆಗಿರುತ್ತೀರಿ)}}</translation>
 <translation id="1165852471352757509">ಟಿವಿ ಸಾಕ್ಷ್ಯಚಿತ್ರ ಮತ್ತು ನಾನ್‌ಫಿಕ್ಷನ್</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="1174644974616730562">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #1</translation>
 <translation id="1174723505405632867"><ph name="TOP_LEVEL_URL" /> ನಲ್ಲಿ ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾವನ್ನು ಬಳಸಲು ನೀವು <ph name="EMBEDDED_URL" /> ಗೆ ಅನುಮತಿಸಲು ಬಯಸುತ್ತೀರಾ?
 
@@ -597,6 +598,7 @@
 <translation id="2126374524350484896">PDF ನಿರ್ಮಿಸಿದವರು:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ಕಾರ್ಯನೀತಿಯನ್ನು ಹೊಂದಿಸದೇ ಇರುವ ಕಾರಣದಿಂದಾಗಿ ನೀವು ನಿರ್ದಿಷ್ಟಪಡಿಸಿದ ಟೆಂಪ್ಲೆಟ್‌ಗಳನ್ನು ಅನ್ವಯಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ಭಾಷೆಯ ಪ್ಯಾಕ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">ಪುರುಷರ ಉಡುಪು</translation>
 <translation id="2137891579555018930">ಅನುಮತಿಗಾಗಿ ನಿರೀಕ್ಷಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="213826338245044447">ಮೊಬೈಲ್ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
@@ -654,6 +656,7 @@
 <translation id="2233745931693710080">ಕಾಂಪ್ಯಾಕ್ಟ್ ಡಿಸ್ಕ್</translation>
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2239100178324503013">ಈಗ ಕಳುಹಿಸಿ</translation>
+<translation id="2239114457614475014">ಇನ್‌ಪುಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2241693394036365668">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆದಾಗ</translation>
 <translation id="2246264294482514010">10 x 12 ಇಂಚು</translation>
 <translation id="2246480341630108201">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಸರಿ ಎಂದು ಹೇಳಿಲ್ಲ</translation>
@@ -778,7 +781,7 @@
 <translation id="2521736961081452453">ಫಾರ್ಮ್ ಆನ್ನು ರಚಿಸಿ</translation>
 <translation id="2523886232349826891">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ಉಳಿಸಲಾಗಿದೆ</translation>
 <translation id="2524461107774643265">ಇನ್ನಷ್ಟು ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="2526280916094749336">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, <ph name="ACCOUNT" />.</translation>
+<translation id="2526280916094749336">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">ನಿಮ್ಮ CVC ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಮುಂಭಾಗದಲ್ಲಿದೆ. ಇದು ನಿಮ್ಮ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯ ಮೇಲಿನ ಬಲಭಾಗದಲ್ಲಿರುವ 4-ಅಂಕಿಯ ಕೋಡ್ ಆಗಿದೆ.</translation>
 <translation id="2529899080962247600">ಈ ಕ್ಷೇತ್ರವು <ph name="MAX_ITEMS_LIMIT" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ನಮೂದುಗಳನ್ನು ಹೊಂದಿರುವಂತಿಲ್ಲ. ಮುಂದಿನ ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ನಿರ್ಲಕ್ಷಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="253493526287553278">ಪ್ರೋಮೋ ಕೋಡ್ ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">ಮುಖ ಮತ್ತು ದೇಹದ ಆರೈಕೆ</translation>
 <translation id="2962073860865348475">12 x 18 ಇಂಚು</translation>
 <translation id="2968103128155246731">ವ್ಯಾನ್‌ಗಳು ಮತ್ತು ಮಿನಿವ್ಯಾನ್‌ಗಳು</translation>
+<translation id="2971483124699139256">ಥಂಬ್ಸ್ ಅಪ್, ಜನರೇಟ್ ಆದ ಪಠ್ಯವನ್ನು ನೀವು ಇಷ್ಟಪಡುತ್ತೀರಿ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸುತ್ತದೆ.</translation>
 <translation id="2972581237482394796">&amp;ಮತ್ತೆಮಾಡು</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ಪ್ರಸ್ತುತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಿರುವುದು. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ಓಪೆರಾ</translation>
@@ -1570,6 +1574,7 @@
 <translation id="4132448310531350254">ಆ್ಯಪ್‌ಗಳ "<ph name="POLICY_IDS_LIST" />" ಮೂಲಕ ಉಲ್ಲೇಖಿಸಲಾದ file_extension "<ph name="FILE_EXTENSION" />" ಗೆ ಸಂಬಂಧಿಸಿದ ನಕಲಿ ಹ್ಯಾಂಡ್ಲರ್‌ಗಳು.</translation>
 <translation id="4134123981501319574">Doc ರಚಿಸಿ</translation>
 <translation id="413544239732274901">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
+<translation id="4139859738677203214">ಥಂಬ್ಸ್ ಡೌನ್, ಜನರೇಟ್ ಆದ ಪಠ್ಯವನ್ನು ನೀವು ಏಕೆ ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬುದರ ಕುರಿತು ವಿವರವಾದ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸಲು ಫಾರ್ಮ್ ಅನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="4140905530744469899">ಪ್ರೊಫೈಲ್ ಐಡಿ:</translation>
 <translation id="4142935452406587478">ಟ್ರೇ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -2020,7 +2025,7 @@
 <translation id="5018422839182700155">ಈ ಪುಟವನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5018802455907704660">16 x 20 ಇಂಚು</translation>
 <translation id="5019198164206649151">ಕಳಪೆ ಸ್ಥಿತಿಯಲ್ಲಿ ಸಂಗ್ರಹಣೆಯನ್ನು ಹಿಂತಿರುಗಿಸಲಾಗಿದೆ</translation>
-<translation id="5019293549442035120">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019293549442035120">ಸೇವ್ ಮಾಡಲಾದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, <ph name="USER_EMAIL" />.</translation>
 <translation id="5020776957610079374">ಜಾಗತಿಕ ಸಂಗೀತ</translation>
 <translation id="5021557570875267742">Chrome ಮೂಲಕ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="5023310440958281426">ನಿಮ್ಮ ನಿರ್ವಾಹಕ ನೀತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -2425,7 +2430,7 @@
 <translation id="5866898949289125849">ನೀವು, ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಪುಟವನ್ನು ವೀಕ್ಷಿಸುತ್ತಿದ್ದೀರಿ</translation>
 <translation id="5869405914158311789">ಈ ಸೈಟ್ ತಲುಪಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5869522115854928033">ಉಳಿಸಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
-<translation id="5872692522325383488">IBAN ಅನ್ನು ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="5872692522325383488">IBAN ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5873297634595728366">ಡೀಸೆಲ್ ವಾಹನಗಳು</translation>
 <translation id="5877831137320480913">ಸೌಂದರ್ಯ ಮತ್ತು ಫಿಟ್‌ನೆಸ್</translation>
 <translation id="5879989559903563723">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -2525,7 +2530,7 @@
 <translation id="6051898664905071243">ಪುಟ ಎಣಿಕೆ:</translation>
 <translation id="6052284303005792909">•</translation>
 <translation id="605237284704429106">IBAN ಅನ್ನು ಭರ್ತಿಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="6053584886670442526">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಉಳಿಸಲಾಗಿದೆ.</translation>
+<translation id="6053584886670442526">ಉಳಿಸಿದ ವಿಳಾಸಗಳನ್ನು ನೀವು Google ಉತ್ಪನ್ನಗಳಾದ್ಯಂತ ಬಳಸಬಹುದು. ಈ ವಿಳಾಸವನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ <ph name="ACCOUNT" /> ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="6053735090575989697">ನಮ್ಮ ಗೌಪ್ಯತೆ ನೀತಿಯಲ್ಲಿ ನಿಮ್ಮ ಡೇಟಾವನ್ನು Google ಹೇಗೆ ರಕ್ಷಿಸುತ್ತದೆ ಎಂಬುದರ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ.</translation>
 <translation id="6055888660316801977">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತಿಗೆ ಯಾವುದೇ ರುಜುವಾತು ಶೀಟ್ ಹೊಂದಾಣಿಕೆಯಾಗಿಲ್ಲ</translation>
 <translation id="6055982527635883756">ಎನ್ವಲಪ್ (ಆರ್ಕೈವಲ್)</translation>
@@ -3983,6 +3988,7 @@
 <translation id="8877780815363510165">ಮೀನುಗಾರಿಕೆ</translation>
 <translation id="8884537526797090108">ಗೌಪ್ಯ ವಿಷಯವನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="8888187300091017436">ಹಾಸಿಗೆಗಳು</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" /> ಅನ್ನು ನಿಯಂತ್ರಿಸಿ ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಇರುವ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್‌ಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="8891727572606052622">ಅಮಾನ್ಯವಾದ ಪ್ರಾಕ್ಸಿ ಮೋಡ್.</translation>
 <translation id="8894794286471754040">ಉದ್ದದ ಅಂಚು ಮೊದಲು</translation>
 <translation id="8897428486789851669">ಈಜು</translation>

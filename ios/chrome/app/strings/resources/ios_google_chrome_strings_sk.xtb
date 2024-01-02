@@ -63,7 +63,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="2427791862912929107">Chrome má funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2444854139071078915">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, použite automatické dopĺňanie v Chrome</translation>
-<translation id="2464852008153767546">{THRESHOLD,plural, =1{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minútu. Môže to zahŕňať históriu a automatické dopĺňanie.}few{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}many{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}other{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minút. Môže to zahŕňať históriu a automatické dopĺňanie.}}</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minútu. Môže to zahŕňať históriu a automatické dopĺňanie.}few{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}many{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty. Môže to zahŕňať históriu a automatické dopĺňanie.}other{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minút. Môže to zahŕňať históriu a automatické dopĺňanie.}}</translation>
 <translation id="2561231791489583059">Používajte Chrome ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="2574249610672786438">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, prihláste sa v nich</translation>
 <translation id="2576431527583832481">Prehliadač Chrome bol práve vylepšený. K dispozícii je nová verzia.</translation>
@@ -88,11 +88,13 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="3146109040683991651">Nastaviť Chrome ako predvolený prehliadač</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="3173834708294760622">Stránka prehliadača Google Chrome</translation>
+<translation id="3209155060213569278">Vo svojom účte Google môžete <ph name="BEGIN_LINK" />spravovať, ktoré údaje Chromu sa ukladajú<ph name="END_LINK" />.
+Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, zadajte prístupovú frázu.</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3340938510625667914">Akcie v Chrome</translation>
 <translation id="3345341804167540816">Používajte prehliadač Chrome kdekoľvek</translation>
-<translation id="3360031466389132716">{THRESHOLD,plural, =1{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minútu}few{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minúty}many{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minúty}other{Dôjde k nej, keď Chrome nepoužívate {THRESHOLD} minút}}</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minútu}few{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}many{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minúty}other{Dochádza k tomu, keď Chrome nepoužívate {THRESHOLD} minút}}</translation>
 <translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="3472587960215700950">Chrome vám pomocou Máp Google poskytuje trasy a miestne informácie o rozpoznaných adresách.</translation>
 <translation id="3503014945441706099">Získajte Zlepšené bezpečné prehliadanie aj pre tento profil Chromu</translation>
@@ -161,6 +163,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chrom
 <translation id="5527026824954593399">Klepnite na Zobraziť v Mapách Google v Chrome.</translation>
 <translation id="5552137475244467770">Chrome pravidelne kontroluje heslá podľa zoznamov, ktoré boli zverejnené online. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
 <translation id="5554520618550346933">Ak používate heslo, Chrome vás upozorní, keď bude zverejnené na internete. Vaše heslá a používateľské mená sú pritom šifrované, aby ich nikto nemohol prečítať (ani Google).</translation>
+<translation id="5601180634394228718">Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Google Chrome a zapnite fotoaparát.</translation>
 <translation id="5642200033778930880">Google Chrome nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="5661521615548540542">Správcovi hesiel Google sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>

@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Συμβουλή για το Chromium</translation>
 <translation id="2168108852149185974">Ορισμένα πρόσθετα προκαλούν σφάλματα στο Chromium. Aπεγκαταστήστε τα.</translation>
 <translation id="2178608107313874732">Αδύνατη χρήση κάμερας από Chromium τώρα</translation>
+<translation id="219374086636266276">Μπορείτε να <ph name="BEGIN_LINK" />διαχειριστείτε τα δεδομένα του Chromium που αποθηκεύονται<ph name="END_LINK" /> στον Λογαριασμό σας Google.
+Για περισσότερες ρυθμίσεις που χρησιμοποιούν δεδομένα για τη βελτίωση της εμπειρίας σας στο Chromium, μεταβείτε στις <ph name="BEGIN_LINK" />Υπηρεσίες Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Θέλετε να προσφερθεί το Chromium να μεταφράσει σελίδες αυτού του ιστότοπου που είναι γραμμένες στα <ph name="LANGUAGE_NAME" /> την επόμενη φορά;</translation>
 <translation id="2218146227246548550">Ο οργανισμός σας απαιτεί να συνδεθείτε για τη χρήση του Chromium. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Αυτή η διεύθυνση είναι αποθηκευμένη στο Chromium. Για να τη χρησιμοποιήσετε σε όλα τα προϊόντα Google, αποθηκεύστε τη στον Λογαριασμό σας Google, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Αυτό συμβαίνει όταν το Chromium δεν χρησιμοποιείται για {THRESHOLD} λεπτό. Σε αυτά περιλαμβάνονται το ιστορικό και η αυτόματη συμπλήρωση.}other{Αυτό συμβαίνει όταν το Chromium δεν χρησιμοποιείται για {THRESHOLD} λεπτά. Σε αυτά περιλαμβάνονται το ιστορικό και η αυτόματη συμπλήρωση.}}</translation>
 <translation id="3472200483164753384">Δεν υποστηρίζεται στο Chromium Canary</translation>
 <translation id="3478750326643748149">Απόκρυψη της κάρτας Αξιοποιήσετε πλήρως το Chromium</translation>
+<translation id="347967311580159871">Για περισσότερες ρυθμίσεις που χρησιμοποιούν δεδομένα για τη βελτίωση της εμπειρίας σας στο Chromium, μεταβείτε στις <ph name="BEGIN_LINK" />Υπηρεσίες Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Ο κωδικός πρόσβασης δεν κοινοποιήθηκε. Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και βεβαιωθείτε ότι έχετε συνδεθεί στο Chromium. Στη συνέχεια, δοκιμάστε ξανά.</translation>
 <translation id="3554027294407525061">Διαγραφή δεδομένων περιήγησης στο Chromium.</translation>
 <translation id="3567399274263440288">Συνδεθείτε στο Chromium με τον Λογαριασμό σας Google για να το αξιοποιήσετε στο έπακρο.</translation>

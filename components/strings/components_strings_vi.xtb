@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Trang đã truy cập</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Không có}=1{Từ 1 trang web (bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google)}other{Từ # trang web (bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google)}}</translation>
 <translation id="1165852471352757509">Phim tài liệu và phi hư cấu</translation>
+<translation id="1167877250265821930">Không tải <ph name="LANGUAGE" /> xuống được</translation>
 <translation id="1174644974616730562">Phong bì kiểu Trung số 1</translation>
 <translation id="1174723505405632867">Bạn có muốn cho phép <ph name="EMBEDDED_URL" /> sử dụng cookie và dữ liệu trang web trên <ph name="TOP_LEVEL_URL" /> không?
 
@@ -598,6 +599,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2126374524350484896">Trình tạo tệp PDF:</translation>
 <translation id="2130448033692577677">Các mẫu bạn đã chỉ định có thể không được áp dụng do chưa đặt chính sách DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Đang tải gói ngôn ngữ <ph name="LANGUAGE" /> xuống...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Quần áo nam</translation>
 <translation id="2137891579555018930">Đang chờ cấp quyền...</translation>
 <translation id="213826338245044447">Dấu trang trên thiết bị di động</translation>
@@ -3990,6 +3992,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8877780815363510165">Câu cá</translation>
 <translation id="8884537526797090108">Không thể ghi nội dung bí mật</translation>
 <translation id="8888187300091017436">Đệm</translation>
+<translation id="8890048757975398817">Kiểm soát <ph name="READERNAME" /> và có quyền truy cập vào thẻ thông minh mà thiết bị này có thể truy cập.</translation>
 <translation id="8891727572606052622">Chế độ proxy không hợp lệ.</translation>
 <translation id="8894794286471754040">Cạnh dài trước</translation>
 <translation id="8897428486789851669">Bơi</translation>

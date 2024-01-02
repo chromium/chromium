@@ -78,6 +78,7 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 
       Jika kebijakan tidak disetel, secara default fitur tidak diizinkan bagi pengguna terkelola tetapi diizinkan bagi pengguna lainnya.</translation>
 <translation id="1035860095382451169">Mengaktifkan ikon gembok di omnibox untuk koneksi aman</translation>
+<translation id="1037426296070139784">Sertifikat TLS yang seharusnya tidak dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server</translation>
 <translation id="1037470927044831850">Izinkan situs meminta pengguna untuk membagikan streaming video dari layar mereka</translation>
 <translation id="1038049732032297658">Mengaktifkan atau menonaktifkan fitur koreksi otomatis di keyboard fisik.
 
@@ -411,6 +412,7 @@ Jika kebijakan disetel ke Nonaktif atau tidak disetel, setelan pemulihan penuh a
 <translation id="1327466551276625742">Aktifkan permintaan konfigurasi jaringan saat offline</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
 <translation id="13356285923490863">Nama Kebijakan</translation>
+<translation id="1336073690474326987">Nonaktifkan fitur sepenuhnya</translation>
 <translation id="1338603603553894503">Menentukan apakah pemilih profil akan diaktifkan, dinonaktifkan, atau dipaksa saat browser dimulai.
 
       Secara default, pemilih profil tidak akan ditampilkan jika browser dimulai dalam mode tamu atau Samaran, direktori dan/atau URL profil ditentukan oleh command line, aplikasi secara eksplisit diminta terbuka, browser diluncurkan oleh notifikasi native, hanya tersedia satu profil, atau kebijakan ForceBrowserSignin disetel ke benar (true).
@@ -949,6 +951,7 @@ Apa pun nilai yang dipilih, pengguna akan dapat memutuskan apakah akan menyimpan
 
 Kebijakan ini tidak akan berpengaruh jika opsi untuk menyimpan data penjelajahan yang ada tidak tersedia; hal ini terjadi jika pemisahan profil perusahaan diterapkan secara ketat, atau jika data berasal dari profil yang sudah dikelola.
 </translation>
+<translation id="1795025936135166305">Izinkan penggunaan fitur untuk organisasi</translation>
 <translation id="1795105105645381965">
       Jika kebijakan disetel ke Aktif (True/Benar), <ph name="PRODUCT_NAME" /> akan diizinkan meminta izin pengguna terkelola sebelum membagikan sinyal perangkat di perangkat yang tidak dikelola guna mendapatkan akses.
 
@@ -2027,6 +2030,13 @@ Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinona
 <translation id="26023406105317310">Konfigurasikan akun Kerberos</translation>
 <translation id="2603382859270873566">Mengaktifkan dukungan untuk PPB_VideoDecoder(Dev) API.</translation>
 <translation id="2604182581880595781">Mengonfigurasi kebijakan terkait fitur Berbagi File Jaringan.</translation>
+<translation id="2604211069017399189">Kebijakan ini memungkinkan Anda mengontrol cara penanganan data organisasi menggunakan Membuat tema dengan AI <ph name="PRODUCT_NAME" />. Kebijakan ini akan lebih diutamakan daripada kebijakan menyeluruh mendatang.
+
+Jika kebijakan disetel ke "Allowed", penggunaan fitur untuk organisasi akan diizinkan.
+
+Jika kebijakan disetel ke "Allow without data collection" (Izinkan tanpa pengumpulan data), hal ini akan menonaktifkan pengumpulan data perusahaan untuk pelatihan model. Setelan ini juga menonaktifkan berbagi data melalui dialog Masukan dalam fitur, dan mengirim data untuk evaluasi manual. Akibatnya, Google tidak menggunakan konten pengguna versi bisnis (termasuk perintah, input, output, dan materi sumber) untuk pelatihan model. Hal ini akan memastikan bahwa Google tidak menggunakan data pengguna versi bisnis untuk melatih atau meningkatkan model AI-nya. Google tidak menyimpan konten pengguna versi bisnis termasuk perintah, sumber, input, atau output. Perhatikan bahwa konten ini dapat disimpan hingga 24 jam untuk menjaga konteks situasional. Hal ini akan memastikan bahwa Google tidak mengumpulkan atau menyimpan data apa pun yang dimasukkan ke atau dibuat oleh fitur AI. Data ini mencakup input pengguna, output yang dihasilkan, dan masukan pengguna.
+
+Jika kebijakan disetel ke "Disabled", fitur akan dinonaktifkan sepenuhnya.</translation>
 <translation id="2608039968712973520">Minta izin pengguna untuk menjalankan <ph name="FLASH_PLUGIN_NAME" /> yang sudah tidak berlaku</translation>
 <translation id="2608535066974278204">Jangka waktu (menit) yang menentukan lamanya interval peluncuran kembali.</translation>
 <translation id="2608887839902987727">Cegah autentikasi captive portal mengabaikan setelan proxy</translation>
@@ -2893,6 +2903,13 @@ Di <ph name="MS_WIN_NAME" />, kebijakan ini hanya tersedia pada instance yang di
       Menyetel kebijakan ke Nonaktif akan merugikan keamanan dan stabilitas <ph name="PRODUCT_NAME" /> karena akan melemahkan sandbox yang digunakan proses perender. Nonaktifkan kebijakan hanya jika terdapat masalah kompatibilitas dengan software pihak ketiga yang harus berjalan dalam proses perender.
 
       Catatan: Baca selengkapnya tentang Kebijakan mitigasi proses ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
+<translation id="3338231005114367157">Kebijakan ini memungkinkan Anda mengontrol penanganan data organisasi dengan Pengelola tab <ph name="PRODUCT_NAME" />. Kebijakan ini akan lebih diutamakan daripada kebijakan menyeluruh mendatang.
+
+Jika kebijakan disetel ke "Allowed", penggunaan fitur untuk organisasi akan diizinkan.
+
+Jika kebijakan disetel ke "Allow without data collection" (Izinkan tanpa pengumpulan data), hal ini akan menonaktifkan pengumpulan data perusahaan untuk pelatihan model. Setelan ini juga menonaktifkan berbagi data melalui dialog Masukan dalam fitur, dan mengirim data untuk evaluasi manual. Akibatnya, Google tidak menggunakan konten pengguna versi bisnis (termasuk perintah, input, output, dan materi sumber) untuk pelatihan model. Hal ini akan memastikan bahwa Google tidak menggunakan data pengguna versi bisnis untuk melatih atau meningkatkan model AI-nya. Google tidak menyimpan konten pengguna versi bisnis termasuk perintah, sumber, input, atau output. Perhatikan bahwa konten ini dapat disimpan hingga 24 jam untuk menjaga konteks situasional. Hal ini akan memastikan bahwa Google tidak mengumpulkan atau menyimpan data apa pun yang dimasukkan ke atau dibuat oleh fitur AI. Data ini mencakup input pengguna, output yang dihasilkan, dan masukan pengguna.
+
+Jika kebijakan disetel ke "Disabled", fitur akan dinonaktifkan sepenuhnya.</translation>
 <translation id="3338431256935927407">Mengontrol setelan yang terkait dengan fitur Cloud Upload.</translation>
 <translation id="3339271789059866414">Mengonfigurasi ketersediaan layanan System-proxy dan kredensial proxy untuk layanan sistem.
       Jika kebijakan tidak ditetapkan, layanan System-proxy tidak akan tersedia.</translation>
@@ -3899,6 +3916,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="4136603825567209889">Aktifkan pelaporan informasi identifikasi pengguna</translation>
 <translation id="4138655880188755661">Batas Waktu</translation>
 <translation id="4140646780789794190">Nonaktifkan berbagi data diagnostik ke PluginVm</translation>
+<translation id="4144417751555442768">AI Generatif</translation>
 <translation id="4145383150978634398">Sediakan Mode Desktop Terpadu untuk pengguna</translation>
 <translation id="4147818922357566987">Aktifkan variasi terkait perbaikan penting saja</translation>
 <translation id="4150201353443180367">Tampilan</translation>
@@ -4894,6 +4912,7 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, Aplikasi Web Kios hanya dapat menggunakan jendela utama browser dan tidak dapat membuka jendela baru. Memanggil fungsi JavaScript untuk membuka jendela baru akan diabaikan.</translation>
 <translation id="4980635395568992380">Jenis data:</translation>
+<translation id="4981523774025330439">Sertifikat TLS yang tidak tepercaya, tetapi dapat digunakan dalam pembuatan jalur untuk autentikasi server</translation>
 <translation id="4981831669478419057">Fitur daftar belanja tidak akan tersedia bagi pengguna.</translation>
 <translation id="4983201894483989687">Izinkan menjalankan plugin yang kedaluwarsa</translation>
 <translation id="4986560318567565414">Jalur ke Chrome untuk beralih dari browser alternatif.</translation>
@@ -5196,6 +5215,7 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
 <translation id="5252995168844634755">Jika kebijakan ditetapkan ke Benar (True), Desktop Terpadu akan diaktifkan, yang memungkinkan aplikasi ditampilkan di beberapa layar. Pengguna dapat menonaktifkan Desktop Terpadu untuk tampilan individu.
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, Desktop Terpadu akan dinonaktifkan dan pengguna tidak dapat mengaktifkannya.</translation>
+<translation id="525500830356475308">Mengizinkan bantu menulis</translation>
 <translation id="5255162913209987122">Dapat Direkomendasikan</translation>
 <translation id="525543707238275321">Nonaktifkan pelaporan info CPU perangkat</translation>
 <translation id="5255790642269910630">Jika kebijakan disetel, setiap tampilan akan diputar sesuai dengan setelan orientasi layar setiap kali dimulai ulang dan saat pertama kali terhubung setelah nilai kebijakan berubah. Pengguna dapat mengubah rotasi tampilan melalui halaman setelan setelah login, tetapi tampilan akan kembali berubah saat mulai ulang berikutnya. Kebijakan ini berlaku untuk tampilan utama dan sekunder.
@@ -6296,6 +6316,7 @@ Jika kebijakan tidak disetel, nilai default global akan digunakan untuk semua si
 Salt harus berupa string antara 8 dan 32 karakter.
 
 Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> disetel. Jika kebijakan ini tidak disetel, ID di URI template yang dikonfigurasi melalui kebijakan <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> akan di-hash tanpa salt.</translation>
+<translation id="622197575020133151">Mengonfigurasi berbagai fitur yang menggunakan AI Generatif.</translation>
 <translation id="6224070048795197148">Izinkan pengguna menggunakan browser tanpa login</translation>
 <translation id="6224304369267200483">URL/domain otomatis mengizinkan pengesahan langsung Kunci Keamanan</translation>
 <translation id="6225938950222983458">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
@@ -6943,6 +6964,7 @@ Jika kebijakan ini disetel ke Salah (False), perilaku lama akan diaktifkan.</tra
 
       Jika kebijakan ini tidak disetel, baik pengguna yang dikelola maupun tidak dikelola perusahaan akan diizinkan secara default.</translation>
 <translation id="6640748114867542396">Jangan izinkan ekstensi terkelola menggunakan Enterprise Hardware Platform API</translation>
+<translation id="6641109870010271671">Sertifikat TLS yang harus dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server</translation>
 <translation id="6641981670621198190">Nonaktifkan dukungan untuk API grafis 3D</translation>
 <translation id="6646912445796087001">Mengaktifkan atau menonaktifkan berbagai fitur di keyboard virtual. Kebijakan ini hanya berlaku jika kebijakan "VirtualKeyboardEnabled" diaktifkan.
 
@@ -7658,6 +7680,11 @@ Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat melewati login otomatis
 <translation id="7167436895080860385">Mengizinkan pengguna menampilkan sandi di Pengelola Sandi (tak lagi digunakan)</translation>
 <translation id="7172046613126456732">Izinkan Chrome diluncurkan jika tidak terdaftar ke Pengelolaan Cloud Browser Chrome</translation>
 <translation id="7173856672248996428">Profil singkat</translation>
+<translation id="7174158612490351828">Daftar kunci publik sertifikat yang seharusnya tidak dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server
+TLS.
+
+Nilai kebijakan ini adalah daftar sertifikat X.509 berenkode base64. Sertifikat
+apa pun dengan SPKI yang cocok (SubjectPublicKeyInfo) akan tidak dipercaya.</translation>
 <translation id="717630378807352957">Izinkan semua printer dari file konfigurasi.</translation>
 <translation id="7177293255621000064">Jika kebijakan ditetapkan ke Benar (True), semua jenis media penyimpanan eksternal (USB, flash drive, hard drive eksternal, kartu SD dan kartu memori lainnya, penyimpanan optik) akan menjadi tidak tersedia di file browser. Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, pengguna akan dapat menggunakan penyimpanan eksternal di perangkat mereka.
 
@@ -7780,6 +7807,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, Setelan akun Kerberos akan 
       Jika kebijakan disetel ke Salah (False) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan menggunakan setelan pemeriksaan pencabutan online yang ada.
 
       Di <ph name="MAC_OS_NAME" />, kebijakan ini tidak akan berpengaruh jika kebijakan <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> disetel ke Salah (False).</translation>
+<translation id="7278164481614262110">Membuat tema dengan AI</translation>
 <translation id="7278854311116092134">Nama hosting pesan native untuk dikeluarkan dari daftar yang tidak diizinkan</translation>
 <translation id="7291084543582732020">Jika setelan ini diaktifkan, pengguna akan diizinkan menggunakan Smart Lock jika persyaratan untuk fitur ini terpenuhi.
 
@@ -8167,6 +8195,13 @@ Jika kebijakan ini disetel, kebijakan <ph name="PRIVACY_SANDBOX_PROMPT_ENABLED_P
       Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, pelaporan akan dinonaktifkan.
       Baik disetel maupun tidak disetel, aturan yang ditentukan dengan batasan tingkat ALLOW di DataLeakPreventionRulesList tidak akan melaporkan peristiwa.</translation>
 <translation id="7648907905084499629">Gunakan perilaku <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> untuk cookie di semua situs</translation>
+<translation id="7650618519247719562">Kebijakan ini memungkinkan Anda mengontrol penanganan data organisasi dengan fitur Bantu menulis <ph name="PRODUCT_NAME" />. Kebijakan ini akan lebih diutamakan daripada kebijakan menyeluruh mendatang.
+
+Jika kebijakan disetel ke "Allowed", penggunaan fitur untuk organisasi akan diizinkan.
+
+Jika kebijakan disetel ke "Allow without data collection" (Izinkan tanpa pengumpulan data), hal ini akan menonaktifkan pengumpulan data perusahaan untuk pelatihan model. Setelan ini juga menonaktifkan berbagi data melalui dialog Masukan dalam fitur, dan mengirim data untuk evaluasi manual. Akibatnya, Google tidak menggunakan konten pengguna versi bisnis (termasuk perintah, input, output, dan materi sumber) untuk pelatihan model. Hal ini akan memastikan bahwa Google tidak menggunakan data pengguna versi bisnis untuk melatih atau meningkatkan model AI-nya. Google tidak menyimpan konten pengguna versi bisnis termasuk perintah, sumber, input, atau output. Perhatikan bahwa konten ini dapat disimpan hingga 24 jam untuk menjaga konteks situasional. Hal ini akan memastikan bahwa Google tidak mengumpulkan atau menyimpan data apa pun yang dimasukkan ke atau dibuat oleh fitur AI. Data ini mencakup input pengguna, output yang dihasilkan, dan masukan pengguna.
+
+Jika kebijakan disetel ke "Disabled", fitur akan dinonaktifkan sepenuhnya.</translation>
 <translation id="765347139142030086">Jika kebijakan disetel ke Aktif, kebijakan yang berkaitan dengan akun <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> akan diprioritaskan jika kebijakan tersebut bertentangan dengan kebijakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
       Hanya kebijakan yang berasal dari pengguna aman yang dapat diprioritaskan. Pengguna aman berafiliasi dengan organisasi yang mengelola browser mereka menggunakan <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Semua kebijakan tingkat pengguna lainnya akan memiliki prioritas default.
@@ -8216,6 +8251,7 @@ Jika kebijakan tidak disetel, <ph name="PRODUCT_OS_NAME" /> dapat memilih pengen
 
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci agar kurang dari atau sama dengan penundaan penonaktifan layar (jika ditetapkan) dan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7680437377926096177">Sembunyikan dialog logout saat jendela terakhir ditutup.</translation>
+<translation id="7683729067082687012">Izinkan tanpa pengumpulan data</translation>
 <translation id="7683777542468165012">Penyegaran Kebijakan Dinamis</translation>
 <translation id="7687943045976362719">Jika kebijakan ini ditetapkan, jenis konten yang ditentukan akan ditangani oleh <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -8663,6 +8699,7 @@ juga aman.</translation>
 
       Perilaku ini tidak akan dipicu jika Safe Browsing dinonaktifkan (oleh kebijakan ataupun pengguna). Untuk mengaktifkan paksa Safe Browsing, gunakan kebijakan <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> atau <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Nonaktifkan <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> di semua halaman web</translation>
+<translation id="8043616595863371483">Mengizinkan pengelola tab</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="80453040817068401">Menjadikan browser <ph name="LACROS_NAME" /> tersedia</translation>
 <translation id="804619600634661088">Izinkan penggunaan proses debug jarak jauh</translation>
@@ -9069,6 +9106,8 @@ perangkat akan digunakan selama pengguna login.</translation>
       Origin harus sesuai dengan aplikasi web yang diinstal otomatis menggunakan kebijakan <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau disiapkan sebagai aplikasi kios. Untuk spesifikasi Device Attributes API, lihat https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Blokir akses tulis ke file dan direktori di situs ini</translation>
 <translation id="8378266419596669629">Memblokir izin Font Lokal di situs ini</translation>
+<translation id="8379281645427937253">Daftar sertifikat TLS yang harus dipercaya oleh <ph name="PRODUCT_NAME" /> untuk autentikasi server.
+Sertifikat harus dienkode dengan base64.</translation>
 <translation id="8379317372795444261">Autentikasi <ph name="BASIC_AUTH" /> diizinkan di koneksi HTTP</translation>
 <translation id="8381678031726288574">Terapkan setelan default untuk penghentian penggunaan U2F API.</translation>
 <translation id="8381774264911275515">Nonaktifkan transfer Cookie SSO SAML ke sesi pengguna selama login</translation>
@@ -9916,6 +9955,8 @@ Catatan: Memulai ulang perangkat akan menghapus cache. Bahkan, data realm penggu
 
 Jika kebijakan tidak disetel, <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> akan berlaku, tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="9110251436602897914">Laporkan informasi tentang periferal yang dicolokkan ke perangkat</translation>
+<translation id="9110485853581788150">Daftar sertifikat yang tidak tepercaya di <ph name="PRODUCT_NAME" />,
+tetapi dapat digunakan sebagai petunjuk untuk membuat jalur. Sertifikat harus dienkode dengan base64.</translation>
 <translation id="9111850884577810507">Kolom ini harus cocok dengan salah satu string yang mewakili printer <ph name="PRODUCT_NAME" /> yang didukung. String ini akan digunakan untuk mengidentifikasi dan menginstal PPD yang sesuai untuk printer. Informasi selengkapnya dapat ditemukan di https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">File konfigurasi untuk printer perusahaan</translation>
 <translation id="9113058104383612727">Mengaktifkan alat pemecahan masalah Kios</translation>

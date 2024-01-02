@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">“Google पात्रोमा हाल्नुहोस्“ वा “Apple पात्रोमा हाल्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> वटा पासवर्ड पहिले नै प्रयोग गरिएका छन्</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
+<translation id="1641316430523156212">फलो गर्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="165008673352427892">नयाँ सुविधा</translation>
 <translation id="1650222530560417226">सबै ट्याबहरूबाट JavaScript कन्सोलका भावी लग तथा त्रुटिहरू सङ्कलन गर्न "लग गर्न सुरु गर्नुहोस्" नामक बटन ट्याप गर्नुहोस्। यो पृष्ठ बन्द नगरेसम्म वा "लग गर्न छाड्नुहोस्" नामक बटन ट्याप नगरेसम्म लगहरू सङ्कलन गरिने छ (र मेमोरीमा मात्र भण्डारण गरिने छ)।</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">भाडादरसम्बन्धी अलर्ट पठाउने सुविधा अन गर्ने हो?</translation>
 <translation id="2139867232736819575">तपाईंले प्रतिलिपि गरेको पाठको खोजी गर्नुहोस्</translation>
 <translation id="214201757571129614">साइन इन गर्नुहोस्…</translation>
+<translation id="2145004670974387485">तपाईं <ph name="FILENAME" /> जुन खातामा सेभ गर्न चाहनुहुन्छ त्यो खाता चयन गर्नुहोस्</translation>
 <translation id="2148716181193084225">आज</translation>
 <translation id="2149973817440762519">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="2175927920773552910">QR कोड</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">रोक्नुहोस्</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
 <translation id="2669454659051515572">यो डिभाइस प्रयोग गर्ने सबै जना डाउनलोड गरिएका फाइलहरू देख्न सक्छन्</translation>
+<translation id="2681158575552244226"><ph name="USER_EMAIL" /> को Drive मा सेभ गरिँदै छ।</translation>
 <translation id="2690858294534178585">क्यामेरा प्रयोग भइरहेको छ</translation>
 <translation id="2691653761409724435">अफलाइन उपलब्ध छैन</translation>
 <translation id="2695507686909505111">पृष्ठ अनुवाद गरियो</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">वेब ब्राउज गर्न एउटा ट्याब खोल्नुहोस्।</translation>
 <translation id="3519905498307021260">{count,plural, =1{यो ट्याब खोल्नुहोस्}other{{count} वटा ट्याब खोल्नुहोस्}}</translation>
 <translation id="3523789730715594198">तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्ने कार्य रोक्न सक्नुहुन्छ। Google ले तपाईंले विगतमा हेरेका वेबपेजका आधारमा Search र अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
+<translation id="3526783603136816353">तपाईं <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) जुन खातामा सेभ गर्न चाहनुहुन्छ त्यो खाता चयन गर्नुहोस्</translation>
 <translation id="3527085408025491307">फोल्डर</translation>
 <translation id="3529024052484145543">सुरक्षित छैन</translation>
 <translation id="3530206579861815432">आफ्ना सिंक गरिएका डिभाइसमा खोलिएका र हालसालै बन्द गरिएका ट्याबहरू तुरुन्तै भेट्टाउनुहोस्।</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">बनाइएको मिति: <ph name="DATE" /></translation>
 <translation id="374357899112510277">"डाउनलोडहरू" लुकाइयोस्</translation>
 <translation id="3745190878148784130">"टेक्स्ट जुम गर्नुहोस्" लुकाइयोस्</translation>
+<translation id="375773422023477320">बुकमार्कहरू</translation>
 <translation id="3762232513783804601">तपाईंको iPad का लागि बनाइएको</translation>
 <translation id="3768725474733206671">अन्तिममा बन्द गरिएको ट्याब फेरि खोल्नुहोस्</translation>
 <translation id="3771033907050503522">इन्कग्निटो ट्याबहरू</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">ठेगानाहरू</translation>
 <translation id="3955822496205734389">तपाईंका पासवर्डहरू कमजोर छन्।</translation>
 <translation id="3959736869653157332">मेनु → नयाँ इन्कोग्निटो ट्याब</translation>
+<translation id="3962326069546168954">सेभ गर्नुहोस्</translation>
 <translation id="3967822245660637423">डाउनलोड पूर्ण भयो</translation>
 <translation id="3968505803272650567">रुचिहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3989635538409502728">साइन आउट गर्नुहोस्</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">सेटिङ तुरुन्तै परिमार्जन गरी एड्रेस बारका सुविधाहरू प्रयोग गर्ने सुविधाका सर्टकटहरू।</translation>
 <translation id="6710079714193676716">तपाईंको सङ्गठनले यो ब्राउजर व्यवस्थापन गर्छ। केही सुविधाहरू उपलब्ध नहुन सक्छन्। <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google एपहरू</translation>
+<translation id="6716730056313760676"><ph name="USER_EMAIL" /> को Drive मा सेभ गरियो।</translation>
 <translation id="672735642903863329">आफूले प्रयोग गर्ने सबै डिभाइसमा आफ्ना बुकमार्क, पासवर्डलगायतका थप कुरा प्राप्त गर्नुहोस्।</translation>
 <translation id="6730682669179532099">पासवर्डहरू निर्यात गर्न सकिएन</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">चाँडै नै, तपाईंले नयाँ ट्याब खोल्दा <ph name="CHANNEL_NAME" /> का समाचारहरू देखाइने छन्।</translation>
 <translation id="6797885426782475225">आवाज मार्फत खोजी</translation>
 <translation id="6800349425672670802">तपाईं ट्याब स्विचरमा गई आफ्ना सबै खुला ट्याबहरू हेर्न तथा प्रयोग गर्न सक्नुहुन्छ।</translation>
+<translation id="6805179248725678418">Google Drive मा सेभ गर्नुहोस्</translation>
 <translation id="6807889908376551050">सबै देखाउनुहोस्...</translation>
 <translation id="681368974849482173">वस्तु सिर्जना गरियो</translation>
 <translation id="6822587385560699678">यो सेटिङ अन हुँदा पासवर्डहरू <ph name="ACCOUNT" /> मा सेभ गरिन्छन्। यो सेटिङ अफ हुँदा पासवर्डहरू यो डिभाइसमा मात्र सेभ गरिन्छन्।</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">डाउनलोड गर्दै… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">लुकाउनुहोस्</translation>
 <translation id="7108762695052995889">साइटमा जानुहोस्</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">पूरा नाम</translation>
 <translation id="7136892417564438900">क्यामेरा उपलब्ध छैन</translation>
 <translation id="7141960840225504692">तपाईंका ट्याबहरू बन्द गरिने छन् र ब्राउजिङ डेटा मेटाइने छ</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">डाउनलोड गर्न सकिएन</translation>
 <translation id="7859704718976024901">ब्राउजिङ इतिहास</translation>
 <translation id="7866501058614003444">यो प्याकेज अनट्र्याक गरिएको छ।</translation>
+<translation id="7866872729285243843">आफ्ना सबै डिभाइसमा रिडिङ लिस्ट प्राप्त गर्न सेटिङमा गई "रिडिङ लिस्ट" अन गर्नुहोस्।</translation>
 <translation id="7866993391592926595">तपाईंले यो कार्ड लुकाउनुभयो भने प्याकेज ट्र्याकिङ अफ हुने छ र तपाईंको सबै डेटा हटाइने छ</translation>
 <translation id="7870750252270996949">तपाईंले कपी गरेको लेन्स इमेज</translation>
 <translation id="7879275349003161544">डाउनलोड गरिएका सामग्री देखाइयोस्</translation>

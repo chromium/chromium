@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">此操作会删除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
 <translation id="5100237604440890931">已收起 - 点击此处即可展开。</translation>
 <translation id="5123685120097942451">无痕式标签页</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{您打开的标签页中有降价}other{您打开的标签页中有降价}}</translation>
 <translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
 <translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
 <translation id="5216942107514965959">上次访问时间：今天</translation>

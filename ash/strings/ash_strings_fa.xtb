@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">‏روشن/خاموش کردن Wi-Fi. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">‏نمی‌توان به سیستم Chromebook وارد شد</translation>
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
+<translation id="2368828502825385061">مکان‌یابی</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2382875860893882175">پخش محتوا موقتاً متوقف شده است. هرزمان بخواهید می‌توانید پخش محتوا را ازسر بگیرید یا متوقف کنید.</translation>
 <translation id="2386292613071805067">انتخاب همه‌چیز در صفحه</translation>
@@ -654,7 +655,7 @@
 <translation id="3659667652322717492">بعداً می‌توانید رفتار میکروفون را تغییر دهید.</translation>
 <translation id="3659814201068740063">حدود <ph name="TIME_LEFT" /> باقی مانده است (<ph name="PERCENTAGE" />٪).
 دستگاهتان را به برق وصل کنید.</translation>
-<translation id="3660860940251915011">روشن/خاموش کردن سطح بالای نمایان بودن <ph name="FEATURE_NAME" /></translation>
+<translation id="3660860940251915011">روشن/خاموش کردن سطح بالای رؤیت‌پذیری <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> کاربر مدیریت‌شده</translation>
 <translation id="3666266999138159418">برای پنهان کردن پنجره شناور، تند بکشید</translation>
 <translation id="367531336287639526">انتخاب اولین نماد در سمت راست نوار نشانی</translation>
@@ -1135,7 +1136,7 @@
 <translation id="5551456515017410630">باز کردن/ بستن تقویم</translation>
 <translation id="5551974246223970793">رفتن به مورد منطبق بعدی در جستجو هنگام جستجوی صفحه</translation>
 <translation id="5555639311269196631">خاموش کردن نقطه اتصال</translation>
-<translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای نمایان بودن</translation>
+<translation id="5558091555391176027">روشن/خاموش کردن «هم‌رسانی با اطراف» با میزان بالای رؤیت‌پذیری</translation>
 <translation id="556042886152191864">دکمه</translation>
 <translation id="5570122939431135380">باز کردن برگه جدید در پنجره ناشناس جدید</translation>
 <translation id="5571066253365925590">بلوتوث فعال شد</translation>

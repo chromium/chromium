@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Petua Chromium</translation>
 <translation id="2168108852149185974">Beberapa alat tambah menyebabkan Chromium ranap. Sila nyahpasang:</translation>
 <translation id="2178608107313874732">Chromium tidak dapat menggunakan kamera anda sekarang</translation>
+<translation id="219374086636266276">Anda boleh <ph name="BEGIN_LINK" />mengurus data Chromium yang disimpan<ph name="END_LINK" /> dalam Google Account anda.
+Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chromium anda, akses <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Adakah anda mahu Chromium menawarkan halaman <ph name="LANGUAGE_NAME" /> dari tapak ini diterjemahkan pada masa akan datang?</translation>
 <translation id="2218146227246548550">Organisasi anda menghendaki anda log masuk untuk menggunakan Chromium. <ph name="BEGIN_LINK" />Ketahui Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Alamat ini disimpan pada Chromium. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Hal ini mungkin termasuk sejarah dan autolengkap.}other{Perkara ini berlaku apabila Chromium tidak digunakan selama {THRESHOLD} minit. Hal ini mungkin termasuk sejarah dan autolengkap.}}</translation>
 <translation id="3472200483164753384">Tidak disokong pada Chromium Canary</translation>
 <translation id="3478750326643748149">Sembunyikan “Manfaatkan Chromium sepenuhnya”</translation>
+<translation id="347967311580159871">Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan pengalaman Chromium anda, akses <ph name="BEGIN_LINK" />Perkhidmatan Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Kata laluan anda tidak dikongsi. Semak sambungan Internet anda dan pastikan anda dilog masuk ke Chromium. Kemudian cuba lagi.</translation>
 <translation id="3554027294407525061">Kosongkan Data Semakan Imbas dalam Chromium.</translation>
 <translation id="3567399274263440288">Untuk memanfaatkan Chromium sepenuhnya, log masuk ke Chromium dengan Google Account anda.</translation>

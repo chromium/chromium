@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">選取「新增至 Google 日曆」或「新增至 Apple 日曆」。</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> 個重複使用的密碼</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
+<translation id="1641316430523156212">追蹤</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="165008673352427892">新功能</translation>
 <translation id="1650222530560417226">輕按 [開始記錄] 按鈕即可收集之後的 JavaScript 控制台記錄和所有分頁錯誤。系統會持續收集記錄 (且僅會儲存於記憶體中)，直到網頁關閉或使用者輕按 [停止記錄] 為止。</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">要開啟價格變更提示嗎？</translation>
 <translation id="2139867232736819575">搜尋您複製的文字</translation>
 <translation id="214201757571129614">登入…</translation>
+<translation id="2145004670974387485">選取要用來儲存 <ph name="FILENAME" /> 的帳戶</translation>
 <translation id="2148716181193084225">今天</translation>
 <translation id="2149973817440762519">編輯書籤</translation>
 <translation id="2175927920773552910">二維條碼</translation>
@@ -312,6 +314,7 @@
 <translation id="2664621323652615289">停止</translation>
 <translation id="2666092431469916601">返回頁首</translation>
 <translation id="2669454659051515572">此裝置的所有使用者都能看到已下載的檔案</translation>
+<translation id="2681158575552244226">正在儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
 <translation id="2690858294534178585">正在使用相機</translation>
 <translation id="2691653761409724435">無法離線查看</translation>
 <translation id="2695507686909505111">已翻譯網頁</translation>
@@ -478,6 +481,7 @@
 <translation id="3519193562722059437">開啟分頁以瀏覽網頁。</translation>
 <translation id="3519905498307021260">{count,plural, =1{開啟分頁}other{開啟 {count} 個分頁}}</translation>
 <translation id="3523789730715594198">你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
+<translation id="3526783603136816353">選取要用來儲存 <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) 的帳戶</translation>
 <translation id="3527085408025491307">資料夾</translation>
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3530206579861815432">快速尋找所有已同步裝置上目前開啟和最近關閉的分頁</translation>
@@ -515,6 +519,7 @@
 <translation id="3738428049780661523">於 <ph name="DATE" />建立</translation>
 <translation id="374357899112510277">隱藏「下載檔案」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
+<translation id="375773422023477320">書籤</translation>
 <translation id="3762232513783804601">專為 iPad 而設</translation>
 <translation id="3768725474733206671">重新開啟最近關閉的分頁</translation>
 <translation id="3771033907050503522">無痕式分頁</translation>
@@ -553,6 +558,7 @@
 <translation id="3929457972718048006">地址</translation>
 <translation id="3955822496205734389">你有安全度低的密碼。</translation>
 <translation id="3959736869653157332">「選單」→「新無痕式分頁」</translation>
+<translation id="3962326069546168954">儲存</translation>
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3968505803272650567">管理興趣</translation>
 <translation id="3989635538409502728">登出</translation>
@@ -1086,6 +1092,7 @@
 <translation id="6685259053455152195">運用捷徑快速修改設定及使用網址列的功能。</translation>
 <translation id="6710079714193676716">由您的機構管理。部分功能可能無法使用。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google 應用程式</translation>
+<translation id="6716730056313760676">已儲存至 <ph name="USER_EMAIL" /> 的「雲端硬碟」。</translation>
 <translation id="672735642903863329">在任何裝置上存取書籤、密碼及其他設定。</translation>
 <translation id="6730682669179532099">無法匯出密碼</translation>
 <translation id="6732087373923685049">攝錄機</translation>
@@ -1104,6 +1111,7 @@
 <translation id="6790502149545262384">不久後，您將會在開啟新分頁時看到 <ph name="CHANNEL_NAME" /> 的內容。</translation>
 <translation id="6797885426782475225">語音搜尋</translation>
 <translation id="6800349425672670802">你可以用分頁切換工具存取所有開咗嘅分頁。</translation>
+<translation id="6805179248725678418">儲存在「Google 雲端硬碟」中</translation>
 <translation id="6807889908376551050">全部顯示…</translation>
 <translation id="681368974849482173">已建立項目</translation>
 <translation id="6822587385560699678">開啟時，密碼將會儲存在 <ph name="ACCOUNT" /> 中。關閉後，密碼只會儲存在此裝置上。</translation>
@@ -1159,6 +1167,7 @@
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108762695052995889">瀏覽網站</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">全名</translation>
 <translation id="7136892417564438900">無法使用相機</translation>
 <translation id="7141960840225504692">系統將關閉分頁並刪除瀏覽資料</translation>
@@ -1286,6 +1295,7 @@
 <translation id="7856733331829174190">無法下載</translation>
 <translation id="7859704718976024901">瀏覽記錄</translation>
 <translation id="7866501058614003444">已成功取消追蹤此包裹。</translation>
+<translation id="7866872729285243843">如要將閱讀清單同步到所有裝置，請在設定中開啟「閱讀清單」。</translation>
 <translation id="7866993391592926595">隱藏此資訊卡後，系統將關閉包裹追蹤功能，並移除你的所有資料</translation>
 <translation id="7870750252270996949">透過「智能鏡頭」複製的圖片</translation>
 <translation id="7879275349003161544">顯示下載內容</translation>

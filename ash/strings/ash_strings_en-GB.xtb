@@ -328,6 +328,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2361210043495191221">Toggle Wi-Fi <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Can't sign in to your Chromebook</translation>
 <translation id="2367972762794486313">Show apps</translation>
+<translation id="2368828502825385061">Locate</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2382875860893882175">Casting is currently paused. You can resume casting or stop casting at any time.</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
@@ -846,7 +847,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4406883609789734330">Live Caption</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> is off.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
-<translation id="4430019312045809116">volume</translation>
+<translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">Apps are sorted by name</translation>
 <translation id="4445159312344259901">Sign in to unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 important notification}other{# important notifications}}</translation>

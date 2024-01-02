@@ -2721,6 +2721,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3043581297103810752">De <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Este sitio descargou varios ficheiros automaticamente</translation>
 <translation id="3046178388369461825">Queda pouquísimo espazo no disco de Linux</translation>
+<translation id="304644035656848980">Vista previa do teu micrófono</translation>
 <translation id="3046910703532196514">Páxina web, completa</translation>
 <translation id="304747341537320566">Motores de fala</translation>
 <translation id="3048336643003835855">Dispositivos HID do provedor <ph name="VENDOR_ID" /></translation>
@@ -4987,6 +4988,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4862642413395066333">Sinatura de respostas de OCSP</translation>
 <translation id="4863702650881330715">Ampliar compatibilidade</translation>
 <translation id="4863769717153320198">A resolución parece de <ph name="WIDTH" /> x <ph name="HEIGHT" /> (predeterminada)</translation>
+<translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4864805589453749318">Indica se será o teu pai ou a túa nai quen che dará permiso para engadir unha conta de centro educativo.</translation>
 <translation id="486505726797718946">Memoria aforrada</translation>
 <translation id="486635084936119914">Abre determinados tipos de ficheiro automaticamente despois da descarga</translation>
@@ -6837,7 +6839,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6350821834561350243">Describe claramente o problema e os pasos para reproducilo (se é posible)</translation>
 <translation id="6351178441572658285">Idiomas das aplicacións</translation>
 <translation id="6354918092619878358">SECG Elliptic Curve secp256r1 (tamén se denomina ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Obtendo información da Conta de Google...</translation>
 <translation id="635609604405270300">Non apagues o dispositivo</translation>
 <translation id="63566973648609420">Só alguén co teu contrasinal pode ler os teus datos encriptados. O contrasinal non se envía nin se almacena en Google. Se esqueciches o contrasinal ou queres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer a sincronización<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Desprázate cara arriba para mover a páxina cara abaixo</translation>
@@ -10597,7 +10598,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Xeral</translation>
-<translation id="987475089238841621">Os paquetes de idiomas úsanse para Subtítulos instantáneos e almacénanse no teu dispositivo</translation>
+<translation id="987475089238841621">Os paquetes de idiomas úsanse para a función Subtítulos instantáneos e almacénanse no teu dispositivo</translation>
 <translation id="988320949174893488">Pestanexo ocasional</translation>
 <translation id="988978206646512040">A frase de acceso non pode estar baleira</translation>
 <translation id="992032470292211616">As extensións, as aplicacións e os temas poden danar o teu dispositivo. Seguro que queres continuar?</translation>

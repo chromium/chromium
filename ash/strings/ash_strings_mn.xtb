@@ -328,6 +328,7 @@
 <translation id="2361210043495191221">Wi-Fi-г асаана уу/унтраана уу. <ph name="STATE" />.</translation>
 <translation id="2367186422933365202">Таны Chromebook-д нэвтрэх боломжгүй</translation>
 <translation id="2367972762794486313">Аппликейшнүүдийг харуулах</translation>
+<translation id="2368828502825385061">Байршил тогтоох</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
 <translation id="2382875860893882175">Дамжуулалтыг одоогоор түр зогсоосон. Та дамжуулалтыг хүссэн үедээ үргэлжлүүлэх эсвэл зогсоох боломжтой.</translation>
 <translation id="2386292613071805067">Хуудсан дээрх бүх зүйлийг сонгох</translation>
@@ -930,7 +931,7 @@
 <translation id="4759238208242260848">Таталтууд:</translation>
 <translation id="4762160261012420470"><ph name="LAUNCHER_KEY_NAME" /> + дээш сум</translation>
 <translation id="4762573482154983647">Аппуудыг нуух</translation>
-<translation id="4762802395013012237">5 футыг метрээр</translation>
+<translation id="4762802395013012237">5 футийг метрээр</translation>
 <translation id="4763885921995354846">Энэ нь камерын зөвшөөрөлтэй бүх апп болон вебсайтын камерын хандалтыг зөвшөөрнө. Та веб хуудсыг сэргээх эсвэл аппыг дахин эхлүүлэх шаардлагатай байж магадгүй.</translation>
 <translation id="4774338217796918551">Маргааш <ph name="COME_BACK_TIME" />-д буцаж ирнэ үү.</translation>
 <translation id="4776584068981882959">Таны нууц үгийг дахиад л баталгаажуулж чадсангүй. Дахин оролдоно уу.</translation>
@@ -1911,7 +1912,7 @@
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>
 <translation id="8759408218731716181">Олон хэрэглэгчтэй нэвтрэх эрхийг суулгаж чадахгүй байна</translation>
 <translation id="8763883995157866248">Төхөөрөмжийг амраах горимд оруулах</translation>
-<translation id="877404052021108314">90°F C-р</translation>
+<translation id="877404052021108314">90°F цельсээр</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Суулгасан апп, Блоклосон</translation>
 <translation id="8785070478575117577"><ph name="NETWORK_NAME" />-д холбогдох</translation>
 <translation id="8788027118671217603"><ph name="STATE_TEXT" />. <ph name="ENTERPRISE_TEXT" /></translation>

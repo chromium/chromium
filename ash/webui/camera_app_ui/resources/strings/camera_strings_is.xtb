@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Hliðra til hægri</translation>
 <translation id="3081586908890909590">Skipta yfir í upptöku myndskeiðs</translation>
 <translation id="313467653172006084">30 rammar á sekúndu</translation>
+<translation id="3158534262962737808">Tengjast „<ph name="WIFINAME" />“</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3240426699337459095">Tengill afritaður</translation>
 <translation id="3354465018370944241">Myndastillingar</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Myndhlutfall myndar</translation>
 <translation id="5057360777601936059">Ekki er hægt að nota myndavélina eins og er.
         Athugaðu hvort myndavélin er rétt tengd.</translation>
+<translation id="5157591164390831335">Vefslóð greindist.</translation>
 <translation id="5163387177077603948">Færist til hægri</translation>
 <translation id="5235304959032763950">16 á móti 9</translation>
 <translation id="5266635337630551423">Efra, vinstra horn skjals</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Takk fyrir að senda ábendingu um myndavélaforritið.
 
 Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við sýnishorn af mynd eða myndskeiði og lýsa því sem er að. (Til dæmis: myndin er of dökk eða myndefnið er ekki í fókus.)</translation>
+<translation id="6519884562954018934">Tengjast <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6617916774429601017">Sýna allar upplausnir</translation>
 <translation id="6631515515009660915">Slökkt á speglun</translation>
@@ -158,6 +161,7 @@ Ef ábendingin þín snýr að gæðum mynda eða myndskeiða máttu hengja við
 <translation id="8711011893539266636">Kveikja/slökkva á hljóðnema. Kveikt er á þöggun</translation>
 <translation id="8730621377337864115">Lokið</translation>
 <translation id="8732462232047530626">Forskoða lýsigögn</translation>
+<translation id="874854738381978209">WiFi-net greindist.</translation>
 <translation id="8815966864175525708">Skipta yfir í töku andlitsmynda</translation>
 <translation id="8828441885228359828">Halda upptöku áfram</translation>
 <translation id="8870695351537079478">Ekki tókst að hefja upptöku</translation>

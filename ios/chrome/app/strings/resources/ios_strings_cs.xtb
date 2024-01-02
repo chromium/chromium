@@ -314,6 +314,7 @@ Weby pomocí souborů cookie nemohou sledovat vaši aktivitu prohlížení mezi 
 <translation id="2664621323652615289">Ukončit</translation>
 <translation id="2666092431469916601">Nahoru</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
+<translation id="2681158575552244226">ukládání na Disk pro uživatele <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">Kamera je používána</translation>
 <translation id="2691653761409724435">Není k dispozici offline</translation>
 <translation id="2695507686909505111">Stránka byla přeložena</translation>
@@ -1091,6 +1092,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="6685259053455152195">Zkratky k rychlé úpravě nastavení a používání funkcí z adresního řádku.</translation>
 <translation id="6710079714193676716">Spravováno vaší organizací. Některé funkce mohou být nedostupné. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Aplikace od Googlu</translation>
+<translation id="6716730056313760676">uloženo na Disk pro uživatele <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Synchronizujte své záložky hesla a další obsah do všech svých zařízení.</translation>
 <translation id="6730682669179532099">Hesla se nepodařilo exportovat</translation>
 <translation id="6732087373923685049">fotoaparát</translation>
@@ -1165,6 +1167,7 @@ V anonymním režimu weby nemohou používat soubory cookie ke sledování vaš
 <translation id="7102005569666697658">Stahování… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Skrýt</translation>
 <translation id="7108762695052995889">Navštívit web</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Celé jméno</translation>
 <translation id="7136892417564438900">Kamera je nedostupná</translation>
 <translation id="7141960840225504692">Vaše karty se zavřou a vymažou se údaje o prohlížení</translation>

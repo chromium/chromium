@@ -203,6 +203,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4148957013307229264">Wrthi’n gosod...</translation>
 <translation id="4149882025268051530">Methodd y gosodwr ag anghywasgu archif. Lawrlwythwch Google Chrome eto.</translation>
 <translation id="4153934450158521343">Bydd Chrome yn cau ac yn dileu data yn fuan</translation>
+<translation id="4173512894976930765">Mae'n debyg y bydd gwefannau yn gweithio yn ôl y disgwyl. Byddwch yn cael eich allgofnodi o'r rhan fwyaf o wefannau pan fyddwch yn cau holl ffenestri Chrome, ac eithrio eich Cyfrif Google os ydych wedi mewngofnodi i Chrome.</translation>
 <translation id="4175922240926474352">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd nad yw'r wefan yn defnyddio cysylltiad diogel ac mae'n bosib bod y ffeil wedi'i hymyrryd â hi</translation>
 <translation id="4191857738314598978">{0,plural, =1{Ail-lansiwch Chrome o fewn diwrnod}zero{Ail-lansiwch Chrome o fewn # diwrnod}two{Ail-lansiwch Chrome o fewn # ddiwrnod}few{Ail-lansiwch Chrome o fewn # diwrnod}many{Ail-lansiwch Chrome o fewn # diwrnod}other{Ail-lansiwch Chrome o fewn # diwrnod}}</translation>
 <translation id="4205939740494406371">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>

@@ -312,6 +312,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2664621323652615289">Arrêter</translation>
 <translation id="2666092431469916601">Haut</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
+<translation id="2681158575552244226">enregistrement dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">La caméra est en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors ligne</translation>
 <translation id="2695507686909505111">Page traduite</translation>
@@ -1086,6 +1087,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="6685259053455152195">Des raccourcis pour modifier rapidement les paramètres et pour utiliser les fonctionnalités de la barre d'adresse.</translation>
 <translation id="6710079714193676716">Géré par votre organisation. Certaines fonctionnalités peuvent ne pas être accessibles. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">enregistré dans Disque pour <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Accédez à vos favoris, à vos mots de passe et à plus encore sur tous vos appareils.</translation>
 <translation id="6730682669179532099">Impossible d'exporter les mots de passe</translation>
 <translation id="6732087373923685049">Appareil photo</translation>
@@ -1159,6 +1161,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7102005569666697658">Téléchargement en cours… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108762695052995889">Visiter le site</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nom et prénom</translation>
 <translation id="7136892417564438900">La caméra est indisponible</translation>
 <translation id="7141960840225504692">Vos onglets seront fermés, et les données de navigation seront supprimées</translation>

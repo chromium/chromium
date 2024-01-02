@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Страницата е посетена</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Няма}=1{От 1 сайт (ще останете в профила си в Google)}other{От # сайта (ще останете в профила си в Google)}}</translation>
 <translation id="1165852471352757509">Телевизионни документални и научно-популярни предавания</translation>
+<translation id="1167877250265821930">Изтеглянето на <ph name="LANGUAGE" /> не бе успешно</translation>
 <translation id="1174644974616730562">Плик, китайски №1</translation>
 <translation id="1174723505405632867">Искате ли да разрешите на <ph name="EMBEDDED_URL" /> да използва „бисквитки“ и данни за сайтове на <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF файлът е създаден със:</translation>
 <translation id="2130448033692577677">Прилагането на посочените от вас шаблони не е възможно, тъй като правилото DnsOverHttpsMode не е зададено.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131200882015008178">Езиковият пакет за <ph name="LANGUAGE" /> се изтегля... <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Мъжко облекло</translation>
 <translation id="2137891579555018930">Чака се разрешение...</translation>
 <translation id="213826338245044447">Мобилни отметки</translation>
@@ -3989,6 +3991,7 @@
 <translation id="8877780815363510165">Риболов</translation>
 <translation id="8884537526797090108">Не е възможно записване на поверително съдържание</translation>
 <translation id="8888187300091017436">Матраци</translation>
+<translation id="8890048757975398817">контролира устройството <ph name="READERNAME" /> и да получи достъп до свързаната с него смарткарта.</translation>
 <translation id="8891727572606052622">Невалиден режим на прокси сървъра.</translation>
 <translation id="8894794286471754040">Дългата страна напред</translation>
 <translation id="8897428486789851669">Плуване</translation>

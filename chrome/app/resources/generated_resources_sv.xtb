@@ -2737,6 +2737,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3043581297103810752">Från <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Den här webbplatsen laddade ned flera filer automatiskt</translation>
 <translation id="3046178388369461825">Mycket ont om utrymme på Linux-disken</translation>
+<translation id="304644035656848980">Förhandsgranskning av mikrofonen</translation>
 <translation id="3046910703532196514">Webbsida, komplett</translation>
 <translation id="304747341537320566">Talmotorer</translation>
 <translation id="3048336643003835855">HID-enheter från leverantören <ph name="VENDOR_ID" /></translation>
@@ -3463,6 +3464,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3659929705630080526">Du har angett fel åtkomstkod för många gånger. Försök igen senare</translation>
 <translation id="3660234220361471169">Opålitliga</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 befintligt lösenord hittades}other{{NUM_PASSWORDS} befintliga lösenord hittades}}</translation>
+<translation id="3662207097851752847">Bekräfta ditt Google-konto på telefonen</translation>
 <translation id="3664511988987167893">Tilläggsikon</translation>
 <translation id="3665100783276035932">De flesta webbplatser bör fungera som förväntat</translation>
 <translation id="3665301845536101715">Öppna i sidopanelen</translation>
@@ -5001,6 +5003,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4862642413395066333">Signera OCSP-svar</translation>
 <translation id="4863702650881330715">Utöka kompatibiliteten</translation>
 <translation id="4863769717153320198">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (standard)</translation>
+<translation id="4864369630010738180">Loggar in ...</translation>
 <translation id="4864805589453749318">Välj den förälder som ger sitt tillstånd att lägga till ett skolkonto.</translation>
 <translation id="486505726797718946">Minnet har sparats</translation>
 <translation id="486635084936119914">Öppna vissa filtyper automatiskt efter att de har laddats ned</translation>
@@ -6854,7 +6857,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6350821834561350243">Ange en tydlig beskrivning av problemet och åtgärder för att återskapa det (om möjligt)</translation>
 <translation id="6351178441572658285">Appspråk</translation>
 <translation id="6354918092619878358">SECG med elliptisk kurva secp256r1 (kallas även ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Hämtar information om Google-kontot …</translation>
 <translation id="635609604405270300">Stäng inte av enheten</translation>
 <translation id="63566973648609420">Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenordet skickas inte till och sparas inte av Google. Om du glömmer lösenordet måste du <ph name="BEGIN_LINK" />återställa synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Svep uppåt för att flytta sidan nedåt</translation>
@@ -8186,6 +8188,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7416263748877373774">Användarvillkoren gick inte att läsa in. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="7416362041876611053">Okänt nätverksfel.</translation>
 <translation id="741906494724992817">Appen kräver inga särskilda behörigheter.</translation>
+<translation id="7419142833919893307">Inget användarnamn har lagts till</translation>
 <translation id="7419565702166471774">Använd alltid en säker anslutning</translation>
 <translation id="742130257665691897">Bokmärkena har tagits bort</translation>
 <translation id="7421925624202799674">Visa &amp;sidkälla</translation>
@@ -8496,6 +8499,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7659154729610375585">Vill du stänga inkognitoläget ändå?</translation>
 <translation id="7659336857671800422">Ta del av integritetsguiden</translation>
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
+<translation id="7660116474961254898">Följ anvisningarna på telefonen</translation>
 <translation id="7660146600670077843">Högerklicka på en flik och välj Lägg till fliken i en ny grupp</translation>
 <translation id="7661259717474717992">Tillåt att webbplatser sparar och läser data i cookies</translation>
 <translation id="7661451191293163002">Ett registreringscertifikat gick inte att erhålla.</translation>

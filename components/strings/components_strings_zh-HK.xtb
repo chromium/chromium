@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">瀏覽網頁</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{無}=1{來自 1 個網站 (Google 帳戶會保持登入狀態)}other{來自 # 個網站 (Google 帳戶會保持登入狀態)}}</translation>
 <translation id="1165852471352757509">電視紀錄片和紀實</translation>
+<translation id="1167877250265821930">無法下載<ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Chinese #1 信封</translation>
 <translation id="1174723505405632867">您要允許 <ph name="EMBEDDED_URL" /> 使用 <ph name="TOP_LEVEL_URL" /> 上的 Cookie 和網站資料嗎？
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF 製作工具：</translation>
 <translation id="2130448033692577677">您並未設定 DnsOverHttpsMode 政策，因此系統無法套用您指定的範本。</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">正在下載<ph name="LANGUAGE" />語言套件…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">男裝</translation>
 <translation id="2137891579555018930">正在等待許可…</translation>
 <translation id="213826338245044447">流動版書籤</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">光碟</translation>
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2239100178324503013">立即傳送</translation>
+<translation id="2239114457614475014">編輯輸入內容</translation>
 <translation id="2241693394036365668">已下載檔案</translation>
 <translation id="2246264294482514010">10 x 12 吋</translation>
 <translation id="2246480341630108201">家長尚未核准</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">臉部和身體護理</translation>
 <translation id="2962073860865348475">12 x 18 吋</translation>
 <translation id="2968103128155246731">貨車和小貨車</translation>
+<translation id="2971483124699139256">㩒一下鍾意就可以為生成嘅文字俾正評。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前揀咗<ph name="ROW_NAME" />。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌劇</translation>
@@ -1572,6 +1576,7 @@
 <translation id="4132448310531350254">應用程式「<ph name="POLICY_IDS_LIST" />」參照的 file_extension「<ph name="FILE_EXTENSION" />」被指派給多個處理常式。</translation>
 <translation id="4134123981501319574">建立文件</translation>
 <translation id="413544239732274901">瞭解詳情</translation>
+<translation id="4139859738677203214">㩒一下唔鍾意，系統會顯示意見表格。你可以喺表單度詳細講下點解唔鍾意生成嘅文字。</translation>
 <translation id="4140905530744469899">設定檔 ID：</translation>
 <translation id="4142935452406587478">紙匣 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3985,6 +3990,7 @@
 <translation id="8877780815363510165">釣魚</translation>
 <translation id="8884537526797090108">無法錄影機密內容</translation>
 <translation id="8888187300091017436">床褥</translation>
+<translation id="8890048757975398817">控制 <ph name="READERNAME" /> 並存取該裝置可存取的智能卡</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>
 <translation id="8897428486789851669">游泳</translation>

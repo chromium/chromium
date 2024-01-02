@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Astfel, se vor șterge toate datele și cookie-urile stocate de <ph name="ORIGIN" /> sau de aplicația asociată de pe ecranul de pornire.</translation>
 <translation id="5100237604440890931">Afișare restrânsă – dă clic pentru a extinde.</translation>
 <translation id="5123685120097942451">Filă incognito</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Scădere de preț în filele deschise}few{Scăderi de prețuri în filele deschise}other{Scăderi de prețuri în filele deschise}}</translation>
 <translation id="5186036860380548585">Opțiunea este disponibilă în partea de sus a ecranului</translation>
 <translation id="5197729504361054390">Persoanele de contact pe care le selectezi vor fi trimise site-ului <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>

@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Navštívenie stránky</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Žiadny}=1{Z 1 webu (vaše prihlásenie do účtu Google zostane aktívne)}few{Z # webov (vaše prihlásenie do účtu Google zostane aktívne)}many{From # sites (you'll stay signed in to your Google Account)}other{Z # webov (vaše prihlásenie do účtu Google zostane aktívne)}}</translation>
 <translation id="1165852471352757509">Dokumentárne a populárno-náučné programy televízne programy</translation>
+<translation id="1167877250265821930">Nepodarilo sa stiahnuť jazyk <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Čínska obálka č. 1</translation>
 <translation id="1174723505405632867">Chcete povoliť webu <ph name="EMBEDDED_URL" /> používať súbory cookie a údaje webu na <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2126374524350484896">Aplikácia, v ktorej bol tento súbor PDF vytvorený:</translation>
 <translation id="2130448033692577677">Špecifikované šablóny nemusia byť uplatnené, pretože nebolo nastavené pravidlo DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3×7</translation>
+<translation id="2131200882015008178">Sťahuje sa jazykový balíček <ph name="LANGUAGE" />…<ph name="PERCENT" /> %</translation>
 <translation id="2135799067377889518">Pánska móda</translation>
 <translation id="2137891579555018930">Čaká sa na povolenie…</translation>
 <translation id="213826338245044447">Mobilné záložky</translation>
@@ -655,6 +657,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2233745931693710080">Kompaktný disk</translation>
 <translation id="2235344399760031203">Súbory cookie tretích strán sú blokované</translation>
 <translation id="2239100178324503013">Odoslať</translation>
+<translation id="2239114457614475014">Upraviť vstup</translation>
 <translation id="2241693394036365668">Súbor je stiahnutý</translation>
 <translation id="2246264294482514010">10 × 12 palcov</translation>
 <translation id="2246480341630108201">Tvoj rodič zatiaľ nepovedal, že je to v poriadku</translation>
@@ -989,6 +992,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2959113999220720579">Starostlivosť o tvár a telo</translation>
 <translation id="2962073860865348475">12 × 18 palcov</translation>
 <translation id="2968103128155246731">Dodávkové a malé dodávkové automobily</translation>
+<translation id="2971483124699139256">Palec hore odošle spätnú väzbu, že sa vám páči vygenerovaný text.</translation>
 <translation id="2972581237482394796">&amp;Dopredu</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, aktuálne vybraté. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1569,6 +1573,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4132448310531350254">Duplicitné obslužné nástroje prípony súboru <ph name="FILE_EXTENSION" /> uvádzané aplikáciami <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Vytvoriť dokument</translation>
 <translation id="413544239732274901">Ďalšie informácie</translation>
+<translation id="4139859738677203214">Palec dole otvorí formulár na odoslanie podrobnej spätnej väzby, prečo sa vám vygenerovaný text nepáči.</translation>
 <translation id="4140905530744469899">Identifikátor profilu:</translation>
 <translation id="4142935452406587478">Priehradka č. 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3982,6 +3987,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8877780815363510165">Rybolov</translation>
 <translation id="8884537526797090108">Nie je možné nahrať dôverný obsah</translation>
 <translation id="8888187300091017436">Matrace</translation>
+<translation id="8890048757975398817">Ovládajte zariadenie <ph name="READERNAME" /> a získajte prístup k inteligentnej karte, ktorú má k dispozícii.</translation>
 <translation id="8891727572606052622">Neplatný režim proxy.</translation>
 <translation id="8894794286471754040">Dlhým okrajom</translation>
 <translation id="8897428486789851669">Plávanie</translation>

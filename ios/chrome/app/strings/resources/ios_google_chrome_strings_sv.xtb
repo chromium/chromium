@@ -88,6 +88,8 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3146109040683991651">Ange Chrome som standardwebbläsare</translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="3173834708294760622">Google Chrome-sida</translation>
+<translation id="3209155060213569278">Du kan <ph name="BEGIN_LINK" />styra vilken Chrome-data som sparas<ph name="END_LINK" /> i Google-kontot.
+Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="322254490661677575">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3340938510625667914">Chrome-åtgärder</translation>
@@ -161,6 +163,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="5527026824954593399">Tryck på Visa med Google Maps i Chrome.</translation>
 <translation id="5552137475244467770">Chrome kontrollerar regelbundet om dina lösenord finns med på listor som har publicerats online. Under kontrollen krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
+<translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Google Chrome och aktivera kameran.</translation>
 <translation id="5642200033778930880">Google Chrome kan inte använda kameran i delad vy</translation>
 <translation id="5661521615548540542">Google Lösenordshantering kunde inte kontrollera alla lösenord. Försök igen senare.</translation>

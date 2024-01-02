@@ -78,6 +78,7 @@ Para o <ph name="PRODUCT_OS_NAME" />, consulte <ph name="DEVICE_METRICS_REPORTIN
 
       Se essa política não for definida, o recurso não será permitido por padrão para usuários gerenciados, mas será permitido para outros usuários.</translation>
 <translation id="1035860095382451169">Ativar o ícone de bloqueio na omnibox para conexões seguras</translation>
+<translation id="1037426296070139784">Certificados TLS em que o <ph name="PRODUCT_NAME" /> não deve confiar para autenticação do servidor</translation>
 <translation id="1037470927044831850">Permitir que os sites peçam para o usuário compartilhar um stream de vídeo da tela</translation>
 <translation id="1038049732032297658">Ativar ou desativar o recurso de correção automática no teclado físico.
 
@@ -407,6 +408,7 @@ Se a política for definida como "Desativada" ou não for definida, as configura
 <translation id="1327466551276625742">Ativar prompt de configuração de rede quando estiver off-line</translation>
 <translation id="1330145147221172764">Ativar o teclado na tela</translation>
 <translation id="13356285923490863">Nome da política</translation>
+<translation id="1336073690474326987">Desativar totalmente o recurso</translation>
 <translation id="1338603603553894503">Especifica se o seletor de perfil será ativado, desativado ou forçado na inicialização do navegador.
 
       Por padrão, o seletor de perfil não é exibido quando o navegador é inicializado nos modos de navegação anônima ou visitante, quando um diretório e/ou URLs de perfil são especificados por linha de comando, quando a abertura de um app é explicitamente solicitada, quando o navegador é aberto por uma notificação nativa, quando há apenas um perfil disponível ou quando a política ForceBrowserSignin é definida como verdadeira.
@@ -946,6 +948,7 @@ Seja qual for o valor, o usuário vai poder decidir se quer ou não manter os da
 
 Esta política não vai ter efeito se a opção de manter os dados de navegação existentes não estiver disponível. Isso acontece quando a separação de perfil corporativo é aplicada de forma rigorosa ou quando os dados são de um perfil já gerenciado.
 </translation>
+<translation id="1795025936135166305">Permitir o uso de recursos para organização</translation>
 <translation id="1795105105645381965">
       Se a política for ativada (verdadeira), o <ph name="PRODUCT_NAME" /> vai pedir o consentimento de acesso aos usuários gerenciados antes de compartilhar indicadores em dispositivos não gerenciados.
 
@@ -2022,6 +2025,13 @@ Quando ela for definida como falsa, o recurso de conjuntos de sites relacionados
 <translation id="26023406105317310">Configurar contas do Kerberos</translation>
 <translation id="2603382859270873566">Ativar suporte para a API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configurar políticas relacionadas ao Compartilhamento de arquivos de rede.</translation>
+<translation id="2604211069017399189">Esta política permite controlar como os dados da organização são processados usando a opção de criação de temas com IA do <ph name="PRODUCT_NAME" />. Esta política terá precedência sobre qualquer outra política geral no futuro.
+
+Se a política for definida como "Permitida", o uso de recursos para organização será permitido.
+
+Se a política for definida como "Permitir sem coleta de dados", a coleta de dados corporativos para o treinamento do modelo será desativada. Essa configuração também desativa o compartilhamento de dados na caixa de diálogo "Feedback" e o envio de dados para avaliação humana. O Google não usa conteúdo de usuários corporativos (incluindo comandos, entradas, saídas e materiais de origem) para treinamento de modelos. Isso garante que o Google não usará dados de usuários corporativos para treinar ou melhorar os modelos de IA. O Google não salva o conteúdo de usuários corporativos, incluindo comandos, fontes, entradas ou saídas. Essas informações podem ser armazenadas por até 24 horas para contextualizar a situação. Isso garante que o Google não coletará nem armazenará dados inseridos ou gerados por um recurso de IA. Isso inclui entradas do usuário, saídas geradas e feedback do usuário.
+
+Se a política for definida como "Desativada", o recurso será totalmente desativado.</translation>
 <translation id="2608039968712973520">Pedir permissão ao usuário para executar o <ph name="FLASH_PLUGIN_NAME" /> desatualizado</translation>
 <translation id="2608535066974278204">Período (em minutos) que especifica a duração da janela de reinicialização.</translation>
 <translation id="2608887839902987727">Impedir que a autenticação do portal cativo ignore as configurações de proxy</translation>
@@ -2883,6 +2893,13 @@ No <ph name="MS_WIN_NAME" />, essa política só está disponível em instância
       Se ela for desativada, a segurança e a estabilidade do <ph name="PRODUCT_NAME" /> serão prejudicadas, porque ela vai enfraquecer o sandbox usado pelos processos do renderizador. Só desative a política se softwares de terceiros que precisam ser executados nos processos do renderizador apresentarem problemas de compatibilidade.
 
       Observação: leia mais sobre as políticas de mitigação de processos em https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
+<translation id="3338231005114367157">Esta política permite que você controle como os dados da sua organização são processados pelo organizador de guias do <ph name="PRODUCT_NAME" />. Esta política terá precedência sobre qualquer outra política geral no futuro.
+
+Se a política for definida como "Permitida", o uso de recursos para organização será permitido.
+
+Se a política for definida como "Permitir sem coleta de dados", a coleta de dados corporativos para o treinamento do modelo será desativada. Essa configuração também desativa o compartilhamento de dados na caixa de diálogo "Feedback" e o envio de dados para avaliação humana. O Google não usa conteúdo de usuários corporativos (incluindo comandos, entradas, saídas e materiais de origem) para treinamento de modelos. Isso garante que o Google não usará dados de usuários corporativos para treinar ou melhorar os modelos de IA. O Google não salva o conteúdo de usuários corporativos, incluindo comandos, fontes, entradas ou saídas. Essas informações podem ser armazenadas por até 24 horas para contextualizar a situação. Isso garante que o Google não coletará nem armazenará dados inseridos ou gerados por um recurso de IA. Isso inclui entradas do usuário, saídas geradas e feedback do usuário.
+
+Se a política for definida como "Desativada", o recurso será totalmente desativado.</translation>
 <translation id="3338431256935927407">Controla as configurações relacionadas ao recurso do Cloud Upload.</translation>
 <translation id="3339271789059866414">Configura a disponibilidade do serviço de proxy do sistema e as credenciais de proxy para os serviços do sistema.
       Se a política não for definida, o serviço de proxy do sistema não estará disponível.</translation>
@@ -3888,6 +3905,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="4136603825567209889">Ativar relatórios sobre informações de identificação do usuário</translation>
 <translation id="4138655880188755661">Limite de tempo</translation>
 <translation id="4140646780789794190">Desativar o compartilhamento de dados de diagnósticos com o PluginVm</translation>
+<translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Disponibilizar o Modo área de trabalho unificada para o usuário</translation>
 <translation id="4147818922357566987">Ativar variações relativas apenas a correções críticas</translation>
 <translation id="4150201353443180367">Exibição</translation>
@@ -4882,6 +4900,7 @@ da versão do ChromeOS ou do dispositivo) serão sempre exibidas ou ocultas na t
 
       Se a política for desativada ou deixada sem definição, um app da Web de quiosque só vai poder usar a janela principal do navegador e não poderá abrir uma nova. Chamadas de funções JavaScript para abrir uma nova janela vão ser ignoradas.</translation>
 <translation id="4980635395568992380">Tipo do dado:</translation>
+<translation id="4981523774025330439">Certificados TLS que não são confiáveis ou aqueles que não são confiáveis, mas podem ser usados na criação de caminhos para autenticação do servidor</translation>
 <translation id="4981831669478419057">O recurso da lista de compras não vai estar disponível para os usuários.</translation>
 <translation id="4983201894483989687">Permitir a execução de plug-ins que estão desatualizados</translation>
 <translation id="4986560318567565414">Caminho para mudar do navegador alternativo para o Chrome.</translation>
@@ -5182,6 +5201,7 @@ Se a política não for definida ou se a lista não tiver referências de imagem
 <translation id="5252995168844634755">Se a política for definida como verdadeira, a área de trabalho unificada será ativada e permitirá que aplicativos apareçam em várias telas. Os usuários poderão desativar essa configuração para usarem as telas individualmente.
 
       Se a política for definida como falsa ou não for definida, a área de trabalho unificada ficará desativada e os usuários não poderão ativá-la.</translation>
+<translation id="525500830356475308">Permitir o uso do recurso "Quero ajuda para escrever"</translation>
 <translation id="5255162913209987122">Pode ser recomendada</translation>
 <translation id="525543707238275321">Desativar relatórios de informações da CPU do dispositivo</translation>
 <translation id="5255790642269910630">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
@@ -6280,6 +6300,7 @@ Se a política não for definida, o valor padrão global será usado para todos 
 O sal precisa ser uma string que tenha entre 8 e 32 caracteres.
 
 Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> está definida. Se esta política não for definida, os identificadores nos URIs de modelo configurados pela política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> serão criptografados com hash sem um sal.</translation>
+<translation id="622197575020133151">Configurar os recursos que usam a IA generativa.</translation>
 <translation id="6224070048795197148">Permitir que o usuário use o navegador sem fazer login</translation>
 <translation id="6224304369267200483">Os URLs/domínios permitidos automaticamente direcionam a declaração da chave de segurança</translation>
 <translation id="6225938950222983458">Essa política foi descontinuada e parou de ter suporte. Use a <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
@@ -6923,6 +6944,7 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
 
       Se a política for deixada sem definição, o padrão será permitido tanto para usuários gerenciados por empresas quanto para os não gerenciados.</translation>
 <translation id="6640748114867542396">Não permitir que extensões gerenciadas usem a API Enterprise Hardware Platform</translation>
+<translation id="6641109870010271671">Certificados TLS que devem ser considerados confiáveis pelo <ph name="PRODUCT_NAME" /> para autenticação do servidor</translation>
 <translation id="6641981670621198190">Desativar o suporte a APIs para gráficos 3D</translation>
 <translation id="6646912445796087001">Ativa ou desativa vários recursos do teclado na tela. Esta política entra em vigor somente quando a VirtualKeyboardEnabled é ativada.
 
@@ -7635,6 +7657,10 @@ Desativar a política faz com que os usuários não possam ignorar o login autom
 <translation id="7167436895080860385">Permitir que os usuários exibam senhas no gerenciador de senhas (uso suspenso)</translation>
 <translation id="7172046613126456732">Permitir que o Chrome seja iniciado se não estiver registrado no Gerenciamento de nuvem do navegador Chrome</translation>
 <translation id="7173856672248996428">Perfil temporário</translation>
+<translation id="7174158612490351828">Uma lista de chaves públicas do certificado em relação ao qual o <ph name="PRODUCT_NAME" /> deve ficar em dúvida para autenticação do servidor TLS.
+
+O valor da política é uma lista de certificados X.509 codificados em base64. Os
+certificados com SPKI (SubjectPublicKeyInfo) correspondentes não serão considerados confiáveis.</translation>
 <translation id="717630378807352957">Permitir todas as impressoras do arquivo de configuração.</translation>
 <translation id="7177293255621000064">Definir a política como verdadeira torna todos os tipos de mídia de armazenamento externo (como pen drives, discos rígidos externos, cartões SD e outros cartões de memória, armazenamento óptico etc.) indisponíveis no navegador de arquivos. Definir a política como falsa ou deixá-la sem definição significa que os usuários podem usar o armazenamento externo no dispositivo.
 
@@ -7757,6 +7783,7 @@ Se esta política for desativada ou não for definida, as configurações de con
       Se a política for definida como falsa ou for deixada sem definição, o <ph name="PRODUCT_NAME" /> vai usar configurações on-line de verificação da revogação.
 
       No <ph name="MAC_OS_NAME" />, essa política não tem efeito quando a <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> é definida como falsa.</translation>
+<translation id="7278164481614262110">Criar temas com IA</translation>
 <translation id="7278854311116092134">Nomes dos hosts de mensagens nativas a serem mantidos fora da lista de bloqueio</translation>
 <translation id="7291084543582732020">Se você ativar esta configuração, os usuários terão permissão para usar o Smart Lock caso os requisitos para o recurso sejam satisfeitos.
 
@@ -8144,6 +8171,13 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
       Se ela for definida como falsa ou for deixada sem definição, os relatórios serão desativados.
       Em ambos os casos, as regras definidas com o nível de restrições ALLOW na DataLeakPreventionRulesList não criarão relatórios de eventos.</translation>
 <translation id="7648907905084499629">Use o comportamento <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para cookies em todos os sites</translation>
+<translation id="7650618519247719562">Esta política permite que você controle como os dados da sua organização são processados com o recurso "Quero ajuda para escrever" do <ph name="PRODUCT_NAME" />. Esta política terá precedência sobre qualquer outra política geral no futuro.
+
+Se a política for definida como "Permitida", o uso de recursos para organização será permitido.
+
+Se a política for definida como "Permitir sem coleta de dados", a coleta de dados corporativos para o treinamento do modelo será desativada. Essa configuração também desativa o compartilhamento de dados na caixa de diálogo "Feedback" e o envio de dados para avaliação humana. O Google não usa conteúdo de usuários corporativos (incluindo comandos, entradas, saídas e materiais de origem) para treinamento de modelos. Isso garante que o Google não usará dados de usuários corporativos para treinar ou melhorar os modelos de IA. O Google não salva o conteúdo de usuários corporativos, incluindo comandos, fontes, entradas ou saídas. Essas informações podem ser armazenadas por até 24 horas para contextualizar a situação. Isso garante que o Google não coletará nem armazenará dados inseridos ou gerados por um recurso de IA. Isso inclui entradas do usuário, saídas geradas e feedback do usuário.
+
+Se a política for definida como "Desativada", o recurso será totalmente desativado.</translation>
 <translation id="765347139142030086">Se a política for ativada, políticas associadas a uma conta do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> poderão ter precedência se entrarem em conflito com políticas do <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
       Apenas políticas originárias de usuários seguros podem ter precedência. Um usuário seguro é afiliado à organização que gerencia o navegador com o <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas as outras políticas do usuário terão precedência por padrão.
@@ -8195,6 +8229,7 @@ Caso a política seja deixada sem definição, é possível que o <ph name="PROD
 
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de desligamento da tela (se definido) e ao intervalo de inatividade.</translation>
 <translation id="7680437377926096177">Suprimir a caixa de diálogo para saída na última janela fechada.</translation>
+<translation id="7683729067082687012">Permitir sem coleta de dados</translation>
 <translation id="7683777542468165012">Atualização de política dinâmica</translation>
 <translation id="7687943045976362719">Se esta política for definida, os tipos de conteúdo especificados serão processados pelo <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -8647,6 +8682,7 @@ também é seguro.</translation>
 
       Esse comportamento não será acionado se a Navegação segura for desativada, seja por uma política ou pelo usuário. Para forçar o uso do Navegação segura, use a política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou a <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Desativar o <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> em todas as páginas da Web</translation>
+<translation id="8043616595863371483">Permitir o uso do organizador de guias</translation>
 <translation id="8044493735196713914">Informar modo de inicialização do dispositivo</translation>
 <translation id="80453040817068401">Disponibilizar o navegador <ph name="LACROS_NAME" /></translation>
 <translation id="804619600634661088">Permitir o uso da depuração remota</translation>
@@ -9048,6 +9084,8 @@ vai ser definida como padrão durante o login do usuário.</translation>
       As origens precisam corresponder a aplicativos da Web de instalação forçada usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (link em inglês).</translation>
 <translation id="8375817202037102567">Bloquear acesso de gravação de arquivos e diretórios nestes sites</translation>
 <translation id="8378266419596669629">Bloquear a permissão para fontes locais nesses sites</translation>
+<translation id="8379281645427937253">Uma lista de certificados TLS em que o <ph name="PRODUCT_NAME" /> confia para autenticação do servidor.
+Os certificados precisam ser codificados em Base64.</translation>
 <translation id="8379317372795444261">A autenticação <ph name="BASIC_AUTH" /> é permitida em conexões HTTP</translation>
 <translation id="8381678031726288574">Aplicar as configurações padrão para descontinuação da API U2F.</translation>
 <translation id="8381774264911275515">Desativar a transferência de cookies do SSO SAML na sessão do usuário durante o login</translation>
@@ -9897,6 +9935,8 @@ Observação: a reinicialização do dispositivo limpa o cache. Até os dados te
 
 Se a política não for definida, a <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> será aplicada, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="9110251436602897914">Relatar informações sobre periféricos que estão conectados ao dispositivo</translation>
+<translation id="9110485853581788150">Uma lista de certificados que não são confiáveis ou aqueles que não são confiáveis no <ph name="PRODUCT_NAME" />,
+mas que podem ser usados como dicas para criar caminhos. Os certificados precisam ser codificados em Base64.</translation>
 <translation id="9111850884577810507">Este campo precisa corresponder a uma das strings que representam uma impressora compatível com <ph name="PRODUCT_NAME" />. A string será usada para identificar e instalar o PPD apropriado para a impressora. Mais informações estão disponíveis em https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">Arquivo de configuração de impressora corporativa</translation>
 <translation id="9113058104383612727">Ativar as ferramentas de solução de problemas em quiosques</translation>

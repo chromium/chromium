@@ -143,7 +143,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7359298090707901886">Den valgte browser kan ikke bruges til at åbne webadresser på den lokale maskine.</translation>
 <translation id="7401733114166276557">Chrome Fjernskrivebord</translation>
 <translation id="7434397035092923453">Adgang nægtet for klient: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="7444276978508498879">Tilsluttet klient: <ph name="CLIENT_USERNAME" /> .</translation>
+<translation id="7444276978508498879">Forbundet klient: <ph name="CLIENT_USERNAME" /> .</translation>
 <translation id="7526139040829362392">Skift konto</translation>
 <translation id="7535110896613603182">Åbn indstillinger for standardapps</translation>
 <translation id="7628469622942688817">Husk min pinkode på denne enhed.</translation>

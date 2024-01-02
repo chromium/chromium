@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Odwiedzono stronę</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Brak}=1{Z 1 witryny (nie nastąpi wylogowanie z konta Google)}few{Z # witryn (nie nastąpi wylogowanie z konta Google)}many{Z # witryn (nie nastąpi wylogowanie z konta Google)}other{Z # witryny (nie nastąpi wylogowanie z konta Google)}}</translation>
 <translation id="1165852471352757509">Telewizyjne programy dokumentalne</translation>
+<translation id="1167877250265821930">Nie udało się pobrać: <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Koperta chińska nr 1</translation>
 <translation id="1174723505405632867">Czy chcesz zezwolić stronie <ph name="EMBEDDED_URL" /> na używanie plików cookie i danych witryn ze strony <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2126374524350484896">Źródło pliku PDF:</translation>
 <translation id="2130448033692577677">Nie można zastosować wybranych szablonów, bo nie została skonfigurowana zasada DnsOverHttpsMode.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Pobieram pakiet językowy dla języka <ph name="LANGUAGE" />… <ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Odzież męska</translation>
 <translation id="2137891579555018930">Czekam na uzyskanie pozwolenia…</translation>
 <translation id="213826338245044447">Zakładki na komórce</translation>
@@ -3989,6 +3991,7 @@ Dodatkowe informacje:
 <translation id="8877780815363510165">Wędkarstwo</translation>
 <translation id="8884537526797090108">Nie można nagrywać treści poufnych</translation>
 <translation id="8888187300091017436">Materace</translation>
+<translation id="8890048757975398817">Sterować urządzeniem <ph name="READERNAME" /> i uzyskiwać dostęp do używanej przez nie karty inteligentnej</translation>
 <translation id="8891727572606052622">Nieprawidłowy tryb proxy</translation>
 <translation id="8894794286471754040">Najpierw dłuższa krawędź</translation>
 <translation id="8897428486789851669">Pływanie</translation>

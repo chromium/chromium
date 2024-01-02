@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Page is visited</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{None}=1{From one site (you'll stay signed in to your Google Account)}other{From # sites (you'll stay signed in to your Google Account)}}</translation>
 <translation id="1165852471352757509">TV documentary and nonfiction</translation>
+<translation id="1167877250265821930">Failed to download <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Envelope Chinese no.1</translation>
 <translation id="1174723505405632867">Do you want to allow <ph name="EMBEDDED_URL" /> to use cookies and site data on <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2131200882015008178">Downloading <ph name="LANGUAGE" /> language pack…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Men's clothing</translation>
 <translation id="2137891579555018930">Waiting for permission…</translation>
 <translation id="213826338245044447">Mobile Bookmarks</translation>
@@ -655,6 +657,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2235344399760031203">Third-party cookies are blocked</translation>
 <translation id="2239100178324503013">Send now</translation>
+<translation id="2239114457614475014">Edit input</translation>
 <translation id="2241693394036365668">File is downloaded</translation>
 <translation id="2246264294482514010">10 in x 12 in</translation>
 <translation id="2246480341630108201">Your parent hasn't said that it's OK yet</translation>
@@ -989,6 +992,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2959113999220720579">Face and body care</translation>
 <translation id="2962073860865348475">12 in x 18 in</translation>
 <translation id="2968103128155246731">Vans and minivans</translation>
+<translation id="2971483124699139256">Thumbs up submits feedback that you like the generated text.</translation>
 <translation id="2972581237482394796">&amp;Redo</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, currently selected. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4132448310531350254">Duplicate handlers for file_extension <ph name="FILE_EXTENSION" />' referenced by apps '<ph name="POLICY_IDS_LIST" />'.</translation>
 <translation id="4134123981501319574">Create doc</translation>
 <translation id="413544239732274901">Learn more</translation>
+<translation id="4139859738677203214">Thumbs down opens a form for submitting detailed feedback on why you dislike the generated text.</translation>
 <translation id="4140905530744469899">Profile ID:</translation>
 <translation id="4142935452406587478">Tray 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Additional details:
 <translation id="8877780815363510165">Fishing</translation>
 <translation id="8884537526797090108">Can't record confidential content</translation>
 <translation id="8888187300091017436">Mattresses</translation>
+<translation id="8890048757975398817">Control <ph name="READERNAME" /> and gain access to the smart card accessible to it.</translation>
 <translation id="8891727572606052622">Invalid proxy mode.</translation>
 <translation id="8894794286471754040">Long edge first</translation>
 <translation id="8897428486789851669">Swimming</translation>

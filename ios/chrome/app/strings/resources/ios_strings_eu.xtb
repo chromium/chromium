@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Hautatu "Gehitu Google Calendar-en" edo "Gehitu Apple Calendar-en".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> pasahitz erabili dira beste nonbait</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
+<translation id="1641316430523156212">Jarraitu</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="165008673352427892">Eginbide berria</translation>
 <translation id="1650222530560417226">Fitxa guztietako JavaScript-en kontsolaren erregistroak eta erroreak biltzeko, sakatu "Hasi partekatzen" botoia. Bildutako erregistroak memorian bakarrik gordeko dira, orria itxi arte edo "Utzi erregistratzeari" sakatu arte.</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">Prezioen alertak aktibatu nahi dituzu?</translation>
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="214201757571129614">Hasi saioa…</translation>
+<translation id="2145004670974387485">Hautatu <ph name="FILENAME" /> gordetzeko erabili nahi duzun kontua</translation>
 <translation id="2148716181193084225">Gaur</translation>
 <translation id="2149973817440762519">Editatu laster-marka</translation>
 <translation id="2175927920773552910">QR kodea</translation>
@@ -312,6 +314,7 @@ Webguneek ezin dituzte erabili cookieak beste webguneetan egiten dituzun arakatz
 <translation id="2664621323652615289">Gelditu</translation>
 <translation id="2666092431469916601">Goiko elementua</translation>
 <translation id="2669454659051515572">Gailu hau darabilen edonork ikus ditzake deskargatutako fitxategiak</translation>
+<translation id="2681158575552244226">Drive-n gordetzen (<ph name="USER_EMAIL" />).</translation>
 <translation id="2690858294534178585">Kamera abian da</translation>
 <translation id="2691653761409724435">Ez dago erabilgarri konexiorik gabe</translation>
 <translation id="2695507686909505111">Itzuli da orria</translation>
@@ -478,6 +481,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3519193562722059437">Sarea arakatzeko, ireki fitxa bat.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Ireki fitxa}other{Ireki {count} fitxa}}</translation>
 <translation id="3523789730715594198">Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
+<translation id="3526783603136816353">Hautatu <ph name="FILENAME" /> (<ph name="FILE_SIZE" />) gordetzeko erabili nahi duzun kontua</translation>
 <translation id="3527085408025491307">Karpeta</translation>
 <translation id="3529024052484145543">Ez da segurua</translation>
 <translation id="3530206579861815432">Aurkitu bizkor sinkronizatutako gailuetan irekita dauzkazun edo duela gutxi itxi dituzun fitxak.</translation>
@@ -515,6 +519,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3738428049780661523">Sortze-data: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ezkutatu "Deskargak"</translation>
 <translation id="3745190878148784130">Ezkutatu "Aplikatu zooma testuari"</translation>
+<translation id="375773422023477320">Laster-markak</translation>
 <translation id="3762232513783804601">Zure iPad-erako garatua</translation>
 <translation id="3768725474733206671">Ireki itxitako azken fitxa</translation>
 <translation id="3771033907050503522">Ezkutuko moduko fitxak</translation>
@@ -553,6 +558,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="3929457972718048006">Helbideak</translation>
 <translation id="3955822496205734389">Seguruak ez diren pasahitzak dauzkazu.</translation>
 <translation id="3959736869653157332">Menu → Ireki ezkutuko moduko fitxa bat</translation>
+<translation id="3962326069546168954">Gorde</translation>
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3968505803272650567">Kudeatu interesak</translation>
 <translation id="3989635538409502728">Amaitu saioa</translation>
@@ -1086,6 +1092,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6685259053455152195">Helbide-barratik bertatik ezarpenak bizkor aldatzeko eta eginbideak erabiltzeko lasterbideak.</translation>
 <translation id="6710079714193676716">Erakundeak kudeatzen du. Baliteke eginbide batzuk erabilgarri ez egotea. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">Drive-n gorde da (<ph name="USER_EMAIL" />).</translation>
 <translation id="672735642903863329">Atzitu laster-markak, pasahitzak eta bestelako datuak gailu guztietan.</translation>
 <translation id="6730682669179532099">Ezin dira esportatu pasahitzak</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1104,6 +1111,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="6790502149545262384">Laster, <ph name="CHANNEL_NAME" /> webguneko istorioak ikusiko dituzu fitxa berri bat irekitzean.</translation>
 <translation id="6797885426782475225">Ahozko bilaketa</translation>
 <translation id="6800349425672670802">Fitxa-aldatzailearen bidez atzi ditzakezu irekitako fitxa guztiak.</translation>
+<translation id="6805179248725678418">Gorde Google Drive-n</translation>
 <translation id="6807889908376551050">Erakutsi guztiak…</translation>
 <translation id="681368974849482173">Elementua sortu da</translation>
 <translation id="6822587385560699678">Aktibatuta badago, pasahitzak <ph name="ACCOUNT" /> kontuan gordetzen dira. Desaktibatuta badago, pasahitzak gailu honetan soilik gordetzen dira.</translation>
@@ -1159,6 +1167,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7102005569666697658">Deskargatzen… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ezkutatu</translation>
 <translation id="7108762695052995889">Joan webgunera</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Izen-abizenak</translation>
 <translation id="7136892417564438900">Kamera ez dago erabilgarri</translation>
 <translation id="7141960840225504692">Fitxak itxiko dira, eta arakatze-datuak ezabatuko dira</translation>
@@ -1286,6 +1295,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="7856733331829174190">Ezin izan da deskargatu</translation>
 <translation id="7859704718976024901">Arakatze-historia</translation>
 <translation id="7866501058614003444">Utzi zaio paketearen jarraipena egiteari.</translation>
+<translation id="7866872729285243843">Irakurketa-zerrenda gailu guztietan eskura izateko, aktibatu Irakurketa-zerrenda ezarpenetan.</translation>
 <translation id="7866993391592926595">Txartela ezkutatzen baduzu, Paketeen jarraipena desaktibatuko da, eta zure datu guztiak ezabatuko</translation>
 <translation id="7870750252270996949">Lens-en kopiatu duzun irudia</translation>
 <translation id="7879275349003161544">Erakutsi deskargak</translation>

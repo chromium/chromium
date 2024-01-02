@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Consell de Chromium</translation>
 <translation id="2168108852149185974">Alguns complements fan que Chromium es bloquegi. Desinstal·la:</translation>
 <translation id="2178608107313874732">Chromium no pot utilitzar la càmera en aquest moment</translation>
+<translation id="219374086636266276">Pots <ph name="BEGIN_LINK" />gestionar quines dades de Chromium es desen<ph name="END_LINK" /> al teu Compte de Google.
+Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">La propera vegada, voleu que Chromium s'ofereixi per traduir les pàgines d'aquest lloc escrites en <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2218146227246548550">La teva organització requereix que iniciïs la sessió per utilitzar Chromium. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Aquesta adreça està desada a Chromium. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Això pot incloure l'historial i la funció Emplenament automàtic.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Això pot incloure l'historial i la funció Emplenament automàtic.}}</translation>
 <translation id="3472200483164753384">No s'admeten a Chromium Canary</translation>
 <translation id="3478750326643748149">Amaga "Treu el màxim profit de Chromium"</translation>
+<translation id="347967311580159871">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chromium, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La contrasenya no s'ha compartit. Comprova la connexió a Internet i assegura't que tens la sessió iniciada a Chromium. Després, torna-ho a provar.</translation>
 <translation id="3554027294407525061">Esborra les dades de navegació a Chromium.</translation>
 <translation id="3567399274263440288">Per treure el màxim profit de Chromium, inicia-hi la sessió amb el teu Compte de Google.</translation>

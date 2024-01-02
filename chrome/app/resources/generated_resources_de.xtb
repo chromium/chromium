@@ -2712,6 +2712,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3043581297103810752">Von <ph name="ORIGIN" /></translation>
 <translation id="3045447014237878114">Diese Website hat automatisch mehrere Dateien heruntergeladen</translation>
 <translation id="3046178388369461825">Auf dem Linux-Laufwerk ist nur noch sehr wenig Speicherplatz verfügbar</translation>
+<translation id="304644035656848980">Mikrofon-Audiovorschau</translation>
 <translation id="3046910703532196514">Webseite, vollständig</translation>
 <translation id="304747341537320566">Sprach-Engines</translation>
 <translation id="3048336643003835855">HID-Geräte vom Anbieter <ph name="VENDOR_ID" /></translation>
@@ -2990,7 +2991,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3294686910656423119">Nutzungsstatistik und Absturzberichte</translation>
 <translation id="3295241308788901889">Ein Tab wird gestreamt</translation>
-<translation id="3297105622164376095">Dürfen Aufforderungen zur Anmeldung von Drittanbietern anzeigen</translation>
+<translation id="3297105622164376095">Dürfen Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
 <translation id="3297536526040732495">Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen</translation>
 <translation id="329838636886466101">Reparieren</translation>
 <translation id="3298789223962368867">Die eingegebene URL ist ungültig.</translation>
@@ -3434,6 +3435,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3659929705630080526">Du hast zu oft einen falschen Zugriffscode eingegeben. Versuche es später noch einmal.</translation>
 <translation id="3660234220361471169">Nicht vertrauenswürdig</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 vorhandenes Passwort gefunden}other{{NUM_PASSWORDS} vorhandene Passwörter gefunden}}</translation>
+<translation id="3662207097851752847">Google-Konto auf dem Smartphone bestätigen</translation>
 <translation id="3664511988987167893">Erweiterungssymbol</translation>
 <translation id="3665100783276035932">Die meisten Websites sollten wie erwartet funktionieren</translation>
 <translation id="3665301845536101715">In Seitenleiste öffnen</translation>
@@ -4489,7 +4491,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4476590490540813026">Athletin</translation>
 <translation id="4476659815936224889">Du kannst eine QR-Scanner-App oder bestimmte Kamera-Apps auf deinem Smartphone verwenden, um diesen Code zu scannen.</translation>
 <translation id="4477015793815781985">Verwende Strg, Alt oder ⌘</translation>
-<translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich bei <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
+<translation id="4478161224666880173">Du kannst dein <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-Konto auf dieser Website verwenden. Melde dich in <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> an, um fortzufahren.</translation>
 <translation id="4478664379124702289">Lin&amp;k speichern unter...</translation>
 <translation id="4479424953165245642">Kioskanwendungen verwalten</translation>
 <translation id="4479639480957787382">Ethernet</translation>
@@ -4796,7 +4798,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4718046540206070045">Mehr als nur ein Browser</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat deinen Bildschirm freigegeben.</translation>
-<translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung von Drittanbietern anzeigen</translation>
+<translation id="4722989931633062466">Dürfen keine Aufforderungen zur Anmeldung über Drittanbieter anzeigen</translation>
 <translation id="4723140812774948886">Mit nächstem tauschen</translation>
 <translation id="4724450788351008910">Zugehörigkeit geändert</translation>
 <translation id="4725511304875193254">Corgi</translation>
@@ -4967,6 +4969,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4862642413395066333">Signatur von OCSP-Antworten</translation>
 <translation id="4863702650881330715">Kompatibilität erweitern</translation>
 <translation id="4863769717153320198">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Standard)</translation>
+<translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
 <translation id="486505726797718946">Arbeitsspeicher gespart</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
@@ -6814,7 +6817,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6350821834561350243">Beschreibe so gut wie möglich das Problem und die Schritte, mit denen es reproduziert werden kann</translation>
 <translation id="6351178441572658285">App-Sprachen</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355395056805388423">Google-Kontoinformationen werden abgerufen...</translation>
 <translation id="635609604405270300">Gerät eingeschaltet lassen</translation>
 <translation id="63566973648609420">Nur Personen mit deiner Passphrase können deine verschlüsselten Daten lesen. Die Passphrase wird nicht an Google gesendet oder von Google gespeichert. Falls du sie vergessen hast oder diese Einstellung ändern möchtest, musst du die <ph name="BEGIN_LINK" />Synchronisierung zurücksetzen<ph name="END_LINK" />.</translation>
 <translation id="6356718524173428713">Nach oben scrollen, um die Seite nach unten zu verschieben</translation>
@@ -8140,6 +8142,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7416263748877373774">Fehler beim Laden der Nutzungsbedingungen. Prüfe die Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="7416362041876611053">Unbekannter Netzwerkfehler</translation>
 <translation id="741906494724992817">Diese App erfordert keine speziellen Berechtigungen.</translation>
+<translation id="7419142833919893307">Kein Nutzername hinzugefügt</translation>
 <translation id="7419565702166471774">Immer verschlüsselte Verbindungen verwenden</translation>
 <translation id="742130257665691897">Lesezeichen entfernt</translation>
 <translation id="7421925624202799674">Seitenquelltext &amp;anzeigen</translation>
@@ -8449,6 +8452,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7659154729610375585">Inkognitomodus trotzdem beenden?</translation>
 <translation id="7659336857671800422">Datenschutz-Leitfaden durchgehen</translation>
 <translation id="7659584679870740384">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung.</translation>
+<translation id="7660116474961254898">Folge der Anleitung auf dem Smartphone</translation>
 <translation id="7660146600670077843">Klicke mit der rechten Maustaste auf einen Tab und wähle „Tab neuer Gruppe hinzufügen“ aus</translation>
 <translation id="7661259717474717992">Speichern und Lesen von Cookiedaten zulassen</translation>
 <translation id="7661451191293163002">Es kann kein Anmeldezertifikat abgerufen werden.</translation>

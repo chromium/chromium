@@ -627,6 +627,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4487967297491345095">Toutes les données des applications de Chrome seront supprimées de façon définitive. Cela comprend tous les fichiers, les paramètres, les comptes, les bases de données, etc.</translation>
 <translation id="449126573531210296">Chiffrer les mots de passe synchronisés avec votre compte Google</translation>
 <translation id="4491323382106587961">Sélectionnez un compte. Actuellement sélectionné : <ph name="EMAIL" />.</translation>
+<translation id="4494806687727322324">L'enregistrement des mots de passe est activé par votre administrateur</translation>
 <translation id="4508528996305412043">Le menu de la carte du flux est ouvert</translation>
 <translation id="4509501256689523862">Lorsque vous naviguez, la personnalisation d’une annonce dépend de ce paramètre, du <ph name="BEGIN_LINK_1" />sujet des annonces<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres de vos témoins<ph name="END_LINK_2" />, et du fait que le site que vous consultez personnalise les annonces</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Il y a # jour}one{Il y a # jour}other{Il y a # jours}}</translation>
@@ -796,6 +797,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5292796745632149097">Envoyer à</translation>
 <translation id="5304593522240415983">Ce champ ne peut être vide</translation>
 <translation id="5308380583665731573">Connecter</translation>
+<translation id="5316947901395241499">L'enregistrement des mots de passe est désactivé par votre administrateur</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319359161174645648">Google recommande Chrome</translation>
 <translation id="5320351714793324716">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement</translation>

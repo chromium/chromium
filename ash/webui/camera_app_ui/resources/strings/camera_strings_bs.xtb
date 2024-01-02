@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Pomičite udesno</translation>
 <translation id="3081586908890909590">Prebaci na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 fps</translation>
+<translation id="3158534262962737808">Pridružite se mreži "<ph name="WIFINAME" />"</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link je kopiran</translation>
 <translation id="3354465018370944241">Postavke fotografije</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Omjer formata fotografije</translation>
 <translation id="5057360777601936059">Kamera je trenutno nedostupna.
         Provjerite je li kamera pravilno povezana.</translation>
+<translation id="5157591164390831335">Otkriven je URL.</translation>
 <translation id="5163387177077603948">Pomjeranje udesno</translation>
 <translation id="5235304959032763950">16 naprema 9</translation>
 <translation id="5266635337630551423">Gornji lijevi ugao dokumenta</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Hvala na pruženim povratnim informacijama za aplikaciju Kamera.
 
 Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, priložite uzorak fotografije ili videozapisa i opišite šta nije uredu. (Naprimjer, fotografija je suviše tamna ili subjekt nije u fokusu.)</translation>
+<translation id="6519884562954018934">Pridružite se mreži <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6617916774429601017">Prikaži sve rezolucije</translation>
 <translation id="6631515515009660915">Preslikavanje je isključeno</translation>
@@ -158,6 +161,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8711011893539266636">Uključite/isključite mikrofon. Mikrofon je isključen</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>
+<translation id="874854738381978209">Otkrivena je WiFi mreža.</translation>
 <translation id="8815966864175525708">Prebacite da snimite portretnu fotografiju</translation>
 <translation id="8828441885228359828">Nastavi snimanje</translation>
 <translation id="8870695351537079478">Nije moguće pokrenuti snimanje</translation>

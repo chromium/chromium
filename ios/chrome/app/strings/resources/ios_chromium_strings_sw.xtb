@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Kidokezo cha Chromium</translation>
 <translation id="2168108852149185974">Baadhi ya programu jalizi husababisha Chromium iache kufanya kazi. Tafadhali ondoa:</translation>
 <translation id="2178608107313874732">Chromium haiwezi kutumia kamera yako hivi sasa</translation>
+<translation id="219374086636266276">Unaweza <ph name="BEGIN_LINK" />kudhibiti data ya Chromium inayohifadhiwa<ph name="END_LINK" /> katika Akaunti yako ya Google.
+Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium, nenda kwenye <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Je, ungependa Chromium ijitolee kutafsiri kurasa za <ph name="LANGUAGE_NAME" /> kwenye tovuti hii wakati ujao?</translation>
 <translation id="2218146227246548550">Shirika lako linahitaji uingie katika akaunti ili uweze kutumia Chromium. <ph name="BEGIN_LINK" />Pata Maelezo Zaidi<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Anwani hii kwa sasa imehifadhiwa kwenye Chromium. Ili uitumie kwenye bidhaa mbalimbali za Google, ihifadhi kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}other{Hali hii hutokea wakati hujatumia Chromium kwa dakika {THRESHOLD}. Data hii inaweza kujumuisha historia na matukio ya kujaza kiotomatiki.}}</translation>
 <translation id="3472200483164753384">Haitumiki kwenye Chromium Canary (toleo la jaribio)</translation>
 <translation id="3478750326643748149">Ficha sehemu ya “Nufaika zaidi na Chromium”</translation>
+<translation id="347967311580159871">Kwa mipangilio zaidi inayotumia data kuboresha hali yako ya utumiaji wa Chromium, nenda kwenye <ph name="BEGIN_LINK" />Huduma za Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Nenosiri lako halikutumwa. Kagua muunganisho wako wa intaneti na uhakikishe umeingia katika akaunti ya Chromium. Kisha, jaribu tena.</translation>
 <translation id="3554027294407525061">Futa Data ya Kuvinjari kwenye Chromium.</translation>
 <translation id="3567399274263440288">Ili unufaike zaidi na Chromium, ingia kwenye Chromium ukitumia Akaunti yako ya Google.</translation>

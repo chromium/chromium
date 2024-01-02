@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1020274983236703756">اب خاص <ph name="PRODUCT_NAME" /> اثاثے دستیاب ہیں</translation>
 <translation id="1022628058306505708">ارتھ فلو</translation>
+<translation id="103306827243002956">حالیہ وال پیپرز</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
 <translation id="2230005943220647148">سیلسیئس</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">مزید تخلیق کریں</translation>
 <translation id="2236746079896696523">کی بورڈ بیک لائٹ ٹوگل کریں</translation>
 <translation id="2240366984605217732">لے آؤٹ کو سوئچ کرنے کی کلید</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">سائن ان کی تصویر</translation>
 <translation id="2640549051766135490">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کیا گیا</translation>
 <translation id="2652403576514495859">ڈکٹیشن کو فعال یا ٹوگل کریں</translation>
+<translation id="2656001153562991489">‏Chromebook Plus کے لیے مخصوص</translation>
 <translation id="267442004702508783">ریفریش کریں</translation>
 <translation id="268270014981824665">کی بورڈ کو مدھم کرنا</translation>
 <translation id="2712812801627182647">‏TLS تصدیقی کلید</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3862598938296403232">تفصیل درکار ہے</translation>
+<translation id="386280020966669610">میری حوصلہ افزائی کریں</translation>
 <translation id="3865289341173661845">مددگار مواد دستیاب نہیں ہے۔</translation>
 <translation id="3865414814144988605">ریزولیوشن</translation>
 <translation id="3866249974567520381">تفصیل</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">‏نیا APN</translation>
 <translation id="4093865285251893588">پروفائل تصویر</translation>
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
+<translation id="409469431304488632">تجربہ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">البم <ph name="TITLE" /> <ph name="DESC" /> منتخب کریں</translation>
 <translation id="4111761024568264522">‏USB ٹچ پیڈ</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">سلائیڈ شو</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
+<translation id="4305367063258930534">‏Google کے ذریعے تقویت یافتہ وال پیپر</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> کلید دبائی گئی</translation>
 <translation id="4354430579665871434">کلید</translation>
 <translation id="4361257691546579041">‏APN کی قسم ڈیفالٹ پر سیٹ ہے۔</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">سرور کا میزبان نام</translation>
 <translation id="5089810972385038852">ریاست</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">ملتا جلتا:</translation>
 <translation id="5137451382116112100">فُل</translation>
 <translation id="5142961317498132443">تصدیق</translation>
 <translation id="5145081769226915336">تاریک وضع کو خودکار طور پر آن کریں؟</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">چارج ہو رہا ہے، مکمل ہونے میں <ph name="TIME_VALUE" /> باقی</translation>
 <translation id="7066538517128343186"><ph name="KEY" /> کلید</translation>
 <translation id="7068619307603204412">اپنا آلہ تیار کریں</translation>
+<translation id="7076851914315147928">ایک وال پیپر منتخب کریں</translation>
 <translation id="708426984172631313">روک دیا گیا</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ناکام ہو گئی - اجازت دہندگی ناکام ہو گئی</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">لائٹ موڈ</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7805768142964895445">صورتحال</translation>
+<translation id="7819831665603418705">تمثیل کا استعمال کریں</translation>
 <translation id="7819857487979277519">‏‫‫PSK‎‏ (WPA یا RSN)‏</translation>
 <translation id="7841134249932030522">تاریک وضع فعال کریں</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
 <translation id="8329018942023753850">کیلکولیٹر ایپ</translation>
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
+<translation id="8339024191194156249">خودکار لانچ کے بارے میں مزید جانیں</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> یا <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">پرنٹ جابز</translation>
 <translation id="8349826889576450703">لانچر</translation>

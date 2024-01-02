@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Хуудсанд зочилдог</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Байхгүй}=1{1 сайтаас (та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ)}other{# сайтаас (та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэнэ)}}</translation>
 <translation id="1165852471352757509">ТВ-ийн баримтат кино, бодит явдал</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" />-г татаж чадсангүй</translation>
 <translation id="1174644974616730562">Хятад дугтуй #1</translation>
 <translation id="1174723505405632867">Та <ph name="EMBEDDED_URL" />-д <ph name="TOP_LEVEL_URL" /> дээрх күүки болон сайтын өгөгдлийг ашиглахыг зөвшөөрөх үү?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF бүтээгч:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode удирдамжийг тохируулаагүй байгаа учраас таны тодорхойлсон загваруудыг хэрэгжүүлэхгүй байж болзошгүй.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> хэлний багцыг татаж байна...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Эрэгтэй хувцас</translation>
 <translation id="2137891579555018930">Зөвшөөрөл хүлээж байна...</translation>
 <translation id="213826338245044447">Гар утасны хавчуургууд</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">Компакт диск</translation>
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2239100178324503013">Одоо илгээх</translation>
+<translation id="2239114457614475014">Оролтыг засах</translation>
 <translation id="2241693394036365668">Файлыг татдаг</translation>
 <translation id="2246264294482514010">10 x 12 инч</translation>
 <translation id="2246480341630108201">Таны эцэг эх одоогоор БОЛНО гэж хэлээгүй байна</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">Нүүр, биеийн арчилгаа</translation>
 <translation id="2962073860865348475">12 x 18 инч</translation>
 <translation id="2968103128155246731">Бүхээгтэй тэрэг, гэр бүлийн бүхээгтэй тэрэг</translation>
+<translation id="2971483124699139256">Сайн тэмдэглэгээ нь үүсгэсэн текст танд таалагдсан талаарх санал хүсэлтийг илгээнэ.</translation>
 <translation id="2972581237482394796">&amp; Дахин хийх</translation>
 <translation id="2977665033722899841">Одоогоор <ph name="ROW_NAME" />-г сонгосон байна. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Дуурь</translation>
@@ -1574,6 +1578,7 @@
 <translation id="4132448310531350254">Аппуудын "<ph name="POLICY_IDS_LIST" />"-с file_extension "<ph name="FILE_EXTENSION" />"-н хуулбар хариуцагчдыг лавласан</translation>
 <translation id="4134123981501319574">Документ үүсгэх</translation>
 <translation id="413544239732274901">Дэлгэрэнгүй үзэх</translation>
+<translation id="4139859738677203214">Муу тэмдэглэгээ нь үүсгэсэн текст танд яагаад таалагдаагүй тухай дэлгэрэнгүй санал хүсэлтийг илгээх маягтыг нээнэ.</translation>
 <translation id="4140905530744469899">Профайлын ID:</translation>
 <translation id="4142935452406587478">Гарах цаасны тавиур 10</translation>
 <translation id="4148925816941278100">Американ Эскпресс</translation>
@@ -1684,7 +1689,7 @@
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Блоклох (өгөгдмөл)</translation>
 <translation id="4314815835985389558">Синк хийхийг удирдах</translation>
-<translation id="4316057107946726368">Хамгийн ихдээ <ph name="MAX_CHAR_COUNT" /> тэмдэгттэй зөвтгөсөн мессеж оруулна уу. <ph name="MAX_CHAR_COUNT" />-с <ph name="ACTUAL_CHAR_COUNT" /> тэмдэгт ашигласан.</translation>
+<translation id="4316057107946726368">Хамгийн ихдээ <ph name="MAX_CHAR_COUNT" /> тэмдэгттэй үндэслэлийн мессеж оруулна уу. <ph name="MAX_CHAR_COUNT" />-с <ph name="ACTUAL_CHAR_COUNT" /> тэмдэгт ашигласан.</translation>
 <translation id="4318213823155573975">Толгойн өмсгөл</translation>
 <translation id="4318312030194671742">Paint Preview нэгтгэгчийн үйлчилгээ</translation>
 <translation id="4318566738941496689">Таны төхөөрөмжийн нэр болон сүлжээний хаяг</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">Загасчлал</translation>
 <translation id="8884537526797090108">Нууцлалтай контентыг бичих боломжгүй</translation>
 <translation id="8888187300091017436">Матрасууд</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />-г хянаж, үүнд хандах боломжтой ухаалаг картад хандах эрх авна уу.</translation>
 <translation id="8891727572606052622">Орлон ашиглах горим хүчингүй байна</translation>
 <translation id="8894794286471754040">Эхлээд урт зах</translation>
 <translation id="8897428486789851669">Усанд сэлэлт</translation>

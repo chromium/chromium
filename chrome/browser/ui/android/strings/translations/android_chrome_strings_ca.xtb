@@ -627,6 +627,7 @@ Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les d
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
 <translation id="4491323382106587961">Tria un compte. Selecció actual: <ph name="EMAIL" />.</translation>
+<translation id="4494806687727322324">L'administrador ha activat l'opció de desar contrasenyes</translation>
 <translation id="4508528996305412043">El menú de la targeta del tauler està obert</translation>
 <translation id="4509501256689523862">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK_1" />temes dels anuncis<ph name="END_LINK_1" />, de la <ph name="BEGIN_LINK_2" />configuració de les galetes<ph name="END_LINK_2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{fa # dia}other{fa # dies}}</translation>
@@ -796,6 +797,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5292796745632149097">Envia a</translation>
 <translation id="5304593522240415983">Aquest camp no pot estar en blanc</translation>
 <translation id="5308380583665731573">Connecta</translation>
+<translation id="5316947901395241499">L'administrador ha desactivat l'opció de desar contrasenyes</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319359161174645648">Google recomana Chrome</translation>
 <translation id="5320351714793324716">Si permets les galetes, Chrome pot utilitzar-les en la precàrrega</translation>

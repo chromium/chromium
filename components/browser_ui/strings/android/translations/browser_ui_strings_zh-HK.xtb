@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">這會刪除 <ph name="ORIGIN" /> 或該網站在主畫面上的應用程式儲存的所有資料和 Cookie。</translation>
 <translation id="5100237604440890931">已收合 - 點擊即可展開。</translation>
 <translation id="5123685120097942451">無痕式分頁</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{已開啟的分頁上有商品降價}other{已開啟的分頁上有商品降價}}</translation>
 <translation id="5186036860380548585">選項喺螢幕頂部附近</translation>
 <translation id="5197729504361054390">系統會將您選取的聯絡人向 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 提供。</translation>
 <translation id="5216942107514965959">上次瀏覽時間：今天</translation>

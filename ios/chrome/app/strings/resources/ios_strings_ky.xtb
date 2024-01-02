@@ -314,6 +314,7 @@
 <translation id="2664621323652615289">Токтотуу</translation>
 <translation id="2666092431469916601">Өйдө</translation>
 <translation id="2669454659051515572">Бул түзмөктү колдонгондордун баары жүктөлүп алынган файлдарды көрө алышат</translation>
+<translation id="2681158575552244226">Drive'га <ph name="USER_EMAIL" /> аккаунтуна сакталууда.</translation>
 <translation id="2690858294534178585">Камера колдонулууда</translation>
 <translation id="2691653761409724435">Оффлайнда жеткиликтүү эмес</translation>
 <translation id="2695507686909505111">Барак которулду</translation>
@@ -1091,6 +1092,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6685259053455152195">Параметрлерди тез өзгөртүү жана дарек тилкесиндеги функцияларды колдонуу үчүн ыкчам баскычтар.</translation>
 <translation id="6710079714193676716">Уюмуңуз тарабынан башкарылат. Айрым функциялар иштебеши мүмкүн. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Колднмлр</translation>
+<translation id="6716730056313760676">Drive'га <ph name="USER_EMAIL" /> аккаунтуна сакталды.</translation>
 <translation id="672735642903863329">Бардык түзмөктөрүңүздө кыстармаларды, сырсөздөрдү жана башка нерселерди алыңыз.</translation>
 <translation id="6730682669179532099">Сырсөздөр экспорттолбой жатат</translation>
 <translation id="6732087373923685049">камера</translation>
@@ -1165,6 +1167,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7102005569666697658">Жүктөлүп алынууда… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Жашыруу</translation>
 <translation id="7108762695052995889">Сайтка баш багуу</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Толук аты-жөнү</translation>
 <translation id="7136892417564438900">Камера жеткиликсиз</translation>
 <translation id="7141960840225504692">Өтмөктөрүңүз жабылып, серептөө дайындарыңыз өчүрлөт</translation>

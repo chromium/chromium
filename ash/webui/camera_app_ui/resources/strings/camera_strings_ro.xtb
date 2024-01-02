@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Deplasează la dreapta</translation>
 <translation id="3081586908890909590">Comută pentru a înregistra un videoclip</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Conectează-te la <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Microfon</translation>
 <translation id="3240426699337459095">Linkul a fost copiat</translation>
 <translation id="3354465018370944241">Setări pentru fotografii</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Raportul de dimensiuni al fotografiei</translation>
 <translation id="5057360777601936059">Camera foto este indisponibilă.
         Verifică dacă ai conectat corect camera foto.</translation>
+<translation id="5157591164390831335">S-a detectat o adresă URL.</translation>
 <translation id="5163387177077603948">Se deplasează în direcția corespunzătoare</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Colțul din stânga sus al documentului</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Mulțumim pentru feedbackul privind aplicația Cameră foto.
 
 Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează un exemplu de fotografie sau de videoclip și descrie problema. (De exemplu, fotografia este prea întunecată sau focalizarea nu este realizată pe subiect.)</translation>
+<translation id="6519884562954018934">Conectează-te la <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Trimite</translation>
 <translation id="6617916774429601017">Afișează toate rezoluțiile</translation>
 <translation id="6631515515009660915">Oglindirea a fost dezactivată</translation>
@@ -158,6 +161,7 @@ Dacă feedbackul tău se referă la calitatea video sau a imaginii, atașează u
 <translation id="8711011893539266636">Comută dezactivarea sunetului microfonului. Dezactivarea sunetului este activată</translation>
 <translation id="8730621377337864115">Terminat</translation>
 <translation id="8732462232047530626">Metadatele de previzualizare</translation>
+<translation id="874854738381978209">S-a detectat o rețea Wi-Fi.</translation>
 <translation id="8815966864175525708">Comută pentru a face o fotografie portret</translation>
 <translation id="8828441885228359828">Reia înregistrarea</translation>
 <translation id="8870695351537079478">Nu se poate porni înregistrarea</translation>

@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Chromium tip</translation>
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
+<translation id="219374086636266276">You can <ph name="BEGIN_LINK" />manage what Chromium data is saved<ph name="END_LINK" /> in your Google Account.
+For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2218146227246548550">Your organisation requires you to sign in to use Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">This address is currently saved to Chromium. To use it across Google products, save it in your Google Account, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}other{This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}</translation>
 <translation id="3472200483164753384">Not supported on Chromium Canary</translation>
 <translation id="3478750326643748149">Hide 'Get the most out of Chromium'</translation>
+<translation id="347967311580159871">For more settings that use data to improve your Chromium experience, go to <ph name="BEGIN_LINK" />Google services<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Your password wasn't shared. Check your Internet connection and make sure that you're signed in to Chromium. Then try again.</translation>
 <translation id="3554027294407525061">Clear browsing data in Chromium.</translation>
 <translation id="3567399274263440288">To get the most out of Chromium, sign in to Chromium with your Google Account.</translation>

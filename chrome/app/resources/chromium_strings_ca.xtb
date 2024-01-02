@@ -375,6 +375,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7461356015007898716">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="7467949745582939695">Vols tornar a iniciar Chromium?</translation>
 <translation id="7483335560992089831">No es pot instal·lar la mateixa versió de Chromium que s'està executant actualment. Tanqueu Chromium i torneu-ho a provar.</translation>
+<translation id="751935028865900641">És probable que els llocs web funcionin de la manera prevista. Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del Compte de Google si tens la sessió iniciada a Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 minut}other{Chromium es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7582945390259497898">Chromium pot estimar els teus interessos. Després, un lloc web que visitis pot demanar els teus interessos a Chromium per personalitzar els anuncis que veus.</translation>
 <translation id="7583399374488819119">Instal·lador de <ph name="COMPANY_NAME" /></translation>

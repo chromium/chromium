@@ -78,6 +78,7 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 
       Si cette règle n'est pas définie, cela signifie que, par défaut, la fonctionnalité n'est pas autorisée pour les utilisateurs gérés, mais qu'elle est accessible aux autres utilisateurs.</translation>
 <translation id="1035860095382451169">Activer l'icône en forme de cadenas dans l'omnibox pour les connexions sécurisées</translation>
+<translation id="1037426296070139784">Certificats TLS qui ne devraient plus être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur</translation>
 <translation id="1037470927044831850">Autoriser les sites à inviter l'utilisateur à partager un flux vidéo de son écran</translation>
 <translation id="1038049732032297658">Permet d'activer ou de désactiver la fonctionnalité de correction automatique pour le clavier physique.
 
@@ -399,6 +400,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de re
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
+<translation id="1336073690474326987">Désactiver complètement la fonctionnalité</translation>
 <translation id="1338603603553894503">Indique si l'outil de sélection du profil est activé, désactivé ou forcé au démarrage du navigateur.
 
       Par défaut, l'outil de sélection du profil n'est pas affiché si le navigateur démarre en mode Invité ou navigation privée, si un répertoire et/ou des URL de profils sont indiqués par ligne de commande, si l'ouverture d'une application a été demandée de manière explicite, si le navigateur a été lancé par une notification native, s'il n'y a qu'un seul profil disponible ou si la règle ForceBrowserSignin est définie sur "True".
@@ -930,6 +932,7 @@ Quelle que soit la valeur, l'utilisateur pourra décider de conserver ou non les
 
 Cette règle n'a aucun effet si l'option permettant de conserver les données de navigation existantes n'est pas disponible. Cela se produit si la séparation des profils d'entreprise est strictement appliquée, ou si les données proviennent d'un profil déjà géré.
 </translation>
+<translation id="1795025936135166305">Autoriser l'utilisation de la fonctionnalité pour l'organisation</translation>
 <translation id="1795105105645381965">
       Si cette règle est activée (True), <ph name="PRODUCT_NAME" /> peut demander l'autorisation des utilisateurs gérés avant de partager les signaux des appareils non gérés afin d'obtenir l'accès.
 
@@ -1979,6 +1982,13 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="26023406105317310">Configurer les comptes Kerberos</translation>
 <translation id="2603382859270873566">Activer la prise en charge de l'API PPB_VideoDecoder(Dev).</translation>
 <translation id="2604182581880595781">Configurer les règles associées à la fonctionnalité Partages de fichiers en réseau.</translation>
+<translation id="2604211069017399189">Cette règle vous permet de contrôler la façon dont Créer des thèmes avec l'IA de <ph name="PRODUCT_NAME" /> traite les données de votre organisation. Elle est prioritaire sur toute règle globale à venir.
+
+Définissez cette règle sur "Autorisé" pour permettre l'utilisation de la fonctionnalité pour l'organisation.
+
+Définissez-la sur "Autoriser sans collecte de données" afin de désactiver la collecte des données de la version Enterprise pour l'entraînement de modèles. Le partage des données à l'aide de la boîte de dialogue "Commentaires" intégrée aux fonctionnalités et l'envoi de données pour des évaluations manuelles seront également désactivés. Google n'utilisera pas le contenu des utilisateurs de la version Enterprise (y compris les invites, entrées, sorties et ressources sources) pour entraîner des modèles. De cette façon, Google n'utilisera pas d'informations sur les utilisateurs de la version Enterprise pour entraîner ou améliorer ses modèles d'IA. Google n'enregistrera pas le contenu des utilisateurs de la version Enterprise (invites, sources, entrées ou sorties). Notez que ces données peuvent être conservées pendant 24 heures maximum pour des raisons de contextualisation. Ainsi, Google ne collectera ni ne stockera aucune donnée servant à alimenter une fonctionnalité d'IA ou générée par celle-ci. Cela inclut les entrées utilisateur, les sorties générées et les commentaires des utilisateurs.
+
+Si vous désactivez cette règle, la fonctionnalité sera complètement désactivée.</translation>
 <translation id="2608039968712973520">Demander à l'utilisateur l'autorisation d'exécuter le plug-in obsolète <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="2608535066974278204">Durée (en minutes) de la fenêtre de redémarrage.</translation>
 <translation id="2608887839902987727">Empêcher l'authentification du portail captif d'ignorer les paramètres proxy</translation>
@@ -2821,6 +2831,13 @@ Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que sur les instan
       Si elle est désactivée, cela affaiblit le bac à sable que les processus de moteur de rendu utilisent et nuit à la sécurité et à la stabilité de <ph name="PRODUCT_NAME" />. Cette règle ne doit être désactivée qu'en cas de problèmes de compatibilité avec des logiciels tiers devant s'exécuter dans les processus du moteur de rendu.
 
       Remarque : Consultez https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies pour en savoir plus sur les règles d'atténuation des risques liés aux processus.</translation>
+<translation id="3338231005114367157">Cette règle vous permet de contrôler la façon dont l'organiseur d'onglets de <ph name="PRODUCT_NAME" /> traite les données de votre organisation. Elle est prioritaire sur toute règle globale à venir.
+
+Définissez cette règle sur "Autorisé" pour permettre l'utilisation de la fonctionnalité pour l'organisation.
+
+Définissez-la sur "Autoriser sans collecte de données" afin de désactiver la collecte des données de la version Enterprise pour l'entraînement de modèles. Le partage des données à l'aide de la boîte de dialogue "Commentaires" intégrée aux fonctionnalités et l'envoi de données pour des évaluations manuelles seront également désactivés. Google n'utilisera pas le contenu des utilisateurs de la version Enterprise (y compris les invites, entrées, sorties et ressources sources) pour entraîner des modèles. De cette façon, Google n'utilisera pas d'informations sur les utilisateurs de la version Enterprise pour entraîner ou améliorer ses modèles d'IA. Google n'enregistrera pas le contenu des utilisateurs de la version Enterprise (invites, sources, entrées ou sorties). Notez que ces données peuvent être conservées pendant 24 heures maximum pour des raisons de contextualisation. Ainsi, Google ne collectera ni ne stockera aucune donnée servant à alimenter une fonctionnalité d'IA ou générée par celle-ci. Cela inclut les entrées utilisateur, les sorties générées et les commentaires des utilisateurs.
+
+Si vous désactivez cette règle, la fonctionnalité sera complètement désactivée.</translation>
 <translation id="3338431256935927407">Paramètres de commande de la fonctionnalité d'importation cloud.</translation>
 <translation id="3339271789059866414">Configure la disponibilité du service proxy du système et les identifiants de proxy pour les services système.
       Si la règle n'est pas définie, le service proxy du système n'est pas disponible.</translation>
@@ -3786,6 +3803,7 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
 <translation id="4140646780789794190">Désactiver le partage des données de diagnostic avec Plugin VM</translation>
+<translation id="4144417751555442768">IA générative</translation>
 <translation id="4145383150978634398">Rendre le mode Bureau unifié accessible à l'utilisateur</translation>
 <translation id="4147818922357566987">Activer uniquement les variantes concernant les correctifs critiques</translation>
 <translation id="4150201353443180367">Écran</translation>
@@ -4732,6 +4750,7 @@ La désactivation du décodage vidéo avec accélération matérielle n'est pas 
 
       Si elle est désactivée ou n'est pas configurée, une appli Web kiosque ne peut utiliser que la fenêtre du navigateur principal, sans pouvoir en ouvrir une nouvelle. L'appel de n'importe quelle fonction JavaScript pour ouvrir une nouvelle fenêtre sera ignoré.</translation>
 <translation id="4980635395568992380">Type de données :</translation>
+<translation id="4981523774025330439">Certificats TLS non approuvés ou qui ne sont plus approuvés, mais qui peuvent être utilisés pour la création de chemins pour l'authentification du serveur</translation>
 <translation id="4981831669478419057">Les utilisateurs n'auront pas accès à la fonctionnalité Liste d'achats.</translation>
 <translation id="4983201894483989687">Autoriser l'exécution de plug-ins obsolètes</translation>
 <translation id="4986560318567565414">Chemin d'accès pour basculer vers Chrome à partir du navigateur secondaire.</translation>
@@ -5027,6 +5046,7 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
 <translation id="5252995168844634755">Si cette règle est définie sur "True", le mode bureau unifié est activé, ce qui permet aux applications de couvrir plusieurs écrans. En cas d'écrans individuels, les utilisateurs peuvent désactiver ce mode.
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le mode bureau unifié est désactivé, et les utilisateurs ne peuvent pas l'activer.</translation>
+<translation id="525500830356475308">Autoriser M'aider à écrire</translation>
 <translation id="5255162913209987122">Peut être recommandée</translation>
 <translation id="525543707238275321">Désactiver les rapports sur le CPU de l'appareil</translation>
 <translation id="5255790642269910630">Si cette règle est configurée, chaque écran pivote en fonction de l'orientation spécifiée, à chaque redémarrage ainsi que la première fois qu'il est affiché après une modification de la valeur de cette règle. Une fois connectés, les utilisateurs peuvent modifier le paramètre de rotation d'écran. Toutefois, le paramètre initial sera rétabli au redémarrage suivant. Cette règle s'applique à l'écran principal, ainsi qu'aux écrans secondaires.
@@ -6113,6 +6133,7 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
 Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 
 À partir de la version 114, cette règle est facultative si la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> est configurée. Si cette règle n'est pas configurée, les identifiants des modèles d'URI configurés via la règle <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> sont hachés sans salage.</translation>
+<translation id="622197575020133151">Configurer les différentes fonctionnalités qui utilisent l'IA générative.</translation>
 <translation id="6224070048795197148">Autoriser l'utilisateur à se servir du navigateur sans se connecter</translation>
 <translation id="6224304369267200483">URL/domaines automatiquement autorisés à recevoir une attestation de clé de sécurité</translation>
 <translation id="6225938950222983458">Cette règle est obsolète et non compatible, veuillez utiliser la règle <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" /> à la place.</translation>
@@ -6706,6 +6727,7 @@ Si cette règle est définie sur "False", l'ancien comportement est activé.</tr
 
       Si cette règle n'est pas définie, le comportement par défaut sera autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6640748114867542396">Ne pas autoriser les extensions gérées à utiliser l'API Enterprise Hardware Platform</translation>
+<translation id="6641109870010271671">Certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
 <translation id="6646912445796087001">Permet d'activer ou de désactiver les différentes fonctionnalités du clavier à l'écran. Cette règle s'applique uniquement si la règle "VirtualKeyboardEnabled" est activée.
 
@@ -7394,6 +7416,9 @@ Si cette règle est désactivée, les utilisateurs ne peuvent pas contourner la 
 <translation id="7167436895080860385">Permet aux utilisateurs d'afficher les mots de passe dans le gestionnaire de mots de passe (obsolète).</translation>
 <translation id="7172046613126456732">Autoriser le lancement de Chrome s'il n'est pas enregistré dans la gestion cloud du navigateur Chrome</translation>
 <translation id="7173856672248996428">Profil éphémère</translation>
+<translation id="7174158612490351828">Liste de clés publiques de certificat qui ne devraient plus être approuvées par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur TLS.
+
+La valeur de la règle est une liste de certificats X.509 encodés en base64. Les certificats associés à un SPKI (SubjectPublicKeyInfo) correspondant ne seront plus approuvés.</translation>
 <translation id="717630378807352957">Autorise toutes les imprimantes répertoriées dans le fichier de configuration.</translation>
 <translation id="7177293255621000064">Si vous définissez cette règle sur "True", tous les types de supports de stockage externes (clés USB, disques durs externes, cartes SD, autres cartes mémoire, etc.) sont alors indisponibles dans l'explorateur de fichiers. Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, les utilisateurs peuvent utiliser des supports de stockage externes sur leur appareil.
 
@@ -7516,6 +7541,7 @@ Si cette règle est désactivée ou n'est pas configurée, les paramètres de co
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise les paramètres actuels de vérification en ligne de la révocation.
 
       Sous <ph name="MAC_OS_NAME" />, cette règle n'a aucun effet si la règle <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
+<translation id="7278164481614262110">Créer des thèmes avec l'IA</translation>
 <translation id="7278854311116092134">Noms des hôtes de messagerie native à exclure de la liste de blocage</translation>
 <translation id="7291084543582732020">Si vous activez ce paramètre, les utilisateurs peuvent utiliser Smart Lock si les conditions requises pour cette fonctionnalité sont réunies.
 
@@ -7897,6 +7923,13 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, le reporting sera désactivé.
       Les règles dont les niveaux de restriction ont été définis sur "ALLOW" dans DataLeakPreventionRulesList ne signaleront aucun événement dans les deux cas.</translation>
 <translation id="7648907905084499629">Utiliser le comportement <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> pour les cookies sur tous les sites</translation>
+<translation id="7650618519247719562">Cette règle vous permet de contrôler la façon dont M'aider à écrire de <ph name="PRODUCT_NAME" /> traite les données de votre organisation. Elle est prioritaire sur toute règle globale à venir.
+
+Définissez cette règle sur "Autorisé" pour permettre l'utilisation de la fonctionnalité pour l'organisation.
+
+Définissez-la sur "Autoriser sans collecte de données" afin de désactiver la collecte des données de la version Enterprise pour l'entraînement de modèles. Le partage des données à l'aide de la boîte de dialogue "Commentaires" intégrée aux fonctionnalités et l'envoi de données pour des évaluations manuelles seront également désactivés. Google n'utilisera pas le contenu des utilisateurs de la version Enterprise (y compris les invites, entrées, sorties et ressources sources) pour entraîner des modèles. De cette façon, Google n'utilisera pas d'informations sur les utilisateurs de la version Enterprise pour entraîner ou améliorer ses modèles d'IA. Google n'enregistrera pas le contenu des utilisateurs de la version Enterprise (invites, sources, entrées ou sorties). Notez que ces données peuvent être conservées pendant 24 heures maximum pour des raisons de contextualisation. Ainsi, Google ne collectera ni ne stockera aucune donnée servant à alimenter une fonctionnalité d'IA ou générée par celle-ci. Cela inclut les entrées utilisateur, les sorties générées et les commentaires des utilisateurs.
+
+Si vous désactivez cette règle, la fonctionnalité sera complètement désactivée.</translation>
 <translation id="765347139142030086">Si cette règle est activée, les règles associées à un compte <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> prévalent en cas de conflit avec les règles <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
       Seules les règles provenant d'utilisateurs sécurisés peuvent être prioritaires. Un utilisateur sécurisé est affilié à une organisation qui gère son navigateur en utilisant <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Toutes les autres règles utilisateur prévalent par défaut.
@@ -7939,6 +7972,7 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> peut sélec
 
           La valeur de la règle doit être indiquée en millisecondes. Elle doit également être inférieure ou égale au délai d'arrêt de l'écran (le cas échéant) et au délai d'inactivité.</translation>
 <translation id="7680437377926096177">Ne plus afficher la boîte de dialogue de déconnexion sur la dernière fenêtre fermée.</translation>
+<translation id="7683729067082687012">Autoriser sans collecte de données</translation>
 <translation id="7683777542468165012">Actualisation dynamique des stratégies</translation>
 <translation id="7687943045976362719">Si cette règle est configurée, les types de contenus spécifiés sont traités par <ph name="PRODUCT_FRAME_NAME" />.
 
@@ -8380,6 +8414,7 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 
       Ce comportement ne se déclenchera pas si la navigation sécurisée est désactivée (soit par la règle, soit par l'utilisateur). Pour forcer l'activation de la navigation sécurisée, utilisez la règle <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> ou <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Désactiver <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> sur toutes les pages Web</translation>
+<translation id="8043616595863371483">Autoriser l'organiseur d'onglets</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="80453040817068401">Rendre le navigateur <ph name="LACROS_NAME" /> disponible</translation>
 <translation id="804619600634661088">Autoriser l'utilisation du débogage à distance</translation>
@@ -8779,6 +8814,8 @@ Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name
       Les origines doivent correspondre aux applications Web installées d'office à l'aide de la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou configurées en tant qu'applications kiosque. Pour connaître les spécifications de l'API Device Attributes, veuillez consulter https://wicg.github.io/WebApiDevice/device_attributes.</translation>
 <translation id="8375817202037102567">Bloquer l'accès en écriture aux fichiers et répertoires pour ces sites</translation>
 <translation id="8378266419596669629">Bloquer l'autorisation des polices locales pour ces sites</translation>
+<translation id="8379281645427937253">Liste des certificats TLS qui devraient être approuvés par <ph name="PRODUCT_NAME" /> pour l'authentification du serveur.
+Les certificats doivent être encodés en base64.</translation>
 <translation id="8379317372795444261">Authentification <ph name="BASIC_AUTH" /> autorisée sur les connexions HTTP</translation>
 <translation id="8381678031726288574">Appliquer les paramètres par défaut pour l'abandon de l'API U2F.</translation>
 <translation id="8381774264911275515">Désactiver le transfert des cookies d'authentification unique SAML dans la session utilisateur lors de la connexion</translation>
@@ -9603,6 +9640,7 @@ Remarque : Le cache est vidé en cas de redémarrage de l'appareil. Les donnée
 
 Si cette règle n'est pas configurée, la règle <ph name="ASK_NOTIFICATIONS_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="9110251436602897914">Signaler les informations sur les périphériques branchés à l'appareil</translation>
+<translation id="9110485853581788150">Liste de certificats non approuvés ou qui ne sont plus approuvés dans <ph name="PRODUCT_NAME" />, mais qui peuvent être utilisés comme des indications pour la création de chemins. Les certificats doivent être encodés en base64.</translation>
 <translation id="9111850884577810507">Ce champ doit correspondre à l'une des chaînes qui représentent une imprimante <ph name="PRODUCT_NAME" /> compatible. Cette chaîne sert à identifier et à installer le bon fichier PPD pour l'imprimante. Pour en savoir plus, consultez la page https://support.google.com/chrome?p=noncloudprint.</translation>
 <translation id="9112727953998243860">Fichier de configuration des imprimantes d'entreprise</translation>
 <translation id="9113058104383612727">Activer les outils de dépannage de kiosque</translation>

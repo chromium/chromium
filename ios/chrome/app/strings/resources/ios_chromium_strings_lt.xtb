@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">„Chromium“ patarimas</translation>
 <translation id="2168108852149185974">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pašalinkite:</translation>
 <translation id="2178608107313874732">„Chromium“ šiuo metu negali naudoti fotoaparato</translation>
+<translation id="219374086636266276">Galite <ph name="BEGIN_LINK" />tvarkyti, kokie „Chromium“ duomenys išsaugomi<ph name="END_LINK" /> „Google“ paskyroje.
+Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Ar norėtumėte, kad kitą kartą „Chromium“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
 <translation id="2218146227246548550">Organizacija reikalauja prisijungti, kad galėtumėte naudoti „Chromium“. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Šis adresas šiuo metu išsaugotas naršyklėje „Chromium“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Tai gali būti istorija ir automatinis pildymas.}one{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutę. Tai gali būti istorija ir automatinis pildymas.}few{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutes. Tai gali būti istorija ir automatinis pildymas.}many{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minutės. Tai gali būti istorija ir automatinis pildymas.}other{Taip nutinka, kai „Chromium“ nenaudojama {THRESHOLD} minučių. Tai gali būti istorija ir automatinis pildymas.}}</translation>
 <translation id="3472200483164753384">Nepalaikoma versijoje „Chromium Canary“</translation>
 <translation id="3478750326643748149">Slėpti parinktį „Išnaudokite visas „Chromium“ galimybes“</translation>
+<translation id="347967311580159871">Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chromium“ funkcijoms tobulinti, eikite į <ph name="BEGIN_LINK" />„Google“ paslaugas<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Slaptažodis nebuvo bendrintas. Patikrinkite interneto ryšį ir įsitikinkite, kad esate prisijungę prie „Chromium“. Tada bandykite dar kartą.</translation>
 <translation id="3554027294407525061">Išvalyti naršymo duomenis naršyklėje „Chromium“.</translation>
 <translation id="3567399274263440288">Jei norite išnaudoti visas „Chromium“ galimybes, prisijunkite prie „Chromium“ naudodami „Google“ paskyrą.</translation>

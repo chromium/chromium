@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Отменено</translation>
 <translation id="1020274983236703756">Эксклюзивный контент для <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Движения земли</translation>
+<translation id="103306827243002956">Недавние обои</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (потоки: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> ГГц)</translation>
 <translation id="1047773237499189053">Доступна новая функция. Чтобы получить подробную информацию, нажмите на стрелку вверх.</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Выберите хотя бы одну художественную галерею.</translation>
 <translation id="2230005943220647148">По шкале Цельсия</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Создать ещё</translation>
 <translation id="2236746079896696523">Подсветка клавиатуры</translation>
 <translation id="2240366984605217732">Переключение раскладки клавиатуры</translation>
 <translation id="225692081236532131">Статус активации</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Изображение на странице входа</translation>
 <translation id="2640549051766135490">Выбран альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="2652403576514495859">включить или отключить голосовой ввод</translation>
+<translation id="2656001153562991489">Только для Chromebook Plus</translation>
 <translation id="267442004702508783">обновить</translation>
 <translation id="268270014981824665">клавиатура затемнить</translation>
 <translation id="2712812801627182647">Ключ аутентификации TLS</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Назад</translation>
 <translation id="3858860766373142691">Название</translation>
 <translation id="3862598938296403232">Введите описание.</translation>
+<translation id="386280020966669610">Случайные обои</translation>
 <translation id="3865289341173661845">Справочный контент недоступен.</translation>
 <translation id="3865414814144988605">Разрешение</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">Новая точка доступа</translation>
 <translation id="4093865285251893588">Изображение профиля</translation>
 <translation id="409427325554347132">Сохранить данные</translation>
+<translation id="409469431304488632">Эксперимент</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
 <translation id="4110686435123617899">Выбрать альбом "<ph name="TITLE" />" с описанием "<ph name="DESC" />"</translation>
 <translation id="4111761024568264522">Сенсорная панель USB</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Слайд-шоу</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
+<translation id="4305367063258930534">Обои от Google</translation>
 <translation id="4333390807948134856">Клавиша <ph name="KEY_NAME" /> нажата</translation>
 <translation id="4354430579665871434">клавиша</translation>
 <translation id="4361257691546579041">Точка доступа используется по умолчанию.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Имя хоста сервера</translation>
 <translation id="5089810972385038852">Штат</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Синонимы:</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5145081769226915336">Включать тёмную тему автоматически?</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Заряжается, осталось <ph name="TIME_VALUE" /></translation>
 <translation id="7066538517128343186">клавиша <ph name="KEY" /></translation>
 <translation id="7068619307603204412">Подготовьте устройство</translation>
+<translation id="7076851914315147928">Выбрать обои</translation>
 <translation id="708426984172631313">ОСТАНОВЛЕН</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Сбой: ошибка авторизации</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Светлая тема</translation>
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7805768142964895445">Состояние</translation>
+<translation id="7819831665603418705">Шаблоны</translation>
 <translation id="7819857487979277519">PSK (WPA или RSN)</translation>
 <translation id="7841134249932030522">Использовать тёмную тему</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
+<translation id="8339024191194156249">Подробнее об автоматическом запуске</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> или <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8349826889576450703">Launcher</translation>

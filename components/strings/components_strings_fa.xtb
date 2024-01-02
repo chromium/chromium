@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">صفحه بازدید شده است</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{هیچ‌کدام}=1{‏از ۱ سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}one{‏از # سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}other{‏از # سایت (از سیستم «حساب Google» خود خارج نمی‌شوید)}}</translation>
 <translation id="1165852471352757509">مستند تلویزیونی و غیرتخیلی</translation>
+<translation id="1167877250265821930">‫<ph name="LANGUAGE" /> بارگیری نشد</translation>
 <translation id="1174644974616730562">پاکت چینی شماره ۱</translation>
 <translation id="1174723505405632867">می‌خواهید به <ph name="EMBEDDED_URL" /> اجازه دهید از کوکی‌ها و داده‌های سایت در <ph name="TOP_LEVEL_URL" /> استفاده کند؟
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">‏تولیدکننده PDF:</translation>
 <translation id="2130448033692577677">‏چون خط‌مشی DnsOverHttpsMode تنظیم نشده است، ممکن است الگوهایی که مشخص کردید اعمال نشوند.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">درحال بارگیری بسته زبان <ph name="LANGUAGE" />…‏<ph name="PERCENT" />٪</translation>
 <translation id="2135799067377889518">لباس مردانه</translation>
 <translation id="2137891579555018930">درانتظار اجازه…</translation>
 <translation id="213826338245044447">نشانک‌های تلفن‌ همراه</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">لوح فشرده</translation>
 <translation id="2235344399760031203">کوکی‌های شخص ثالث مسدود شده‌اند</translation>
 <translation id="2239100178324503013">اکنون ارسال شود</translation>
+<translation id="2239114457614475014">ویرایش ورودی</translation>
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
 <translation id="2246264294482514010">۱۲ × ۱۰ اینچ</translation>
 <translation id="2246480341630108201">ولی‌تان هنوز موافقت نکرده است</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">مراقبت از صورت و بدن</translation>
 <translation id="2962073860865348475">۱۸ × ۱۲ اینچ</translation>
 <translation id="2968103128155246731">وانت و ون کوچک</translation>
+<translation id="2971483124699139256">«رأی موافق» بازخوردی با این معنا ارسال می‌کند که شما نوشتار تولیدشده را می‌پسندید.</translation>
 <translation id="2972581237482394796">انجام مجدد</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، درحال‌حاضر انتخاب شده است. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">اپرا</translation>
@@ -1206,7 +1210,7 @@
 <translation id="3402261774528610252">اتصال استفاده‌شده برای بار کردن این سایت از «امنیت لایه انتقال» نسخه ۱.۰ یا ۱.۱ استفاده می‌کرد که منسوخ شده است و در آینده غیرفعال خواهد شد. بعد از غیرفعال شدن، کاربران نمی‌توانند این سایت را بار کنند. سرور باید «امنیت لایه انتقال» نسخه ۱.۲ یا بالاتر را فعال کند.</translation>
 <translation id="3405664148539009465">سفارشی کردن قلم‌ها</translation>
 <translation id="3407789382767355356">ورود به سیستم شخص ثالث</translation>
-<translation id="3409896703495473338">مدیریت تنظیمات امنیتی</translation>
+<translation id="3409896703495473338">مدیریت تنظیمات ایمنی</translation>
 <translation id="3414952576877147120">اندازه:</translation>
 <translation id="341513675006332771">‏دکمه «اجرای بازی دایناسور Chrome»؛ برای بازی کردن بازی دویدن دایناسور در Chrome، آن را فعال کنید</translation>
 <translation id="3422248202833853650">سعی کنید از برنامه‌های دیگر خارج شوید تا حافظه آزاد شود.</translation>
@@ -1573,6 +1577,7 @@
 <translation id="4132448310531350254">کنترل‌کننده تکراری برای پسوند فایل «<ph name="FILE_EXTENSION" />» که توسط برنامه‌های «<ph name="POLICY_IDS_LIST" />» ارجاع داده شده است.</translation>
 <translation id="4134123981501319574">ایجاد سند</translation>
 <translation id="413544239732274901">بیشتر بدانید</translation>
+<translation id="4139859738677203214">«رأی مخالف» فرمی را برای ارسال بازخورد دقیق درباره علت نپسندیدن نوشتار تولیدشده باز می‌کند.</translation>
 <translation id="4140905530744469899">شناسه نمایه:</translation>
 <translation id="4142935452406587478">سینی ۱۰</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -2918,7 +2923,7 @@
 <translation id="6832753933931306326">فرم به‌طور خودکار تکمیل شده است</translation>
 <translation id="6841864657731852591">سیلندر گراور</translation>
 <translation id="6842196666980060516">۲۶۰ × ۱۸۴ میلی‌متر</translation>
-<translation id="6849023911358004088">‏دکمه «مدیریت تنظیمات امنیتی»؛ برای مدیریت «مرور ایمن» و موارد دیگر در تنظیمات Chrome، آن را فعال کنید</translation>
+<translation id="6849023911358004088">‏دکمه «مدیریت تنظیمات ایمنی»؛ برای مدیریت «مرور ایمن» و موارد دیگر در تنظیمات Chrome، آن را فعال کنید</translation>
 <translation id="6852204201400771460">برنامه بار کردن مجدد شود؟</translation>
 <translation id="6857776781123259569">مدیریت گذرواژه‌ها…</translation>
 <translation id="6858034839887287663">A2x4</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">ماهی‌گیری</translation>
 <translation id="8884537526797090108">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="8888187300091017436">تشک</translation>
+<translation id="8890048757975398817">‫<ph name="READERNAME" /> کنترل شود و دسترسی به کارت هوشمند دردسترس آن مجاز شود؟</translation>
 <translation id="8891727572606052622">حالت پروکسی نامعتبر است.</translation>
 <translation id="8894794286471754040">ابتدا لبه بلند</translation>
 <translation id="8897428486789851669">شنا</translation>

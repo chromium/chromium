@@ -239,6 +239,7 @@
 <translation id="5099358668261120049">Verranno eliminati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
 <translation id="5100237604440890931">Compresso. Fai clic per espandere.</translation>
 <translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
+<translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>
 <translation id="5186036860380548585">Opzione disponibile nella parte superiore dello schermo</translation>
 <translation id="5197729504361054390">I contatti che selezioni verranno condivisi con <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>

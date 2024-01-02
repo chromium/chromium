@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Ymwelir â'r dudalen</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Dim}=1{O 1 wefan (byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google)}two{O # wefan (byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google)}few{O # gwefan (byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google)}many{O # gwefan (byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google)}other{O # gwefan (byddwch yn parhau wedi'ch mewngofnodi i'ch Cyfrif Google)}}</translation>
 <translation id="1165852471352757509">Rhaglenni teledu dogfen neu ffeithiol</translation>
+<translation id="1167877250265821930">Wedi methu â lawrlwytho <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Amlen Chinese #1</translation>
 <translation id="1174723505405632867">Ydych chi am ganiatáu i <ph name="EMBEDDED_URL" /> ddefnyddio cwcis a data gwefan ar <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2126374524350484896">Cynhyrchydd PDF:</translation>
 <translation id="2130448033692577677">Mae'n bosib na fydd y templedi rydych wedi'u nodi yn cael eu defnyddio oherwydd nad yw'r polisi DnsOverHttpsMode wedi'i osod.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Lawrlwytho pecyn iaith <ph name="LANGUAGE" />...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Dillad dynion</translation>
 <translation id="2137891579555018930">Wrthi'n aros am ganiatâd…</translation>
 <translation id="213826338245044447">Nodau Tudalen Symudol</translation>
@@ -655,6 +657,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2233745931693710080">Cryno Ddisg</translation>
 <translation id="2235344399760031203">Mae cwcis trydydd parti yn cael eu rhwystro</translation>
 <translation id="2239100178324503013">Anfon nawr</translation>
+<translation id="2239114457614475014">Golygu mewnbwn</translation>
 <translation id="2241693394036365668">Mae'r ffeil wedi'i lawrlwytho</translation>
 <translation id="2246264294482514010">10 x 12 modfedd</translation>
 <translation id="2246480341630108201">Nid yw dy riant wedi dweud ei fod yn iawn eto</translation>
@@ -989,6 +992,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2959113999220720579">Gofal wyneb a chorff</translation>
 <translation id="2962073860865348475">12 x 18 modfedd</translation>
 <translation id="2968103128155246731">Faniau a faniau bach</translation>
+<translation id="2971483124699139256">Mae bodiau i fyny yn cyflwyno adborth rydych yn hoffi'r testun a gynhyrchwyd.</translation>
 <translation id="2972581237482394796">&amp;Ailwneud</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, dewiswyd ar hyn o bryd. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,6 +1577,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4132448310531350254">Dyblygu trinyddion ar gyfer file_extension "<ph name="FILE_EXTENSION" />" y cyfeirir ato gan apiau "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Creu dogfen</translation>
 <translation id="413544239732274901">Dysgu rhagor</translation>
+<translation id="4139859738677203214">Mae bodiau i lawr yn agor ffurflen ar gyfer cyflwyno adborth manwl ar pam nad ydych yn hoffi'r testun a gynhyrchwyd.</translation>
 <translation id="4140905530744469899">Dull adnabod proffil</translation>
 <translation id="4142935452406587478">Hambwrdd 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Manylion ychwanegol:
 <translation id="8877780815363510165">Pysgota</translation>
 <translation id="8884537526797090108">Methu â recordio cynnwys cyfrinachol</translation>
 <translation id="8888187300091017436">Matresi</translation>
+<translation id="8890048757975398817">Rheoli <ph name="READERNAME" /> a chael mynediad at y cerdyn clyfar sy'n hygyrch iddo.</translation>
 <translation id="8891727572606052622">Modd dirprwy annilys.</translation>
 <translation id="8894794286471754040">Ymyl hir yn gyntaf</translation>
 <translation id="8897428486789851669">Nofio</translation>

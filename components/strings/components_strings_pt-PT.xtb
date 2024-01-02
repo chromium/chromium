@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">A página é visitada</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{De 1 site (mantém a sessão iniciada na sua Conta Google)}other{De # sites (mantém a sessão iniciada na sua Conta Google)}}</translation>
 <translation id="1165852471352757509">Programas não ficcionais e documentários televisivos</translation>
+<translation id="1167877250265821930">Falha ao transferir <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Envelope Chinese n.º 1</translation>
 <translation id="1174723505405632867">Permitir que <ph name="EMBEDDED_URL" /> utilize cookies e dados de sites em <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2126374524350484896">Criador do PDF:</translation>
 <translation id="2130448033692577677">Os modelos que especificou podem não ser aplicados porque a política DnsOverHttpsMode não está definida.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">A transferir o pacote de idiomas <ph name="LANGUAGE" />…<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">Vestuário para homem</translation>
 <translation id="2137891579555018930">A aguardar autorização…</translation>
 <translation id="213826338245044447">Marcadores de Telemóvel</translation>
@@ -655,6 +657,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Os cookies de terceiros estão bloqueados</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
+<translation id="2239114457614475014">Editar entrada</translation>
 <translation id="2241693394036365668">É transferido um ficheiro</translation>
 <translation id="2246264294482514010">10 x 12 pol.</translation>
 <translation id="2246480341630108201">O teu pai ou mãe ainda não autorizou</translation>
@@ -989,6 +992,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2959113999220720579">Cuidados para o rosto e o corpo</translation>
 <translation id="2962073860865348475">12 x 18 pol.</translation>
 <translation id="2968103128155246731">Carrinhas e monovolumes</translation>
+<translation id="2971483124699139256">A opção Gosto envia feedback a indicar que gosta do texto gerado.</translation>
 <translation id="2972581237482394796">&amp;Repetir</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> selecionado atualmente. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -1573,6 +1577,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4132448310531350254">Controladores duplicados para a file_extension "<ph name="FILE_EXTENSION" />" referenciada pelas apps "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Criar documento</translation>
 <translation id="413544239732274901">Saiba mais</translation>
+<translation id="4139859738677203214">A opção Não gosto abre um formulário para enviar feedback detalhado sobre o motivo pelo qual não gosta do texto gerado.</translation>
 <translation id="4140905530744469899">ID do perfil</translation>
 <translation id="4142935452406587478">Tabuleiro 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@ Detalhes adicionais:
 <translation id="8877780815363510165">Pesca</translation>
 <translation id="8884537526797090108">Não é possível gravar conteúdo confidencial</translation>
 <translation id="8888187300091017436">Colchões</translation>
+<translation id="8890048757975398817">Controlar o dispositivo <ph name="READERNAME" /> e ter acesso ao respetivo cartão inteligente?</translation>
 <translation id="8891727572606052622">Modo de proxy inválido.</translation>
 <translation id="8894794286471754040">Margem larga primeiro</translation>
 <translation id="8897428486789851669">Natação</translation>

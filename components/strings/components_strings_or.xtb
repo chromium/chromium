@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">ପୃଷ୍ଠା ଭିଜିଟ୍ କରାଯାଇଛି</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{କିଛି ନାହିଁ}=1{1 ସାଇଟରୁ (ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ ହୋଇ ରହିବେ)}other{# ସାଇଟରୁ (ଆପଣ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ ହୋଇ ରହିବେ)}}</translation>
 <translation id="1165852471352757509">ଟିଭି ଡକ୍ୟୁମେଣ୍ଟାରୀ ଏବଂ ନନଫିକ୍ସନ</translation>
+<translation id="1167877250265821930"><ph name="LANGUAGE" />କୁ ଡାଉନଲୋଡ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="1174644974616730562">ଏନଭେଲପ ଚାଇନିଜ #1</translation>
 <translation id="1174723505405632867">ଆପଣ <ph name="EMBEDDED_URL" />କୁ <ph name="TOP_LEVEL_URL" />ରେ କୁକୀ ଏବଂ ସାଇଟ ଡାଟା ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଚାହାଁନ୍ତି କି?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">PDF ପ୍ରଯୋଜକ:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178"><ph name="LANGUAGE" /> ଭାଷା ପେକକୁ ଡାଉନଲୋଡ କରାଯାଉଛି...<ph name="PERCENT" />%</translation>
 <translation id="2135799067377889518">ପୁରୁଷମାନଙ୍କର ପୋଷାକ</translation>
 <translation id="2137891579555018930">ଅନୁମତି ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
 <translation id="213826338245044447">ମୋବାଇଲ୍‍ ବୁକ୍‍ମାର୍କ</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">କମ୍ପାକ୍ଟ ଡିସ୍କ</translation>
 <translation id="2235344399760031203">ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="2239100178324503013">ବର୍ତ୍ତମାନ ପଠାନ୍ତୁ</translation>
+<translation id="2239114457614475014">ଇନପୁଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2241693394036365668">ଫାଇଲ୍ ଡାଉନଲୋଡ୍ କରାଯାଇଛି</translation>
 <translation id="2246264294482514010">10 x 12 ଇଞ୍ଚ</translation>
 <translation id="2246480341630108201">ତୁମ ବାପା କିମ୍ବା ମା ଏପର୍ଯ୍ୟନ୍ତ 'ଏହା ଠିକ୍ ଅଛି' ବୋଲି କହିନାହାଁନ୍ତି</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">ଫେସ ଏବଂ ବଡି କେୟାର</translation>
 <translation id="2962073860865348475">12 x 18 ଇଞ୍ଚ</translation>
 <translation id="2968103128155246731">ଭ୍ୟାନ ଏବଂ ମିନିଭ୍ୟାନଗୁଡ଼ିକ</translation>
+<translation id="2971483124699139256">ଥମ୍ବସ ଅପ 'ଜେନେରେଟ ହୋଇଥିବା ଟେକ୍ସଟକୁ ଆପଣ ପସନ୍ଦ କରନ୍ତି' ବୋଲି ମତାମତ ଦାଖଲ କରିଥାଏ।</translation>
 <translation id="2972581237482394796">&amp;ପୁନଃବତ୍</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ସାମ୍ପ୍ରତିକ ଭାବେ ଚୟନ କରାଯାଇଛି । <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ଅପେରା</translation>
@@ -1570,6 +1574,7 @@
 <translation id="4132448310531350254">ଆପ୍ସ "<ph name="POLICY_IDS_LIST" />" ଦ୍ୱାରା ରେଫରେନ୍ସ କରାଯାଇଥିବା file_extension "<ph name="FILE_EXTENSION" />" ପାଇଁ ଡୁପ୍ଲିକେଟ ହେଣ୍ଡଲର।</translation>
 <translation id="4134123981501319574">ଡକ୍ୟୁମେଣ୍ଟ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="413544239732274901">ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="4139859738677203214">ଆପଣ କାହିଁକି ଜେନେରେଟ ହୋଇଥିବା ଟେକ୍ସଟକୁ ନାପସନ୍ଦ କରନ୍ତି ସେ ବିଷୟରେ ସବିଶେଷ ମତାମତ ଦାଖଲ କରିବା ପାଇଁ ଥମ୍ବସ ଡାଉନ ଏକ ଫର୍ମକୁ ଖୋଲିଥାଏ।</translation>
 <translation id="4140905530744469899">ପ୍ରୋଫାଇଲ ID:</translation>
 <translation id="4142935452406587478">ଟ୍ରେ 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3983,6 +3988,7 @@
 <translation id="8877780815363510165">ଫିସିଂ</translation>
 <translation id="8884537526797090108">ଗୋପନୀୟ ବିଷୟବସ୍ତୁକୁ ରେକର୍ଡ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="8888187300091017436">ଗଦି</translation>
+<translation id="8890048757975398817"><ph name="READERNAME" />କୁ ନିୟନ୍ତ୍ରଣ କରି ଏହାକୁ ଆକ୍ସେସ କରିପାରୁଥିବା ଏକ ସ୍ମାର୍ଟ କାର୍ଡକୁ ଆକ୍ସେସ ପାଆନ୍ତୁ।</translation>
 <translation id="8891727572606052622">ଅବୈଧ ପ୍ରକ୍ସି ମୋଡ୍</translation>
 <translation id="8894794286471754040">ପ୍ରଥମେ ଲମ୍ବା ଏଡଜ୍</translation>
 <translation id="8897428486789851669">ସନ୍ତରଣ</translation>

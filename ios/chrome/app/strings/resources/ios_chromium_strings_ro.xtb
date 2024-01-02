@@ -42,6 +42,8 @@
 <translation id="2109439615198500433">Sfat pentru Chromium</translation>
 <translation id="2168108852149185974">Unele suplimente blochează Chromium. Dezinstalează:</translation>
 <translation id="2178608107313874732">Momentan, Chromium nu poate folosi camera foto</translation>
+<translation id="219374086636266276">Poți <ph name="BEGIN_LINK" />gestiona ce date Chromium se salvează<ph name="END_LINK" /> în Contul Google.
+Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chromium, accesează <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
 <translation id="2218146227246548550">Organizația îți solicită să te conectezi pentru a folosi Chromium. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Această adresă se salvează momentan în Chromium. Pentru a o folosi în toate produsele Google, salveaz-o în Contul Google, <ph name="USER_EMAIL" />.</translation>
@@ -79,6 +81,7 @@
 <translation id="3387107508582892610">{THRESHOLD,plural, =1{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minut. Aici pot fi incluse istoricul și completarea automată.}few{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} minute. Aici pot fi incluse istoricul și completarea automată.}other{Acest lucru se întâmplă când Chromium nu este folosit timp de {THRESHOLD} de minute. Aici pot fi incluse istoricul și completarea automată.}}</translation>
 <translation id="3472200483164753384">Nu se acceptă în Chromium Canary</translation>
 <translation id="3478750326643748149">Ascunde opțiunea „Profită la maximum de Chromium”</translation>
+<translation id="347967311580159871">Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experiența în Chromium, accesează <ph name="BEGIN_LINK" />Serviciile Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">Parola nu a fost trimisă. Verifică-ți conexiunea la internet și asigură-te că te-ai conectat la Chromium. Apoi încearcă din nou.</translation>
 <translation id="3554027294407525061">Șterge datele de navigare din Chromium.</translation>
 <translation id="3567399274263440288">Pentru a profita din plin de Chromium, conectează-te la Chromium folosind Contul Google.</translation>

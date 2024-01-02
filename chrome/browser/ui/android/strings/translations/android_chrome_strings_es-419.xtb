@@ -627,6 +627,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4487967297491345095">Todos los datos de app de Chrome se borrarán de forma permanente. Esta información incluye todos los archivos, opciones de configuración, cuentas, bases de datos, etc.</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
 <translation id="4491323382106587961">Elige una cuenta. Actualmente seleccionaste <ph name="EMAIL" />.</translation>
+<translation id="4494806687727322324">El administrador activó la función para guardar contraseñas</translation>
 <translation id="4508528996305412043">Se abrió el menú de la tarjeta de feed</translation>
 <translation id="4509501256689523862">Mientras navegas, la personalización de un anuncio que ves depende de este parámetro de configuración, los <ph name="BEGIN_LINK_1" />temas de los anuncios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Hace # día}other{Hace # días}}</translation>
@@ -796,6 +797,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5304593522240415983">Este campo no puede quedar en blanco.</translation>
 <translation id="5308380583665731573">Conectar</translation>
+<translation id="5316947901395241499">El administrador desactivó la opción para guardar contraseñas</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319359161174645648">Google recomienda Chrome</translation>
 <translation id="5320351714793324716">Si permites las cookies, Chrome puede usarlas cuando realice la precarga</translation>

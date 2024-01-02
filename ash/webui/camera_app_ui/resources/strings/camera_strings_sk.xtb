@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Posunutie doprava</translation>
 <translation id="3081586908890909590">Prepnúť na zaznamenávanie videa</translation>
 <translation id="313467653172006084">30 sním./s</translation>
+<translation id="3158534262962737808">Pripojiť sa k sieti <ph name="WIFINAME" /></translation>
 <translation id="3227137524299004712">Mikrofón</translation>
 <translation id="3240426699337459095">Odkaz bol skopírovaný</translation>
 <translation id="3354465018370944241">Nastavenia fotiek</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Pomer strán fotky</translation>
 <translation id="5057360777601936059">Fotoaparát je momentálne nedostupný.
         Skontrolujte, či je správne pripojený.</translation>
+<translation id="5157591164390831335">Bola zistená webová adresa.</translation>
 <translation id="5163387177077603948">Presúvate doprava</translation>
 <translation id="5235304959032763950">16 ku 9</translation>
 <translation id="5266635337630551423">Ľavý horný roh dokumentu</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Ďakujeme za spätnú väzbu na aplikáciu Fotoaparát.
 
 Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a opíšte, čo nie je v poriadku. (Napríklad fotka je príliš tmavá alebo snímaný objekt nie je zaostrený).</translation>
+<translation id="6519884562954018934">Pripojiť sa k sieti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6617916774429601017">Zobraziť všetky rozlíšenia</translation>
 <translation id="6631515515009660915">Vypnutie zrkadlenia</translation>
@@ -158,6 +161,7 @@ Ak sa týka kvality obrázkov či videí, priložte ukážku fotky alebo videa a
 <translation id="8711011893539266636">Prepínač vypnutia zvuku mikrofónu. Zvuk je vypnutý.</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobraziť ukážku metadát</translation>
+<translation id="874854738381978209">Bola zistená sieť Wi‑Fi.</translation>
 <translation id="8815966864175525708">Prepnúť na nasnímanie portrétovej fotky</translation>
 <translation id="8828441885228359828">Pokračovať v nahrávaní</translation>
 <translation id="8870695351537079478">Zaznamenávanie sa nedá spustiť</translation>

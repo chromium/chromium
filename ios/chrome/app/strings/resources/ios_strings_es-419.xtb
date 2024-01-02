@@ -130,6 +130,7 @@
 <translation id="1622717322707146952">Selecciona "Agregar al Calendario de Google" o "Agregar al Calendario de Apple".</translation>
 <translation id="1626771852476987600"><ph name="COUNT" /> contraseñas reutilizadas</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
+<translation id="1641316430523156212">Seguir</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="165008673352427892">Nueva función</translation>
 <translation id="1650222530560417226">Presiona el botón "Iniciar registro" para recopilar de todas las pestañas futuros errores y registros de la Consola de JavaScript. Se recopilarán los registros (y almacenarán solo en memoria) hasta que se cierre esta página o se presione el botón "Detener registro".</translation>
@@ -216,6 +217,7 @@
 <translation id="2139502497535990641">¿Quieres activar las alertas de precios?</translation>
 <translation id="2139867232736819575">Buscar el texto copiado</translation>
 <translation id="214201757571129614">Acceder…</translation>
+<translation id="2145004670974387485">Selecciona la cuenta que quieres usar para guardar <ph name="FILENAME" /></translation>
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2149973817440762519">Editar marcador</translation>
 <translation id="2175927920773552910">Código QR</translation>
@@ -312,6 +314,7 @@ Tampoco pueden usar cookies para ver la actividad de navegación en diferentes s
 <translation id="2664621323652615289">Detener</translation>
 <translation id="2666092431469916601">Superior</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
+<translation id="2681158575552244226">guardando en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="2690858294534178585">La cámara se está usando</translation>
 <translation id="2691653761409724435">No disponible sin conexión</translation>
 <translation id="2695507686909505111">Se tradujo la página</translation>
@@ -478,6 +481,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3519193562722059437">Abre una pestaña para navegar por la Web.</translation>
 <translation id="3519905498307021260">{count,plural, =1{Abrir la pestaña}other{Abrir {count} pestañas}}</translation>
 <translation id="3523789730715594198">Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
+<translation id="3526783603136816353">Selecciona la cuenta que quieres usar para guardar <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="3527085408025491307">Carpeta</translation>
 <translation id="3529024052484145543">No seguro</translation>
 <translation id="3530206579861815432">Encuentra rápidamente las pestañas que abriste y cerraste recientemente en tus dispositivos sincronizados.</translation>
@@ -515,6 +519,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3738428049780661523">Creación: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Ocultar la opción Descargas</translation>
 <translation id="3745190878148784130">Ocultar la opción Hacer zoom en el texto</translation>
+<translation id="375773422023477320">Favoritos</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3768725474733206671">Volver a abrir última pestaña</translation>
 <translation id="3771033907050503522">Pestañas de incógnito</translation>
@@ -553,6 +558,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3929457972718048006">Direcciones</translation>
 <translation id="3955822496205734389">Tienes contraseñas poco seguras.</translation>
 <translation id="3959736869653157332">Menú → Nueva pestaña de incógnito</translation>
+<translation id="3962326069546168954">Guardar</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3968505803272650567">Administrar intereses</translation>
 <translation id="3989635538409502728">Salir</translation>
@@ -1086,6 +1092,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6685259053455152195">Accesos directos para modificar rápidamente la configuración y usar funciones de la barra de direcciones</translation>
 <translation id="6710079714193676716">Tu organización administra el navegador. Es posible que algunas funciones no estén disponibles. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="6713747756340119864">Google Apps</translation>
+<translation id="6716730056313760676">se guardó en Drive para <ph name="USER_EMAIL" />.</translation>
 <translation id="672735642903863329">Accede a tus favoritos, contraseñas y más en todos tus dispositivos.</translation>
 <translation id="6730682669179532099">No se pueden exportar las contraseñas</translation>
 <translation id="6732087373923685049">cámara</translation>
@@ -1104,6 +1111,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="6790502149545262384">Pronto, cuando abras una nueva pestaña, verás historias de <ph name="CHANNEL_NAME" />.</translation>
 <translation id="6797885426782475225">Búsqueda por voz</translation>
 <translation id="6800349425672670802">Puedes acceder a todas las pestañas abiertas desde el Alternador de pestañas.</translation>
+<translation id="6805179248725678418">Guardar en Google Drive</translation>
 <translation id="6807889908376551050">Mostrar todos...</translation>
 <translation id="681368974849482173">Elemento creado</translation>
 <translation id="6822587385560699678">Si la activas, se guardarán las contraseñas en <ph name="ACCOUNT" />. Cuando está desactivada, las contraseñas se guardan solo en este dispositivo.</translation>
@@ -1159,6 +1167,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7102005569666697658">Descargando… <ph name="FILE_SIZE" /></translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108762695052995889">Visitar sitio</translation>
+<translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7133798577887235672">Nombre completo</translation>
 <translation id="7136892417564438900">La cámara no está disponible</translation>
 <translation id="7141960840225504692">Se cerrarán las pestañas y se borrarán los datos de navegación</translation>
@@ -1286,6 +1295,7 @@ Cuando está activado el modo Incógnito, los sitios no pueden usar cookies para
 <translation id="7856733331829174190">No se pudo descargar</translation>
 <translation id="7859704718976024901">Historial de navegación</translation>
 <translation id="7866501058614003444">Se anuló correctamente el seguimiento de este paquete.</translation>
+<translation id="7866872729285243843">Para obtener tu Lista de lectura en todos tus dispositivos, activa "Lista de lectura" en la configuración.</translation>
 <translation id="7866993391592926595">Si ocultas esta tarjeta, se desactivará el seguimiento de paquetes y se quitarán todos tus datos</translation>
 <translation id="7870750252270996949">Imagen copiada de Lens</translation>
 <translation id="7879275349003161544">Mostrar descargas</translation>

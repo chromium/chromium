@@ -7,6 +7,7 @@
 <translation id="1018656279737460067">Peruutettu</translation>
 <translation id="1020274983236703756">Eksklusiivista sisältöä nyt saatavilla: <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
+<translation id="103306827243002956">Viimeisimmät taustakuvat</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> viestiketju, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uusi ominaisuus saatavilla, tutki sitä painamalla ylänuolta.</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
@@ -191,6 +192,7 @@
 <translation id="222447520299472966">Ainakin yksi Taidegalleria-albumi on valittava</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2230624078793142213">Luo lisää</translation>
 <translation id="2236746079896696523">Näppäimistön taustavalo päälle/pois</translation>
 <translation id="2240366984605217732">Asettelun valitsin</translation>
 <translation id="225692081236532131">Aktivoinnin tila</translation>
@@ -242,6 +244,7 @@
 <translation id="2638662041295312666">Kirjautumiskuva</translation>
 <translation id="2640549051766135490">Albumi <ph name="TITLE" /> <ph name="DESC" /> valittu</translation>
 <translation id="2652403576514495859">ota sanelu käyttöön tai poista se käytöstä</translation>
+<translation id="2656001153562991489">Vain Chromebook Plus</translation>
 <translation id="267442004702508783">Päivitä.</translation>
 <translation id="268270014981824665">näppäimistön himmeä</translation>
 <translation id="2712812801627182647">TLS-todennusavain</translation>
@@ -374,6 +377,7 @@
 <translation id="385051799172605136">Takaisin</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3862598938296403232">Kuvaus on pakollinen</translation>
+<translation id="386280020966669610">Kaipaan inspiraatiota</translation>
 <translation id="3865289341173661845">Ohjesisältöä ei ole saatavilla.</translation>
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="3866249974567520381">Kuvaus</translation>
@@ -405,6 +409,7 @@
 <translation id="4060260348856573701">Uusi APN</translation>
 <translation id="4093865285251893588">Profiilikuva</translation>
 <translation id="409427325554347132">Tallenna testin tulokset</translation>
+<translation id="409469431304488632">Kokeilu</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
 <translation id="4110686435123617899">Valitse albumi <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB-kosketuslevy</translation>
@@ -440,6 +445,7 @@
 <translation id="4289849978083912975">Diaesitys</translation>
 <translation id="4297501883039923494">Pysähtynyt – Tuntematon virhe</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kuvaa</translation>
+<translation id="4305367063258930534">Googlen tarjoama taustakuva</translation>
 <translation id="4333390807948134856">Näppäintä painetaan: <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">näppäin</translation>
 <translation id="4361257691546579041">APN-tyyppi on oletus.</translation>
@@ -552,6 +558,7 @@
 <translation id="5088172560898466307">Palvelimen isäntänimi</translation>
 <translation id="5089810972385038852">Osavaltio/alue</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
+<translation id="5108781503443873320">Samantyyppisiä:</translation>
 <translation id="5137451382116112100">Koko näyttö</translation>
 <translation id="5142961317498132443">Todennus</translation>
 <translation id="5145081769226915336">Laitetaanko tumma tila päälle automaattisesti?</translation>
@@ -649,7 +656,7 @@
 <translation id="5860033963881614850">Pois päältä</translation>
 <translation id="5860491529813859533">Ota käyttöön</translation>
 <translation id="5876385649737594562">Laita tämä päälle, jotta voit valita vaihtoehdot</translation>
-<translation id="588258955323874662">Koko ruutu</translation>
+<translation id="588258955323874662">Koko näyttö</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5901630391730855834">Keltainen</translation>
 <translation id="5903200662178656908">Laite on näppäimistön ja hiiren yhdistelmä.</translation>
@@ -809,6 +816,7 @@
 <translation id="7059230779847288458">Ladataan, täynnä <ph name="TIME_VALUE" /> päästä</translation>
 <translation id="7066538517128343186"><ph name="KEY" />-näppäin</translation>
 <translation id="7068619307603204412">Valmistele laite</translation>
+<translation id="7076851914315147928">Valitse taustakuva</translation>
 <translation id="708426984172631313">LOPETETTU</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Epäonnistui – Valtuutus epäonnistui</translation>
@@ -913,6 +921,7 @@
 <translation id="7799817062559422778">Vaalea tila</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7805768142964895445">Tila</translation>
+<translation id="7819831665603418705">Käytä mallia</translation>
 <translation id="7819857487979277519">PSK (WPA tai RSN)</translation>
 <translation id="7841134249932030522">Ota tumma tila käyttöön</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
@@ -976,6 +985,7 @@
 <translation id="8318753676953949627">Ei kuvia</translation>
 <translation id="8329018942023753850">laskin-sovellus</translation>
 <translation id="8336739000755212683">Vaihda laitteen tilikuva</translation>
+<translation id="8339024191194156249">Lue lisää automaattisesta käynnistyksestä</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> tai <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Tulostustyöt</translation>
 <translation id="8349826889576450703">käynnistysohjelma</translation>

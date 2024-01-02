@@ -91,6 +91,7 @@
 <translation id="1165174597379888365">Страница је посећена</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Ниједан}=1{Са 1 сајта (остаћете пријављени на Google налог)}one{Са # сајта (остаћете пријављени на Google налог)}few{Са # сајта (остаћете пријављени на Google налог)}other{Са # сајтова (остаћете пријављени на Google налог)}}</translation>
 <translation id="1165852471352757509">Документарни ТВ филм и емисија</translation>
+<translation id="1167877250265821930">Преузимање језика <ph name="LANGUAGE" /> није успело</translation>
 <translation id="1174644974616730562">Кинеска коверта бр. 1</translation>
 <translation id="1174723505405632867">Желите ли да дозволите да <ph name="EMBEDDED_URL" /> користи колачиће и податке о сајтовима на <ph name="TOP_LEVEL_URL" />?
 
@@ -598,6 +599,7 @@
 <translation id="2126374524350484896">Апликација за прављење PDF докумената:</translation>
 <translation id="2130448033692577677">Није могуће применити шаблоне које сте навели јер DnsOverHttpsMode смернице нису подешене.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2131200882015008178">Преузима се језички пакет за језик <ph name="LANGUAGE" />…<ph name="PERCENT" />&amp;</translation>
 <translation id="2135799067377889518">Мушка одећа</translation>
 <translation id="2137891579555018930">Чека се дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
@@ -655,6 +657,7 @@
 <translation id="2233745931693710080">Компактни диск</translation>
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
+<translation id="2239114457614475014">Измените унос</translation>
 <translation id="2241693394036365668">Датотека је преузета</translation>
 <translation id="2246264294482514010">10×12 in</translation>
 <translation id="2246480341630108201">Родитељ још није рекао да је у реду</translation>
@@ -989,6 +992,7 @@
 <translation id="2959113999220720579">Нега лица и тела</translation>
 <translation id="2962073860865348475">12×18 in</translation>
 <translation id="2968103128155246731">Комби и мини-комби</translation>
+<translation id="2971483124699139256">Опција Свиђа ми се шаље повратне информације да вам се свиђа генерисани текст.</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1573,6 +1577,7 @@
 <translation id="4132448310531350254">Дуплирани обрађивачи за екстензију фајла<ph name="FILE_EXTENSION" /> наведени у апликацијама <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Направите документ</translation>
 <translation id="413544239732274901">Сазнајте више</translation>
+<translation id="4139859738677203214">Опција Не свиђа ми се отвара образац за слање детаљних повратних информација о томе зашто вам се не свиђа генерисани текст.</translation>
 <translation id="4140905530744469899">ИД профила:</translation>
 <translation id="4142935452406587478">10. фиока</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -3986,6 +3991,7 @@
 <translation id="8877780815363510165">Пецање</translation>
 <translation id="8884537526797090108">Снимање поверљивог садржаја није успело</translation>
 <translation id="8888187300091017436">Душеци</translation>
+<translation id="8890048757975398817">Контролишите уређај <ph name="READERNAME" /> и добијте приступ паметној картици којој приступа.</translation>
 <translation id="8891727572606052622">Неважећи режим проксија.</translation>
 <translation id="8894794286471754040">Прво дугачка ивица</translation>
 <translation id="8897428486789851669">Пливање</translation>

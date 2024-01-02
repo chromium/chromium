@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Pásztázás jobbra</translation>
 <translation id="3081586908890909590">Váltás videófelvételre</translation>
 <translation id="313467653172006084">30 FPS</translation>
+<translation id="3158534262962737808">Csatlakozás a következőhöz: „<ph name="WIFINAME" />”</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link másolva</translation>
 <translation id="3354465018370944241">Fotóbeállítások</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Fotó méretaránya</translation>
 <translation id="5057360777601936059">A kamera jelenleg nem használható.
         Ellenőrizze, hogy a kamera megfelelően van-e csatlakoztatva.</translation>
+<translation id="5157591164390831335">URL észlelve.</translation>
 <translation id="5163387177077603948">Mozgatás jobb oldali irányba</translation>
 <translation id="5235304959032763950">16:9</translation>
 <translation id="5266635337630551423">Dokumentum bal felső sarka</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Köszönjük a Kamera alkalmazással kapcsolatban küldött visszajelzését.
 
 Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mellékeljen valamilyen mintafotót vagy -videót, és ismertesse a problémát. (Például túl sötét a fotó, vagy a kép tárgya nincs fókuszban.)</translation>
+<translation id="6519884562954018934">Csatlakozás a következőhöz: <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6617916774429601017">Minden felbontás megjelenítése</translation>
 <translation id="6631515515009660915">Tükrözés ki</translation>
@@ -158,6 +161,7 @@ Ha visszajelzése a kép vagy a videó minőségével kapcsolatos, kérjük, mel
 <translation id="8711011893539266636">Némítsa el a mikrofont. A némítás be van kapcsolva.</translation>
 <translation id="8730621377337864115">Kész</translation>
 <translation id="8732462232047530626">Metaadatok előnézete</translation>
+<translation id="874854738381978209">Wi-Fi-hálózat észlelve.</translation>
 <translation id="8815966864175525708">Váltás portréfotó készítésére</translation>
 <translation id="8828441885228359828">Felvétel folytatása</translation>
 <translation id="8870695351537079478">Nem sikerült elindítani a felvételt.</translation>
