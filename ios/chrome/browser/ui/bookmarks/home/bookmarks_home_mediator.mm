@@ -19,6 +19,7 @@
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -737,7 +738,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Show batch upload section only if kEnableBatchUploadFromBookmarksManager
   // flag is enabled.
   if (!base::FeatureList::IsEnabled(kEnableBatchUploadFromBookmarksManager)) {
-    return false;
+    return NO;
   }
   // Do not show if profile section is empty.
   BOOL showProfileSection =
@@ -751,6 +752,13 @@ bool IsABookmarkNodeSectionForIdentifier(
           syncer::UserSelectableType::kBookmarks) ||
       self.syncService->GetTransportState() ==
           syncer::SyncService::TransportState::PAUSED) {
+    return NO;
+  }
+  // Do not show if last syncing account is different from the current one.
+  ChromeBrowserState* browserState = [self originalBrowserState];
+  const std::string lastSyncingGaiaId = browserState->GetPrefs()->GetString(
+      prefs::kGoogleServicesLastSyncingGaiaId);
+  if (lastSyncingGaiaId != self.syncService->GetAccountInfo().gaia) {
     return NO;
   }
   return YES;

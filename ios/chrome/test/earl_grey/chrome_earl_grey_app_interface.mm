@@ -1301,6 +1301,14 @@ base::RepeatingClosure ExpectNCall(uint32_t n, base::RepeatingClosure closure) {
   prefService->SetString(path, UTF8Value);
 }
 
++ (void)setStringValue:(NSString*)value forUserPref:(NSString*)prefName {
+  std::string UTF8Value = base::SysNSStringToUTF8(value);
+  std::string path = base::SysNSStringToUTF8(prefName);
+  PrefService* prefService =
+      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  prefService->SetString(path, UTF8Value);
+}
+
 + (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName {
   std::string path = base::SysNSStringToUTF8(prefName);
   PrefService* prefService = GetApplicationContext()->GetLocalState();
