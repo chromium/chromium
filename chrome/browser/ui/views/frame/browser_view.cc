@@ -2584,6 +2584,7 @@ void BrowserView::OnCanResizeFromWebAPIChanged() {
 
   cached_can_resize_from_web_api_ = can_resize;
   GetWidget()->OnSizeConstraintsChanged();
+  InvalidateLayout();  // To show/hide the maximize button.
 }
 
 void BrowserView::SynchronizeRenderWidgetHostVisualPropertiesForMainFrame() {
