@@ -2387,8 +2387,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 // Verify that clearing autofill form data works.
+#if BUILDFLAG(IS_LINUX)
+// This is disabled due to flakiness: https://crbug.com/1515085
+#define MAYBE_AutofillOriginsRemovedWithHistory \
+  DISABLED_AutofillOriginsRemovedWithHistory
+#else
+#define MAYBE_AutofillOriginsRemovedWithHistory \
+  AutofillOriginsRemovedWithHistory
+#endif
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
-       AutofillOriginsRemovedWithHistory) {
+       MAYBE_AutofillOriginsRemovedWithHistory) {
   RemoveAutofillTester tester(GetProfile());
   // Initialize sync service so that PersonalDatabaseHelper::server_database_
   // gets initialized:
