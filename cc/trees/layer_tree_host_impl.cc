@@ -3874,7 +3874,9 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
   // Release any context visibility before we destroy the LayerTreeFrameSink.
   SetContextVisibility(false);
 
-  bool all_resources_are_lost = layer_tree_frame_sink_->context_provider();
+  bool all_resources_are_lost =
+      layer_tree_frame_sink_->context_provider() ||
+      base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage);
 
   // Destroy the submit-frame trackers before destroying the frame sink.
   frame_trackers_.ClearAll();
