@@ -237,12 +237,16 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    }
  ],
  [
-   'DevicePageKeyboard', 'device_page/keyboard_test.js', {
+   'DevicePageKeyboard',
+   'device_page/keyboard_test.js',
+   {
      enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
+       'ash::features::kPeripheralCustomization',
      ],
-   }
+     disabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+     ],
+   },
  ],
  [
    'DevicePageKeyboardSixPackKeyRow',
@@ -320,12 +324,16 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
-   'DevicePagePointers', 'device_page/pointers_test.js', {
+   'DevicePagePointers',
+   'device_page/pointers_test.js',
+   {
      enabled: [
-       'ash::features::kInputDeviceSettingsSplit',
-       'ash::features::kPeripheralCustomization'
+       'ash::features::kPeripheralCustomization',
      ],
-   }
+     disabled: [
+       'ash::features::kInputDeviceSettingsSplit',
+     ],
+   },
  ],
  [
    'DevicePagePower',

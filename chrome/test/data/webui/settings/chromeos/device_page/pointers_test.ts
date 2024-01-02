@@ -5,82 +5,44 @@
 import 'chrome://os-settings/lazy_load.js';
 
 import {SettingsPointersElement} from 'chrome://os-settings/lazy_load.js';
-import {CrToggleElement, DevicePageBrowserProxyImpl, LocalizedLinkElement, Route, Router, routes, setDisplayApiForTesting, settingMojom, SettingsDevicePageElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrToggleElement, DevicePageBrowserProxyImpl, LocalizedLinkElement, Route, Router, routes, settingMojom, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakeSystemDisplay} from '../fake_system_display.js';
+import {clearBody} from '../utils.js';
 
 import {getFakePrefs} from './device_page_test_util.js';
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
-suite('<settings-pointers> for device page', () => {
-  let devicePage: SettingsDevicePageElement;
-  let fakeSystemDisplay: FakeSystemDisplay;
+suite('<settings-pointers>', () => {
+  let pointersPage: SettingsPointersElement;
   let browserProxy: TestDevicePageBrowserProxy;
 
-  suiteSetup(() => {
-    // Disable animations so sub-pages open within one event loop.
-    disableAnimationsAndTransitions();
-  });
-
-  /**
-   * Set enableInputDeviceSettingsSplit feature flag to true for split tests.
-   */
-  function setDeviceSplitEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: isEnabled,
-    });
-  }
-
   setup(async () => {
-    fakeSystemDisplay = new FakeSystemDisplay();
-    setDisplayApiForTesting(fakeSystemDisplay);
-
-    Router.getInstance().navigateTo(routes.BASIC);
-
     browserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    setDeviceSplitEnabled(true);
-    // Allow the light DOM to be distributed to os-settings-animated-pages.
+
+    Router.getInstance().navigateTo(routes.POINTERS);
+
+    clearBody();
+    pointersPage = document.createElement('settings-pointers');
+    pointersPage.hasMouse = true;
+    pointersPage.hasPointingStick = true;
+    pointersPage.hasTouchpad = true;
+    pointersPage.hasHapticTouchpad = true;
+    pointersPage.prefs = getFakePrefs();
+    document.body.appendChild(pointersPage);
     await flushTasks();
   });
 
   teardown(() => {
-    devicePage.remove();
-    browserProxy.reset();
     Router.getInstance().resetRouteForTesting();
   });
 
-  async function init(): Promise<void> {
-    devicePage = document.createElement('settings-device-page');
-    devicePage.prefs = getFakePrefs();
-    document.body.appendChild(devicePage);
-    flush();
-  }
-
-  function showAndGetDeviceSubpage(
-      subpage: string, expectedRoute: Route): HTMLElement {
-    const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-        `#main #${subpage}Row`);
-    assertTrue(!!row);
-    row.click();
-    assertEquals(expectedRoute, Router.getInstance().currentRoute);
-    const page = devicePage.shadowRoot!.querySelector<HTMLElement>(
-        'settings-' + subpage);
-    assertTrue(!!page);
-    return page;
-  }
-
-  function expectReverseScrollValue(
-      pointersPage: HTMLElement, expected: boolean): void {
+  function expectReverseScrollValue(expected: boolean): void {
     const reverseScrollToggle =
         pointersPage.shadowRoot!.querySelector<CrToggleElement>(
             '#enableReverseScrollingToggle');
@@ -88,7 +50,7 @@ suite('<settings-pointers> for device page', () => {
     assertEquals(expected, reverseScrollToggle.checked);
     assertEquals(
         expected,
-        devicePage.get('prefs.settings.touchpad.natural_scroll.value'));
+        pointersPage.get('prefs.settings.touchpad.natural_scroll.value'));
   }
 
   /**
@@ -111,279 +73,282 @@ suite('<settings-pointers> for device page', () => {
         `${elementDesc} should be focused for settingId=${settingId}.`);
   }
 
-  suite('pointers', () => {
-    let pointersPage: SettingsPointersElement;
+  function assertElementIsVisible(selector: string, visible: boolean) {
+    const element = pointersPage.shadowRoot!.querySelector(selector);
+    if (visible) {
+      assertTrue(isVisible(element), `${selector} should be visible.`);
+    } else {
+      assertFalse(isVisible(element), `${selector} should not be visible.`);
+    }
+  }
 
-    setup(async () => {
-      setDeviceSplitEnabled(false);
-      await init();
-      const page = showAndGetDeviceSubpage('pointers', routes.POINTERS) as
-          SettingsPointersElement;
-      pointersPage = page;
+  test('touchpad setting visibility', async () => {
+    pointersPage.hasTouchpad = true;
+    await flushTasks();
+    [{selector: '#mouse', visible: true},
+     {selector: '#mouse h2', visible: true},
+     {selector: '#pointingStick', visible: true},
+     {selector: '#pointingStick h2', visible: true},
+     {selector: '#touchpad', visible: true},
+     {selector: '#touchpad h2', visible: true},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
     });
 
-    teardown(() => {
-      pointersPage.remove();
+    pointersPage.hasTouchpad = false;
+    await flushTasks();
+    [{selector: '#mouse', visible: true},
+     {selector: '#mouse h2', visible: true},
+     {selector: '#pointingStick', visible: true},
+     {selector: '#pointingStick h2', visible: true},
+     {selector: '#touchpad', visible: false},
+     {selector: '#touchpad h2', visible: false},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
+    });
+  });
+
+  test('pointing stick setting visibility', async () => {
+    pointersPage.hasPointingStick = true;
+    await flushTasks();
+    [{selector: '#mouse', visible: true},
+     {selector: '#mouse h2', visible: true},
+     {selector: '#pointingStick', visible: true},
+     {selector: '#pointingStick h2', visible: true},
+     {selector: '#touchpad', visible: true},
+     {selector: '#touchpad h2', visible: true},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
     });
 
-    test('subpage responds to pointer attach/detach', async () => {
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      [pointersPage.shadowRoot!.querySelector('#mouse'),
-       pointersPage.shadowRoot!.querySelector('#mouse h2'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick h2'),
-       pointersPage.shadowRoot!.querySelector('#touchpad'),
-       pointersPage.shadowRoot!.querySelector('#touchpad h2')]
-          .forEach(element => assertTrue(isVisible(element)));
-      webUIListenerCallback('has-touchpad-changed', false);
-      await flushTasks();
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      [pointersPage.shadowRoot!.querySelector('#mouse'),
-       pointersPage.shadowRoot!.querySelector('#mouse h2'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick h2')]
-          .forEach(element => assertTrue(isVisible(element)));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot!.querySelector('#touchpad')));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot!.querySelector('#touchpad h2')));
+    pointersPage.hasPointingStick = false;
+    await flushTasks();
+    [{selector: '#mouse', visible: true},
+     {selector: '#mouse h2', visible: true},
+     {selector: '#pointingStick', visible: false},
+     {selector: '#pointingStick h2', visible: false},
+     {selector: '#touchpad', visible: true},
+     {selector: '#touchpad h2', visible: true},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
+    });
+  });
 
-      webUIListenerCallback('has-pointing-stick-changed', false);
-      await flushTasks();
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      assertTrue(isVisible(pointersPage.shadowRoot!.querySelector('#mouse')));
-      [pointersPage.shadowRoot!.querySelector('#mouse h2'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick h2'),
-       pointersPage.shadowRoot!.querySelector('#touchpad'),
-       pointersPage.shadowRoot!.querySelector('#touchpad h2')]
-          .forEach(element => assertFalse(isVisible(element)));
-
-      webUIListenerCallback('has-mouse-changed', false);
-      await flushTasks();
-      assertEquals(routes.DEVICE, Router.getInstance().currentRoute);
-      assertFalse(isVisible(
-          devicePage.shadowRoot!.querySelector('#main #pointersRow')));
-
-      webUIListenerCallback('has-touchpad-changed', true);
-      await flushTasks();
-      assertTrue(isVisible(
-          devicePage.shadowRoot!.querySelector('#main #pointersRow')));
-
-      showAndGetDeviceSubpage('pointers', routes.POINTERS);
-      [pointersPage.shadowRoot!.querySelector('#mouse'),
-       pointersPage.shadowRoot!.querySelector('#mouse h2'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick'),
-       pointersPage.shadowRoot!.querySelector('#pointingStick h2'),
-       pointersPage.shadowRoot!.querySelector('#touchpad h2')]
-          .forEach(element => assertFalse(isVisible(element)));
-      assertTrue(
-          isVisible(pointersPage.shadowRoot!.querySelector('#touchpad')));
-
-      webUIListenerCallback('has-mouse-changed', true);
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      [pointersPage.shadowRoot!.querySelector('#mouse'),
-       pointersPage.shadowRoot!.querySelector('#mouse h2'),
-       pointersPage.shadowRoot!.querySelector('#touchpad'),
-       pointersPage.shadowRoot!.querySelector('#touchpad h2')]
-          .forEach(element => assertTrue(isVisible(element)));
-      assertFalse(
-          isVisible(pointersPage.shadowRoot!.querySelector('#pointingStick')));
-      assertFalse(isVisible(
-          pointersPage.shadowRoot!.querySelector('#pointingStick h2')));
+  test('mouse setting visibility', async () => {
+    pointersPage.hasMouse = true;
+    await flushTasks();
+    [{selector: '#mouse', visible: true},
+     {selector: '#mouse h2', visible: true},
+     {selector: '#pointingStick', visible: true},
+     {selector: '#pointingStick h2', visible: true},
+     {selector: '#touchpad', visible: true},
+     {selector: '#touchpad h2', visible: true},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
     });
 
-    test('mouse', () => {
-      assertTrue(isVisible(pointersPage.shadowRoot!.querySelector('#mouse')));
-
-      const slider =
-          pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
-              '#mouse settings-slider');
-      assertTrue(!!slider);
-      assertEquals(4, slider.pref.value);
-
-      const crSlider = slider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
-
-      pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
-      assertEquals(3, devicePage.prefs!['settings'].mouse.sensitivity2.value);
-
-      pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
-      assertEquals(5, slider.pref.value);
+    pointersPage.hasMouse = false;
+    await flushTasks();
+    [{selector: '#mouse', visible: false},
+     {selector: '#mouse h2', visible: false},
+     {selector: '#pointingStick', visible: true},
+     {selector: '#pointingStick h2', visible: true},
+     {selector: '#touchpad', visible: true},
+     {selector: '#touchpad h2', visible: true},
+    ].forEach(({selector, visible}) => {
+      assertElementIsVisible(selector, visible);
     });
+  });
 
-    test('touchpad', () => {
-      assertTrue(
-          isVisible(pointersPage.shadowRoot!.querySelector('#touchpad')));
+  test('mouse', () => {
+    assertTrue(isVisible(pointersPage.shadowRoot!.querySelector('#mouse')));
 
-      const enableTapToClick =
-          pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#touchpad #enableTapToClick');
-      assertTrue(!!enableTapToClick);
-      assertTrue(enableTapToClick.checked);
+    const slider =
+        pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#mouse settings-slider');
+    assertTrue(!!slider);
+    assertEquals(4, slider.pref.value);
 
-      const enableTapDragging =
-          pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#touchpad #enableTapDragging');
-      assertTrue(!!enableTapDragging);
-      assertFalse(enableTapDragging.checked);
+    const crSlider = slider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
 
-      const slider =
-          pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
-              '#touchpad settings-slider');
-      assertTrue(!!slider);
-      assertEquals(3, slider.pref.value);
+    pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    assertEquals(
+        3, pointersPage.get('prefs.settings.mouse.sensitivity2.value'));
 
-      const crSlider = slider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
+    pointersPage.set('prefs.settings.mouse.sensitivity2.value', 5);
+    assertEquals(5, slider.pref.value);
+  });
 
-      pressAndReleaseKeyOn(crSlider, 39 /* right */, [], 'ArrowRight');
-      assertEquals(
-          4, devicePage.prefs!['settings'].touchpad.sensitivity2.value);
+  test('touchpad', () => {
+    assertTrue(isVisible(pointersPage.shadowRoot!.querySelector('#touchpad')));
 
-      pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
-      assertEquals(2, slider.pref.value);
-    });
+    const enableTapToClick =
+        pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#touchpad #enableTapToClick');
+    assertTrue(!!enableTapToClick);
+    assertTrue(enableTapToClick.checked);
 
-    test('haptic touchpad', () => {
-      const toggle = pointersPage.shadowRoot!.querySelector<CrToggleElement>(
-          '#touchpadHapticFeedbackToggle');
-      assertTrue(!!toggle);
-      assertTrue(toggle.checked);
+    const enableTapDragging =
+        pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#touchpad #enableTapDragging');
+    assertTrue(!!enableTapDragging);
+    assertFalse(enableTapDragging.checked);
 
-      const slider =
-          pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
-              '#touchpadHapticClickSensitivity');
-      assertTrue(!!slider);
-      assertEquals(3, slider.pref.value);
+    const slider =
+        pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#touchpad settings-slider');
+    assertTrue(!!slider);
+    assertEquals(3, slider.pref.value);
 
-      const crSlider = slider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
+    const crSlider = slider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
 
-      pressAndReleaseKeyOn(crSlider, 39 /* right */, [], 'ArrowRight');
-      assertEquals(
-          5,
-          devicePage.prefs!['settings']
-              .touchpad.haptic_click_sensitivity.value);
+    pressAndReleaseKeyOn(crSlider, 39 /* right */, [], 'ArrowRight');
+    assertEquals(
+        4, pointersPage.get('prefs.settings.touchpad.sensitivity2.value'));
 
-      pointersPage.set(
-          'prefs.settings.touchpad.haptic_click_sensitivity.value', 1);
-      assertEquals(1, slider.pref.value);
-    });
+    pointersPage.set('prefs.settings.touchpad.sensitivity2.value', 2);
+    assertEquals(2, slider.pref.value);
+  });
 
-    test('link doesn\'t activate control', () => {
-      expectReverseScrollValue(pointersPage, false);
+  test('haptic touchpad', () => {
+    const toggle = pointersPage.shadowRoot!.querySelector<CrToggleElement>(
+        '#touchpadHapticFeedbackToggle');
+    assertTrue(!!toggle);
+    assertTrue(toggle.checked);
 
-      // Tapping the link shouldn't enable the radio button.
-      const reverseScrollLabel =
-          pointersPage.shadowRoot!.querySelector<LocalizedLinkElement>(
-              '#enableReverseScrollingLabel');
-      assertTrue(!!reverseScrollLabel);
-      const anchor = reverseScrollLabel.$.container.querySelector('a');
-      assertTrue(!!anchor);
-      // Prevent actually opening a link, which would block test.
-      anchor.removeAttribute('href');
-      anchor.click();
-      expectReverseScrollValue(pointersPage, false);
+    const slider =
+        pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#touchpadHapticClickSensitivity');
+    assertTrue(!!slider);
+    assertEquals(3, slider.pref.value);
 
-      // Check specifically clicking toggle changes pref.
-      const reverseScrollToggle =
-          pointersPage.shadowRoot!.querySelector<CrToggleElement>(
-              '#enableReverseScrollingToggle');
-      assertTrue(!!reverseScrollToggle);
-      reverseScrollToggle.click();
-      expectReverseScrollValue(pointersPage, true);
-      devicePage.set('prefs.settings.touchpad.natural_scroll.value', false);
-      expectReverseScrollValue(pointersPage, false);
+    const crSlider = slider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
 
-      // Check specifically clicking the row changes pref.
-      const reverseScrollSettings =
-          pointersPage.shadowRoot!.querySelector<HTMLElement>(
-              '#reverseScrollRow');
-      assertTrue(!!reverseScrollSettings);
-      reverseScrollSettings.click();
-      expectReverseScrollValue(pointersPage, true);
-      devicePage.set('prefs.settings.touchpad.natural_scroll.value', false);
-      expectReverseScrollValue(pointersPage, false);
-    });
+    pressAndReleaseKeyOn(crSlider, 39 /* right */, [], 'ArrowRight');
+    assertEquals(
+        5,
+        pointersPage.get(
+            'prefs.settings.touchpad.haptic_click_sensitivity.value'));
 
-    test('pointing stick acceleration toggle', () => {
-      const toggle =
-          pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
-              '#pointingStickAcceleration');
-      assertTrue(!!toggle);
-      assertTrue(toggle.pref!.value);
-      toggle.click();
-      assertFalse(
-          devicePage.prefs!['settings'].pointing_stick.acceleration.value);
+    pointersPage.set(
+        'prefs.settings.touchpad.haptic_click_sensitivity.value', 1);
+    assertEquals(1, slider.pref.value);
+  });
 
-      pointersPage.set(
-          'prefs.settings.pointing_stick.acceleration.value', true);
-      assertTrue(toggle.pref!.value);
-    });
+  test('link doesn\'t activate control', () => {
+    expectReverseScrollValue(false);
 
-    test('pointing stick speed slider', () => {
-      const slider =
-          pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
-              '#pointingStick settings-slider');
-      assertTrue(!!slider);
-      assertEquals(4, slider.pref.value);
+    // Tapping the link shouldn't enable the radio button.
+    const reverseScrollLabel =
+        pointersPage.shadowRoot!.querySelector<LocalizedLinkElement>(
+            '#enableReverseScrollingLabel');
+    assertTrue(!!reverseScrollLabel);
+    const anchor = reverseScrollLabel.$.container.querySelector('a');
+    assertTrue(!!anchor);
+    // Prevent actually opening a link, which would block test.
+    anchor.removeAttribute('href');
+    anchor.click();
+    expectReverseScrollValue(false);
 
-      const crSlider = slider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
+    // Check specifically clicking toggle changes pref.
+    const reverseScrollToggle =
+        pointersPage.shadowRoot!.querySelector<CrToggleElement>(
+            '#enableReverseScrollingToggle');
+    assertTrue(!!reverseScrollToggle);
+    reverseScrollToggle.click();
+    expectReverseScrollValue(true);
+    pointersPage.set('prefs.settings.touchpad.natural_scroll.value', false);
+    expectReverseScrollValue(false);
 
-      pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
-      assertEquals(
-          3, devicePage.prefs!['settings'].pointing_stick.sensitivity.value);
+    // Check specifically clicking the row changes pref.
+    const reverseScrollSettings =
+        pointersPage.shadowRoot!.querySelector<HTMLElement>(
+            '#reverseScrollRow');
+    assertTrue(!!reverseScrollSettings);
+    reverseScrollSettings.click();
+    expectReverseScrollValue(true);
+    pointersPage.set('prefs.settings.touchpad.natural_scroll.value', false);
+    expectReverseScrollValue(false);
+  });
 
-      pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
-      assertEquals(5, slider.pref.value);
-    });
+  test('pointing stick acceleration toggle', () => {
+    const toggle =
+        pointersPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#pointingStickAcceleration');
+    assertTrue(!!toggle);
+    assertTrue(toggle.pref!.value);
+    toggle.click();
+    assertFalse(
+        pointersPage.get('prefs.settings.pointing_stick.acceleration.value'));
 
-    test('Deep link to pointing stick primary button setting', async () => {
-      const dropdown = pointersPage.shadowRoot!.querySelector(
-          '#pointingStickSwapButtonDropdown');
-      assertTrue(!!dropdown);
-      const select = dropdown.shadowRoot!.querySelector('select');
-      assertTrue(!!select);
-      await checkDeepLink(
-          routes.POINTERS,
-          settingMojom.Setting.kPointingStickSwapPrimaryButtons.toString(),
-          select, 'Pointing stick primary button dropdown');
-    });
+    pointersPage.set('prefs.settings.pointing_stick.acceleration.value', true);
+    assertTrue(toggle.pref!.value);
+  });
 
-    test('Deep link to pointing stick acceleration setting', async () => {
-      const element =
-          pointersPage.shadowRoot!.querySelector('#pointingStickAcceleration');
-      assertTrue(!!element);
-      const toggle = element.shadowRoot!.querySelector('cr-toggle');
-      assertTrue(!!toggle);
-      await checkDeepLink(
-          routes.POINTERS,
-          settingMojom.Setting.kPointingStickAcceleration.toString(), toggle,
-          'Pointing stick acceleration slider');
-    });
+  test('pointing stick speed slider', () => {
+    const slider =
+        pointersPage.shadowRoot!.querySelector<SettingsSliderElement>(
+            '#pointingStick settings-slider');
+    assertTrue(!!slider);
+    assertEquals(4, slider.pref.value);
 
-    test('Deep link to pointing stick speed setting', async () => {
-      const speedSlider =
-          pointersPage.shadowRoot!.querySelector('#pointingStickSpeedSlider');
-      assertTrue(!!speedSlider);
-      const crSlider = speedSlider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
-      await checkDeepLink(
-          routes.POINTERS, settingMojom.Setting.kPointingStickSpeed.toString(),
-          crSlider, 'Pointing stick speed slider');
-    });
+    const crSlider = slider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
 
-    test('Deep link to touchpad speed', async () => {
-      const settingsSlider =
-          pointersPage.shadowRoot!.querySelector('#touchpadSensitivity');
-      assertTrue(!!settingsSlider);
-      const crSlider = settingsSlider.shadowRoot!.querySelector('cr-slider');
-      assertTrue(!!crSlider);
-      await checkDeepLink(
-          routes.POINTERS, settingMojom.Setting.kTouchpadSpeed.toString(),
-          crSlider, 'Touchpad speed slider');
-    });
+    pressAndReleaseKeyOn(crSlider, 37, [], 'ArrowLeft');
+    assertEquals(
+        3, pointersPage.get('prefs.settings.pointing_stick.sensitivity.value'));
+
+    pointersPage.set('prefs.settings.pointing_stick.sensitivity.value', 5);
+    assertEquals(5, slider.pref.value);
+  });
+
+  test('Deep link to pointing stick primary button setting', async () => {
+    const dropdown = pointersPage.shadowRoot!.querySelector(
+        '#pointingStickSwapButtonDropdown');
+    assertTrue(!!dropdown);
+    const select = dropdown.shadowRoot!.querySelector('select');
+    assertTrue(!!select);
+    await checkDeepLink(
+        routes.POINTERS,
+        settingMojom.Setting.kPointingStickSwapPrimaryButtons.toString(),
+        select, 'Pointing stick primary button dropdown');
+  });
+
+  test('Deep link to pointing stick acceleration setting', async () => {
+    const element =
+        pointersPage.shadowRoot!.querySelector('#pointingStickAcceleration');
+    assertTrue(!!element);
+    const toggle = element.shadowRoot!.querySelector('cr-toggle');
+    assertTrue(!!toggle);
+    await checkDeepLink(
+        routes.POINTERS,
+        settingMojom.Setting.kPointingStickAcceleration.toString(), toggle,
+        'Pointing stick acceleration slider');
+  });
+
+  test('Deep link to pointing stick speed setting', async () => {
+    const speedSlider =
+        pointersPage.shadowRoot!.querySelector('#pointingStickSpeedSlider');
+    assertTrue(!!speedSlider);
+    const crSlider = speedSlider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
+    await checkDeepLink(
+        routes.POINTERS, settingMojom.Setting.kPointingStickSpeed.toString(),
+        crSlider, 'Pointing stick speed slider');
+  });
+
+  test('Deep link to touchpad speed', async () => {
+    const settingsSlider =
+        pointersPage.shadowRoot!.querySelector('#touchpadSensitivity');
+    assertTrue(!!settingsSlider);
+    const crSlider = settingsSlider.shadowRoot!.querySelector('cr-slider');
+    assertTrue(!!crSlider);
+    await checkDeepLink(
+        routes.POINTERS, settingMojom.Setting.kTouchpadSpeed.toString(),
+        crSlider, 'Touchpad speed slider');
   });
 });

@@ -143,6 +143,10 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
     };
   }
 
+  hasMouse: boolean;
+  hasPointingStick: boolean;
+  hasTouchpad: boolean;
+  hasHapticTouchpad: boolean;
   private isDeviceSettingsSplitEnabled_: boolean;
 
   /**

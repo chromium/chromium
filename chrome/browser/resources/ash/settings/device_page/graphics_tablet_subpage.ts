@@ -20,6 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {cast, castExists} from '../assert_extras.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {PrefsState} from '../common/types.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './graphics_tablet_subpage.html.js';
@@ -41,6 +42,11 @@ export class SettingsGraphicsTabletSubpageElement extends
 
   static get properties(): PolymerElementProperties {
     return {
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+
       graphicsTablets: {
         type: Array,
         observer: 'onGraphicsTabletListUpdated',
@@ -48,6 +54,7 @@ export class SettingsGraphicsTabletSubpageElement extends
     };
   }
 
+  prefs: PrefsState;
   graphicsTablets: GraphicsTablet[];
 
   override currentRouteChanged(route: Route): void {
