@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_
 #define CHROMEOS_ASH_SERVICES_NETWORK_CONFIG_CROS_NETWORK_CONFIG_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -237,7 +239,7 @@ class CrosNetworkConfig
   mojo::ReceiverSet<chromeos::network_config::mojom::CrosNetworkConfig>
       receivers_;
 
-  std::optional<base::StringPiece> serial_number_;
+  std::optional<std::string> serial_number_;
 
   int callback_id_ = 1;
   base::flat_map<int, SetPropertiesCallback> set_properties_callbacks_;

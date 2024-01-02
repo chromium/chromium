@@ -608,7 +608,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     NetworkStateHandler* network_state_handler,
     CellularInhibitor* cellular_inhibitor,
     mojom::DeviceStateType technology_state,
-    const std::optional<base::StringPiece> serial_number) {
+    const std::optional<std::string>& serial_number) {
   mojom::NetworkType type = ShillTypeToMojo(device->type());
   if (type == mojom::NetworkType::kAll) {
     NET_LOG(ERROR) << "Unexpected device type: " << device->type()
@@ -649,7 +649,7 @@ mojom::DeviceStatePropertiesPtr DeviceStateToMojo(
     result->imei = device->imei();
     if (features::IsCellularCarrierLockEnabled() && serial_number &&
         !serial_number->empty()) {
-      result->serial = std::string(serial_number.value());
+      result->serial = serial_number.value();
     }
     if (features::IsCellularCarrierLockEnabled()) {
       carrier_lock::ModemLockStatus status =
@@ -2267,9 +2267,12 @@ CrosNetworkConfig::CrosNetworkConfig(
       technology_state_controller_(technology_state_controller) {
   CHECK(network_state_handler);
   if (features::IsCellularCarrierLockEnabled()) {
-    serial_number_ = system::StatisticsProvider::GetInstance()->GetMachineID();
-    if (!serial_number_ || serial_number_->empty()) {
+    const std::optional<base::StringPiece> serial_number =
+        system::StatisticsProvider::GetInstance()->GetMachineID();
+    if (!serial_number || serial_number->empty()) {
       LOG(WARNING) << "Serial number not set.";
+    } else {
+      serial_number_ = std::string(serial_number.value());
     }
   }
 }
