@@ -102,16 +102,19 @@ ci.builder(
                     "--project",
                     "chrome-unexpected-pass-data",
                     "--no-prompt-for-user-input",
-                    # Only suppress tests that in the past 10 days, causes
-                    # build failures in 3 consecutive days and at least 10
-                    # times.
+                    # Only suppress tests that in the past 7 days, causes
+                    # build failures in 2 consecutive days, at least 10
+                    # times total and in recent 2 days still causes build
+                    # failures.
                     "--sample-period",
-                    "10",
+                    "7",
                     "--non-hidden-failures-only",
                     "--build-fail-consecutive-days-threshold",
-                    "3",
+                    "2",
                     "--build-fail-total-number-threshold",
                     "10",
+                    "--build-fail-recent-days-threshold",
+                    "2",
                 ],
             },
         ],

@@ -14,12 +14,14 @@
         "chrome-unexpected-pass-data",
         "--no-prompt-for-user-input",
         "--sample-period",
-        "10",
+        "7",
         "--non-hidden-failures-only",
         "--build-fail-consecutive-days-threshold",
-        "3",
+        "2",
         "--build-fail-total-number-threshold",
-        "10"
+        "10",
+        "--build-fail-recent-days-threshold",
+        "2"
       ],
       "cl_title": "Blink web tests suppression",
       "reviewer_list": {
