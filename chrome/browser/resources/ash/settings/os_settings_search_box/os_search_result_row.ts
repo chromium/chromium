@@ -775,6 +775,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:nearby-share';
       case SearchResultIcon.kNotifications:
         return 'os-settings:apps-notifications';
+      case SearchResultIcon.kOneDrive:
+        return 'settings20:onedrive';
       case SearchResultIcon.kOnScreenKeyboard:
         return 'os-settings:on-screen-keyboard';
       case SearchResultIcon.kPaintbrush:
