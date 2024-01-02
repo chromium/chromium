@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
@@ -13,24 +14,24 @@ import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 
-/**
- * A {@link Pane} representing the tab switcher. This is effectively an adapter layer between the
- * {@link Pane} and {@link TabSwitcher} APIs.
- */
+/** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
-    private final TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
+    private final @NonNull TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
 
     /**
-     * @param tabSwitcher The {@link TabSwitcher} hosted by the Pane.
+     * @param context The activity context.
+     * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param tabSwitcherPaneDrawableCoordinator The drawable to represent the pane.
      */
     TabSwitcherPane(
-            @NonNull TabSwitcher tabSwitcher,
+            @NonNull Context context,
+            @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull OnClickListener newTabButtonClickListener,
             @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator) {
         super(
-                tabSwitcher,
+                context,
+                factory,
                 newTabButtonClickListener,
                 org.chromium.chrome.browser.toolbar.R.string.button_new_tab);
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
@@ -45,7 +46,10 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        super.destroy();
+        mTabSwitcherPaneDrawableCoordinator.destroy();
+    }
 
     @Override
     public @PaneId int getPaneId() {

@@ -6,20 +6,25 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,33 +45,39 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
-/** Unit tests for {@link TabSwitcherPane}. */
+/** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabSwitcher mTabSwitcher;
-    @Mock private TabSwitcher.Controller mTabSwitcherController;
+    @Mock private TabSwitcherPaneCoordinatorFactory mTabSwitcherPaneCoordinatorFactory;
+    @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
     @Mock private TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
     @Mock private TabSwitcherDrawable mTabSwitcherDrawable;
     @Mock private HubContainerView mHubContainerView;
-    @Mock private ViewGroup mContainerView;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
 
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangeSupplier =
             new ObservableSupplierImpl<>();
     private TabSwitcherPane mTabSwitcherPane;
+    private int mTimesCreated;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mHubContainerView.getContext()).thenReturn(mContext);
-        when(mTabSwitcher.getController()).thenReturn(mTabSwitcherController);
-        mHandleBackPressChangeSupplier.set(false);
-        when(mTabSwitcherController.getTabSwitcherContainer()).thenReturn(mContainerView);
-        when(mTabSwitcherController.getHandleBackPressChangedSupplier())
+        doAnswer(
+                        invocation -> {
+                            mTimesCreated++;
+                            return mTabSwitcherPaneCoordinator;
+                        })
+                .when(mTabSwitcherPaneCoordinatorFactory)
+                .create(any());
+        when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);
+
+        mHandleBackPressChangeSupplier.set(false);
         when(mTabSwitcherPaneDrawableCoordinator.getTabSwitcherDrawable())
                 .thenReturn(mTabSwitcherDrawable);
         doAnswer(
@@ -75,14 +86,39 @@ public class TabSwitcherPaneUnitTest {
                                     ? BackPressResult.SUCCESS
                                     : BackPressResult.FAILURE;
                         })
-                .when(mTabSwitcherController)
+                .when(mTabSwitcherPaneCoordinator)
                 .handleBackPress();
 
         mTabSwitcherPane =
                 new TabSwitcherPane(
-                        mTabSwitcher,
+                        mContext,
+                        mTabSwitcherPaneCoordinatorFactory,
                         mNewTabButtonClickListener,
                         mTabSwitcherPaneDrawableCoordinator);
+    }
+
+    @After
+    public void tearDown() {
+        mTabSwitcherPane.destroy();
+        verify(mTabSwitcherPaneCoordinator, times(mTimesCreated)).destroy();
+    }
+
+    @Test
+    @SmallTest
+    public void testInitWithNativeBeforeCoordinatorCreation() {
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        verify(mTabSwitcherPaneCoordinator).initWithNative();
+    }
+
+    @Test
+    @SmallTest
+    public void testInitWithNativeAfterCoordinatorCreation() {
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        verify(mTabSwitcherPaneCoordinator, never()).initWithNative();
+
+        mTabSwitcherPane.initWithNative();
+        verify(mTabSwitcherPaneCoordinator).initWithNative();
     }
 
     @Test
@@ -103,7 +139,7 @@ public class TabSwitcherPaneUnitTest {
     @Test
     @SmallTest
     public void testGetRootView() {
-        assertEquals(mContainerView, mTabSwitcherPane.getRootView());
+        assertNotNull(mTabSwitcherPane.getRootView());
     }
 
     @Test
@@ -143,6 +179,11 @@ public class TabSwitcherPaneUnitTest {
     public void testBackPress() {
         ObservableSupplier<Boolean> handlesBackPressSupplier =
                 mTabSwitcherPane.getHandleBackPressChangedSupplier();
+        assertNull(handlesBackPressSupplier.get());
+        assertEquals(BackPressResult.FAILURE, mTabSwitcherPane.handleBackPress());
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
         assertFalse(handlesBackPressSupplier.get());
         assertEquals(BackPressResult.FAILURE, mTabSwitcherPane.handleBackPress());
 
@@ -166,5 +207,57 @@ public class TabSwitcherPaneUnitTest {
                 mTabSwitcherPane
                         .createShowHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetDialogVisibilitySupplier() {
+        assertNull(mTabSwitcherPane.getTabGridDialogVisibilitySupplier());
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
+        verify(mTabSwitcherPaneCoordinator).getTabSwitcherCustomViewManager();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetCustomViewManager() {
+        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        assertNull(mTabSwitcherPane.getTabSwitcherCustomViewManager());
+        verify(mTabSwitcherPaneCoordinator).getTabSwitcherCustomViewManager();
+    }
+
+    @Test
+    @SmallTest
+    public void testGetTabListModelSize() {
+        assertEquals(0, mTabSwitcherPane.getTabSwitcherTabListModelSize());
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        int tabCount = 5;
+        when(mTabSwitcherPaneCoordinator.getTabSwitcherTabListModelSize()).thenReturn(tabCount);
+
+        assertEquals(tabCount, mTabSwitcherPane.getTabSwitcherTabListModelSize());
+    }
+
+    @Test
+    @SmallTest
+    public void testSetRecyclerViewPosition() {
+        RecyclerViewPosition position = new RecyclerViewPosition(1, 5);
+        mTabSwitcherPane.setTabSwitcherRecyclerViewPosition(position);
+        verify(mTabSwitcherPaneCoordinator, never()).setTabSwitcherRecyclerViewPosition(any());
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        mTabSwitcherPane.setTabSwitcherRecyclerViewPosition(position);
+        verify(mTabSwitcherPaneCoordinator).setTabSwitcherRecyclerViewPosition(position);
     }
 }

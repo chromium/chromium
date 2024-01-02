@@ -4,14 +4,21 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.base.supplier.TransitiveObservableSupplier;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
@@ -24,30 +31,40 @@ import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
- * A abstract {@link Pane} representing a tab switcher for shared logic between the normal and
- * incognito modes. This is effectively an adapter layer between the {@link Pane} and {@link
- * TabSwitcher} APIs.
+ * An abstract {@link Pane} representing a tab switcher for shared logic between the normal and
+ * incognito modes.
  */
 public abstract class TabSwitcherPaneBase implements Pane {
-    protected final TabSwitcher mTabSwitcher;
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
             new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<TabSwitcherPaneCoordinator>
+            mTabSwitcherPaneCoordinatorSupplier = new ObservableSupplierImpl<>();
+    private final TransitiveObservableSupplier<TabSwitcherPaneCoordinator, Boolean>
+            mHandleBackPressChangedSupplier =
+                    new TransitiveObservableSupplier<>(
+                            mTabSwitcherPaneCoordinatorSupplier,
+                            pc -> pc.getHandleBackPressChangedSupplier());
+    private final ViewGroup mRootView;
+    private final TabSwitcherPaneCoordinatorFactory mFactory;
 
+    private boolean mNativeInitialized;
     private OnClickListener mNewTabButtonClickListener;
 
     /**
-     * @param tabSwitcher The {@link TabSwitcher} hosted by the Pane.
+     * @param context The activity context.
+     * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param newTabButtonContentDescriptionRes The resource for the new tab button content
      *     description.
      */
     TabSwitcherPaneBase(
-            @NonNull TabSwitcher tabSwitcher,
+            @NonNull Context context,
+            @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull OnClickListener newTabButtonClickListener,
             @StringRes int newTabButtonContentDescriptionRes) {
-        mTabSwitcher = tabSwitcher;
+        mFactory = factory;
 
         mNewTabButtonDataSupplier.set(
                 new DelegateButtonData(
@@ -56,11 +73,18 @@ public abstract class TabSwitcherPaneBase implements Pane {
                                 newTabButtonContentDescriptionRes,
                                 org.chromium.chrome.browser.toolbar.R.drawable.new_tab_icon),
                         () -> newTabButtonClickListener.onClick(null)));
+
+        mRootView = new FrameLayout(context);
+    }
+
+    @Override
+    public void destroy() {
+        destroyTabSwitcherPaneCoordinator();
     }
 
     @Override
     public @NonNull View getRootView() {
-        return mTabSwitcher.getController().getTabSwitcherContainer();
+        return mRootView;
     }
 
     @Override
@@ -93,11 +117,75 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     @Override
     public @BackPressResult int handleBackPress() {
-        return mTabSwitcher.getController().handleBackPress();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return BackPressResult.FAILURE;
+        return coordinator.handleBackPress();
     }
 
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
-        return mTabSwitcher.getController().getHandleBackPressChangedSupplier();
+        return mHandleBackPressChangedSupplier;
+    }
+
+    public void initWithNative() {
+        if (mNativeInitialized) return;
+
+        mNativeInitialized = true;
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator != null) {
+            coordinator.initWithNative();
+        }
+    }
+
+    /** Returns a {@link Supplier} that provides dialog visibility information. */
+    public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return null;
+        return coordinator.getTabGridDialogVisibilitySupplier();
+    }
+
+    /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
+    public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return null;
+        return coordinator.getTabSwitcherCustomViewManager();
+    }
+
+    /** Returns the number of elements in the tab switcher's tab list model. */
+    public int getTabSwitcherTabListModelSize() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return 0;
+        return coordinator.getTabSwitcherTabListModelSize();
+    }
+
+    /** Set the tab switcher's RecyclerViewPosition. */
+    public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.setTabSwitcherRecyclerViewPosition(position);
+    }
+
+    protected @Nullable TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
+        return mTabSwitcherPaneCoordinatorSupplier.get();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    void createTabSwitcherPaneCoordinator() {
+        if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
+
+        TabSwitcherPaneCoordinator coordinator = mFactory.create(mRootView);
+        mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
+        if (mNativeInitialized) {
+            coordinator.initWithNative();
+        }
+    }
+
+    protected void destroyTabSwitcherPaneCoordinator() {
+        if (!mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
+
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        mTabSwitcherPaneCoordinatorSupplier.set(null);
+        mRootView.removeAllViews();
+        coordinator.destroy();
     }
 }
