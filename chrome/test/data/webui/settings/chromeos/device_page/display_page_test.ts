@@ -382,6 +382,23 @@ suite('<settings-display>', () => {
           displayHistogram.get(
               displaySettingsProviderMojom.DisplaySettingsType.kUnifiedMode));
     });
+
+    test('primary display', () => {
+      // Mock user changing primary display.
+      const primaryDisplaySelect =
+          displayPage.shadowRoot!.querySelector<HTMLSelectElement>(
+              '#primaryDisplaySelect');
+      assertTrue(!!primaryDisplaySelect);
+      primaryDisplaySelect.value = '1';
+      primaryDisplaySelect.dispatchEvent(new CustomEvent('change'));
+      flush();
+
+      // Verify histogram count for changing primary display setting.
+      assertEquals(
+          1,
+          displayHistogram.get(displaySettingsProviderMojom.DisplaySettingsType
+                                   .kPrimaryDisplay));
+    });
   });
 
   test('display tests', async function() {
