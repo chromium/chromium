@@ -54,6 +54,8 @@ class StandaloneTrustedVaultBackend
     Delegate& operator=(const Delegate&) = delete;
 
     virtual void NotifyRecoverabilityDegradedChanged() = 0;
+    // Called whenever persisted state changes.
+    virtual void NotifyStateChanged() = 0;
   };
 
   enum class RefreshTokenErrorState {

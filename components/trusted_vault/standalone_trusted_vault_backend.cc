@@ -1219,6 +1219,7 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {
   WriteMD5HashedFileToDisk(data_, md5_hashed_file_path_);
+  delegate_->NotifyStateChanged();
 }
 
 }  // namespace trusted_vault
