@@ -7,12 +7,15 @@ import './base_page.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_enter_rsu_wp_disable_code_page.html.js';
-import {QrCode, RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {RmadErrorCode, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {dispatchNextButtonClick, enableNextButton} from './shimless_rma_util.js';
 
 // The number of characters in an RSU code.
@@ -24,19 +27,12 @@ const RSU_CODE_EXPECTED_LENGTH = 8;
  * code.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingEnterRsuWpDisableCodePageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OnboardingEnterRsuWpDisableCodePageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class OnboardingEnterRsuWpDisableCodePage extends
     OnboardingEnterRsuWpDisableCodePageBase {
   static get is() {
-    return 'onboarding-enter-rsu-wp-disable-code-page';
+    return 'onboarding-enter-rsu-wp-disable-code-page' as const;
   }
 
   static get template() {
@@ -46,14 +42,12 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
       /**
-       * Set by shimless_rma.js.
-       * @type {RmadErrorCode}
+       * Set by shimless_rma.ts.
        */
       errorCode: {
         type: Object,
@@ -61,25 +55,21 @@ export class OnboardingEnterRsuWpDisableCodePage extends
             OnboardingEnterRsuWpDisableCodePage.prototype.onErrorCodeChanged,
       },
 
-      /** @protected */
       canvasSize: {
         type: Number,
         value: 0,
       },
 
-      /** @protected {string} */
       rsuChallenge: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       rsuHwid: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       rsuCode: {
         type: String,
         value: '',
@@ -87,40 +77,34 @@ export class OnboardingEnterRsuWpDisableCodePage extends
             OnboardingEnterRsuWpDisableCodePage.prototype.onRsuCodeChanged,
       },
 
-      /** @protected */
       rsuCodeExpectedLength: {
         type: Number,
         value: RSU_CODE_EXPECTED_LENGTH,
         readOnly: true,
       },
 
-      /** @protected */
       rsuInstructionsText: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       qrCodeUrl: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       rsuChallengeLinkText: {
         type: String,
         value: '',
         computed: 'computeRsuChallengeLinkText(rsuHwid, rsuChallenge)',
       },
 
-      /** @protected */
       rsuCodeValidationRegex: {
         type: String,
         value: '.{1,8}',
         readOnly: true,
       },
 
-      /** @protected {boolean} */
       rsuCodeInvalid: {
         type: Boolean,
         value: false,
@@ -129,77 +113,67 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     };
   }
 
-  constructor() {
-    super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-  }
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  allButtonsDisabled: boolean;
+  errorCode: RmadErrorCode;
+  protected canvasSize: number;
+  protected rsuChallenge: string;
+  protected rsuHwid: string;
+  protected rsuCode: string;
+  protected rsuCodeExpectedLength: number;
+  protected rsuInstructionsText: TrustedHTML;
+  protected qrCodeUrl: string;
+  protected rsuChallengeLinkText: string;
+  protected rsuCodeValidationRegex: string;
+  protected rsuCodeInvalid: boolean;
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     this.getRsuChallengeAndHwid();
     this.setRsuInstructionsText();
     enableNextButton(this);
 
     afterNextRender(this, () => {
-      const codeInput = this.shadowRoot.querySelector('#rsuCode');
+      const codeInput: CrInputElement|null = this.shadowRoot!.querySelector('#rsuCode');
+      assert(codeInput);
       codeInput.focus();
     });
   }
 
-  /** @private */
-  getRsuChallengeAndHwid() {
+  private getRsuChallengeAndHwid(): void {
     this.shimlessRmaService.getRsuDisableWriteProtectChallenge().then(
-        (result) => this.rsuChallenge = result.challenge);
-    this.shimlessRmaService.getRsuDisableWriteProtectHwid().then((result) => {
+        (result: {challenge: string}) => this.rsuChallenge = result.challenge);
+    this.shimlessRmaService.getRsuDisableWriteProtectHwid().then((result: {hwid: string}) => {
       this.rsuHwid = result.hwid;
     });
     this.shimlessRmaService.getRsuDisableWriteProtectChallengeQrCode().then(
         this.updateQrCode.bind(this));
   }
 
-  /**
-   * @param {{qrCodeData: !Array<number>}} response
-   * @private
-   */
-  updateQrCode(response) {
+  private updateQrCode(response: {qrCodeData: number[]}): void {
     const blob =
         new Blob([Uint8Array.from(response.qrCodeData)], {'type': 'image/png'});
     this.qrCodeUrl = URL.createObjectURL(blob);
   }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  rsuCodeIsPlausible() {
+  private rsuCodeIsPlausible(): boolean {
     return !!this.rsuCode && this.rsuCode.length === RSU_CODE_EXPECTED_LENGTH;
   }
 
-  /**
-   * @param {!Event} event
-   * @protected
-   */
-  onRsuCodeChanged(event) {
+  protected onRsuCodeChanged(): void {
     // Set to false whenever the user changes the code to remove the red invalid
     // warning.
     this.rsuCodeInvalid = false;
     this.rsuCode = this.rsuCode.toUpperCase();
   }
 
-  /**
-   * @param {!Event} event
-   * @protected
-   */
-  onKeyDown(event) {
+  protected onKeyDown(event: KeyboardEvent): void {
     if (event.key === 'Enter') {
       dispatchNextButtonClick(this);
     }
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     if (this.rsuCode.length !== this.rsuCodeExpectedLength) {
       this.rsuCodeInvalid = true;
       return Promise.reject(new Error('No RSU code set'));
@@ -208,59 +182,55 @@ export class OnboardingEnterRsuWpDisableCodePage extends
     return this.shimlessRmaService.setRsuDisableWriteProtectCode(this.rsuCode);
   }
 
-  /** @private */
-  setRsuInstructionsText() {
+  private setRsuInstructionsText(): void {
     this.rsuInstructionsText =
         this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
-    const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
+    const linkElement: HTMLAnchorElement|null = this.shadowRoot!.querySelector('#rsuCodeDialogLink');
+    assert(linkElement);
     linkElement.setAttribute('href', '#');
     linkElement.addEventListener('click', () => {
       if (this.allButtonsDisabled) {
         return;
       }
 
-      this.shadowRoot.querySelector('#rsuChallengeDialog').showModal();
+      const dialog: CrDialogElement|null = this.shadowRoot!.querySelector('#rsuChallengeDialog');
+      assert(dialog);
+      dialog.showModal();
     });
   }
 
-  /**
-   * @return {string}
-   * @private
-   */
-  computeRsuChallengeLinkText() {
+  private computeRsuChallengeLinkText(): string {
     const unlockPageUrl =
         'https://chromeos.google.com/partner/console/cr50reset?challenge=';
     return unlockPageUrl + this.rsuChallenge + '&hwid=' + this.rsuHwid;
   }
 
-  /** @private */
-  closeDialog() {
-    this.shadowRoot.querySelector('#rsuChallengeDialog').close();
+  private closeDialog(): void {
+    const dialog: CrDialogElement|null = this.shadowRoot!.querySelector('#rsuChallengeDialog');
+    assert(dialog);
+    dialog.close();
   }
 
-  /** @private */
-  onErrorCodeChanged() {
+  private onErrorCodeChanged(): void {
     if (this.errorCode === RmadErrorCode.kWriteProtectDisableRsuCodeInvalid) {
       this.rsuCodeInvalid = true;
     }
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getRsuCodeLabelText() {
+  protected getRsuCodeLabelText(): string {
     return this.rsuCodeInvalid ? this.i18n('rsuCodeErrorLabelText') :
                                  this.i18n('rsuCodeLabelText');
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getRsuAriaDescription() {
+  protected getRsuAriaDescription(): string {
     return `${this.getRsuCodeLabelText()} ${
         this.i18n('rsuCodeInstructionsAriaText')}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingEnterRsuWpDisableCodePage.is]: OnboardingEnterRsuWpDisableCodePage;
   }
 }
 
