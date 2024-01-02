@@ -897,7 +897,7 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="462160925400706389"><ph name="NAME" /> er tilkoblet</translation>
 <translation id="4623167406982293031">Bekreft kontoen</translation>
 <translation id="4628757576491864469">Enheter</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernerangering <ph name="RATING_SCORE" /></translation>
+<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" /> – stjernevurdering <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en dag}other{Nedgrader enheten til en tidligere versjon innen # dager}}</translation>
 <translation id="4633636853437260449">Trykk på Ctrl + W for å slette</translation>
 <translation id="4642092649622328492">Ta en delvis skjermdump</translation>

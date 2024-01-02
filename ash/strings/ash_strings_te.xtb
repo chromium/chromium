@@ -1278,7 +1278,7 @@
 <translation id="6095425951508823973"><ph name="PROVIDER" />‌తో కనెక్షన్‌ను జోడించండి</translation>
 <translation id="6099678161144790572">గత నెలలో ఎడిట్ చేశారు</translation>
 <translation id="6103838137565245112">సిస్టమ్</translation>
-<translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
+<translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైళ్లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
@@ -1937,7 +1937,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google సహాయకం ఈ భాషను మాట్లాడదు.</translation>
 <translation id="8926951137623668982">అర ఎల్లప్పుడూ దాచబడుతుంది</translation>
-<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైల్‌లు}}</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ఫైల్}other{# ఫైళ్లు}}</translation>
 <translation id="8936501819958976551">డీయాక్టివేట్ చేయబడింది</translation>
 <translation id="8938800817013097409">USB-C పరికరం (వెనుక భాగంలో కుడి పోర్ట్)</translation>
 <translation id="8940956008527784070">బ్యాటరీ తక్కువగా ఉంది (<ph name="PERCENTAGE" />%)</translation>
