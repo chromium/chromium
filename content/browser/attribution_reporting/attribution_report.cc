@@ -313,10 +313,25 @@ absl::optional<base::Time> AttributionReport::MinReportTime(
 
 void AttributionReport::PopulateAdditionalHeaders(
     net::HttpRequestHeaders& headers) const {
-  if (const auto* data = absl::get_if<AggregatableAttributionData>(&data_);
-      data && data->common_data.verification_token.has_value()) {
+  const absl::optional<std::string>* verification_token = absl::visit(
+      base::Overloaded{
+          [](const EventLevelData&) -> const absl::optional<std::string>* {
+            return nullptr;
+          },
+
+          [](const AggregatableAttributionData& data) {
+            return &data.common_data.verification_token;
+          },
+
+          [](const NullAggregatableData& data) {
+            return &data.common_data.verification_token;
+          },
+      },
+      data_);
+
+  if (verification_token && verification_token->has_value()) {
     headers.SetHeader("Sec-Attribution-Reporting-Private-State-Token",
-                      *data->common_data.verification_token);
+                      **verification_token);
   }
 }
 

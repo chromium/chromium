@@ -264,6 +264,32 @@ TEST(AttributionReportTest, PopulateAdditionalHeaders) {
   }
 }
 
+TEST(AttributionReportTest, PopulateAdditionalHeadersNullAggregatableReport) {
+  const absl::optional<std::string> kTestCases[] = {
+      absl::nullopt,
+      "foo",
+  };
+
+  for (const auto& verification_token : kTestCases) {
+    AttributionReport report = ReportBuilder(AttributionInfoBuilder().Build(),
+                                             SourceBuilder().BuildStored())
+                                   .SetVerificationToken(verification_token)
+                                   .BuildNullAggregatable();
+
+    net::HttpRequestHeaders headers;
+    report.PopulateAdditionalHeaders(headers);
+
+    if (verification_token.has_value()) {
+      std::string header;
+      headers.GetHeader("Sec-Attribution-Reporting-Private-State-Token",
+                        &header);
+      EXPECT_EQ(header, *verification_token);
+    } else {
+      EXPECT_TRUE(headers.IsEmpty());
+    }
+  }
+}
+
 TEST(AttributionReportTest, NullAggregatableReport) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
