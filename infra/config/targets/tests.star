@@ -683,6 +683,19 @@ targets.tests.gtest_test(
     binary = "content_browsertests",
 )
 
+targets.tests.gtest_test(
+    name = "content_browsertests_with_emulator_network",
+    mixins = [
+        "emulator-enable-network",
+    ],
+    args = [
+        # These are integration tests for network change, they need to run
+        # on an emulator with network enabled
+        "--gtest_filter=QuicConnectionMigrationTest.*",
+    ],
+    binary = "content_browsertests",
+)
+
 targets.tests.isolated_script_test(
     name = "content_junit_tests",
 )

@@ -55,6 +55,19 @@
       },
     },
 
+    'android_emulator_specific_network_enabled_content_browsertests': {
+      'content_browsertests_with_emulator_network': {
+        'test': 'content_browsertests',
+        'mixins': [
+          'emulator-enable-network',
+        ],
+        'args': [
+          '--gtest_filter=QuicConnectionMigrationTest.*',
+        ],
+        'ci_only': True,
+      },
+    },
+
     'android_isolated_scripts': {
       'content_shell_crash_test': {
         'args': [
@@ -5802,6 +5815,7 @@
 
     'android_oreo_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
+      'android_emulator_specific_network_enabled_content_browsertests',
       'android_monochrome_smoke_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',

@@ -45,6 +45,7 @@ targets.legacy_compound_suite(
     name = "android_oreo_emulator_gtests",
     basic_suites = [
         "android_emulator_specific_chrome_public_tests",
+        "android_emulator_specific_network_enabled_content_browsertests",
         "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
