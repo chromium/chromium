@@ -1173,3 +1173,32 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultiIdpWithOneIdpMismatch) {
             bubble_view_->sheet_type_);
   EXPECT_THAT(bubble_view_->account_ids_, testing::ElementsAre(kAccountId));
 }
+
+// Tests that if a pop-up window is opened in button flow mode, closing the
+// pop-up window triggers the dismiss callback.
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       ButtonFlowPopupCloseTriggersDismissCallback) {
+  // Initialize a controller but do not trigger any dialogs.
+  auto controller = std::make_unique<TestFedCmAccountSelectionView>(
+      delegate_.get(), widget_.get(), bubble_view_.get());
+  EXPECT_FALSE(widget_->IsVisible());
+
+  // Emulate user clicking on a button to sign in with an IDP via button flow.
+  auto popup_window = std::make_unique<MockFedCmModalDialogView>(
+      test_web_contents_.get(), controller.get());
+  EXPECT_CALL(*popup_window, ShowPopupWindow).Times(1);
+  controller->SetIdpSigninPopupWindowForTesting(std::move(popup_window));
+  controller->ShowModalDialog(GURL(u"https://example.com"));
+
+  // Emulate user closing the pop-up window.
+  controller->OnPopupWindowDestroyed();
+
+  // Widget should be dismissed.
+  StubAccountSelectionViewDelegate* delegate =
+      static_cast<StubAccountSelectionViewDelegate*>(delegate_.get());
+  EXPECT_EQ(delegate->GetDismissReason(), DismissReason::kOther);
+
+  // Reset the widget explicitly since no widget was shown. Otherwise, the test
+  // will complain that a widget is still open.
+  widget_.reset();
+}

@@ -595,8 +595,12 @@ FedCmAccountSelectionView::SheetType FedCmAccountSelectionView::GetSheetType() {
 }
 
 void FedCmAccountSelectionView::Close() {
-  if (!bubble_widget_)
+  if (!bubble_widget_) {
+    if (delegate_ && notify_delegate_of_dismiss_) {
+      delegate_->OnDismiss(DismissReason::kOther);
+    }
     return;
+  }
 
   bubble_widget_->Close();
   OnDismiss(DismissReason::kOther);
