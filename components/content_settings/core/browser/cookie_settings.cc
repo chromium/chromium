@@ -36,10 +36,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(USE_BLINK)
-#include "third_party/blink/public/common/features_generated.h"
-#endif
-
 namespace content_settings {
 
 CookieSettings::CookieSettings(
@@ -356,9 +352,9 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
 }
 
 bool CookieSettings::IsStorageAccessApiEnabled() const {
-  // TODO(https://crbug.com/1411765): instead of using a BUILDFLAG and checking
-  // the feature here, we should rely on CookieSettingsFactory to plumb in this
-  // boolean instead.
+  // TODO(https://crbug.com/1411765): instead of explicitly checking for
+  // USE_BLINK throughout the core code of this component, we should rely on
+  // CookieSettingsFactory to plumb in the necessary configuration instead.
 #if BUILDFLAG(USE_BLINK)
   return true;
 #else

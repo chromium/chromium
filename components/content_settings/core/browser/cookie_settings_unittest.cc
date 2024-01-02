@@ -44,7 +44,6 @@
 #include "components/content_settings/core/common/features.h"
 #else
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
-#include "third_party/blink/public/common/features_generated.h"
 #endif
 
 namespace {

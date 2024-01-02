@@ -83,7 +83,6 @@ static_library("browser") {
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
-      "//third_party/blink/public/common:headers",
     ]
   }
 
@@ -138,7 +137,6 @@ source_set("unit_tests") {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser:test_support",
-      "//third_party/blink/public/common:headers",
     ]
   }
 }
