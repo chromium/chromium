@@ -640,7 +640,10 @@ TEST_P(InlineScriptStreamingTest, InlineScript) {
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
 
-TEST_F(ScriptStreamingTest, ProduceLocalCompileHintsForStreamedScript) {
+// TODO(crbug.com/1515152) Re-enable when the source of the hard-crashes has
+// been addressed.
+TEST_F(ScriptStreamingTest,
+       DISABLED_ProduceLocalCompileHintsForStreamedScript) {
   // Test that we can produce local compile hints when a script is streamed.
   base::test::ScopedFeatureList flag_on(features::kLocalCompileHints);
   V8TestingScope scope;
