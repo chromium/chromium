@@ -316,8 +316,10 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
     return absl::nullopt;
   }
   std::vector<blink::InterestGroup::Ad> out;
+  out.reserve(ad_protos.ads_size());
   for (const auto& ad_proto : ad_protos.ads()) {
-    blink::InterestGroup::Ad ad(passkey, ad_proto.render_url());
+    blink::InterestGroup::Ad& ad =
+        out.emplace_back(passkey, ad_proto.render_url());
     if (ad_proto.has_size_group()) {
       ad.size_group = ad_proto.size_group();
     }
@@ -336,7 +338,9 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
     }
     if (!ad_proto.allowed_reporting_origins().empty()) {
       std::vector<url::Origin> allowed_reporting_origins_vector;
-      for (std::string allowed_reporting_origin :
+      allowed_reporting_origins_vector.reserve(
+          ad_proto.allowed_reporting_origins_size());
+      for (const std::string& allowed_reporting_origin :
            ad_proto.allowed_reporting_origins()) {
         allowed_reporting_origins_vector.emplace_back(
             DeserializeOrigin(allowed_reporting_origin));
@@ -344,7 +348,6 @@ DeserializeInterestGroupAdVectorProto(const PassKey& passkey,
       ad.allowed_reporting_origins =
           std::move(allowed_reporting_origins_vector);
     }
-    out.push_back(ad);
   }
   return out;
 }
@@ -3355,17 +3358,16 @@ DoGetKAnonymityData(sql::Database& db,
   return k_anon_data;
 }
 
-absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
-    sql::Database& db,
-    const PassKey& passkey,
-    const blink::InterestGroupKey& group_key,
-    base::Time now) {
-  StorageInterestGroup db_interest_group;
+bool DoGetStoredInterestGroup(sql::Database& db,
+                              StorageInterestGroup& db_interest_group,
+                              const PassKey& passkey,
+                              const blink::InterestGroupKey& group_key,
+                              base::Time now) {
   if (!DoLoadInterestGroup(
           db, passkey, group_key, db_interest_group.interest_group,
           &db_interest_group.joining_origin, &db_interest_group.join_time,
           &db_interest_group.last_updated)) {
-    return absl::nullopt;
+    return false;
   }
 
   sql::Statement interest_group_kanon_query(
@@ -3396,18 +3398,15 @@ absl::optional<StorageInterestGroup> DoGetStoredInterestGroup(
       auction_worklet::mojom::BiddingBrowserSignals::New();
   if (!GetJoinCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
                     db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
+    return false;
   }
   if (!GetBidCount(db, group_key, now - InterestGroupStorage::kHistoryLength,
                    db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
+    return false;
   }
-  if (!GetPreviousWins(db, group_key,
-                       now - InterestGroupStorage::kHistoryLength,
-                       db_interest_group.bidding_browser_signals)) {
-    return absl::nullopt;
-  }
-  return db_interest_group;
+  return GetPreviousWins(db, group_key,
+                         now - InterestGroupStorage::kHistoryLength,
+                         db_interest_group.bidding_browser_signals);
 }
 
 absl::optional<std::vector<InterestGroupUpdateParameter>>
@@ -3480,14 +3479,15 @@ absl::optional<std::vector<StorageInterestGroup>> DoGetInterestGroupsForOwner(
   }
 
   std::vector<StorageInterestGroup> result;
+  result.reserve(group_names->size());
   for (const std::string& name : *group_names) {
-    absl::optional<StorageInterestGroup> db_interest_group =
-        DoGetStoredInterestGroup(db, passkey,
+    StorageInterestGroup& db_interest_group = result.emplace_back();
+    bool success =
+        DoGetStoredInterestGroup(db, db_interest_group, passkey,
                                  blink::InterestGroupKey(owner, name), now);
-    if (!db_interest_group) {
+    if (!success) {
       return absl::nullopt;
     }
-    result.push_back(std::move(db_interest_group).value());
   }
 
   if (!transaction.Commit()) {
@@ -4393,8 +4393,12 @@ absl::optional<StorageInterestGroup> InterestGroupStorage::GetInterestGroup(
     return absl::nullopt;
   }
 
-  return DoGetStoredInterestGroup(*db_, PassKey(), group_key,
-                                  base::Time::Now());
+  StorageInterestGroup db_interest_group;
+  if (DoGetStoredInterestGroup(*db_, db_interest_group, PassKey(), group_key,
+                               base::Time::Now())) {
+    return db_interest_group;
+  }
+  return absl::nullopt;
 }
 
 std::vector<url::Origin> InterestGroupStorage::GetAllInterestGroupOwners() {
