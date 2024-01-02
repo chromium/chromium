@@ -1662,7 +1662,7 @@ BASE_FEATURE(kInteractiveDetectorIgnoreFcp,
 
 BASE_FEATURE(kRenderBlockingFonts,
              "RenderBlockingFonts",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kMaxBlockingTimeMsForRenderBlockingFonts(
     &features::kRenderBlockingFonts,
