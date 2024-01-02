@@ -45,6 +45,13 @@ class AudioManagerApple : public AudioManagerBase, public AudioIOStreamClient {
   // device.
   virtual int HardwareSampleRateForDevice(AudioDeviceID device_id) = 0;
 
+  // If successful, this function returns no error and populates the out
+  // parameter `input_format` with a valid ASBD. Otherwise, an error status code
+  // will be returned.
+  virtual OSStatus GetInputDeviceStreamFormat(
+      AudioUnit audio_unit,
+      AudioStreamBasicDescription* input_format) = 0;
+
  protected:
   AudioManagerApple(std::unique_ptr<AudioThread> audio_thread,
                     AudioLogFactory* audio_log_factory);

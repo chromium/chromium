@@ -207,6 +207,29 @@ bool AudioManagerIOS::IsInputGainSettable() {
   return AudioSessionManagerIOS::GetInstance().IsInputGainSettable();
 }
 
+OSStatus AudioManagerIOS::GetInputDeviceStreamFormat(
+    AudioUnit audio_unit,
+    AudioStreamBasicDescription* input_format) {
+  // Configure audio stream format for 16-bit PCM
+  const SampleFormat kSampleFormat = kSampleFormatS16;
+  input_format->mSampleRate =
+      AudioSessionManagerIOS::GetInstance().HardwareSampleRate();
+  input_format->mFormatID = kAudioFormatLinearPCM;
+  input_format->mFormatFlags =
+      kLinearPCMFormatFlagIsSignedInteger | kLinearPCMFormatFlagIsPacked;
+  input_format->mChannelsPerFrame =
+      AudioSessionManagerIOS::GetInstance().GetDeviceChannels(
+          /*is_input=*/true);
+  input_format->mBitsPerChannel = SampleFormatToBitsPerChannel(kSampleFormat);
+
+  // Calculate other fields based on the above settings
+  input_format->mBytesPerPacket = SampleFormatToBytesPerChannel(kSampleFormat) *
+                                  input_format->mChannelsPerFrame;
+  input_format->mBytesPerFrame = input_format->mBytesPerPacket;
+  input_format->mFramesPerPacket = 1;  // uncompressed audio
+  return noErr;
+}
+
 // protected
 AudioParameters AudioManagerIOS::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,

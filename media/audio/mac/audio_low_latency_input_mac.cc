@@ -345,8 +345,13 @@ bool AUAudioInputStream::OpenAUHAL() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
-                                              &input_device_format);
+  result =
+      manager_->GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  if (result != noErr) {
+    HandleError(result);
+    return false;
+  }
+
   DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR) << "Input device's sample rate does not match the client's "
@@ -489,8 +494,13 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   // in the AUHAL, only *simple* conversions, e.g., 32-bit float to 16-bit
   // signed integer format.
   AudioStreamBasicDescription input_device_format = {0};
-  AudioManagerMac::GetInputDeviceStreamFormat(audio_unit_,
-                                              &input_device_format);
+  result =
+      manager_->GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
+  if (result != noErr) {
+    HandleError(result);
+    return false;
+  }
+
   DVLOG(1) << "Input device stream format: " << input_device_format;
   if (input_device_format.mSampleRate != format_.mSampleRate) {
     LOG(ERROR)
