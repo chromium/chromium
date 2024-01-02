@@ -30,8 +30,6 @@ DisplayResourceProviderSoftware::DisplayResourceProviderSoftware(
               ? sync_point_manager_->CreateSyncPointOrderData()
               : nullptr) {
   DCHECK(shared_bitmap_manager);
-  DCHECK((shared_image_manager && sync_point_manager) ||
-         !base::FeatureList::IsEnabled(features::kSharedBitmapToSharedImage));
 
   memory_tracker_ = std::make_unique<gpu::MemoryTypeTracker>(nullptr);
 }
@@ -48,8 +46,8 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   ChildResource* resource = GetResource(id);
   DCHECK(!resource->is_gpu_resource_type());
 
-  if (shared_image_manager_ &&
-      resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
+  if (resource->transferable.mailbox_holder.mailbox.IsSharedImage()) {
+    DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {
       const SharedBitmapId& shared_bitmap_id =
