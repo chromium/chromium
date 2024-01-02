@@ -1457,6 +1457,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetContainsPlugins() { contains_plugins_ = true; }
   bool ContainsPlugins() const { return contains_plugins_; }
 
+  void EnqueueMoveEvent();
   void EnqueueResizeEvent();
   void EnqueueScrollEventForNode(Node*);
   void EnqueueScrollEndEventForNode(Node*);

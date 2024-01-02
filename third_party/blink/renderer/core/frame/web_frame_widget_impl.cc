@@ -4460,10 +4460,35 @@ void WebFrameWidgetImpl::UpdateViewportDescription(
 bool WebFrameWidgetImpl::UpdateScreenRects(
     const gfx::Rect& widget_screen_rect,
     const gfx::Rect& window_screen_rect) {
-  if (!device_emulator_)
-    return false;
-  device_emulator_->OnUpdateScreenRects(widget_screen_rect, window_screen_rect);
-  return true;
+  bool should_send = WindowRect().origin() != window_screen_rect.origin();
+
+  if (device_emulator_) {
+    device_emulator_->OnUpdateScreenRects(widget_screen_rect,
+                                          window_screen_rect);
+  }
+  if (should_send) {
+    EnqueueMoveEvent();
+  }
+
+  return device_emulator_ != nullptr;
+}
+
+void WebFrameWidgetImpl::EnqueueMoveEvent() {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  if (!local_root_ || !local_root_->GetFrame() || !ForTopMostMainFrame()) {
+    return;
+  }
+
+  Document* document = local_root_->GetFrame()->GetDocument();
+  if (!document || !document->IsActive()) {
+    return;
+  }
+
+  document->EnqueueMoveEvent();
 }
 
 void WebFrameWidgetImpl::OrientationChanged() {

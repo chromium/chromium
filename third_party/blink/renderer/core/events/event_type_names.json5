@@ -200,6 +200,7 @@
     "mouseover",
     "mouseup",
     "mousewheel",
+    "move",
     "mute",
     "navigate",
     "navigateerror",

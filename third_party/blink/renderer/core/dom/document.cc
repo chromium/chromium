@@ -68,6 +68,7 @@
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -5862,6 +5863,26 @@ void Document::EnqueueSnapChangingEvent(
       SnapEvent::Create(event_type_names::kSnapchanging, snap_targets);
   snapchanging_event->SetTarget(target);
   scripted_animation_controller_->EnqueuePerFrameEvent(snapchanging_event);
+}
+
+void Document::EnqueueMoveEvent() {
+  CHECK(
+      RuntimeEnabledFeatures::DesktopPWAsAdditionalWindowingControlsEnabled());
+
+  auto display_mode = GetFrame()->GetWidgetForLocalRoot()->DisplayMode();
+  bool is_app_window = !(display_mode == mojom::blink::DisplayMode::kBrowser ||
+                         display_mode == mojom::blink::DisplayMode::kUndefined);
+
+  if (!(IsInWebAppScope() && is_app_window) &&
+      !GetFrame()->GetPage()->GetChromeClient().IsPopup()) {
+    return;
+  }
+
+  Event* event = Event::Create(event_type_names::kMove);
+  event->SetTarget(domWindow());
+
+  // TODO(crbug.com/1515101): When launching AWC, requires spec work.
+  scripted_animation_controller_->EnqueuePerFrameEvent(event);
 }
 
 void Document::EnqueueResizeEvent() {
