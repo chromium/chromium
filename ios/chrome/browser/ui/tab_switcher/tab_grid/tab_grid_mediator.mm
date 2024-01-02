@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_mediator_provider_wrangler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
@@ -30,6 +31,10 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
+  // Current page.
+  // TODO(crbug.com/1515084): Remove once the mediator and the view controller
+  // are fully sync.
+  TabGridPage _currentPage;
 }
 
 - (instancetype)initWithPrefService:(PrefService*)prefService {
@@ -106,6 +111,7 @@
 
 // Notifies mutators if it is the current selected one or not.
 - (void)notifyPageMutatorAboutPage:(TabGridPage)page {
+  _currentPage = page;
   [_currentPageMutator currentlySelectedGrid:NO];
   [self updateCurrentPageMutatorForPage:page];
   [_currentPageMutator currentlySelectedGrid:YES];
@@ -119,7 +125,6 @@
                             interaction);
 
   [self notifyPageMutatorAboutPage:currentPage];
-
   // TODO(crbug.com/1462133): Implement the incognito grid or content visible
   // notification.
 }
@@ -130,6 +135,12 @@
 
 - (void)dragAndDropSessionEnded {
   [self.toolbarsMutator setButtonsEnabled:YES];
+}
+
+#pragma mark - TabGridMediatorProviderWrangler
+
+- (TabGridPage)currentPage {
+  return _currentPage;
 }
 
 @end

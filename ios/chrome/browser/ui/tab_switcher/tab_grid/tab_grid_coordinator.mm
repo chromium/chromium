@@ -708,6 +708,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   baseViewController.layoutGuideCenter = LayoutGuideCenterForBrowser(nil);
   baseViewController.delegate = self;
   baseViewController.mutator = _mediator;
+  // TODO(crbug.com/1515084): Remove once sync bug have beeen solved.
+  baseViewController.provider = _mediator;
   _baseViewController = baseViewController;
 
   _mediator.consumer = _baseViewController;
