@@ -957,19 +957,13 @@ metrics:
 ### chrome_public_apk and Integration Tests
 
 To make the Foo feature available in the non-bundle `chrome_public_apk`
-target, add the `java` target to the `chrome_public_common_apk_or_module_tmpl`
-in `//chrome/android/chrome_public_apk_tmpl.gni` like so:
+target, add the `java` target to the template in
+`//chrome/android/chrome_public_apk_tmpl.gni` like so:
 
 ```gn
-template("chrome_public_common_apk_or_module_tmpl") {
-  ...
-  target(_target_type, target_name) {
-    ...
-    if (_target_type != "android_app_bundle_module") {
-      deps += [
-        "//chrome/browser/foo/internal:java",
-      ]
-    }
+  # Add to where "chrome_all_java" is added:
+  if (!_is_bundle) {
+    deps += [ "//chrome/browser/foo/internal:java" ]
   }
 }
 ```

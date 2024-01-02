@@ -768,9 +768,3 @@ template("chrome_public_test_apk_tmpl") {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 }
-
-template("chrome_public_common_apk_or_module_tmpl") {
-  chrome_common_apk_or_module_tmpl(target_name) {
-    forward_variables_from(invoker, "*")
-  }
-}
