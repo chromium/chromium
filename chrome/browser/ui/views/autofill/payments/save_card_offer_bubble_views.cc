@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -34,6 +35,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -48,6 +50,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -83,10 +86,28 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
 
 void SaveCardOfferBubbleViews::Init() {
   SaveCardBubbleViews::Init();
+  if (controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE) {
+    loading_row_ = AddChildView(CreateLoadingRow());
+  }
   SetExtraView(CreateUploadExplanationView());
 }
 
 bool SaveCardOfferBubbleViews::Accept() {
+  bool show_throbber =
+      controller() &&
+      controller()->GetBubbleType() == BubbleType::UPLOAD_SAVE &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSaveCardLoadingAndConfirmation);
+
+  if (show_throbber) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+
+    loading_throbber_->Start();
+    loading_row_->SetVisible(true);
+
+    DialogModelChanged();
+  }
+
   if (controller()) {
     controller()->OnSaveButton(
         {cardholder_name_textfield_ ? cardholder_name_textfield_->GetText()
@@ -100,7 +121,10 @@ bool SaveCardOfferBubbleViews::Accept() {
                    year_input_dropdown_->GetSelectedIndex().value())
              : std::u16string()});
   }
-  return true;
+
+  // If a throbber is shown, don't automatically close the bubble view upon
+  // acceptance.
+  return !show_throbber;
 }
 
 bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
@@ -379,6 +403,22 @@ SaveCardOfferBubbleViews::CreateLegalMessageView() {
   return std::make_unique<LegalMessageView>(
       message_lines, /*user_email=*/std::u16string(),
       /*user_avatar=*/ui::ImageModel(), LegalMessageCallBack);
+}
+
+std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateLoadingRow() {
+  auto loading_row = std::make_unique<views::BoxLayoutView>();
+
+  // Initialize `loading_row` as hidden because it should only be visible after
+  // the user accepts uploading the card.
+  loading_row->SetVisible(false);
+
+  loading_row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  loading_row->SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  loading_throbber_ =
+      loading_row->AddChildView(std::make_unique<views::Throbber>());
+  loading_throbber_->SetID(DialogViewId::LOADING_THROBBER);
+
+  return loading_row;
 }
 
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {

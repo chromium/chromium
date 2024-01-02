@@ -121,6 +121,7 @@ class SaveCardBubbleControllerImplTest : public DialogBrowserTest {
         controller_->ShowBubbleForManageCardsForTesting(test::GetCreditCard());
         break;
       case BubbleType::UPLOAD_IN_PROGRESS:
+      case BubbleType::UPLOAD_COMPLETED:
       case BubbleType::INACTIVE:
         break;
     }

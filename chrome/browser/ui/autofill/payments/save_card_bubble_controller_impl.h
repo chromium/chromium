@@ -96,6 +96,7 @@ class SaveCardBubbleControllerImpl
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
   void ReshowBubble();
+  virtual void HideIconAndBubbleAfterUpload();
 
   // SaveCardBubbleController:
   std::u16string GetWindowTitle() const override;

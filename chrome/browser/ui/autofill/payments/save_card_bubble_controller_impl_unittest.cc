@@ -717,6 +717,20 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveDialogContent) {
             u"industry-leading security.");
 }
 
+TEST_F(SaveCardBubbleControllerImplTest, HideIconAndBubbleAfterUpload) {
+  ShowUploadBubble();
+
+  EXPECT_TRUE(controller()->IsIconVisible());
+  EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
+
+  controller()->HideIconAndBubbleAfterUpload();
+  CloseBubble();
+
+  EXPECT_FALSE(controller()->IsIconVisible());
+  EXPECT_EQ(controller()->GetPaymentBubbleView(), nullptr);
+  EXPECT_EQ(controller()->GetBubbleType(), BubbleType::INACTIVE);
+}
+
 TEST_F(SaveCardBubbleControllerImplTest, UploadCvcOnlySaveDialogContent) {
   // Show the server CVC save bubble.
   ShowUploadBubble(
@@ -872,6 +886,57 @@ TEST_F(SaveCardBubbleControllerImplTest, Metrics_Upload_FirstShow_ManageCards) {
   // even when this flag is enabled.
   histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Local", 0);
   histogram_tester.ExpectTotalCount("Autofill.ManageCardsPrompt.Upload", 1);
+}
+
+class SaveCardBubbleControllerImplTestWithLoadingAndConfirmation
+    : public SaveCardBubbleControllerImplTest {
+ public:
+  SaveCardBubbleControllerImplTestWithLoadingAndConfirmation() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableSaveCardLoadingAndConfirmation);
+  }
+};
+
+// Test that `Accepted` metric is recorded on upload card save.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Metrics_Upload_OnSave) {
+  base::HistogramTester histogram_tester;
+
+  ShowUploadBubble();
+  controller()->OnSaveButton({});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow",
+      autofill_metrics::SaveCardPromptResult::kAccepted, 1);
+}
+
+// Test that metrics are not recorded in
+// SaveCardBubbleController::OnSaveButton() on local card save.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Metrics_Local_OnSave) {
+  base::HistogramTester histogram_tester;
+
+  ShowLocalBubble();
+  controller()->OnSaveButton({});
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
+}
+
+// Test that metrics are not recorded when the save card bubble is
+// programmatically closed after the save card upload completes. They should be
+// recorded at the time save is accepted, because accepting save no longer
+// immediately closes the bubble.
+TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
+       Metrics_Upload_HideAfterUpload_CloseBubble) {
+  base::HistogramTester histogram_tester;
+
+  ShowUploadBubble();
+  controller()->HideIconAndBubbleAfterUpload();
+  CloseBubble();
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.SaveCreditCardPromptResult.Upload.FirstShow", 0);
 }
 
 }  // namespace autofill

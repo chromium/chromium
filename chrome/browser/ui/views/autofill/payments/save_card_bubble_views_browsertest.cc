@@ -89,9 +89,11 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -2163,6 +2165,67 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(GetSaveCardBubbleViews()->GetCardIdentifierString(),
             card.NetworkAndLastFourDigits());
+}
+
+class SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation
+    : public SaveCardBubbleViewsFullFormBrowserTest {
+ public:
+  SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation() {
+    feature_list_.InitAndEnableFeature(
+        features::kAutofillEnableSaveCardLoadingAndConfirmation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
+    ::testing::Bool());
+
+// Tests the upload save bubble. Ensures that clicking the [Save] button
+// does not close the bubble, causes a loading throbber to appear and hides the
+// other dialog buttons.
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
+    Upload_ClickingSaveShowsLoadingView) {
+  ASSERT_TRUE(SetupSync());
+
+  FillForm();
+  SubmitFormAndWaitForCardUploadSaveBubble();
+
+  SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
+  views::View* loading_throbber =
+      FindViewInBubbleById(DialogViewId::LOADING_THROBBER);
+  EXPECT_FALSE(loading_throbber->IsDrawn());
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::OK_BUTTON)->IsDrawn());
+  EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CANCEL_BUTTON)->IsDrawn());
+
+  ClickOnDialogViewWithId(DialogViewId::OK_BUTTON);
+
+  EXPECT_TRUE(save_card_bubble_views->GetWidget()->IsVisible());
+  EXPECT_TRUE(loading_throbber->IsDrawn());
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::OK_BUTTON), nullptr);
+  EXPECT_EQ(FindViewInBubbleById(DialogViewId::CANCEL_BUTTON), nullptr);
+}
+
+// Tests the local save bubble. Ensures that clicking the [Save] button
+// closes the bubble.
+IN_PROC_BROWSER_TEST_P(
+    SaveCardBubbleViewsFullFormBrowserTestWithLoadingAndConfirmation,
+    Local_ClickingSaveClosesBubble) {
+  FillForm();
+  SubmitFormAndWaitForCardLocalSaveBubble();
+
+  auto* bubble_widget = GetSaveCardBubbleViews()->GetWidget();
+  views::test::TestWidgetObserver bubble_observer(bubble_widget);
+
+  EXPECT_TRUE(bubble_widget->IsVisible());
+
+  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
+
+  EXPECT_TRUE(bubble_observer.widget_closed());
 }
 
 // Tests the local save bubble. Ensures that clicking the [Save] button
