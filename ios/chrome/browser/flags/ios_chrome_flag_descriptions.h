@@ -206,10 +206,6 @@ extern const char kEnableFamilyLinkControlsDescription[];
 extern const char kEnablePopoutOmniboxIpadName[];
 extern const char kEnablePopoutOmniboxIpadDescription[];
 
-// Title and description for UIButtonConfiguration.
-extern const char kEnableUIButtonConfigurationName[];
-extern const char kEnableUIButtonConfigurationDescription[];
-
 // Title and description for the flag to enable the Credential
 // Provider Extension promo.
 extern const char kCredentialProviderExtensionPromoName[];

@@ -417,10 +417,6 @@ const char kEnableSuggestionsScrollingOnIPadDescription[] =
     "Enable omnibox suggestions scrolling on iPad and disable suggestions "
     "hiding on keyboard dismissal.";
 
-const char kEnableUIButtonConfigurationName[] =
-    "Enable UIButtonConfiguration Usage";
-const char kEnableUIButtonConfigurationDescription[] =
-    "Enable UIButtonConfiguration usage for UIButtons.";
 
 const char kEnableWebChannelsName[] = "Enable WebFeed";
 const char kEnableWebChannelsDescription[] =

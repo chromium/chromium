@@ -128,12 +128,6 @@ BASE_DECLARE_FEATURE(kEnableLensInOmniboxCopiedImage);
 // trait propagation.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionWorkAround);
 
-// Feature flag to enable the use of UIButtonConfigurations in iOS 15+.
-BASE_DECLARE_FEATURE(kEnableUIButtonConfiguration);
-
-// Returns true if the use of UIButtonConfigurations is enabled.
-bool IsUIButtonConfigurationEnabled();
-
 // Feature flag to enable duplicate NTP cleanup.
 BASE_DECLARE_FEATURE(kRemoveExcessNTPs);
 
