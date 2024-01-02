@@ -149,21 +149,59 @@
       GetApplicationContext()->GetPushNotificationService();
   id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
       signin::ConsentLevel::kSignin);
-  service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
-                         true);
   __weak FeedTopSectionMediator* weakSelf = self;
+  // Request displaying the OS notifications permission prompt.
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
-    if (!error && !promptShown && !granted) {
-      // This callback can be executed on a background thread, make sure
-      // the UI is displayed on the main thread.
+    if (error) {
+      [self updateFeedTopSectionWhenClosed];
+      return;
+    }
+    if (!promptShown && !granted) {
+      // If the OS notification prompt has been previously shown, display a
+      // custom alert to ask for permission.
+      // This callback can be executed on a background thread, make sure the UI
+      // is updated on the main thread.
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf
                 .notificationsPresenter presentPushNotificationPermissionAlert];
+        [self updateFeedTopSectionWhenClosed];
       });
+      return;
     }
-    if (error) {
-      [self updateFeedTopSectionWhenClosed];
+    if (promptShown && granted) {
+      // If the OS prompt is shown and the user granted notifications access,
+      // save the preference and close the promo.
+      // This callback can be executed on a background thread, make sure the UI
+      // is updated on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        service->SetPreference(identity.gaiaID,
+                               PushNotificationClientId::kContent, true);
+        [self updateFeedTopSectionWhenClosed];
+      });
+      return;
+    }
+    if (promptShown && !granted) {
+      // If the OS prompt is shown and the user denied notifications access,
+      // close the promo.
+      // This callback can be executed on a background thread, make sure the UI
+      // is updated on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self updateFeedTopSectionWhenClosed];
+      });
+      return;
+    }
+    if (!promptShown && granted) {
+      // If the OS prompt has been previously shown but notifications are not
+      // active on Chrome activate the notifications. This is an edge case.
+      // This callback can be executed on a background thread, make sure the UI
+      // is updated on the main thread.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        service->SetPreference(identity.gaiaID,
+                               PushNotificationClientId::kContent, true);
+        [self updateFeedTopSectionWhenClosed];
+      });
+      return;
     }
   }];
 }
