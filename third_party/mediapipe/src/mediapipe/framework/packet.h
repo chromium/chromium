@@ -635,53 +635,14 @@ inline Packet& Packet::operator=(const Packet& packet) {
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::Consume() {
-  // If type validation fails, returns error.
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // Clients who use this function are responsible for ensuring that no
-  // other thread is doing anything with this Packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    return release_result;
-  }
-  // If packet isn't the sole owner of the holder, returns kFailedPrecondition
-  // error with message.
-  return absl::Status(absl::StatusCode::kFailedPrecondition,
-                      "Packet isn't the sole owner of the holder.");
+  return absl::InternalError("Consume isn't supported.");
 }
 
 template <typename T>
 inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<!std::is_array<T>::value>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  std::unique_ptr<T> data_ptr = absl::make_unique<T>(Get<T>());
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>
@@ -689,35 +650,7 @@ inline absl::StatusOr<std::unique_ptr<T>> Packet::ConsumeOrCopy(
     bool* was_copied,
     typename std::enable_if<std::is_array<T>::value &&
                             std::extent<T>::value != 0>::type*) {
-  MP_RETURN_IF_ERROR(ValidateAsType<T>());
-  // If holder is the sole owner of the underlying data, consumes this packet.
-  if (!holder_->HasForeignOwner() && holder_.unique()) {
-    VLOG(2) << "Consuming the data of " << DebugString();
-    absl::StatusOr<std::unique_ptr<T>> release_result =
-        holder_->As<T>()->Release();
-    if (release_result.ok()) {
-      VLOG(2) << "Setting " << DebugString() << " to empty.";
-      holder_.reset();
-    }
-    if (was_copied) {
-      *was_copied = false;
-    }
-    return release_result;
-  }
-  VLOG(2) << "Copying the data of " << DebugString();
-  const auto& original_array = Get<T>();
-  // Type T is bounded array type, such as int[N] and float[M].
-  // The new operator creates a new bounded array.
-  std::unique_ptr<T> data_ptr(reinterpret_cast<T*>(new T));
-  // Copies bounded array data into data_ptr.
-  std::copy(std::begin(original_array), std::end(original_array),
-            std::begin(*data_ptr));
-  VLOG(2) << "Setting " << DebugString() << " to empty.";
-  holder_.reset();
-  if (was_copied) {
-    *was_copied = true;
-  }
-  return std::move(data_ptr);
+  return absl::InternalError("ConsumeOrCopy isn't supported.");
 }
 
 template <typename T>
