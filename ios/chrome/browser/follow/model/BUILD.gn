@@ -43,7 +43,7 @@ source_set("enums") {
     "follow_action_state.h",
     "followed_web_site_state.h",
   ]
-  public_deps = [ "//ios/chrome/browser/follow:enums" ]
+  deps = []
 }
 
 source_set("tab_helper") {
@@ -54,18 +54,18 @@ source_set("tab_helper") {
     "follow_tab_helper.mm",
   ]
   deps = [
+    ":enums",
     ":feature_flags",
     ":javascript_feature",
     ":service",
     ":service_factory",
+    ":utils",
     "//base",
     "//components/feature_engagement/public",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/feature_engagement/model",
-    "//ios/chrome/browser/follow/model:enums",
-    "//ios/chrome/browser/follow/model:utils",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
@@ -81,12 +81,20 @@ source_set("tab_helper") {
 source_set("service") {
   sources = [
     "follow_configuration.h",
+    "follow_configuration.mm",
     "follow_service.h",
     "follow_service_observer.h",
+    "follow_service_observer.mm",
     "followed_web_site.h",
+    "followed_web_site.mm",
     "web_page_urls.h",
+    "web_page_urls.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/follow:service" ]
+  deps = [
+    ":enums",
+    "//base",
+    "//components/keyed_service/core",
+  ]
 }
 
 source_set("service_factory") {
@@ -115,6 +123,8 @@ source_set("browser_agent") {
     "follow_browser_agent_observing.h",
   ]
   deps = [
+    ":service",
+    ":service_factory",
     "//base",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/prefs",
