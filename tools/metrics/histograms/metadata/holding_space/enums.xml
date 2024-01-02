@@ -157,7 +157,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="kResume"/>
 </enum>
 
-<enum name="HoldingSpaceItemFailureToLaunchReason">
+<enum name="HoldingSpaceItemLaunchFailureReason">
   <int value="0" label="kUnknown"/>
   <int value="1" label="kCrosApiNotFound"/>
   <int value="2" label="kDownloadNotFound"/>

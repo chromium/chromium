@@ -36,8 +36,7 @@
 namespace ash {
 namespace {
 
-using ItemFailureToLaunchReason =
-    holding_space_metrics::ItemFailureToLaunchReason;
+using ItemLaunchFailureReason = holding_space_metrics::ItemLaunchFailureReason;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -57,7 +56,8 @@ void GetFileInfo(Profile* profile,
       file_manager::util::GetFileManagerFileSystemContext(profile);
   file_manager::util::GetMetadataForPath(
       file_system_context, file_path,
-      {storage::FileSystemOperation::GetMetadataField::kIsDirectory},
+      {storage::FileSystemOperation::GetMetadataField::kIsDirectory,
+       storage::FileSystemOperation::GetMetadataField::kSize},
       base::BindOnce(
           [](GetFileInfoCallback callback, base::File::Error error,
              const base::File::Info& info) {
@@ -71,7 +71,7 @@ void GetFileInfo(Profile* profile,
 // Opens an in-progress item and returns the reason for failure if any. Returns
 // `std::nullopt` if successful. Runs the command `kOpenItem` if there is one;
 // otherwise, opens `item` when the underlying download completes.
-std::optional<ItemFailureToLaunchReason> OpenInProgressItem(
+std::optional<ItemLaunchFailureReason> OpenInProgressItem(
     Profile* profile,
     const HoldingSpaceItem& item) {
   CHECK(!item.progress().IsComplete());
@@ -89,20 +89,20 @@ std::optional<ItemFailureToLaunchReason> OpenInProgressItem(
 
 // Returns the reason for failing to launch a holding space item for the
 // specified open operation `result`. Returns `std::nullopt` on success.
-std::optional<ItemFailureToLaunchReason> ToItemFailureToLaunchReason(
+std::optional<ItemLaunchFailureReason> ToItemLaunchFailureReason(
     platform_util::OpenOperationResult result) {
   switch (result) {
     case platform_util::OpenOperationResult::OPEN_SUCCEEDED:
       return std::nullopt;
     case platform_util::OpenOperationResult::OPEN_FAILED_PATH_NOT_FOUND:
-      return ItemFailureToLaunchReason::kPathNotFound;
+      return ItemLaunchFailureReason::kPathNotFound;
     case platform_util::OpenOperationResult::OPEN_FAILED_INVALID_TYPE:
-      return ItemFailureToLaunchReason::kInvalidType;
+      return ItemLaunchFailureReason::kInvalidType;
     case platform_util::OpenOperationResult::
         OPEN_FAILED_NO_HANLDER_FOR_FILE_TYPE:
-      return ItemFailureToLaunchReason::kNoHandlerForFileType;
+      return ItemLaunchFailureReason::kNoHandlerForFileType;
     case platform_util::OpenOperationResult::OPEN_FAILED_FILE_ERROR:
-      return ItemFailureToLaunchReason::kFileError;
+      return ItemLaunchFailureReason::kFileError;
   }
 }
 
@@ -204,18 +204,18 @@ void HoldingSpaceClientImpl::OpenItems(
 
   for (const HoldingSpaceItem* item : items) {
     if (item->file().file_path.empty()) {
-      holding_space_metrics::RecordItemFailureToLaunch(
+      holding_space_metrics::RecordItemLaunchFailure(
           item->type(), item->file().file_path,
-          ItemFailureToLaunchReason::kPathEmpty);
+          ItemLaunchFailureReason::kPathEmpty);
       *complete_success_ptr = false;
       barrier_closure.Run();
       continue;
     }
     if (!item->progress().IsComplete()) {
-      const std::optional<ItemFailureToLaunchReason> failure_to_launch_reason =
+      const std::optional<ItemLaunchFailureReason> failure_to_launch_reason =
           OpenInProgressItem(profile_, *item);
       if (failure_to_launch_reason) {
-        holding_space_metrics::RecordItemFailureToLaunch(
+        holding_space_metrics::RecordItemLaunchFailure(
             item->type(), item->file().file_path,
             failure_to_launch_reason.value());
       }
@@ -231,13 +231,16 @@ void HoldingSpaceClientImpl::OpenItems(
                const base::FilePath& file_path, HoldingSpaceItem::Type type,
                const std::optional<base::File::Info>& info) {
               if (!weak_ptr || !info.has_value()) {
-                holding_space_metrics::RecordItemFailureToLaunch(
+                holding_space_metrics::RecordItemLaunchFailure(
                     type, file_path,
-                    weak_ptr ? ItemFailureToLaunchReason::kFileInfoError
-                             : ItemFailureToLaunchReason::kShutdown);
+                    weak_ptr ? ItemLaunchFailureReason::kFileInfoError
+                             : ItemLaunchFailureReason::kShutdown);
                 *complete_success = false;
                 barrier_closure.Run();
                 return;
+              }
+              if (!info->size) {
+                holding_space_metrics::RecordItemLaunchEmpty(type, file_path);
               }
               file_manager::util::OpenItem(
                   weak_ptr->profile_, file_path,
@@ -251,9 +254,9 @@ void HoldingSpaceClientImpl::OpenItems(
                         const bool success =
                             result == platform_util::OPEN_SUCCEEDED;
                         if (!success) {
-                          holding_space_metrics::RecordItemFailureToLaunch(
+                          holding_space_metrics::RecordItemLaunchFailure(
                               type, file_path,
-                              ToItemFailureToLaunchReason(result).value());
+                              ToItemLaunchFailureReason(result).value());
                           *complete_success = false;
                         }
                         barrier_closure.Run();

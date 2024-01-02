@@ -141,7 +141,7 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   // Attempts to mark the specified holding space `item` to open when complete.
   // Returns `std::nullopt` on success or the reason if the attempt was not
   // successful.
-  std::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  std::optional<holding_space_metrics::ItemLaunchFailureReason>
   OpenItemWhenComplete(const HoldingSpaceItem* item);
 
   // Returns the `profile_` associated with this service.

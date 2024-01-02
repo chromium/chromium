@@ -86,10 +86,15 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
 ASH_PUBLIC_EXPORT void RecordItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
 
+// Records an attempt to launch a holding space item of the specified `type`
+// backed by the empty file at the specified `file_path`.
+ASH_PUBLIC_EXPORT void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
+                                             const base::FilePath& file_path);
+
 // Enumeration of reasons that a holding space item might fail to launch. These
 // values are persisted to logs. Entries should not be renumbered and numeric
 // values should never be reused.
-enum class ItemFailureToLaunchReason {
+enum class ItemLaunchFailureReason {
   kUnknown = 0,
   kCrosApiNotFound = 1,
   kDownloadNotFound = 2,
@@ -107,10 +112,9 @@ enum class ItemFailureToLaunchReason {
 
 // Records a failure to launch a holding space item of the specified `type`
 // backed by the file at the specified `file_path` with the specified `reason`.
-ASH_PUBLIC_EXPORT void RecordItemFailureToLaunch(
-    HoldingSpaceItem::Type type,
-    const base::FilePath& file_path,
-    ItemFailureToLaunchReason reason);
+ASH_PUBLIC_EXPORT void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
+                                               const base::FilePath& file_path,
+                                               ItemLaunchFailureReason reason);
 
 // Enumeration of actions that can be taken on the holding space suggestions
 // section button. These values are persisted to logs. Entries should not be

@@ -159,15 +159,24 @@ void RecordItemCounts(const std::vector<const HoldingSpaceItem*>& items) {
   RecordItemCounts(items, /*visible=*/false);
 }
 
-void RecordItemFailureToLaunch(HoldingSpaceItem::Type type,
-                               const base::FilePath& file_path,
-                               ItemFailureToLaunchReason reason) {
-  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch", type);
-  base::UmaHistogramExactLinear("HoldingSpace.Item.FailureToLaunch.Extension",
-                                FilePathToExtension(file_path),
-                                kExtensionsSize);
-  base::UmaHistogramEnumeration("HoldingSpace.Item.FailureToLaunch.Reason",
-                                reason);
+void RecordItemLaunchEmpty(HoldingSpaceItem::Type type,
+                           const base::FilePath& file_path) {
+  base::UmaHistogramEnumeration("HoldingSpace.Item.Action.Launch.Empty", type);
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.Item.Action.Launch.Empty.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+}
+
+void RecordItemLaunchFailure(HoldingSpaceItem::Type type,
+                             const base::FilePath& file_path,
+                             ItemLaunchFailureReason reason) {
+  base::UmaHistogramEnumeration("HoldingSpace.Item.Action.Launch.Failure",
+                                type);
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.Item.Action.Launch.Failure.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+  base::UmaHistogramEnumeration(
+      "HoldingSpace.Item.Action.Launch.Failure.Reason", reason);
 }
 
 void RecordSuggestionsAction(SuggestionsAction action) {
