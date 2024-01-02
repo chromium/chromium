@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {constants} from '../common/constants.js';
-import {EventGenerator} from '../common/event_generator.js';
+import {EventGenerator, MouseClickParams} from '../common/event_generator.js';
 
 import {ActionManager} from './action_manager.js';
 import {FocusRingManager} from './focus_ring_manager.js';
@@ -11,41 +11,36 @@ import {PointNavigatorInterface} from './navigator_interfaces.js';
 import {SwitchAccess} from './switch_access.js';
 import {MenuType, Mode} from './switch_access_constants.js';
 
-const MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
-const PointScanState = chrome.accessibilityPrivate.PointScanState;
+import MenuAction = chrome.accessibilityPrivate.SwitchAccessMenuAction;
+import Point = constants.Point;
+import PointScanState = chrome.accessibilityPrivate.PointScanState;
 
-export class PointScanManager extends PointNavigatorInterface {
+export class PointScanManager implements PointNavigatorInterface {
+  private point_: Point = {x: 0, y: 0};
+  private pointListener_: (point: Point) => void;
+
   constructor() {
-    super();
-    /** @private {!constants.Point} */
-    this.point_ = {x: 0, y: 0};
-
-    /** @private {function(constants.Point)} */
     this.pointListener_ = point => this.handleOnPointScanSet_(point);
   }
 
   // ====== PointNavigatorInterface implementation =====
 
-  /** @override */
-  get currentPoint() {
+  get currentPoint(): Point {
     return this.point_;
   }
 
-  /** @override */
-  start() {
+  start(): void {
     FocusRingManager.clearAll();
     SwitchAccess.mode = Mode.POINT_SCAN;
     chrome.accessibilityPrivate.onPointScanSet.addListener(this.pointListener_);
     chrome.accessibilityPrivate.setPointScanState(PointScanState.START);
   }
 
-  /** @override */
-  stop() {
+  stop(): void {
     chrome.accessibilityPrivate.setPointScanState(PointScanState.STOP);
   }
 
-  /** @override */
-  performMouseAction(action) {
+  performMouseAction(action: MenuAction): void {
     if (SwitchAccess.mode !== Mode.POINT_SCAN) {
       return;
     }
@@ -53,7 +48,7 @@ export class PointScanManager extends PointNavigatorInterface {
       return;
     }
 
-    const params = {};
+    const params: MouseClickParams = {};
     if (action === MenuAction.RIGHT_CLICK) {
       params.mouseButton =
           chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT;
@@ -68,10 +63,8 @@ export class PointScanManager extends PointNavigatorInterface {
   /**
    * Shows the point scan menu and sets the point scan position
    * coordinates.
-   * @param {!constants.Point} point
-   * @private
    */
-  handleOnPointScanSet_(point) {
+  private handleOnPointScanSet_(point: Point): void {
     this.point_ = point;
     ActionManager.openMenu(MenuType.POINT_SCAN_MENU);
     chrome.accessibilityPrivate.onPointScanSet.removeListener(

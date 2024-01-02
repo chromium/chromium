@@ -4,7 +4,7 @@
 
 import {Key} from './key_code.js';
 
-interface MouseClickParams {
+export interface MouseClickParams {
   delayMs?: number;
   mouseButton?: chrome.accessibilityPrivate.SyntheticMouseEventButton;
 }

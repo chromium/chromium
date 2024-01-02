@@ -22,6 +22,7 @@ ts_modules = [
   "commands.ts",
   "focus_ring_manager.ts",
   "navigator_interfaces.ts",
+  "point_scan_manager.ts",
   "settings_manager.ts",
 ]
 
@@ -117,7 +118,6 @@ run_jsbundler("copied_files") {
     "nodes/switch_access_node.js",
     "nodes/tab_node.js",
     "nodes/window_node.js",
-    "point_scan_manager.js",
     "switch_access.js",
     "switch_access_constants.js",
     "switch_access_predicate.js",
