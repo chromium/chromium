@@ -5713,7 +5713,10 @@ const char kCrosShortstandName[] =
     "Differentiate behaviour between web apps and browser created shortcuts";
 const char kCrosShortstandDescription[] =
     "Enables the behaviour difference between web apps and browser created "
-    "shortcut backed by the web app system on Chrome OS.";
+    "shortcut backed by the web app system on Chrome OS. Turning on this flag"
+    "is equivalent of turning on #cros-web-app-shortcut-ui-update, "
+    "#separate-web-app-shortcut-badge-icon, and "
+    "#create-shortcut-ignores-manifest.";
 
 const char kCrosWebAppShortcutUiUpdateName[] =
     "New ChromeOS Web app Shortcut UI";

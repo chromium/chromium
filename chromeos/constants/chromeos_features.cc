@@ -254,6 +254,9 @@ bool IsCrosShortstandEnabled() {
 }
 
 bool IsCrosWebAppShortcutUiUpdateEnabled() {
+  if (IsCrosShortstandEnabled()) {
+    return true;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()
       ->IsCrosWebAppShortcutUiUpdateEnabled();

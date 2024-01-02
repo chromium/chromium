@@ -4171,7 +4171,8 @@ bool IsSeparateNetworkIconsEnabled() {
 }
 
 bool IsSeparateWebAppShortcutBadgeIconEnabled() {
-  return base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
+  return chromeos::features::IsCrosShortstandEnabled() ||
+         base::FeatureList::IsEnabled(kSeparateWebAppShortcutBadgeIcon);
 }
 
 bool IsSettingsAppNotificationSettingsEnabled() {
