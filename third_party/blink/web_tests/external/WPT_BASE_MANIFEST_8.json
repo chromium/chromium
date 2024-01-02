@@ -5932,16 +5932,16 @@
     },
     "canvas": {
      "element": {
-      "filters": {
-       "svg-filter-crash.html": [
-        "f64379c79241409ab55535596f4cbad894f45b42",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "manual": {
+       "filters": {
+        "svg-filter-crash.html": [
+         "f64379c79241409ab55535596f4cbad894f45b42",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "wide-gamut-canvas": {
         "imagedata-no-color-settings-crash.html": [
          "b21eaf72abec2fc9da5d9a48c9ef483a143ec830",
