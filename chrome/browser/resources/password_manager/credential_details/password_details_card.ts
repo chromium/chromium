@@ -245,6 +245,41 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         !pref.value;
   }
 
+  private getCredentialTypeString_(): string {
+    return this.isFederated_() ? this.i18n(
+                                     'federatedCredentialProviderAriaLabel',
+                                     this.password.federationText!) :
+                                 this.i18n('passwordLabel');
+  }
+
+  private getAriaLabelForPasswordCard_(): string {
+    return this.password.username ?
+        this.i18n(
+            'passwordDetailsCardAriaLabel', this.getCredentialTypeString_(),
+            this.password.username) :
+        this.getCredentialTypeString_();
+  }
+
+  private getAriaLabelForEditButton_(): string {
+    return this.password.username ?
+        this.i18n(
+            'passwordDetailsCardEditButtonAriaLabel',
+            this.getCredentialTypeString_(), this.password.username) :
+        this.i18n(
+            'passwordDetailsCardEditButtonNoUsernameAriaLabel',
+            this.getCredentialTypeString_());
+  }
+
+  private getAriaLabelForDeleteButton_(): string {
+    return this.password.username ?
+        this.i18n(
+            'passwordDetailsCardDeleteButtonAriaLabel',
+            this.getCredentialTypeString_(), this.password.username) :
+        this.i18n(
+            'passwordDetailsCardDeleteButtonNoUsernameAriaLabel',
+            this.getCredentialTypeString_());
+  }
+
   maybeRegisterSharingHelpBubble(): void {
     if (!this.showShareButton_ && !this.passwordSharingDisabled_) {
       return;
