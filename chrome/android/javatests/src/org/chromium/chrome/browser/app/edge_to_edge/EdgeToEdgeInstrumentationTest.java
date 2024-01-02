@@ -109,10 +109,14 @@ public class EdgeToEdgeInstrumentationTest {
         mActivity = sActivityTestRule.getActivity();
         assertNotNull(mActivity);
 
-        mEdgeToEdgeController =
-                (EdgeToEdgeControllerImpl)
-                        mActivity.getEdgeToEdgeControllerSupplierForTesting().get();
-        assertNotNull("Couldn't get the EdgeToEdgeController during setUp!", mEdgeToEdgeController);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    mEdgeToEdgeController =
+                            (EdgeToEdgeControllerImpl)
+                                    mActivity.getEdgeToEdgeControllerSupplierForTesting().get();
+                    return mEdgeToEdgeController != null;
+                },
+                "Couldn't get the EdgeToEdgeController during setUp!");
         assertFalse(
                 "Setup error, all tests start ToNormal (controller never activated)!",
                 mEdgeToEdgeController.isToEdge());
