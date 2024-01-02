@@ -248,7 +248,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     const areAnyPrivacySandboxApisEnabled =
         this.getPref('privacy_sandbox.m1.topics_enabled').value ||
         this.getPref('privacy_sandbox.m1.fledge_enabled').value ||
-        this.getPref('privacy_sandbox.m1.fledge_enabled').value;
+        this.getPref('privacy_sandbox.m1.ad_measurement_enabled').value;
     const areThirdPartyCookiesAllowed =
         currentCookieControlsMode === CookieControlsMode.OFF ||
         currentCookieControlsMode === CookieControlsMode.INCOGNITO_ONLY;
