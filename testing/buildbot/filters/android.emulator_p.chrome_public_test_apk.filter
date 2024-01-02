@@ -75,4 +75,6 @@
 # crbug.com/1392774
 -org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.testViewportFitCover*
 
-
+# crbug.com/1514512
+-org.chromium.chrome.browser.password_manager.PasswordSavingIntegrationTest.testSavingNewPassword
+-org.chromium.chrome.browser.password_manager.TouchToFillMainFlowIntegrationTest.testClickingSuggestionPopulatesForm

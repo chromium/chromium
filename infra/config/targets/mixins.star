@@ -1295,19 +1295,19 @@ targets.mixin(
 targets.mixin(
     name = "pie-x86-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android28",
+                "caches": "android_28_google_apis_x86",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android28",
-                path = ".android_emulator/generic_android28",
+                name = "android_28_google_apis_x86",
+                path = ".android_emulator/android_28_google_apis_x86",
             ),
         ],
     ),
