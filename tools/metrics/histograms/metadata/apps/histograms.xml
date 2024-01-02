@@ -1001,6 +1001,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Apps.AppList.Search.Federated.QueryLengthOnStorageSuccess"
+    units="characters" expires_after="2024-06-01">
+  <owner>amandadeacon@chromium.org</owner>
+  <owner>alanlxl@chromium.org</owner>
+  <summary>
+    Records the length of launcher query strings which are successfully reported
+    to on-device (Federated Service) storage.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.Search.Federated.ReportStatus"
     enum="AppListFederatedReportStatus" expires_after="2024-04-28">
   <owner>amandadeacon@chromium.org</owner>

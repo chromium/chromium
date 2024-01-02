@@ -93,6 +93,15 @@ class FederatedMetricsManagerTest : public testing::Test,
         app_list::federated::FederatedMetricsManager::InitStatus::kOk, 1);
   }
 
+  void ExpectUmaBucketValueForQueryLength(int expected_bucket_value,
+                                          int query_length) {
+    histogram_tester()->ExpectBucketCount(
+        app_list::federated::kHistogramQueryLengthOnStorageSuccess,
+        std::min(query_length,
+                 app_list::federated::kMaxLoggedQueryLengthOnStorageSuccess),
+        expected_bucket_value);
+  }
+
   void ExpectNoFederatedLogsOnUserAction() {
     const std::string histograms =
         histogram_tester()->GetAllHistogramsRecorded();
@@ -100,7 +109,9 @@ class FederatedMetricsManagerTest : public testing::Test,
         histograms,
         Not(AnyOf(
             HasSubstr(app_list::federated::kHistogramSearchSessionConclusion),
-            HasSubstr(app_list::federated::kHistogramReportStatus))));
+            HasSubstr(app_list::federated::kHistogramReportStatus),
+            HasSubstr(
+                app_list::federated::kHistogramQueryLengthOnStorageSuccess))));
     // TODO(b/262611120): Check emptiness of federated service storage, once
     // this functionality is available.
   }
@@ -152,7 +163,7 @@ TEST_P(FederatedMetricsManagerTest, ChromeMetricsConsentDisabled) {
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
-TEST_P(FederatedMetricsManagerTest, DefaultSearchEngine) {
+TEST_P(FederatedMetricsManagerTest, DefaultSearchEngineNonGoogle) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
 
@@ -182,7 +193,7 @@ TEST_P(FederatedMetricsManagerTest, DefaultSearchEngine) {
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
-TEST_P(FederatedMetricsManagerTest, Quit) {
+TEST_P(FederatedMetricsManagerTest, SessionQuit) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
 
@@ -194,7 +205,8 @@ TEST_P(FederatedMetricsManagerTest, Quit) {
   metrics_manager_->OnSearchSessionStarted();
   // Search session ends without user taking other action (e.g. without
   // launching a result).
-  metrics_manager_->OnSearchSessionEnded(u"fake_query");
+  std::u16string query = u"fake_query";
+  metrics_manager_->OnSearchSessionEnded(query);
   base::RunLoop().RunUntilIdle();
 
   if (launcher_fa_enabled) {
@@ -209,6 +221,9 @@ TEST_P(FederatedMetricsManagerTest, Quit) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramReportStatus,
         app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+
+    ExpectUmaBucketValueForQueryLength(/*expected_bucket_value*/ 1,
+                                       query.length());
 
     // TODO(b/262611120): Check contents of logged example, once this
     // functionality is available.
@@ -245,6 +260,10 @@ TEST_P(FederatedMetricsManagerTest, Launch) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramReportStatus,
         app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+
+    ExpectUmaBucketValueForQueryLength(/*expected_bucket_value*/ 1,
+                                       query.length());
+
     // TODO(b/262611120): Check contents of logged example, once this
     // functionality is available.
   } else {
@@ -278,6 +297,10 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeen) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramReportStatus,
         app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+
+    ExpectUmaBucketValueForQueryLength(/*expected_bucket_value*/ 1,
+                                       query.length());
+
     // TODO(b/262611120): Check contents of logged example, once this
     // functionality is available.
   } else {
@@ -318,6 +341,10 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
     histogram_tester()->ExpectUniqueSample(
         app_list::federated::kHistogramReportStatus,
         app_list::federated::FederatedMetricsManager::ReportStatus::kOk, 1);
+
+    ExpectUmaBucketValueForQueryLength(/*expected_bucket_value*/ 1,
+                                       query.length());
+
     // TODO(b/262611120): Check contents of logged example, once this
     // functionality is available.
   } else {
@@ -326,7 +353,7 @@ TEST_P(FederatedMetricsManagerTest, AnswerCardSeenThenListResultLaunched) {
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
-TEST_P(FederatedMetricsManagerTest, ZeroState) {
+TEST_P(FederatedMetricsManagerTest, ZeroStateDoesNotLogOnUserAction) {
   SetChromeMetricsEnabled(true);
   InitFederatedMetricsManager();
 

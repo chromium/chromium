@@ -54,6 +54,12 @@ void LogReportStatus(FederatedMetricsManager::ReportStatus status) {
   base::UmaHistogramEnumeration(kHistogramReportStatus, status);
 }
 
+void LogQueryLength(int query_length) {
+  base::UmaHistogramExactLinear(kHistogramQueryLengthOnStorageSuccess,
+                                query_length,
+                                kMaxLoggedQueryLengthOnStorageSuccess);
+}
+
 ExamplePtr CreateExamplePtr(const std::string& query,
                             const std::string& user_action) {
   ExamplePtr example = Example::New();
@@ -186,6 +192,7 @@ void FederatedMetricsManager::LogExample(const std::string& query) {
         query, SearchSessionConclusionToString(session_result_));
     federated_service_->ReportExample(kClientName, std::move(example));
     LogReportStatus(ReportStatus::kOk);
+    LogQueryLength(query.length());
   }
 }
 
