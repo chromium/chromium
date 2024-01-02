@@ -507,6 +507,75 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCustomField
 class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
     : public DialogModelField {
  public:
+  class Builder final {
+   public:
+    Builder();
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+    ~Builder();
+
+    [[nodiscard]] std::unique_ptr<DialogModelSection> Build();
+
+    Builder& AddParagraph(const DialogModelLabel& label,
+                          std::u16string header = std::u16string(),
+                          ElementIdentifier id = ElementIdentifier()) {
+      section_->AddParagraph(label, std::move(header), id);
+      return *this;
+    }
+
+    Builder& AddCheckbox(ElementIdentifier id,
+                         const DialogModelLabel& label,
+                         const DialogModelCheckbox::Params& params =
+                             DialogModelCheckbox::Params()) {
+      section_->AddCheckbox(id, label, params);
+      return *this;
+    }
+
+    Builder& AddCombobox(ElementIdentifier id,
+                         std::u16string label,
+                         std::unique_ptr<ui::ComboboxModel> combobox_model,
+                         const DialogModelCombobox::Params& params =
+                             DialogModelCombobox::Params()) {
+      section_->AddCombobox(id, std::move(label), std::move(combobox_model),
+                            params);
+      return *this;
+    }
+
+    Builder& AddMenuItem(ImageModel icon,
+                         std::u16string label,
+                         base::RepeatingCallback<void(int)> callback,
+                         const DialogModelMenuItem::Params& params =
+                             DialogModelMenuItem::Params()) {
+      section_->AddMenuItem(std::move(icon), std::move(label),
+                            std::move(callback), params);
+      return *this;
+    }
+
+    Builder& AddSeparator() {
+      section_->AddSeparator();
+      return *this;
+    }
+
+    Builder& AddTextfield(ElementIdentifier id,
+                          std::u16string label,
+                          std::u16string text,
+                          const DialogModelTextfield::Params& params =
+                              DialogModelTextfield::Params()) {
+      section_->AddTextfield(id, std::move(label), std::move(text), params);
+      return *this;
+    }
+
+    Builder& AddCustomField(
+        std::unique_ptr<DialogModelCustomField::Field> field,
+        ElementIdentifier id = ElementIdentifier()) {
+      section_->AddCustomField(std::move(field), id);
+      return *this;
+    }
+
+   private:
+    std::unique_ptr<DialogModelSection> section_;
+  };
+
   // TODO(pbos): Params may make sense here? An optional title should be here?
   // TODO(pbos): We may also want to add on_field_added as a callback to that
   // Params struct once it exists.
@@ -533,7 +602,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSection final
   // Adds a paragraph at the end of the section. A paragraph consists of a
   // label and an optional header.
   void AddParagraph(const DialogModelLabel& label,
-                    std::u16string header,
+                    std::u16string header = std::u16string(),
                     ElementIdentifier id = ElementIdentifier());
 
   // Adds a checkbox ([checkbox] label) at the end of the section.

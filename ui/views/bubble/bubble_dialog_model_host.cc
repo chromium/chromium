@@ -293,10 +293,8 @@ std::unique_ptr<View> BubbleDialogModelHost::CustomView::TransferView() {
   return std::move(view_);
 }
 
-class BubbleDialogModelHostContentsView final
-    : public BoxLayoutView,
-      public ui::DialogModelFieldHost {
-  METADATA_HEADER(BubbleDialogModelHostContentsView, BoxLayoutView)
+class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
+  METADATA_HEADER(BubbleDialogModelHostContentsView, DialogModelSectionHost)
 
  public:
   // TODO(pbos): Break this dependency on BubbleDialogModelHost once most of
@@ -707,7 +705,17 @@ class BubbleDialogModelHostContentsView final
   LayoutConsensusGroup textfield_second_column_group_;
 };
 
-BEGIN_METADATA(BubbleDialogModelHostContentsView, BoxLayoutView)
+BEGIN_METADATA(BubbleDialogModelHostContentsView, DialogModelSectionHost)
+END_METADATA
+
+std::unique_ptr<DialogModelSectionHost> DialogModelSectionHost::Create(
+    ui::DialogModelSection* section,
+    ui::ElementIdentifier initially_focused_field_id) {
+  return std::make_unique<BubbleDialogModelHostContentsView>(
+      section, initially_focused_field_id);
+}
+
+BEGIN_METADATA(DialogModelSectionHost, BoxLayoutView)
 END_METADATA
 
 BubbleDialogModelHost::ThemeChangedObserver::ThemeChangedObserver(
