@@ -135,8 +135,8 @@ void PickerView::PublishSearchResults(const PickerSearchResults& results) {
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
+  delegate_->InsertResultOnNextFocus(result);
   GetWidget()->Close();
-  delegate_->InsertResult(result);
 }
 
 BEGIN_METADATA(PickerView, views::View)

@@ -31,8 +31,10 @@ class ASH_EXPORT PickerViewDelegate {
   virtual void StartSearch(const std::u16string& query,
                            SearchResultsCallback callback) = 0;
 
-  // Inserts `result` into the previously focused input field.
-  virtual void InsertResult(const PickerSearchResult& result) = 0;
+  // Inserts `result` into the next focused input field.
+  // If there's no focus event within some timeout after the widget is closed,
+  // the result is dropped silently.
+  virtual void InsertResultOnNextFocus(const PickerSearchResult& result) = 0;
 
   // Whether the view should paint. Certain test scenarios do not need
   // painting, so it is better to skip painting.

@@ -55,7 +55,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     callback.Run(search_function_.Run(query));
   }
 
-  void InsertResult(const PickerSearchResult& result) override {
+  void InsertResultOnNextFocus(const PickerSearchResult& result) override {
     last_inserted_result_ = result;
   }
 

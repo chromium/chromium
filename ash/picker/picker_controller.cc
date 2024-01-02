@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/picker_insert_media_request.h"
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
@@ -30,6 +31,9 @@ constexpr std::string_view kPickerFeatureTestKeyHash(
     "\xE7\x2C\x99\xD7\x99\x89\xDB\xA5\x9D\x06\x4A\xED\xDF\xE5\x30\xA7\x8C\x76"
     "\x00\x89",
     base::kSHA1Length);
+
+// Time from when the insert is issued and when we give up inserting.
+constexpr base::TimeDelta kInsertMediaTimeout = base::Seconds(2);
 
 enum class PickerFeatureKeyType { kNone, kDev, kTest };
 
@@ -103,7 +107,22 @@ void PickerController::StartSearch(const std::u16string& query,
   }}));
 }
 
-void PickerController::InsertResult(const PickerSearchResult& result) {}
+void PickerController::InsertResultOnNextFocus(
+    const PickerSearchResult& result) {
+  if (!widget_) {
+    return;
+  }
+
+  ui::InputMethod* input_method = widget_->GetInputMethod();
+  if (input_method == nullptr) {
+    return;
+  }
+
+  // This cancels the previous request if there was one.
+  // TODO: b/316936944 - Actually insert a real result.
+  insert_media_request_ = std::make_unique<PickerInsertMediaRequest>(
+      input_method, u"test", kInsertMediaTimeout);
+}
 
 bool PickerController::ShouldPaint() {
   return should_paint_;

@@ -12,6 +12,7 @@
 namespace ash {
 
 class PickerClient;
+class PickerInsertMediaRequest;
 
 // Controls a Picker widget.
 class ASH_EXPORT PickerController : public PickerViewDelegate {
@@ -47,13 +48,14 @@ class ASH_EXPORT PickerController : public PickerViewDelegate {
       const AshWebView::InitParams& params) override;
   void StartSearch(const std::u16string& query,
                    SearchResultsCallback callback) override;
-  void InsertResult(const PickerSearchResult& result) override;
+  void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   bool ShouldPaint() override;
 
  private:
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
   bool should_paint_ = false;
+  std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
 };
 
 }  // namespace ash
