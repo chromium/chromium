@@ -71,11 +71,6 @@
 #endif
 
 namespace {
-// Whether we are warning about a dangerous/malicious download.
-bool is_download_warning(download::DownloadItemMode mode) {
-  return (mode == download::DownloadItemMode::kDangerous) ||
-         (mode == download::DownloadItemMode::kMalicious);
-}
 
 ui::ImageModel GetDefaultIcon() {
   return ui::ImageModel::FromVectorIcon(
@@ -772,15 +767,7 @@ void DownloadBubbleRowView::UpdateLabels() {
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
   // This should only be logged once per download.
-  if (is_download_warning(
-          download::GetDesiredDownloadItemMode(info_->model())) &&
-      !info_->model()->WasUIWarningShown()) {
-    info_->model()->SetWasUIWarningShown(true);
-    RecordDangerousDownloadWarningShown(
-        info_->model()->GetDangerType(), info_->model()->GetTargetFilePath(),
-        info_->model()->GetURL().SchemeIs(url::kHttpsScheme),
-        info_->model()->HasUserGesture());
-  }
+  MaybeRecordDangerousDownloadWarningShown(*info_->model());
   if (!has_download_completion_been_logged_ &&
       info_->model()->GetState() == download::DownloadItem::COMPLETE) {
     has_download_completion_been_logged_ = true;

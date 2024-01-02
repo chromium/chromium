@@ -73,7 +73,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool WasActionedOn() const override;
   void SetActionedOn(bool actioned_on) override;
   bool WasUIWarningShown() const override;
-  void SetWasUIWarningShown(bool should_notify) override;
+  void SetWasUIWarningShown(bool was_ui_warning_shown) override;
   absl::optional<base::Time> GetEphemeralWarningUiShownTime() const override;
   void SetEphemeralWarningUiShownTime(absl::optional<base::Time> time) override;
   bool ShouldPreferOpeningInBrowser() override;

@@ -98,10 +98,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
 
   // Whether the download should be displayed in the download shelf. True by
   // default.
-  bool should_show_in_shelf_;
+  bool should_show_in_shelf_ = true;
 
   // Whether the UI has been notified about this download.
-  bool was_ui_notified_;
+  bool was_ui_notified_ = false;
 
   // Whether the download should be opened in the browser vs. the system handler
   // for the file type.
@@ -109,10 +109,10 @@ class DownloadItemModelData : public base::SupportsUserData::Data {
 
   // Danger level of the file determined based on the file type and whether
   // there was a user action associated with the download.
-  DownloadFileType::DangerLevel danger_level_;
+  DownloadFileType::DangerLevel danger_level_ = DownloadFileType::NOT_DANGEROUS;
 
   // Whether the download is currently being revived.
-  bool is_being_revived_;
+  bool is_being_revived_ = false;
 
   // Whether the safe browsing download warning was shown (and recorded) earlier
   // on the UI.
@@ -156,11 +156,7 @@ DownloadItemModelData* DownloadItemModelData::GetOrCreate(
   return data;
 }
 
-DownloadItemModelData::DownloadItemModelData()
-    : should_show_in_shelf_(true),
-      was_ui_notified_(false),
-      danger_level_(DownloadFileType::NOT_DANGEROUS),
-      is_being_revived_(false) {}
+DownloadItemModelData::DownloadItemModelData() = default;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 bool ShouldSendDownloadReport(download::DownloadDangerType danger_type) {

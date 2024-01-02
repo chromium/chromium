@@ -360,6 +360,21 @@ chromium-metrics-reviews@google.com.
   <summary>The size of successfully completed downloads.</summary>
 </histogram>
 
+<histogram name="Download.DownloadsPageDangerousWarningWasShownBefore"
+    enum="BooleanShown" expires_after="2024-06-30">
+  <owner>chlily@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a dangerous download warning has been shown previously, when
+    it is shown on the chrome://downloads page. Logged when a dangerous download
+    item is sent to the chrome://downloads page for display, either as a new
+    item or as an update. &quot;Not shown&quot; may be logged only once per
+    download, since afterwards it will have been shown. &quot;Shown&quot; may be
+    logged more than once per download, because a given download can be shown
+    and updated multiple times.
+  </summary>
+</histogram>
+
 <histogram name="Download.HttpResponseCode" enum="HttpResponseCode"
     expires_after="never">
 <!-- expires-never: Used to monitor download system health. -->

@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/download/download_ui_safe_browsing_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
@@ -409,6 +411,13 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       GetSafeBrowsingState(download_model.profile());
   file_value->has_safe_browsing_verdict =
       WasSafeBrowsingVerdictObtained(download_item);
+
+  if (download_model.IsDangerous()) {
+    base::UmaHistogramBoolean(
+        "Download.DownloadsPageDangerousWarningWasShownBefore",
+        download_model.WasUIWarningShown());
+  }
+  MaybeRecordDangerousDownloadWarningShown(download_model);
 
   return file_value;
 }

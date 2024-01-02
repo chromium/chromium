@@ -401,9 +401,10 @@ class DownloadUIModel {
   // Change what's returned by WasActionedOn().
   virtual void SetActionedOn(bool actioned_on);
 
-  // Returns |true| if the Download Bubble UI has shown this download warning.
-  // By default, this value is |false| and should be changed explicitly using
-  // SetWasUIWarningShown().
+  // Returns |true| if the UI (download bubble, downloads page, notification)
+  // has shown this download warning. By default, this value is |false| and
+  // should be changed explicitly using SetWasUIWarningShown(). Used to prevent
+  // double-logging of download warnings.
   virtual bool WasUIWarningShown() const;
 
   // Change what's returned by WasUIWarningShown().
