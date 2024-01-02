@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Permission-gated access to Additional Windowing Controls (AWC) APIs.
+// https://w3c.github.io/window-management/
+// https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+
+[
+  SecureContext,
+  ImplementedAs=AdditionalWindowingControls,
+  RuntimeEnabled=DesktopPWAsAdditionalWindowingControls
+] partial interface Window {
+  [CallWith=ScriptState, RaisesException] Promise<undefined> maximize();
+  [CallWith=ScriptState, RaisesException] Promise<undefined> minimize();
+  [CallWith=ScriptState, RaisesException] Promise<undefined> restore();
+
+  // TODO(laurila): Make this return promise as well.
+  [CallWith=ScriptState, RaisesException] void setResizable(boolean resizable);
+};
