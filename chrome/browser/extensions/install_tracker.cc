@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/install_tracker.h"
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/pref_names.h"
@@ -21,8 +23,9 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
 
   // Prefs may be null in tests.
   if (prefs) {
-    pref_change_registrar_.Init(prefs->pref_service());
-    pref_change_registrar_.Add(
+    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+    pref_change_registrar_->Init(prefs->pref_service());
+    pref_change_registrar_->Add(
         pref_names::kExtensions,
         base::BindRepeating(&InstallTracker::OnExtensionPrefChanged,
                             base::Unretained(this)));
@@ -127,7 +130,7 @@ void InstallTracker::Shutdown() {
   for (auto& observer : observers_)
     observer.OnShutdown();
   observers_.Clear();
-  pref_change_registrar_.RemoveAll();
+  pref_change_registrar_.reset();
   browser_context_ = nullptr;
 }
 

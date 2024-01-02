@@ -97,7 +97,7 @@ class InstallTracker : public KeyedService, public ExtensionRegistryObserver {
   raw_ptr<content::BrowserContext> browser_context_;
 
   base::ObserverList<InstallObserver>::Unchecked observers_;
-  PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
 };
