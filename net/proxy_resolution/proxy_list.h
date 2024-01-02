@@ -28,10 +28,6 @@ class NetLogWithSource;
 
 // This class is used to hold a prioritized list of proxy chains. It handles
 // fallback to lower-priority chains if multiple chains are specified.
-//
-// TODO(crbug.com/1491092): For compatibility until proxy chains are used
-// everywhere, this class can also provide a list of ProxyServers only when
-// there are no multi-proxy chains in the list. This support will be removed.
 class NET_EXPORT_PRIVATE ProxyList {
  public:
   ProxyList();
@@ -84,11 +80,6 @@ class NET_EXPORT_PRIVATE ProxyList {
   // Returns the first proxy chain in the list.
   const ProxyChain& First() const;
 
-  // Returns all proxy servers in the list. It is only valid to call this
-  // if no chain in the list is multi-proxy.
-  // TODO(crbug.com/1491092): Remove this method in favor of `AllChains()`.
-  std::vector<ProxyServer> GetAll() const;
-
   // Returns all proxy chains in the list.
   const std::vector<ProxyChain>& AllChains() const;
 
@@ -108,7 +99,9 @@ class NET_EXPORT_PRIVATE ProxyList {
 
   // Returns a semicolon-separated list of proxy chain debug representations.
   // For single-proxy chains, this is just the PAC representation of the proxy;
-  // otherwise the chain is displayed in `[..]`.
+  // otherwise the chain is displayed in "[..]".
+  // TODO(https://crbug.com/1491092): Once a PAC string format for multi-proxy
+  // chains is implemented, this can be removed in favor of `ToPacString()`.
   std::string ToDebugString() const;
 
   // Returns a serialized value for the list.

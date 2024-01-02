@@ -132,14 +132,6 @@ const ProxyChain& ProxyList::First() const {
   return proxy_chains_[0];
 }
 
-std::vector<ProxyServer> ProxyList::GetAll() const {
-  std::vector<ProxyServer> proxy_servers;
-  for (const auto& proxy_chain : AllChains()) {
-    proxy_servers.push_back(proxy_chain.proxy_server());
-  }
-  return proxy_servers;
-}
-
 const std::vector<ProxyChain>& ProxyList::AllChains() const {
   return proxy_chains_;
 }
@@ -164,30 +156,36 @@ void ProxyList::SetFromPacString(const std::string& pac_string) {
 
 std::string ProxyList::ToPacString() const {
   std::string proxy_list;
-  auto iter = proxy_chains_.begin();
-  for (; iter != proxy_chains_.end(); ++iter) {
+  for (const ProxyChain& proxy_chain : proxy_chains_) {
     if (!proxy_list.empty()) {
       proxy_list += ";";
     }
-    CHECK(!iter->is_multi_proxy());
-    proxy_list += ProxyServerToPacResultElement(iter->proxy_server());
+    CHECK(!proxy_chain.is_multi_proxy());
+    proxy_list += ProxyServerToPacResultElement(
+        proxy_chain.is_direct()
+            ? ProxyServer::Direct()
+            : proxy_chain.GetProxyServer(/*chain_index=*/0));
   }
   return proxy_list.empty() ? std::string() : proxy_list;
 }
 
 std::string ProxyList::ToDebugString() const {
   std::string proxy_list;
-  auto iter = proxy_chains_.begin();
-  for (; iter != proxy_chains_.end(); ++iter) {
-    if (!proxy_list.empty())
+
+  for (const ProxyChain& proxy_chain : proxy_chains_) {
+    if (!proxy_list.empty()) {
       proxy_list += ";";
-    if (iter->is_multi_proxy()) {
-      proxy_list += iter->ToDebugString();
+    }
+    if (proxy_chain.is_multi_proxy()) {
+      proxy_list += proxy_chain.ToDebugString();
     } else {
-      proxy_list += ProxyServerToPacResultElement(iter->proxy_server());
+      proxy_list += ProxyServerToPacResultElement(
+          proxy_chain.is_direct()
+              ? ProxyServer::Direct()
+              : proxy_chain.GetProxyServer(/*chain_index=*/0));
     }
   }
-  return proxy_list.empty() ? std::string() : proxy_list;
+  return proxy_list;
 }
 
 base::Value ProxyList::ToValue() const {

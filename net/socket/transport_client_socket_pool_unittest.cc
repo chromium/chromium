@@ -1953,10 +1953,12 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpProxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2028,10 +2030,12 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeyHttpsProxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2113,10 +2117,12 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks4Proxy) {
   // First two lookups are for the proxy's hostname, and should use the same
   // transient NAK.
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),
@@ -2198,10 +2204,12 @@ TEST_F(TransportClientSocketPoolTest, NetworkAnonymizationKeySocks5Proxy) {
       IsError(ERR_IO_PENDING));
 
   ASSERT_EQ(2u, session_deps_.host_resolver->last_id());
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(1));
-  EXPECT_EQ(kProxyChain.proxy_server().host_port_pair().host(),
-            session_deps_.host_resolver->request_host(2));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(1));
+  EXPECT_EQ(
+      kProxyChain.GetProxyServer(/*server_index=*/0).host_port_pair().host(),
+      session_deps_.host_resolver->request_host(2));
   EXPECT_TRUE(session_deps_.host_resolver->request_network_anonymization_key(1)
                   .IsTransient());
   EXPECT_EQ(session_deps_.host_resolver->request_network_anonymization_key(1),

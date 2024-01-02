@@ -65,22 +65,6 @@ const std::vector<ProxyServer>& ProxyChain::proxy_servers() const {
   return proxy_server_list_.value();
 }
 
-const ProxyServer& ProxyChain::proxy_server() const {
-  if (!proxy_server_list_.has_value()) {
-    static base::NoDestructor<ProxyServer> invalid(ProxyServer::SCHEME_INVALID,
-                                                   HostPortPair());
-    return *invalid;
-  } else if (proxy_server_list_.value().empty()) {
-    static base::NoDestructor<ProxyServer> direct(ProxyServer::SCHEME_DIRECT,
-                                                  HostPortPair());
-    return *direct;
-  }
-  CHECK_EQ(1u, proxy_server_list_->size())
-      << "Cannot call `proxy_server() on a ProxyChain with multiple proxies: "
-      << ToDebugString();
-  return proxy_server_list_.value().at(0);
-}
-
 ProxyChain&& ProxyChain::ForIpProtection() && {
   CHECK(IsValid());
   is_for_ip_protection_ = true;

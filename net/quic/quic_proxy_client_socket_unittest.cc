@@ -667,7 +667,8 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
                        packet_number++,
                        // Order matters! Keep these alphabetical.
                        {{TestProxyDelegate::kTestSpdyHeaderName,
-                         ProxyServerToProxyUri(proxy_chain.proxy_server())},
+                         ProxyServerToProxyUri(
+                             proxy_chain.GetProxyServer(/*chain_index=*/0))},
                         {"user-agent", kUserAgent}}));
   mock_quic_data_.AddRead(
       ASYNC, ConstructServerConnectReplyPacketWithExtraHeaders(

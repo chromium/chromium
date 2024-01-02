@@ -84,11 +84,6 @@ class NET_EXPORT ProxyChain {
     return proxy_server_list_;
   }
 
-  // Get the single ProxyServer equivalent to this chain. This must not be
-  // called for multi-proxy chains.
-  // TODO(crbug.com/1491092): Remove this method.
-  const ProxyServer& proxy_server() const;
-
   // Returns number of proxy servers in chain.
   size_t length() const {
     return proxy_server_list_.has_value() ? proxy_server_list_.value().size()

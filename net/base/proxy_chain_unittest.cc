@@ -164,7 +164,7 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
                  base::NumberToString(tests[i].input_port.value_or(-1)));
     auto chain = ProxyChain::FromSchemeHostAndPort(
         tests[i].input_scheme, tests[i].input_host, tests[i].input_port);
-    auto proxy = chain.proxy_server();
+    auto proxy = chain.GetProxyServer(/*chain_index=*/0);
 
     ASSERT_TRUE(proxy.is_valid());
     EXPECT_EQ(proxy.scheme(), tests[i].input_scheme);
@@ -173,7 +173,8 @@ TEST(ProxyChainTest, FromSchemeHostAndPort) {
 
     auto chain_from_string_port = ProxyChain::FromSchemeHostAndPort(
         tests[i].input_scheme, tests[i].input_host, tests[i].input_port_str);
-    auto proxy_from_string_port = chain_from_string_port.proxy_server();
+    auto proxy_from_string_port =
+        chain_from_string_port.GetProxyServer(/*chain_index=*/0);
     EXPECT_TRUE(proxy_from_string_port.is_valid());
     EXPECT_EQ(proxy, proxy_from_string_port);
   }
@@ -197,7 +198,7 @@ TEST(ProxyChainTest, InvalidHostname) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
     auto proxy = ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP,
                                                    tests[i], 80);
-    EXPECT_FALSE(proxy.proxy_server().is_valid());
+    EXPECT_FALSE(proxy.IsValid());
   }
 }
 
@@ -213,7 +214,7 @@ TEST(ProxyChainTest, InvalidPort) {
     SCOPED_TRACE(base::NumberToString(i) + ": " + tests[i]);
     auto proxy = ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTP,
                                                    "foopy", tests[i]);
-    EXPECT_FALSE(proxy.proxy_server().is_valid());
+    EXPECT_FALSE(proxy.IsValid());
   }
 }
 

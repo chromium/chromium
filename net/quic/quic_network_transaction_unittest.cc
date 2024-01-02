@@ -24,6 +24,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/schemeful_site.h"
@@ -653,6 +654,13 @@ class QuicNetworkTransactionTest
     EXPECT_EQ(expected, response_data);
   }
 
+  void CheckUsedQuicProxyServer(HttpNetworkTransaction* trans) {
+    const ProxyChain& proxy_chain = trans->GetResponseInfo()->proxy_chain;
+    EXPECT_TRUE(proxy_chain.IsValid());
+    ASSERT_FALSE(proxy_chain.is_direct());
+    EXPECT_TRUE(proxy_chain.GetProxyServer(/*chain_index=*/0).is_quic());
+  }
+
   void RunTransaction(HttpNetworkTransaction* trans) {
     TestCompletionCallback callback;
     int rv = trans->Start(&request_, callback.callback(), net_log_with_source_);
@@ -676,8 +684,10 @@ class QuicNetworkTransactionTest
     CheckResponsePort(&trans, port);
     CheckResponseData(&trans, expected);
     if (used_proxy) {
-      EXPECT_TRUE(
-          trans.GetResponseInfo()->proxy_chain.proxy_server().is_https());
+      const ProxyChain& proxy_chain = trans.GetResponseInfo()->proxy_chain;
+      EXPECT_TRUE(proxy_chain.IsValid());
+      ASSERT_FALSE(proxy_chain.is_direct());
+      EXPECT_TRUE(proxy_chain.GetProxyServer(/*chain_index=*/0).is_https());
     } else {
       EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.is_direct());
     }
@@ -892,9 +902,7 @@ class QuicNetworkTransactionTest
     CheckResponsePort(&trans, port);
     CheckResponseData(&trans, expected);
     if (used_proxy) {
-      EXPECT_TRUE(
-          trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
-
+      CheckUsedQuicProxyServer(&trans);
       // DNS aliases should be empty when using a proxy.
       EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
     } else {
@@ -6293,7 +6301,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectHttpsServer) {
   CheckWasHttpResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans);
 
   // DNS aliases should be empty when using a proxy.
   EXPECT_TRUE(trans.GetResponseInfo()->dns_aliases.empty());
@@ -6389,7 +6397,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectSpdyServer) {
   CheckWasSpdyResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans);
 
   // Causes MockSSLClientSocket to disconproxyconnecthttpnect, which causes the
   // underlying QUIC proxy socket to disconnect.
@@ -6507,7 +6515,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   CheckWasHttpResponse(&trans_1);
   CheckResponsePort(&trans_1, 70);
   CheckResponseData(&trans_1, "0123456789");
-  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans_1);
 
   request_.url = GURL("https://mail.example.org/2");
   HttpNetworkTransaction trans_2(DEFAULT_PRIORITY, session_.get());
@@ -6515,7 +6523,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseTransportSocket) {
   CheckWasHttpResponse(&trans_2);
   CheckResponsePort(&trans_2, 70);
   CheckResponseData(&trans_2, "0123456");
-  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans_2);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6665,7 +6673,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   CheckWasHttpResponse(&trans_1);
   CheckResponsePort(&trans_1, 70);
   CheckResponseData(&trans_1, "0123456789");
-  EXPECT_TRUE(trans_1.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans_1);
 
   request_.url = GURL("https://different.example.org/");
   HttpNetworkTransaction trans_2(DEFAULT_PRIORITY, session_.get());
@@ -6673,7 +6681,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectReuseQuicSession) {
   CheckWasSpdyResponse(&trans_2);
   CheckResponsePort(&trans_2, 70);
   CheckResponseData(&trans_2, "0123456");
-  EXPECT_TRUE(trans_2.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans_2);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
@@ -6893,7 +6901,7 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyConnectBadCertificate) {
   CheckWasHttpResponse(&trans);
   CheckResponsePort(&trans, 70);
   CheckResponseData(&trans, "0123456789");
-  EXPECT_TRUE(trans.GetResponseInfo()->proxy_chain.proxy_server().is_quic());
+  CheckUsedQuicProxyServer(&trans);
 
   // Causes MockSSLClientSocket to disconnect, which causes the underlying QUIC
   // proxy socket to disconnect.
