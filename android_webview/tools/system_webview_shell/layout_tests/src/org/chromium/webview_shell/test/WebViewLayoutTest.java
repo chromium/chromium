@@ -402,7 +402,6 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add("use-fake-device-for-media-stream")
-    @DisabledTest(message = "crbug.com/1477889")
     public void testMediaStreamApiDenyPermission() throws Exception {
         runWebViewLayoutTest(
                 "blink-apis/webrtc/mediastream-permission-denied-callbacks.html",
@@ -412,7 +411,6 @@ public class WebViewLayoutTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add("use-fake-device-for-media-stream")
-    @DisabledTest(message = "crbug.com/1477889")
     public void testMediaStreamApi() throws Exception {
         mTestActivity.setGrantPermission(true);
         runWebViewLayoutTest(
