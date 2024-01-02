@@ -175,8 +175,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setTitle:(NSString*)title {
-  NSTextAlignment titleTextAligment =
-      [self determineBestAlignmentForText:title];
+  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
 
   _titleLabel.text = [title copy];
   _titleLabel.textAlignment = titleTextAligment;
@@ -503,20 +502,6 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
       _titleLabelFaderLeadingConstraint.active = YES;
     }
   }
-}
-
-// Determines the best aligment for the provided `text`.
-- (NSTextAlignment)determineBestAlignmentForText:(NSString*)text {
-  if (text.length) {
-    NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
-        (CFStringRef)text, CFRangeMake(0, text.length)));
-
-    if ([NSLocale characterDirectionForLanguage:lang] ==
-        NSLocaleLanguageDirectionRightToLeft) {
-      return NSTextAlignmentRight;
-    }
-  }
-  return NSTextAlignmentLeft;
 }
 
 - (NSString*)accessibilityLabelWithTitle:(NSString*)title {

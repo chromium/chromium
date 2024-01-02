@@ -9,7 +9,9 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
@@ -38,6 +40,9 @@ const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
 const CGFloat kFaviconSize = 16.0;
 
+// Width of the title label gradient view.
+const CGFloat kTitleGradientWidth = 16.0f;
+
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
   return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 14);
@@ -48,7 +53,9 @@ UIImage* DefaultFavicon() {
 @implementation TabStripCell {
   // Content view subviews.
   UIButton* _closeButton;
+  UIView* _titleContainer;
   UILabel* _titleLabel;
+  GradientView* _titleGradientView;
   UIImageView* _faviconView;
 
   // Rounded decoration views, visible when the cell is selected.
@@ -67,8 +74,12 @@ UIImage* DefaultFavicon() {
   MDCActivityIndicator* _activityIndicator;
 
   // Title label's trailing constraints.
-  NSLayoutConstraint* _titleLabelCollapsedTrailingConstraint;
-  NSLayoutConstraint* _titleLabelTrailingConstraint;
+  NSLayoutConstraint* _titleContainerCollapsedTrailingConstraint;
+  NSLayoutConstraint* _titleContainerTrailingConstraint;
+
+  // Gradient view's constraints.
+  NSLayoutConstraint* _titleGradientViewLeadingConstraint;
+  NSLayoutConstraint* _titleGradientViewTrailingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -93,8 +104,8 @@ UIImage* DefaultFavicon() {
     _closeButton = [self createCloseButton];
     [contentView addSubview:_closeButton];
 
-    _titleLabel = [self createTitleLabel];
-    [contentView addSubview:_titleLabel];
+    _titleContainer = [self createTitleContainer];
+    [contentView addSubview:_titleContainer];
 
     _leftTailView = [self createTailView];
     [self addSubview:_leftTailView];
@@ -114,7 +125,11 @@ UIImage* DefaultFavicon() {
 }
 
 - (void)setTitle:(NSString*)title {
-  _titleLabel.text = title;
+  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
+
+  _titleLabel.text = [title copy];
+  _titleLabel.textAlignment = titleTextAligment;
+  [self updateTitleGradientViewConstraints];
 }
 
 - (void)setFaviconImage:(UIImage*)image {
@@ -124,6 +139,8 @@ UIImage* DefaultFavicon() {
     _faviconView.image = image;
   }
 }
+
+#pragma mark - Setters
 
 - (void)setLoading:(BOOL)loading {
   if (_loading == loading) {
@@ -142,23 +159,29 @@ UIImage* DefaultFavicon() {
   }
 }
 
-#pragma mark - Accessor
+- (void)setSeparatorHidden:(BOOL)separatorHidden {
+  if (separatorHidden == _separatorHidden) {
+    return;
+  }
+  _separatorHidden = separatorHidden;
+  _trailingSeparatorView.hidden = _separatorHidden;
+}
 
 - (void)setSelected:(BOOL)selected {
   [super setSelected:selected];
 
-  // Style the contentView background color.
-  self.contentView.backgroundColor =
-      selected ? [UIColor colorNamed:kPrimaryBackgroundColor]
-               : UIColor.clearColor;
+  UIColor* backgroundColor = selected
+                                 ? [UIColor colorNamed:kPrimaryBackgroundColor]
+                                 : [UIColor colorNamed:kGrey200Color];
 
-  // Style the favicon tint color.
+  // Update colors.
+  self.contentView.backgroundColor = backgroundColor;
   _faviconView.tintColor = selected ? [UIColor colorNamed:kCloseButtonColor]
                                     : [UIColor colorNamed:kGrey500Color];
-
-  // Style the separator color.
   _trailingSeparatorView.backgroundColor =
       selected ? UIColor.clearColor : [UIColor colorNamed:kGrey400Color];
+  [_titleGradientView setStartColor:[backgroundColor colorWithAlphaComponent:0]
+                           endColor:backgroundColor];
 
   // Update decoration views visibility.
   _leftTailView.hidden = !selected;
@@ -169,14 +192,14 @@ UIImage* DefaultFavicon() {
   [self updateCollapsedState];
 }
 
+#pragma mark - UICollectionViewCell
+
 - (void)applyLayoutAttributes:
     (UICollectionViewLayoutAttributes*)layoutAttributes {
   [super applyLayoutAttributes:layoutAttributes];
 
   [self updateCollapsedState];
 }
-
-#pragma mark - UICollectionViewCell
 
 - (void)prepareForReuse {
   [super prepareForReuse];
@@ -185,15 +208,7 @@ UIImage* DefaultFavicon() {
   [self setFaviconImage:nil];
 }
 
-#pragma mark - Setters
 
-- (void)setSeparatorHidden:(BOOL)separatorHidden {
-  if (separatorHidden == _separatorHidden) {
-    return;
-  }
-  _separatorHidden = separatorHidden;
-  _trailingSeparatorView.hidden = _separatorHidden;
-}
 
 #pragma mark - Private
 
@@ -236,7 +251,7 @@ UIImage* DefaultFavicon() {
   _decorationLayersUpdated = YES;
 }
 
-/// Hides the close button view if the cell is collapsed.
+// Hides the close button view if the cell is collapsed.
 - (void)updateCollapsedState {
   BOOL collapsed = NO;
   if (self.frame.size.width < kCollapsedWidthThreshold) {
@@ -252,11 +267,39 @@ UIImage* DefaultFavicon() {
 
   // To avoid breaking the layout, always disable the active constraint first.
   if (collapsed) {
-    _titleLabelTrailingConstraint.active = NO;
-    _titleLabelCollapsedTrailingConstraint.active = YES;
+    _titleContainerTrailingConstraint.active = NO;
+    _titleContainerCollapsedTrailingConstraint.active = YES;
   } else {
-    _titleLabelCollapsedTrailingConstraint.active = NO;
-    _titleLabelTrailingConstraint.active = YES;
+    _titleContainerCollapsedTrailingConstraint.active = NO;
+    _titleContainerTrailingConstraint.active = YES;
+  }
+}
+
+// Updates the `_titleGradientView` horizontal constraints.
+- (void)updateTitleGradientViewConstraints {
+  NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
+
+  // To avoid breaking the layout, always disable the active constraint first.
+  if (UseRTLLayout()) {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      [_titleGradientView setTransform:CGAffineTransformMakeScale(1, 1)];
+      _titleGradientViewTrailingConstraint.active = NO;
+      _titleGradientViewLeadingConstraint.active = YES;
+    } else {
+      [_titleGradientView setTransform:CGAffineTransformMakeScale(-1, 1)];
+      _titleGradientViewLeadingConstraint.active = NO;
+      _titleGradientViewTrailingConstraint.active = YES;
+    }
+  } else {
+    if (titleTextAligment == NSTextAlignmentLeft) {
+      [_titleGradientView setTransform:CGAffineTransformMakeScale(1, 1)];
+      _titleGradientViewLeadingConstraint.active = NO;
+      _titleGradientViewTrailingConstraint.active = YES;
+    } else {
+      [_titleGradientView setTransform:CGAffineTransformMakeScale(-1, 1)];
+      _titleGradientViewTrailingConstraint.active = NO;
+      _titleGradientViewLeadingConstraint.active = YES;
+    }
   }
 }
 
@@ -293,18 +336,41 @@ UIImage* DefaultFavicon() {
   ]];
 
   /// `_titleLabel` constraints.
-  _titleLabelTrailingConstraint = [_titleLabel.trailingAnchor
+  _titleContainerTrailingConstraint = [_titleContainer.trailingAnchor
       constraintEqualToAnchor:_closeButton.leadingAnchor
                      constant:-kTitleInset];
-  _titleLabelCollapsedTrailingConstraint = [_titleLabel.trailingAnchor
+  _titleContainerCollapsedTrailingConstraint = [_titleContainer.trailingAnchor
       constraintEqualToAnchor:contentView.trailingAnchor
                      constant:-kTitleInset];
   [NSLayoutConstraint activateConstraints:@[
-    [_titleLabel.leadingAnchor
+    [_titleContainer.leadingAnchor
         constraintEqualToAnchor:leadingImageGuide.trailingAnchor
                        constant:kTitleInset],
-    [_titleLabel.centerYAnchor
+    _titleContainerTrailingConstraint,
+    [_titleContainer.heightAnchor
+        constraintEqualToAnchor:contentView.heightAnchor],
+    [_titleContainer.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
+
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_titleContainer.leadingAnchor],
+    [_titleLabel.centerYAnchor
+        constraintEqualToAnchor:_titleContainer.centerYAnchor],
+  ]];
+
+  /// `_titleGradientView` constraints.
+  _titleGradientViewLeadingConstraint = [_titleGradientView.leadingAnchor
+      constraintEqualToAnchor:_titleContainer.leadingAnchor];
+  _titleGradientViewTrailingConstraint = [_titleGradientView.trailingAnchor
+      constraintEqualToAnchor:_titleContainer.trailingAnchor];
+  [NSLayoutConstraint activateConstraints:@[
+    _titleGradientViewTrailingConstraint,
+    [_titleGradientView.widthAnchor
+        constraintEqualToConstant:kTitleGradientWidth],
+    [_titleGradientView.heightAnchor
+        constraintEqualToAnchor:_titleContainer.heightAnchor],
+    [_titleGradientView.centerYAnchor
+        constraintEqualToAnchor:_titleContainer.centerYAnchor],
   ]];
 
   /// `_topLeftCornerView` and `_topRightCornerView` constraints.
@@ -395,7 +461,36 @@ UIImage* DefaultFavicon() {
   titleLabel.font = [UIFont systemFontOfSize:kFontSize
                                       weight:UIFontWeightMedium];
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  titleLabel.adjustsFontForContentSizeCategory = YES;
+
   return titleLabel;
+}
+
+// Returns a new gradient view.
+- (GradientView*)createTitleGradientView {
+  GradientView* gradientView = [[GradientView alloc]
+      initWithStartColor:[[UIColor colorNamed:kGrey200Color]
+                             colorWithAlphaComponent:0]
+                endColor:[UIColor colorNamed:kGrey200Color]
+              startPoint:CGPointMake(0.0f, 0.5f)
+                endPoint:CGPointMake(1.0f, 0.5f)];
+  gradientView.translatesAutoresizingMaskIntoConstraints = NO;
+  return gradientView;
+}
+
+// Returns a new title container view.
+- (UIView*)createTitleContainer {
+  UIView* titleContainer = [[UIView alloc] init];
+  titleContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  titleContainer.clipsToBounds = YES;
+
+  _titleLabel = [self createTitleLabel];
+  [titleContainer addSubview:_titleLabel];
+
+  _titleGradientView = [self createTitleGradientView];
+  [titleContainer addSubview:_titleGradientView];
+
+  return titleContainer;
 }
 
 // Returns a new Activity Indicator.

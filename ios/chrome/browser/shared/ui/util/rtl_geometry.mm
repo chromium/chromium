@@ -277,3 +277,16 @@ BOOL EdgeLeadsEdge(CGFloat a, CGFloat b, base::i18n::TextDirection direction) {
 BOOL EdgeLeadsEdge(CGFloat a, CGFloat b) {
   return EdgeLeadsEdge(a, b, LayoutDirection());
 }
+
+NSTextAlignment DetermineBestAlignmentForText(NSString* text) {
+  if (text.length) {
+    NSString* lang = CFBridgingRelease(CFStringTokenizerCopyBestStringLanguage(
+        (CFStringRef)text, CFRangeMake(0, text.length)));
+
+    if ([NSLocale characterDirectionForLanguage:lang] ==
+        NSLocaleLanguageDirectionRightToLeft) {
+      return NSTextAlignmentRight;
+    }
+  }
+  return NSTextAlignmentLeft;
+}
