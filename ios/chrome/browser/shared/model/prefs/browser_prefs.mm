@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/contains.h"
 #import "base/json/values_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
@@ -99,6 +100,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/components/cookie_util/cookie_constants.h"
@@ -229,6 +231,22 @@ void MigrateIntegerToTimePreferenceFromUserDefaults(std::string_view pref_name,
 
   pref_service->SetTime(pref_name.data(),
                         base::Time::FromTimeT([value intValue]));
+  [defaults removeObjectForKey:key];
+}
+
+// Helper function migrating the preference `pref_name` of type "NSString" from
+// `defaults` to `pref_service`.
+void MigrateNSStringPreferenceFromUserDefaults(std::string_view pref_name,
+                                               PrefService* pref_service,
+                                               NSUserDefaults* defaults) {
+  NSString* key = @(pref_name.data());
+  NSString* value =
+      base::apple::ObjCCast<NSString>([defaults objectForKey:key]);
+  if (!value) {
+    return;
+  }
+
+  pref_service->SetString(pref_name.data(), base::SysNSStringToUTF8(value));
   [defaults removeObjectForKey:key];
 }
 
@@ -456,6 +474,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAppStoreRatingTotalDaysOnChromeKey, 0);
   registry->RegisterListPref(kAppStoreRatingActiveDaysInPastWeekKey);
   registry->RegisterTimePref(kAppStoreRatingLastShownPromoDayKey, base::Time());
+
+  registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -747,6 +767,10 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 10/2023.
   prefs->ClearPref(kAutofillBrandingKeyboardAccessoriesTapped);
+
+  // Added 01/2024.
+  MigrateNSStringPreferenceFromUserDefaults(kIOSChromeNextVersionKey, prefs,
+                                            defaults);
 }
 
 // This method should be periodically pruned of year+ old migrations.

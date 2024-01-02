@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_center.h"
 
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -20,6 +21,7 @@ class UpgradeCenterTest : public PlatformTest {
   }
 
   void TearDown() override { [[UpgradeCenter sharedInstance] resetForTests]; }
+  IOSChromeScopedTestingLocalState scoped_local_state_;
 };
 
 }  // namespace

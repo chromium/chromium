@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-// The user defaults key for the upgrade version.
-extern NSString* const kIOSChromeNextVersionKey;
+// The Pref key for the upgrade version.
+extern const char kIOSChromeNextVersionKey[];
 // The user defaults key for the upgrade URL.
 extern NSString* const kIOSChromeUpgradeURLKey;
 // The user defaults key for up to date status;

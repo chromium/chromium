@@ -113,6 +113,7 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/ntp:field_trial",
     "//ios/chrome/browser/ui/ntp/metrics:constants",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
+    "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/font_size",

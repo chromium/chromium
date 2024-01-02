@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/passwords/model/password_store_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
@@ -1018,11 +1019,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     base::UmaHistogramEnumeration(kSafetyCheckMetricsUpdates,
                                   safety_check::UpdateStatus::kOutdated);
 
-    // Valid results, update all NSUserDefaults.
+    // Valid results, update all prefs.
     [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
                 forKey:kIOSChromeUpgradeURLKey];
-    [defaults setValue:base::SysUTF8ToNSString(details.next_version)
-                forKey:kIOSChromeNextVersionKey];
+    PrefService* prefService = GetApplicationContext()->GetLocalState();
+    prefService->SetString(kIOSChromeNextVersionKey, details.next_version);
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.
