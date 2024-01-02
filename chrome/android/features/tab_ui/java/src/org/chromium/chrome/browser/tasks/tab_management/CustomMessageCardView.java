@@ -26,7 +26,7 @@ public class CustomMessageCardView extends LinearLayout {
     }
 
     /**
-     * Set the custom view to be displayed as a child view of this message card view.
+     * Sets the custom view to be displayed as a child view of this message card view.
      *
      * @param view The view to be displayed.
      */
