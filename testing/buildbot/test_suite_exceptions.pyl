@@ -1274,8 +1274,8 @@
         },
       },
       'win-arm64-rel': {
-        # Surface Pros aren't using 100% scaling, which some browser tests
-        # rely on. They also have touch enabled, which we need to disable.
+        # Some Win Arm64 bots aren't using 100% scaling, which some browser
+        # tests rely on. They also have touch enabled, which we need to disable.
         'args': [
           '--force-device-scale-factor=1',
           '--top-chrome-touch-ui=disabled',
@@ -3186,8 +3186,10 @@
         },
       },
       'win-arm64-rel': {
-        # Surface Pros have touch turned on by default, which makes some interactive-ui-tests fail.
+        # Some Win Arm64 bots have touch turned on, which makes some tests fail.
+        # Similarly, some have a non 1.0 device scale factor.
         'args': [
+          '--force-device-scale-factor=1',
           '--top-chrome-touch-ui=disabled',
         ],
       },

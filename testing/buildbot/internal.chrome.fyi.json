@@ -1195,6 +1195,7 @@
       },
       {
         "args": [
+          "--force-device-scale-factor=1",
           "--top-chrome-touch-ui=disabled"
         ],
         "isolate_profile_data": true,
