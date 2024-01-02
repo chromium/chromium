@@ -235,6 +235,24 @@ TEST_F(AutofillAcrossIframesTest, WithChildFrames) {
 
   // TODO(crbug.com/1440471): Check contents of frames to make sure they're the
   // right ones.
+
+  // Also check that data relating to the frame was properly set on the form-
+  // and field-level data when extracted.
+  ASSERT_TRUE(form.host_frame);
+  web::WebFrame* main_frame_from_form_data =
+      frames_manager->GetFrameWithId(form.host_frame.ToString());
+  ASSERT_TRUE(main_frame_from_form_data);
+  EXPECT_TRUE(main_frame_from_form_data->IsMainFrame());
+
+  FormSignature form_signature = CalculateFormSignature(form);
+
+  EXPECT_EQ(form.fields.size(), 2u);
+  for (const FormFieldData& field : form.fields) {
+    EXPECT_EQ(field.host_frame, form.host_frame);
+    EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
+    EXPECT_EQ(field.origin, url::Origin::Create(form.url));
+    EXPECT_EQ(field.host_form_signature, form_signature);
+  }
 }
 
 // Ensure that disabling the feature actually disables the feature.
