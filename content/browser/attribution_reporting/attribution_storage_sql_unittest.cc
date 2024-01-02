@@ -2490,9 +2490,23 @@ TEST_P(AttributionStorageSqlTest, InvalidStoredReportFields_MarkedAsCorrupted) {
           .status = AttributionStorageSql::ReportCorruptionStatus::
               kSourceDataMissingAggregatable,
       },
+      {
+          .desc = "invalid_report_type",
+          .record =
+              AttributionReportRecord{
+                  .report_id = 1,
+                  .external_report_id =
+                      DefaultExternalReportID().AsLowercaseString(),
+                  .report_type = 123,
+              },
+          .status =
+              AttributionStorageSql::ReportCorruptionStatus::kInvalidReportType,
+      },
   };
 
   for (auto test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
     OpenDatabase();
     storage()->StoreSource(SourceBuilder()
                                .SetReportingOrigin(*SuitableOrigin::Deserialize(

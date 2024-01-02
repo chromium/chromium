@@ -1532,16 +1532,18 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
     corruption_causes.Put(ReportCorruptionStatus::kInvalidContextOrigin);
   }
 
-  if (!report_type.has_value()) {
-    corruption_causes.Put(ReportCorruptionStatus::kInvalidReportType);
-  }
-
   if (!reporting_origin.has_value()) {
     corruption_causes.Put(ReportCorruptionStatus::kInvalidReportingOrigin);
   } else if (source_data.has_value() &&
              *source_data->source.common_info().reporting_origin() !=
                  *reporting_origin) {
     corruption_causes.Put(ReportCorruptionStatus::kReportingOriginMismatch);
+  }
+
+  if (!report_type.has_value()) {
+    corruption_causes.Put(ReportCorruptionStatus::kInvalidReportType);
+    corruption_causes.Put(ReportCorruptionStatus::kAnyFieldCorrupted);
+    return base::unexpected(std::move(corruption_causes));
   }
 
   absl::optional<AttributionReport::Data> data;
