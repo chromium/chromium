@@ -58,8 +58,10 @@ FaceGazeTestBase = class extends E2ETestBase {
     const module =
         await import('/accessibility_common/accessibility_common_loader.js');
     await importModule(
-        ['Action', 'FaceGaze', 'FacialGesture'],
-        '/accessibility_common/facegaze/facegaze.js');
+        ['Action', 'FaceGaze'], '/accessibility_common/facegaze/facegaze.js');
+    await importModule(
+        ['FacialGesture'],
+        '/accessibility_common/facegaze/gesture_detector.js');
     accessibilityCommon = new module.AccessibilityCommon();
     assertNotNullNorUndefined(accessibilityCommon);
     assertNotNullNorUndefined(Action);
@@ -99,15 +101,10 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   /**
    * @param {!FacialGesture} gesture
-   * @return {?Action}
+   * @return {Action|undefined}
    */
   getActionForGesture(gesture) {
-    const data = this.getFaceGaze().gestureToActionData_.get(gesture);
-    if (!data) {
-      return null;
-    }
-
-    return data.action;
+    return this.getFaceGaze().gestureToAction_.get(gesture);
   }
 
   /**
@@ -115,7 +112,7 @@ FaceGazeTestBase = class extends E2ETestBase {
    * @param {!chrome.accessibilityPrivate.ScreenPoint} location
    */
   setMouseLocation(location) {
-    this.getFaceGaze().mouseLocation_ = location;
+    this.getFaceGaze().mouseController_.mouseLocation_ = location;
   }
 
   /** @param {!MockFaceLandmarkerResult} result */

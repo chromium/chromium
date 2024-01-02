@@ -63,6 +63,8 @@ ts_modules = [
   "dictation/macros/smart_select_between_macro.ts",
   "dictation/macros/stop_listening_macro.ts",
   "facegaze/facegaze.ts",
+  "facegaze/gesture_detector.ts",
+  "facegaze/mouse_controller.ts",
   "magnifier/magnifier.ts",
 ]
 
