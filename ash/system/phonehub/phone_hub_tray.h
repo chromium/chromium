@@ -62,8 +62,8 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
  public:
   explicit PhoneHubTray(Shelf* shelf);
   PhoneHubTray(const PhoneHubTray&) = delete;
-  ~PhoneHubTray() override;
   PhoneHubTray& operator=(const PhoneHubTray&) = delete;
+  ~PhoneHubTray() override;
 
   // Sets the PhoneHubManager that provides the data to drive the UI.
   void SetPhoneHubManager(phonehub::PhoneHubManager* phone_hub_manager);
