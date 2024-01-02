@@ -104,7 +104,7 @@ void OnMaximizePermissionRequestComplete(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  window->GetFrame()->GetLocalFrameHostRemote().Maximize();
+  window->GetFrame()->GetChromeClient().Maximize(*window->GetFrame());
 #endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be
@@ -122,7 +122,7 @@ void OnMinimizePermissionRequestComplete(
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  window->GetFrame()->GetLocalFrameHostRemote().Minimize();
+  window->GetFrame()->GetChromeClient().Minimize(*window->GetFrame());
 #endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be
@@ -139,7 +139,7 @@ void OnRestorePermissionRequestComplete(ScriptPromiseResolver* resolver,
   }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  window->GetFrame()->GetLocalFrameHostRemote().Restore();
+  window->GetFrame()->GetChromeClient().Restore(*window->GetFrame());
 #endif
 
   // TODO(crbug.com/1505666): Add wait for the display state change to be

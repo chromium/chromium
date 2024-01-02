@@ -2300,9 +2300,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void FullscreenStateChanged(
       bool is_fullscreen,
       blink::mojom::FullscreenOptionsPtr options) override;
-  void Maximize() override;
-  void Minimize() override;
-  void Restore() override;
   void RegisterProtocolHandler(const std::string& scheme,
                                const GURL& url,
                                bool user_gesture) override;
@@ -2502,6 +2499,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      SetWindowRectCallback callback) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void DidAccessInitialMainDocument() override;
+  void Minimize() override;
+  void Maximize() override;
+  void Restore() override;
   void SetResizable(bool resizable) override;
 
   void ReportNoBinderForInterface(const std::string& error);

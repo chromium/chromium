@@ -7312,6 +7312,9 @@ class TestAccessInitialDocumentLocalFrameHost
                      SetWindowRectCallback callback) override {
     std::move(callback).Run();
   }
+  void Minimize() override {}
+  void Maximize() override {}
+  void Restore() override {}
   void SetResizable(bool resizable) override {}
   void DidFirstVisuallyNonEmptyPaint() override {}
   void DidAccessInitialMainDocument() override {

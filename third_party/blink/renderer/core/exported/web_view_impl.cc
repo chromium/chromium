@@ -3067,6 +3067,21 @@ void WebViewImpl::DidAccessInitialMainDocument() {
   local_main_frame_host_remote_->DidAccessInitialMainDocument();
 }
 
+void WebViewImpl::Minimize() {
+  DCHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->Minimize();
+}
+
+void WebViewImpl::Maximize() {
+  DCHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->Maximize();
+}
+
+void WebViewImpl::Restore() {
+  DCHECK(local_main_frame_host_remote_);
+  local_main_frame_host_remote_->Restore();
+}
+
 void WebViewImpl::SetResizable(bool resizable) {
   DCHECK(local_main_frame_host_remote_);
   local_main_frame_host_remote_->SetResizable(resizable);

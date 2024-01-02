@@ -219,6 +219,27 @@ void ChromeClientImpl::SetWindowRect(const gfx::Rect& requested_rect,
                                                   adjusted_rect);
 }
 
+void ChromeClientImpl::Minimize(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Minimize();
+#endif
+}
+
+void ChromeClientImpl::Maximize(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Maximize();
+#endif
+}
+
+void ChromeClientImpl::Restore(LocalFrame&) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  DCHECK(web_view_);
+  web_view_->Restore();
+#endif
+}
+
 void ChromeClientImpl::SetResizable(bool resizable, LocalFrame& frame) {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   DCHECK(web_view_);
