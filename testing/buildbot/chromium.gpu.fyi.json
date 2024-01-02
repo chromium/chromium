@@ -5578,7 +5578,8 @@
           "${buildername}",
           "--jobs=1",
           "--git-revision=${got_revision}",
-          "--service-account=/creds/service_accounts/skylab-drone.json"
+          "--service-account=/creds/service_accounts/skylab-drone.json",
+          "--disable-features=Vulkan,DefaultANGLEVulkan"
         ],
         "autotest_name": "chromium_Graphics",
         "bucket": "chromiumos-image-archive",
