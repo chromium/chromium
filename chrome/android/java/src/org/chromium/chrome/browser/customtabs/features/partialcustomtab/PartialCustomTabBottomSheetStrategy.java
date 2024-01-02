@@ -30,6 +30,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
@@ -432,9 +433,10 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
     @Override
     public void setScrimFraction(float scrimFraction) {
-        int scrimColor = mActivity.getColor(R.color.default_scrim_color);
+        @ColorInt int scrimColor = mActivity.getColor(R.color.default_scrim_color);
         float scrimColorAlpha = (scrimColor >>> 24) / 255f;
-        int scrimColorOpaque = scrimColor & 0xFF000000;
+        @ColorInt int scrimColorOpaque = scrimColor | 0xFF000000;
+        @ColorInt
         int color =
                 ColorUtils.getColorWithOverlay(
                         mToolbarColor, scrimColorOpaque, scrimFraction * scrimColorAlpha);
@@ -446,7 +448,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
         getDragBarBackground().setColor(color);
 
         ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handle);
-        int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
+        @ColorInt int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
         if (scrimFraction > 0.f) {
             handle.setColorFilter(
                     ColorUtils.getColorWithOverlay(

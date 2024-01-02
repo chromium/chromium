@@ -76,14 +76,9 @@ public class ThemeUtils {
      */
     public static @ColorInt int getTextBoxColorForToolbarBackgroundInNonNativePage(
             Context context, @ColorInt int color, boolean isIncognito) {
-        // Text box color on default toolbar background in incognito mode is a pre-defined
-        // color. We calculate the equivalent opaque color from the pre-defined translucent color.
+        // Text box color on default toolbar background in incognito mode is a pre-defined color.
         if (isIncognito) {
-            final @ColorInt int overlayColor =
-                    context.getColor(R.color.toolbar_text_box_background_incognito);
-            final float overlayColorAlpha = Color.alpha(overlayColor) / 255f;
-            final @ColorInt int overlayColorOpaque = overlayColor & 0xFF000000;
-            return ColorUtils.getColorWithOverlay(color, overlayColorOpaque, overlayColorAlpha);
+            return context.getColor(R.color.toolbar_text_box_background_incognito);
         }
 
         // Text box color on default toolbar background in standard mode is a pre-defined
