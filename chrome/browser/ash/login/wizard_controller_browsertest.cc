@@ -24,6 +24,7 @@
 #include "base/test/run_until.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -188,6 +189,11 @@ const test::UIPath kGuestSessionLink = {"error-message",
 // Matches on the mode parameter of an EnrollmentConfig object.
 MATCHER_P(EnrollmentModeMatches, mode, "") {
   return arg.mode == mode;
+}
+
+template <typename Error>
+policy::AutoEnrollmentState ToAutoEnrollmentState(Error error) {
+  return base::unexpected(error);
 }
 
 class PrefStoreStub : public TestingPrefStore {
@@ -1316,7 +1322,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
+  WaitForAutoEnrollmentState(
+      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
+          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+          .network_error = net::ERR_CONNECTION_REFUSED}));
 
   // The error screen shows up if device state could not be retrieved.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1408,7 +1417,10 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
+  WaitForAutoEnrollmentState(
+      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
+          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+          .network_error = net::ERR_CONNECTION_REFUSED}));
 
   // The error screen shows up if there's no auto-enrollment decision.
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());
@@ -1713,9 +1725,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Timeout) {
 
   // Ensure that we show an error on enrollment check screen and that it is not
   // possible to enter guest mode (like in FRE).
-  EXPECT_EQ(auto_enrollment_controller()->state(),
-            base::unexpected(policy::AutoEnrollmentError(
-                policy::AutoEnrollmentSafeguardTimeoutError{})));
+  EXPECT_EQ(
+      auto_enrollment_controller()->state(),
+      ToAutoEnrollmentState(policy::AutoEnrollmentSafeguardTimeoutError{}));
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
@@ -2083,9 +2095,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_EQ(policy::AutoEnrollmentTypeChecker::CheckType::
                 kUnknownDueToMissingSystemClockSync,
             auto_enrollment_controller()->auto_enrollment_check_type());
-  EXPECT_EQ(auto_enrollment_controller()->state(),
-            base::unexpected(policy::AutoEnrollmentError(
-                policy::AutoEnrollmentSystemClockSyncError{})));
+  EXPECT_EQ(
+      auto_enrollment_controller()->state(),
+      ToAutoEnrollmentState(policy::AutoEnrollmentSystemClockSyncError{}));
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
@@ -2795,7 +2807,10 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   mock_auto_enrollment_check_screen_->RealShow();
 
   // Wait for auto-enrollment controller to encounter the connection error.
-  WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
+  WaitForAutoEnrollmentState(
+      ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
+          .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+          .network_error = net::ERR_CONNECTION_REFUSED}));
 
   // The error screen shows up if device state could not be retrieved.
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);

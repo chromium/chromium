@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_STATE_H_
 #define CHROME_BROWSER_ASH_POLICY_ENROLLMENT_AUTO_ENROLLMENT_STATE_H_
 
+#include <optional>
 #include <string_view>
 #include <variant>
 
 #include "base/types/expected.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace policy {
+
+struct DMServerJobResult;
 
 // Indicates the result of state determination.
 enum class AutoEnrollmentResult {
@@ -44,9 +48,37 @@ struct AutoEnrollmentSystemClockSyncError {
       default;
 };
 
-using AutoEnrollmentError = std::variant<AutoEnrollmentLegacyError,
-                                         AutoEnrollmentSafeguardTimeoutError,
-                                         AutoEnrollmentSystemClockSyncError>;
+// Represents an error during state determination request to DMServer. May
+// be caused by connection error, server error, or invalid request.
+struct AutoEnrollmentDMServerError {
+  static AutoEnrollmentDMServerError FromDMServerJobResult(
+      const DMServerJobResult& result);
+
+  constexpr bool operator==(const AutoEnrollmentDMServerError&) const = default;
+
+  DeviceManagementStatus dm_error;
+  std::optional<int> network_error;
+};
+
+// Represents an error due to an invalid response from DMServer.
+struct AutoEnrollmentStateAvailabilityResponseError {
+  constexpr bool operator==(
+      const AutoEnrollmentStateAvailabilityResponseError&) const = default;
+};
+
+// Represents an internal error in PSM library during initial state
+// determination.
+struct AutoEnrollmentPsmError {
+  constexpr bool operator==(const AutoEnrollmentPsmError&) const = default;
+};
+
+using AutoEnrollmentError =
+    std::variant<AutoEnrollmentLegacyError,
+                 AutoEnrollmentSafeguardTimeoutError,
+                 AutoEnrollmentSystemClockSyncError,
+                 AutoEnrollmentDMServerError,
+                 AutoEnrollmentStateAvailabilityResponseError,
+                 AutoEnrollmentPsmError>;
 
 // Indicates the current state of the auto-enrollment check.
 using AutoEnrollmentState =

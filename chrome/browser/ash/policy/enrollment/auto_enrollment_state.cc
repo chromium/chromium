@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 
 #include "base/functional/overloaded.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
 namespace policy {
 
@@ -34,6 +35,18 @@ std::string_view AutoEnrollmentLegacyErrorCodeToString(
 }  // namespace
 
 // static
+AutoEnrollmentDMServerError AutoEnrollmentDMServerError::FromDMServerJobResult(
+    const DMServerJobResult& result) {
+  CHECK_NE(result.dm_status, DM_STATUS_SUCCESS);
+
+  return AutoEnrollmentDMServerError{
+      .dm_error = result.dm_status,
+      .network_error = (result.dm_status == DM_STATUS_REQUEST_FAILED
+                            ? std::optional(result.net_error)
+                            : std::nullopt)};
+}
+
+// static
 AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
     const AutoEnrollmentError& error) {
   return std::visit(
@@ -44,7 +57,19 @@ AutoEnrollmentLegacyError AutoEnrollmentErrorToLegacyError(
           },
           [](AutoEnrollmentSystemClockSyncError) {
             return AutoEnrollmentLegacyError::kConnectionError;
-          }},
+          },
+          [](const AutoEnrollmentDMServerError& error) {
+            return error.network_error.has_value()
+                       ? AutoEnrollmentLegacyError::kConnectionError
+                       : AutoEnrollmentLegacyError::kServerError;
+          },
+          [](AutoEnrollmentStateAvailabilityResponseError error) {
+            return AutoEnrollmentLegacyError::kServerError;
+          },
+          [](AutoEnrollmentPsmError error) {
+            return AutoEnrollmentLegacyError::kServerError;
+          },
+      },
       error);
 }
 

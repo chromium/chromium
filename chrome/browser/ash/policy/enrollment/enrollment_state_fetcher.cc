@@ -280,7 +280,7 @@ class DeviceIdentifiers {
 class RlweOprf {
  public:
   using Response = private_membership::rlwe::PrivateMembershipRlweOprfResponse;
-  using Result = base::expected<Response, AutoEnrollmentState>;
+  using Result = base::expected<Response, AutoEnrollmentError>;
   using CompletionCallback = base::OnceCallback<void(Result)>;
 
   RlweOprf() = default;
@@ -298,8 +298,9 @@ class RlweOprf {
     if (!oprf_request.ok()) {
       LOG(ERROR) << "Failed to create PSM RLWE OPRF request: "
                  << oprf_request.status();
+
       return std::move(completion_callback)
-          .Run(base::unexpected(AutoEnrollmentResult::kNoEnrollment));
+          .Run(base::unexpected(AutoEnrollmentPsmError{}));
     }
 
     // Prepare the RLWE OPRF request job.
@@ -331,38 +332,38 @@ class RlweOprf {
     base::UmaHistogramSparse(
         kUMAStateDeterminationPsmRlweOprfRequestNetworkErrorCode,
         -result.net_error);
-    switch (result.dm_status) {
-      case DM_STATUS_SUCCESS: {
-        if (!result.response.has_private_set_membership_response() ||
-            !result.response.private_set_membership_response()
-                 .has_rlwe_response() ||
-            !result.response.private_set_membership_response()
-                 .rlwe_response()
-                 .has_oprf_response()) {
-          LOG(ERROR) << "Empty PSM RLWE OPRF response";
-          return std::move(completion_callback)
-              .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
-        }
-        break;
-      }
-      case DM_STATUS_REQUEST_FAILED: {
+
+    if (result.dm_status != DM_STATUS_SUCCESS) {
+      const auto error =
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result);
+
+      if (error.network_error.has_value()) {
         LOG(ERROR) << "PSM RLWE OPRF connection error";
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyConnectionError));
+      } else {
+        LOG(ERROR) << "PSM RLWE OPRF server error: " << error.dm_error;
       }
-      default: {
-        LOG(ERROR) << "PSM RLWE OPRF server error: " << result.dm_status;
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
-      }
+
+      return std::move(completion_callback).Run(base::unexpected(error));
+    }
+
+    if (!result.response.has_private_set_membership_response() ||
+        !result.response.private_set_membership_response()
+             .has_rlwe_response() ||
+        !result.response.private_set_membership_response()
+             .rlwe_response()
+             .has_oprf_response()) {
+      LOG(ERROR) << "Empty PSM RLWE OPRF response";
+      return std::move(completion_callback)
+          .Run(
+              base::unexpected(AutoEnrollmentStateAvailabilityResponseError{}));
     }
 
     // Handle success
     VLOG(1) << "PSM RLWE OPRF request completed successfully";
     return std::move(completion_callback)
-        .Run(base::ok(result.response.private_set_membership_response()
-                          .rlwe_response()
-                          .oprf_response()));
+        .Run(result.response.private_set_membership_response()
+                 .rlwe_response()
+                 .oprf_response());
   }
 
  private:
@@ -379,9 +380,8 @@ class RlweQuery {
   RlweQuery(const RlweQuery&) = delete;
   RlweQuery& operator=(const RlweQuery&) = delete;
 
-  using Result = base::expected<bool, AutoEnrollmentState>;
-  using CompletionCallback =
-      base::OnceCallback<void(base::expected<bool, AutoEnrollmentState>)>;
+  using Result = base::expected<bool, AutoEnrollmentError>;
+  using CompletionCallback = base::OnceCallback<void(Result)>;
 
   void Request(
       DeterminationContext& context,
@@ -397,7 +397,7 @@ class RlweQuery {
       LOG(ERROR) << "Failed to create PSM RLWE query request: "
                  << query_request.status();
       return std::move(completion_callback)
-          .Run(base::unexpected(AutoEnrollmentResult::kNoEnrollment));
+          .Run(base::unexpected(AutoEnrollmentPsmError{}));
     }
 
     // Prepare the RLWE query request job.
@@ -432,31 +432,32 @@ class RlweQuery {
     base::UmaHistogramSparse(
         kUMAStateDeterminationPsmRlweQueryRequestNetworkErrorCode,
         -result.net_error);
-    switch (result.dm_status) {
-      case DM_STATUS_SUCCESS: {
-        // Check if the RLWE query response is empty.
-        if (!result.response.has_private_set_membership_response() ||
-            !result.response.private_set_membership_response()
-                 .has_rlwe_response() ||
-            !result.response.private_set_membership_response()
-                 .rlwe_response()
-                 .has_query_response()) {
-          LOG(ERROR) << "Empty PSM RLWE query response";
-          return std::move(completion_callback)
-              .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
-        }
-        break;
-      }
-      case DM_STATUS_REQUEST_FAILED: {
+
+    if (result.dm_status != DM_STATUS_SUCCESS) {
+      const auto error =
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result);
+
+      if (error.network_error.has_value()) {
         LOG(ERROR) << "PSM RLWE query connection error";
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyConnectionError));
+      } else {
+        LOG(ERROR) << "PSM RLWE query server error: " << error.dm_error;
       }
-      default: {
-        LOG(ERROR) << "PSM RLWE query server error: " << result.dm_status;
-        return std::move(completion_callback)
-            .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
-      }
+
+      return std::move(completion_callback).Run(base::unexpected(error));
+    }
+
+    // Check if the RLWE query response is empty.
+    if (!result.response.has_private_set_membership_response() ||
+        !result.response.private_set_membership_response()
+             .has_rlwe_response() ||
+        !result.response.private_set_membership_response()
+             .rlwe_response()
+             .has_query_response()) {
+      LOG(ERROR) << "Empty PSM RLWE query response";
+
+      return std::move(completion_callback)
+          .Run(
+              base::unexpected(AutoEnrollmentStateAvailabilityResponseError{}));
     }
 
     const auto responses = psm_rlwe_client->ProcessQueryResponse(
@@ -466,21 +467,25 @@ class RlweQuery {
 
     if (!responses.ok() || responses->membership_responses_size() != 1) {
       LOG(ERROR) << "Invalid PSM RLWE query response";
+
       return std::move(completion_callback)
-          .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
+          .Run(
+              base::unexpected(AutoEnrollmentStateAvailabilityResponseError{}));
     }
 
     if (responses->membership_responses_size() != 1) {
       LOG(ERROR) << "Invalid PSM RLWE query response: "
                  << responses->membership_responses_size()
                  << " membership responses, expected 1";
+
       return std::move(completion_callback)
-          .Run(base::unexpected(kAutoEnrollmentLegacyServerError));
+          .Run(
+              base::unexpected(AutoEnrollmentStateAvailabilityResponseError{}));
     }
 
     const bool is_member =
         responses->membership_responses(0).membership_response().is_member();
-    return std::move(completion_callback).Run(base::ok(is_member));
+    return std::move(completion_callback).Run(is_member);
   }
 
   void StoreResponse(PrefService* local_state, bool is_member) {
@@ -941,7 +946,11 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixOPRFRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      return ReportResult(result.error());
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+        return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      }
+
+      return ReportResult(base::unexpected(result.error()));
     }
     query_.Request(context_, result.value(),
                    base::BindOnce(&Sequence::OnQueryRequestDone,
@@ -952,7 +961,11 @@ class EnrollmentStateFetcherImpl::Sequence {
     ReportStepDurationAndResetTimer(kUMASuffixQueryRequest);
     if (!result.has_value()) {
       StorePsmError(local_state_);
-      return ReportResult(result.error());
+      if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+        return ReportResult(AutoEnrollmentResult::kNoEnrollment);
+      }
+
+      return ReportResult(base::unexpected(result.error()));
     }
 
     RlwePlaintextId psm_id =

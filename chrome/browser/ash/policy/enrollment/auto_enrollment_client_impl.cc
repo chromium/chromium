@@ -93,21 +93,14 @@ class DeviceIdentifierProviderFRE {
 
 }  // namespace
 
-enum class AutoEnrollmentClientImpl::ServerStateAvailabilityResult {
+enum class AutoEnrollmentClientImpl::ServerStateAvailabilitySuccess {
   // Indicates that request has been successful and server state availability is
   // known.
-  kSuccess = 0,
-  // Indicates a connection error during request.
-  kConnectionError = 1,
-  // Indicates an invalid response from server.
-  kServerError = 2,
+  kSuccess,
   // Special case for server state availability result via auto enrollment
   // request.
   // Indicates that request shall be immediately retried.
-  kAutoEnrollmentRetriableError = 3,
-  // Special case for server state availability result via PSM.
-  // Indicates an internal non-recoverable error.
-  kPsmInternalError = 4,
+  kRetry,
 };
 
 // Base class to handle server state availability requests.
@@ -256,25 +249,28 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
 
     base::UmaHistogramSparse(kUMAHashDanceRequestStatus + uma_suffix_,
                              result.dm_status);
-    // TODO(crbug.com/1312919): Check `result.dm_status` for specific errors.
+
     if (result.dm_status != DM_STATUS_SUCCESS) {
       LOG(ERROR) << "Auto enrollment error: " << result.dm_status;
-      if (result.dm_status == DM_STATUS_REQUEST_FAILED)
+
+      const auto error =
+          AutoEnrollmentDMServerError::FromDMServerJobResult(result);
+      if (error.network_error.has_value()) {
         base::UmaHistogramSparse(kUMAHashDanceNetworkErrorCode + uma_suffix_,
-                                 -result.net_error);
-      RunCallback(result.dm_status == DM_STATUS_REQUEST_FAILED
-                      ? ServerStateAvailabilityResult::kConnectionError
-                      : ServerStateAvailabilityResult::kServerError);
-      return;
+                                 -error.network_error.value());
+      }
+
+      return RunCallback(base::unexpected(error));
     }
 
     ServerStateAvailabilityResult availability_result =
-        ServerStateAvailabilityResult::kSuccess;
+        ServerStateAvailabilitySuccess::kSuccess;
     const em::DeviceAutoEnrollmentResponse& enrollment_response =
         result.response.auto_enrollment_response();
     if (!result.response.has_auto_enrollment_response()) {
       LOG(ERROR) << "Server failed to provide auto-enrollment response.";
-      availability_result = ServerStateAvailabilityResult::kServerError;
+      availability_result =
+          base::unexpected(AutoEnrollmentStateAvailabilityResponseError{});
     } else if (enrollment_response.has_expected_modulus()) {
       // Server is asking us to retry with a different modulus.
       modulus_updates_received_++;
@@ -285,18 +281,21 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
         LOG(ERROR) << "Auto enrollment: the server didn't ask for a power-of-2 "
                    << "modulus. Using the closest power-of-2 instead "
                    << "(" << modulus << " vs 2^" << power << ")";
-        availability_result = ServerStateAvailabilityResult::kServerError;
+        availability_result =
+            base::unexpected(AutoEnrollmentStateAvailabilityResponseError{});
       }
       if (modulus_updates_received_ >= 2) {
         LOG(ERROR) << "Auto enrollment error: already retried with an updated "
                    << "modulus but the server asked for a new one again: "
                    << power;
-        availability_result = ServerStateAvailabilityResult::kServerError;
+        availability_result =
+            base::unexpected(AutoEnrollmentStateAvailabilityResponseError{});
       } else if (power > power_limit_) {
         LOG(ERROR) << "Auto enrollment error: the server asked for a larger "
                    << "modulus than the client accepts (" << power << " vs "
                    << power_limit_ << ").";
-        availability_result = ServerStateAvailabilityResult::kServerError;
+        availability_result =
+            base::unexpected(AutoEnrollmentStateAvailabilityResponseError{});
       } else {
         // Retry at most once with the modulus that the server requested.
         if (power <= current_power_) {
@@ -308,8 +307,7 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
         // modulus.
         current_power_ = power;
         DCHECK(!GetServerStateIfObtained());
-        RunCallback(
-            ServerStateAvailabilityResult::kAutoEnrollmentRetriableError);
+        RunCallback(ServerStateAvailabilitySuccess::kRetry);
         return;
       }
     } else {
@@ -326,15 +324,15 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
       // preserved in the logs.
       LOG(WARNING) << "Received has_state=" << has_server_state;
 
-      availability_result = ServerStateAvailabilityResult::kSuccess;
+      availability_result = ServerStateAvailabilitySuccess::kSuccess;
       RecordHashDanceSuccessTimeHistogram();
     }
 
     const bool succeeded_with_result =
-        availability_result == ServerStateAvailabilityResult::kSuccess &&
+        availability_result == ServerStateAvailabilitySuccess::kSuccess &&
         GetServerStateIfObtained();
     const bool failed_without_result =
-        availability_result != ServerStateAvailabilityResult::kSuccess &&
+        availability_result != ServerStateAvailabilitySuccess::kSuccess &&
         !GetServerStateIfObtained();
     DCHECK(succeeded_with_result || failed_without_result);
 
@@ -489,31 +487,31 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
     UpdateLocalState(psm_result_holder);
 
     switch (psm_result_holder.psm_result) {
-      case psm::RlweResult::kConnectionError:
-        RunCallback(ServerStateAvailabilityResult::kConnectionError);
-        break;
-      case psm::RlweResult::kServerError:
-        RunCallback(ServerStateAvailabilityResult::kServerError);
-        break;
-
       case psm::RlweResult::kSuccessfulDetermination:
         DCHECK(GetServerStateIfObtained());
-        RunCallback(ServerStateAvailabilityResult::kSuccess);
+        RunCallback(ServerStateAvailabilitySuccess::kSuccess);
         break;
 
-      // At the moment, `AutoEnrollmentClientImpl` will not distinguish
-      // between any of the PSM errors (except for connection error, and server
-      // error) and will report final progress with given server state even if
-      // it's not available.
-      // TODO(crbug.com/1249792): Handle internal PSM Errors.
+      case psm::RlweResult::kConnectionError:
+        RunCallback(
+            base::unexpected(AutoEnrollmentLegacyError::kConnectionError));
+        break;
+      case psm::RlweResult::kServerError:
+        RunCallback(base::unexpected(AutoEnrollmentLegacyError::kServerError));
+        break;
+
+      case psm::RlweResult::kEmptyOprfResponseError:
+      case psm::RlweResult::kEmptyQueryResponseError:
+        RunCallback(
+            base::unexpected(AutoEnrollmentStateAvailabilityResponseError{}));
+        break;
+
       case psm::RlweResult::kCreateRlweClientLibraryError:
       case psm::RlweResult::kCreateOprfRequestLibraryError:
       case psm::RlweResult::kCreateQueryRequestLibraryError:
       case psm::RlweResult::kProcessingQueryResponseLibraryError:
-      case psm::RlweResult::kEmptyOprfResponseError:
-      case psm::RlweResult::kEmptyQueryResponseError:
         DCHECK(!GetServerStateIfObtained());
-        RunCallback(ServerStateAvailabilityResult::kPsmInternalError);
+        RunCallback(base::unexpected(AutoEnrollmentPsmError{}));
         break;
     }
   }
@@ -812,8 +810,7 @@ void AutoEnrollmentClientImpl::Retry() {
     case State::kRequestingStateRetrieval:
       break;
 
-    case State::kRequestServerStateAvailabilityConnectionError:
-    case State::kRequestServerStateAvailabilityServerError:
+    case State::kRequestServerStateAvailabilityError:
       RequestServerStateAvailability();
       break;
 
@@ -835,12 +832,12 @@ void AutoEnrollmentClientImpl::Retry() {
 
 void AutoEnrollmentClientImpl::RequestServerStateAvailability() {
   DCHECK(state_ == State::kIdle ||
-         state_ == State::kRequestServerStateAvailabilityConnectionError ||
-         state_ == State::kRequestServerStateAvailabilityServerError);
+         state_ == State::kRequestServerStateAvailabilityError);
   state_ = State::kRequestingServerStateAvailability;
 
   if (server_state_availability_requester_->GetServerStateIfObtained()) {
-    OnServerStateAvailabilityCompleted(ServerStateAvailabilityResult::kSuccess);
+    OnServerStateAvailabilityCompleted(
+        ServerStateAvailabilitySuccess::kSuccess);
     return;
   }
 
@@ -853,35 +850,35 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
     ServerStateAvailabilityResult result) {
   DCHECK(state_ == State::kRequestingServerStateAvailability);
 
-  switch (result) {
-    case ServerStateAvailabilityResult::kSuccess:
+  if (!result.has_value()) {
+    if (std::holds_alternative<AutoEnrollmentPsmError>(result.error())) {
+      // At the moment, `AutoEnrollmentClientImpl` will not distinguish
+      // between any of the PSM errors (except for connection error, and
+      // server error) and will report final progress with given server state
+      // even if it's not available.
+      DCHECK(!server_state_availability_requester_->GetServerStateIfObtained());
+      state_ = State::kFinished;
+      return ReportFinished();
+    }
+
+    state_ = State::kRequestServerStateAvailabilityError;
+    return ReportProgress(base::unexpected(result.error()));
+  }
+
+  switch (result.value()) {
+    case ServerStateAvailabilitySuccess::kSuccess:
       DCHECK(server_state_availability_requester_->GetServerStateIfObtained());
       if (server_state_availability_requester_->GetServerStateIfObtained()
               .value()) {
         state_ = State::kRequestServerStateAvailabilitySuccess;
-        RequestStateRetrieval();
+        return RequestStateRetrieval();
       } else {
         state_ = State::kFinished;
-        ReportFinished();
+        return ReportFinished();
       }
-      break;
-    case ServerStateAvailabilityResult::kConnectionError:
-      state_ = State::kRequestServerStateAvailabilityConnectionError;
-      ReportProgress(kAutoEnrollmentLegacyConnectionError);
-      break;
-    case ServerStateAvailabilityResult::kServerError:
-      state_ = State::kRequestServerStateAvailabilityServerError;
-      ReportProgress(kAutoEnrollmentLegacyServerError);
-      break;
-    case ServerStateAvailabilityResult::kAutoEnrollmentRetriableError:
-      state_ = State::kRequestServerStateAvailabilityServerError;
-      Retry();
-      break;
-    case ServerStateAvailabilityResult::kPsmInternalError:
-      DCHECK(!server_state_availability_requester_->GetServerStateIfObtained());
-      state_ = State::kFinished;
-      ReportFinished();
-      break;
+    case ServerStateAvailabilitySuccess::kRetry:
+      state_ = State::kRequestServerStateAvailabilityError;
+      return Retry();
   }
 }
 

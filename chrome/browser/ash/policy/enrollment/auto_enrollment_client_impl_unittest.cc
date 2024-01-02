@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_state.h"
 #include "chrome/browser/ash/policy/enrollment/psm/fake_rlwe_dmserver_client.h"
@@ -73,6 +74,11 @@ using ::testing::Mock;
 using ::testing::SaveArg;
 
 enum class AutoEnrollmentProtocol { kFRE = 0, kInitialEnrollment = 1 };
+
+template <typename Error>
+AutoEnrollmentState ToState(Error error) {
+  return base::unexpected(error);
+}
 
 class AutoEnrollmentClientImplBaseTest : public testing::Test {
  public:
@@ -549,7 +555,8 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkFailure) {
                                         /*dm_status_count=*/1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -586,7 +593,7 @@ TEST_F(AutoEnrollmentClientImplTest, EmptyAutoEnrollmentRespose) {
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -630,7 +637,8 @@ TEST_F(AutoEnrollmentClientImplTest, AskForMoreThenFail) {
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
   EXPECT_EQ(failed_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -652,7 +660,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForMoreThenEvenMore) {
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -731,7 +739,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForSameTwice) {
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -750,7 +758,7 @@ TEST_F(AutoEnrollmentClientImplTest, AskForTooMuch) {
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -770,7 +778,7 @@ TEST_F(AutoEnrollmentClientImplTest, ServerRepliesWithTooLargeModulus) {
 
   EXPECT_EQ(auto_enrollment_job_type_,
             DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 }
@@ -1160,7 +1168,8 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkChangeRetryAfterErrors) {
   // Don't invoke the callback if there was a network failure.
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 
@@ -1198,7 +1207,9 @@ TEST_F(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
   // Callback should signal the connection error.
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_REQUEST_FAILED,
+                        .network_error = net::ERR_FAILED}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
   Mock::VerifyAndClearExpectations(service_.get());
@@ -1316,7 +1327,10 @@ TEST_F(AutoEnrollmentClientImplTest,
   ExpectHashDanceNetworkErrorHistogram(-net::ERR_FAILED);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_REQUEST_FAILED,
+                        .network_error = net::ERR_FAILED,
+                    }));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 
@@ -1330,7 +1344,8 @@ TEST_F(AutoEnrollmentClientImplTest,
                                         /*dm_status_count=*/1);
   EXPECT_EQ(DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT,
             failed_job_type_);
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
   EXPECT_FALSE(HasCachedDecision());
   EXPECT_FALSE(HasServerBackedState());
 
@@ -1584,6 +1599,34 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
 
 TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterNetworkFailureForRlweQueryResponse) {
+  PsmWillReplyWith(psm::RlweResult::kConnectionError);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  const StateDiscoveryResult kExpectedStateResult =
+      StateDiscoveryResult::kFailure;
+  const PsmExecutionResult kExpectedPsmExecutionResult =
+      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify that PSM cached membership result hasn't changed.
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, kAutoEnrollmentLegacyConnectionError);
+}
+
+TEST_F(PsmHelperInitialEnrollmentTest,
+       RetryLogicAfterServerFailureForRlweQueryResponse) {
   PsmWillReplyWith(psm::RlweResult::kServerError);
 
   client()->Start();
@@ -1608,6 +1651,34 @@ TEST_F(PsmHelperInitialEnrollmentTest,
 
   // Verify initial enrollment state retrieval.
   EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+}
+
+TEST_F(PsmHelperInitialEnrollmentTest,
+       RetryLogicAfterInvalidResponseForRlweQueryResponse) {
+  PsmWillReplyWith(psm::RlweResult::kEmptyQueryResponseError);
+
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  const StateDiscoveryResult kExpectedStateResult =
+      StateDiscoveryResult::kFailure;
+  const PsmExecutionResult kExpectedPsmExecutionResult =
+      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify that PSM cached membership result hasn't changed.
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, ToState(AutoEnrollmentStateAvailabilityResponseError{}));
 }
 
 TEST_F(PsmHelperInitialEnrollmentTest,
@@ -1827,6 +1898,10 @@ class PsmHelperInitialEnrollmentInternalErrorTest
               psm::RlweResult::kSuccessfulDetermination);
     ASSERT_NE(GetPsmInternalErrorResult(), psm::RlweResult::kConnectionError);
     ASSERT_NE(GetPsmInternalErrorResult(), psm::RlweResult::kServerError);
+    ASSERT_NE(GetPsmInternalErrorResult(),
+              psm::RlweResult::kEmptyOprfResponseError);
+    ASSERT_NE(GetPsmInternalErrorResult(),
+              psm::RlweResult::kEmptyQueryResponseError);
 
     PsmHelperInitialEnrollmentTest::SetUp();
   }
@@ -1870,9 +1945,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn({psm::RlweResult::kCreateRlweClientLibraryError,
                        psm::RlweResult::kCreateOprfRequestLibraryError,
                        psm::RlweResult::kCreateQueryRequestLibraryError,
-                       psm::RlweResult::kProcessingQueryResponseLibraryError,
-                       psm::RlweResult::kEmptyOprfResponseError,
-                       psm::RlweResult::kEmptyQueryResponseError}));
+                       psm::RlweResult::kProcessingQueryResponseLibraryError}));
 
 }  // namespace
 }  // namespace policy
