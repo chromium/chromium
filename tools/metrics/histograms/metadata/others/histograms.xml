@@ -11435,7 +11435,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebShare.ShareOutcome" enum="WebShareOutcome"
-    expires_after="M85">
+    expires_after="2024-12-01">
   <owner>mgiuca@chromium.org</owner>
   <summary>
     Records the outcome of calls to navigator.share. This will not count any
