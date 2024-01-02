@@ -1414,20 +1414,32 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     return;
   }
 
-  if (IsFedCmAddAccountEnabled()) {
-    // This map may have contents already if we came here through the "Add
-    // Account" flow.
-    idp_data_for_display_.clear();
-  } else {
-    CHECK(idp_data_for_display_.empty());
-  }
+  // This map may have contents already if we came here through the "Add
+  // Account" flow or the IDP login mismatch in multiple IDP case.
+  idp_data_for_display_.clear();
 
+  // We temporarily store IDPs with accounts on a separate vector to ensure that
+  // IDPs with login status mismatch are listed first.
+  std::vector<IdentityProviderData> idps_with_accounts;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      idp_data_for_display_.push_back(*idp_info_it->second->data);
+      if (idp_info_it->second->data->has_login_status_mismatch) {
+        // Append to `idp_data_for_display_` right away: IDPs with login status
+        // mismatch should go first in the list, before IDPs with accounts.
+        DCHECK(idp_info_it->second->data->accounts.empty());
+        idp_data_for_display_.push_back(*idp_info_it->second->data);
+      } else {
+        // Append to `idps_with_accounts`, which will later be appended to
+        // `idp_data_for_display_`.
+        DCHECK(!idp_info_it->second->data->accounts.empty());
+        idps_with_accounts.push_back(*idp_info_it->second->data);
+      }
     }
   }
+  std::move(idps_with_accounts.begin(), idps_with_accounts.end(),
+            std::back_inserter(idp_data_for_display_));
+  idps_with_accounts.clear();
 
   // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
@@ -1463,7 +1475,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
     // Auto signs in returning users if they have a single returning account and
     // are signing in.
     has_single_returning_account =
-        GetSingleReturningAccount(&auto_reauthn_idp, &auto_reauthn_account);
+        GetAccountForAutoReauthn(&auto_reauthn_idp, &auto_reauthn_account);
     if (dialog_type_ == kAutoReauth &&
         (requires_user_mediation || !is_auto_reauthn_setting_enabled ||
          is_auto_reauthn_embargoed || !has_single_returning_account)) {
@@ -2692,10 +2704,16 @@ void FederatedAuthRequestImpl::DismissErrorDialogForDevtools() {
                        IdentityRequestDialogController::DismissReason::kOther);
 }
 
-bool FederatedAuthRequestImpl::GetSingleReturningAccount(
+bool FederatedAuthRequestImpl::GetAccountForAutoReauthn(
     const IdentityProviderData** out_idp_data,
     const IdentityRequestAccount** out_account) {
   for (const auto& idp_info : idp_infos_) {
+    if (idp_info.second->data->has_login_status_mismatch) {
+      // If we need to show IDP login status mismatch UI, we cannot
+      // auto-reauthenticate a user even if there really is a single returning
+      // account.
+      return false;
+    }
     for (const auto& account : idp_info.second->data->accounts) {
       if (account.login_state == LoginState::kSignUp) {
         continue;

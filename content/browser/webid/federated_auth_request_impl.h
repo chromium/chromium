@@ -359,8 +359,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Returns true and the `IdentityProviderData` + `IdentityRequestAccount` for
   // the only returning account. Returns false if there are multiple returning
   // accounts or no returning account.
-  bool GetSingleReturningAccount(const IdentityProviderData** out_idp_data,
-                                 const IdentityRequestAccount** out_account);
+  bool GetAccountForAutoReauthn(const IdentityProviderData** out_idp_data,
+                                const IdentityRequestAccount** out_account);
 
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
