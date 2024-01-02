@@ -152,7 +152,7 @@ void TranslateUIDelegate::GetContentLanguagesCodes(
 }
 
 void TranslateUIDelegate::Translate() {
-  if (!GetTranslateDriver().IsIncognito()) {
+  if (!IsIncognito()) {
     prefs_->ResetTranslationDeniedCount(
         translate_ui_languages_manager_->GetSourceLanguageCode());
     prefs_->ResetTranslationIgnoredCount(
@@ -183,7 +183,7 @@ void TranslateUIDelegate::RevertTranslation() {
 }
 
 void TranslateUIDelegate::TranslationDeclined(bool explicitly_closed) {
-  if (!GetTranslateDriver().IsIncognito()) {
+  if (!IsIncognito()) {
     const std::string& language =
         translate_ui_languages_manager_->GetSourceLanguageCode();
     if (explicitly_closed) {
@@ -308,14 +308,14 @@ bool TranslateUIDelegate::ShouldAlwaysTranslateBeCheckedByDefault() const {
 }
 
 bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
-  return !GetTranslateDriver().IsIncognito() &&
+  return !IsIncognito() &&
          prefs_->GetTranslationAcceptedCount(
              translate_ui_languages_manager_->GetSourceLanguageCode()) >=
              kAlwaysTranslateShortcutMinimumAccepts;
 }
 
 bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {
-  return !GetTranslateDriver().IsIncognito() &&
+  return !IsIncognito() &&
          prefs_->GetTranslationDeniedCount(
              translate_ui_languages_manager_->GetSourceLanguageCode()) >=
              kNeverTranslateShortcutMinimumDenials;
@@ -349,11 +349,8 @@ void TranslateUIDelegate::MaybeSetContentLanguages() {
 }
 
 bool TranslateUIDelegate::IsIncognito() const {
-  if (!translate_manager_)
-    return false;
-  TranslateClient* client = translate_manager_->translate_client();
-  TranslateDriver* driver = client->GetTranslateDriver();
-  return driver ? driver->IsIncognito() : false;
+  const TranslateDriver* translate_driver = GetTranslateDriver();
+  return translate_driver && translate_driver->IsIncognito();
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -420,19 +417,16 @@ bool TranslateUIDelegate::ShouldAutoNeverTranslate() {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 std::string TranslateUIDelegate::GetPageHost() const {
-  const auto& translate_driver = GetTranslateDriver();
-  if (!translate_driver.HasCurrentPage()) {
-    return std::string();
-  }
-  return translate_driver.GetLastCommittedURL().HostNoBrackets();
+  const TranslateDriver* translate_driver = GetTranslateDriver();
+  return translate_driver && translate_driver->HasCurrentPage()
+             ? translate_driver->GetLastCommittedURL().HostNoBrackets()
+             : std::string();
 }
 
-const TranslateDriver& TranslateUIDelegate::GetTranslateDriver() const {
-  // The translate client should always return a valid driver when needed.
-  TranslateDriver* translate_driver =
-      translate_manager_->translate_client()->GetTranslateDriver();
-  CHECK(translate_driver);
-  return *translate_driver;
+const TranslateDriver* TranslateUIDelegate::GetTranslateDriver() const {
+  return translate_manager_ && translate_manager_->translate_client()
+             ? translate_manager_->translate_client()->GetTranslateDriver()
+             : nullptr;
 }
 
 }  // namespace translate

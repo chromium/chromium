@@ -154,7 +154,7 @@ class TranslateUIDelegate {
   // associated with the current page.
   std::string GetPageHost() const;
 
-  const TranslateDriver& GetTranslateDriver() const;
+  const TranslateDriver* GetTranslateDriver() const;
 
   base::WeakPtr<TranslateManager> translate_manager_;
 
