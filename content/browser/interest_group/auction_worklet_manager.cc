@@ -333,9 +333,10 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned() {
   mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handler;
   RenderFrameHostImpl* const rfh = delegate->GetFrame();
+  worklet_manager_->auction_network_events_proxy_->Clone(
+      auction_network_events_handler.InitWithNewPipeAndPassReceiver());
   url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
       url_loader_factory.InitWithNewPipeAndPassReceiver(),
-      auction_network_events_handler.InitWithNewPipeAndPassReceiver(),
       base::BindRepeating(&Delegate::GetFrameURLLoaderFactory,
                           base::Unretained(delegate)),
       base::BindRepeating(&Delegate::GetTrustedURLLoaderFactory,
@@ -598,7 +599,9 @@ AuctionWorkletManager::AuctionWorkletManager(
     : auction_process_manager_(auction_process_manager),
       top_window_origin_(std::move(top_window_origin)),
       frame_origin_(std::move(frame_origin)),
-      delegate_(delegate) {
+      delegate_(delegate),
+      auction_network_events_proxy_(
+          std::make_unique<AuctionNetworkEventsProxy>(GetFrameTreeNodeID())) {
   if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPI)) {
     auction_shared_storage_host_ = std::make_unique<AuctionSharedStorageHost>(
         static_cast<StoragePartitionImpl*>(

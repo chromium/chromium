@@ -58,8 +58,6 @@ net::IsolationInfo CreateBidderIsolationInfo(const url::Origin& bidder_origin) {
 
 AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver,
-    mojo::PendingReceiver<auction_worklet::mojom::AuctionNetworkEventsHandler>
-        auction_network_events_handler,
     GetUrlLoaderFactoryCallback get_frame_url_loader_factory,
     GetUrlLoaderFactoryCallback get_trusted_url_loader_factory,
     PreconnectSocketCallback preconnect_socket_callback,
@@ -94,7 +92,6 @@ AuctionURLLoaderFactoryProxy::AuctionURLLoaderFactoryProxy(
       wasm_url_(wasm_url),
       trusted_signals_base_url_(trusted_signals_base_url),
       needs_cors_for_additional_bid_(needs_cors_for_additional_bid) {
-  Clone(std::move(auction_network_events_handler));
   DCHECK(client_security_state_);
   if (trusted_signals_base_url_) {
     std::move(preconnect_socket_callback)
@@ -306,7 +303,13 @@ void AuctionURLLoaderFactoryProxy::Clone(
   NOTREACHED();
 }
 
-void AuctionURLLoaderFactoryProxy::Clone(
+AuctionNetworkEventsProxy::AuctionNetworkEventsProxy(
+    int owner_frame_tree_node_id)
+    : owner_frame_tree_node_id_(owner_frame_tree_node_id) {}
+
+AuctionNetworkEventsProxy::~AuctionNetworkEventsProxy() = default;
+
+void AuctionNetworkEventsProxy::Clone(
     mojo::PendingReceiver<auction_worklet::mojom::AuctionNetworkEventsHandler>
         receiver) {
   if (receiver.is_valid()) {
@@ -314,13 +317,13 @@ void AuctionURLLoaderFactoryProxy::Clone(
   }
 }
 
-void AuctionURLLoaderFactoryProxy::OnNetworkSendRequest(
+void AuctionNetworkEventsProxy::OnNetworkSendRequest(
     const ::network::ResourceRequest& request,
     ::base::TimeTicks timestamp) {
   devtools_instrumentation::OnAuctionWorkletNetworkRequestWillBeSent(
       owner_frame_tree_node_id_, request, timestamp);
 }
-void AuctionURLLoaderFactoryProxy::OnNetworkResponseReceived(
+void AuctionNetworkEventsProxy::OnNetworkResponseReceived(
     const std::string& request_id,
     const std::string& loader_id,
     const ::GURL& request_url,
@@ -328,7 +331,7 @@ void AuctionURLLoaderFactoryProxy::OnNetworkResponseReceived(
   devtools_instrumentation::OnAuctionWorkletNetworkResponseReceived(
       owner_frame_tree_node_id_, request_id, loader_id, request_url, *headers);
 }
-void AuctionURLLoaderFactoryProxy::OnNetworkRequestComplete(
+void AuctionNetworkEventsProxy::OnNetworkRequestComplete(
     const std::string& request_id,
     const ::network::URLLoaderCompletionStatus& status) {
   devtools_instrumentation::OnAuctionWorkletNetworkRequestComplete(

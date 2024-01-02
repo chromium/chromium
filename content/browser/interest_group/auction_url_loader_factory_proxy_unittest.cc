@@ -123,7 +123,6 @@ class AuctionUrlLoaderFactoryProxyTest : public testing::Test {
     remote_url_loader_factory_.reset();
     url_loader_factory_proxy_ = std::make_unique<AuctionURLLoaderFactoryProxy>(
         remote_url_loader_factory_.BindNewPipeAndPassReceiver(),
-        /*auction_network_events_handler=*/mojo::NullReceiver(),
         base::BindRepeating(
             [](network::mojom::URLLoaderFactory* factory) { return factory; },
             &frame_url_loader_factory_),

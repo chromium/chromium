@@ -36,6 +36,7 @@ class NetworkAnonymizationKey;
 namespace content {
 
 class AuctionSharedStorageHost;
+class AuctionNetworkEventsProxy;
 class RenderFrameHostImpl;
 class SiteInstance;
 class SubresourceUrlAuthorizations;
@@ -309,6 +310,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   const url::Origin frame_origin_;
   raw_ptr<Delegate> const delegate_;
 
+  std::unique_ptr<AuctionNetworkEventsProxy> auction_network_events_proxy_;
   std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
   std::map<WorkletKey, WorkletOwner*> worklets_;
