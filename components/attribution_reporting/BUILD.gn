@@ -71,6 +71,8 @@ component("attribution_reporting") {
     "source_type.h",
     "suitable_origin.cc",
     "suitable_origin.h",
+    "summary_buckets.cc",
+    "summary_buckets.h",
     "trigger_config.cc",
     "trigger_config.h",
     "trigger_registration.cc",
@@ -129,6 +131,7 @@ source_set("unit_tests") {
     "parsing_utils_unittest.cc",
     "source_registration_unittest.cc",
     "suitable_origin_unittest.cc",
+    "summary_buckets_unittest.cc",
     "trigger_config_unittest.cc",
     "trigger_registration_unittest.cc",
   ]
