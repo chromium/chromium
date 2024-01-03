@@ -592,6 +592,10 @@
   E_CPONLY(kColorTabSearchCardBackground) \
   E_CPONLY(kColorTabSearchBackground) \
   E_CPONLY(kColorTabSearchDivider) \
+  E_CPONLY(kColorTabSearchImageTabContentBottom) \
+  E_CPONLY(kColorTabSearchImageTabContentTop) \
+  E_CPONLY(kColorTabSearchImageTabText) \
+  E_CPONLY(kColorTabSearchImageWindowFrame) \
   E_CPONLY(kColorTabSearchMediaIcon) \
   E_CPONLY(kColorTabSearchMediaRecordingIcon) \
   E_CPONLY(kColorTabSearchPrimaryForeground) \
