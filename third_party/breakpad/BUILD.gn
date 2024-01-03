@@ -83,6 +83,13 @@ if (!is_win) {
   if (current_toolchain == host_toolchain || target_os == "mac") {
     # Contains the code shared by both {micro,mini}dump_stackwalk.
     static_library("stackwalk_common") {
+      # Binaries that use this library are not debugged frequently and
+      # performance is vastly reduced without optimizations. So, force maximum
+      # optimization to get the lowest runtimes in Chromium tests that use these
+      # tools. These can be removed locally if debugging is actually needed.
+      configs -= [ "//build/config/compiler:default_optimization" ]
+      configs += [ "//build/config/compiler:optimize_max" ]
+
       sources = [
         "breakpad/src/common/path_helper.cc",
         "breakpad/src/common/path_helper.h",
