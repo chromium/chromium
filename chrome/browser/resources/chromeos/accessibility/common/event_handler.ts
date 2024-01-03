@@ -2,65 +2,70 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const AutomationEvent = chrome.automation.AutomationEvent;
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationEvent = chrome.automation.AutomationEvent;
+type AutomationNode = chrome.automation.AutomationNode;
+import EventType = chrome.automation.EventType;
+
+interface EventHandlerOptions {
+  /**
+   * Whether to ignore events where the target is not the provided node.
+   */
+  exactMatch?: boolean;
+
+  /**
+   * True if the event should be processed before it has reached the target
+   * node, false if it should be processed after.
+   */
+  capture?: boolean;
+
+  /**
+   * True if the event listeners should automatically be removed when the
+   * callback is called once.
+   */
+  listenOnce?: boolean;
+
+  /**
+   * A predicate for what events will be processed.
+   */
+  predicate?: (event: AutomationEvent) => boolean;
+}
 
 /**
  * This class wraps AutomationNode event listeners, adding some convenience
  * functions.
  */
 export class EventHandler {
-  /**
-   * @param {!AutomationNode | !Array<!AutomationNode>} nodes
-   * @param {!chrome.automation.EventType |
-   *     !Array<!chrome.automation.EventType>} types
-   * @param {?function(!AutomationEvent)} callback
-   * @param {{capture: (boolean|undefined), exactMatch: (boolean|undefined),
-   *     listenOnce: (boolean|undefined), predicate:
-   *     ((function(AutomationEvent): boolean)|undefined)}}
-   *     options
-   *   exactMatch Whether to ignore events where the target is not the provided
-   *       node.
-   *   capture True if the event should be processed before it has reached the
-   *       target node, false if it should be processed after.
-   *   listenOnce True if the event listeners should automatically be removed
-   *       when the callback is called once.
-   *   predicate A predicate for what events will be processed.
-   */
-  constructor(nodes, types, callback, options = {}) {
-    /** @private {!Array<!AutomationNode>} */
+  private nodes_: AutomationNode[];
+  private types_: EventType[];
+  private callback_: ((event: AutomationEvent) => void)|null;
+  private capture_: boolean;
+  private exactMatch_: boolean;
+  private listenOnce_: boolean;
+  private listening_ = false;
+  private predicate_: (event: AutomationEvent) => boolean;
+  private handler_: (event: AutomationEvent) => void;
+
+  constructor(
+      nodes: AutomationNode|AutomationNode[], types: EventType|EventType[],
+      callback: (event: AutomationEvent) => void,
+      options: EventHandlerOptions = {}) {
     this.nodes_ = nodes instanceof Array ? nodes : [nodes];
-
-    /** @private {!Array<!chrome.automation.EventType>} */
     this.types_ = types instanceof Array ? types : [types];
-
-    /** @private {?function(!AutomationEvent)} */
     this.callback_ = callback;
-
-    /** @private {boolean} */
     this.capture_ = options.capture || false;
-
-    /** @private {boolean} */
     this.exactMatch_ = options.exactMatch || false;
-
-    /** @private {boolean} */
     this.listenOnce_ = options.listenOnce || false;
 
     /**
      * Default is a function that always returns true.
-     * @private {!function(AutomationEvent): boolean}
      */
-    this.predicate_ = options.predicate || (e => true);
+    this.predicate_ = options.predicate || (_e => true);
 
-    /** @private {boolean} */
-    this.listening_ = false;
-
-    /** @private {!function(AutomationEvent)} */
     this.handler_ = event => this.handleEvent_(event);
   }
 
   /** Starts listening to events. */
-  start() {
+  start(): void {
     if (this.listening_) {
       return;
     }
@@ -74,7 +79,7 @@ export class EventHandler {
   }
 
   /** Stops listening or handling future events. */
-  stop() {
+  stop(): void {
     for (const node of this.nodes_) {
       for (const type of this.types_) {
         node.removeEventListener(type, this.handler_, this.capture_);
@@ -84,25 +89,23 @@ export class EventHandler {
   }
 
   /**
-   * @return {boolean} Whether this EventHandler is currently listening for
-   *     events.
+   * @return Whether this EventHandler is currently listening for events.
    */
-  listening() {
+  listening(): boolean {
     return this.listening_;
   }
 
-  /** @param {?function(!AutomationEvent)} callback */
-  setCallback(callback) {
+  setCallback(callback: ((event: AutomationEvent) => void)|null): void {
     this.callback_ = callback;
   }
 
   /**
    * Changes what nodes are being listened to. Removes listeners from existing
    *     nodes before adding listeners on new nodes.
-   * @param {!AutomationNode | !Array<!AutomationNode>} nodes
    */
-  setNodes(nodes) {
+  setNodes(nodes: AutomationNode|AutomationNode[]): void {
     const wasListening = this.listening_;
+    // TODO(b/318557827): Shouldn't this be: if (wasListening) this.stop()?
     this.stop();
     this.nodes_ = nodes instanceof Array ? nodes : [nodes];
     if (wasListening) {
@@ -112,9 +115,8 @@ export class EventHandler {
 
   /**
    * Adds another node to the set of nodes being listened to.
-   * @param {!AutomationNode} node
    */
-  addNode(node) {
+  addNode(node: AutomationNode): void {
     this.nodes_.push(node);
 
     if (this.listening_) {
@@ -126,9 +128,8 @@ export class EventHandler {
 
   /**
    * Removes a specific node from the set of nodes being listened to.
-   * @param {!AutomationNode} node
    */
-  removeNode(node) {
+  removeNode(node: AutomationNode): void {
     this.nodes_ = this.nodes_.filter(n => n !== node);
 
     if (this.listening_) {
@@ -138,8 +139,7 @@ export class EventHandler {
     }
   }
 
-  /** @private */
-  handleEvent_(event) {
+  private handleEvent_(event: AutomationEvent): void {
     if (this.exactMatch_ && !this.nodes_.includes(event.target)) {
       return;
     }
