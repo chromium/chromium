@@ -106,7 +106,6 @@ presubmit_builder(
                     "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_linux.cfg",
                     "buildtools/reclient_cfgs/chromium-browser-clang/rewrapper_windows.cfg",
                     "buildtools/reclient_cfgs/nacl/rewrapper_linux.cfg",
-                    "buildtools/reclient_cfgs/nacl/rewrapper_windows.cfg",
                 ],
             },
         ],
