@@ -347,7 +347,7 @@ TEST_P(AppListViewLauncherSearchIphTest, Basic) {
 
   UseFixedPlaceholderTextAndHideCursor(search_box_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "launcher_search_iph", /*revision_number=*/3, search_box_view));
+      "launcher_search_iph", /*revision_number=*/4, search_box_view));
 }
 
 class AppListViewTabletPixelTest
