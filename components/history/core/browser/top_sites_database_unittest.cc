@@ -167,7 +167,7 @@ TEST_F(TopSitesDatabaseTest, Recovery1) {
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
-      ASSERT_TRUE(raw_db.Open(file_name_));
+      ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
@@ -202,7 +202,7 @@ TEST_F(TopSitesDatabaseTest, Recovery2) {
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
-      ASSERT_TRUE(raw_db.Open(file_name_));
+      ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));
@@ -235,7 +235,7 @@ TEST_F(TopSitesDatabaseTest, Recovery4_CorruptHeader) {
     {
       sql::test::ScopedErrorExpecter expecter;
       expecter.ExpectError(SQLITE_CORRUPT);
-      ASSERT_TRUE(raw_db.Open(file_name_));
+      ASSERT_FALSE(raw_db.Open(file_name_));
       EXPECT_TRUE(expecter.SawExpectedErrors());
     }
     EXPECT_EQ("ok", sql::test::IntegrityCheck(raw_db));

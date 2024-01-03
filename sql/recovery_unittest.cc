@@ -508,7 +508,7 @@ TEST_P(SqlRecoveryTest, RecoverCorruptTable) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
     EXPECT_TRUE(expecter.SawExpectedErrors());
     // PRAGMAs executed inside Database::Open() will error out.
   }
@@ -1141,6 +1141,21 @@ TEST_P(SqlRecoveryTest, RecoverIfPossibleMeta) {
                       std::move(run_recovery));
 }
 
+TEST_P(SqlRecoveryTest, RecoverIfPossibleWithoutErrorCallback) {
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    // `RecoverIfPossible()` should not set an error callback.
+    EXPECT_FALSE(db_.has_error_callback());
+    bool recovery_was_attempted = BuiltInRecovery::RecoverIfPossible(
+        &db_, SQLITE_CORRUPT,
+        BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze);
+    EXPECT_TRUE(recovery_was_attempted);
+    EXPECT_FALSE(db_.has_error_callback());
+  });
+
+  TestRecoverDatabase(db_, db_path_, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
 TEST_P(SqlRecoveryTest, RecoverIfPossibleWithErrorCallback) {
   auto run_recovery = base::BindLambdaForTesting([&]() {
     db_.set_error_callback(base::DoNothing());
@@ -1266,7 +1281,7 @@ TEST_P(SqlRecoveryTest, RecoverDatabaseDelete) {
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
 
     // This should "recover" the database by making it valid, but empty.
     if (UseBuiltIn()) {
@@ -1365,7 +1380,7 @@ TEST_P(SqlRecoveryTest, AttachFailure) {
     expecter.ExpectError(SQLITE_NOTADB);
 
     // Reopen() here because it will see SQLITE_NOTADB.
-    ASSERT_TRUE(Reopen());
+    ASSERT_FALSE(Reopen());
 
     // Begin() should fail.
     if (UseBuiltIn()) {

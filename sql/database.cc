@@ -338,7 +338,18 @@ bool Database::Open(const base::FilePath& path) {
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
 
-  return OpenInternal(path_string, OpenMode::kRetryOnPoision);
+  if (OpenInternal(path_string, OpenMode::kNone)) {
+    return true;
+  }
+  // OpenInternal() may have run the error callback before returning false. If
+  // the error callback poisoned `this`, the database may have been recovered or
+  // razed, so a second attempt may succeed.
+  if (poisoned_) {
+    Close();
+    return OpenInternal(path_string, OpenMode::kNone);
+  }
+  // Otherwise, do not attempt to reopen.
+  return false;
 }
 
 bool Database::OpenInMemory() {
@@ -1837,7 +1848,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
   std::string uri_file_path = db_file_path;
   if (options_.exclusive_database_file_lock) {
 #if BUILDFLAG(IS_WIN)
-    if (mode == OpenMode::kNone || mode == OpenMode::kRetryOnPoision) {
+    if (mode == OpenMode::kNone) {
       // Do not allow query injection.
       if (base::Contains(db_file_path, '?')) {
         return false;
@@ -1867,11 +1878,6 @@ bool Database::OpenInternal(const std::string& db_file_path,
 
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_open_v2()");
-    bool was_poisoned = poisoned_;
-    Close();
-
-    if (was_poisoned && mode == OpenMode::kRetryOnPoision)
-      return OpenInternal(db_file_path, OpenMode::kNone);
     return false;
   }
 
@@ -1915,16 +1921,7 @@ bool Database::OpenInternal(const std::string& db_file_path,
   if (sqlite_result_code != SqliteResultCode::kOk) {
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_table_column_metadata()");
-
-    // Retry or bail out if the error handler poisoned the handle.
-    // TODO(shess): Move this handling to one place (see also sqlite3_open).
-    //              Possibly a wrapper function?
-    if (poisoned_) {
-      Close();
-      if (mode == OpenMode::kRetryOnPoision)
-        return OpenInternal(db_file_path, OpenMode::kNone);
-      return false;
-    }
+    return false;
   }
 
   const base::TimeDelta kBusyTimeout = base::Seconds(kBusyTimeoutSeconds);

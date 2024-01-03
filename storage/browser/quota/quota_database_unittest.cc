@@ -985,7 +985,7 @@ TEST_F(QuotaDatabaseTest, OpenCorruptedDatabase) {
 
   histograms.ExpectTotalCount("Quota.QuotaDatabaseReset", 1);
   histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
-                               DatabaseResetReason::kCreateSchema, 1);
+                               DatabaseResetReason::kOpenDatabase, 1);
 }
 
 TEST_F(QuotaDatabaseTest, QuotaDatabasePathMigration) {

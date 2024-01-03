@@ -6,7 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <cstdint>
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/files/file.h"
@@ -27,6 +31,7 @@
 #include "build/build_config.h"
 #include "sql/database_memory_dump_provider.h"
 #include "sql/meta_table.h"
+#include "sql/recovery.h"
 #include "sql/sql_features.h"
 #include "sql/statement.h"
 #include "sql/test/database_test_peer.h"
@@ -99,10 +104,22 @@ class SQLDatabaseTest : public testing::Test,
   ~SQLDatabaseTest() override = default;
 
   void SetUp() override {
-    db_ = std::make_unique<Database>(GetDBOptions());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_path_ = temp_dir_.GetPath().AppendASCII("database_test.sqlite");
+    CreateFreshDB();
+  }
+
+  // Resets the database handle and deletes the backing file. On return, `db_`
+  // has just been opened on a fresh temp file named by `db_path_`.
+  void CreateFreshDB() {
+    ASSERT_FALSE(db_path_.empty());
+
+    db_.reset();
+    ASSERT_TRUE(base::DeleteFile(db_path_));
+
+    db_ = std::make_unique<Database>(GetDBOptions());
     ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_TRUE(base::PathExists(db_path_));
   }
 
   DatabaseOptions GetDBOptions() {
@@ -402,7 +419,7 @@ TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_FALSE(db_->Open(db_path_));
     ASSERT_FALSE(db_->DoesTableExist("bar"));
     ASSERT_FALSE(db_->DoesTableExist("foo"));
     ASSERT_FALSE(db_->DoesColumnExist("foo", "id"));
@@ -972,7 +989,7 @@ TEST_P(SQLDatabaseTest, RazeNOTADB) {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
 
-    EXPECT_TRUE(db_->Open(db_path_));
+    EXPECT_FALSE(db_->Open(db_path_));
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
   EXPECT_TRUE(db_->Raze());
@@ -998,7 +1015,7 @@ TEST_P(SQLDatabaseTest, RazeNOTADB2) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_NOTADB);
-    EXPECT_TRUE(db_->Open(db_path_));
+    EXPECT_FALSE(db_->Open(db_path_));
     ASSERT_TRUE(expecter.SawExpectedErrors());
   }
   EXPECT_TRUE(db_->Raze());
@@ -1027,7 +1044,7 @@ TEST_P(SQLDatabaseTest, RazeCallbackReopen) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_FALSE(db_->Open(db_path_));
     ASSERT_FALSE(db_->Execute("PRAGMA auto_vacuum"));
     db_->Close();
     ASSERT_TRUE(expecter.SawExpectedErrors());
@@ -2141,8 +2158,50 @@ TEST_P(SQLDatabaseTest, OpenFailsAfterCorruptSizeInHeader) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_FALSE(db_->Open(db_path_));
     EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+}
+
+TEST_P(SQLDatabaseTest, OpenWithRecoveryHandlesCorruption) {
+  for (const bool corrupt_after_recovery : {false, true}) {
+    SCOPED_TRACE(::testing::Message()
+                 << "corrupt_after_recovery: " << corrupt_after_recovery);
+    // Ensure that `db_` is fresh in this iteration.
+    CreateFreshDB();
+    // The database file ends up empty if we don't create at least one table.
+    ASSERT_TRUE(
+        db_->Execute("CREATE TABLE rows(i INTEGER PRIMARY KEY NOT NULL)"));
+    db_->Close();
+
+    ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
+
+    size_t error_count = 0;
+    auto callback = base::BindLambdaForTesting([&](int error, Statement* stmt) {
+      error_count++;
+      ASSERT_TRUE(BuiltInRecovery::RecoverIfPossible(
+          db_.get(), error, sql::BuiltInRecovery::Strategy::kRecoverOrRaze));
+      if (corrupt_after_recovery) {
+        // Corrupt the file again after temporarily recovering it.
+        ASSERT_TRUE(sql::test::CorruptSizeInHeader(db_path_));
+      }
+    });
+    db_->set_error_callback(std::move(callback));
+
+    {
+      sql::test::ScopedErrorExpecter expecter;
+      expecter.ExpectError(SQLITE_CORRUPT);
+
+      // When `corrupt_after_recovery` is true, `Database::Open()` will return
+      // false because both attempts at opening the database will fail. When the
+      // database is *not* corrupted after recovery, recovery will succeed and
+      // thus `Database::Open()`'s second attempt at opening the database will
+      // succeed.
+      ASSERT_EQ(db_->Open(db_path_), !corrupt_after_recovery);
+      EXPECT_TRUE(expecter.SawExpectedErrors());
+    }
+    EXPECT_EQ(error_count, 1u);
+    EXPECT_FALSE(db_->has_error_callback());
   }
 }
 
@@ -2158,7 +2217,7 @@ TEST_P(SQLDatabaseTest, ExecuteFailsAfterCorruptSizeInHeader) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_FALSE(db_->Open(db_path_));
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }
@@ -2182,7 +2241,7 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   {
     sql::test::ScopedErrorExpecter expecter;
     expecter.ExpectError(SQLITE_CORRUPT);
-    ASSERT_TRUE(db_->Open(db_path_));
+    ASSERT_FALSE(db_->Open(db_path_));
     EXPECT_TRUE(expecter.SawExpectedErrors())
         << "Database::Open() did not encounter SQLITE_CORRUPT";
   }

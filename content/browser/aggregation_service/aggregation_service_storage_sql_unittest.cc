@@ -1126,7 +1126,7 @@ TEST_F(AggregationServiceStorageSqlTest,
       "PrivacySandbox.AggregationService.Storage.Sql.Error",
       base::checked_cast<base::HistogramBase::Sample>(
           sql::SqliteLoggedResultCode::kCorrupt),
-      /*expected_bucket_count=*/6);
+      /*expected_bucket_count=*/1);
 
   CloseDatabase();
 }
