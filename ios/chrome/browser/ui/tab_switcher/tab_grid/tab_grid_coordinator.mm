@@ -357,8 +357,8 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)setActivePage:(TabGridPage)page {
   DCHECK(page != TabGridPageRemoteTabs);
-  self.baseViewController.activePage = page;
   [_mediator setPage:page];
+  self.baseViewController.activePage = page;
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
