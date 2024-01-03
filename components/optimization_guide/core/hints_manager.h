@@ -519,7 +519,7 @@ class HintsManager : public OptimizationHintsComponentObserver,
   std::unique_ptr<HintsFetcherFactory> hints_fetcher_factory_;
 
   // The top host provider that can be queried. Not owned.
-  raw_ptr<TopHostProvider, DanglingUntriaged> top_host_provider_ = nullptr;
+  raw_ptr<TopHostProvider> top_host_provider_ = nullptr;
 
   // The tab URL provider that can be queried. Not owned.
   raw_ptr<TabUrlProvider> tab_url_provider_ = nullptr;
