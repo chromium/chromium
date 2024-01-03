@@ -4,11 +4,9 @@
 
 #include "ash/birch/birch_model.h"
 
+#include "ash/birch/birch_item.h"
+
 namespace ash {
-
-BirchItem::BirchItem(const std::string& title) : title_(title) {}
-
-BirchItem::~BirchItem() = default;
 
 BirchModel::BirchModel() = default;
 
@@ -22,8 +20,14 @@ void BirchModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void BirchModel::AddItem(std::unique_ptr<BirchItem> item) {
-  items_.push_back(std::move(item));
+void BirchModel::SetFileSuggestItems(
+    std::vector<BirchFileItem> file_suggest_items) {
+  // Return early if there are no changes to the file suggest items.
+  if (file_suggest_items == file_suggest_items_) {
+    return;
+  }
+
+  file_suggest_items_ = std::move(file_suggest_items);
 
   for (auto& observer : observers_) {
     observer.OnItemsChanged();
