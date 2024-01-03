@@ -24,6 +24,9 @@
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kHatsSurveyTriggerGetMostChrome[] = "get-most-chrome";
+#endif
 constexpr char kHatsSurveyTriggerM1AdPrivacyPage[] = "m1-ad-privacy-page";
 constexpr char kHatsSurveyTriggerM1TopicsSubpage[] = "m1-topics-subpage";
 constexpr char kHatsSurveyTriggerM1FledgeSubpage[] = "m1-fledge-subpage";
@@ -203,6 +206,11 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/std::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  survey_configs.emplace_back(&features::kHappinessTrackingSurveysGetMostChrome,
+                              kHatsSurveyTriggerGetMostChrome);
+#endif
 
   const auto ad_privacy_product_specific_bits_data =
       std::vector<std::string>{"3P cookies blocked", "Topics enabled",

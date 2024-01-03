@@ -7524,6 +7524,30 @@
             ]
         }
     ],
+    "GetMostChromeHats": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20231218",
+                    "params": {
+                        "en_site_id": "GLvAVoj3X0ugnJ3q1cK0SRghzrsT",
+                        "get-most-chrome-time": "15s",
+                        "probability": "1"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysGetMostChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "GifRecording": [
         {
             "platforms": [

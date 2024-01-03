@@ -341,6 +341,15 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
       product_specific_bits_data = GetAdPrivacyProductSpecificBitsData(profile);
       break;
     }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    case TrustSafetyInteraction::OPENED_GET_MOST_CHROME: {
+      trigger = kHatsSurveyTriggerGetMostChrome;
+      timeout_ms = features::kHappinessTrackingSurveysGetMostChromeTime.Get()
+                       .InMilliseconds();
+      require_same_origin = true;
+      break;
+    }
+#endif
     case TrustSafetyInteraction::OPENED_PASSWORD_MANAGER:
       [[fallthrough]];
     case TrustSafetyInteraction::RAN_PASSWORD_CHECK: {

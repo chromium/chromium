@@ -20,6 +20,9 @@ export enum TrustSafetyInteraction {
   OPENED_TOPICS_SUBPAGE = 7,
   OPENED_FLEDGE_SUBPAGE = 8,
   OPENED_AD_MEASUREMENT_SUBPAGE = 9,
+  // <if expr="_google_chrome">
+  OPENED_GET_MOST_CHROME = 10,
+  // </if>
 }
 
 /**
