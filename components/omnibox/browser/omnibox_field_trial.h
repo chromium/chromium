@@ -683,19 +683,6 @@ bool IsUrlScoringModelEnabled();
 
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
-// Two-column realbox ->
-
-// Specifies the number of zero-prefix suggestions in the 2nd column of realbox
-// when `omnibox::kRealboxSecondaryZeroSuggest` is enabled.
-extern const base::FeatureParam<int>
-    kRealboxMaxPreviousSearchRelatedSuggestions;
-// Does not show zero-prefix suggestions in the 2nd column of realbox, even if
-// they are available.
-extern const base::FeatureParam<bool>
-    kRealboxSecondaryZeroSuggestCounterfactual;
-
-// <- Two-column realbox
-// ---------------------------------------------------------
 // Inspire Me ->
 
 // Specify number of additional Related and Trending queries appended to the

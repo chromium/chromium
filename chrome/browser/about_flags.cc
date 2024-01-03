@@ -1464,23 +1464,6 @@ const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
      std::size(kOmniboxMlUrlScoringMaxMatchesByProvider10), nullptr},
 };
 
-const FeatureEntry::FeatureParam kRealboxTwoPreviousSearchRelatedSuggestions[] =
-    {
-        {"RealboxMaxPreviousSearchRelatedSuggestions", "2"},
-};
-const FeatureEntry::FeatureParam kRealboxSecondaryZeroSuggestCounterfactual[] =
-    {
-        {"RealboxSecondaryZeroSuggestCounterfactual", "true"},
-};
-
-const FeatureEntry::FeatureVariation kRealboxSecondaryZeroSuggestVariations[] =
-    {{"2 secondary suggestions (default is 3)",
-      kRealboxTwoPreviousSearchRelatedSuggestions,
-      std::size(kRealboxTwoPreviousSearchRelatedSuggestions), nullptr},
-     {"counterfactual (don't show secondary suggestions)",
-      kRealboxSecondaryZeroSuggestCounterfactual,
-      std::size(kRealboxSecondaryZeroSuggestCounterfactual), nullptr}};
-
 const FeatureEntry::FeatureParam kActionsUISimplificationTrimExtraFalse[]{
     {"ActionsUISimplificationTrimExtra", "false"},
 };
@@ -5930,13 +5913,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
-
-    {"realbox-secondary-zero-suggest",
-     flag_descriptions::kRealboxSecondaryZeroSuggestName,
-     flag_descriptions::kRealboxSecondaryZeroSuggestDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kRealboxSecondaryZeroSuggest,
-                                    kRealboxSecondaryZeroSuggestVariations,
-                                    "RealboxSecondaryZeroSuggest")},
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 

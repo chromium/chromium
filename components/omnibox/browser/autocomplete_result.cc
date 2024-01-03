@@ -404,11 +404,13 @@ void AutocompleteResult::SortAndCull(
         sections.push_back(
             std::make_unique<DesktopNTPZpsSection>(suggestion_groups_map_));
         // Allow secondary zero-prefix suggestions in the NTP realbox or the
-        // WebUI omnibox, if any.
+        // WebUI omnibox popup.
+        // TODO(crbug/1396174): Disallow secondary zps in the WebUI omnibox
+        // before experimentation.
         if ((page_classification == OmniboxEventProto::NTP_REALBOX ||
-             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) &&
-            base::FeatureList::IsEnabled(
-                omnibox::kRealboxSecondaryZeroSuggest)) {
+             base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup))) {
+          sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
+              suggestion_groups_map_));
           // Report whether secondary zero-prefix suggestions were triggered.
           if (base::ranges::any_of(
                   suggestion_groups_map_, [](const auto& entry) {
@@ -418,17 +420,6 @@ void AutocompleteResult::SortAndCull(
             triggered_feature_service->FeatureTriggered(
                 metrics::
                     OmniboxEventProto_Feature_REMOTE_SECONDARY_ZERO_SUGGEST);
-          }
-
-          // Don't show the secondary zero-prefix suggestions in the
-          // counterfactual arm.
-          if (!OmniboxFieldTrial::kRealboxSecondaryZeroSuggestCounterfactual
-                   .Get()) {
-            size_t max_previous_search_related =
-                OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions
-                    .Get();
-            sections.push_back(std::make_unique<DesktopSecondaryNTPZpsSection>(
-                max_previous_search_related, suggestion_groups_map_));
           }
         }
       } else if (omnibox::IsSearchResultsPage(page_classification)) {

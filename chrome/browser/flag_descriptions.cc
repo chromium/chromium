@@ -4960,12 +4960,6 @@ const char kProbabilisticMemorySaverDescription[] =
     "Memory Saver uses some probability distributions to estimate the chance "
     "of tab revisit based on observations about the tab's state.";
 
-const char kRealboxSecondaryZeroSuggestName[] =
-    "Enables showing secondary zero-prefix suggestions in NTP realbox.";
-const char kRealboxSecondaryZeroSuggestDescription[] =
-    "When enabled, allows showing secondary zero-prefix suggestions in NTP "
-    "realbox.";
-
 const char kSCTAuditingName[] = "SCT auditing";
 const char kSCTAuditingDescription[] =
     "Enables SCT auditing for users who have opted in to Safe Browsing "

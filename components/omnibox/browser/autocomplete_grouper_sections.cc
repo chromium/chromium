@@ -177,11 +177,9 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
                  group_configs) {}
 
 DesktopSecondaryNTPZpsSection::DesktopSecondaryNTPZpsSection(
-    size_t max_previous_search_related,
     omnibox::GroupConfigMap& group_configs)
-    : ZpsSection(max_previous_search_related,
-                 {{max_previous_search_related,
-                   omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS}},
+    : ZpsSection(3,
+                 {{3, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS}},
                  group_configs) {}
 
 DesktopSRPZpsSection::DesktopSRPZpsSection(

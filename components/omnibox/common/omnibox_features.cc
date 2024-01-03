@@ -157,13 +157,6 @@ BASE_FEATURE(kOmniboxOnClobberFocusTypeOnContent,
              "OmniboxOnClobberFocusTypeOnContent",
              enabled_by_default_desktop_android);
 
-// If enabled, allows up to
-// `OmniboxFieldTrial::kRealboxMaxPreviousSearchRelatedSuggestions` zero-prefix
-// suggestions in the 2nd column of realbox.
-BASE_FEATURE(kRealboxSecondaryZeroSuggest,
-             "RealboxSecondaryZeroSuggest",
-             enabled_by_default_desktop_only);
-
 // If enabled, zero prefix suggestions will be stored using an in-memory caching
 // service, instead of using the existing prefs-based cache.
 BASE_FEATURE(kZeroSuggestInMemoryCaching,

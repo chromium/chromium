@@ -107,13 +107,11 @@ class DesktopNTPZpsSection : public ZpsSection {
 };
 
 // Section expressing the Desktop secondary ZPS limits and grouping for the NTP.
-// - up to `max_previous_search_related` suggestions total.
-//  - up to `max_previous_search_related` previous search related suggestion
-//    chips.
+// - up to 3 suggestions total.
+//  - up to 3 previous search related suggestion chips.
 class DesktopSecondaryNTPZpsSection : public ZpsSection {
  public:
   explicit DesktopSecondaryNTPZpsSection(
-      size_t max_previous_search_related,
       omnibox::GroupConfigMap& group_configs);
 };
 
