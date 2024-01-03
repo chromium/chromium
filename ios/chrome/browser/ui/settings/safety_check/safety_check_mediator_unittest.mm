@@ -190,12 +190,12 @@ class SafetyCheckMediatorTest : public PlatformTest {
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     [defaults removeObjectForKey:kTimestampOfLastIssueFoundKey];
     [defaults removeObjectForKey:kIOSChromeUpToDateKey];
-    [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   }
 
   void ResetLocalPrefsForTesting() {
     local_pref_service_->ClearPref(prefs::kIosSettingsSafetyCheckLastRunTime);
     local_pref_service_->ClearPref(kIOSChromeNextVersionKey);
+    local_pref_service_->ClearPref(kIOSChromeUpgradeURLKey);
   }
 
   // Creates a form.

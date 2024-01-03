@@ -421,14 +421,16 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         case UpdateCheckRowStateNetError:      // i tap: Show error popover.
           break;
         case UpdateCheckRowStateOutOfDate: {  // i tap: Go to app store.
-          NSString* updateLocation = [[NSUserDefaults standardUserDefaults]
-              stringForKey:kIOSChromeUpgradeURLKey];
+          PrefService* prefService = GetApplicationContext()->GetLocalState();
+          std::string updateLocation =
+              prefService->GetString(kIOSChromeUpgradeURLKey);
           base::RecordAction(base::UserMetricsAction(
               "Settings.SafetyCheck.RelaunchAfterUpdates"));
           base::UmaHistogramEnumeration(
               kSafetyCheckInteractions,
               SafetyCheckInteractions::kUpdatesRelaunch);
-          [self.handler showUpdateAtLocation:updateLocation];
+          [self.handler
+              showUpdateAtLocation:base::SysUTF8ToNSString(updateLocation)];
           break;
         }
       }
@@ -1020,10 +1022,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
                                   safety_check::UpdateStatus::kOutdated);
 
     // Valid results, update all prefs.
-    [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
-                forKey:kIOSChromeUpgradeURLKey];
     PrefService* prefService = GetApplicationContext()->GetLocalState();
     prefService->SetString(kIOSChromeNextVersionKey, details.next_version);
+    prefService->SetString(kIOSChromeUpgradeURLKey, upgradeUrl.spec());
 
     // Treat the safety check finding the device out of date as if the update
     // infobar was just shown to not overshow the infobar to the user.

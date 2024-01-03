@@ -356,13 +356,8 @@ class UpgradeInfoBarDismissObserver
   [self hideUpgradeInfoBars];
 
   if (shouldUpgrade) {
-    NSString* urlString = [[NSUserDefaults standardUserDefaults]
-        valueForKey:kIOSChromeUpgradeURLKey];
-    if (!urlString) {
-      return;  // Missing URL, no upgrade possible.
-    }
-
-    GURL URL = GURL(base::SysNSStringToUTF8(urlString));
+    PrefService* prefService = GetApplicationContext()->GetLocalState();
+    GURL URL = GURL(prefService->GetString(kIOSChromeUpgradeURLKey));
     if (!URL.is_valid()) {
       return;
     }
@@ -374,7 +369,7 @@ class UpgradeInfoBarDismissObserver
       [self.handler openURLInNewTab:command];
     } else {
       // This URL scheme is not understood, ask the system to open it.
-      NSURL* launchURL = [NSURL URLWithString:urlString];
+      NSURL* launchURL = net::NSURLWithGURL(URL);
       if (launchURL) {
         [[UIApplication sharedApplication] openURL:launchURL
                                            options:@{}
@@ -449,8 +444,7 @@ class UpgradeInfoBarDismissObserver
     [defaults removeObjectForKey:kLastInfobarDisplayTimeKey];
   }
 
-  [defaults setValue:base::SysUTF8ToNSString(upgradeUrl.spec())
-              forKey:kIOSChromeUpgradeURLKey];
+  prefService->SetString(kIOSChromeUpgradeURLKey, upgradeUrl.spec());
   prefService->SetString(kIOSChromeNextVersionKey, newVersionString);
 
   if ([self shouldShowInfoBar]) {
@@ -461,13 +455,13 @@ class UpgradeInfoBarDismissObserver
 - (void)resetForTests {
   [[UpgradeCenter sharedInstance] hideUpgradeInfoBars];
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  [defaults removeObjectForKey:kIOSChromeUpgradeURLKey];
   [defaults removeObjectForKey:kLastInfobarDisplayTimeKey];
   [defaults removeObjectForKey:kIOSChromeUpToDateKey];
   [_clients removeAllObjects];
 
   PrefService* prefService = GetApplicationContext()->GetLocalState();
   prefService->ClearPref(kIOSChromeNextVersionKey);
+  prefService->ClearPref(kIOSChromeUpgradeURLKey);
 }
 
 - (void)setLastDisplayToPast {
