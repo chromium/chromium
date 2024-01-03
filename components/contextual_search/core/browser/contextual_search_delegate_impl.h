@@ -33,9 +33,7 @@ class ContextualSearchFieldTrial;
 
 // Handles tasks for the ContextualSearchManager including communicating with
 // the server. This class has no JNI in order to keep it separable and testable.
-class ContextualSearchDelegateImpl
-    : public ContextualSearchDelegate,
-      public base::SupportsWeakPtr<ContextualSearchDelegateImpl> {
+class ContextualSearchDelegateImpl final : public ContextualSearchDelegate {
  public:
   // Constructs a delegate that uses the given url_loader_factory and
   // template_url_service for all contextual search requests.
@@ -173,6 +171,8 @@ class ContextualSearchDelegateImpl
 
   // The field trial helper instance, always set up by the constructor.
   std::unique_ptr<ContextualSearchFieldTrial> field_trial_;
+
+  base::WeakPtrFactory<ContextualSearchDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CONTEXTUAL_SEARCH_DELEGATE_IMPL_H_

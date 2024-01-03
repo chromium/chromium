@@ -127,7 +127,7 @@ void ContextualSearchDelegateImpl::GatherAndSaveSurroundingText(
   blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback
       get_text_callback = base::BindOnce(
           &ContextualSearchDelegateImpl::OnTextSurroundingSelectionAvailable,
-          AsWeakPtr(), context, callback);
+          weak_ptr_factory_.GetWeakPtr(), context, callback);
   if (!context)
     return;
 
