@@ -228,6 +228,12 @@
        As you browse, whether an ad you see is personalized depends on this setting, Site-suggested ads, your cookie settings, and if the site you’re viewing personalizes ads
   </message>
 
+  <!-- Proactive Topics Blocking -->
+  <!-- TODO(crbug.com/1515108) - Finalize and mark translateable. -->
+  <message name="IDS_SETTINGS_TOPICS_PAGE_EXPLANATION_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
+    Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting.
+  </message>
+
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
   <!-- TODO(crbug.com/1378703) - Update and mark translateable. -->
   <message name="IDS_PRIVACY_SANDBOX_TOPICS_CONSENT_STATUS_LABEL" desc="Label for the text which displays the state of the user's Topics consent">

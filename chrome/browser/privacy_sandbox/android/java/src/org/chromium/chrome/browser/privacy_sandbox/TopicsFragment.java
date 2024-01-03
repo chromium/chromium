@@ -13,6 +13,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -64,7 +65,12 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         getActivity().setTitle(R.string.settings_topics_page_title);
-        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v2);
+        } else {
+            SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
+        }
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
         mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
@@ -78,16 +84,17 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         mTopicsTogglePreference.setOnPreferenceChangeListener(this);
         mTopicsTogglePreference.setManagedPreferenceDelegate(createManagedPreferenceDelegate());
 
-        mTopicsHeadingPreference.setSummary(
-                SpanApplier.applySpans(
-                        getResources()
-                                .getString(
-                                        R.string.settings_topics_page_current_topics_description),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)) {
+            mTopicsHeadingPreference.setSummary(
+                    SpanApplier.applySpans(getResources().getString(
+                            R.string.settings_topics_page_current_topics_description),
+                            new SpanApplier.SpanInfo(
+                                    "<link>",
+                                    "</link>",
+                                    new NoUnderlineClickableSpan(
+                                            getContext(), this::onLearnMoreClicked))));
+        }
 
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
