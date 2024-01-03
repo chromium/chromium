@@ -40,6 +40,7 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void HideBubble(const TrayBubbleView* bubble_view) override;
+  TrayBubbleView* GetBubbleView() override;
   void CloseBubble() override;
   void ShowBubble() override;
   void UpdateTrayItemColor(bool is_active) override;
@@ -53,7 +54,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // views::View:
   void Layout() override;
 
-  TrayBubbleWrapper* tray_bubble_wrapper_for_testing() { return bubble_.get(); }
   FocusModeCountdownView* countdown_view_for_testing() {
     return countdown_view_;
   }
