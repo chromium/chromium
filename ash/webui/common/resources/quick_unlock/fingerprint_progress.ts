@@ -168,7 +168,6 @@ export class FingerprintProgressElement extends PolymerElement {
     this.progressCircleBackgroundColor =
         getComputedStyle(document.body)
             .getPropertyValue('--cros-sys-primary_container');
-    this.$.scanningAnimation.onColorSchemeChanged();
   }
 
   override connectedCallback() {
@@ -205,7 +204,6 @@ export class FingerprintProgressElement extends PolymerElement {
     this.updateAnimationAsset_();
     this.resizeAndCenterIcon_(scanningAnimation);
     scanningAnimation.hidden = false;
-    scanningAnimation.onColorSchemeChanged();
   }
 
   /**
