@@ -29,6 +29,9 @@ crbug.com/810960 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.html [ Sk
 crbug.com/736554 [ Linux ] external/wpt/IndexedDB/nested-cloning-large-multiple.html [ Skip ]
 crbug.com/1508160 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.html [ Skip ]
 
+# As above. The tests in this file load very large values (128kB) into memory, making execution excessively slow.
+crbug.com/1506625 [ Linux ] external/wpt/IndexedDB/request-event-ordering2.html [ Skip ]
+
 # These tests use OpenGl, which crashes on MSAN builds due to missing instrumentation
 crbug.com/555703 [ Linux ] virtual/media-gpu-accelerated/* [ Skip ]
 
