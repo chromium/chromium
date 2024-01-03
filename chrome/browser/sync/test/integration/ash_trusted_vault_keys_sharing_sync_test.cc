@@ -28,6 +28,7 @@
 #include "components/sync/test/nigori_test_utils.h"
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/features.h"
+#include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/trusted_vault_client.h"
@@ -241,7 +242,8 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
     encryption_helper::SetupFakeTrustedVaultPages(
         GetSyncService(0)->GetAccountInfo().gaia, kTestTrustedVaultKey,
         /*trusted_vault_key_version=*/1,
-        /*recovery_method_public_key=*/{}, &embedded_https_test_server());
+        /*recovery_method_public_key=*/kTestRecoveryMethodPublicKey,
+        &embedded_https_test_server());
     embedded_https_test_server().StartAcceptingConnections();
 
     return true;
@@ -268,6 +270,13 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
             .GetCallback<const std::vector<std::vector<uint8_t>>&>());
 
     return fetched_keys_future.Take();
+  }
+
+  bool FetchDegradedRecoveribilityStateThroughCrosapi() {
+    base::test::TestFuture<bool> fetched_state_future;
+    trusted_vault_backend_remote_->GetIsRecoverabilityDegraded(
+        GetSyncingUserAccountKey(), fetched_state_future.GetCallback());
+    return fetched_state_future.Take();
   }
 
   void MarkLocalKeysAsStaleThroughCrosapi() {
@@ -325,6 +334,11 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
 
  protected:
   const std::vector<uint8_t> kTestTrustedVaultKey = {1, 2, 3};
+  // Arbitrary (but valid) public key of a recovery method.
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      trusted_vault::SecureBoxKeyPair::GenerateRandom()
+          ->public_key()
+          .ExportToBytes();
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -507,6 +521,61 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
   MarkLocalKeysAsStaleThroughCrosapi();
   EXPECT_THAT(FetchKeysThroughCrosapi(),
               ElementsAre(trusted_vault_key_1, trusted_vault_key_2));
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldExposeDegradedRecoverabilityState) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotations.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  // Mimic transition to kTrustedVaultPassphrase and entering degraded
+  // recoverability state. Ash should notify Lacros through Crosapi.
+  auto degraded_recoverability_notified_checker_1 =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  std::vector<uint8_t> trusted_vault_key =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  security_domains_server().RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({trusted_vault_key}),
+      GetFakeServer());
+
+  EXPECT_TRUE(degraded_recoverability_notified_checker_1.Wait());
+  EXPECT_TRUE(FetchDegradedRecoveribilityStateThroughCrosapi());
+
+  // Mimic resolving the degraded recoverability state through system
+  // notification. Ash should notify Lacros through Crosapi.
+  auto notification = GetSyncNotification();
+  ASSERT_TRUE(notification);
+  ASSERT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE)));
+  ASSERT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  auto degraded_recoverability_notified_checker_2 =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  notification_display_service_tester().SimulateClick(
+      NotificationHandler::Type::TRANSIENT, notification->id(),
+      /*action_index=*/absl::nullopt,
+      /*reply=*/absl::nullopt);
+  ASSERT_TRUE(WaitForTrustedVaultReauthCompletion());
+
+  EXPECT_TRUE(degraded_recoverability_notified_checker_2.Wait());
+  EXPECT_FALSE(FetchDegradedRecoveribilityStateThroughCrosapi());
 }
 
 }  // namespace
