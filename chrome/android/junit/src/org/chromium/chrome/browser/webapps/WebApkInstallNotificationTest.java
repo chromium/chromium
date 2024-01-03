@@ -122,10 +122,7 @@ public class WebApkInstallNotificationTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION,
-        ChromeFeatureList.WEB_APK_INSTALL_RETRY
-    })
+    @EnableFeatures({ChromeFeatureList.WEB_APK_INSTALL_FAILURE_NOTIFICATION})
     public void testFailureNotification() {
         WebApkInstallService.showInstallFailedNotification(
                 MANIFEST_URL,

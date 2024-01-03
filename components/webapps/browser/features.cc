@@ -39,13 +39,6 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow user to retry install WebAPK with the failure notification if the
-// initial install failed. This needs to be used with
-// |kWebApkInstallFailureNotification| Enabled.
-BASE_FEATURE(kWebApkInstallFailureRetry,
-             "WebApkInstallFailureRetry",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, the web app install prompt will be block on the site if
 // user ignored the prompt recently. The number of days the prompt will be
 // blocked is controlled by feature |kAppBannerTriggering| with params

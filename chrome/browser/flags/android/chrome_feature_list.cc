@@ -344,7 +344,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncDecoupleAddressPaymentSettings,
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &webapps::features::kWebApkInstallFailureNotification,
-    &webapps::features::kWebApkInstallFailureRetry,
     &webapps::features::kAmbientBadgeSuppressFirstVisit,
     &network::features::kPrivateStateTokens,
 };
