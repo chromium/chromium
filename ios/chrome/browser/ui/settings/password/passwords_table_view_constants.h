@@ -6,10 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORDS_TABLE_VIEW_CONSTANTS_H_
 
 #import <Foundation/Foundation.h>
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
-// TODO(crbug.com/1486512): Acronyms in Objective-C identifiers should be
-// written in all caps.
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 // The accessibility identifier of the Password Manager table view.
 extern NSString* const kPasswordsTableViewID;
