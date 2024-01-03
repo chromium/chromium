@@ -588,7 +588,11 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 - (void)addLinkAttributeToTextView:(UITextView*)view range:(NSRange)range {
   NSMutableAttributedString* linkText = [[NSMutableAttributedString alloc]
       initWithAttributedString:view.attributedText];
-  [linkText addAttribute:NSLinkAttributeName value:@"" range:range];
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
+  [linkText addAttributes:linkAttributes range:range];
   view.attributedText = linkText;
 }
 

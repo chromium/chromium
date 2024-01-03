@@ -73,9 +73,11 @@
   // Inherits the default styling already applied to `subtitle`.
   NSMutableAttributedString* newSubtitle = [[NSMutableAttributedString alloc]
       initWithAttributedString:subtitle.attributedText];
-  [newSubtitle addAttribute:NSLinkAttributeName
-                      value:@""
-                      range:self.subtitleLinkRange];
+  NSDictionary* linkAttributes = @{
+    NSLinkAttributeName : @"",
+    NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle)
+  };
+  [newSubtitle addAttributes:linkAttributes range:self.subtitleLinkRange];
   subtitle.attributedText = newSubtitle;
 }
 
