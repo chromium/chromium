@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -76,7 +77,7 @@ TEST_F(ShellSystemLogsFetcherTest, TestLogSources) {
   EXPECT_LT(0u, response()->at("APPSHELL VERSION").size());
   EXPECT_LT(0u, response()->at("OS VERSION").size());
 
-  const base::StringPiece fmt = "$1 : $2 : version $3\n";
+  const std::string_view fmt = "$1 : $2 : version $3\n";
   std::string expected_extensions = "";
   for (const scoped_refptr<const Extension>& extension : extensions) {
     std::string version_mangled;
