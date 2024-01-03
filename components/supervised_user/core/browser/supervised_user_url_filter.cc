@@ -228,9 +228,6 @@ SupervisedUserURLFilter::SupervisedUserURLFilter(
     std::unique_ptr<Delegate> service_delegate)
     : default_behavior_(FilteringBehavior::kAllow),
       service_delegate_(std::move(service_delegate)),
-      blocking_task_runner_(base::ThreadPool::CreateTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       check_webstore_url_callback_(std::move(check_webstore_url_callback)) {}
 
 SupervisedUserURLFilter::~SupervisedUserURLFilter() {
@@ -711,11 +708,6 @@ void SupervisedUserURLFilter::AddObserver(Observer* observer) {
 
 void SupervisedUserURLFilter::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void SupervisedUserURLFilter::SetBlockingTaskRunnerForTesting(
-    const scoped_refptr<base::TaskRunner>& task_runner) {
-  blocking_task_runner_ = task_runner;
 }
 
 SupervisedUserURLFilter::WebFilterType
