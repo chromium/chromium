@@ -123,8 +123,8 @@ ci.builder(
 )
 
 ci.builder(
-    name = "blink-fuzzy-diff-analyzer",
-    description_html = "Runs Fuzzy Diff Analyzer on flaky image web tests bugs.",
+    name = "blink-web-test-analyzer",
+    description_html = "Runs all web test analyzers on web tests bugs.",
     executable = "recipe:chromium/generic_script_runner",
     # Run every 6 hours.
     schedule = "0 */6 * * *",
@@ -139,6 +139,18 @@ ci.builder(
             {
                 "step_name": "analyze_flaky_image_web_tests",
                 "script": "third_party/blink/tools/run_fuzzy_diff_analyzer.py",
+                "args": [
+                    "--project",
+                    "chrome-unexpected-pass-data",
+                    "--sample-period",
+                    "3",
+                    "--check-bugs-only",
+                    "--attach-analysis-result",
+                ],
+            },
+            {
+                "step_name": "analyze_slow_web_tests",
+                "script": "third_party/blink/tools/run_slow_test_analyzer.py",
                 "args": [
                     "--project",
                     "chrome-unexpected-pass-data",
