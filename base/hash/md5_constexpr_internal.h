@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace internal {
@@ -73,22 +74,21 @@ struct MD5CE {
   }
 
   // Extracts the |i|th byte of a message of length |n|.
-  static constexpr uint8_t GetPaddedMessageByte(const char* data,
-                                                const uint32_t n,
+  static constexpr uint8_t GetPaddedMessageByte(std::string_view data,
                                                 const uint32_t m,
                                                 const uint32_t i) {
     DCHECK_LT(i, m);
-    DCHECK_LT(n, m);
+    DCHECK_LT(data.size(), m);
     DCHECK_EQ(m % 64, 0u);
-    if (i < n) {
+    if (i < data.size()) {
       // Emit the message itself...
       return static_cast<uint8_t>(data[i]);
-    } else if (i == n) {
+    } else if (i == data.size()) {
       // ...followed by the end of message marker.
       return 0x80;
     } else if (i >= m - 8) {
       // The last 8 bytes encode the original message length times 8.
-      return ExtractByte(n * 8, i - (m - 8));
+      return ExtractByte(data.size() * 8, i - (m - 8));
     } else {
       // And everything else is just empyt padding.
       return 0;
@@ -96,51 +96,46 @@ struct MD5CE {
   }
 
   // Extracts the uint32_t starting at position |i| from the padded message
-  // generate by the provided input |data| of length |n|. The bytes are treated
-  // in little endian order.
-  static constexpr uint32_t GetPaddedMessageWord(const char* data,
-                                                 const uint32_t n,
+  // generate by the provided input |data|. The bytes are treated in little
+  // endian order.
+  static constexpr uint32_t GetPaddedMessageWord(std::string_view data,
                                                  const uint32_t m,
                                                  const uint32_t i) {
     DCHECK_EQ(i % 4, 0u);
     DCHECK_LT(i, m);
-    DCHECK_LT(n, m);
+    DCHECK_LT(data.size(), m);
     DCHECK_EQ(m % 64, 0u);
-    return static_cast<uint32_t>(GetPaddedMessageByte(data, n, m, i)) |
-           static_cast<uint32_t>((GetPaddedMessageByte(data, n, m, i + 1))
-                                 << 8) |
-           static_cast<uint32_t>((GetPaddedMessageByte(data, n, m, i + 2))
-                                 << 16) |
-           static_cast<uint32_t>((GetPaddedMessageByte(data, n, m, i + 3))
-                                 << 24);
+    return static_cast<uint32_t>(GetPaddedMessageByte(data, m, i)) |
+           static_cast<uint32_t>((GetPaddedMessageByte(data, m, i + 1)) << 8) |
+           static_cast<uint32_t>((GetPaddedMessageByte(data, m, i + 2)) << 16) |
+           static_cast<uint32_t>((GetPaddedMessageByte(data, m, i + 3)) << 24);
   }
 
-  // Given an input buffer of length |n| bytes, extracts one round worth of data
-  // starting at offset |i|.
-  static constexpr RoundData GetRoundData(const char* data,
-                                          const uint32_t n,
+  // Given an input buffer |data|, extracts one round worth of data starting at
+  // offset |i|.
+  static constexpr RoundData GetRoundData(std::string_view data,
                                           const uint32_t m,
                                           const uint32_t i) {
     DCHECK_EQ(i % 64, 0u);
     DCHECK_LT(i, m);
-    DCHECK_LT(n, m);
+    DCHECK_LT(data.size(), m);
     DCHECK_EQ(m % 64, 0u);
-    return RoundData{{GetPaddedMessageWord(data, n, m, i),
-                      GetPaddedMessageWord(data, n, m, i + 4),
-                      GetPaddedMessageWord(data, n, m, i + 8),
-                      GetPaddedMessageWord(data, n, m, i + 12),
-                      GetPaddedMessageWord(data, n, m, i + 16),
-                      GetPaddedMessageWord(data, n, m, i + 20),
-                      GetPaddedMessageWord(data, n, m, i + 24),
-                      GetPaddedMessageWord(data, n, m, i + 28),
-                      GetPaddedMessageWord(data, n, m, i + 32),
-                      GetPaddedMessageWord(data, n, m, i + 36),
-                      GetPaddedMessageWord(data, n, m, i + 40),
-                      GetPaddedMessageWord(data, n, m, i + 44),
-                      GetPaddedMessageWord(data, n, m, i + 48),
-                      GetPaddedMessageWord(data, n, m, i + 52),
-                      GetPaddedMessageWord(data, n, m, i + 56),
-                      GetPaddedMessageWord(data, n, m, i + 60)}};
+    return RoundData{{GetPaddedMessageWord(data, m, i),
+                      GetPaddedMessageWord(data, m, i + 4),
+                      GetPaddedMessageWord(data, m, i + 8),
+                      GetPaddedMessageWord(data, m, i + 12),
+                      GetPaddedMessageWord(data, m, i + 16),
+                      GetPaddedMessageWord(data, m, i + 20),
+                      GetPaddedMessageWord(data, m, i + 24),
+                      GetPaddedMessageWord(data, m, i + 28),
+                      GetPaddedMessageWord(data, m, i + 32),
+                      GetPaddedMessageWord(data, m, i + 36),
+                      GetPaddedMessageWord(data, m, i + 40),
+                      GetPaddedMessageWord(data, m, i + 44),
+                      GetPaddedMessageWord(data, m, i + 48),
+                      GetPaddedMessageWord(data, m, i + 52),
+                      GetPaddedMessageWord(data, m, i + 56),
+                      GetPaddedMessageWord(data, m, i + 60)}};
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -220,12 +215,12 @@ struct MD5CE {
   }
 
   // Processes an entire message.
-  static constexpr IntermediateData ProcessMessage(const char* message,
-                                                   const uint32_t n) {
-    const uint32_t m = GetPaddedMessageLength(n);
+  static constexpr IntermediateData ProcessMessage(std::string_view message) {
+    const uint32_t m =
+        GetPaddedMessageLength(checked_cast<uint32_t>(message.size()));
     IntermediateData intermediate0 = kInitialIntermediateData;
     for (uint32_t offset = 0; offset < m; offset += 64) {
-      RoundData data = GetRoundData(message, n, m, offset);
+      RoundData data = GetRoundData(message, m, offset);
       IntermediateData intermediate1 = intermediate0;
       for (uint32_t i = 0; i < 64; ++i)
         intermediate1 = ApplyStep(i, data, intermediate1);
@@ -237,17 +232,6 @@ struct MD5CE {
   //////////////////////////////////////////////////////////////////////////////
   // HELPER FUNCTIONS
 
-  static constexpr uint32_t StringLength(const char* string) {
-    const char* end = string;
-    while (*end != 0)
-      ++end;
-    // Double check that the precision losing conversion is safe.
-    DCHECK(end >= string);
-    DCHECK(static_cast<std::ptrdiff_t>(static_cast<uint32_t>(end - string)) ==
-           (end - string));
-    return static_cast<uint32_t>(end - string);
-  }
-
   static constexpr uint32_t SwapEndian(uint32_t a) {
     return ((a & 0xff) << 24) | (((a >> 8) & 0xff) << 16) |
            (((a >> 16) & 0xff) << 8) | ((a >> 24) & 0xff);
@@ -256,14 +240,14 @@ struct MD5CE {
   //////////////////////////////////////////////////////////////////////////////
   // WRAPPER FUNCTIONS
 
-  static constexpr uint64_t Hash64(const char* data, uint32_t n) {
-    IntermediateData intermediate = ProcessMessage(data, n);
+  static constexpr uint64_t Hash64(std::string_view data) {
+    IntermediateData intermediate = ProcessMessage(data);
     return (static_cast<uint64_t>(SwapEndian(intermediate.a)) << 32) |
            static_cast<uint64_t>(SwapEndian(intermediate.b));
   }
 
-  static constexpr uint32_t Hash32(const char* data, uint32_t n) {
-    IntermediateData intermediate = ProcessMessage(data, n);
+  static constexpr uint32_t Hash32(std::string_view data) {
+    IntermediateData intermediate = ProcessMessage(data);
     return SwapEndian(intermediate.a);
   }
 };
@@ -272,20 +256,12 @@ struct MD5CE {
 
 // Implementations of the functions exposed in the public header.
 
-constexpr uint64_t MD5Hash64Constexpr(const char* string) {
-  return internal::MD5CE::Hash64(string, internal::MD5CE::StringLength(string));
+constexpr uint64_t MD5Hash64Constexpr(std::string_view string) {
+  return internal::MD5CE::Hash64(string);
 }
 
-constexpr uint64_t MD5Hash64Constexpr(const char* string, uint32_t length) {
-  return internal::MD5CE::Hash64(string, length);
-}
-
-constexpr uint32_t MD5Hash32Constexpr(const char* string) {
-  return internal::MD5CE::Hash32(string, internal::MD5CE::StringLength(string));
-}
-
-constexpr uint32_t MD5Hash32Constexpr(const char* string, uint32_t length) {
-  return internal::MD5CE::Hash32(string, length);
+constexpr uint32_t MD5Hash32Constexpr(std::string_view string) {
+  return internal::MD5CE::Hash32(string);
 }
 
 }  // namespace base
