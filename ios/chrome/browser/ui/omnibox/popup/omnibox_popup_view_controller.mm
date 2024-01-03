@@ -271,7 +271,8 @@ BOOL ShouldDismissKeyboardOnScroll() {
   self.tableView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentAutomatic;
   if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !IsIpadPopoutOmniboxEnabled()) {
     /// The popup view in multitasking displays suggestion icons outside of the
     /// safe area (too close to the leading edge). This is ok because the entire
     /// rows act as touch targets.
@@ -369,8 +370,10 @@ BOOL ShouldDismissKeyboardOnScroll() {
   }
 
   if (base::FeatureList::IsEnabled(kOmniboxSuggestionsRTLImprovements) &&
-      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+      !IsIpadPopoutOmniboxEnabled()) {
     CGFloat leadingPadding = kDefaultSuggestionLeadingOffset;
+
     if (IsRegularXRegularSizeClass(self)) {
       leadingPadding += CGRectGetMinX(omniboxFrame);
     }
