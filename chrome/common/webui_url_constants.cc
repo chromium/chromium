@@ -631,7 +631,6 @@ const char kSearchSubPage[] = "search";
 const char kSearchEnginesSubPage[] = "searchEngines";
 const char kSignOutSubPage[] = "signOut";
 const char kSiteDetailsSubpage[] = "content/siteDetails";
-const char kSyncSetupPageContentSubPage[] = "syncSetup/pageContent";
 const char kSyncSetupSubPage[] = "syncSetup";
 const char kTriggeredResetProfileSettingsSubPage[] =
     "triggeredResetProfileSettings";

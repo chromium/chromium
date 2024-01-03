@@ -623,7 +623,7 @@ void ComposeSession::OpenComposeSettings() {
   // triggered from. The session is created when that dialog is opened and it is
   // destroyed if its WebContents is destroyed.
   CHECK(browser);
-  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupPageContentSubPage);
+  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
 }
 
 void ComposeSession::SaveMostRecentOkStateToUndoStack() {
