@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_is_test.h"
+#include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -194,6 +195,7 @@ void ScreenAIInstallState::SetState(State state) {
   // TODO(crbug.com/1508404): Remove after crash root cause is found.
   if ((state == State::kDownloaded || state == State::kReady) &&
       !IsComponentAvailable()) {
+    base::debug::Alias(&state);
     base::debug::DumpWithoutCrashing();
     state = State::kFailed;
   }
