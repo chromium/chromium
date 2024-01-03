@@ -183,13 +183,15 @@ void OnLacrosActiveTabUrlFetched(
     const std::string& category_tag,
     const std::string& extra_diagnostics,
     base::Value::Dict autofill_metadata,
+    base::Value::Dict ai_metadata,
     const absl::optional<GURL>& active_tab_url) {
   GURL page_url;
   if (active_tab_url)
     page_url = *active_tab_url;
   chrome::ShowFeedbackPage(page_url, profile, source, description_template,
                            description_placeholder_text, category_tag,
-                           extra_diagnostics, std::move(autofill_metadata));
+                           extra_diagnostics, std::move(autofill_metadata),
+                           std::move(ai_metadata));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -303,11 +305,12 @@ void ShowFeedbackPage(const Browser* browser,
     crosapi::BrowserManager::Get()->GetActiveTabUrl(base::BindOnce(
         &OnLacrosActiveTabUrlFetched, profile, source, description_template,
         description_placeholder_text, category_tag, extra_diagnostics,
-        std::move(autofill_metadata)));
+        std::move(autofill_metadata), std::move(ai_metadata)));
   } else {
     ShowFeedbackPage(page_url, profile, source, description_template,
                      description_placeholder_text, category_tag,
-                     extra_diagnostics, std::move(autofill_metadata));
+                     extra_diagnostics, std::move(autofill_metadata),
+                     std::move(ai_metadata));
   }
 #else
   ShowFeedbackPage(page_url, profile, source, description_template,
