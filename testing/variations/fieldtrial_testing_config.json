@@ -17833,6 +17833,30 @@
             ]
         }
     ],
+    "SyncIncreaseNudgeDelayForSingleClient": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFactor2",
+                    "params": {
+                        "SyncIncreaseNudgeDelayForSingleClientFactor": "2.0"
+                    },
+                    "enable_features": [
+                        "SyncIncreaseNudgeDelayForSingleClient"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncPersistInvalidations": [
         {
             "platforms": [
@@ -17882,7 +17906,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled5min",
+                    "params": {
+                        "SyncSessionOnVisibilityChangedTimeThreshold": "5m"
+                    },
                     "enable_features": [
                         "SyncSessionOnVisibilityChanged"
                     ]
