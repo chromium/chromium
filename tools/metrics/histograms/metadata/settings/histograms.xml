@@ -245,7 +245,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.PrivacyGuide.FlowLength" units="steps"
     expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of settings steps that can be shown in the Privacy Guide flow.
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
     enum="SettingsPrivacyGuideStepsEligibleAndReached"
     expires_after="2024-06-02">
   <owner>rainhard@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Records which steps were set to be eligible to be shown when user clicks
@@ -720,7 +720,7 @@ chromium-metrics-reviews@google.com.
     enum="SafetyCheckNotificationsModuleInteractions"
     expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The user actions taken on the notification permissions module in Safety
@@ -732,7 +732,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.NotificationPermissionsModule.ListCount"
     units="suggestions" expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of notification permissions suggested to be removed. Recorded
@@ -743,7 +743,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.PasswordsCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Passwords Card is located on Safety Check page in settings and can be in one
@@ -754,7 +754,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.SafeBrowsingCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Safe Browsing Card is located on Safety Check page in settings and can be in
@@ -767,7 +767,7 @@ chromium-metrics-reviews@google.com.
     enum="SafetyCheckUnusedSitePermissionsModuleInteractions"
     expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The user actions taken on the unused site permissions module in Safety Check
@@ -779,7 +779,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.UnusedSitePermissionsModule.ListCount"
     units="suggestions" expires_after="2024-05-30">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     The number of unused site permissions suggested to be removed. Recorded when
@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Settings.SafetyHub.VersionCard.StatusOnClick"
     enum="SafetyHubCardState" expires_after="2024-06-16">
   <owner>sideyilmaz@chromium.org</owner>
-  <owner>aisulu@chromium.org</owner>
+  <owner>aisulu@google.com</owner>
   <owner>chrome-privacy-controls@google.com</owner>
   <summary>
     Version Card is located on Safety Check page in settings and can be in one
