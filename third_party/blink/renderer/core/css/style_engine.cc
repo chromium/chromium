@@ -135,14 +135,13 @@ CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
 enum RuleSetFlags {
   kFontFaceRules = 1 << 0,
   kKeyframesRules = 1 << 1,
-  kFullRecalcRules = 1 << 2,
-  kPropertyRules = 1 << 3,
-  kCounterStyleRules = 1 << 4,
-  kLayerRules = 1 << 5,
-  kFontPaletteValuesRules = 1 << 6,
-  kPositionFallbackRules = 1 << 7,
-  kFontFeatureValuesRules = 1 << 8,
-  kViewTransitionRules = 1 << 9
+  kPropertyRules = 1 << 2,
+  kCounterStyleRules = 1 << 3,
+  kLayerRules = 1 << 4,
+  kFontPaletteValuesRules = 1 << 5,
+  kPositionFallbackRules = 1 << 6,
+  kFontFeatureValuesRules = 1 << 7,
+  kViewTransitionRules = 1 << 8
 };
 
 const unsigned kRuleSetFlagsAll = ~0u;
@@ -2447,14 +2446,6 @@ void StyleEngine::InvalidateForRuleSetChanges(
   Element& invalidation_root =
       ScopedStyleResolver::InvalidationRootForTreeScope(tree_scope);
   if (invalidation_root.GetStyleChangeType() == kSubtreeStyleChange) {
-    return;
-  }
-
-  if (changed_rule_flags & kFullRecalcRules) {
-    invalidation_root.SetNeedsStyleRecalc(
-        kSubtreeStyleChange,
-        StyleChangeReasonForTracing::Create(
-            style_change_reason::kActiveStylesheetsUpdate));
     return;
   }
 
