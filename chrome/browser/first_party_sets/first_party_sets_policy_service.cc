@@ -35,6 +35,8 @@ namespace first_party_sets {
 
 namespace {
 
+using ServiceState = FirstPartySetsPolicyService::ServiceState;
+
 network::mojom::FirstPartySetsReadyEventPtr MakeReadyEvent(
     net::FirstPartySetsContextConfig config,
     net::FirstPartySetsCacheFilter cache_filter) {
@@ -55,23 +57,25 @@ const base::Value::Dict* GetOverridesPolicyForProfile(
       .GetIfDict();
 }
 
-bool GetEnabledStateForProfile(Profile* profile) {
-  if (profile->IsOffTheRecord()) {
-    return false;
+ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
+  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
+      profile->IsOffTheRecord()) {
+    return ServiceState::kPermanentlyDisabled;
   }
   if (base::FeatureList::IsEnabled(
           net::features::kForceThirdPartyCookieBlocking)) {
-    return true;
+    return ServiceState::kPermanentlyEnabled;
   }
   auto* tracking_protection_settings =
       TrackingProtectionSettingsFactory::GetForProfile(profile);
   if (tracking_protection_settings &&
       tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
-    return !tracking_protection_settings->AreAllThirdPartyCookiesBlocked();
+    return tracking_protection_settings->AreAllThirdPartyCookiesBlocked()
+               ? ServiceState::kDisabled
+               : ServiceState::kEnabled;
   }
-  return profile->GetPrefs() &&
-         profile->GetPrefs()->GetBoolean(
-             prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
+
+  return pref_enabled ? ServiceState::kEnabled : ServiceState::kDisabled;
 }
 
 }  // namespace
@@ -99,10 +103,12 @@ void FirstPartySetsPolicyService::Init() {
   // non-null `context`.
   CHECK(profile);
 
-  pref_enabled_ = GetEnabledStateForProfile(profile);
+  service_state_ = GetServiceState(
+      profile, profile->GetPrefs() &&
+                   profile->GetPrefs()->GetBoolean(
+                       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
 
-  if (profile->IsSystemProfile() || profile->IsGuestSession() ||
-      profile->IsOffTheRecord()) {
+  if (service_state_ == ServiceState::kPermanentlyDisabled) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
                              net::FirstPartySetsCacheFilter());
     return;
@@ -120,7 +126,7 @@ void FirstPartySetsPolicyService::Init() {
                      // enabled when the service is created, to allow users
                      // to play with the FPS enabled setting without
                      // affecting user experience during the browser session.
-                     pref_enabled_));
+                     service_state_));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
@@ -165,7 +171,7 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
     mojo::Remote<network::mojom::FirstPartySetsAccessDelegate>
         access_delegate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  access_delegate->SetEnabled(pref_enabled_);
+  access_delegate->SetEnabled(is_enabled());
   if (config_.has_value() && cache_filter_.has_value()) {
     // Since the list of First-Party Sets is static after initialization and
     // the FirstPartySetsOverrides policy doesn't support dynamic refresh, a
@@ -178,21 +184,17 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
 
 void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Profile* profile = Profile::FromBrowserContext(browser_context_);
-  if (profile && profile->IsOffTheRecord()) {
-    CHECK(!pref_enabled_);
-    return;
-  }
-  if (base::FeatureList::IsEnabled(
-          net::features::kForceThirdPartyCookieBlocking)) {
-    CHECK(pref_enabled_);
+  if (service_state_ == ServiceState::kPermanentlyDisabled ||
+      service_state_ == ServiceState::kPermanentlyEnabled) {
     return;
   }
   // TODO(crbug.com/1366846) Add metrics here to track whether the pref is ever
   // enabled before the config is ready to be to be sent to the delegates.
-  pref_enabled_ = enabled;
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  CHECK(profile);
+  service_state_ = GetServiceState(profile, enabled);
   for (auto& delegate : access_delegates_) {
-    delegate->SetEnabled(pref_enabled_);
+    delegate->SetEnabled(is_enabled());
   }
 
   // Clear all the existing permission decisions that were made by FPS, since
@@ -250,17 +252,19 @@ void FirstPartySetsPolicyService::WaitForFirstInitCompleteForTesting(
 }
 
 void FirstPartySetsPolicyService::OnProfileConfigReady(
-    bool initially_enabled,
+    ServiceState initial_state,
     net::FirstPartySetsContextConfig config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(initial_state, ServiceState::kPermanentlyDisabled);
 
-  if (!initially_enabled) {
+  if (initial_state == ServiceState::kDisabled) {
     OnReadyToNotifyDelegates(std::move(config),
                              net::FirstPartySetsCacheFilter());
     return;
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
+  CHECK(profile);
   if (!profile->IsRegularProfile() || profile->IsGuestSession()) {
     // TODO(https://crbug.com/1348572): regular profiles and guest sessions
     // aren't mutually exclusive on ChromeOS.
@@ -361,7 +365,7 @@ void FirstPartySetsPolicyService::OnReadyToNotifyDelegates(
 
 void FirstPartySetsPolicyService::ResetForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_enabled_ = true;
+  service_state_ = ServiceState::kEnabled;
   access_delegates_.Clear();
   on_ready_callbacks_.clear();
   config_.reset();

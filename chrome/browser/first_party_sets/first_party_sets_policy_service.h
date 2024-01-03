@@ -37,6 +37,19 @@ namespace first_party_sets {
 // BrowserContext.
 class FirstPartySetsPolicyService : public KeyedService {
  public:
+  enum class ServiceState {
+    // Related Website Sets is permanently disabled for this profile.
+    kPermanentlyDisabled,
+    // Related Website Sets is disabled (for now) for this profile. This may
+    // change as preferences change.
+    kDisabled,
+    // Related Website Sets is permanently enabled for this profile.
+    kPermanentlyEnabled,
+    // Related Website Sets is enabled (for now) for this profile. This may
+    // change as preferences change.
+    kEnabled,
+  };
+
   explicit FirstPartySetsPolicyService(content::BrowserContext* context);
   FirstPartySetsPolicyService(const FirstPartySetsPolicyService&) = delete;
   FirstPartySetsPolicyService& operator=(const FirstPartySetsPolicyService&) =
@@ -92,10 +105,17 @@ class FirstPartySetsPolicyService : public KeyedService {
   // Exposes `Init` for use in tests.
   void InitForTesting();
 
-  // Returns true iff the preference is enabled.
+  // Returns true iff the Related Website Sets service is enabled.
   bool is_enabled() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return pref_enabled_;
+    switch (service_state_) {
+      case ServiceState::kPermanentlyDisabled:
+      case ServiceState::kDisabled:
+        return false;
+      case ServiceState::kPermanentlyEnabled:
+      case ServiceState::kEnabled:
+        return true;
+    }
   }
 
   // Returns true when this instance has received the config thus has been fully
@@ -164,7 +184,7 @@ class FirstPartySetsPolicyService : public KeyedService {
   //
   // Only clears site data if First-Party Sets is enabled when this service
   // is created.
-  void OnProfileConfigReady(bool initially_enabled,
+  void OnProfileConfigReady(ServiceState initial_state,
                             net::FirstPartySetsContextConfig config);
 
   // Like ComputeFirstPartySetMetadata, but passes the result into the provided
@@ -189,12 +209,13 @@ class FirstPartySetsPolicyService : public KeyedService {
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Whether FPS is enabled in this context. Note that this may be true even if
-  // FPS is globally disabled.
+  // FPS is globally disabled (e.g. disabled by the embedder).
   //
-  // Initialized to true for the sake of tests, so that queries received before
-  // service initialization can be accumulated and answered after test setup,
-  // rather than answered immediately in the negative.
-  bool pref_enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
+  // Initialized to `kEnabled` for the sake of tests, so that queries received
+  // before service initialization can be accumulated and answered after test
+  // setup, rather than answered immediately in the negative.
+  ServiceState service_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      ServiceState::kEnabled;
 
   // The customizations to the browser's list of First-Party Sets to respect
   // the changes specified by this FirstPartySetsOverrides policy for the

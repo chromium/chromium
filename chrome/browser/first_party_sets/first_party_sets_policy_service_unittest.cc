@@ -259,6 +259,32 @@ TEST_F(FirstPartySetsPolicyServiceTest,
   env().RunUntilIdle();
 }
 
+TEST_F(FirstPartySetsPolicyServiceTest,
+       OnFirstPartySetsEnabledChanged_EnabledByBlock3pcToggle) {
+  profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
+
+  service()->OnFirstPartySetsEnabledChanged(false);
+  EXPECT_TRUE(service()->is_enabled());
+
+  service()->OnFirstPartySetsEnabledChanged(true);
+  EXPECT_TRUE(service()->is_enabled());
+}
+
+TEST_F(FirstPartySetsPolicyServiceTest,
+       OnFirstPartySetsEnabledChanged_DisabledByBlock3pcToggle) {
+  profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
+                                    true);
+  profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
+
+  service()->OnFirstPartySetsEnabledChanged(false);
+  EXPECT_FALSE(service()->is_enabled());
+
+  service()->OnFirstPartySetsEnabledChanged(true);
+  EXPECT_FALSE(service()->is_enabled());
+}
+
 // Parameterized test class that controls whether the enabled pref status we are
 // setting is for the existing pref or the 3PCD prefs.
 class FirstPartySetsPolicyServicePrefTest
