@@ -117,22 +117,14 @@ void MaybeAppendDuplicateIdForInputDevtoolsIssue(
       elements_with_id_attr.push_back(element);
     }
   }
-  base::ranges::sort(elements_with_id_attr, [](const WebFormControlElement& a,
-                                               const WebFormControlElement& b) {
-    return std::forward_as_tuple(a.GetIdAttribute(),
-                                 a.OwnerShadowHost().GetDomNodeId()) <
-           std::forward_as_tuple(b.GetIdAttribute(),
-                                 b.OwnerShadowHost().GetDomNodeId());
-  });
+  base::ranges::sort(elements_with_id_attr, {},
+                     &WebFormControlElement::GetIdAttribute);
 
   for (auto it = elements_with_id_attr.begin();
        (it = base::ranges::adjacent_find(
-            it, elements_with_id_attr.end(),
-            [](const WebFormControlElement& a, const WebFormControlElement& b) {
-              return a.GetIdAttribute() == b.GetIdAttribute() &&
-                     a.OwnerShadowHost().GetDomNodeId() ==
-                         b.OwnerShadowHost().GetDomNodeId();
-            })) != elements_with_id_attr.end();
+            it, elements_with_id_attr.end(), {},
+            &WebFormControlElement::GetIdAttribute)) !=
+       elements_with_id_attr.end();
        it++) {
     bool current_element_not_added =
         form_issues.empty() ||
