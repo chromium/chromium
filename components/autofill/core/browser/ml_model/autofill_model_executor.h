@@ -13,15 +13,17 @@
 
 namespace autofill {
 
+// Maximum number of form fields for which the model can predict types.
+// When calling the executor with a larger form, predictions are only returned
+// for the first `kMaxNumberOfFields` many fields.
+inline constexpr size_t kModelExecutorMaxNumberOfFields = 20;
+
 // The executor maps its inputs into TFLite's tensor format and converts the
 // model output's tensor representation back. See `ModelInput` and `ModelOutput`
 // for descriptions of the inputs and outputs.
-// The executor supports at most `kMaxNumberOfFields`. When calling the executor
-// with a larger form, predictions are only returned for the first
-// `kMaxNumberOfFields` many fields.
 class AutofillModelExecutor
     : public optimization_guide::BaseModelExecutor<
-          std::vector<std::vector<float>>,
+          std::array<std::vector<float>, kModelExecutorMaxNumberOfFields>,
           const std::vector<
               std::array<AutofillModelVectorizer::TokenId,
                          AutofillModelVectorizer::kOutputSequenceLength>>&> {
@@ -32,15 +34,17 @@ class AutofillModelExecutor
       std::vector<std::array<AutofillModelVectorizer::TokenId,
                              AutofillModelVectorizer::kOutputSequenceLength>>;
 
-  // One element per `ModelInput::size()`, representing the raw model outputs
-  // for the different field types. They don't have any meaning per-se, but
-  // higher means more confidence. Since the model might not support all
-  // FieldTypes, the indices don't map to field types directly. See
+  // The model always returns predictions for `kModelExecutorMaxNumberOfFields`.
+  // If the queried form was smaller, the last
+  // (kModelExecutorMaxNumberOfFields - fields) elements of the output have
+  // unspecified values.
+  // The other indices contain a vector with one entry per supported FieldType,
+  // representing the confidence in that type. The confidences don't have any
+  // meaning per-se, but higher means more confidence. Since the model might not
+  // support all FieldTypes, the indices don't map to field types directly. See
   // `AutofillMlPredictionModelHandler`.
-  using ModelOutput = std::vector<std::vector<float>>;
-
-  // Maximum number of fields in one form that can be used as input.
-  static constexpr size_t kMaxNumberOfFields = 20;
+  using ModelOutput =
+      std::array<std::vector<float>, kModelExecutorMaxNumberOfFields>;
 
   AutofillModelExecutor();
   ~AutofillModelExecutor() override;
@@ -51,14 +55,6 @@ class AutofillModelExecutor
                   const ModelInput& input) override;
   std::optional<ModelOutput> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
-
-  // Stores the number of fields sent to the model via `Preprocess()`. This will
-  // be min(number of fields provided, kMaxNumberOfFields). `Postprocess()`
-  // relies on this information to construct the output.
-  // Nullopt indicates that no query is currently processing.
-  // Since multiple queries are executed sequentially, ensuring that this value
-  // only corresponds to a single query at a time.
-  std::optional<size_t> fields_count_;
 };
 
 }  // namespace autofill

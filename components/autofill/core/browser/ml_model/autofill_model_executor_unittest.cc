@@ -88,11 +88,10 @@ TEST_F(AutofillModelExecutorTest, ExecuteModel) {
                      predictions.GetCallback(),
                      /*start_time=*/AutofillTickClock::NowTicks(), input));
 
-  // Expect that there are predictions for all fields. Since the input values
-  // are meaningless, the meaning of the output is not validated. This is done
-  // in the model handler tests, which actually have a type.
+  // Expect that the execution succeeded. Since the input values are
+  // meaningless, the meaning of the output is not validated. This is done in
+  // the model handler tests, which actually have a type.
   ASSERT_TRUE(predictions.Get());
-  EXPECT_EQ(predictions.Get()->size(), input.size());
 }
 
 }  // namespace
