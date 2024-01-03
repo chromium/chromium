@@ -612,6 +612,27 @@ class HoldingSpaceTrayTest : public HoldingSpaceTrayTestBase {
 
 // Tests -----------------------------------------------------------------------
 
+// Holding Space used to own the constant which determines its bubble's width
+// but now shares a constant with the rest of the system UI bubbles. Holding
+// Space UI is not yet implemented to be fully reactive to variable bubble
+// widths, so this test adds a speed bump to (hopefully) prevent the shared
+// constant from being updated and inadvertently breaking Holding Space UI.
+TEST_F(HoldingSpaceTrayTest, BubbleHasExpectedWidth) {
+  // Start session and verify the holding space tray is showing in the shelf.
+  StartSession(/*pre_mark_time_of_first_add=*/true);
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Show the holding space bubble.
+  test_api()->Show();
+  EXPECT_TRUE(test_api()->IsShowing());
+
+  // Verify holding space bubble width.
+  views::View* const bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+  ViewDrawnWaiter().Wait(bubble);
+  EXPECT_EQ(bubble->width(), 360);
+}
+
 TEST_F(HoldingSpaceTrayTest, ShowTrayButtonWhenForced) {
   // Case: Force show in shelf prior to session start.
   auto force_show_in_shelf =
