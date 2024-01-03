@@ -44432,6 +44432,12 @@ Called by update_net_error_codes.py.-->
              start)"/>
 </enum>
 
+<enum name="SecCookieDeprecationHeaderStatus">
+  <int value="0" label="kSet"/>
+  <int value="1" label="kNoLabel"/>
+  <int value="2" label="kNoCookie"/>
+</enum>
+
 <enum name="SecureChannelConnectionAttemptFailureReason">
   <int value="0" label="Authentication error"/>
   <int value="1" label="Could not generate advertisement"/>

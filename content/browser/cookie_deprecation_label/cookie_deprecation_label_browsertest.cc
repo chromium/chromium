@@ -5,7 +5,9 @@
 #include <memory>
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_base.h"
 #include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/cookie_deprecation_label/cookie_deprecation_label_test_utils.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -32,6 +34,9 @@ namespace content {
 namespace {
 
 using ::net::test_server::EmbeddedTestServer;
+
+constexpr char kSecCookieDeprecationHeaderStatus[] =
+    "Privacy.3PCD.SecCookieDeprecationHeaderStatus";
 
 class CookieDeprecationLabelBrowserTestBase : public ContentBrowserTest {
  public:
@@ -90,6 +95,8 @@ class CookieDeprecationLabelDisabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelDisabledBrowserTest,
                        FeatureDisabled_CookieDeprecationLabelHeaderNotAdded) {
+  base::HistogramTester histograms;
+
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   auto response_a_a =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -132,6 +139,9 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelDisabledBrowserTest,
   http_response_a_b->set_code(net::HTTP_OK);
   response_a_b->Send(http_response_a_b->ToResponseString());
   response_a_b->Done();
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectTotalCount(kSecCookieDeprecationHeaderStatus, 0);
 }
 
 class CookieDeprecationLabelEnabledBrowserTest
@@ -149,6 +159,10 @@ class CookieDeprecationLabelEnabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
                        HeaderAddedOnceOptedIn) {
+  base::HistogramTester histograms;
+  constexpr base::HistogramBase::Sample kNoCookie = 2;
+  constexpr base::HistogramBase::Sample kHeaderSet = 0;
+
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   auto response_a_a =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -173,12 +187,23 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
 
   GURL initial_page_url = https_server->GetURL("d.test", "/hello.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), initial_page_url));
+
+  base::HistogramBase::Count no_cookie_requests = 0;
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kNoCookie,
+                               ++no_cookie_requests);
+
   AddImageToDocument(/*src_url=*/https_server->GetURL("a.test", "/a_a"));
 
   // [a.test/a] - Non opted-in request should not receive a label header.
   response_a_a->WaitForRequest();
   ASSERT_FALSE(base::Contains(response_a_a->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
+
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kNoCookie,
+                               ++no_cookie_requests);
+
   auto http_response_a_a =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response_a_a->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -196,6 +221,10 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_a_b->WaitForRequest();
   ASSERT_TRUE(base::Contains(response_a_b->http_request()->headers,
                              "Sec-Cookie-Deprecation"));
+  base::HistogramBase::Count header_set_requests = 0;
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kHeaderSet,
+                               ++header_set_requests);
   EXPECT_EQ(response_a_b->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
 
@@ -212,6 +241,10 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_b_a->WaitForRequest();
   ASSERT_FALSE(base::Contains(response_b_a->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kNoCookie,
+                               ++no_cookie_requests);
+
   auto http_response_b_a =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response_b_a->set_code(net::HTTP_MOVED_PERMANENTLY);
@@ -225,6 +258,9 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_a_c->WaitForRequest();
   ASSERT_TRUE(base::Contains(response_a_c->http_request()->headers,
                              "Sec-Cookie-Deprecation"));
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kHeaderSet,
+                               ++header_set_requests);
   EXPECT_EQ(response_a_c->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
 
@@ -241,6 +277,9 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_a_d->WaitForRequest();
   ASSERT_TRUE(base::Contains(response_a_d->http_request()->headers,
                              "Sec-Cookie-Deprecation"));
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kHeaderSet,
+                               ++header_set_requests);
   EXPECT_EQ(response_a_d->http_request()->headers.at("Sec-Cookie-Deprecation"),
             "label_test");
   auto http_response_a_d =
@@ -259,6 +298,12 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledBrowserTest,
   response_a_e->WaitForRequest();
   ASSERT_FALSE(base::Contains(response_a_e->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
+  content::FetchHistogramsFromChildProcesses();
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, kHeaderSet,
+                               header_set_requests);
+  histograms.ExpectBucketCount(
+      kSecCookieDeprecationHeaderStatus, kNoCookie,
+      no_cookie_requests + 3);  // 2 navigations and 1 image
   auto http_response_a_e =
       std::make_unique<net::test_server::BasicHttpResponse>();
   http_response_a_e->set_code(net::HTTP_OK);
@@ -569,6 +614,7 @@ class CookieDeprecationLabelEnabledEmptyLabelBrowserTest
 
 IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledEmptyLabelBrowserTest,
                        EmptyLabel_CookieDeprecationLabelHeaderNotAdded) {
+  base::HistogramTester histograms;
   auto https_server = CreateTestServer(EmbeddedTestServer::TYPE_HTTPS);
   auto response_a_a =
       std::make_unique<net::test_server::ControllableHttpResponse>(
@@ -605,6 +651,12 @@ IN_PROC_BROWSER_TEST_F(CookieDeprecationLabelEnabledEmptyLabelBrowserTest,
   response_a_b->WaitForRequest();
   ASSERT_FALSE(base::Contains(response_a_b->http_request()->headers,
                               "Sec-Cookie-Deprecation"));
+  // kNoLabel = 1
+  content::FetchHistogramsFromChildProcesses();
+  // This is a side effect of using an empty label "" as a sentinel value to
+  // indicate that the client is not eligible. When it is but the label is
+  // empty, it also records `kNoLabel`. 3 requests: nav, img & redirect
+  histograms.ExpectBucketCount(kSecCookieDeprecationHeaderStatus, 1, 3);
 
   auto http_response_a_b =
       std::make_unique<net::test_server::BasicHttpResponse>();

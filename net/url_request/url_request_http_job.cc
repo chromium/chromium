@@ -106,6 +106,20 @@
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TpcdHeaderStatus {
+  kSet = 0,
+  kNoLabel = 1,
+  kNoCookie = 2,
+  kMaxValue = kNoCookie,
+};
+
+void RecordTpcdHeaderStatus(TpcdHeaderStatus status) {
+  base::UmaHistogramEnumeration("Privacy.3PCD.SecCookieDeprecationHeaderStatus",
+                                status);
+}
+
 base::Value::Dict FirstPartySetMetadataNetLogParams(
     const net::FirstPartySetMetadata& first_party_set_metadata,
     const int64_t* const fps_cache_filter) {
@@ -767,6 +781,14 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     AnnotateAndMoveUserBlockedCookies(maybe_included_cookies, excluded_cookies);
   }
 
+  const bool cookie_deprecation_testing_enabled =
+      request_->context()->cookie_deprecation_label().has_value();
+  const bool cookie_deprecation_testing_has_label =
+      cookie_deprecation_testing_enabled &&
+      !request_->context()->cookie_deprecation_label().value().empty();
+  bool may_set_sec_cookie_deprecation_header =
+      cookie_deprecation_testing_has_label;
+
   if (!maybe_included_cookies.empty()) {
     std::string cookie_line =
         CanonicalCookie::BuildCookieLine(maybe_included_cookies);
@@ -774,8 +796,6 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
                                           cookie_line);
 
     size_t n_partitioned_cookies = 0;
-    bool may_set_sec_cookie_deprecation_header =
-        !request_->context()->cookie_deprecation_label().value_or("").empty();
 
     // TODO(crbug.com/1031664): Reduce the number of times the cookie list
     // is iterated over. Get metrics for every cookie which is included.
@@ -823,6 +843,15 @@ void URLRequestHttpJob::SetCookieHeaderAndStart(
     if (ShouldRecordPartitionedCookieUsage()) {
       base::UmaHistogramCounts100("Cookie.PartitionedCookiesInRequest",
                                   n_partitioned_cookies);
+    }
+  }
+  if (cookie_deprecation_testing_enabled) {
+    if (!cookie_deprecation_testing_has_label) {
+      RecordTpcdHeaderStatus(TpcdHeaderStatus::kNoLabel);
+    } else if (may_set_sec_cookie_deprecation_header) {
+      RecordTpcdHeaderStatus(TpcdHeaderStatus::kNoCookie);
+    } else {
+      RecordTpcdHeaderStatus(TpcdHeaderStatus::kSet);
     }
   }
 

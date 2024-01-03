@@ -156,7 +156,7 @@ void EligibilityService::UpdateCookieDeprecationLabel() {
         if (auto* cookie_deprecation_label_manager =
                 storage_partition->GetCookieDeprecationLabelManager()) {
           storage_partition->GetNetworkContext()->SetCookieDeprecationLabel(
-              cookie_deprecation_label_manager->GetValue());
+              cookie_deprecation_label_manager->GetValue().value_or(""));
         }
       });
 }

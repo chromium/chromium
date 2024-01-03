@@ -1945,7 +1945,7 @@ MediaLicenseManager* StoragePartitionImpl::GetMediaLicenseManager() {
 }
 
 CdmStorageManager* StoragePartitionImpl::GetCdmStorageManager() {
-    return cdm_storage_manager_.get();
+  return cdm_storage_manager_.get();
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -3427,7 +3427,7 @@ void StoragePartitionImpl::InitNetworkContext() {
 
   if (cookie_deprecation_label_manager_) {
     context_params->cookie_deprecation_label =
-        cookie_deprecation_label_manager_->GetValue();
+        cookie_deprecation_label_manager_->GetValue().value_or("");
   }
 
   network_context_.reset();
