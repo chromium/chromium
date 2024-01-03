@@ -69,8 +69,6 @@ public class UpdateSuccessMetrics {
                 .get()
                 .then(
                         state -> {
-                            HistogramUtils.recordStartedUpdateHistogram(state != null);
-
                             // We're using System.currentTimeMillis() here to track time across
                             // restarts.
                             Tracking info =

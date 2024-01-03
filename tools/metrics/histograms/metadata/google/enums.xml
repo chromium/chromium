@@ -26,11 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="BooleanAlreadyUpdating">
-  <int value="0" label="Not Already Updating"/>
-  <int value="1" label="Already Updating"/>
-</enum>
-
 <enum name="GoogleUpdateErrorCode">
   <int value="0" label="GOOGLE_UPDATE_NO_ERROR"/>
   <int value="1" label="CANNOT_UPGRADE_CHROME_IN_THIS_DIRECTORY"/>

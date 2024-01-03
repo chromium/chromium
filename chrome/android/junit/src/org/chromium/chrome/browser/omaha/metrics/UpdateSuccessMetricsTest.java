@@ -14,7 +14,6 @@ import static org.mockito.Mockito.when;
 import android.os.Looper;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
@@ -42,9 +40,6 @@ import org.chromium.components.version_info.VersionConstants;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class UpdateSuccessMetricsTest {
-    private static final int NOT_UPDATING = 0;
-    private static final int UPDATING = 1;
-
     @Mock private TrackingProvider mProvider;
 
     private UpdateSuccessMetrics mMetrics;
@@ -74,11 +69,6 @@ public class UpdateSuccessMetricsTest {
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
-
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.StartingUpdateState", NOT_UPDATING));
     }
 
     /**
@@ -95,11 +85,6 @@ public class UpdateSuccessMetricsTest {
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
-
-        Assert.assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.StartingUpdateState", UPDATING));
     }
 
     /** Tests having no persisted state. */

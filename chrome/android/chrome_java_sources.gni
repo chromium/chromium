@@ -869,7 +869,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelper.java",
   "java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java",
   "java/src/org/chromium/chrome/browser/omaha/VersionNumberGetter.java",
-  "java/src/org/chromium/chrome/browser/omaha/metrics/HistogramUtils.java",
   "java/src/org/chromium/chrome/browser/omaha/metrics/TrackingProvider.java",
   "java/src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetrics.java",
   "java/src/org/chromium/chrome/browser/page_info/ChromePageInfo.java",
