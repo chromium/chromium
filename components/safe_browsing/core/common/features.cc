@@ -37,10 +37,6 @@ BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionModelIsFlatBuffer,
-             "ClientSideDetectionModelIsFlatBuffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kClientSideDetectionModelTag,
              "ClientSideDetectionTag",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -313,7 +309,6 @@ constexpr struct {
     {&kAddWarningShownTSToClientSafeBrowsingReport, false},
     {&kAntiPhishingTelemetry, false},
     {&kClientSideDetectionKillswitch, true},
-    {&kClientSideDetectionModelIsFlatBuffer, true},
     {&kCreateWarningShownClientSafeBrowsingReports, false},
     {&kDelayedWarnings, true},
     {&kDownloadTailoredWarnings, true},

@@ -626,16 +626,12 @@ void ClientSidePhishingModel::MaybeOverrideModel() {
     base::FilePath overriden_model_directory =
         base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
             kOverrideCsdModelFlag);
-    CSDModelType model_type =
-        base::FeatureList::IsEnabled(kClientSideDetectionModelIsFlatBuffer)
-            ? CSDModelType::kFlatbuffer
-            : CSDModelType::kNone;
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(
             &ReadOverridenModel, overriden_model_directory,
             base::BindOnce(&ClientSidePhishingModel::OnGetOverridenModelData,
-                           base::Unretained(this), model_type)));
+                           base::Unretained(this), CSDModelType::kFlatbuffer)));
   }
 }
 

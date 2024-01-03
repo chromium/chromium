@@ -32,9 +32,6 @@ BASE_DECLARE_FEATURE(kAntiPhishingTelemetry);
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
-// The client side detection model is a flatbuffer.
-BASE_DECLARE_FEATURE(kClientSideDetectionModelIsFlatBuffer);
-
 // Determines the tag to pass to Omaha to get a client side detection model.
 BASE_DECLARE_FEATURE(kClientSideDetectionModelTag);
 
