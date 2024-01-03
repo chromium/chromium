@@ -1966,7 +1966,7 @@ action("dependencies_checks") {
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
   ]
-  deps = [ ":cronet" ]
+  deps = [ ":cronet_sample_apk" ]
 }
 
 group("cronet_non_test_package") {
