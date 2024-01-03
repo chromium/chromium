@@ -1377,7 +1377,7 @@ void DismissScreensAfterSigninAndSync() {
 
 - (void)relaunchAppWithBrowserSigninMode:(BrowserSigninMode)mode {
   std::string xmlPolicyValue("<integer>");
-  xmlPolicyValue += std::to_string(static_cast<int>(mode));
+  xmlPolicyValue += base::NumberToString(static_cast<int>(mode));
   xmlPolicyValue += "</integer>";
   [self relaunchAppWithPolicyKey:policy::key::kBrowserSignin
                   xmlPolicyValue:xmlPolicyValue];

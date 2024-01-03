@@ -220,7 +220,7 @@ class PopupMenuMediatorTest : public PlatformTest {
 
   void InsertNewWebState(int index) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    GURL url("http://test/" + std::to_string(index));
+    GURL url("http://test/" + base::NumberToString(index));
     web_state->SetCurrentURL(url);
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
