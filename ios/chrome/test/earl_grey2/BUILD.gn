@@ -27,7 +27,7 @@ group("all_tests") {
 
 chrome_ios_eg2_test_app_host("ios_chrome_eg2tests") {
   eg_extension_target =
-      "//ios/chrome/test/eg_open_extension:appex(${current_toolchain}_app_ext)"
+      "//ios/chrome/test/eg_open_extension:appex(${default_toolchain}_app_ext)"
   eg_extension_name = "eg_open_extension.appex"
 }
 
