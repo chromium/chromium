@@ -38,15 +38,20 @@ public class BookmarkActivity extends SnackbarActivity {
         boolean isIncognito =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), IntentHandler.EXTRA_INCOGNITO_MODE, false);
+        Profile profile = Profile.getLastUsedRegularProfile();
+        // TODO(crbug/1410601): Instead of using getPrimaryOTRProfile, this should account for
+        //                      instances where the incognito profile is using a non-primary key.
+        //                      Because the Bookmark model redirects to the original profile
+        //                      regardless, this is not a critical issue.
+        if (isIncognito) profile = profile.getPrimaryOTRProfile(true);
         mBookmarkManagerCoordinator =
                 new BookmarkManagerCoordinator(
                         this,
                         IntentUtils.safeGetParcelableExtra(
                                 getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT),
                         true,
-                        isIncognito,
                         getSnackbarManager(),
-                        Profile.getLastUsedRegularProfile(),
+                        profile,
                         new BookmarkUiPrefs(ChromeSharedPreferences.getInstance()));
         String url = getIntent().getDataString();
         if (TextUtils.isEmpty(url)) url = UrlConstants.BOOKMARKS_URL;

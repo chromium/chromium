@@ -217,7 +217,7 @@ public class NativePageFactory {
             return new BookmarkPage(
                     mActivity.getComponentName(),
                     mSnackbarManagerSupplier.get(),
-                    mTabModelSelector.isIncognitoSelected(),
+                    tab.getProfile(),
                     new TabShim(tab, mBrowserControlsManager, mTabModelSelector));
         }
 

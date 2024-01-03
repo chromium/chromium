@@ -130,7 +130,6 @@ public class BookmarkManagerCoordinator
      * @param context The current {@link Context} used to obtain resources or inflate views.
      * @param openBookmarkComponentName The component to use when opening a bookmark.
      * @param isDialogUi Whether the main bookmarks UI will be shown in a dialog, not a NativePage.
-     * @param isIncognito Whether the tab model loading the bookmark manager is for incognito mode.
      * @param snackbarManager The {@link SnackbarManager} used to display snackbars.
      * @param profile The profile which the manager is running in.
      * @param bookmarkUiPrefs Manages prefs for bookmarks ui.
@@ -139,7 +138,6 @@ public class BookmarkManagerCoordinator
             Context context,
             ComponentName openBookmarkComponentName,
             boolean isDialogUi,
-            boolean isIncognito,
             SnackbarManager snackbarManager,
             Profile profile,
             BookmarkUiPrefs bookmarkUiPrefs) {
@@ -236,7 +234,6 @@ public class BookmarkManagerCoordinator
                         dragReorderableRecyclerViewAdapter,
                         largeIconBridge,
                         isDialogUi,
-                        isIncognito,
                         mBackPressStateSupplier,
                         mProfile,
                         bookmarkUndoController,

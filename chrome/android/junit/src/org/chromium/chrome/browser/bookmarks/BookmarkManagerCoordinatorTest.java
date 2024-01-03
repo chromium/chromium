@@ -82,6 +82,8 @@ public class BookmarkManagerCoordinatorTest {
         // Setup JNI mocks.
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);
 
+        Mockito.doReturn(mProfile).when(mProfile).getOriginalProfile();
+
         // Setup service mocks.
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
@@ -102,7 +104,6 @@ public class BookmarkManagerCoordinatorTest {
                                             /* openBookmarkComponentName= */ null,
                                             /* isDialogUi= */ !DeviceFormFactor
                                                     .isNonMultiDisplayContextOnTablet(mActivity),
-                                            /* isIncognito= */ false,
                                             mSnackbarManager,
                                             mProfile,
                                             mBookmarkUiPrefs);

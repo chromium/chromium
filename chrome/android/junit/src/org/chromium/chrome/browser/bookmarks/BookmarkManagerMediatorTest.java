@@ -323,9 +323,6 @@ public class BookmarkManagerMediatorTest {
     private void onActivity(Activity activity) {
         mActivity = spy(activity);
 
-        // Setup Profile.
-        Profile.setLastUsedProfileForTesting(mProfile);
-
         // Setup CurrencyFormatter.
         mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
 
@@ -473,7 +470,6 @@ public class BookmarkManagerMediatorTest {
                         mDragReorderableRecyclerViewAdapter,
                         mLargeIconBridge,
                         /* isDialogUi= */ true,
-                        /* isIncognito= */ false,
                         mBackPressStateSupplier,
                         mProfile,
                         mBookmarkUndoController,
