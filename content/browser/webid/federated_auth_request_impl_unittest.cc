@@ -649,6 +649,8 @@ class TestDialogController
     // State related to ShowErrorDialog().
     bool did_show_error_dialog{false};
     absl::optional<TokenError> token_error;
+    // List of IDP strings for which a mismatch is shown in a test.
+    std::vector<std::string> displayed_mismatch_idps;
   };
 
   explicit TestDialogController(MockConfiguration config)
@@ -685,9 +687,14 @@ class TestDialogController
     state_->sign_in_mode = sign_in_mode;
     state_->rp_context = identity_provider_data[0].rp_context;
 
-    base::span<const content::IdentityRequestAccount> accounts =
-        identity_provider_data[0].accounts;
-    state_->displayed_accounts = AccountList(accounts.begin(), accounts.end());
+    for (const auto& idp_data : identity_provider_data) {
+      state_->displayed_accounts.insert(state_->displayed_accounts.end(),
+                                        idp_data.accounts.begin(),
+                                        idp_data.accounts.end());
+      if (idp_data.has_login_status_mismatch) {
+        state_->displayed_mismatch_idps.push_back(idp_data.idp_for_display);
+      }
+    }
 
     switch (accounts_dialog_action_) {
       case AccountsDialogAction::kSelectFirstAccount: {
@@ -695,8 +702,9 @@ class TestDialogController
             FROM_HERE,
             base::BindOnce(std::move(on_selected),
                            identity_provider_data[0].idp_metadata.config_url,
-                           accounts[0].id,
-                           accounts[0].login_state == LoginState::kSignIn));
+                           identity_provider_data[0].accounts[0].id,
+                           identity_provider_data[0].accounts[0].login_state ==
+                               LoginState::kSignIn));
         break;
       }
       case AccountsDialogAction::kClose:
@@ -729,6 +737,7 @@ class TestDialogController
       return;
     }
 
+    state_->displayed_mismatch_idps.push_back(idp_for_display);
     ++state_->num_show_idp_signin_status_mismatch_dialog_requests;
     switch (idp_signin_status_mismatch_dialog_action_) {
       case IdpSigninStatusMismatchDialogAction::kClose:
@@ -1104,6 +1113,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
   base::span<const content::IdentityRequestAccount> displayed_accounts() const {
     return dialog_controller_state_.displayed_accounts;
+  }
+
+  std::vector<std::string> displayed_mismatch_idps() const {
+    return dialog_controller_state_.displayed_mismatch_idps;
   }
 
   bool did_show_accounts_dialog() const {
@@ -4231,6 +4244,38 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpSignedOut) {
 
   EXPECT_TRUE(DidFetch(FetchedEndpoint::ACCOUNTS));
   EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+// Test that API can succeed with multiple IdPs, if all IDPs have login status
+// mismatch.
+TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = true;
+
+  // RequestParameters parameters = kDefaultMultiIdpRequestParameters;
+  // Set the config so that both accounts fetches result in failure.
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].accounts_response.parse_status =
+      IdpNetworkRequestManager::ParseStatus::kEmptyListError;
+  config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
+      IdpNetworkRequestManager::ParseStatus::kInvalidResponseError;
+  // Need to change the accounts dialog action since we won't get any accounts.
+  config.accounts_dialog_action = AccountsDialogAction::kNone;
+
+  RunAuthDontWaitForCallback(kDefaultMultiIdpRequestParameters, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_TRUE(displayed_accounts().empty());
+  auto mismatch_idps = displayed_mismatch_idps();
+  ASSERT_EQ(mismatch_idps.size(), 2u);
+  EXPECT_EQ(mismatch_idps[0], "idp.example");
+  EXPECT_EQ(mismatch_idps[1], "idp2.example");
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 

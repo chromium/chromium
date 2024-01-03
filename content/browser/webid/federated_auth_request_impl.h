@@ -254,9 +254,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void ShowErrorDialog(const GURL& idp_config_url,
                        IdpNetworkRequestManager::FetchStatus status,
                        absl::optional<TokenError> error);
-  // Called when we should show a failure dialog since all IDP account fetches
-  // resulted in a mismatch with the accounts fetch.
-  void ShowIdpFailureDialog();
+  // Called when we should show a failure dialog in the case where a single IDP
+  // account fetch resulted in a mismatch with its login status.
+  void ShowSingleIdpFailureDialog();
 
   // Updates the IdpSigninStatus in case of accounts fetch failure and shows a
   // failure UI if applicable.

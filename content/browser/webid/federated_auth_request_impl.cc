@@ -1697,22 +1697,23 @@ void FederatedAuthRequestImpl::OnIdpMismatch(
     return;
   }
 
-  if (fetch_data_.did_succeed_for_at_least_one_idp) {
+  // Invoke the accounts dialog flow if there is at least one account or more
+  // than one IDP for which we should show the mismatch dialog.
+  if (fetch_data_.did_succeed_for_at_least_one_idp || idp_infos_.size() > 1u) {
     MaybeShowAccountsDialog();
     return;
   }
 
-  ShowIdpFailureDialog();
+  ShowSingleIdpFailureDialog();
 }
 
-void FederatedAuthRequestImpl::ShowIdpFailureDialog() {
-  // TODO(crbug.com/1513495): handle multiple IDPs.
+void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
+  CHECK_EQ(idp_infos_.size(), 1u);
   IdentityProviderInfo* idp_info = idp_infos_.begin()->second.get();
   url::Origin idp_origin =
       url::Origin::Create(idp_info->provider->config->config_url);
   // RenderFrameHost should be in the primary page (ex not in the BFCache).
   DCHECK(render_frame_host().GetPage().IsPrimary());
-  // TODO(crbug.com/1382495): Handle failure UI in the multi IDP case.
 
   fetch_data_ = FetchData();
 
