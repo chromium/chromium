@@ -134,6 +134,10 @@ class ModelExecutionManagerTest : public testing::Test {
     EXPECT_THAT(body_bytes, HasSubstr(message));
   }
 
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return &test_url_loader_factory_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -486,6 +490,70 @@ TEST_F(ModelExecutionManagerTest,
   CheckPendingRequestMessage("other test");
   EXPECT_TRUE(SimulateSuccessfulResponse());
   run_loop.Run();
+}
+
+TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
+  base::HistogramTester histogram_tester;
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  base::RunLoop run_loop_old, run_loop_new;
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      "test_email", signin::ConsentLevel::kSignin);
+
+  model_execution_manager()->ExecuteModel(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*log_ai_data_request=*/nullptr,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            EXPECT_FALSE(result.has_value());
+            EXPECT_EQ(OptimizationGuideModelExecutionError::
+                          ModelExecutionError::kCancelled,
+                      result.error().error());
+            run_loop->Quit();
+          },
+          &run_loop_old));
+
+  model_execution_manager()->ExecuteModel(
+      proto::MODEL_EXECUTION_FEATURE_COMPOSE, request,
+      /*log_ai_data_request=*/nullptr,
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             OptimizationGuideModelExecutionResult result,
+             std::unique_ptr<ModelQualityLogEntry> log_entry) {
+            EXPECT_TRUE(result.has_value());
+            auto response =
+                ParsedAnyMetadata<proto::ComposeResponse>(result.value());
+            EXPECT_EQ("foo response", response->output());
+            EXPECT_NE(log_entry, nullptr);
+            EXPECT_TRUE(log_entry->log_ai_data_request()
+                            ->mutable_compose()
+                            ->has_request_data());
+            EXPECT_TRUE(log_entry->log_ai_data_request()
+                            ->mutable_compose()
+                            ->has_response_data());
+            EXPECT_EQ(log_entry->log_ai_data_request()
+                          ->mutable_model_execution_info()
+                          ->server_execution_id(),
+                      "test_id");
+            run_loop->Quit();
+          },
+          &run_loop_new));
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  test_url_loader_factory()->EraseResponse(
+      GURL(kOptimizationGuideServiceModelExecutionDefaultURL));
+  EXPECT_TRUE(SimulateSuccessfulResponse());
+  run_loop_new.Run();
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution.Result.Compose", 2);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.Result.Compose", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "OptimizationGuide.ModelExecution.Result.Compose", false, 1);
 }
 
 TEST_F(ModelExecutionManagerTest, DoesNotRegisterTextSafetyIfNotEnabled) {
