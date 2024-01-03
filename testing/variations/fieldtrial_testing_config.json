@@ -15301,47 +15301,6 @@
             ]
         }
     ],
-    "SafeBrowsingCSDAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_29_8_20221021",
-                    "params": {
-                        "reporter_omaha_tag": "29.8"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionTag"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SafeBrowsingCSDDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_30_0_20230127",
-                    "params": {
-                        "reporter_omaha_tag": "30.0"
-                    },
-                    "enable_features": [
-                        "ClientSideDetectionTag"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingDelayedWarnings": [
         {
             "platforms": [

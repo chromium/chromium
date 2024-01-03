@@ -37,10 +37,6 @@ BASE_FEATURE(kClientSideDetectionKillswitch,
              "ClientSideDetectionKillswitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kClientSideDetectionModelTag,
-             "ClientSideDetectionTag",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCreateWarningShownClientSafeBrowsingReports,
              "CreateWarningShownClientSafeBrowsingReports",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -364,31 +360,12 @@ base::Value::List GetFeatureStatusList() {
   }
 
   // Manually add experimental features that we want param values for.
-  param_list.Append(base::GetFieldTrialParamValueByFeature(
-      safe_browsing::kClientSideDetectionModelTag,
-      kClientSideDetectionTagParamName));
-  param_list.Append(kClientSideDetectionModelTag.name);
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
   param_list.Append(kHashRealTimeOverOhttpRelayUrl.Get());
   param_list.Append(kHashRealTimeOverOhttpRelayUrl.name);
 
   return param_list;
-}
-
-std::string GetClientSideDetectionTag() {
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kClientSideDetectionModelTag)) {
-    return base::GetFieldTrialParamValueByFeature(
-        safe_browsing::kClientSideDetectionModelTag,
-        kClientSideDetectionTagParamName);
-  }
-
-#if BUILDFLAG(IS_ANDROID)
-  return "android_1";
-#else
-  return "desktop_1_flatbuffer";
-#endif
 }
 
 }  // namespace safe_browsing
