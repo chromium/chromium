@@ -27,6 +27,7 @@
 
 #include <map>
 #include <memory>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -623,7 +624,7 @@ class CastBenchmark {
     }
 
     while (max - min > accuracy) {
-      double avg = (min + max) / 2;
+      double avg = std::midpoint(min, max);
       if (RunOnePoint(v, avg)) {
         min = avg;
       } else {

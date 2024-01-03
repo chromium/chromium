@@ -5,6 +5,7 @@
 #include "media/cast/sender/video_bitrate_suggester.h"
 
 #include <memory>
+#include <numeric>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -35,7 +36,7 @@ static const FrameSenderConfig kVideoConfig{
     /* channels = */ 1,
     kDefaultMaxVideoBitrate,
     kDefaultMinVideoBitrate,
-    (kDefaultMinVideoBitrate + kDefaultMaxVideoBitrate) / 2,
+    std::midpoint<int>(kDefaultMinVideoBitrate, kDefaultMaxVideoBitrate),
     kDefaultMaxFrameRate,
     Codec::kVideoVp8,
     kAesSecretKey,
