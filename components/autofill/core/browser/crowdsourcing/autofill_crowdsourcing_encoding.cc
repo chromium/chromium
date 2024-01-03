@@ -91,7 +91,7 @@ std::deque<FieldSuggestion> MergeManualAndServerOverrides(
   return result;
 }
 
-// Applies manual overrides from |parsed_overrides| to |field_types|.
+// Applies manual overrides from `parsed_overrides` to `field_types`.
 void InsertParsedOverrides(
     base::expected<ServerPredictionOverrides, std::string> parsed_overrides,
     std::map<std::pair<FormSignature, FieldSignature>,
@@ -109,18 +109,18 @@ void InsertParsedOverrides(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-// Helper for |EncodeUploadRequest()| that creates a bit field corresponding to
-// |available_field_types| and returns the hex representation as a string.
+// Helper for `EncodeUploadRequest()` that creates a bit field corresponding to
+// `available_field_types` and returns the hex representation as a string.
 std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
-  // There are |MAX_VALID_FIELD_TYPE| different field types and 8 bits per byte,
+  // There are `MAX_VALID_FIELD_TYPE` different field types and 8 bits per byte,
   // so we need ceil(MAX_VALID_FIELD_TYPE / 8) bytes to encode the bit field.
   const size_t kNumBytes = (MAX_VALID_FIELD_TYPE + 0x7) / 8;
 
-  // Pack the types in |available_field_types| into |bit_field|.
+  // Pack the types in `available_field_types` into `bit_field`.
   std::vector<uint8_t> bit_field(kNumBytes, 0);
   for (auto field_type : available_field_types) {
     // Set the appropriate bit in the field.  The bit we set is the one
-    // |field_type| % 8 from the left of the byte.
+    // `field_type` % 8 from the left of the byte.
     const size_t byte = field_type / 8;
     const size_t bit = 0x80 >> (field_type % 8);
     DCHECK(byte < bit_field.size());
@@ -143,7 +143,7 @@ std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
   return data_presence;
 }
 
-// Returns the first form field type that is not contained in |contained_types|
+// Returns the first form field type that is not contained in `contained_types`
 // or MAX_VALID_FIELD_TYPE if no such type exists.
 FieldType FirstNonCapturedType(const FormStructure& form,
                                const FieldTypeSet& contained_types) {
@@ -385,10 +385,10 @@ void EncodeFormForQuery(const autofill::FormStructure& form,
                         std::vector<FormSignature>& queried_form_signatures,
                         std::set<FormSignature>& processed_forms) {
   DCHECK(!IsMalformed(form));
-  // Adds a request to |query| that contains all (|form|, |field|) for every
-  // |field| from |fields_| that meets |necessary_condition|. Repeated calls for
-  // the same |form| have no effect (early return if |processed_forms| contains
-  // |form|).
+  // Adds a request to `query` that contains all (`form`, `field`) for every
+  // `field` from `fields_` that meets `necessary_condition`. Repeated calls for
+  // the same `form` have no effect (early return if `processed_forms` contains
+  // `form`).
   auto AddFormIf =
       [&](const std::vector<std::unique_ptr<AutofillField>>& fields,
           FormSignature form, FormSignature alternative_signature,
@@ -462,8 +462,8 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
     const AutofillField& field,
     std::map<std::pair<FormSignature, FieldSignature>,
              std::deque<FieldSuggestion>>& fields_suggestions) {
-  // Retrieves the next prediction for |form| and |field| and pops it. Popping
-  // is omitted if no other predictions for |form| and |field| are left, so that
+  // Retrieves the next prediction for `form` and `field` and pops it. Popping
+  // is omitted if no other predictions for `form` and `field` are left, so that
   // any subsequent fields with the same signature will get the same prediction.
   std::set<FormSignature> signatures_seen;
   auto get_suggestion =

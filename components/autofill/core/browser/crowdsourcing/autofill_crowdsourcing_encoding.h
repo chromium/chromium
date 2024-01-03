@@ -18,7 +18,7 @@ namespace autofill {
 // Encodes the given FormStructure as a vector of protobufs.
 //
 // On success, the returned vector is non-empty. The first element encodes the
-// entire FormStructure. In some cases, a |login_form_signature| is included
+// entire FormStructure. In some cases, a `login_form_signature` is included
 // as part of the upload. This field is empty when sending upload requests for
 // non-login forms.
 //
@@ -53,9 +53,9 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     std::string_view login_form_signature,
     bool observed_submission);
 
-// Encodes the list of |forms| and their fields that are valid into an
+// Encodes the list of `forms` and their fields that are valid into an
 // AutofillPageQueryRequest proto. The queried FormSignatures and
-// FieldSignatures are also returned in the same order as in |query|. In case
+// FieldSignatures are also returned in the same order as in `query`. In case
 // multiple FormStructures have the same FormSignature, only the first one is
 // included in AutofillPageQueryRequest and the returned queried form
 // signatures.
@@ -72,9 +72,9 @@ void ParseApiQueryResponse(
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
     LogManager* log_manager);
 
-// Parses the field types from the server query response. |forms| must be the
+// Parses the field types from the server query response. `forms` must be the
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
-// constructing the query. |form_interactions_ukm_logger| is used to provide
+// constructing the query. `form_interactions_ukm_logger` is used to provide
 // logs to UKM and can be null in tests.
 void ProcessQueryResponse(
     const AutofillQueryResponse& response,
