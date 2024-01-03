@@ -60,6 +60,8 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.NavigateChromeVoxMenu*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShowFormControlsList*
 -SelectToSpeakTest.ContinuesReadingDuringResize
+# TODO(b/318357300): Flaky.
+-AccessibilityHighlightsBrowserTest.CaretHighlightOmnibox
 # These tests do not run with the browser and do not need to run with Lacros.
 -AccessibilityCommonTest*
 -AccessibilityPrivateApiTest*

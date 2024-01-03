@@ -176,9 +176,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   EXPECT_FALSE(controller->caret_layer_for_testing());
 }
 
-// This is disabled due to flakiness: b/318357300
 IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
-                       DISABLED_CaretHighlightOmnibox) {
+                       CaretHighlightOmnibox) {
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   PrefService* prefs = GetProfile()->GetPrefs();
