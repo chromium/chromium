@@ -37,13 +37,13 @@ const NSInteger kProgressBarCirclesAmount = 20;
 const CGFloat kLockSymbolPointSize = 22.0;
 const CGFloat kFaviconContainerSize = 30.0;
 const CGFloat kFaviconSize = 22.0;
+const CGFloat kProfileImageSize = 60.0;
 
 // Spacing and padding constraints.
 const CGFloat kVerticalSpacing = 16.0;
 const CGFloat kTopPadding = 20.0;
 const CGFloat kBottomPadding = 42.0;
 const CGFloat kHorizontalPadding = 16.0;
-const CGFloat kTitleDoneButtonSpacing = 48.0;
 const CGFloat kFaviconProfileImageVerticalOverlap = 10.0;
 
 // Durations of specific parts of the animation in seconds.
@@ -88,6 +88,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 // The container for the favicon view that is displayed below the recipient and
 // sender images in successful status view.
 @property(nonatomic, strong) FaviconContainerView* faviconContainerView;
+
+// Stack view containing animation container view, title, subtitle and footer.
+@property(nonatomic, strong) UIStackView* stackView;
 
 // Animates profile image of the sender sliding to the left and profile images
 // of recipients sliding to the right.
@@ -136,115 +139,38 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   UIView* view = self.view;
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
-  // Add container view for the animation.
-  UIView* animationView = [[UIView alloc] init];
-  animationView = [[UIView alloc] init];
-  animationView.translatesAutoresizingMaskIntoConstraints = NO;
-  [view addSubview:animationView];
+  // Add vertical stack view for the animation and all labels.
+  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    [self createAnimationContainerView], [self createTitleLabel]
+  ]];
+  verticalStack.axis = UILayoutConstraintAxisVertical;
+  verticalStack.spacing = kVerticalSpacing;
+  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
+  self.stackView = verticalStack;
+  [view addSubview:verticalStack];
 
-  // Add sender profile image.
-  UIImageView* senderImageView = [self createSenderImageView];
-  [animationView addSubview:senderImageView];
-
-  // Add recipient profile image.
-  UIImageView* recipientImageView = [self createRecipientImageView];
-  [animationView insertSubview:recipientImageView belowSubview:senderImageView];
-
-  // Add progress bar view.
-  UIView* progressBarView = [self createProgressBarView];
-  [animationView insertSubview:progressBarView belowSubview:recipientImageView];
-
-  // Add progress bar circles.
-  [self createProgressBarSubviews];
-
-  // Add lock image.
-  UIImageView* lockImage = [self createLockImage];
-  [progressBarView addSubview:lockImage];
-
-  // Add favicon and its container.
-  FaviconContainerView* faviconContainerView =
-      [self createFaviconContainerView];
-  [animationView insertSubview:faviconContainerView
-                  aboveSubview:senderImageView];
-  FaviconView* faviconView = [self createFaviconView];
-  [faviconContainerView addSubview:faviconView];
-
-  // Add title label.
-  UILabel* titleLabel = [self createTitleLabel];
-  [view addSubview:titleLabel];
-
-  // Add cancel button below the label.
+  // Add cancel button below the stack.
   UIButton* cancelButton = [self createCancelButton];
   [view addSubview:cancelButton];
 
   [NSLayoutConstraint activateConstraints:@[
-    // Animation container constraints.
-    [animationView.topAnchor constraintEqualToAnchor:view.topAnchor
+    // Vertical stack constraints.
+    [verticalStack.topAnchor constraintEqualToAnchor:view.topAnchor
                                             constant:kTopPadding],
-    [animationView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+    [verticalStack.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
                                                 constant:kHorizontalPadding],
-    [animationView.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+    [verticalStack.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
                                                  constant:-kHorizontalPadding],
-    [animationView.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-
-    // Sender image constraints.
-    [senderImageView.topAnchor constraintEqualToAnchor:animationView.topAnchor
-                                              constant:kVerticalSpacing],
-    [senderImageView.bottomAnchor
-        constraintEqualToAnchor:animationView.bottomAnchor
-                       constant:-kVerticalSpacing],
-    [senderImageView.centerXAnchor
-        constraintEqualToAnchor:animationView.centerXAnchor],
-
-    // Recipient image constraints.
-    [recipientImageView.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [recipientImageView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
-
-    // Progress bar constraints.
-    [progressBarView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
-    [progressBarView.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
-    [progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
-
-    // Lock image constraints.
-    [lockImage.centerYAnchor
-        constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [lockImage.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
-
-    // Favicon constraints.
-    [faviconContainerView.topAnchor
-        constraintEqualToAnchor:senderImageView.bottomAnchor
-                       constant:-kFaviconProfileImageVerticalOverlap],
-    [faviconContainerView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
-    [faviconContainerView.widthAnchor
-        constraintEqualToConstant:kFaviconContainerSize],
-    [faviconContainerView.heightAnchor
-        constraintEqualToConstant:kFaviconContainerSize],
-    [faviconView.centerXAnchor
-        constraintEqualToAnchor:faviconContainerView.centerXAnchor],
-    [faviconView.centerYAnchor
-        constraintEqualToAnchor:faviconContainerView.centerYAnchor],
-    [faviconView.widthAnchor constraintEqualToConstant:kFaviconSize],
-    [faviconView.heightAnchor constraintEqualToConstant:kFaviconSize],
-
-    // Title constraints.
-    [titleLabel.topAnchor constraintEqualToAnchor:animationView.bottomAnchor
-                                         constant:kVerticalSpacing],
-    [titleLabel.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
+    [verticalStack.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
 
     // Cancel button constraints.
-    [cancelButton.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
-                                           constant:kVerticalSpacing],
+    [cancelButton.topAnchor
+        constraintGreaterThanOrEqualToAnchor:verticalStack.bottomAnchor
+                                    constant:kVerticalSpacing],
     [cancelButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
                                               constant:-kBottomPadding],
     [cancelButton.centerXAnchor
-        constraintEqualToAnchor:animationView.centerXAnchor],
+        constraintEqualToAnchor:verticalStack.centerXAnchor],
   ]];
 
   [self createAnimations];
@@ -262,6 +188,19 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [self.progressBarLoadingAnimation stopAnimation:YES];
   [self.imagesSlidingInAnimation stopAnimation:YES];
   [super viewDidDisappear:animated];
+}
+
+#pragma mark - Public
+
+- (UISheetPresentationControllerDetent*)preferredHeightDetent {
+  __typeof(self) __weak weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    return [weakSelf detentForPreferredHeightInContext:context];
+  };
+  return [UISheetPresentationControllerDetent
+      customDetentWithIdentifier:@"preferred_height"
+                        resolver:resolver];
 }
 
 #pragma mark - SharingStatusConsumer
@@ -301,6 +240,16 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 }
 
 #pragma mark - Private
+
+- (CGFloat)detentForPreferredHeightInContext:
+    (id<UISheetPresentationControllerDetentResolutionContext>)context
+    API_AVAILABLE(ios(16)) {
+  UIView* containerView = self.sheetPresentationController.containerView;
+  CGFloat width = containerView.bounds.size.width;
+  CGSize fittingSize = CGSizeMake(width, UILayoutFittingCompressedSize.height);
+  CGFloat height = [self.view systemLayoutSizeFittingSize:fittingSize].height;
+  return height;
+}
 
 // Helper for creating sender image view.
 - (UIImageView*)createSenderImageView {
@@ -393,6 +342,96 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   faviconContainerView.hidden = YES;
   self.faviconContainerView = faviconContainerView;
   return faviconContainerView;
+}
+
+// Creates the container view for the animation.
+- (UIView*)createAnimationContainerView {
+  UIView* animationView = [[UIView alloc] init];
+  animationView = [[UIView alloc] init];
+  animationView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // Add sender profile image.
+  UIImageView* senderImageView = [self createSenderImageView];
+  [animationView addSubview:senderImageView];
+
+  // Add recipient profile image.
+  UIImageView* recipientImageView = [self createRecipientImageView];
+  [animationView insertSubview:recipientImageView belowSubview:senderImageView];
+
+  // Add progress bar view.
+  UIView* progressBarView = [self createProgressBarView];
+  [animationView insertSubview:progressBarView belowSubview:recipientImageView];
+
+  // Add progress bar circles.
+  [self createProgressBarSubviews];
+
+  // Add lock image.
+  UIImageView* lockImage = [self createLockImage];
+  [progressBarView addSubview:lockImage];
+
+  // Add favicon and its container.
+  FaviconContainerView* faviconContainerView =
+      [self createFaviconContainerView];
+  [animationView insertSubview:faviconContainerView
+                  aboveSubview:senderImageView];
+  FaviconView* faviconView = [self createFaviconView];
+  [faviconContainerView addSubview:faviconView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    // Sender image constraints.
+    [senderImageView.topAnchor constraintEqualToAnchor:animationView.topAnchor
+                                              constant:kVerticalSpacing],
+    [senderImageView.bottomAnchor
+        constraintEqualToAnchor:animationView.bottomAnchor
+                       constant:-kVerticalSpacing],
+    [senderImageView.centerXAnchor
+        constraintEqualToAnchor:animationView.centerXAnchor],
+    [senderImageView.widthAnchor constraintEqualToConstant:kProfileImageSize],
+    [senderImageView.heightAnchor constraintEqualToConstant:kProfileImageSize],
+
+    // Recipient image constraints.
+    [recipientImageView.centerYAnchor
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
+    [recipientImageView.centerXAnchor
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
+    [recipientImageView.widthAnchor
+        constraintEqualToConstant:kProfileImageSize],
+    [recipientImageView.heightAnchor
+        constraintEqualToConstant:kProfileImageSize],
+
+    // Progress bar constraints.
+    [progressBarView.centerXAnchor
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
+    [progressBarView.centerYAnchor
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
+    [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
+    [progressBarView.heightAnchor constraintEqualToConstant:kProgressBarHeight],
+
+    // Lock image constraints.
+    [lockImage.centerYAnchor
+        constraintEqualToAnchor:senderImageView.centerYAnchor],
+    [lockImage.centerXAnchor
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
+
+    // Favicon constraints.
+    [faviconContainerView.topAnchor
+        constraintEqualToAnchor:senderImageView.bottomAnchor
+                       constant:-kFaviconProfileImageVerticalOverlap],
+    [faviconContainerView.centerXAnchor
+        constraintEqualToAnchor:senderImageView.centerXAnchor],
+    [faviconContainerView.widthAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconContainerView.heightAnchor
+        constraintEqualToConstant:kFaviconContainerSize],
+    [faviconView.centerXAnchor
+        constraintEqualToAnchor:faviconContainerView.centerXAnchor],
+    [faviconView.centerYAnchor
+        constraintEqualToAnchor:faviconContainerView.centerYAnchor],
+    [faviconView.widthAnchor constraintEqualToConstant:kFaviconSize],
+    [faviconView.heightAnchor constraintEqualToConstant:kFaviconSize],
+  ]];
+
+  return animationView;
 }
 
 // Creates title label.
@@ -521,6 +560,16 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
       }];
 }
 
+// Calculates and sets detent based on the height of content.
+- (void)recalculatePreferredHeightDetent {
+  if (@available(iOS 16, *)) {
+    self.sheetPresentationController.detents = @[
+      [self preferredHeightDetent],
+      UISheetPresentationControllerDetent.largeDetent
+    ];
+  }
+}
+
 // Creates a UITextView with subtitle and footer defaults.
 - (UITextView*)createTextView {
   UITextView* view = [[UITextView alloc] init];
@@ -603,36 +652,38 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   return doneButton;
 }
 
+// Creates done button, adds it to the view and sets its constraints.
+- (void)addDoneButtonWithBottomPadding {
+  UIView* view = self.view;
+  UIButton* doneButton = [self createDoneButton];
+  [view addSubview:doneButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [doneButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
+                                             constant:kHorizontalPadding],
+    [doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
+                                              constant:-kHorizontalPadding],
+    [doneButton.topAnchor
+        constraintGreaterThanOrEqualToAnchor:self.stackView.bottomAnchor
+                                    constant:kVerticalSpacing],
+    [doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
+                                            constant:-kBottomPadding],
+  ]];
+}
+
 // Replaces text of the title label, cancel button with done button and adds a
 // subtitle and a footer.
 - (void)displaySuccessStatus {
-  UILabel* titleLabel = self.titleLabel;
-  titleLabel.text =
+  self.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_SUCCESS_TITLE);
   self.cancelButton.hidden = YES;
 
-  UIView* view = self.view;
-  UIStackView* verticalStack = [[UIStackView alloc] initWithArrangedSubviews:@[
-    [self createSubtitle], [self createFooter], [self createDoneButton]
-  ]];
-  verticalStack.axis = UILayoutConstraintAxisVertical;
-  verticalStack.spacing = kVerticalSpacing;
-  verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
-  [view addSubview:verticalStack];
+  UIStackView* stackView = self.stackView;
+  [stackView addArrangedSubview:[self createSubtitle]];
+  [stackView addArrangedSubview:[self createFooter]];
 
-  [NSLayoutConstraint activateConstraints:@[
-    [verticalStack.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
-                                            constant:kVerticalSpacing],
-    [verticalStack.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                                constant:kHorizontalPadding],
-    [verticalStack.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                                 constant:-kHorizontalPadding],
-    [verticalStack.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                               constant:-kBottomPadding],
-  ]];
-
-  [view setNeedsLayout];
-  [view layoutIfNeeded];
+  [self addDoneButtonWithBottomPadding];
+  [self recalculatePreferredHeightDetent];
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   self.titleLabel);
 }
@@ -640,30 +691,12 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 // Replaces text of the title label and adds a done button.
 // TODO(crbug.com/1463882): Add test.
 - (void)displayCancelledStatus {
-  UILabel* titleLabel = self.titleLabel;
-  titleLabel.text =
+  self.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_CANCELLED_TITLE);
   self.cancelButton.hidden = YES;
 
-  UIView* view = self.view;
-  UIButton* doneButton = [self createDoneButton];
-  [view addSubview:doneButton];
-
-  [NSLayoutConstraint activateConstraints:@[
-    // Constraints for the done button.
-    [doneButton.topAnchor constraintEqualToAnchor:titleLabel.bottomAnchor
-                                         constant:kTitleDoneButtonSpacing],
-    [doneButton.bottomAnchor constraintEqualToAnchor:view.bottomAnchor
-                                            constant:-kBottomPadding],
-    [doneButton.leadingAnchor constraintEqualToAnchor:view.leadingAnchor
-                                             constant:kHorizontalPadding],
-    [doneButton.trailingAnchor constraintEqualToAnchor:view.trailingAnchor
-                                              constant:-kHorizontalPadding],
-    [doneButton.centerXAnchor constraintEqualToAnchor:view.centerXAnchor],
-  ]];
-
-  [view setNeedsLayout];
-  [view layoutIfNeeded];
+  [self addDoneButtonWithBottomPadding];
+  [self recalculatePreferredHeightDetent];
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   self.titleLabel);
 }
