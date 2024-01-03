@@ -97,18 +97,18 @@
   },
   '12l-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android32_foldable',
+          'caches': 'android_32_google_apis_x64_foldable',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android32_foldable',
-          'path': '.android_emulator/generic_android32_foldable',
+          'name': 'android_32_google_apis_x64_foldable',
+          'path': '.android_emulator/android_32_google_apis_x64_foldable',
         },
       ],
     },

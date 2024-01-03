@@ -9868,7 +9868,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -9895,13 +9895,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -9923,7 +9923,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*:All/PaymentHandlerEnforceFullDelegationTest.WhenEnabled_ShowPaymentSheet_WhenDisabled_Reject/1"
         ],
         "merge": {
@@ -9951,13 +9951,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -9981,7 +9981,7 @@
           "--test-launcher-batch-limit=1",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10008,13 +10008,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10036,7 +10036,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10063,13 +10063,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10090,7 +10090,7 @@
       {
         "args": [
           "-v",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -10111,13 +10111,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -10130,7 +10130,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
         "merge": {
@@ -10158,13 +10158,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10186,7 +10186,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10213,13 +10213,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10241,7 +10241,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10268,13 +10268,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10296,7 +10296,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10323,13 +10323,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10351,7 +10351,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10378,13 +10378,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10406,7 +10406,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10433,13 +10433,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10462,7 +10462,7 @@
           "--gtest_filter=-*UsingRealWebcam*",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10489,13 +10489,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10517,7 +10517,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10544,13 +10544,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10572,7 +10572,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10599,13 +10599,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10627,7 +10627,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10654,13 +10654,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10682,7 +10682,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_test_apk.filter"
         ],
@@ -10718,13 +10718,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10747,7 +10747,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.chrome_public_unit_test_apk.filter"
         ],
@@ -10781,13 +10781,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10810,7 +10810,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10837,13 +10837,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10865,7 +10865,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -10892,13 +10892,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10921,7 +10921,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l.content_shell_test_apk.filter"
         ],
         "merge": {
@@ -10949,13 +10949,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -10978,7 +10978,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11005,13 +11005,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11034,7 +11034,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
         "merge": {
@@ -11062,13 +11062,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11090,7 +11090,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11117,13 +11117,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11145,7 +11145,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter"
         ],
         "merge": {
@@ -11173,13 +11173,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11201,7 +11201,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11228,13 +11228,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11256,7 +11256,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "ci_only": true,
         "merge": {
@@ -11284,13 +11284,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11312,7 +11312,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11339,13 +11339,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11367,7 +11367,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11394,13 +11394,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11422,7 +11422,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11449,13 +11449,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11477,7 +11477,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11504,13 +11504,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11533,7 +11533,7 @@
           "--use-cmd-decoder=validating",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter"
         ],
         "merge": {
@@ -11561,13 +11561,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11589,7 +11589,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11616,13 +11616,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11644,7 +11644,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11671,13 +11671,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11699,7 +11699,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11726,13 +11726,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11754,7 +11754,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11781,13 +11781,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11809,7 +11809,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11836,13 +11836,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11864,7 +11864,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -11891,13 +11891,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11919,7 +11919,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "ci_only": true,
         "merge": {
@@ -11947,13 +11947,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -11975,7 +11975,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12002,13 +12002,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12030,7 +12030,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12057,13 +12057,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12085,7 +12085,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter"
         ],
         "merge": {
@@ -12113,13 +12113,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12141,7 +12141,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12168,13 +12168,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12196,7 +12196,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12223,13 +12223,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12251,7 +12251,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12278,13 +12278,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12306,7 +12306,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12333,13 +12333,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12362,7 +12362,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
         "merge": {
@@ -12390,13 +12390,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12418,7 +12418,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12445,13 +12445,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12473,7 +12473,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12500,13 +12500,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12528,7 +12528,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12555,13 +12555,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12583,7 +12583,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12610,13 +12610,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12638,7 +12638,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12665,13 +12665,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12693,7 +12693,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12720,13 +12720,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12748,7 +12748,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12775,13 +12775,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12803,7 +12803,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12830,13 +12830,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12858,7 +12858,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12885,13 +12885,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12913,7 +12913,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12940,13 +12940,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -12968,7 +12968,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -12995,13 +12995,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13023,7 +13023,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13050,13 +13050,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13079,7 +13079,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13106,13 +13106,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13134,7 +13134,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13161,13 +13161,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13189,7 +13189,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13216,13 +13216,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13245,7 +13245,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13272,13 +13272,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13301,7 +13301,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13328,13 +13328,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13357,7 +13357,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13384,13 +13384,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13412,7 +13412,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13439,13 +13439,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
@@ -13467,7 +13467,7 @@
         "args": [
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
-          "--avd-config=../../tools/android/avd/proto/generic_android32_foldable.textpb"
+          "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb"
         ],
         "merge": {
           "args": [
@@ -13494,13 +13494,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android32_foldable",
-              "path": ".android_emulator/generic_android32_foldable"
+              "name": "android_32_google_apis_x64_foldable",
+              "path": ".android_emulator/android_32_google_apis_x64_foldable"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android32_foldable"
+              "caches": "android_32_google_apis_x64_foldable"
             }
           },
           "output_links": [
