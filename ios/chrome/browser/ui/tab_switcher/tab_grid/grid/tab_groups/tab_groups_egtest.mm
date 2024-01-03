@@ -37,7 +37,7 @@ NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
 
 // Tests if the tab group creation view is displayed after pushing the button in
 // the context menu.
-- (void)testEditTabGroupIsDisplayedAfterLongPressATab {
+- (void)testCreateTabGroupIsDisplayedAfterLongPressATab {
   // Ensure the app is clean.
   // TODO(crbug.com/1501837): Remove this workaround when the feature is
   // finished. When run repeatedly, the view is never dismissed, which cause the
@@ -62,7 +62,7 @@ NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
       performAction:grey_tap()];
 
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kEditTabGroupIdentifier)]
+      selectElementWithMatcher:grey_accessibilityID(kCreateTabGroupIdentifier)]
       assertWithMatcher:grey_notNil()];
 }
 

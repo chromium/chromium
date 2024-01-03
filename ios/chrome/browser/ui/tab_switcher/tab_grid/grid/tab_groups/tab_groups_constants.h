@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-// Accessibility identifier for the tab group edition or creation view.
-extern NSString* const kEditTabGroupIdentifier;
+// Accessibility identifier for the tab group creation view.
+extern NSString* const kCreateTabGroupIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_GRID_TAB_GROUPS_TAB_GROUPS_CONSTANTS_H_

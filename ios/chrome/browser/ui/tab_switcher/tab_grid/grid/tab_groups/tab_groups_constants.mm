@@ -4,4 +4,4 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 
-NSString* const kEditTabGroupIdentifier = @"EditTabGroupIdentifier";
+NSString* const kCreateTabGroupIdentifier = @"CreateTabGroupIdentifier";

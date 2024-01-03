@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/edit_tab_group_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -23,7 +23,7 @@ constexpr CGFloat kDotTitleSeparationMargin = 12;
 constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 }
 
-@implementation EditTabGroupViewController {
+@implementation CreateTabGroupViewController {
   // Text input to name the group.
   UITextField* _tabGroupTextField;
 }
@@ -39,7 +39,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.accessibilityIdentifier = kEditTabGroupIdentifier;
+  self.view.accessibilityIdentifier = kCreateTabGroupIdentifier;
   if (!UIAccessibilityIsReduceTransparencyEnabled()) {
     self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
         colorWithAlphaComponent:kBackgroundAlpha];

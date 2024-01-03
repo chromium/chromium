@@ -21,11 +21,11 @@ class WebStateID;
 // Hides the currently displayed tab group.
 - (void)hideTabGroup;
 
-// Shows the tab group creation or edition view.
-- (void)showTabGroupEditionForTabs:(std::set<web::WebStateID>&)identifiers;
+// Shows the tab group creation view.
+- (void)showTabGroupCreationForTabs:(std::set<web::WebStateID>&)identifiers;
 
-// Hides the tab group creation or edition view.
-- (void)hideTabGroupEdition;
+// Hides the tab group creation view.
+- (void)hideTabGroupCreation;
 
 @end
 

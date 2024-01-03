@@ -1343,9 +1343,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // TODO(crbug.com/1501837): Display the tab group creation view.
   std::set<web::WebStateID> webStateIDSet = {identifier};
   if (incognito) {
-    [_incognitoGridCoordinator showTabGroupEditionForTabs:webStateIDSet];
+    [_incognitoGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
   } else {
-    [_regularGridCoordinator showTabGroupEditionForTabs:webStateIDSet];
+    [_regularGridCoordinator showTabGroupCreationForTabs:webStateIDSet];
   }
 }
 
