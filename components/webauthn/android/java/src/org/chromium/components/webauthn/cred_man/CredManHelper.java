@@ -220,8 +220,6 @@ public class CredManHelper {
         mIsCrossOrigin = isCrossOrigin;
         mBarrier = barrier;
 
-        // The Android 14 APIs have to be called via reflection until Chromium
-        // builds with the Android 14 SDK by default.
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
                 new OutcomeReceiver<>() {
                     @Override
@@ -374,6 +372,8 @@ public class CredManHelper {
                             assert mConditionalUiState == ConditionalUiState.NONE;
                             assert !options.isConditional;
 
+                            mMetricsHelper.reportGetCredentialMetrics(
+                                    CredManGetRequestEnum.NO_CREDENTIAL_FOUND, mConditionalUiState);
                             if (mNoCredentialsFallback != null) {
                                 mNoCredentialsFallback.run();
                             } else if (mConditionalUiState == ConditionalUiState.NONE) {

@@ -63,6 +63,7 @@ public class CredManMetricsHelper {
         CredManGetRequestEnum.SUCCESS_PASSWORD,
         CredManGetRequestEnum.FAILURE,
         CredManGetRequestEnum.CANCELLED,
+        CredManGetRequestEnum.NO_CREDENTIAL_FOUND,
         CredManGetRequestEnum.NUM_ENTRIES
     })
     public @interface CredManGetRequestEnum {
@@ -72,8 +73,9 @@ public class CredManMetricsHelper {
         int SUCCESS_PASSWORD = 3;
         int FAILURE = 4;
         int CANCELLED = 5;
+        int NO_CREDENTIAL_FOUND = 6;
 
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 7;
     }
 
     public void recordCredManCreateRequestHistogram(@CredManCreateRequestEnum int value) {
