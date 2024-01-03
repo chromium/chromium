@@ -8,7 +8,7 @@ import {constants} from './constants.js';
 import {ParagraphUtils} from './paragraph_utils.js';
 import {RectUtil} from './rect_util.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+import AutomationNode = chrome.automation.AutomationNode;
 const PositionType = chrome.automation.PositionType;
 const RoleType = chrome.automation.RoleType;
 
@@ -17,11 +17,9 @@ const RoleType = chrome.automation.RoleType;
 export class NodeUtils {
   /**
    * Gets the current visibility state for a given node.
-   *
-   * @param {AutomationNode} node The starting node.
-   * @return {NodeUtils.NodeState} the current node state.
+   * @param node The starting node.
    */
-  static getNodeState(node) {
+  static getNodeState(node: AutomationNode): NodeUtils.NodeState {
     if (node === undefined || node.root === null || node.root === undefined) {
       // The node has been removed from the tree, perhaps because the
       // window was closed.
@@ -31,12 +29,16 @@ export class NodeUtils {
     // parents or roots are now invisible.
     // TODO: Update the C++ bindings to set 'invisible' automatically based
     // on parents, rather than going through parents in JS below.
-    if (node.state.invisible) {
+    // TODO(b/314203187): Determine if not null assertion is appropriate here.
+    if (node.state!['invisible']) {
       return NodeUtils.NodeState.NODE_STATE_INVISIBLE;
     }
     // Walk up the tree to make sure the window it is in is not invisible.
     const window = NodeUtils.getNearestContainingWindow(node);
-    if (window != null && window.state[chrome.automation.StateType.INVISIBLE]) {
+    if (window != null &&
+        // TODO(b/314203187): Determine if not null assertion is appropriate
+        // here.
+        window.state![chrome.automation.StateType.INVISIBLE]) {
       return NodeUtils.NodeState.NODE_STATE_INVISIBLE;
     }
     // TODO: Also need a check for whether the window is minimized,
@@ -49,11 +51,12 @@ export class NodeUtils {
    * is of interest. This does not deal with whether nodes have children --
    * nodes are interesting if they have a name or a value and have an onscreen
    * location.
-   * @param {!AutomationNode} node The node to test
-   * @param {boolean} includeOffscreen Whether to include offscreen nodes.
-   * @return {boolean} whether this node should be ignored.
+   * @param node The node to test
+   * @param includeOffscreen Whether to include offscreen nodes.
+   * @return whether this node should be ignored.
    */
-  static shouldIgnoreNode(node, includeOffscreen) {
+  static shouldIgnoreNode(node: AutomationNode, includeOffscreen: boolean):
+      boolean {
     if (NodeUtils.isNodeInvisible(node, includeOffscreen)) {
       return true;
     }
@@ -65,10 +68,10 @@ export class NodeUtils {
    * it was marked with user-select:none. For Inline Text elements, the
    * parent is marked with this attribute, hence the check.
    *
-   * @param {!AutomationNode} node The node to test
-   * @return {boolean} whether this node was marked user-select:none
+   * @param node The node to test
+   * @return whether this node was marked user-select:none
    */
-  static isNotSelectable(node) {
+  static isNotSelectable(node: AutomationNode): boolean {
     return Boolean(
         node &&
         (node.notUserSelectableStyle ||
@@ -77,26 +80,31 @@ export class NodeUtils {
 
   /**
    * Returns true if a node is invisible for any reason.
-   * @param {!AutomationNode} node The node to test
-   * @param {boolean} includeOffscreen Whether to include offscreen nodes
+   * @param node The node to test
+   * @param includeOffscreen Whether to include offscreen nodes
    *     as visible type nodes.
-   * @return {boolean} whether this node is invisible.
+   * @return whether this node is invisible.
    */
-  static isNodeInvisible(node, includeOffscreen) {
-    return !node.location || node.state.invisible ||
-        (node.state.offscreen && !includeOffscreen);
+  static isNodeInvisible(node: AutomationNode, includeOffscreen: boolean):
+      boolean {
+    // TODO(b/314203187): Determine if not null assertion is appropriate here.
+    return !node.location || node.state!['invisible'] ||
+        (node.state!['offscreen'] && !includeOffscreen);
   }
 
   /**
    * Gets the first window containing this node.
-   * @param {AutomationNode} node The node to find a window for.
-   * @return {AutomationNode|undefined} The node representing the nearest
+   * @param node The node to find a window for.
+   * @return The node representing the nearest
    *     containing window.
    */
-  static getNearestContainingWindow(node) {
+  static getNearestContainingWindow(node: AutomationNode): AutomationNode
+      |undefined {
     // Go upwards to root nodes' parents until we find the first window.
     if (node.root && node.root.role === RoleType.ROOT_WEB_AREA) {
-      let nextRootParent = node;
+      let nextRootParent: AutomationNode|undefined = node;
+      // TODO(b/314204374): Check if nextRootParent is undefiend rather than
+      // null.
       while (nextRootParent != null &&
              nextRootParent.role !== RoleType.WINDOW &&
              nextRootParent.root != null &&
@@ -107,7 +115,8 @@ export class NodeUtils {
     }
     // If the parent isn't a root web area, just walk up the tree to find the
     // nearest window.
-    let parent = node;
+    let parent: AutomationNode|undefined = node;
+    // TODO(b/314204374): Check if parent is undefiend rather than null.
     while (parent != null &&
            parent.role !== chrome.automation.RoleType.WINDOW) {
       parent = parent.parent;
@@ -118,20 +127,20 @@ export class NodeUtils {
   /**
    * Gets the length of a node's name. Returns 0 if the name is
    * undefined.
-   * @param {AutomationNode} node The node for which to check the name.
-   * @return {number} The length of the node's name
+   * @param node The node for which to check the name.
+   * @return The length of the node's name
    */
-  static nameLength(node) {
+  static nameLength(node: AutomationNode): number {
     return node.name ? node.name.length : 0;
   }
 
   /**
    * Returns true if a node is a text field type, but not for any other type,
    * including contentEditables.
-   * @param {!AutomationNode} node The node to check
-   * @return {boolean} True if the node is a text field type.
+   * @param node The node to check
+   * @return True if the node is a text field type.
    */
-  static isTextField(node) {
+  static isTextField(node: AutomationNode): boolean {
     return node.role === RoleType.TEXT_FIELD ||
         node.role === RoleType.TEXT_FIELD_WITH_COMBO_BOX;
   }
@@ -139,10 +148,10 @@ export class NodeUtils {
   /**
    * Gets the first (left-most) leaf node of a node. Returns undefined if
    *  none is found.
-   * @param {AutomationNode} node The node to search for the first leaf.
-   * @return {AutomationNode|undefined} The leaf node.
+   * @param node The node to search for the first leaf.
+   * @return The leaf node.
    */
-  static getFirstLeafChild(node) {
+  static getFirstLeafChild(node: AutomationNode): AutomationNode|undefined {
     let result = node.firstChild;
     while (result && result.firstChild) {
       result = result.firstChild;
@@ -153,10 +162,10 @@ export class NodeUtils {
   /**
    * Gets the first (left-most) leaf node of a node. Returns undefined
    * if none is found.
-   * @param {AutomationNode} node The node to search for the first leaf.
-   * @return {AutomationNode|undefined} The leaf node.
+   * @param node The node to search for the first leaf.
+   * @return The leaf node.
    */
-  static getLastLeafChild(node) {
+  static getLastLeafChild(node: AutomationNode): AutomationNode|undefined {
     let result = node.lastChild;
     while (result && result.lastChild) {
       result = result.lastChild;
@@ -167,14 +176,15 @@ export class NodeUtils {
   /**
    * Finds all nodes within the subtree rooted at |node| that overlap
    * a given rectangle.
-   * @param {!AutomationNode} node The starting node.
-   * @param {{left: number, top: number, width: number, height: number}} rect
-   *     The bounding box to search.
-   * @param {Array<AutomationNode>} nodes The matching node array to be
-   *     populated.
-   * @return {boolean} True if any matches are found.
+   * @param node The starting node.
+   * @param rect The bounding box to search.
+   * @param nodes The matching node array to be populated.
+   * @return True if any matches are found.
    */
-  static findAllMatching(node, rect, nodes) {
+  static findAllMatching(
+      node: AutomationNode,
+      rect: {left: number, top: number, width: number, height: number},
+      nodes: AutomationNode[]): boolean {
     var found = false;
     for (var c = node.firstChild; c; c = c.nextSibling) {
       if (NodeUtils.findAllMatching(c, rect, nodes)) {
@@ -212,14 +222,16 @@ export class NodeUtils {
    * object and selection offset. This is meant to be used in conjunction with
    * the selectionStartObject/selectionStartOffset and
    * selectionEndObject/selectionEndOffset of the automation API.
-   * @param {!AutomationNode} parent The parent node of the selection,
+   * @param parent The parent node of the selection,
    * similar to chrome.automation.selectionStartObject or selectionEndObject.
-   * @param {number} offset The integer offset of the selection. This is
+   * @param offset The integer offset of the selection. This is
    * similar to chrome.automation.selectionStartOffset or selectionEndOffset.
-   * @param {boolean} isStart whether this is the start or end of a selection.
-   * @return {!NodeUtils.Position} The node matching the selected offset.
+   * @param isStart whether this is the start or end of a selection.
+   * @return The node matching the selected offset.
    */
-  static getDeepEquivalentForSelection(parent, offset, isStart) {
+  static getDeepEquivalentForSelection(
+      parent: AutomationNode, offset: number,
+      isStart: boolean): NodeUtils.Position {
     const automationPosition = parent.createPosition(PositionType.TREE, offset);
     if (!automationPosition.node) {
       // TODO(accessibility): Bugs in AXPosition cause this; for example, a
@@ -246,14 +258,16 @@ export class NodeUtils {
 
   /**
    * TODO(accessibility): remove once AXPosition bugs are fixed; see above.
-   * @param {!AutomationNode} parent The parent node of the selection,
+   * @param parent The parent node of the selection,
    * similar to chrome.automation.selectionStartObject or selectionEndObject.
-   * @param {number} offset The integer offset of the selection. This is
+   * @param offset The integer offset of the selection. This is
    * similar to chrome.automation.selectionStartOffset or selectionEndOffset.
-   * @param {boolean} isStart whether this is the start or end of a selection.
-   * @return {!NodeUtils.Position} The node matching the selected offset.
+   * @param isStart whether this is the start or end of a selection.
+   * @return The node matching the selected offset.
    */
-  static getDeepEquivalentForSelectionDeprecated(parent, offset, isStart) {
+  static getDeepEquivalentForSelectionDeprecated(
+      parent: AutomationNode, offset: number,
+      isStart: boolean): NodeUtils.Position {
     if (parent.children.length === 0) {
       return {node: parent, offset};
     }
@@ -264,16 +278,14 @@ export class NodeUtils {
         parent.children.length > 0 && !NodeUtils.isTextField(parent)) {
       const index = isStart ? offset : offset - 1;
       if (parent.children.length > index && index >= 0) {
-        let child = parent.children[index];
+        let child = parent.children[index]!;
         if (child.children.length > 0) {
-          child = isStart ? NodeUtils.getFirstLeafChild(child) :
-                            NodeUtils.getLastLeafChild(child);
+          child = isStart ? NodeUtils.getFirstLeafChild(child)! :
+                            NodeUtils.getLastLeafChild(child)!;
         }
         return {
-          node: /** @type {!AutomationNode} */ (child),
-          offset: isStart ?
-              0 :
-              NodeUtils.nameLength(/** @type {!AutomationNode} */ (child)),
+          node: child!,
+          offset: isStart ? 0 : NodeUtils.nameLength(child!),
         };
       } else if (isStart && !NodeUtils.isTextField(parent)) {
         // We are off the edge of this parent. Go to the next leaf node that is
@@ -304,7 +316,7 @@ export class NodeUtils {
     // nodes to search through.
     // TODO(katie): Since we only have non-text nodes or nodes without children,
     // can this be simplified?
-    let nodesToCheck;
+    let nodesToCheck: AutomationNode[];
     if (NodeUtils.isTextField(parent) && parent.firstChild &&
         parent.firstChild.firstChild) {
       // Skip ahead.
@@ -317,8 +329,9 @@ export class NodeUtils {
     // Delve down into the children recursively to find the
     // one at this offset.
     while (nodesToCheck.length > 0) {
-      node = nodesToCheck.pop();
-      if (node.state.invisible) {
+      node = nodesToCheck.pop()!;
+      // TODO(b/314203187): Determine if not null assertion is appropriate here.
+      if (node.state!['invisible']) {
         continue;
       }
       if (node.children.length > 0) {
@@ -328,8 +341,8 @@ export class NodeUtils {
           nodesToCheck = nodesToCheck.concat(node.children.slice().reverse());
         }
       } else {
-        if (node.parent.role === RoleType.STATIC_TEXT ||
-            node.parent.role === RoleType.INLINE_TEXT_BOX) {
+        if (node.parent!.role === RoleType.STATIC_TEXT ||
+            node.parent!.role === RoleType.INLINE_TEXT_BOX) {
           // How many characters are in the name.
           index += NodeUtils.nameLength(node);
         } else {
@@ -381,9 +394,8 @@ export class NodeUtils {
   /**
    * Sorts given nodes by visual reading order. Expects nodes to be leaf nodes
    * with text.
-   * @param {!Array<!AutomationNode>} nodes
    */
-  static sortNodesByReadingOrder(nodes) {
+  static sortNodesByReadingOrder(nodes: AutomationNode[]): void {
     // Pre-compute ancestors for each node.
     const nodeAncestorMap = new Map();
     for (const node of nodes) {
@@ -432,11 +444,11 @@ export class NodeUtils {
   /**
    * Sorts a specific range of a given array of nodes by visual reading order.
    * Expects nodes to be leaf nodes with text.
-   * @param {!Array<!AutomationNode>} nodes
-   * @param {number} startIndex Index specifying start of range.
-   * @param {number} endIndex  Index specifying end of range, non-inclusive.
+   * @param startIndex Index specifying start of range.
+   * @param endIndex  Index specifying end of range, non-inclusive.
    */
-  static sortNodeRangeByReadingOrder(nodes, startIndex, endIndex) {
+  static sortNodeRangeByReadingOrder(
+      nodes: AutomationNode[], startIndex: number, endIndex: number): void {
     const nodesToSort = nodes.slice(startIndex, endIndex);
     NodeUtils.sortNodesByReadingOrder(nodesToSort);
     nodes.splice(startIndex, endIndex - startIndex, ...nodesToSort);
@@ -444,9 +456,8 @@ export class NodeUtils {
 
   /**
    * Sorts SVG nodes with the same SVG root parent by visual reading order.
-   * @param {!Array<!AutomationNode>} nodes
    */
-  static sortSvgNodesByReadingOrder(nodes) {
+  static sortSvgNodesByReadingOrder(nodes: AutomationNode[]): void {
     let lastSvgRoot = null;
     let startIndex = 0;
     for (let i = 0; i < nodes.length; i++) {
@@ -468,12 +479,12 @@ export class NodeUtils {
   }
 
   /**
-   * @param {!AutomationNode} node Leaf node.
-   * @return {!Array<!AutomationNode>} All selectable leaf nodes in the
-   *     paragraph that the given leaf node belongs to. If the node does
-   *     not belong to a paragraph, then just the node itself is returned.
+   * @param node Leaf node.
+   * @return All selectable leaf nodes in the paragraph that the given
+   *     leaf node belongs to. If the node does not belong to a paragraph,
+   *     then just the node itself is returned.
    */
-  static getAllNodesInParagraph(node) {
+  static getAllNodesInParagraph(node: AutomationNode): AutomationNode[] {
     const blockParent = ParagraphUtils.getFirstBlockAncestor(node);
     if (blockParent === null || blockParent === node.root) {
       return [node];
@@ -490,12 +501,10 @@ export class NodeUtils {
    * |nodeGroup|. If |fallbackToEnd| is true, when the |charIndex| is undefined
    * or out of the text of |nodeGroup|, we will return the end of the
    * |nodeGroup|. Otherwise, we fallback to the start of the |nodeGroup|.
-   * @param {!ParagraphUtils.NodeGroup} nodeGroup
-   * @param {number|undefined} charIndex
-   * @param {boolean} fallbackToEnd
-   * @return {!NodeUtils.Position}
    */
-  static getPositionFromNodeGroup(nodeGroup, charIndex, fallbackToEnd) {
+  static getPositionFromNodeGroup(
+      nodeGroup: ParagraphUtils.NodeGroup, charIndex: number|undefined,
+      fallbackToEnd: boolean): NodeUtils.Position {
     let node;
     let offset;
     if (charIndex !== undefined) {
@@ -523,25 +532,25 @@ export class NodeUtils {
   }
 
   /**
-   * @param {!AutomationNode} node
-   * @return {boolean} Whether the given node is a valid leaf node that is can
+   * @param node
+   * @return Whether the given node is a valid leaf node that is can
    *     be ingested by Select-to-speak.
    */
-  static isValidLeafNode(node) {
+  static isValidLeafNode(node: AutomationNode): boolean {
     return AutomationPredicate.leafWithText(node) &&
         !NodeUtils.shouldIgnoreNode(node, /* includeOffscreen= */ true) &&
         !NodeUtils.isNotSelectable(node);
   }
 
   /**
-   * @param {!NodeUtils.Position} startPosition
-   * @param {!NodeUtils.Position} endPosition
-   * @return {constants.Dir} the direction from the |startPosition| to the
+   * @return The direction from the |startPosition| to the
    *     |endPosition|. If the input positions are equal, we view the
    *     |endPosition| is to the |constants.Dir.BACKWARD| of the
    *     |startPosition|.
    */
-  static getDirectionBetweenPositions(startPosition, endPosition) {
+  static getDirectionBetweenPositions(
+      startPosition: NodeUtils.Position,
+      endPosition: NodeUtils.Position): constants.Dir {
     const startNode = startPosition.node;
     const startOffset = startPosition.offset;
     const endNode = endPosition.node;
@@ -556,24 +565,26 @@ export class NodeUtils {
   }
 }
 
-/**
- * Node state. Nodes can be on-screen like normal, or they may
- * be invisible if they are in a tab that is not in the foreground
- * or similar, or they may be invalid if they were removed from their
- * root, i.e. if they were in a window that was closed.
- * @enum {number}
- */
-NodeUtils.NodeState = {
-  NODE_STATE_INVALID: 0,
-  NODE_STATE_INVISIBLE: 1,
-  NODE_STATE_NORMAL: 2,
-};
+export namespace NodeUtils {
+  /**
+   * Node state. Nodes can be on-screen like normal, or they may
+   * be invisible if they are in a tab that is not in the foreground
+   * or similar, or they may be invalid if they were removed from their
+   * root, i.e. if they were in a window that was closed.
+   */
+  export enum NodeState {
+    NODE_STATE_INVALID = 0,
+    NODE_STATE_INVISIBLE = 1,
+    NODE_STATE_NORMAL = 2,
+  }
 
 
-/**
- * Class representing a position on the accessibility, made of a
- * selected node and the offset of that selection.
- * @typedef {{node: (!AutomationNode),
- *            offset: (number)}}
- */
-NodeUtils.Position;
+  /**
+   * Class representing a position on the accessibility, made of a
+   * selected node and the offset of that selection.
+   */
+  export interface Position {
+    node: AutomationNode;
+    offset: number;
+  }
+}

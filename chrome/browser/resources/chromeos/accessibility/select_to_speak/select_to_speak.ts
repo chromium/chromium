@@ -254,7 +254,9 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       // that a node is in ARC++.
       if (!NodeUtils.findAllMatching(root, rect, nodes) && focusedNode &&
           focusedNode.root!.role !== RoleType.DESKTOP) {
-        NodeUtils.findAllMatching(focusedNode.root, rect, nodes);
+        // TODO(b/314203187): Determine if not null assertion is appropriate
+        // here.
+        NodeUtils.findAllMatching(focusedNode.root!, rect, nodes);
       }
       if (nodes.length === 1 && UiManager.isTrayButton(nodes[0])) {
         // Don't read only the Select-to-Speak toggle button in the tray unless
@@ -343,10 +345,10 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     // say which node is selected and at what charOffset. See
     // https://crbug.com/803160 for more.
 
-    const startPosition =
-        NodeUtils.getDeepEquivalentForSelection(startObject, startOffset, true);
+    const startPosition = NodeUtils.getDeepEquivalentForSelection(
+        startObject!, startOffset, true);
     const endPosition =
-        NodeUtils.getDeepEquivalentForSelection(endObject, endOffset, false);
+        NodeUtils.getDeepEquivalentForSelection(endObject!, endOffset, false);
 
     // TODO(katie): We go into these blocks but they feel redundant. Can
     // there be another way to do this?
@@ -392,7 +394,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       method: MetricsUtils.StartSpeechMethod|null,
       focusedNode: AutomationNode|undefined): void {
     const nodes = [];
-    let selectedNode = firstPosition.node;
+    // TODO(b/314204374): AutomationUtil.findNextNode may return null.
+    let selectedNode: AutomationNode|null = firstPosition.node;
     // If the method is set, a user requested the speech.
     const userRequested = method !== null;
     /**@type {number} */
@@ -1488,8 +1491,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
                 // window which received the hit test request is not part of the
                 // tree that contains the actual content. In such cases, use
                 // focus to get the appropriate root.
-                const focusedWindow = NodeUtils.getNearestContainingWindow(
-                    focusedNode.root || null);
+                const focusedWindow =
+                    NodeUtils.getNearestContainingWindow(focusedNode.root!);
                 if (focusedWindow != null && currentWindow === focusedWindow) {
                   resolve(true);
                   return;
