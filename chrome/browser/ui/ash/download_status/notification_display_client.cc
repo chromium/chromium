@@ -16,14 +16,20 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_handler.h"
+#include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/user.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -52,10 +58,12 @@ class DownloadNotificationDelegate
     : public message_center::NotificationDelegate {
  public:
   DownloadNotificationDelegate(
-      std::vector<base::RepeatingClosure> button_callbacks,
-      base::RepeatingClosure on_closed_by_user_closure)
-      : button_callbacks_(std::move(button_callbacks)),
-        on_closed_by_user_closure_(std::move(on_closed_by_user_closure)) {}
+      std::vector<base::RepeatingClosure> button_click_callbacks,
+      base::RepeatingClosure body_click_callback,
+      base::RepeatingClosure closed_by_user_callback)
+      : button_click_callbacks_(std::move(button_click_callbacks)),
+        body_click_callback_(std::move(body_click_callback)),
+        closed_by_user_callback_(std::move(closed_by_user_callback)) {}
   DownloadNotificationDelegate(const DownloadNotificationDelegate&) = delete;
   DownloadNotificationDelegate& operator=(const DownloadNotificationDelegate&) =
       delete;
@@ -66,28 +74,62 @@ class DownloadNotificationDelegate
 
   void Click(const std::optional<int>& button_index,
              const std::optional<std::u16string>& reply) override {
-    if (button_index >= 0 && button_index < button_callbacks_.size()) {
-      button_callbacks_[*button_index].Run();
+    if (button_index >= 0 && button_index < button_click_callbacks_.size()) {
+      button_click_callbacks_[*button_index].Run();
+      return;
     }
 
-    // TODO(http://b/316368295): Handle click on the notification body.
+    if (!button_index) {
+      body_click_callback_.Run();
+    }
   }
 
   void Close(bool by_user) override {
     if (by_user) {
-      on_closed_by_user_closure_.Run();
+      closed_by_user_callback_.Run();
     }
   }
 
   // Callbacks for handling button click events, listed in the order of their
   // corresponding buttons.
-  const std::vector<base::RepeatingClosure> button_callbacks_;
+  const std::vector<base::RepeatingClosure> button_click_callbacks_;
+
+  // Runs when the notification body is clicked.
+  const base::RepeatingClosure body_click_callback_;
 
   // Runs when the observed notification is closed by user.
-  const base::RepeatingClosure on_closed_by_user_closure_;
+  const base::RepeatingClosure closed_by_user_callback_;
 };
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the callback that runs when the notification body associated with
+// `display_metadata` is clicked. Performs the show-in-browser command if
+// `display_metadata` contains it. Otherwise, the download file will be opened.
+base::RepeatingClosure GetNotificationBodyClickCallback(
+    Profile* profile,
+    const DisplayMetadata& display_metadata) {
+  const std::vector<CommandInfo>& command_infos =
+      display_metadata.command_infos;
+  if (auto show_in_browser_iter = base::ranges::find(
+          command_infos, CommandType::kShowInBrowser, &CommandInfo::type);
+      show_in_browser_iter != command_infos.end()) {
+    return show_in_browser_iter->command_callback;
+  }
+
+  // TODO(http://b/316368295): Track successful file openings as a metric.
+  return base::BindRepeating(
+      [](const AccountId& account_id, const base::FilePath& file_path) {
+        if (Profile* const profile =
+                ProfileHelper::Get()->GetProfileByAccountId(account_id)) {
+          platform_util::OpenItem(profile, file_path,
+                                  platform_util::OpenItemType::OPEN_FILE,
+                                  /*callback=*/base::DoNothing());
+        }
+      },
+      ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId(),
+      display_metadata.file_path);
+}
 
 // NOTE: This function returns a non-empty string indicating the notification
 // text, but does not guarantee the presence of a notification.
@@ -113,11 +155,11 @@ void NotificationDisplayClient::AddOrUpdate(
   }
 
   // Get button infos from `display_metadata`.
-  std::vector<base::RepeatingClosure> button_callbacks;
+  std::vector<base::RepeatingClosure> button_click_callbacks;
   std::vector<message_center::ButtonInfo> buttons;
   for (const auto& command_info : display_metadata.command_infos) {
     if (base::Contains(kButtonCommands, command_info.type)) {
-      button_callbacks.push_back(command_info.command_callback);
+      button_click_callbacks.push_back(command_info.command_callback);
       buttons.emplace_back(l10n_util::GetStringUTF16(command_info.text_id));
     }
   }
@@ -147,7 +189,8 @@ void NotificationDisplayClient::AddOrUpdate(
   message_center::Notification notification =
       SystemNotificationBuilder()
           .SetDelegate(base::MakeRefCounted<DownloadNotificationDelegate>(
-              std::move(button_callbacks),
+              std::move(button_click_callbacks),
+              GetNotificationBodyClickCallback(profile(), display_metadata),
               base::BindRepeating(
                   &NotificationDisplayClient::OnNotificationClosedByUser,
                   weak_ptr_factory_.GetWeakPtr(), guid)))
