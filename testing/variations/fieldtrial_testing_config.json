@@ -8652,6 +8652,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "Hotspot"
+                    ]
+                },
+                {
                     "name": "Enabled",
                     "enable_features": [
                         "Hotspot"
