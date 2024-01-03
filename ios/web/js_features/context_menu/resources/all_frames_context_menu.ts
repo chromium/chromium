@@ -615,6 +615,9 @@ function extractUrlFromBackgroundImageString(backgroundImageString: string):
  */
 window.addEventListener('message', function(message) {
   const payload = message.data;
+  if (!payload || typeof payload !== 'object') {
+    return;
+  }
   if (payload.hasOwnProperty('type') &&
       payload.type === 'org.chromium.contextMenuMessage') {
     findElementAtPointInPageCoordinates(

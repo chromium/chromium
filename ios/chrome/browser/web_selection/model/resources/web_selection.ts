@@ -62,7 +62,8 @@ gCrWeb.webSelection =  { getSelectedText };
 
 window.addEventListener('message', function(message) {
   const payload = message.data;
-  if (typeof payload !== 'object' ||
+  if (!payload ||
+      typeof payload !== 'object' ||
       !payload.hasOwnProperty('type') ||
       payload.type !== 'org.chromium.getSelection' ||
       !payload.hasOwnProperty('offsetX') ||
