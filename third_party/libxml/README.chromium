@@ -13,9 +13,6 @@ libxml2 from libxml.org.
 
 Modifications:
 
-- chromium-issue-894933.patch: Use ptrdiff_t instead of unsigned long for
-    pointer differences in parser.c
-- libxml2-2.9.4-security-xpath-nodetab-uaf.patch: See https://crbug.com/705445
 - undo-sax-deprecation.patch: Un-deprecate xmlSAXParseMemory because it is used
   in chromium's copy of maldoca. See https://github.com/google/maldoca/issues/87
 - Add helper classes in the chromium/ subdirectory.

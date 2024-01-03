@@ -72,7 +72,6 @@ import tempfile
 # this is helpful.
 
 PATCHES = [
-    'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
     'undo-sax-deprecation.patch',
 ]
 

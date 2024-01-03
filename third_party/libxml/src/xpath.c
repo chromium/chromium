@@ -3698,7 +3698,7 @@ xmlXPathNewValueTree(xmlNodePtr val) {
     }
     memset(ret, 0 , sizeof(xmlXPathObject));
     ret->type = XPATH_XSLT_TREE;
-    ret->boolval = 0;
+    ret->boolval = 1;
     ret->user = (void *) val;
     ret->nodesetval = xmlXPathNodeSetCreate(val);
     return(ret);
