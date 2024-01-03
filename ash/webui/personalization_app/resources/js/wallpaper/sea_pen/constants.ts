@@ -132,7 +132,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
     },
     {
       id: SeaPenTemplateId.kMineral.toString(),
-      title: 'Mineral',
+      title: 'Minerals',
       text: `A close-up image of <${SeaPenTemplateChip.kMineralName}> with <${
           SeaPenTemplateChip.kMineralColor}> hues`,
       preview: [{
@@ -143,28 +143,88 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kMineralName,
           [
             {
-              value: SeaPenTemplateOption.kMineralNameWhiteQuartz,
-              translation: 'white quartz',
+              value: SeaPenTemplateOption.kMineralNameAgate,
+              translation: 'agate',
             },
             {
               value: SeaPenTemplateOption.kMineralNameAmethyst,
               translation: 'amethyst',
             },
             {
-              value: SeaPenTemplateOption.kMineralNameBlueSapphire,
-              translation: 'blue sapphire',
+              value: SeaPenTemplateOption.kMineralNameAquamarine,
+              translation: 'aquamarine',
             },
             {
-              value: SeaPenTemplateOption.kMineralNameAmberCarnelian,
-              translation: 'amber carnelian',
+              value: SeaPenTemplateOption.kMineralNameAragonite,
+              translation: 'aragonite',
             },
             {
-              value: SeaPenTemplateOption.kMineralNameEmerald,
-              translation: 'emerald',
+              value: SeaPenTemplateOption.kMineralNameBismuth,
+              translation: 'bismuth',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameCerussite,
+              translation: 'cerussite',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameChalcopyrite,
+              translation: 'chalcopyrite',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameChrysoprase,
+              translation: 'chrysoprase',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameFluorite,
+              translation: 'fluorite',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameGalena,
+              translation: 'galena',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameJasper,
+              translation: 'jasper',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameLabradorite,
+              translation: 'labradorite',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameLapisLazuli,
+              translation: 'lapis lazuli',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameMoonstone,
+              translation: 'moonstone',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameOpal,
+              translation: 'opal',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNamePeridot,
+              translation: 'peridot',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameRhondochrosite,
+              translation: 'rhondochrosite',
             },
             {
               value: SeaPenTemplateOption.kMineralNameRuby,
               translation: 'ruby',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameSapphire,
+              translation: 'sapphire',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameQuartz,
+              translation: 'quartz',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralNameTourmaline,
+              translation: 'tourmaline',
             },
           ],
         ],
@@ -172,20 +232,48 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
           SeaPenTemplateChip.kMineralColor,
           [
             {
-              value: SeaPenTemplateOption.kMineralColorWhite,
-              translation: 'white',
+              value: SeaPenTemplateOption.kMineralColorWarm,
+              translation: 'warm',
             },
             {
-              value: SeaPenTemplateOption.kMineralColorPeriwinkle,
-              translation: 'periwinkle',
+              value: SeaPenTemplateOption.kMineralColorCool,
+              translation: 'cool',
             },
             {
-              value: SeaPenTemplateOption.kMineralColorPink,
-              translation: 'pink',
+              value: SeaPenTemplateOption.kMineralColorNeutral,
+              translation: 'neutral',
             },
             {
-              value: SeaPenTemplateOption.kMineralColorLavender,
-              translation: 'lavender',
+              value: SeaPenTemplateOption.kMineralColorPastel,
+              translation: 'pastel',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorMuted,
+              translation: 'muted',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorVibrant,
+              translation: 'vibrant',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorEarthy,
+              translation: 'earthy',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorMetallic,
+              translation: 'metallic',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorNeon,
+              translation: 'neon',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorTonal,
+              translation: 'tonal',
+            },
+            {
+              value: SeaPenTemplateOption.kMineralColorGray,
+              translation: 'gray',
             },
           ],
         ],

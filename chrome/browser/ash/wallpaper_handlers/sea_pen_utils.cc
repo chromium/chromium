@@ -105,35 +105,101 @@ std::string TemplateOptionToString(
     case ash::personalization_app::mojom::SeaPenTemplateOption::kFlowerColorRed:
       return "red";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameWhiteQuartz:
-      return "white_quartz";
+        kMineralNameAgate:
+      return "agate";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralNameAmethyst:
       return "amethyst";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameBlueSapphire:
-      return "blue_sapphire";
+        kMineralNameAquamarine:
+      return "aquamarine";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameAmberCarnelian:
-      return "amber_carnelian";
+        kMineralNameAragonite:
+      return "aragonite";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralNameEmerald:
-      return "emerald";
+        kMineralNameBismuth:
+      return "bismuth";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameCerussite:
+      return "cerussite";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameChalcopyrite:
+      return "chalcopyrite";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameChrysoprase:
+      return "chrysoprase";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameFluorite:
+      return "fluorite";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameGalena:
+      return "galena";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameJasper:
+      return "jasper";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameLabradorite:
+      return "labradorite";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameLapisLazuli:
+      return "lapis_lazuli";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameMoonstone:
+      return "moonstone";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameOpal:
+      return "opal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNamePeridot:
+      return "peridot";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralNameRhondochrosite:
+      return "rhondochrosite";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kMineralNameRuby:
       return "ruby";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralColorWhite:
-      return "white";
+        kMineralNameSapphire:
+      return "sapphire";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralColorPeriwinkle:
-      return "periwinkle";
+        kMineralNameQuartz:
+      return "quartz";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralColorPink:
-      return "pink";
+        kMineralNameTourmaline:
+      return "tourmaline";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
-        kMineralColorLavender:
-      return "lavender";
+        kMineralColorWarm:
+      return "warm";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorCool:
+      return "cool";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorNeutral:
+      return "neutral";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorPastel:
+      return "pastel";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorMuted:
+      return "muted";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorVibrant:
+      return "vibrant";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorEarthy:
+      return "earthy";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorMetallic:
+      return "metallic";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorNeon:
+      return "neon";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorTonal:
+      return "tonal";
+    case ash::personalization_app::mojom::SeaPenTemplateOption::
+        kMineralColorGray:
+      return "gray";
     case ash::personalization_app::mojom::SeaPenTemplateOption::
         kLandscapeBiomeTaiga:
       return "taiga";
@@ -274,15 +340,15 @@ bool IsValidTemplateQuery(
                                .find(ash::personalization_app::mojom::
                                          SeaPenTemplateChip::kMineralColor)
                                ->second;
-      return (mineral_name >=
+      return (mineral_name >= ash::personalization_app::mojom::
+                                  SeaPenTemplateOption::kMineralNameAgate &&
+              mineral_name <=
                   ash::personalization_app::mojom::SeaPenTemplateOption::
-                      kMineralNameWhiteQuartz &&
-              mineral_name <= ash::personalization_app::mojom::
-                                  SeaPenTemplateOption::kMineralNameRuby &&
+                      kMineralNameTourmaline &&
               mineral_color >= ash::personalization_app::mojom::
-                                   SeaPenTemplateOption::kMineralColorWhite &&
+                                   SeaPenTemplateOption::kMineralColorWarm &&
               mineral_color <= ash::personalization_app::mojom::
-                                   SeaPenTemplateOption::kMineralColorLavender);
+                                   SeaPenTemplateOption::kMineralColorGray);
     }
     case ash::personalization_app::mojom::SeaPenTemplateId::kLandscape: {
       auto landscape_biome = options
@@ -326,7 +392,7 @@ bool IsValidTemplateQuery(
                                  SeaPenTemplateOption::kScifiColorNeutral);
     }
   }
-  return true;
+  return false;
 }
 
 }  // namespace
