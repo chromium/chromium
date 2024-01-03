@@ -325,7 +325,6 @@ void DialogClientView::UpdateDialogButton(MdTextButton** member,
               .SetText(title)
               .SetProperty(views::kElementIdentifierKey, GetButtonId(type))
               .SetStyle(style)
-              .SetProminent(is_default)
               .SetIsDefault(is_default)
               .SetEnabled(delegate->IsDialogButtonEnabled(type))
               .SetMinSize(gfx::Size(minimum_width, 0))
