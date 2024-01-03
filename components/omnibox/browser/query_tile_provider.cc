@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/query_tile_provider.h"
+#include <algorithm>
 
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -19,7 +21,7 @@
 #include "third_party/omnibox_proto/groups.pb.h"
 
 // The relevance score for query tile match.
-constexpr int kQueryTilesMatchRelevanceScore = 1600;
+constexpr int kQueryTilesMatchRelevanceScore = 100;
 
 QueryTileProvider::QueryTileProvider(AutocompleteProviderClient* client,
                                      AutocompleteProviderListener* listener)
@@ -120,9 +122,17 @@ void QueryTileProvider::BuildSuggestions() {
   const auto& search_terms_data = template_url_service->search_terms_data();
   std::u16string keyword = template_url->keyword();
 
+  // We only ever show a subset of query tiles. Randomizing relevance gives all
+  // query tiles the opportunity to surface.
+  std::vector<int> shuffled_relevance(tiles_.size());
+  std::iota(shuffled_relevance.begin(), shuffled_relevance.end(), 0);
+  base::RandomShuffle(shuffled_relevance.begin(), shuffled_relevance.end());
+  auto shuffled_relevance_iter = shuffled_relevance.begin();
+
   for (const auto& tile : tiles_) {
-    AutocompleteMatch match(this, kQueryTilesMatchRelevanceScore, false,
-                            AutocompleteMatchType::TILE_SUGGESTION);
+    AutocompleteMatch match(
+        this, kQueryTilesMatchRelevanceScore + *shuffled_relevance_iter, false,
+        AutocompleteMatchType::TILE_SUGGESTION);
     match.contents = base::ASCIIToUTF16(tile.display_text);
     match.contents_class = ClassifyTermMatches({}, match.contents.size(),
                                                ACMatchClassification::MATCH,
@@ -141,6 +151,7 @@ void QueryTileProvider::BuildSuggestions() {
         *match.search_terms_args, search_terms_data));
 
     matches_.push_back(std::move(match));
+    shuffled_relevance_iter++;
   }
 
   NotifyListeners(!matches_.empty());
