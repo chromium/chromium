@@ -428,7 +428,9 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
 
 - (TabGridToolbarsConfiguration*)toolbarsConfiguration {
   TabGridToolbarsConfiguration* toolbarsConfiguration =
-      [[TabGridToolbarsConfiguration alloc] init];
+      [[TabGridToolbarsConfiguration alloc]
+          initWithPage:TabGridPageRegularTabs];
+  toolbarsConfiguration.mode = TabGridModeInactive;
   toolbarsConfiguration.closeAllButton = [self canCloseTabs];
   toolbarsConfiguration.searchButton = YES;
   toolbarsConfiguration.undoButton = [self canUndoCloseAllTabs];

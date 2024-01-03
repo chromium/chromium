@@ -126,7 +126,10 @@ source_set("recent_tabs_ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "recent_tabs_coordinator_unittest.mm" ]
+  sources = [
+    "recent_tabs_coordinator_unittest.mm",
+    "recent_tabs_mediator_unittest.mm",
+  ]
   deps = [
     ":recent_tabs",
     ":recent_tabs_ui",
@@ -158,6 +161,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test:fakes",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",

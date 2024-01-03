@@ -274,7 +274,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     if (page != self.currentPage) {
       self.currentPage = page;
       [self broadcastIncognitoContentVisibility];
-      [self configureButtonsForActiveAndCurrentPage];
       // Records when the user drags the scrollView to switch pages.
       [self.mutator pageChanged:page
                     interaction:TabSwitcherPageChangeInteraction::kScrollDrag];
@@ -303,7 +302,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (page != self.currentPage) {
     self.currentPage = page;
     [self broadcastIncognitoContentVisibility];
-    [self configureButtonsForActiveAndCurrentPage];
     [self.mutator
         pageChanged:page
         interaction:TabSwitcherPageChangeInteraction::kAccessibilitySwipe];
@@ -323,7 +321,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.currentPage = currentPage;
   self.scrollViewAnimatingContentOffset = NO;
   [self broadcastIncognitoContentVisibility];
-  [self configureButtonsForActiveAndCurrentPage];
 }
 
 #pragma mark - UIScrollViewAccessibilityDelegate
@@ -944,7 +941,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // made at the end of scrolling animations after `self.currentPage` is set.
     // Since this codepath has no animations, updates must be called manually.
     [self broadcastIncognitoContentVisibility];
-    [self configureButtonsForActiveAndCurrentPage];
   } else {
     // Only set `scrollViewAnimatingContentOffset` to YES if there's an actual
     // change in the contentOffset, as `-scrollViewDidEndScrollingAnimation:` is
@@ -961,7 +957,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         // Something easy to reproduce with the two edges (incognito / recent
         // tabs), but also possible with middle position (normal).
         [self broadcastIncognitoContentVisibility];
-        [self configureButtonsForActiveAndCurrentPage];
       }
     }
   }
@@ -1139,81 +1134,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // vertically long or the selection mode is enabled.
     self.configuration = TabGridConfigurationBottomToolbar;
   }
-  [self configureButtonsForActiveAndCurrentPage];
-}
-
-// TODO(crbug.com/1457146): Remove this function when mediators will manage the
-// selection mode toolbar update.
-// TODO(crbug.com/1457146): Remove this function when mediators will match all
-// the toolbar update currently done by the UI.
-- (void)configureButtonsForActiveAndCurrentPage {
-  self.bottomToolbar.page = self.currentPage;
-  self.topToolbar.page = self.currentPage;
-  self.bottomToolbar.mode = self.tabGridMode;
-  self.topToolbar.mode = self.tabGridMode;
-
-  // When current page is a remote tabs page.
-  if (self.currentPage == TabGridPageRemoteTabs) {
-    if (self.pageConfiguration ==
-        TabGridPageConfiguration::kIncognitoPageOnly) {
-      // Disable done button if showing a disabled tab view for recent tab.
-      [self configureDoneButtonOnDisabledPage];
-    } else {
-      [self configureDoneButtonBasedOnPage:self.activePage];
-    }
-    return;
-  }
-
-  BOOL incognitoIsDisabled =
-      _pageConfiguration == TabGridPageConfiguration::kIncognitoPageDisabled;
-  BOOL regularIsDisabled =
-      _pageConfiguration == TabGridPageConfiguration::kIncognitoPageOnly;
-  // When current page is a disabled tab page.
-  if ((self.currentPage == TabGridPageIncognitoTabs && incognitoIsDisabled) ||
-      (self.currentPage == TabGridPageRegularTabs && regularIsDisabled)) {
-    [self configureDoneButtonOnDisabledPage];
-    [self.topToolbar setCloseAllButtonEnabled:NO];
-    [self.bottomToolbar setCloseAllButtonEnabled:NO];
-    [self.bottomToolbar setEditButtonEnabled:NO];
-    [self.topToolbar setEditButtonEnabled:NO];
-    return;
-  }
-
-  [self configureDoneButtonBasedOnPage:self.currentPage];
-  [self configureNewTabButtonBasedOnContentPermissions];
-}
-
-// TODO(crbug.com/1457146): Remove this when incognito authentication is take
-// into account for button configuration.
-// TODO(crbug.com/1457146): Remove this function when mediators will match all
-// the toolbar update currently done by the UI.
-- (void)configureNewTabButtonBasedOnContentPermissions {
-  BOOL isRecentTabPage = self.currentPage == TabGridPageRemoteTabs;
-  BOOL allowedByContentAuthentication =
-      !((self.currentPage == TabGridPageIncognitoTabs) &&
-        self.incognitoTabsViewController.contentNeedsAuthentication);
-  BOOL allowNewTab = !isRecentTabPage && allowedByContentAuthentication;
-  [self.bottomToolbar setNewTabButtonEnabled:allowNewTab];
-}
-
-// TODO(crbug.com/1457146): Remove this function when mediators will match all
-// the toolbar update currently done by the UI.
-- (void)configureDoneButtonBasedOnPage:(TabGridPage)page {
-  const BOOL tabsPresent = [self tabsPresentForPage:page];
-
-  self.topToolbar.pageControl.userInteractionEnabled = YES;
-
-  // The Done button should have the same behavior as the other buttons on the
-  // top Toolbar.
-  BOOL incognitoTabsNeedsAuth =
-      (self.currentPage == TabGridPageIncognitoTabs &&
-       self.incognitoTabsViewController.contentNeedsAuthentication);
-  // Avoid drag and drop because you can switch grid while drag and drop
-  // session.
-  BOOL doneEnabled =
-      tabsPresent && !incognitoTabsNeedsAuth && !self.dragSessionInProgress;
-  [self.topToolbar setDoneButtonEnabled:doneEnabled];
-  [self.bottomToolbar setDoneButtonEnabled:doneEnabled];
 }
 
 // YES if there are tabs present on `page`. For `TabGridPageRemoteTabs`, YES
@@ -1232,16 +1152,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     case TabGridPageIncognitoTabs:
       return ![self.incognitoTabsViewController isGridEmpty];
   }
-}
-
-// Disables the done button on bottom toolbar if a disabled tab view is
-// presented.
-// TODO(crbug.com/1457146): Remove this function when mediators will match all
-// the toolbar update currently done by the UI.
-- (void)configureDoneButtonOnDisabledPage {
-  self.topToolbar.pageControl.userInteractionEnabled = YES;
-  [self.bottomToolbar setDoneButtonEnabled:NO];
-  [self.topToolbar setDoneButtonEnabled:NO];
 }
 
 // Shows the two toolbars and the floating button. Suitable for use in
@@ -1394,7 +1304,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // Updates the views, buttons, toolbars as well as broadcasts incognito tabs
 // visibility after the tab count has changed.
 - (void)handleTabCountChangeWithTabCount:(NSUInteger)tabCount {
-  [self configureButtonsForActiveAndCurrentPage];
   [self broadcastIncognitoContentVisibility];
 }
 
@@ -2050,7 +1959,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   if (isTabGridUpdated) {
-    [self configureButtonsForActiveAndCurrentPage];
     [self broadcastIncognitoContentVisibility];
   }
 }

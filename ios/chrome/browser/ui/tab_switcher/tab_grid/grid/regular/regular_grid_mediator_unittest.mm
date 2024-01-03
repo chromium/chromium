@@ -33,6 +33,7 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
     mediator_.toolbarsMutator = fake_toolbars_mediator_;
+    [mediator_ currentlySelectedGrid:YES];
 
     tab_restore_service_ =
         IOSChromeTabRestoreServiceFactory::GetForBrowserState(
@@ -185,6 +186,9 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_EQ(3UL, consumer_.items.size());
   [mediator_ saveAndCloseAllItems];
   EXPECT_EQ(0UL, consumer_.items.size());
+
+  EXPECT_EQ(TabGridPageRegularTabs, fake_toolbars_mediator_.configuration.page);
+  EXPECT_EQ(TabGridModeNormal, fake_toolbars_mediator_.configuration.mode);
 
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.newTabButton);
   EXPECT_TRUE(fake_toolbars_mediator_.configuration.searchButton);

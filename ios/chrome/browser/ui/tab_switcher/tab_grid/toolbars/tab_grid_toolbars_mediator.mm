@@ -16,8 +16,6 @@
   TabGridToolbarsConfiguration* _previousConfiguration;
   id<TabGridToolbarsGridDelegate> _buttonsDelegate;
 
-  TabGridMode _currentMode;
-
   // YES if buttons are disabled.
   BOOL _isDisabled;
 }
@@ -26,10 +24,17 @@
 
 - (void)setToolbarConfiguration:(TabGridToolbarsConfiguration*)configuration {
   if (_isDisabled) {
+    // Handle page change during drag and drop.
+    _previousConfiguration = configuration;
     return;
   }
 
   _configuration = configuration;
+
+  self.topToolbarConsumer.page = configuration.page;
+  self.topToolbarConsumer.mode = configuration.mode;
+  self.bottomToolbarConsumer.page = configuration.page;
+  self.bottomToolbarConsumer.mode = configuration.mode;
 
   // TODO(crbug.com/1457146): Add all buttons management.
   [self configureSelectionModeButtons];
@@ -61,12 +66,6 @@
   self.bottomToolbarConsumer.buttonsDelegate = delegate;
 }
 
-- (void)setToolbarsMode:(TabGridMode)mode {
-  _currentMode = mode;
-  self.bottomToolbarConsumer.mode = mode;
-  self.topToolbarConsumer.mode = mode;
-}
-
 - (void)setButtonsEnabled:(BOOL)enabled {
   // Do not do anything if the state do not change.
   if (enabled != _isDisabled) {
@@ -80,8 +79,9 @@
     [self setToolbarConfiguration:_previousConfiguration];
   } else {
     _previousConfiguration = _configuration;
-    [self setToolbarConfiguration:[TabGridToolbarsConfiguration
-                                      disabledConfiguration]];
+    [self setToolbarConfiguration:
+              [TabGridToolbarsConfiguration
+                  disabledConfigurationForPage:TabGridPageRegularTabs]];
     // Set the disabled boolean after modifiying the toolbar configuration
     // because the configuration setup is skipped when disabled.
     _isDisabled = YES;
