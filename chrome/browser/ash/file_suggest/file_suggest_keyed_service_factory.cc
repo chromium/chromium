@@ -39,7 +39,8 @@ FileSuggestKeyedService* FileSuggestKeyedServiceFactory::GetService(
       GetServiceForBrowserContext(context, /*create=*/true));
 }
 
-KeyedService* FileSuggestKeyedServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+FileSuggestKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -50,7 +51,7 @@ KeyedService* FileSuggestKeyedServiceFactory::BuildServiceInstanceFor(
       app_list::RankerStateDirectory(profile).AppendASCII("removed_results.pb"),
       /*write_delay=*/base::TimeDelta());
 
-  return new FileSuggestKeyedService(profile, std::move(proto));
+  return std::make_unique<FileSuggestKeyedService>(profile, std::move(proto));
 }
 
 }  // namespace ash
