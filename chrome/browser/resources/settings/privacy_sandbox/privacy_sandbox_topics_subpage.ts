@@ -19,6 +19,8 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin} from '../router.js';
 
 import {PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_topics_subpage.html.js';
@@ -31,7 +33,7 @@ export interface SettingsPrivacySandboxTopicsSubpageElement {
 }
 
 const SettingsPrivacySandboxTopicsSubpageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxTopicsSubpageElement extends
     SettingsPrivacySandboxTopicsSubpageElementBase {
@@ -111,9 +113,13 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+  }
 
-    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-        TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_SANDBOX_TOPICS) {
+      HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+          TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
+    }
   }
 
   private isTopicsPrefManaged_(): boolean {

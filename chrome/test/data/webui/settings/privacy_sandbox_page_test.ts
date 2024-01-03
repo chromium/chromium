@@ -39,6 +39,7 @@ suite('PrivacySandboxPage', function() {
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-page');
     page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
     document.body.appendChild(page);
     return flushTasks();
   });
@@ -210,6 +211,7 @@ suite('TopicsSubpage', function() {
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-topics-subpage');
     page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_TOPICS);
     document.body.appendChild(page);
     await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     return flushTasks();
@@ -628,6 +630,7 @@ suite('FledgeSubpage', function() {
     document.body.appendChild(settingsPrefs);
     page = document.createElement('settings-privacy-sandbox-fledge-subpage');
     page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_FLEDGE);
     document.body.appendChild(page);
     await testPrivacySandboxBrowserProxy.whenCalled('getFledgeState');
     return flushTasks();
@@ -1208,6 +1211,7 @@ suite('AdMeasurementSubpage', function() {
     page = document.createElement(
         'settings-privacy-sandbox-ad-measurement-subpage');
     page.prefs = settingsPrefs.prefs!;
+    Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX_AD_MEASUREMENT);
     document.body.appendChild(page);
     return flushTasks();
   });
