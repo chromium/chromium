@@ -188,7 +188,7 @@ void QsBatteryInfoViewBase::ConfigureIcon(bool bsm_active) {
                     info, kUnifiedTrayBatteryIconSize, GetColorProvider())));
 }
 
-BEGIN_METADATA(QsBatteryInfoViewBase, PillButton)
+BEGIN_METADATA(QsBatteryInfoViewBase)
 END_METADATA
 
 QsBatteryLabelView::QsBatteryLabelView(UnifiedSystemTrayController* controller)
@@ -214,7 +214,7 @@ void QsBatteryLabelView::Update() {
   }
 }
 
-BEGIN_METADATA(QsBatteryLabelView, QsBatteryInfoViewBase)
+BEGIN_METADATA(QsBatteryLabelView)
 END_METADATA
 
 QsBatteryIconView::QsBatteryIconView(UnifiedSystemTrayController* controller)
@@ -230,7 +230,7 @@ void QsBatteryIconView::Update() {
   UpdateIconAndText(PowerStatus::Get()->IsBatterySaverActive());
 }
 
-BEGIN_METADATA(QsBatteryIconView, QsBatteryIconView)
+BEGIN_METADATA(QsBatteryIconView)
 END_METADATA
 
 QuickSettingsFooter::QuickSettingsFooter(
@@ -365,7 +365,7 @@ views::View* QuickSettingsFooter::CreateEndContainer() {
   return end_container;
 }
 
-BEGIN_METADATA(QuickSettingsFooter, views::View)
+BEGIN_METADATA(QuickSettingsFooter)
 END_METADATA
 
 }  // namespace ash
