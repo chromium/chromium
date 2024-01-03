@@ -1,16 +1,3 @@
-<style>
-  /* L1 page content backdrop style */
-  :host-context(body.revamp-wayfinding-enabled)
-      ::slotted(div[route-path="default"]) {
-    background-color: var(--settings-content-backdrop-bg-color);
-    border-radius: 20px;
-    padding-bottom: 16px;
-    padding-inline-end: 16px;
-    padding-inline-start: 16px;
-    padding-top: 8px;
-  }
-</style>
-
 <iron-pages id="animatedPages" attr-for-selected="route-path"
     on-iron-select="onIronSelect_">
   <slot></slot>
