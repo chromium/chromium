@@ -7656,6 +7656,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kUseOutOfProcessVideoDecoding)},
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 
+#if BUILDFLAG(USE_V4L2_CODEC)
+    {"use-v4l2-flat-stateful-video-decoder",
+     flag_descriptions::kV4L2FlatStatefulVideoDecoderName,
+     flag_descriptions::kV4L2FlatStatefulVideoDecoderDescription,
+     kOsLinux | kOsLacros | kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kV4L2FlatStatefulVideoDecoder)},
+#endif
+
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
     {"enable-family-link-website-filtering",

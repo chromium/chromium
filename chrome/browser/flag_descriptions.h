@@ -4288,6 +4288,11 @@ extern const char kPreferSoftwareMT21Description[];
 #endif  // defined(ARCH_CPU_ARM_FAMILY
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) && defined(ARCH_CPU_ARM_FAMILY)
+extern const char kV4L2FlatStatefulVideoDecoderName[];
+extern const char kV4L2FlatStatefulVideoDecoderDescription[];
+#endif
+
 // Linux ---------------------------------------------------------------------
 
 #if BUILDFLAG(IS_LINUX)

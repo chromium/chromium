@@ -7467,6 +7467,17 @@ const char kPreferSoftwareMT21Description[] =
 #endif  // defined(ARCH_CPU_ARM_FAMILY)
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) && defined(ARCH_CPU_ARM_FAMILY)
+const char kV4L2FlatStatefulVideoDecoderName[] =
+    "ChromeOS V4L2 Flat Video Decoder";
+const char kV4L2FlatStatefulVideoDecoderDescription[] =
+    "Enables the new (flat) hardware-accelerated ChromeOS media::VideoDecoder "
+    "implementation. Note that this only has an effect on platforms supporting "
+    "the V4L2 Stateful video decoding API, currently Hana MT8173 and Trogdor "
+    "SC7180.";
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION) &&
+        // defined(ARCH_CPU_ARM_FAMILY)
+
 // Linux -----------------------------------------------------------------------
 
 #if BUILDFLAG(IS_LINUX)
