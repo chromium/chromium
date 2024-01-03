@@ -1108,8 +1108,13 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
-  if (proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct()) {
-    request_headers_.SetHeader("IP-Protection", "1");
+  if (net::features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
+      proxy_info_.is_for_ip_protection()) {
+    CHECK(!proxy_info_.is_direct() ||
+          net::features::kIpPrivacyDirectOnly.Get());
+    if (!proxy_info_.is_direct()) {
+      request_headers_.SetHeader("IP-Protection", "1");
+    }
   }
 
   request_headers_.MergeFrom(request_->extra_headers);
