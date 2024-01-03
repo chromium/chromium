@@ -993,13 +993,13 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
 
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    const GURL& base_url = embedded_test_server()->base_url();
+    ASSERT_TRUE(embedded_https_test_server().InitializeAndListen());
+    const GURL& base_url = embedded_https_test_server().base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(
         trusted_vault::kTrustedVaultServiceURLSwitch,
         trusted_vault::FakeSecurityDomainsServer::GetServerURL(
-            embedded_test_server()->base_url())
+            embedded_https_test_server().base_url())
             .spec());
 
     SyncTest::SetUpCommandLine(command_line);
@@ -1012,22 +1012,22 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
 
     security_domains_server_ =
         std::make_unique<trusted_vault::FakeSecurityDomainsServer>(
-            embedded_test_server()->base_url());
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+            embedded_https_test_server().base_url());
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &trusted_vault::FakeSecurityDomainsServer::HandleRequest,
         base::Unretained(security_domains_server_.get())));
 
     encryption_helper::SetupFakeTrustedVaultPages(
         GetDefaultUserGaiaID(), kTestEncryptionKey, kTestEncryptionKeyVersion,
-        kTestRecoveryMethodPublicKey, embedded_test_server());
+        kTestRecoveryMethodPublicKey, &embedded_https_test_server());
 
-    embedded_test_server()->StartAcceptingConnections();
+    embedded_https_test_server().StartAcceptingConnections();
   }
 
   void TearDown() override {
     // Test server shutdown is required before |security_domains_server_| can be
     // destroyed.
-    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    ASSERT_TRUE(embedded_https_test_server().ShutdownAndWaitUntilComplete());
     SyncTest::TearDown();
   }
 
@@ -1362,7 +1362,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
   // iframe.
   chrome::AddTabAt(
       GetBrowser(0),
-      embedded_test_server()->GetURL(
+      embedded_https_test_server().GetURL(
           "foo.com", base::StringPrintf(
                          "/sync/encryption_keys_retrieval_with_iframe.html?%s",
                          GaiaUrls::GetInstance()
