@@ -221,6 +221,7 @@ const char kChromeUISiteEngagementHost[] = "site-engagement";
 const char kChromeUISupervisedUserPassphrasePageHost[] =
     "managed-user-passphrase";
 const char kChromeUISupportToolHost[] = "support-tool";
+const char kChromeUISupportToolURL[] = "chrome://support-tool";
 const char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 const char kChromeUISyncConfirmationLoadingPath[] = "loading";
 const char kChromeUISyncConfirmationURL[] = "chrome://sync-confirmation/";
