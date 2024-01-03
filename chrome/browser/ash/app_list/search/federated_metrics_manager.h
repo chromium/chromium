@@ -19,13 +19,13 @@
 
 namespace app_list::federated {
 
-constexpr char kHistogramSearchSessionConclusion[] =
+inline constexpr char kHistogramSearchSessionConclusion[] =
     "Apps.AppList.Search.Federated.SearchSessionConclusion";
-constexpr char kHistogramInitStatus[] =
+inline constexpr char kHistogramInitStatus[] =
     "Apps.AppList.Search.Federated.InitStatus";
-constexpr char kHistogramQueryLengthOnStorageSuccess[] =
+inline constexpr char kHistogramQueryLengthOnStorageSuccess[] =
     "Apps.AppList.Search.Federated.QueryLengthOnStorageSuccess";
-constexpr char kHistogramReportStatus[] =
+inline constexpr char kHistogramReportStatus[] =
     "Apps.AppList.Search.Federated.ReportStatus";
 
 const int kMaxLoggedQueryLengthOnStorageSuccess = 20;
