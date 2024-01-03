@@ -3708,17 +3708,17 @@
   {
     "name": "enable-web-bluetooth",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 120
+    "expiry_milestone": 150
   },
   {
     "name": "enable-web-bluetooth-confirm-pairing-support",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 150
   },
   {
     "name": "enable-web-bluetooth-new-permissions-backend",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "enable-web-hid-on-extension-service-worker",
