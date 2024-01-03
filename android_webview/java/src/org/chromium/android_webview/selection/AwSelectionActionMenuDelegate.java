@@ -56,9 +56,13 @@ public class AwSelectionActionMenuDelegate implements SelectionActionMenuDelegat
     }
 
     @Override
-    public void modifyDefaultMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders) {
+    public void modifyDefaultMenuItems(
+            List<SelectionMenuItem.Builder> menuItemBuilders,
+            boolean isSelectionPassword,
+            @NonNull String selectedText) {
         if (SamsungSelectionActionMenuHelper.shouldUseSamsungMenuItemOrdering()) {
-            SamsungSelectionActionMenuHelper.modifyDefaultMenuItems(menuItemBuilders);
+            SamsungSelectionActionMenuHelper.modifyDefaultMenuItems(
+                    menuItemBuilders, isSelectionPassword, selectedText);
         }
     }
 

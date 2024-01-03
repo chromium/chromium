@@ -25,8 +25,13 @@ public interface SelectionActionMenuDelegate {
      * #getAdditionalTextProcessingItems()}.
      *
      * @param menuItemBuilders default menu item builder list which need to be modified.
+     * @param isSelectionPassword True if current selection is of password type, False otherwise.
+     * @param selectedText The selected text (empty if no text selected).
      */
-    void modifyDefaultMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders);
+    void modifyDefaultMenuItems(
+            List<SelectionMenuItem.Builder> menuItemBuilders,
+            boolean isSelectionPassword,
+            @NonNull String selectedText);
 
     /**
      * Allows filtering of text processing activities.

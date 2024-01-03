@@ -13,12 +13,16 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.android_webview.R;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.PackageUtils;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -40,6 +44,13 @@ public class SamsungSelectionActionMenuHelper {
                     "com.android.settings",
                     "com.samsung.android.settings.display.SecProcessTextManageAppsFragment");
     private static final String STR_TEXT_MANAGER_APPS_RESOLVER = "process_text_manager_apps";
+    private static final String TRANSLATOR_PACKAGE_NAME = "com.samsung.android.app.interpreter";
+
+    /**
+     * Android Intent size limitations prevent sending over a megabyte of data. Limit query lengths
+     * to 100kB because other things may be added to the Intent.
+     */
+    private static final int MAX_SHARE_QUERY_LENGTH = 100000;
 
     /**
      * On Samsung devices, OS mandates a different ordering than stock Android, and we want to be
@@ -50,6 +61,7 @@ public class SamsungSelectionActionMenuHelper {
         SamsungDefaultItemOrder.CUT,
         SamsungDefaultItemOrder.COPY,
         SamsungDefaultItemOrder.PASTE,
+        SamsungDefaultItemOrder.TRANSLATE,
         SamsungDefaultItemOrder.PASTE_AS_PLAIN_TEXT,
         SamsungDefaultItemOrder.SELECT_ALL,
         SamsungDefaultItemOrder.SHARE,
@@ -59,17 +71,51 @@ public class SamsungSelectionActionMenuHelper {
         int CUT = 1;
         int COPY = 2;
         int PASTE = 3;
-        int PASTE_AS_PLAIN_TEXT = 4;
-        int SELECT_ALL = 5;
-        int SHARE = 6;
-        int WEB_SEARCH = 7;
+        int TRANSLATE = 4;
+        int PASTE_AS_PLAIN_TEXT = 5;
+        int SELECT_ALL = 6;
+        int SHARE = 7;
+        int WEB_SEARCH = 8;
     }
 
-    public static void modifyDefaultMenuItems(List<SelectionMenuItem.Builder> menuItemBuilders) {
+    public static void modifyDefaultMenuItems(
+            List<SelectionMenuItem.Builder> menuItemBuilders,
+            boolean isSelectionPassword,
+            @NonNull String selectedText) {
         for (SelectionMenuItem.Builder builder : menuItemBuilders) {
             int menuItemOrder = getMenuItemOrder(builder.mId);
             if (menuItemOrder == -1) continue;
             builder.setOrderInCategory(menuItemOrder);
+        }
+        // TODO(https://crbug.com/1513111) Rewrite to have content APIs which support moving menu
+        // items within groups instead of filtering our and re-adding.
+        if (shouldAddTranslateMenu(selectedText, isSelectionPassword)) {
+            // Get list of apps registered for text processing.
+            List<ResolveInfo> textProcessActivities =
+                    PackageManagerUtils.queryIntentActivities(createProcessTextIntent(), 0);
+            // Identify and get ResolveInfo for Translate app.
+            ResolveInfo translateResolveInfo =
+                    textProcessActivities.stream()
+                            .filter(
+                                    resolveInfo ->
+                                            resolveInfo.activityInfo.packageName.equals(
+                                                    TRANSLATOR_PACKAGE_NAME))
+                            .findAny()
+                            .orElse(null);
+            assert translateResolveInfo != null;
+            // Create menu item from Translate app resolve info and then add to default menu.
+            menuItemBuilders.add(
+                    new SelectionMenuItem.Builder(
+                                    translateResolveInfo.loadLabel(
+                                            ContextUtils.getApplicationContext()
+                                                    .getPackageManager()))
+                            .setId(Menu.NONE)
+                            .setIcon(null)
+                            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                            .setOrderInCategory(SamsungDefaultItemOrder.TRANSLATE)
+                            .setClickListener(
+                                    getTranslationActionClickListener(
+                                            selectedText, translateResolveInfo)));
         }
     }
 
@@ -166,5 +212,36 @@ public class SamsungSelectionActionMenuHelper {
 
     private static boolean isSamsungDevice() {
         return "SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER);
+    }
+
+    private static boolean shouldAddTranslateMenu(
+            @NonNull String selectedText, boolean isSelectionPassword) {
+        return isManageAppsSupported()
+                && PackageUtils.isPackageInstalled(TRANSLATOR_PACKAGE_NAME)
+                && !selectedText.isEmpty()
+                && !isSelectionPassword;
+    }
+
+    private static View.OnClickListener getTranslationActionClickListener(
+            @NonNull String selectedText, ResolveInfo info) {
+        return v -> {
+            String textForProcessing =
+                    (selectedText.length() >= MAX_SHARE_QUERY_LENGTH)
+                            ? selectedText.substring(0, MAX_SHARE_QUERY_LENGTH) + "…"
+                            : selectedText;
+            Intent intent =
+                    createProcessTextIntent()
+                            .setClassName(info.activityInfo.packageName, info.activityInfo.name)
+                            .putExtra(Intent.EXTRA_PROCESS_TEXT, textForProcessing);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            try {
+                ContextUtils.getApplicationContext().startActivity(intent);
+            } catch (android.content.ActivityNotFoundException ignored) {
+            }
+        };
+    }
+
+    private static Intent createProcessTextIntent() {
+        return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
     }
 }
