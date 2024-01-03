@@ -769,6 +769,19 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FRE_SIGNIN_ON_AUTOMOTIVE})
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    public void testSignInDisabledOnAutomotive() {
+        launchActivityWithFragment();
+
+        ViewUtils.waitForVisibleView(withText(R.string.continue_button));
+        onView(withId(R.id.signin_fre_continue_button))
+                .check(matches(withText(R.string.continue_button)));
+        onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @MediumTest
     public void testContinueButtonWithChildAccountWithNonDisplayableAccountEmail() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         TestThreadUtils.runOnUiThreadBlocking(
