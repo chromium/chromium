@@ -16581,6 +16581,21 @@
             ]
         }
     ],
+    "SeaPen": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SeaPen"
+                    ]
+                }
+            ]
+        }
+    ],
     "SearchEnginesPromoV3": [
         {
             "platforms": [
