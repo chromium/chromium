@@ -128,7 +128,6 @@ class TabStripLayout: UICollectionViewFlowLayout {
       cell.separatorHidden = true
 
       var origin = layoutAttributes.frame.origin
-      layoutAttributes.zIndex = TabStripConstants.TabItem.selectedZindex
 
       // Update the cell's origin horizontally to prevent it from being partially hidden off-screen.
       let maxOriginX = collectionViewSizeWidth - frame.size.width

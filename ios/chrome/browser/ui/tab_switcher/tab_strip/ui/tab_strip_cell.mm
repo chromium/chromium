@@ -43,6 +43,9 @@ const CGFloat kFaviconSize = 16.0;
 // Width of gradient views.
 const CGFloat kGradientWidth = 16.0f;
 
+// Z-Index of the selected cell.
+const NSInteger kSelectedZIndex = 10;
+
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
   return DefaultSymbolWithPointSize(kGlobeAmericasSymbol, 14);
@@ -187,6 +190,9 @@ UIImage* DefaultFavicon() {
       selected ? UIColor.clearColor : [UIColor colorNamed:kGrey400Color];
   [_titleGradientView setStartColor:[backgroundColor colorWithAlphaComponent:0]
                            endColor:backgroundColor];
+
+  // Make the selected cell on top of other cells.
+  self.layer.zPosition = selected ? kSelectedZIndex : 0;
 
   // Update decoration views visibility.
   _trailingGradientView.hidden = selected;
