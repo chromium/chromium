@@ -70,19 +70,19 @@ targets.mixin(
 targets.mixin(
     name = "12-x64-emulator",
     args = [
-        "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
+        "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
     ],
     swarming = targets.swarming(
         # soft affinity so that bots with caches will be picked first
         optional_dimensions = {
             60: {
-                "caches": "generic_android31",
+                "caches": "android_31_google_apis_x64",
             },
         },
         named_caches = [
             swarming.cache(
-                name = "generic_android31",
-                path = ".android_emulator/generic_android31",
+                name = "android_31_google_apis_x64",
+                path = ".android_emulator/android_31_google_apis_x64",
             ),
         ],
     ),
