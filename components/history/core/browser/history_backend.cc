@@ -1974,14 +1974,17 @@ QueryURLResult HistoryBackend::QueryURL(const GURL& url, bool want_visits) {
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 HistoryBackend::GetHistorySyncControllerDelegate() {
-  DCHECK(history_sync_bridge_);
-  return history_sync_bridge_->change_processor()->GetControllerDelegate();
+  if (history_sync_bridge_) {
+    return history_sync_bridge_->change_processor()->GetControllerDelegate();
+  }
+  return nullptr;
 }
 
 void HistoryBackend::SetSyncTransportState(
     syncer::SyncService::TransportState state) {
-  DCHECK(history_sync_bridge_);
-  history_sync_bridge_->SetSyncTransportState(state);
+  if (history_sync_bridge_) {
+    history_sync_bridge_->SetSyncTransportState(state);
+  }
 }
 
 // Statistics ------------------------------------------------------------------
