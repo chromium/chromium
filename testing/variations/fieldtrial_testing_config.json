@@ -6600,22 +6600,6 @@
             ]
         }
     ],
-    "EnableMSAAOnNewIntelGPUs": [
-        {
-            "platforms": [
-                "windows",
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableMSAAOnNewIntelGPUs"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableNtpHistoryClustersModuleDiscounts": [
         {
             "platforms": [
