@@ -1910,10 +1910,15 @@ int TabStripModel::InsertWebContentsAtImpl(
 void TabStripModel::CloseTabs(base::span<content::WebContents* const> items,
                               uint32_t close_types) {
   std::vector<content::WebContents*> filtered_items;
-  base::ranges::copy_if(items, std::back_inserter(filtered_items),
-                        [this](content::WebContents* const contents) {
-                          return IsTabClosable(contents);
-                        });
+  for (content::WebContents* contents : items) {
+    if (IsTabClosable(contents)) {
+      filtered_items.push_back(contents);
+    } else {
+      for (auto& observer : observers_) {
+        observer.TabCloseCancelled(contents);
+      }
+    }
+  }
 
   if (filtered_items.empty()) {
     return;

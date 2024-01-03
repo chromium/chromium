@@ -285,7 +285,8 @@ enum class ToastCatalogName {
   kBatterySaverEnabled = 46,
   kDictationMicMuted = 47,
   kVideoConferenceTraySpeakOnMuteOptInConfirmation = 48,
-  kMaxValue = kVideoConferenceTraySpeakOnMuteOptInConfirmation
+  kAppNotClosable = 49,
+  kMaxValue = kAppNotClosable
 };
 
 }  // namespace ash

@@ -389,6 +389,10 @@ class TabStripModelObserver {
   // TabStripModel, for example...
   virtual void TabStripEmpty();
 
+  // Called when a tab is attempted to be closed but the closure is not
+  // permitted by the `TabStripModel::IsTabClosable` oracle.
+  virtual void TabCloseCancelled(const content::WebContents* contents);
+
   // Sent any time an attempt is made to close all the tabs. This is not
   // necessarily the result of CloseAllTabs(). For example, if the user closes
   // the last tab WillCloseAllTabs() is sent. If the close does not succeed

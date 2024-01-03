@@ -100,7 +100,7 @@ bool FakeWebAppUiManager::IsInAppWindow(
 }
 
 const webapps::AppId* FakeWebAppUiManager::GetAppIdForWindow(
-    content::WebContents* web_contents) const {
+    const content::WebContents* web_contents) const {
   return nullptr;
 }
 

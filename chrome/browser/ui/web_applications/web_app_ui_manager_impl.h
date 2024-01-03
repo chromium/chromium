@@ -15,9 +15,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -54,7 +56,9 @@ class WithAppResources;
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
 // Allows //c/b/web_applications code to call into //c/b/ui without directly
 // depending on UI.
-class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
+class WebAppUiManagerImpl : public BrowserListObserver,
+                            public WebAppUiManager,
+                            public TabStripModelObserver {
  public:
   explicit WebAppUiManagerImpl(Profile* profile);
   WebAppUiManagerImpl(const WebAppUiManagerImpl&) = delete;
@@ -75,7 +79,7 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   bool IsAppInQuickLaunchBar(const webapps::AppId& app_id) const override;
   bool IsInAppWindow(content::WebContents* web_contents) const override;
   const webapps::AppId* GetAppIdForWindow(
-      content::WebContents* web_contents) const override;
+      const content::WebContents* web_contents) const override;
   void NotifyOnAssociatedAppChanged(
       content::WebContents* web_contents,
       const std::optional<webapps::AppId>& previous_app_id,
@@ -163,6 +167,11 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TabStripModelObserver:
+  void TabCloseCancelled(const content::WebContents* contents) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
   // Attempts to uninstall the given web app id. Meant to be used with OS-level

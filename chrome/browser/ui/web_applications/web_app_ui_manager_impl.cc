@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/message_formatter.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -22,6 +23,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -82,12 +84,17 @@
 #endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
+#include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/sync/model/string_ordinal.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -116,6 +123,10 @@ namespace web_app {
 class AppLock;
 
 namespace {
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kPreventCloseToastIdPrefix[] = "prevent_close_toast_id-";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
 // ScopedKeepAlive not only keeps the process from terminating early
@@ -289,7 +300,7 @@ bool WebAppUiManagerImpl::IsInAppWindow(
 }
 
 const webapps::AppId* WebAppUiManagerImpl::GetAppIdForWindow(
-    content::WebContents* web_contents) const {
+    const content::WebContents* web_contents) const {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
   if (AppBrowserController::IsWebApp(browser)) {
     return &browser->app_controller()->app_id();
@@ -576,6 +587,10 @@ void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
   }
 
   ++num_windows_for_apps_map_[GetAppIdForBrowser(browser)];
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser->tab_strip_model()->AddObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
@@ -589,6 +604,10 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   size_t& num_windows_for_app = num_windows_for_apps_map_[app_id];
   DCHECK_GT(num_windows_for_app, 0u);
   --num_windows_for_app;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  browser->tab_strip_model()->RemoveObserver(this);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (num_windows_for_app > 0) {
     return;
@@ -605,6 +624,32 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 
   windows_closed_requests_map_.erase(app_id);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppUiManagerImpl::TabCloseCancelled(
+    const content::WebContents* contents) {
+  // TODO(b/317413108): Implement Toast for Ctrl + q.
+  // TODO(b/317413108): Implement Toast on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const webapps::AppId* app_id = GetAppIdForWindow(contents);
+  if (!app_id) {
+    return;
+  }
+
+  ash::ToastData toast_data{
+      /*id=*/kPreventCloseToastIdPrefix + *app_id,
+      ash::ToastCatalogName::kAppNotClosable,
+      /*text=*/
+      base::i18n::MessageFormatter::FormatWithNamedArgs(
+          l10n_util::GetStringUTF16(IDS_PREVENT_CLOSE_TOAST_MESSAGE),
+          /*name0=*/"APP_NAME",
+          WebAppProvider::GetForWebApps(profile_)
+              ->registrar_unsafe()
+              .GetAppShortName(*app_id))};
+  ash::ToastManager::Get()->Show(std::move(toast_data));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(

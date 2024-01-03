@@ -225,6 +225,9 @@ void TabStripModelObserver::TabGroupedStateChanged(
 void TabStripModelObserver::TabStripEmpty() {
 }
 
+void TabStripModelObserver::TabCloseCancelled(
+    const content::WebContents* contents) {}
+
 void TabStripModelObserver::WillCloseAllTabs(TabStripModel* tab_strip_model) {}
 
 void TabStripModelObserver::CloseAllTabsStopped(TabStripModel* tab_strip_model,

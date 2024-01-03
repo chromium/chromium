@@ -4733,6 +4733,11 @@
       <message name="IDS_APP_CLOSE_BUTTON_DISABLED_BY_ADMIN" desc="Text for the close button when prevent close is enabled by the administrator">
         Your administrator doesn't allow closing this app
       </message>
+
+      <message name="IDS_PREVENT_CLOSE_TOAST_MESSAGE" desc="Text for the toast that is shown if a user tried to close an unclosable PWA">
+        Your administrator doesn't allow closing <ph name="APP_NAME">{APP_NAME}</ph>
+      </message>
+
       <!-- End of Strings for WebAppSettings -->
       <message name="IDS_WEB_APP_RELAUNCH_NOTIFICATION_TITLE" desc="Title of the app relaunch notification.">
           Restarting and updating <ph name="APP_NAME">$1</ph>

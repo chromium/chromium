@@ -5,18 +5,22 @@
 #include "chrome/browser/web_applications/app_service/web_apps.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -225,6 +229,56 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest, CheckMenuModel) {
   EXPECT_EQ(
       HasMenuModelCommandId(menu_model.get(), ash::USE_LAUNCH_TYPE_WINDOW),
       !IsPreventCloseEnabled());
+
+  // Clear policy values, otherwise we won't be able to gracefully close stop
+  // browser test.
+  profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
+                       CloseTabAttemptShowsToast) {
+  // Set up policy values.
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppSettings,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kManifestId, kCalculatorAppUrl)
+              .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
+              .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kUrlKey, kCalculatorAppUrl)
+              .Set(web_app::kDefaultLaunchContainerKey,
+                   web_app::kDefaultLaunchContainerWindowValue)));
+
+  // Wait until prefs are propagated and App `allow_close` field is updated to
+  // expected value.
+  apps::AppUpdateWaiter waiter(
+      profile(), web_app::kCalculatorAppId,
+      base::BindRepeating(
+          [](bool expected_allow_close, const apps::AppUpdate& update) {
+            return update.AllowClose().has_value() &&
+                   update.AllowClose().value() == expected_allow_close;
+          },
+          !IsPreventCloseEnabled()));
+  waiter.Await();
+
+  Browser* const browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  ASSERT_TRUE(browser);
+
+  chrome::CloseTab(browser);
+
+  if (IsPreventCloseEnabled()) {
+    EXPECT_EQ(1, browser->tab_strip_model()->count());
+    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+      return ash::ToastManager::Get()->IsToastShown(
+          std::string("prevent_close_toast_id-") + web_app::kCalculatorAppId);
+    }));
+  } else {
+    EXPECT_EQ(0, browser->tab_strip_model()->count());
+  }
 
   // Clear policy values, otherwise we won't be able to gracefully close stop
   // browser test.
