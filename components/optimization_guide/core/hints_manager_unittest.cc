@@ -263,12 +263,12 @@ class TestHintsFetcher : public HintsFetcher {
   }
 
  private:
+  OptimizationGuideLogger optimization_guide_logger_;
   std::vector<HintsFetcherEndState> fetch_states_;
   int num_fetches_requested_ = 0;
   std::string locale_requested_;
   proto::RequestContext request_context_requested_ =
       proto::RequestContext::CONTEXT_UNSPECIFIED;
-  OptimizationGuideLogger optimization_guide_logger_;
 };
 
 // A mock class of HintsFetcherFactory that returns instances of

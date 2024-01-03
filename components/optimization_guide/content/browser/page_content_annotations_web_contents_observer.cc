@@ -43,10 +43,10 @@ PageContentAnnotationsWebContentsObserver::
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<PageContentAnnotationsWebContentsObserver>(
           *web_contents),
+      template_url_service_(template_url_service),
       page_content_annotations_service_(page_content_annotations_service),
       salient_image_retriever_(
           page_content_annotations_service_->optimization_guide_logger()),
-      template_url_service_(template_url_service),
       no_state_prefetch_manager_(no_state_prefetch_manager) {
   DCHECK(page_content_annotations_service_);
 }

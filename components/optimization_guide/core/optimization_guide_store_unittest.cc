@@ -430,9 +430,9 @@ class OptimizationGuideStoreTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  raw_ptr<FakeDB<proto::StoreEntry>, DanglingUntriaged> db_;
   StoreEntryMap db_store_;
   std::unique_ptr<OptimizationGuideStore> guide_store_;
+  raw_ptr<FakeDB<proto::StoreEntry>> db_;
   base::ScopedTempDir temp_dir_;
 
   OptimizationGuideStore::EntryKey last_loaded_entry_key_;
