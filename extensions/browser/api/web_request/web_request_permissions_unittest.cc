@@ -13,6 +13,7 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
+#include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"
 #include "extensions/browser/process_map.h"
@@ -290,6 +291,98 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
     EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
                                                    sensitive_request_info));
   }
+}
+
+// Tests that subresource requests to Web origins initiated from
+// chrome-untrusted:// pages can't be inspected.
+TEST_F(ExtensionWebRequestPermissionsTest,
+       CanNotAccessSubresourceRequestsFromChromeUntrustedPage) {
+  ExtensionsAPIClient api_client;
+  auto* permission_helper = PermissionHelper::Get(browser_context());
+
+  auto create_sub_resource_request = [](const GURL& url,
+                                        WebRequestResourceType type) {
+    WebRequestInfoInitParams request;
+    request.url = url;
+    request.render_process_id = 1;
+    request.web_request_type = type;
+    request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));
+
+    return WebRequestInfo(std::move(request));
+  };
+
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_resource_request(GURL("https:://example.com/a.jpg"),
+                                  WebRequestResourceType::IMAGE)));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_resource_request(GURL("https:://example.com/a.mp4"),
+                                  WebRequestResourceType::MEDIA)));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_resource_request(GURL("https:://example.com/xhr"),
+                                  WebRequestResourceType::XHR)));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_resource_request(GURL("https:://example.com/a.js"),
+                                  WebRequestResourceType::SCRIPT)));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_resource_request(GURL("https:://example.com/a.css"),
+                                  WebRequestResourceType::STYLESHEET)));
+}
+
+// Tests that subframe navigation requests to Web origins initiated from
+// chrome-untrusted:// pages can't be inspected.
+TEST_F(ExtensionWebRequestPermissionsTest,
+       CanNotAccessSubframeNavigationRequestsFromChromeUntrustedPage) {
+  ExtensionsAPIClient api_client;
+  auto* permission_helper = PermissionHelper::Get(browser_context());
+
+  auto create_sub_frame_navigation_request = [](const GURL& url) {
+    WebRequestInfoInitParams request;
+    request.url = url;
+    request.render_process_id = 1;
+    request.web_request_type = WebRequestResourceType::SUB_FRAME;
+    request.is_navigation_request = true;
+    request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));
+
+    return WebRequestInfo(std::move(request));
+  };
+
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_sub_frame_navigation_request(GURL("https:://example.com/"))));
+}
+
+// Tests that main frame navigations to non-WebUI origins initiated from
+// chrome-untrusted:// pages can be inspected.
+TEST_F(ExtensionWebRequestPermissionsTest,
+       CanAccessMainFrameNavigationsToWebOriginsFromChromeUntrustedPage) {
+  ExtensionsAPIClient api_client;
+  auto* permission_helper = PermissionHelper::Get(browser_context());
+
+  auto create_main_frame_request_info = [](const GURL& url) {
+    WebRequestInfoInitParams request;
+    request.url = url;
+    request.render_process_id = 1;
+    request.web_request_type = WebRequestResourceType::MAIN_FRAME;
+    request.is_navigation_request = true;
+    request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));
+
+    return WebRequestInfo(std::move(request));
+  };
+
+  EXPECT_FALSE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_main_frame_request_info(GURL("https://example.com/"))));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_main_frame_request_info(GURL("chrome://version/"))));
+  EXPECT_TRUE(WebRequestPermissions::HideRequest(
+      permission_helper,
+      create_main_frame_request_info(GURL("chrome-untrusted://test2/"))));
 }
 
 TEST_F(ExtensionWebRequestPermissionsTest,
