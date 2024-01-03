@@ -238,10 +238,10 @@ void AppBannerManager::SendBannerAccepted() {
 }
 
 void AppBannerManager::SendBannerDismissed() {
-  if (event_.is_bound())
+  if (event_.is_bound()) {
     event_->BannerDismissed();
-
-  SendBannerPromptRequest();
+    SendBannerPromptRequest();
+  }
 }
 
 void AppBannerManager::AddObserver(Observer* observer) {
