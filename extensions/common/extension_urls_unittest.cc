@@ -19,6 +19,9 @@ class ExtensionWebstoreURLsTest : public testing::Test,
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(
           extensions_features::kNewWebstoreURL);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          extensions_features::kNewWebstoreURL);
     }
   }
 
