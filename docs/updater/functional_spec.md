@@ -152,7 +152,7 @@ directory at `out\ChromeBrandedDebug`:
 New-SelfSignedCertificate -DnsName id@domain.tld -Type CodeSigning
  -CertStoreLocation cert:\CurrentUser\My
 ```
-* Note: all the steps below are run from a medium cmd prompt.
+* Note: **all the steps below are run from a medium cmd prompt.**
 * One-time step: `python3 -m pip install pypiwin32`
 * One-time step:
 ```
@@ -169,17 +169,16 @@ python3 chrome/updater/win/signing/sign.py                                     ^
   --manifest_path out/ChromeBrandedDebug/UpdaterSigning/OfflineManifest.gup    ^
   --lzma_7z "C:/Program Files/7-Zip/7z.exe"                                    ^
   --signtool ../../fig/google3/third_party/windows_sdk/windows_sdk_10/files/bin/10.0.22000.0/x86/signtool.exe ^
-  --certificate_tag out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
+  --tagging_exe out/ChromeBrandedDebug/UpdaterSigning/tag.exe  ^
   --manifest_dict_replacements "{'${INSTALLER_VERSION}':'110.0.5478.0', '${ARCH_REQUIREMENT}':'x86'}"
 ```
 * tag the offline installer and save the result as
 `Signed_ChromeBetaOfflineSetup.exe`:
 ```
-python3 chrome/updater/tools/tag.py                                            ^
-  --certificate_tag=out/ChromeBrandedDebug/UpdaterSigning/certificate_tag.exe  ^
-  --in_file=out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe   ^
-  --out_file=out/ChromeBrandedDebug/UpdaterSigning/Signed_ChromeBetaOfflineSetup.exe ^
-  --tag="appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20Beta&needsadmin=Prefers"
+out/ChromeBrandedDebug/UpdaterSigning/tag.exe                                                                   ^
+  --set-tag="appguid={8237E44A-0054-442C-B6B6-EA0509993955}&appname=Google%20Chrome%20Beta&needsadmin=Prefers"  ^
+  --out=out/ChromeBrandedDebug/UpdaterSigning/Signed_ChromeBetaOfflineSetup.exe                                 ^
+  out/ChromeBrandedDebug/UpdaterSigning/ChromeBetaOfflineSetup.exe
 ```
 * Now you can run the final signed offline installer:
 `Signed_ChromeBetaOfflineSetup.exe`!
@@ -1482,8 +1481,8 @@ Overrides are specified in an overrides.json file placed in the updater data
 directory.
 
 ### Tagging Tools
-The project contains a helper tool for tagging called `certificate_tag.exe`.
+The project contains a helper tool for tagging called `tag.exe`.
 This tool can be
-[used](https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/tools/main.cc#59)
+[used](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/tools/tag_main.cc)
 to inject a superfluous certificate into a signed binary to support the
 creation of tagged binaries.
