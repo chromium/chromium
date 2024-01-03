@@ -34,6 +34,8 @@ class ChoiceScreenProperties {
         static final PropertyKey[] ALL_KEYS = {SHORT_NAME, IS_SELECTED, ON_CLICKED};
 
         static PropertyModel createPropertyModel(String shortName, Runnable onClicked) {
+            assert shortName != null;
+            assert onClicked != null;
             return new PropertyModel.Builder(ALL_KEYS)
                     .with(SHORT_NAME, shortName)
                     .with(IS_SELECTED, false)

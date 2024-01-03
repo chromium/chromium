@@ -1813,6 +1813,7 @@ if (current_toolchain == default_toolchain) {
       "//components/safe_browsing/android:safe_browsing_java",
       "//components/schema_org/common:mojom_java",
       "//components/search_engines/android:java",
+      "//components/search_engines/android:test_utils_java",
       "//components/security_interstitials/content/android:java",
       "//components/security_state/content/android:java",
       "//components/security_state/core:security_state_enums_java",

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.locale;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import static org.chromium.components.search_engines.TemplateUrlTestHelpers.buildMockTemplateUrl;
+
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
@@ -167,7 +169,7 @@ public class LocaleManagerTest {
     @Features.EnableFeatures({ChromeFeatureList.SEARCH_ENGINE_CHOICE})
     public void testShowSearchEnginePromoIfNeeded_ForWaffle() throws Exception {
         final CallbackHelper searchEnginesFinalizedCallback = new CallbackHelper();
-        final List<TemplateUrl> fakeTemplateUrls = List.of(mMockTemplateUrl);
+        final List<TemplateUrl> fakeTemplateUrls = List.of(buildMockTemplateUrl("name", 1));
 
         // Override the LocaleManagerDelegate to bypass the logic determining which type of promo
         // to show.
