@@ -12,6 +12,7 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
@@ -55,10 +56,9 @@ void TabOrganizationService::OnTriggerOccured(const Browser* browser) {
     if (!GetSessionForBrowser(browser)->IsComplete()) {
       return;
     } else {
-      browser_session_map_.erase(browser);
+      RemoveBrowserFromSessionMap(browser);
     }
   }
-  CreateSessionForBrowser(browser);
 
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnToggleActionUIState(browser, true);
@@ -90,6 +90,7 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
       browser_session_map_.emplace(
           browser, TabOrganizationSession::CreateSessionForBrowser(
                        browser, base_session_webcontents));
+  browser->tab_strip_model()->AddObserver(this);
 
   for (TabOrganizationObserver& observer : observers_) {
     observer.OnSessionCreated(browser, pair.first->second.get());
@@ -101,8 +102,9 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
     const Browser* browser,
     const content::WebContents* base_session_webcontents) {
+  browser->tab_strip_model()->RemoveObserver(this);
   if (base::Contains(browser_session_map_, browser)) {
-    browser_session_map_.erase(browser);
+    RemoveBrowserFromSessionMap(browser);
   }
 
   return CreateSessionForBrowser(browser, base_session_webcontents);
@@ -122,6 +124,36 @@ void TabOrganizationService::StartRequest(const Browser* browser) {
   if (session->request()->state() ==
       TabOrganizationRequest::State::NOT_STARTED) {
     session->StartRequest();
+  }
+}
+
+void TabOrganizationService::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  switch (change.type()) {
+    case TabStripModelChange::kMoved:
+    case TabStripModelChange::kSelectionOnly:
+    case TabStripModelChange::kReplaced: {
+      return;
+    }
+    // When a tab is added or removed on the tabstrip destroy the session
+    // for that browser.
+    case TabStripModelChange::kInserted:
+    case TabStripModelChange::kRemoved: {
+      const auto find_result = std::find_if(
+          browser_session_map_.begin(), browser_session_map_.end(),
+
+          [&tab_strip_model](
+              std::pair<const Browser* const,
+                        std::unique_ptr<TabOrganizationSession>>& element) {
+            return element.first->tab_strip_model() == tab_strip_model;
+          });
+      if (find_result != browser_session_map_.end()) {
+        RemoveBrowserFromSessionMap(find_result->first);
+      }
+      return;
+    }
   }
 }
 
@@ -151,7 +183,7 @@ void TabOrganizationService::AcceptTabOrganization(
 
   // if the session is completed, then destroy it.
   if (session->IsComplete()) {
-    browser_session_map_.erase(browser);
+    RemoveBrowserFromSessionMap(browser);
   }
 
   for (TabOrganizationObserver& observer : observers_) {
@@ -166,7 +198,6 @@ void TabOrganizationService::OnActionUIAccepted(const Browser* browser) {
 
 void TabOrganizationService::OnActionUIDismissed(const Browser* browser) {
   trigger_backoff_->Increment();
-  browser_session_map_.erase(browser);
 }
 
 void TabOrganizationService::Shutdown() {
@@ -201,6 +232,13 @@ void TabOrganizationService::PrepareToEnableOnRestart() {
       std::make_unique<flags_ui::PrefServiceFlagsStorage>(
           g_browser_process->local_state());
   EnableTabOrganizationFeatures(flags_storage.get());
+}
+
+void TabOrganizationService::RemoveBrowserFromSessionMap(
+    const Browser* browser) {
+  CHECK(base::Contains(browser_session_map_, browser));
+  browser->tab_strip_model()->RemoveObserver(this);
+  browser_session_map_.erase(browser);
 }
 
 void TabOrganizationService::EnableTabOrganizationFeatures(

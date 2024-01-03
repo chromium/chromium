@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/trigger_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
@@ -30,7 +31,8 @@ class WebContents;
 // Provides an interface for getting Organizations for tabs.
 class TabOrganizationService
     : public KeyedService,
-      public optimization_guide::SettingsEnabledObserver {
+      public optimization_guide::SettingsEnabledObserver,
+      public TabStripModelObserver {
  public:
   using BrowserSessionMap =
       std::unordered_map<const Browser*,
@@ -47,6 +49,10 @@ class TabOrganizationService
 
   const BrowserSessionMap& browser_session_map() const {
     return browser_session_map_;
+  }
+
+  const TabSensitivityCache* tab_sensitivity_cache() const {
+    return tab_sensitivity_cache_.get();
   }
 
   const TabOrganizationSession* GetSessionForBrowser(
@@ -91,9 +97,11 @@ class TabOrganizationService
     observers_.RemoveObserver(observer);
   }
 
-  const TabSensitivityCache* tab_sensitivity_cache() const {
-    return tab_sensitivity_cache_.get();
-  }
+  // TabStripModelObserver.
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
 
  private:
   // KeyedService:
@@ -101,6 +109,8 @@ class TabOrganizationService
 
   // optimization_guide::SettingsEnabledObserver:
   void PrepareToEnableOnRestart() override;
+
+  void RemoveBrowserFromSessionMap(const Browser* browser);
 
   void EnableTabOrganizationFeatures(flags_ui::FlagsStorage* flags_storage);
 
