@@ -765,9 +765,9 @@ SkiaOutputSurfaceImpl::CreateImageContext(
       /*is_for_render_pass=*/false, raw_draw_if_possible);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_calling_makecurrent",
-               force_makecurrent)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_disable_makecurrent",
+               force_disable_makecurrent)
 #endif
 
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
@@ -804,9 +804,9 @@ void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
       // appropriated.
       //
       // TODO(crbug.com/1494032): Extend that approach for other platforms.
-      force_makecurrent();  // Defaults to false.
+      false;
 #else
-      true;
+      !force_disable_makecurrent();  // Defaults to false.
 #endif
 
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
