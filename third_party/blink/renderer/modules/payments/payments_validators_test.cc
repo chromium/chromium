@@ -10,7 +10,6 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
@@ -33,7 +32,7 @@ struct CurrencyCodeTestCase {
 class PaymentsCurrencyValidatorTest
     : public testing::TestWithParam<CurrencyCodeTestCase> {
  public:
-  v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
+  v8::Isolate* GetIsolate() { return task_environment_.isolate(); }
 
   test::TaskEnvironment task_environment_;
 };
@@ -97,7 +96,7 @@ std::ostream& operator<<(std::ostream& out, const TestCase& test_case) {
 
 class PaymentsAmountValidatorTest : public testing::TestWithParam<TestCase> {
  public:
-  v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
+  v8::Isolate* GetIsolate() { return task_environment_.isolate(); }
   test::TaskEnvironment task_environment_;
 };
 
@@ -146,7 +145,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PaymentsRegionValidatorTest : public testing::TestWithParam<TestCase> {
  public:
-  v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
+  v8::Isolate* GetIsolate() { return task_environment_.isolate(); }
   test::TaskEnvironment task_environment_;
 };
 
@@ -185,7 +184,7 @@ struct ShippingAddressTestCase {
 class PaymentsShippingAddressValidatorTest
     : public testing::TestWithParam<ShippingAddressTestCase> {
  public:
-  v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
+  v8::Isolate* GetIsolate() { return task_environment_.isolate(); }
 
   test::TaskEnvironment task_environment_;
 };
@@ -355,7 +354,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 class PaymentMethodValidatorTest : public testing::Test {
  public:
-  v8::Isolate* GetIsolate() { return MainThreadIsolate(); }
+  v8::Isolate* GetIsolate() { return task_environment_.isolate(); }
   test::TaskEnvironment task_environment_;
 };
 
