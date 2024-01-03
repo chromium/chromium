@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -149,9 +150,9 @@ std::unique_ptr<FormStructure> BuildFormStructure(
     }
   }
   // Calls RationalizeFieldTypePredictions.
-  FormStructure::ParseApiQueryResponse(
-      response_string, {form_structure.get()},
-      test::GetEncodedSignatures({form_structure.get()}), nullptr, nullptr);
+  ParseApiQueryResponse(response_string, {form_structure.get()},
+                        test::GetEncodedSignatures({form_structure.get()}),
+                        nullptr, nullptr);
   return form_structure;
 }
 

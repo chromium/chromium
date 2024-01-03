@@ -8,6 +8,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/common/form_data.h"
@@ -36,8 +37,9 @@ void AddField(const std::string& label,
 // forms vectors, so it can be changed if needed.
 DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  FormStructureTestApi::ProcessQueryResponse(
-      response, forms, test::GetEncodedSignatures(forms), nullptr);
+  ProcessQueryResponse(response, forms, test::GetEncodedSignatures(forms),
+                       /*form_interactions_ukm_logger=*/nullptr,
+                       /*log_manager=*/nullptr);
 
   FormData form_data;
   AddField("username", "username", FormControlType::kInputText, &form_data);
@@ -45,8 +47,9 @@ DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
 
   FormStructure form(form_data);
   forms.push_back(&form);
-  FormStructureTestApi::ProcessQueryResponse(
-      response, forms, test::GetEncodedSignatures(forms), nullptr);
+  ProcessQueryResponse(response, forms, test::GetEncodedSignatures(forms),
+                       /*form_interactions_ukm_logger=*/nullptr,
+                       /*log_manager=*/nullptr);
 }
 
 }  // namespace

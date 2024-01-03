@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
@@ -847,9 +848,9 @@ void AutofillManager::OnLoadedServerPredictions(
   }
 
   // Parse and store the server predictions.
-  FormStructure::ParseApiQueryResponse(
-      std::move(response), queried_forms, queried_form_signatures,
-      form_interactions_ukm_logger(), log_manager_);
+  ParseApiQueryResponse(std::move(response), queried_forms,
+                        queried_form_signatures, form_interactions_ukm_logger(),
+                        log_manager_);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.

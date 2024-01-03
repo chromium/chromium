@@ -20,27 +20,6 @@ class FormStructureTestApi {
  public:
   using ShouldBeParsedParams = FormStructure::ShouldBeParsedParams;
 
-  static void ParseApiQueryResponse(
-      std::string_view payload,
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger* ukm_logger,
-      LogManager* log_manager = nullptr) {
-    FormStructure::ParseApiQueryResponse(
-        payload, forms, queried_form_signatures, ukm_logger, log_manager);
-  }
-
-  static void ProcessQueryResponse(
-      const AutofillQueryResponse& response,
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
-      const std::vector<FormSignature>& queried_form_signatures,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager = nullptr) {
-    FormStructure::ProcessQueryResponse(
-        response, forms, queried_form_signatures, form_interactions_ukm_logger,
-        log_manager);
-  }
-
   explicit FormStructureTestApi(FormStructure* form_structure)
       : form_structure_(*form_structure) {}
 
