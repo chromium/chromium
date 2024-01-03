@@ -172,12 +172,6 @@ WindowStateType GetStateTypeFromSnapPosition(SnapPosition snap_position) {
   }
 }
 
-// Returns the length of the window according to the screen orientation.
-int GetWindowLength(aura::Window* window, bool horizontal) {
-  const auto& bounds = window->bounds();
-  return horizontal ? bounds.width() : bounds.height();
-}
-
 // Returns true if |window| is currently snapped.
 bool IsSnapped(aura::Window* window) {
   if (!window)
@@ -1214,26 +1208,6 @@ void SplitViewController::OnWindowPropertyChanged(aura::Window* window,
   Shell::Get()->overview_controller()->EndOverview(
       OverviewEndAction::kSplitView);
   ShowAppCannotSnapToast();
-}
-
-void SplitViewController::OnWindowBoundsChanged(
-    aura::Window* window,
-    const gfx::Rect& old_bounds,
-    const gfx::Rect& new_bounds,
-    ui::PropertyChangeReason reason) {
-  CHECK_EQ(root_window_, window->GetRootWindow());
-
-  if (InTabletSplitViewMode() && IsResizingWithDivider()) {
-    // Bounds may be changed while we are processing a resize event. In this
-    // case, we don't update the windows transform here, since it will be done
-    // soon anyway. If we are *not* currently processing a resize, it means the
-    // bounds of a window have been updated "async", and we need to update the
-    // window's transform.
-    if (!split_view_divider_->processing_resize_event_) {
-      SetWindowsTransformDuringResizing();
-    }
-    return;
-  }
 }
 
 void SplitViewController::OnWindowDestroyed(aura::Window* window) {
@@ -2350,36 +2324,15 @@ void SplitViewController::RestoreTransformIfApplicable(aura::Window* window) {
 }
 
 void SplitViewController::SetWindowsTransformDuringResizing() {
-  DCHECK(InTabletSplitViewMode() || IsSnapGroupEnabledInClamshellMode());
-  DCHECK_GE(divider_position_, 0);
-  const bool horizontal = IsLayoutHorizontal(root_window_);
+  CHECK(InTabletSplitViewMode() || IsSnapGroupEnabledInClamshellMode());
+  CHECK_GE(divider_position_, 0);
   aura::Window* left_or_top_window = GetPhysicalLeftOrTopWindow();
   aura::Window* right_or_bottom_window = GetPhysicalRightOrBottomWindow();
-
-  gfx::Transform left_or_top_transform;
   if (left_or_top_window) {
-    const int left_size = divider_position_;
-    const int distance =
-        left_size - GetWindowLength(left_or_top_window, horizontal);
-    if (distance < 0) {
-      left_or_top_transform.Translate(horizontal ? distance : 0,
-                                      horizontal ? 0 : distance);
-    }
-    window_util::SetTransform(left_or_top_window, left_or_top_transform);
+    SetWindowTransformDuringResizing(left_or_top_window, divider_position_);
   }
-
-  gfx::Transform right_or_bottom_transform;
   if (right_or_bottom_window) {
-    const int right_size = GetDividerPositionUpperLimit(root_window_) -
-                           divider_position_ - kSplitviewDividerShortSideLength;
-    const int distance =
-        right_size - GetWindowLength(right_or_bottom_window, horizontal);
-    if (distance < 0) {
-      right_or_bottom_transform.Translate(horizontal ? -distance : 0,
-                                          horizontal ? 0 : -distance);
-    }
-    window_util::SetTransform(right_or_bottom_window,
-                              right_or_bottom_transform);
+    SetWindowTransformDuringResizing(right_or_bottom_window, divider_position_);
   }
 }
 
