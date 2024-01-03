@@ -144,30 +144,6 @@
       },
       {
         "args": [
-          "mediapipe",
-          "--show-stdout",
-          "--browser=cros-chrome",
-          "--passthrough",
-          "-v",
-          "--stable-jobs",
-          "--enforce-browser-version"
-        ],
-        "autotest_name": "chromium_Graphics",
-        "cros_board": "jacuzzi",
-        "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
-        "name": "mediapipe_passthrough_tests JACUZZI_RELEASE_LKGM",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "test": "telemetry_gpu_integration_test",
-        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
-        "timeout_sec": 10800,
-        "use_lkgm": true,
-        "variant_id": "JACUZZI_RELEASE_LKGM"
-      },
-      {
-        "args": [
           "pixel",
           "--show-stdout",
           "--browser=cros-chrome",

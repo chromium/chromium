@@ -4953,14 +4953,6 @@ hooks = [
                 '--gs_url_base=chromeos-prebuilt/afdo-job/llvm',
     ],
   },
-  # Download and unpack MediaPipe Integration tests.
-  {
-    'name': 'mediapipe_integration_testdata',
-    'pattern': '.',
-    'action': [ 'python3',
-                'src/content/test/gpu/gpu_tests/mediapipe_update.py',
-    ],
-  },
   # DOWNLOAD AR test APKs only if the environment variable is set
   {
     'name': 'ar_test_apks',

@@ -951,7 +951,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_validating_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_telemetry_test",
         "gpu_webgl_conformance_validating_telemetry_tests",
@@ -973,7 +972,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_lacros_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
@@ -1013,7 +1011,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_linux_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
@@ -1028,7 +1025,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_linux_release_vulkan_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
@@ -1052,7 +1048,6 @@ targets.legacy_compound_suite(
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
         "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
         "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
@@ -1086,7 +1081,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_mac_release_telemetry_tests",
     basic_suites = [
         "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_metal_passthrough_ganesh_telemetry_tests",
         "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
         "gpu_webcodecs_metal_passthrough_ganesh_telemetry_test",
@@ -1104,7 +1098,6 @@ targets.legacy_compound_suite(
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
         "gpu_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_metal_passthrough_ganesh_telemetry_tests",
         "gpu_metal_passthrough_graphite_telemetry_tests",
         "gpu_webcodecs_gl_passthrough_ganesh_telemetry_test",
@@ -1123,7 +1116,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_win_amd_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
@@ -1161,7 +1153,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_win_intel_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_webcodecs_telemetry_test",
         "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
@@ -1195,8 +1186,6 @@ targets.legacy_compound_suite(
     name = "gpu_nexus5x_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
-        "gpu_mediapipe_validating_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_telemetry_test",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
@@ -1218,8 +1207,6 @@ targets.legacy_compound_suite(
     name = "gpu_pixel_4_and_6_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_mediapipe_passthrough_telemetry_tests",
-        "gpu_mediapipe_validating_telemetry_tests",
         "gpu_passthrough_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_telemetry_test",

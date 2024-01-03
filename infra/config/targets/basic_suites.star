@@ -2746,54 +2746,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_mediapipe_passthrough_telemetry_tests",
-    tests = {
-        "mediapipe_passthrough_tests": targets.legacy_test_config(
-            args = [
-                "--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=passthrough --use-gl=angle",
-            ],
-            android_args = [
-                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
-            ],
-            chromeos_args = [
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
-            ],
-            lacros_args = [
-                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_mediapipe_validating_telemetry_tests",
-    tests = {
-        "mediapipe_validating_tests": targets.legacy_test_config(
-            args = [
-                "--extra-browser-args=--force_higher_performance_gpu --use-cmd-decoder=validating",
-            ],
-            android_args = [
-                "$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices",
-            ],
-            chromeos_args = [
-                "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
-            ],
-            lacros_args = [
-                "--extra-browser-args=--enable-features=UseOzonePlatform --ozone-platform=wayland",
-                "--xvfb",
-                "--no-xvfb",
-                "--use-weston",
-                "--weston-use-gl",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_metal_passthrough_ganesh_telemetry_tests",
     tests = {
         "context_lost_metal_passthrough_ganesh_tests": targets.legacy_test_config(

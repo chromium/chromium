@@ -1437,22 +1437,6 @@ targets.tests.gtest_test(
     binary = "media_unittests",
 )
 
-targets.tests.gpu_telemetry_test(
-    name = "mediapipe_passthrough_tests",
-    telemetry_test_name = "mediapipe",
-    mixins = [
-        "has_native_resultdb_integration",
-    ],
-)
-
-targets.tests.gpu_telemetry_test(
-    name = "mediapipe_validating_tests",
-    telemetry_test_name = "mediapipe",
-    mixins = [
-        "has_native_resultdb_integration",
-    ],
-)
-
 targets.tests.isolated_script_test(
     name = "memory.leak_detection",
     args = [

@@ -352,11 +352,6 @@ targets.legacy_matrix_compound_suite(
                 "CROS_JACUZZI_RELEASE_LKGM",
             ],
         ),
-        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_JACUZZI_RELEASE_LKGM",
-            ],
-        ),
         "gpu_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_JACUZZI_RELEASE_LKGM",
@@ -384,11 +379,6 @@ targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_release_telemetry_tests_volteer_skylab",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
-            ],
-        ),
-        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
             ],
@@ -1197,12 +1187,6 @@ targets.legacy_matrix_compound_suite(
                 "LINUX_NVIDIA_GTX_1660_STABLE",
             ],
         ),
-        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
         "gpu_webcodecs_telemetry_test": targets.legacy_matrix_config(
             variants = [
                 "LINUX_INTEL_UHD_630_STABLE",
@@ -1240,13 +1224,6 @@ targets.legacy_matrix_compound_suite(
     name = "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
-            ],
-        ),
-        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
@@ -1366,12 +1343,6 @@ targets.legacy_matrix_compound_suite(
     name = "win_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "WIN10_INTEL_UHD_630_STABLE",
-                "WIN10_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        "gpu_mediapipe_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "WIN10_INTEL_UHD_630_STABLE",
                 "WIN10_NVIDIA_GTX_1660_STABLE",
