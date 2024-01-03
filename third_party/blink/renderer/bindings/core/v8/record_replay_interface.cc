@@ -3372,7 +3372,7 @@ function makeAPIHash(content) {
 function collectUnresolvedSourceMapResources(mapText, mapURL) {
   let obj;
   try {
-    obj = JSON_parse(mapText);
+    obj = JSON.parse(mapText);
     if (typeof obj !== "object" || !obj) {
       return {
         sources: [],
@@ -3422,7 +3422,7 @@ function collectUnresolvedSourceMapResources(mapText, mapURL) {
             continue;
           }
 
-          Array_push.call(unresolvedSources, {
+          unresolvedSources.push({
             offset,
             url: sourceURL,
           });
@@ -3551,7 +3551,7 @@ function inject(renderer) {
 
   const id = ++uidCounter;
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
-  Array_push.call(window.__REACT_DEVTOOLS_SAVED_RENDERERS__, renderer);
+  window.__REACT_DEVTOOLS_SAVED_RENDERERS__.push(renderer);
   return id;
 }
 
@@ -3670,7 +3670,7 @@ function saveReplayAnnotation(action, state, connectionType, extractedConfig, co
   const {
     instanceId
   } = extractedConfig;
-  window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON_stringify({
+  window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON.stringify({
     type: 'action',
     actionType: action.type,
     connectionType,
@@ -3746,7 +3746,7 @@ function connect(preConfig) {
     return;
   };
   const init = (state, liftedData) => {
-    window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON_stringify({
+    window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON.stringify({
       type: 'init',
       connectionType: 'generic',
       instanceId
@@ -3774,7 +3774,7 @@ function __REDUX_DEVTOOLS_EXTENSION__(preConfig = {}) {
     instanceId
   } = extractedExtensionConfig;
   function init() {
-    window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON_stringify({
+    window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON.stringify({
       type: 'init',
       connectionType: 'redux',
       instanceId
