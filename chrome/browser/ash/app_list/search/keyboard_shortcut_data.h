@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_LIST_SEARCH_KEYBOARD_SHORTCUT_DATA_H_
 
 #include <optional>
+#include <string>
 
 #include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -13,7 +14,7 @@
 
 namespace app_list {
 
-// An intermediary struct between keyboard shortcut data classes in //ash and
+// An intermediary class between keyboard shortcut data classes in //ash and
 // the launcher backend. Hierarchy:
 //
 //   1) ash::KeyboardShortcutItem.
@@ -26,7 +27,8 @@ namespace app_list {
 // (3), and can provide encapsulation of processing tasks.
 //
 // To be used in the productivity launcher, and not in the old launcher.
-struct KeyboardShortcutData {
+class KeyboardShortcutData {
+ public:
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);
   // For testing purposes.
   explicit KeyboardShortcutData(const std::u16string description);
@@ -35,19 +37,29 @@ struct KeyboardShortcutData {
 
   ~KeyboardShortcutData();
 
+  int description_message_id() const { return description_message_id_; }
+  const std::u16string& description() const { return description_; }
+  const std::optional<int> shortcut_message_id() const {
+    return shortcut_message_id_;
+  }
+  const std::vector<ui::KeyboardCode> shortcut_key_codes() const {
+    return shortcut_key_codes_;
+  }
+
+ private:
   // ID of the message resource describing the action the shortcut performs.
-  int description_message_id;
+  int description_message_id_;
   // The description (corresponding to |description_message_id|) of the shortcut
   // action e.g. "Dock a window on the right".
-  std::u16string description;
+  std::u16string description_;
 
   // ID of the message template resource used to list the keys making up the
   // shortcut.
-  std::optional<int> shortcut_message_id;
+  std::optional<int> shortcut_message_id_;
 
   // The VKEY codes of the key and each modifier comprising the shortcut. See
   // ash/public/cpp/keyboard_shortcut_item.h for more detail.
-  std::vector<ui::KeyboardCode> shortcut_key_codes;
+  std::vector<ui::KeyboardCode> shortcut_key_codes_;
 };
 
 }  // namespace app_list

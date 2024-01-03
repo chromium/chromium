@@ -47,7 +47,7 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
   std::vector<std::pair<KeyboardShortcutData, double>> candidates;
   for (const auto& shortcut : shortcut_data) {
     double relevance = KeyboardShortcutResult::CalculateRelevance(
-        tokenized_query, shortcut.description);
+        tokenized_query, shortcut.description());
     if (relevance > kResultRelevanceThreshold) {
       candidates.push_back(std::make_pair(shortcut, relevance));
     }
