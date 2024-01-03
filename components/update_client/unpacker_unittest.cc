@@ -15,30 +15,30 @@
 #include "base/test/task_environment.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/services/unzip/in_process_unzipper.h"
-#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace update_client {
 
-class PuffinComponentUnpackerTest : public testing::Test {
+class UnpackerTest : public testing::Test {
  public:
-  PuffinComponentUnpackerTest() = default;
-  ~PuffinComponentUnpackerTest() override = default;
+  UnpackerTest() = default;
+  ~UnpackerTest() override = default;
 
-  void UnpackComplete(const PuffinComponentUnpacker::Result& result);
+  void UnpackComplete(const Unpacker::Result& result);
 
  protected:
   base::test::TaskEnvironment env_;
 };
 
-TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
+TEST_F(UnpackerTest, UnpackFullCrx) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
-  PuffinComponentUnpacker::Unpack(
+  Unpacker::Unpack(
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"),
       base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -46,7 +46,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
           ->Create(),
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&](const PuffinComponentUnpacker::Result& result) {
+          [&](const Unpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kNone);
             EXPECT_EQ(result.extended_error, 0);
@@ -69,15 +69,15 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFullCrx) {
   loop.Run();
 }
 
-TEST_F(PuffinComponentUnpackerTest, UnpackFileNotFound) {
+TEST_F(UnpackerTest, UnpackFileNotFound) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
-  PuffinComponentUnpacker::Unpack(
+  Unpacker::Unpack(
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("file_not_found.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&](const PuffinComponentUnpacker::Result& result) {
+          [&](const Unpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
             EXPECT_EQ(result.extended_error,
@@ -91,15 +91,15 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileNotFound) {
 }
 
 // Tests a mismatch between the public key hash and the id of the component.
-TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
+TEST_F(UnpackerTest, UnpackFileHashMismatch) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
-  PuffinComponentUnpacker::Unpack(
+  Unpacker::Unpack(
       std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&](const PuffinComponentUnpacker::Result& result) {
+          [&](const Unpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
             EXPECT_EQ(
@@ -113,10 +113,10 @@ TEST_F(PuffinComponentUnpackerTest, UnpackFileHashMismatch) {
   loop.Run();
 }
 
-TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
+TEST_F(UnpackerTest, UnpackWithVerifiedContents) {
   SEQUENCE_CHECKER(sequence_checker);
   base::RunLoop loop;
-  PuffinComponentUnpacker::Unpack(
+  Unpacker::Unpack(
       std::vector<uint8_t>(),
       GetTestFilePath("gndmhdcefbhlchkhipcnnbkcmicncehk_22_314.crx3"),
       base::MakeRefCounted<update_client::UnzipChromiumFactory>(
@@ -124,7 +124,7 @@ TEST_F(PuffinComponentUnpackerTest, UnpackWithVerifiedContents) {
           ->Create(),
       crx_file::VerifierFormat::CRX3,
       base::BindLambdaForTesting(
-          [&](const PuffinComponentUnpacker::Result& result) {
+          [&](const Unpacker::Result& result) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
             EXPECT_EQ(result.error, UnpackerError::kNone);
             base::FilePath unpack_path = result.unpack_path;

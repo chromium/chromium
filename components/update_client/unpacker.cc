@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/update_client/puffin_component_unpacker.h"
+#include "components/update_client/unpacker.h"
 
 #include <stdint.h>
 #include <string>
@@ -38,35 +38,34 @@ base::FilePath GetVerifiedContentsPath(const base::FilePath& extension_path) {
 
 namespace update_client {
 
-PuffinComponentUnpacker::Result::Result() = default;
+Unpacker::Result::Result() = default;
 
-PuffinComponentUnpacker::PuffinComponentUnpacker(
-    const std::vector<uint8_t>& pk_hash,
+Unpacker::Unpacker(
     const base::FilePath& path,
     std::unique_ptr<Unzipper> unzipper,
-    crx_file::VerifierFormat crx_format,
     base::OnceCallback<void(const Result& result)> callback)
-    : pk_hash_(pk_hash),
-      path_(path),
+    : path_(path),
       unzipper_(std::move(unzipper)),
-      crx_format_(crx_format),
       callback_(std::move(callback)) {}
 
-PuffinComponentUnpacker::~PuffinComponentUnpacker() = default;
+Unpacker::~Unpacker() = default;
 
-void PuffinComponentUnpacker::Unpack(
+void Unpacker::Unpack(
     const std::vector<uint8_t>& pk_hash,
     const base::FilePath& path,
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     base::OnceCallback<void(const Result& result)> callback) {
-  scoped_refptr<PuffinComponentUnpacker> unpacker =
-      base::WrapRefCounted(new PuffinComponentUnpacker(
-          pk_hash, path, std::move(unzipper), crx_format, std::move(callback)));
-  unpacker->Verify();
+  base::WrapRefCounted(
+      new Unpacker(
+          path,
+          std::move(unzipper),
+          std::move(callback)))->Verify(pk_hash, crx_format);
 }
 
-void PuffinComponentUnpacker::Verify() {
+void Unpacker::Verify(
+      const std::vector<uint8_t>& pk_hash,
+      crx_file::VerifierFormat crx_format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Verifying component: " << path_.value();
   if (path_.empty()) {
@@ -74,10 +73,11 @@ void PuffinComponentUnpacker::Verify() {
     return;
   }
   std::vector<std::vector<uint8_t>> required_keys;
-  if (!pk_hash_.empty())
-    required_keys.push_back(pk_hash_);
+  if (!pk_hash.empty()) {
+    required_keys.push_back(pk_hash);
+  }
   const crx_file::VerifierResult result = crx_file::Verify(
-      path_, crx_format_, required_keys, std::vector<uint8_t>(), &public_key_,
+      path_, crx_format, required_keys, std::vector<uint8_t>(), &public_key_,
       /*crx_id=*/nullptr, &compressed_verified_contents_);
   if (result != crx_file::VerifierResult::OK_FULL) {
     EndUnpacking(UnpackerError::kInvalidFile, static_cast<int>(result));
@@ -87,10 +87,10 @@ void PuffinComponentUnpacker::Verify() {
   BeginUnzipping();
 }
 
-void PuffinComponentUnpacker::BeginUnzipping() {
+void Unpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::CreateNewTempDirectory(
-          FILE_PATH_LITERAL("chrome_PuffinComponentUnpacker_BeginUnzipping"),
+          FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"),
           &unpack_path_)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError,
@@ -100,10 +100,10 @@ void PuffinComponentUnpacker::BeginUnzipping() {
   VLOG(1) << "Unpacking in: " << unpack_path_.value();
   unzipper_->Unzip(
       path_, unpack_path_,
-      base::BindOnce(&PuffinComponentUnpacker::EndUnzipping, this));
+      base::BindOnce(&Unpacker::EndUnzipping, this));
 }
 
-void PuffinComponentUnpacker::EndUnzipping(bool result) {
+void Unpacker::EndUnzipping(bool result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result) {
     VLOG(1) << "Unzipping failed.";
@@ -122,7 +122,7 @@ void PuffinComponentUnpacker::EndUnzipping(bool result) {
   UncompressVerifiedContents();
 }
 
-void PuffinComponentUnpacker::UncompressVerifiedContents() {
+void Unpacker::UncompressVerifiedContents() {
   std::string verified_contents;
   if (!compression::GzipUncompress(compressed_verified_contents_,
                                    &verified_contents)) {
@@ -134,7 +134,7 @@ void PuffinComponentUnpacker::UncompressVerifiedContents() {
   StoreVerifiedContentsInExtensionDir(verified_contents);
 }
 
-void PuffinComponentUnpacker::StoreVerifiedContentsInExtensionDir(
+void Unpacker::StoreVerifiedContentsInExtensionDir(
     const std::string& verified_contents) {
   base::FilePath metadata_path = unpack_path_.Append(kMetadataFolder);
   if (!base::CreateDirectory(metadata_path)) {
@@ -156,8 +156,7 @@ void PuffinComponentUnpacker::StoreVerifiedContentsInExtensionDir(
   EndUnpacking(UnpackerError::kNone);
 }
 
-void PuffinComponentUnpacker::EndUnpacking(UnpackerError error,
-                                           int extended_error) {
+void Unpacker::EndUnpacking(UnpackerError error, int extended_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (error != UnpackerError::kNone && !unpack_path_.empty())
     base::DeletePathRecursively(unpack_path_);

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_UPDATE_CLIENT_PUFFIN_COMPONENT_UNPACKER_H_
-#define COMPONENTS_UPDATE_CLIENT_PUFFIN_COMPONENT_UNPACKER_H_
+#ifndef COMPONENTS_UPDATE_CLIENT_UNPACKER_H_
+#define COMPONENTS_UPDATE_CLIENT_UNPACKER_H_
 
 #include <stdint.h>
 
@@ -36,7 +36,7 @@ class Unzipper;
 // - The manifest can have different attributes and resources are not
 //   transcoded.
 //
-// This is an updated version of ComponentUnpacker that leverages the new
+// This is an updated version of Unpacker that leverages the new
 // Puffin-based puffpatch CRX-diff format, rather than the legacy
 // courgette/bsdiff per-file CRXD format. Puffin patches the CRX before
 // unpacking, changing the order of operations such that patching needs to occur
@@ -46,8 +46,8 @@ class Unzipper;
 // Note: During unzip step we also check for verified_contents.json in the
 // header of crx file and unpack it to metadata_ folder if it doesn't already
 // contain verified_contents file.
-class PuffinComponentUnpacker
-    : public base::RefCountedThreadSafe<PuffinComponentUnpacker> {
+class Unpacker
+    : public base::RefCountedThreadSafe<Unpacker> {
  public:
   // Contains the result of the unpacking.
   struct Result {
@@ -66,8 +66,8 @@ class PuffinComponentUnpacker
     std::string public_key;
   };
 
-  PuffinComponentUnpacker(const PuffinComponentUnpacker&) = delete;
-  PuffinComponentUnpacker& operator=(const PuffinComponentUnpacker&) = delete;
+  Unpacker(const Unpacker&) = delete;
+  Unpacker& operator=(const Unpacker&) = delete;
 
   // Begins the actual unpacking of the files. Calls `callback` with the result.
   static void Unpack(const std::vector<uint8_t>& pk_hash,
@@ -77,25 +77,26 @@ class PuffinComponentUnpacker
                      base::OnceCallback<void(const Result& result)> callback);
 
  private:
-  friend class base::RefCountedThreadSafe<PuffinComponentUnpacker>;
+  friend class base::RefCountedThreadSafe<Unpacker>;
 
   // Constructs an unpacker for a specific component unpacking operation.
   // `pk_hash` is the expected public developer key's SHA256 hash. If empty,
   // the unpacker accepts any developer key. `path` is the current location
   // of the CRX.
-  PuffinComponentUnpacker(
-      const std::vector<uint8_t>& pk_hash,
+  Unpacker(
       const base::FilePath& path,
       std::unique_ptr<Unzipper> unzipper,
-      crx_file::VerifierFormat crx_format,
       base::OnceCallback<void(const Result& result)> callback);
 
-  virtual ~PuffinComponentUnpacker();
+  virtual ~Unpacker();
 
   // The first step of unpacking is to verify the file. Triggers
   // `BeginUnzipping` if successful. Triggers `EndUnpacking` if an early error
   // is encountered.
-  void Verify();
+  void Verify(
+      const std::vector<uint8_t>& pk_hash,
+      crx_file::VerifierFormat crx_format
+  );
 
   // The next step of unpacking is to unzip. Triggers `EndUnzipping` if
   // successful. Triggers `EndUnpacking` if an early error is encountered.
@@ -115,10 +116,8 @@ class PuffinComponentUnpacker
   // callback provided in `Unpack`.
   void EndUnpacking(UnpackerError error, int extended_error = 0);
 
-  std::vector<uint8_t> pk_hash_;
   base::FilePath path_;
   std::unique_ptr<Unzipper> unzipper_;
-  crx_file::VerifierFormat crx_format_;
   base::OnceCallback<void(const Result& result)> callback_;
   base::FilePath unpack_path_;
   std::string public_key_;
@@ -130,4 +129,4 @@ class PuffinComponentUnpacker
 
 }  // namespace update_client
 
-#endif  // COMPONENTS_UPDATE_CLIENT_PUFFIN_COMPONENT_UNPACKER_H_
+#endif  // COMPONENTS_UPDATE_CLIENT_UNPACKER_H_

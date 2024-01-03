@@ -41,10 +41,10 @@
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/ping_manager.h"
 #include "components/update_client/protocol_handler.h"
-#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_installer.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_checker.h"
@@ -5561,7 +5561,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
     base::RunLoop runloop;
     base::OnceClosure quit_closure = runloop.QuitClosure();
 
-    PuffinComponentUnpacker::Unpack(
+    Unpacker::Unpack(
         std::vector<uint8_t>(std::begin(gjpm_hash), std::end(gjpm_hash)),
         GetTestFilePath("runaction_test_win.crx3"),
         base::MakeRefCounted<UnzipChromiumFactory>(
@@ -5570,7 +5570,7 @@ TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
         crx_file::VerifierFormat::CRX3,
         base::BindOnce(
             [](base::FilePath* unpack_path, base::OnceClosure quit_closure,
-               const PuffinComponentUnpacker::Result& result) {
+               const Unpacker::Result& result) {
               EXPECT_EQ(UnpackerError::kNone, result.error);
               EXPECT_EQ(0, result.extended_error);
               *unpack_path = result.unpack_path;

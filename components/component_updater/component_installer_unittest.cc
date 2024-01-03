@@ -34,9 +34,9 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/patcher.h"
-#include "components/update_client/puffin_component_unpacker.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
+#include "components/update_client/unpacker.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -212,15 +212,12 @@ class ComponentInstallerTest : public testing::Test {
  protected:
   void RunThreads();
   void Unpack(const base::FilePath& crx_path);
-  update_client::PuffinComponentUnpacker::Result result() const {
-    return result_;
-  }
+  update_client::Unpacker::Result result() const { return result_; }
 
   base::test::TaskEnvironment task_environment_;
 
  private:
-  void UnpackComplete(
-      const update_client::PuffinComponentUnpacker::Result& result);
+  void UnpackComplete(const update_client::Unpacker::Result& result);
   void Schedule(const base::TimeDelta& initial_delay,
                 const base::TimeDelta& delay,
                 const UpdateScheduler::UserTask& user_task,
@@ -236,7 +233,7 @@ class ComponentInstallerTest : public testing::Test {
   scoped_refptr<TestConfigurator> config_;
   scoped_refptr<MockUpdateClient> update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  update_client::PuffinComponentUnpacker::Result result_;
+  update_client::Unpacker::Result result_;
   std::unique_ptr<ComponentUpdateService> component_updater_;
   raw_ptr<MockUpdateScheduler> scheduler_ = nullptr;
 };
@@ -263,7 +260,7 @@ void ComponentInstallerTest::RunThreads() {
 }
 
 void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
-  update_client::PuffinComponentUnpacker::Unpack(
+  update_client::Unpacker::Unpack(
       std::vector<uint8_t>(std::begin(kSha256Hash), std::end(kSha256Hash)),
       crx_path, config_->GetUnzipperFactory()->Create(),
       crx_file::VerifierFormat::CRX3,
@@ -273,7 +270,7 @@ void ComponentInstallerTest::Unpack(const base::FilePath& crx_path) {
 }
 
 void ComponentInstallerTest::UnpackComplete(
-    const update_client::PuffinComponentUnpacker::Result& result) {
+    const update_client::Unpacker::Result& result) {
   result_ = result;
 
   EXPECT_EQ(update_client::UnpackerError::kNone, result_.error);
