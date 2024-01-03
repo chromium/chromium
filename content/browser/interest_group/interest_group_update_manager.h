@@ -277,6 +277,10 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   // updates.
   base::TimeTicks last_update_started_ = base::TimeTicks::Min();
 
+  // Counter used for count how many interest groups are updated in an update
+  // round. This value is only meaningful during an update round.
+  int num_groups_updated_in_current_round_ = 0;
+
   // Used for fetching interest group update JSON over the network.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

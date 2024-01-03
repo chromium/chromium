@@ -22672,13 +22672,28 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="InterestGroupAdAuctionRoundUpdateResult">
+  <obsolete>
+    Deprecated as of 12/2023.
+  </obsolete>
   <int value="0" label="Round update is successful"/>
   <int value="1" label="Round update is cancelled due to timeout"/>
 </enum>
 
 <enum name="InterestGroupAdAuctionUpdateBatchOperation">
+  <obsolete>
+    Replaced by InterestGroupAdAuctionUpdateResizeOperation.
+  </obsolete>
   <int value="0" label="Batch remains unsplit"/>
   <int value="1" label="Batch is split due to different joining origin"/>
+</enum>
+
+<enum name="InterestGroupAdAuctionUpdateResizeOperation">
+  <int value="0" label="No batch resizing"/>
+  <int value="1" label="Batch is resized with same head and tail origins"/>
+  <int value="2"
+      label="Batch is resized with different origins across the boundary"/>
+  <int value="3"
+      label="Batch is resized with same origins across the boundary"/>
 </enum>
 
 <enum name="InterestGroupAdAuctionUrlLoaderInterceptorStartRequestOutcome">
