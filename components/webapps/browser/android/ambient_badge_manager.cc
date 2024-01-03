@@ -30,6 +30,8 @@ namespace webapps {
 
 namespace {
 
+constexpr base::TimeDelta kSuppressedForFirsVisitPeriod = base::Days(30);
+
 InstallableParams ParamsToPerformWorkerCheck() {
   InstallableParams params;
   params.has_worker = true;
@@ -65,11 +67,6 @@ void AmbientBadgeManager::MaybeShow(
   app_identifier_ = app_identifier;
   a2hs_params_ = std::move(a2hs_params);
   show_banner_callback_ = std::move(show_banner_callback);
-
-  if (!base::FeatureList::IsEnabled(
-          features::kInstallableAmbientBadgeMessage)) {
-    return;
-  }
 
   UpdateState(State::kActive);
 
@@ -175,9 +172,8 @@ bool AmbientBadgeManager::ShouldSuppressAmbientBadgeOnFirstVisit() {
     return true;
   }
 
-  base::TimeDelta period =
-      features::kAmbientBadgeSuppressFirstVisit_Period.Get();
-  return AppBannerManager::GetCurrentTime() - *last_could_show_time > period;
+  return AppBannerManager::GetCurrentTime() - *last_could_show_time >
+         kSuppressedForFirsVisitPeriod;
 }
 
 void AmbientBadgeManager::PerformWorkerCheckForAmbientBadge(
@@ -296,11 +292,9 @@ void AmbientBadgeManager::ShowAmbientBadge() {
   GURL url = a2hs_params_->app_type == AddToHomescreenParams::AppType::WEBAPK
                  ? a2hs_params_->shortcut_info->url
                  : validated_url_;
-  if (base::FeatureList::IsEnabled(features::kInstallableAmbientBadgeMessage)) {
-    message_controller_.EnqueueMessage(
-        web_contents_.get(), app_name_, a2hs_params_->primary_icon,
-        a2hs_params_->HasMaskablePrimaryIcon(), url);
-  }
+  message_controller_.EnqueueMessage(
+      web_contents_.get(), app_name_, a2hs_params_->primary_icon,
+      a2hs_params_->HasMaskablePrimaryIcon(), url);
 }
 
 }  // namespace webapps

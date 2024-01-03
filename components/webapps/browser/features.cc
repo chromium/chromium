@@ -18,22 +18,6 @@ BASE_FEATURE(kAmbientBadgeSuppressFirstVisit,
              "AmbientBadgeSuppressFirstVisit",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-extern const base::FeatureParam<base::TimeDelta>
-    kAmbientBadgeSuppressFirstVisit_Period{&kAmbientBadgeSuppressFirstVisit,
-                                           "period", base::Days(30)};
-
-// Enables or disables the installable ambient badge message.
-BASE_FEATURE(kInstallableAmbientBadgeMessage,
-             "InstallableAmbientBadgeMessage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// The capacity of cached domains which do not show message again if
-// users do not accept the message.
-extern const base::FeatureParam<int>
-    kInstallableAmbientBadgeMessage_ThrottleDomainsCapacity{
-        &kInstallableAmbientBadgeMessage,
-        "installable_ambient_badge_message_throttle_domains_capacity", 100};
-
 // Enables or disables the installable ambient badge message.
 BASE_FEATURE(kInstallPromptGlobalGuardrails,
              "InstallPromptGlobalGuardrails",

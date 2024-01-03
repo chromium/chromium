@@ -2403,9 +2403,6 @@ extern const char kMessagesForAndroidPermissionUpdateDescription[];
 extern const char kMessagesForAndroidPopupBlockedName[];
 extern const char kMessagesForAndroidPopupBlockedDescription[];
 
-extern const char kMessagesForAndroidPWAInstallName[];
-extern const char kMessagesForAndroidPWAInstallDescription[];
-
 extern const char kMessagesForAndroidSaveCardName[];
 extern const char kMessagesForAndroidSaveCardDescription[];
 

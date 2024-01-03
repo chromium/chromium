@@ -4106,10 +4106,6 @@ const char kMessagesForAndroidPopupBlockedName[] = "Popup Blocked Messages UI";
 const char kMessagesForAndroidPopupBlockedDescription[] =
     "When enabled, popup blocked prompt will use the new Messages UI.";
 
-const char kMessagesForAndroidPWAInstallName[] = "PWA Installation Messages UI";
-const char kMessagesForAndroidPWAInstallDescription[] =
-    "When enabled, PWA Installation prompt will use the new Messages UI.";
-
 const char kMessagesForAndroidSaveCardName[] = "Save Card Messages UI";
 const char kMessagesForAndroidSaveCardDescription[] =
     "When enabled, save card prompt will use the new Messages UI.";
