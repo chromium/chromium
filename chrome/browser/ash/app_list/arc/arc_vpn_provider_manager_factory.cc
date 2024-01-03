@@ -39,7 +39,8 @@ ArcVpnProviderManagerFactory::ArcVpnProviderManagerFactory()
 
 ArcVpnProviderManagerFactory::~ArcVpnProviderManagerFactory() = default;
 
-KeyedService* ArcVpnProviderManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ArcVpnProviderManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return ArcVpnProviderManager::Create(context);
 }

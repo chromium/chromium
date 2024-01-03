@@ -29,7 +29,7 @@ class ArcVpnProviderManagerFactory : public ProfileKeyedServiceFactory {
   ArcVpnProviderManagerFactory();
   ~ArcVpnProviderManagerFactory() override;
 
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
