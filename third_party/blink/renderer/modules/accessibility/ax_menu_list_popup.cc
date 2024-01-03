@@ -82,6 +82,10 @@ AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
   DCHECK(IsA<HTMLOptionElement>(*element));
 
   AXObject* ax_object = AXObjectCache().GetOrCreate(element, this);
+  CHECK(ax_object);
+  if (ChildrenNeedToUpdateCachedValues()) {
+    ax_object->InvalidateCachedValues();
+  }
 
   return DynamicTo<AXMenuListOption>(ax_object);
 }

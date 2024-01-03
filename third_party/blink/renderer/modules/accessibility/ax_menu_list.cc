@@ -143,6 +143,9 @@ void AXMenuList::AddChildren() {
   children_dirty_ = false;
 
   // Update mock AXMenuListPopup children.
+  if (ChildrenNeedToUpdateCachedValues()) {
+    popup_->InvalidateCachedValues();
+  }
   popup_->UpdateChildrenIfNecessary();
 }
 

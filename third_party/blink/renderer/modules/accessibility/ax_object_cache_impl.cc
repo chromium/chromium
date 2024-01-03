@@ -2898,6 +2898,14 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "\n* Computed parent: "
         << (object->ComputeParent() ? object->ComputeParent()->ToString(true)
                                     : "not found");
+    // Check whether cached values need an update before using any getters that
+    // will update them.
+    DCHECK(!object->NeedsToUpdateCachedValues())
+        << "No cached values should require an update: " << "\n* Object: "
+        << object->ToString(true);
+    DCHECK(!object->ChildrenNeedToUpdateCachedValues())
+        << "Cached values for children should not require an update: "
+        << "\n* Object: " << object->ToString(true);
     if (object->AccessibilityIsIncludedInTree()) {
       // All cached children must be included.
       for (const auto& child : object->CachedChildrenIncludingIgnored()) {
@@ -2953,10 +2961,7 @@ void AXObjectCacheImpl::CheckTreeIsUpdated() {
         << "No children in the tree should require an update at this point: "
         << "\n* Object: " << object->ToString(true)
         << "\n* Included parent: " << included_parent->ToString(true);
-    DCHECK(!object->NeedsToUpdateCachedValues())
-        << "No cached values should require an update at this point: "
-        << "\n* Object: " << object->ToString(true)
-        << "\n* Included parent: " << included_parent->ToString(true);
+
     count++;
   }
 #endif
@@ -3979,6 +3984,10 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       // values in every node in the subtree, especially when cached values
       // can depend on ancestor cached values, aria-owns and other markup
       // can significantly complicate the code paths.
+      // TODO(accessibility) Replace RemoveSubtreeWhenSafe() with an
+      // implementation that only calls MarkElementDirty(). It is no longer
+      // necessary to remove the subtree for a changed cached value, because
+      // OnInheritedCachedValuesChanged() ensures that descendants are updated.
       RemoveSubtreeWhenSafe(element);
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {

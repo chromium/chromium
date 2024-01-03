@@ -4788,10 +4788,14 @@ void AXNodeObject::InsertChild(AXObject* child,
   // - For a reused, older object, it may need to be changed to a new parent.
   child->SetParent(this);
 
+  if (ChildrenNeedToUpdateCachedValues()) {
+    child->InvalidateCachedValues();
+  }
   // Update cached values preemptively, but don't allow children changed to be
-  // called if ignored change, we are already recomputing children and don't
-  // want to recurse.
-  child->UpdateCachedAttributeValuesIfNeeded(false);
+  // called on the parent if the ignored state changes, as we are already
+  // recomputing children and don't want to recurse.
+  child->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
 
   if (!child->LastKnownIsIncludedInTreeValue()) {
     DCHECK(!is_from_aria_owns)

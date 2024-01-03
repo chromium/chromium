@@ -328,6 +328,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // AXObjectCacheImpl::InvalidateCachedValuesOnSubtree().
   void InvalidateCachedValues();
   bool NeedsToUpdateCachedValues() const { return cached_values_need_update_; }
+  bool ChildrenNeedToUpdateCachedValues() const {
+    return child_cached_values_need_update_;
+  }
   void CheckCanAccessCachedValues() const;
 
   // The AXObjectCacheImpl that owns this object, and its unique ID within this
@@ -1487,9 +1490,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool ComputeCanSetFocusAttribute() const;
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
+  void OnInheritedCachedValuesChanged() const;
 
   // Do the rest of the cached_* member variables need to be recomputed?
   mutable bool cached_values_need_update_ : 1;
+  // Do children need to recompute their cached values?
+  mutable bool child_cached_values_need_update_ : 1;
 
   // The following cached attribute values (the ones starting with m_cached*)
   // are only valid if last_modification_count_ matches

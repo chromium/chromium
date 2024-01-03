@@ -55,6 +55,9 @@ void AXVirtualObject::AddChildren() {
     AXObject* ax_child = AXObjectCache().GetOrCreate(child, this);
     if (!ax_child)
       continue;
+    if (ChildrenNeedToUpdateCachedValues()) {
+      ax_child->InvalidateCachedValues();
+    }
     DCHECK(!ax_child->IsDetached());
     DCHECK(ax_child->AccessibilityIsIncludedInTree());
 
