@@ -13,6 +13,7 @@ import {AllowedPaths} from './volume_manager_types.js';
 export interface TypeList {
   extensions: string[];
   description: string;
+  selected: boolean;
 }
 
 /**

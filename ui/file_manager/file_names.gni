@@ -31,7 +31,6 @@ static_js_files = [
   "file_manager/foreground/js/navigation_list_model.js",
 
   # Files app UI:
-  "file_manager/foreground/js/ui/dialog_footer.js",
   "file_manager/foreground/js/ui/directory_tree.js",
   "file_manager/foreground/js/ui/tree.js",
 ]
@@ -164,6 +163,7 @@ ts_files = [
   "file_manager/foreground/js/ui/command.ts",
   "file_manager/foreground/js/ui/context_menu_handler.ts",
   "file_manager/foreground/js/ui/drag_selector.ts",
+  "file_manager/foreground/js/ui/dialog_footer.ts",
   "file_manager/foreground/js/ui/file_grid.ts",
   "file_manager/foreground/js/ui/file_list_selection_model.ts",
   "file_manager/foreground/js/ui/file_manager_dialog_base.ts",
