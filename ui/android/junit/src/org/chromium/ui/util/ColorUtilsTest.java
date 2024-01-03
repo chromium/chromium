@@ -72,7 +72,10 @@ public class ColorUtilsTest {
 
     private @ColorInt int flatten(@ColorInt int background, @ColorInt int overlay) {
         assert Color.alpha(background) == 255;
-        return ColorUtils.getColorWithOverlay(background, overlay, Color.alpha(overlay) / 255f);
+        @ColorInt int opaqueOverlay = ColorUtils.setAlphaComponent(overlay, 255);
+        @FloatRange(from = 0f, to = 1f)
+        float fraction = Color.alpha(overlay) / 255f;
+        return ColorUtils.getColorWithOverlay(background, opaqueOverlay, fraction);
     }
 
     private void assertColorsEqual(

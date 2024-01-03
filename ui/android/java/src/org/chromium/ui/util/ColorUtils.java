@@ -63,8 +63,8 @@ public class ColorUtils {
     }
 
     /**
-     * Get a color when overlaid with a different color. Note that colors returned by this method
-     * are always opaque.
+     * Get a color when overlaid with a different color. Input and output colors should be fully
+     * opaque, as this approach does not work well with transparency.
      *
      * @param baseColor The base Android color.
      * @param overlayColor The overlay Android color.
@@ -74,7 +74,26 @@ public class ColorUtils {
             @ColorInt int baseColor,
             @ColorInt int overlayColor,
             @FloatRange(from = 0f, to = 1f) float overlayAlpha) {
-        return getColorWithOverlay(baseColor, overlayColor, overlayAlpha, false);
+        // Transparency is ignored in the logic below, so assert if anyone is passing a color that's
+        // not fully opaque. This does incur a minor burden on clients that knowingly want to call
+        // this on a partially transparent color, as they have to change the alpha value first.
+        // TODO(https://crbug.com/1485217): Enable asserts once hairline calculation is updated.
+        // assert Color.alpha(baseColor) == 255;
+        // assert Color.alpha(overlayColor) == 255;
+
+        int red =
+                (int)
+                        MathUtils.interpolate(
+                                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
+        int green =
+                (int)
+                        MathUtils.interpolate(
+                                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
+        int blue =
+                (int)
+                        MathUtils.interpolate(
+                                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
+        return Color.rgb(red, green, blue);
     }
 
     /**
@@ -158,47 +177,6 @@ public class ColorUtils {
             return ColorUtils.getColorWithOverlay(
                     themeColor, Color.BLACK, THEMED_FOREGROUND_BLACK_FRACTION);
         }
-    }
-
-    /**
-     * Get a color when overlaid with a different color.
-     *
-     * @param baseColor The base Android color.
-     * @param overlayColor The overlay Android color.
-     * @param overlayAlpha The alpha |overlayColor| should have on the base color.
-     * @param considerOpacity indicates whether to take color opacity into consideration when
-     *     calculating the new color.
-     * @deprecated Should not directly call this version, as considerOpacity has surprising
-     *     behavior. If you need to handle opacity, consider {@link #blendColorsMultiply} instead.
-     */
-    @Deprecated
-    public static @ColorInt int getColorWithOverlay(
-            @ColorInt int baseColor,
-            @ColorInt int overlayColor,
-            @FloatRange(from = 0f, to = 1f) float overlayAlpha,
-            boolean considerOpacity) {
-        int red =
-                (int)
-                        MathUtils.interpolate(
-                                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
-        int green =
-                (int)
-                        MathUtils.interpolate(
-                                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
-        int blue =
-                (int)
-                        MathUtils.interpolate(
-                                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
-        if (considerOpacity) {
-            int alpha =
-                    (int)
-                            MathUtils.interpolate(
-                                    Color.alpha(baseColor),
-                                    Color.alpha(overlayColor),
-                                    overlayAlpha);
-            return Color.argb(alpha, red, green, blue);
-        }
-        return Color.rgb(red, green, blue);
     }
 
     /**
