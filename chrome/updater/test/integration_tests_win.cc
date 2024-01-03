@@ -637,11 +637,14 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   const base::FilePath batch_script_path(
       offline_app_scripts_dir.AppendASCII("AppSetup.bat"));
 
-  // Create a unique name for a shared event to be waited for in this process
-  // and signaled in the offline installer process to confirm the installer
-  // was run.
-  test::EventHolder event_holder(test::CreateWaitableEventForTest());
-
+  // Create a shared event to be waited for in this process and signaled in the
+  // test process. If the test is running elevated with UAC on, the test will
+  // also confirm that the test process is launched at medium integrity, by
+  // creating an event with a security descriptor that allows the medium
+  // integrity process to signal it.
+  test::EventHolder event_holder(IsElevatedWithUACOn()
+                                     ? CreateEveryoneWaitableEventForTest()
+                                     : test::CreateWaitableEventForTest());
   EXPECT_TRUE(base::WriteFile(
       batch_script_path,
       [](UpdaterScope scope, const std::string& app_client_state_key,
@@ -650,7 +653,10 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
         base::CommandLine post_install_cmd(
             GetTestProcessCommandLine(scope, GetTestName()));
-        post_install_cmd.AppendSwitchNative(kTestEventToSignal, event_name);
+        post_install_cmd.AppendSwitchNative(
+            IsElevatedWithUACOn() ? kTestEventToSignalIfMediumIntegrity
+                                  : kTestEventToSignal,
+            event_name);
         std::vector<std::string> commands;
         const struct {
           const char* value_name;
@@ -666,9 +672,12 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
         };
         for (const auto& reg_item : reg_items) {
           commands.push_back(base::StringPrintf(
-              "REG.exe ADD \"%s\\%s\" /v %s /t %s /d \"%s\" /f /reg:32",
+              "REG.exe ADD \"%s\\%s\" /v %s /t %s /d %s /f /reg:32",
               reg_hive.c_str(), app_client_state_key.c_str(),
-              reg_item.value_name, reg_item.type, reg_item.value.c_str()));
+              reg_item.value_name, reg_item.type,
+              base::WideToASCII(base::CommandLine::QuoteForCommandLineToArgvW(
+                                    base::ASCIIToWide(reg_item.value)))
+                  .c_str()));
         }
         return base::JoinString(commands, "\n");
       }(scope, base::WideToASCII(app_client_state_key), event_holder.name)));
