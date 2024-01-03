@@ -2069,6 +2069,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     optimization_guide::model_execution::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
+  { key::kWallpaperSearchAllowed,
+    optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
+    base::Value::Type::INTEGER},
+#endif
 };
 // clang-format on
 

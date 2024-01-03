@@ -16,6 +16,10 @@ const char kTabOrganizationEnterprisePolicyAllowed[] =
 const char kComposeEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.compose_enterprise_policy_allowed";
 
+const char kWallpaperSearchEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.wallpaper_search_enterprise_policy_"
+    "allowed";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kTabOrganizationEnterprisePolicyAllowed,
@@ -23,6 +27,10 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
       PrefRegistry::LOSSY_PREF);
   registry->RegisterIntegerPref(
       kComposeEnterprisePolicyAllowed,
+      static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
+      PrefRegistry::LOSSY_PREF);
+  registry->RegisterIntegerPref(
+      kWallpaperSearchEnterprisePolicyAllowed,
       static_cast<int>(ModelExecutionEnterprisePolicyValue::kAllow),
       PrefRegistry::LOSSY_PREF);
 }
@@ -34,7 +42,7 @@ const char* GetEnterprisePolicyPrefName(proto::ModelExecutionFeature feature) {
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION:
       return kTabOrganizationEnterprisePolicyAllowed;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
-      return nullptr;
+      return kWallpaperSearchEnterprisePolicyAllowed;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED();
       return nullptr;
