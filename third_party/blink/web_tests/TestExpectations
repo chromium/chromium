@@ -6822,4 +6822,4 @@ crbug.com/1508113 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/au
 crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/cross-document-traversal-cross-document-traversal.html [ Failure Pass ]
 
 # DevTools roll
-crbug.com/1421694 http/tests/devtools/extensions/extensions-api-expected.txt [ Failure Pass ]
+crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
