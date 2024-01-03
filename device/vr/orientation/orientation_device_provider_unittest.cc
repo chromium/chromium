@@ -171,7 +171,8 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackSuccessTest) {
 
   MockOrientationDeviceProviderClient client(&wait_for_device, &wait_for_init);
 
-  provider_->Initialize(&client);
+  // The orientation device provider does not make use of the WebContents.
+  provider_->Initialize(&client, nullptr);
 
   InitializeDevice(FakeInitParams());
 
@@ -185,7 +186,9 @@ TEST_F(VROrientationDeviceProviderTest, InitializationCallbackFailureTest) {
   base::RunLoop wait_for_init;
 
   MockOrientationDeviceProviderClient client(nullptr, &wait_for_init);
-  provider_->Initialize(&client);
+
+  // The orientation device provider does not make use of the WebContents.
+  provider_->Initialize(&client, nullptr);
 
   InitializeDevice(nullptr);
 

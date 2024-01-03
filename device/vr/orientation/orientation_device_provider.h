@@ -30,7 +30,8 @@ class COMPONENT_EXPORT(VR_ORIENTATION) VROrientationDeviceProvider
 
   ~VROrientationDeviceProvider() override;
 
-  void Initialize(VRDeviceProviderClient* client) override;
+  void Initialize(VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
 
   bool Initialized() override;
 

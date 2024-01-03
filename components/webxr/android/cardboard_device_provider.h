@@ -28,7 +28,8 @@ class CardboardDeviceProvider : public device::VRDeviceProvider {
   CardboardDeviceProvider(const CardboardDeviceProvider&) = delete;
   CardboardDeviceProvider& operator=(const CardboardDeviceProvider&) = delete;
 
-  void Initialize(device::VRDeviceProviderClient* client) override;
+  void Initialize(device::VRDeviceProviderClient* client,
+                  content::WebContents* initializing_web_contents) override;
   bool Initialized() override;
 
  private:

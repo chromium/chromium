@@ -8,6 +8,7 @@
 #include "base/android/jni_android.h"
 #include "components/webxr/android/webxr_utils.h"
 #include "components/webxr/android/xr_session_coordinator.h"
+#include "content/public/browser/web_contents.h"
 #include "device/vr/openxr/android/openxr_graphics_binding_open_gles.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -79,14 +80,42 @@ bool OpenXrPlatformHelperAndroid::Initialize() {
   return true;
 }
 
+bool OpenXrPlatformHelperAndroid::CheckHardwareSupport(
+    content::WebContents* web_contents) {
+  XrInstance instance = XR_NULL_HANDLE;
+  if (!XR_SUCCEEDED(CreateTemporaryInstance(&instance, web_contents))) {
+    return false;
+  }
+
+  is_ar_blend_mode_supported_ = IsArBlendModeSupported(instance);
+
+  // Ensure that we destroy the temporary instance we created.
+  return XR_SUCCEEDED(DestroyInstance(instance));
+}
+
 device::mojom::XRDeviceData OpenXrPlatformHelperAndroid::GetXRDeviceData() {
   device::mojom::XRDeviceData device_data;
-  // TODO(https://crbug.com/1458584): Query if AR blending is supported from an
-  // XrInstance using IsArBlendModeSupported(). Statically returning `true`
-  // because AR support is currently gated by the "OpenXrExtendedFeatureSupport"
-  // flag in XRRuntimeManagerImpl::GetImmersiveArRuntime().
-  device_data.is_ar_blend_mode_supported = true;
+  device_data.is_ar_blend_mode_supported = is_ar_blend_mode_supported_;
   return device_data;
+}
+
+XrResult OpenXrPlatformHelperAndroid::CreateTemporaryInstance(
+    XrInstance* instance,
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return XR_ERROR_VALIDATION_FAILURE;
+  }
+
+  activity_ =
+      XrSessionCoordinator::GetActivity(web_contents->GetJavaWebContents());
+
+  XrInstanceCreateInfoAndroidKHR create_info{
+      XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR};
+  create_info.next = nullptr;
+  create_info.applicationVM = base::android::GetVM();
+  create_info.applicationActivity = activity_.obj();
+
+  return CreateInstance(instance, &create_info);
 }
 
 XrResult OpenXrPlatformHelperAndroid::DestroyInstance(XrInstance& instance) {
