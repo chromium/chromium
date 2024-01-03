@@ -1359,13 +1359,8 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
             format().NumberOfPlanes());
   for (int plane_index = 0; plane_index < format().NumberOfPlanes();
        plane_index++) {
-    // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain behavior
-    // from when this class was using a duplicate-but-not-identical utility.
-    // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
-    // killswitch.
     gl::ScopedRestoreTexture scoped_restore(
         gl::g_current_gl_context, egl_state->GetGLTarget(),
-        /*restore_prev_even_if_invalid=*/true,
         egl_state->GetGLServiceId(plane_index));
     // Un-bind the IOSurface from the GL texture (this will be a no-op if it is
     // not yet bound).
@@ -1453,14 +1448,8 @@ void IOSurfaceImageBacking::IOSurfaceBackingEGLStateEndAccess(
       if (!egl_state->egl_surfaces_.empty()) {
         for (int plane_index = 0; plane_index < format().NumberOfPlanes();
              plane_index++) {
-          // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain
-          // behavior from when this class was using a
-          // duplicate-but-not-identical utility.
-          // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
-          // killswitch.
           gl::ScopedRestoreTexture scoped_restore(
               gl::g_current_gl_context, egl_state->GetGLTarget(),
-              /*restore_prev_even_if_invalid=*/true,
               egl_state->GetGLServiceId(plane_index));
           egl_state->egl_surfaces_[plane_index]->ReleaseTexImage();
         }

@@ -94,12 +94,7 @@ GLuint MakeTextureAndSetParameters(
     scoped_refptr<gles2::TexturePassthrough>* passthrough_texture,
     raw_ptr<gles2::Texture>* texture) {
   gl::GLApi* api = gl::g_current_gl_context;
-  // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain behavior
-  // from when this class was using a duplicate-but-not-identical utility.
-  // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
-  // killswitch.
-  gl::ScopedRestoreTexture scoped_restore(
-      api, target, /*restore_prev_even_if_invalid=*/true);
+  gl::ScopedRestoreTexture scoped_restore(api, target);
 
   GLuint service_id = 0;
   api->glGenTexturesFn(1, &service_id);

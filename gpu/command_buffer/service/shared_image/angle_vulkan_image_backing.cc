@@ -678,13 +678,8 @@ bool AngleVulkanImageBacking::InitializePassthroughTexture() {
         /*framebuffer_attachment_angle=*/true, &passthrough_texture, nullptr);
     passthrough_texture->SetEstimatedSize(GetEstimatedSize());
 
-    // NOTE: We pass `restore_prev_even_if_invalid=true` to maintain behavior
-    // from when this class was using a duplicate-but-not-identical utility.
-    // TODO(crbug.com/1367187): Eliminate this behavior with a Finch
-    // killswitch.
     gl::GLApi* api = gl::g_current_gl_context;
-    gl::ScopedRestoreTexture scoped_restore(
-        api, GL_TEXTURE_2D, /*restore_prev_even_if_invalid=*/true);
+    gl::ScopedRestoreTexture scoped_restore(api, GL_TEXTURE_2D);
     api->glBindTextureFn(GL_TEXTURE_2D, texture_id);
 
     glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, egl_image.get());
