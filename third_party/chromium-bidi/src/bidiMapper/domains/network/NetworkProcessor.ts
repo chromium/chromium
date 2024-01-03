@@ -25,7 +25,8 @@ import {
 import {assert} from '../../../utils/assert.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
-import {NetworkStorage} from './NetworkStorage.js';
+import type {NetworkRequest} from './NetworkRequest.js';
+import {type BlockedRequest, NetworkStorage} from './NetworkStorage.js';
 import {
   cdpFetchHeadersFromBidiNetworkHeaders,
   cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction,
@@ -102,9 +103,7 @@ export class NetworkProcessor {
     const requestHeaders: Protocol.Fetch.HeaderEntry[] | undefined =
       cdpFetchHeadersFromBidiNetworkHeaders(headers);
 
-    const request = this.#networkStorage.getRequest(networkId);
-    assert(request, `Network request with ID ${networkId} doesn't exist`);
-
+    const request = this.#getRequestOrFail(networkId);
     await request.continueRequest(fetchId, url, method, requestHeaders);
 
     this.#networkStorage.removeBlockedRequest(networkId);
@@ -132,9 +131,7 @@ export class NetworkProcessor {
     // TODO: Set / expand.
     // ; Step 10. cookies
     // ; Step 11. credentials
-    const request = this.#networkStorage.getRequest(networkId);
-    assert(request, `Network request with ID ${networkId} doesn't exist`);
-
+    const request = this.#getRequestOrFail(networkId);
     await request.continueResponse(
       fetchId,
       statusCode,
@@ -159,17 +156,18 @@ export class NetworkProcessor {
       );
     }
 
-    const request = this.#networkStorage.getRequest(networkId);
-    assert(request, `Network request with ID ${networkId} doesn't exist`);
+    const request = this.#getRequestOrFail(networkId);
 
     let username: string | undefined;
     let password: string | undefined;
 
     if (params.action === 'provideCredentials') {
       const {credentials} = params;
-      username = params.credentials.username;
-      password = params.credentials.password;
 
+      username = credentials.username;
+      password = credentials.password;
+      // TODO: This should be invalid argument exception.
+      // Spec may need to be updated.
       assert(
         credentials.type === 'password',
         `Credentials type ${credentials.type} must be 'password'`
@@ -185,12 +183,10 @@ export class NetworkProcessor {
     return {};
   }
 
-  async failRequest(
-    params: Network.FailRequestParameters
-  ): Promise<EmptyResult> {
-    const networkId = params.request;
-    const blockedRequest = this.#getBlockedRequest(networkId);
-    const {request: fetchId, phase} = blockedRequest;
+  async failRequest({
+    request: networkId,
+  }: Network.FailRequestParameters): Promise<EmptyResult> {
+    const {request: fetchId, phase} = this.#getBlockedRequest(networkId);
 
     if (phase === Network.InterceptPhase.AuthRequired) {
       throw new InvalidArgumentException(
@@ -198,9 +194,7 @@ export class NetworkProcessor {
       );
     }
 
-    const request = this.#networkStorage.getRequest(networkId);
-    assert(request, `Network request with ID ${networkId} doesn't exist`);
-
+    const request = this.#getRequestOrFail(networkId);
     await request.failRequest(fetchId, 'Failed');
 
     this.#networkStorage.removeBlockedRequest(networkId);
@@ -211,10 +205,14 @@ export class NetworkProcessor {
   async provideResponse(
     params: Network.ProvideResponseParameters
   ): Promise<EmptyResult> {
-    const networkId = params.request;
+    const {
+      statusCode,
+      reasonPhrase,
+      headers,
+      body,
+      request: networkId,
+    } = params;
     const {request: fetchId} = this.#getBlockedRequest(networkId);
-
-    const {statusCode, reasonPhrase, headers, body} = params;
 
     // TODO: Step 6
     // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
@@ -225,9 +223,7 @@ export class NetworkProcessor {
     // TODO: Set / expand.
     // ; Step 10. cookies
     // ; Step 11. credentials
-    const request = this.#networkStorage.getRequest(networkId);
-    assert(request, `Network request with ID ${networkId} doesn't exist`);
-
+    const request = this.#getRequestOrFail(networkId);
     await request.provideResponse(
       fetchId,
       statusCode ?? request.statusCode,
@@ -298,11 +294,7 @@ export class NetworkProcessor {
    * Returns the blocked request associated with the given network ID.
    * If none, throws a NoSuchRequestException.
    */
-  #getBlockedRequest(networkId: Network.Request): {
-    request: Protocol.Fetch.RequestId;
-    phase: Network.InterceptPhase;
-    response: Network.ResponseData;
-  } {
+  #getBlockedRequest(networkId: Network.Request): BlockedRequest {
     const blockedRequest = this.#networkStorage.getBlockedRequest(networkId);
     if (!blockedRequest) {
       throw new NoSuchRequestException(
@@ -310,6 +302,16 @@ export class NetworkProcessor {
       );
     }
     return blockedRequest;
+  }
+
+  #getRequestOrFail(id: Network.Request): NetworkRequest {
+    const request = this.#networkStorage.getRequest(id);
+    if (!request) {
+      throw new NoSuchRequestException(
+        `Network request with ID ${id} doesn't exist`
+      );
+    }
+    return request;
   }
 
   /**

@@ -22,6 +22,13 @@ import {uuidv4} from '../../../utils/uuid.js';
 
 import type {NetworkRequest} from './NetworkRequest.js';
 
+export interface BlockedRequest {
+  // intercept request id; form: 'interception-job-1.0'
+  request: Protocol.Fetch.RequestId;
+  phase: Network.InterceptPhase;
+  response: Network.ResponseData;
+}
+
 /** Stores network and intercept maps. */
 export class NetworkStorage {
   /**
@@ -40,15 +47,7 @@ export class NetworkStorage {
   >();
 
   /** A map from network request ID to track actively blocked requests. */
-  readonly #blockedRequestMap = new Map<
-    Network.Request,
-    {
-      // intercept request id; form: 'interception-job-1.0'
-      request: Protocol.Fetch.RequestId;
-      phase: Network.InterceptPhase;
-      response: Network.ResponseData;
-    }
-  >();
+  readonly #blockedRequestMap = new Map<Network.Request, BlockedRequest>();
 
   disposeRequestMap() {
     for (const request of this.#requestMap.values()) {
@@ -261,14 +260,7 @@ export class NetworkStorage {
     );
   }
 
-  addBlockedRequest(
-    requestId: Network.Request,
-    value: {
-      request: Protocol.Fetch.RequestId;
-      phase: Network.InterceptPhase;
-      response: Network.ResponseData;
-    }
-  ) {
+  addBlockedRequest(requestId: Network.Request, value: BlockedRequest) {
     this.#blockedRequestMap.set(requestId, value);
   }
 
@@ -279,13 +271,7 @@ export class NetworkStorage {
   /**
    * Returns the blocked request associated with the given network ID, if any.
    */
-  getBlockedRequest(networkId: Network.Request):
-    | {
-        request: Protocol.Fetch.RequestId;
-        phase: Network.InterceptPhase;
-        response: Network.ResponseData;
-      }
-    | undefined {
+  getBlockedRequest(networkId: Network.Request) {
     return this.#blockedRequestMap.get(networkId);
   }
 

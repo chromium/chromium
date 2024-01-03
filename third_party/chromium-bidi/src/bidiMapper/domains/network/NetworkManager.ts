@@ -173,7 +173,7 @@ export class NetworkManager {
         if (params.networkId) {
           networkManager
             .#getOrCreateNetworkRequest(params.networkId)
-            .onRequestPaused(params, networkManager.#networkStorage);
+            .onRequestPaused(params);
         }
       }
     );

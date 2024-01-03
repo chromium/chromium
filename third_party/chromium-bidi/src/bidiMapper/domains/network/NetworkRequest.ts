@@ -227,10 +227,7 @@ export class NetworkRequest {
   }
 
   /** Fired whenever a network request interception is hit. */
-  onRequestPaused(
-    params: Protocol.Fetch.RequestPausedEvent,
-    networkStorage: NetworkStorage
-  ): void {
+  onRequestPaused(params: Protocol.Fetch.RequestPausedEvent): void {
     if (this.#isIgnoredEvent()) {
       void this.continueRequest(params.requestId).catch(() => {
         // TODO: Add some logging
@@ -263,8 +260,7 @@ export class NetworkRequest {
       params.responseHeaders
     );
 
-    assert(this.requestId === params.networkId);
-    networkStorage.addBlockedRequest(this.requestId, {
+    this.#networkStorage.addBlockedRequest(this.requestId, {
       request: params.requestId, // intercept request id
       phase,
       // TODO: Finish populating response / ResponseData.
