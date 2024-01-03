@@ -49,8 +49,9 @@ class UpdaterInternalCallback
 
  private:
   ~UpdaterInternalCallback() override {
-    if (callback_)
+    if (callback_) {
       std::move(callback_).Run(std::nullopt);
+    }
   }
 
   // Called by IUpdaterInternalCallback::Run when the COM RPC call is done.

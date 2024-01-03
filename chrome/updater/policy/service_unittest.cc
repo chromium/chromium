@@ -48,8 +48,9 @@ class FakePolicyManager : public PolicyManagerInterface {
   }
   std::optional<UpdatesSuppressedTimes> GetUpdatesSuppressedTimes()
       const override {
-    if (!suppressed_times_.valid())
+    if (!suppressed_times_.valid()) {
       return std::nullopt;
+    }
 
     return suppressed_times_;
   }
@@ -84,8 +85,9 @@ class FakePolicyManager : public PolicyManagerInterface {
   std::optional<int> GetEffectivePolicyForAppUpdates(
       const std::string& app_id) const override {
     auto value = update_policies_.find(app_id);
-    if (value == update_policies_.end())
+    if (value == update_policies_.end()) {
       return std::nullopt;
+    }
     return value->second;
   }
   void SetUpdatePolicy(const std::string& app_id, int update_policy) {

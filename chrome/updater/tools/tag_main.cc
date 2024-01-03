@@ -81,8 +81,9 @@ CommandLineArguments ParseCommandLineArgs(int argc, char** argv) {
   CommandLineArguments args;
   base::CommandLine::Init(argc, argv);
   auto* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->argv().size() == 1 || cmdline->GetArgs().size() != 1)
+  if (cmdline->argv().size() == 1 || cmdline->GetArgs().size() != 1) {
     PrintUsageAndExit(cmdline);
+  }
 
   args.in_filename = base::FilePath{cmdline->GetArgs()[0]};
 

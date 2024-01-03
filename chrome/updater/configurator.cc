@@ -81,7 +81,7 @@ base::TimeDelta Configurator::InitialDelay() const {
 
 base::TimeDelta Configurator::ServerKeepAliveTime() const {
   return std::clamp(external_constants_->ServerKeepAliveTime(),
-                     base::Seconds(1), kServerKeepAliveTime);
+                    base::Seconds(1), kServerKeepAliveTime);
 }
 
 base::TimeDelta Configurator::NextCheckDelay() const {

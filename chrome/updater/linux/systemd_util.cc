@@ -36,7 +36,7 @@ namespace updater {
 // granting access to |base::ScopedAllowBaseSyncPrimitives|, this class must
 // continue to live in a `.cc`.
 class [[maybe_unused, nodiscard]] SystemctlLauncherScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives{};
+    : public base::ScopedAllowBaseSyncPrimitives {};
 
 namespace {
 // Location of system-scoped unit files.

@@ -31,8 +31,9 @@ bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
       ERROR_SUCCESS) {
     // We support both string and DWORD formats for backward compatibility.
     std::wstring value;
-    if ((key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) && (value == L"1"))
+    if ((key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) && (value == L"1")) {
       return true;
+    }
 
     DWORD value_dw = 0;
     if ((key.ReadValueDW(kDidRun, &value_dw) == ERROR_SUCCESS) &&
@@ -51,8 +52,9 @@ bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
     return false;
   }
 
-  if (!key.HasValue(kDidRun))
+  if (!key.HasValue(kDidRun)) {
     return true;
+  }
 
   // We always clear the value as a string "0".
   const LONG result = key.WriteValue(kDidRun, L"0");
@@ -102,8 +104,9 @@ bool ProcessSystemActiveBit(ProcessActiveBitUnderKeyCallback callback,
   for (base::win::RegistryKeyIterator it(HKEY_USERS, L"", KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const std::wstring sid = it.Name();
-    if (ProcessActiveBit(callback, HKEY_USERS, sid, id))
+    if (ProcessActiveBit(callback, HKEY_USERS, sid, id)) {
       return true;
+    }
   }
 
   return false;

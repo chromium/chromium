@@ -68,8 +68,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     const std::optional<base::FilePath> path =
         GetInstallDirectory(updater_scope_);
     ASSERT_TRUE(path);
-    if (path)
+    if (path) {
       updater::test::CopyLog(*path);
+    }
   }
 
   void Clean() const override { RunCommand("clean"); }

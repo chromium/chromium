@@ -19,8 +19,9 @@ std::vector<base::FilePath> GetHomeDirPaths(UpdaterScope scope) {
   switch (scope) {
     case UpdaterScope::kUser: {
       const base::FilePath path = base::GetHomeDir();
-      if (path.empty())
+      if (path.empty()) {
         return {};
+      }
       return {path};
     }
     case UpdaterScope::kSystem: {

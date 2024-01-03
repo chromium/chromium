@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-
 namespace updater {
 
 // Interface wrapper around MSI API calls to allow for mocking.

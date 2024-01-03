@@ -5,7 +5,6 @@
 #ifndef CHROME_UPDATER_UTIL_LINUX_UTIL_H_
 #define CHROME_UPDATER_UTIL_LINUX_UTIL_H_
 
-
 namespace updater {
 
 // Filename of the non side-by-side launcher. The file is a hardlink to the

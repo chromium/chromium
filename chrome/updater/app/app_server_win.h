@@ -37,9 +37,7 @@ class AppServerWin : public AppServer {
   // Posts the `task` to the sequence bound to this instance.
   static void PostRpcTask(base::OnceClosure task);
 
-  scoped_refptr<UpdateService> update_service() {
-    return update_service_;
-  }
+  scoped_refptr<UpdateService> update_service() { return update_service_; }
 
   scoped_refptr<UpdateServiceInternal> update_service_internal() {
     return update_service_internal_;

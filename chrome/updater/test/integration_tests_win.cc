@@ -758,8 +758,9 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
 
 base::FilePath GetSetupExecutablePath() {
   base::FilePath out_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &out_dir))
+  if (!base::PathService::Get(base::DIR_EXE, &out_dir)) {
     return base::FilePath();
+  }
   return out_dir.AppendASCII("UpdaterSetup_test.exe");
 }
 
@@ -784,8 +785,9 @@ void Clean(UpdaterScope scope) {
   for (const CLSID& clsid :
        JoinVectors(GetSideBySideServers(scope), GetActiveServers(scope))) {
     EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerClsidRegistryPath(clsid)));
-    if (IsSystemInstall(scope))
+    if (IsSystemInstall(scope)) {
       EXPECT_TRUE(DeleteRegKeyCOM(root, GetComServerAppidRegistryPath(clsid)));
+    }
 
     const std::wstring progid(GetProgIdForClsid(clsid));
     if (!progid.empty()) {
@@ -841,8 +843,9 @@ void Clean(UpdaterScope scope) {
 
   const std::optional<base::FilePath> target_path =
       GetGoogleUpdateExePath(scope);
-  if (target_path)
+  if (target_path) {
     base::DeleteFile(*target_path);
+  }
 
   std::optional<base::FilePath> path = GetInstallDirectory(scope);
   ASSERT_TRUE(path);
@@ -944,8 +947,9 @@ void ExpectNotActive(UpdaterScope /*scope*/, const std::string& id) {
   if (key.Open(HKEY_CURRENT_USER, GetAppClientStateKey(id).c_str(),
                Wow6432(KEY_READ)) == ERROR_SUCCESS) {
     std::wstring value;
-    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS)
+    if (key.ReadValue(kDidRun, &value) == ERROR_SUCCESS) {
       EXPECT_EQ(value, L"0");
+    }
   }
 }
 
@@ -1411,8 +1415,9 @@ HRESULT ProcessLaunchCmdElevated(
   ULONG_PTR proc_handle = 0;
   HRESULT hr = process_launcher->LaunchCmdElevated(
       appid.c_str(), commandid.c_str(), ::GetCurrentProcessId(), &proc_handle);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return hr;
+  }
 
   EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
 
@@ -1427,8 +1432,9 @@ HRESULT ProcessLaunchCmdElevated(
 
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
   // ProcessLauncher is only implemented for kSystem at the moment.
-  if (!IsSystemInstall(scope))
+  if (!IsSystemInstall(scope)) {
     return;
+  }
 
   Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
   ASSERT_HRESULT_SUCCEEDED(
@@ -1508,8 +1514,9 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
                             return base::win::ScopedVariant(
                                 base::UTF8ToWide(param.GetString()).c_str());
                           });
-  for (size_t i = parameters.size(); i < kMaxParameters; ++i)
+  for (size_t i = parameters.size(); i < kMaxParameters; ++i) {
     variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
+  }
 
   ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
       variant_params[0], variant_params[1], variant_params[2],

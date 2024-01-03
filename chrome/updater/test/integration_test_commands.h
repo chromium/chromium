@@ -18,7 +18,7 @@ class GURL;
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 namespace updater {
 namespace test {

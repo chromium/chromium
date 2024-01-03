@@ -80,8 +80,9 @@ bool CrashClient::InitializeCrashReporting(UpdaterScope updater_scope) {
   CHECK(!initialized);
   initialized = true;
 
-  if (!InitializeDatabaseOnly(updater_scope))
+  if (!InitializeDatabaseOnly(updater_scope)) {
     return false;
+  }
 
   base::debug::SetDumpWithoutCrashingFunction(
       [] { CRASHPAD_SIMULATE_CRASH(); });

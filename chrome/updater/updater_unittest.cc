@@ -74,8 +74,9 @@ TEST(UpdaterTest, UpdaterTestVersionResource) {
 // Checks that the unit test has the SE_DEBUG_NAME privilege when the process is
 // running as Administrator.
 TEST(UpdaterTest, UpdaterTestDebugPrivilege) {
-  if (!::IsUserAnAdmin())
+  if (!::IsUserAnAdmin()) {
     return;
+  }
 
   LUID luid = {0};
   ASSERT_TRUE(::LookupPrivilegeValue(nullptr, SE_DEBUG_NAME, &luid));
