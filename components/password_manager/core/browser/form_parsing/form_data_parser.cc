@@ -439,12 +439,10 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         if (processed_field) {
           result->username = processed_field->field;
           result->is_single_username = true;
-          result->ClearAllPasswordFields();
           base::UmaHistogramBoolean(
               "PasswordManager.SingleUsername."
               "ForgotPasswordServerPredictionUsed",
               prediction.type == autofill::SINGLE_USERNAME_FORGOT_PASSWORD);
-          return;
         }
         break;
       case CredentialFieldType::kCurrentPassword:
@@ -487,6 +485,20 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
         break;
       case CredentialFieldType::kNone:
         break;
+    }
+  }
+
+  if (result->is_single_username) {
+    if (mode == FormDataParser::Mode::kSaving &&
+        (result->password || result->new_password)) {
+      // Contradicting predictions were received: the form was predicted to be
+      // both a single username form and a password form. Prioritize saving
+      // the password.
+      result->username = nullptr;
+      result->is_single_username = false;
+    } else {
+      result->ClearAllPasswordFields();
+      return;
     }
   }
 
