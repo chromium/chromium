@@ -190,7 +190,7 @@ void DismissScreensAfterSigninAndSync() {
 
 }  // namespace
 
-// Test first run stages
+// Tests first run stages
 @interface FirstRunTestCase : ChromeTestCase
 
 @end
@@ -245,11 +245,6 @@ void DismissScreensAfterSigninAndSync() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable the choice screen feature flag.
-  config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
-  // Set the country to one that is eligible for the choice screen (in this
-  // case, France).
-  config.additional_args.push_back("--search-engine-choice-country=FR");
 
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
@@ -258,6 +253,273 @@ void DismissScreensAfterSigninAndSync() {
   // Relaunches the app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByKilling;
 
+  return config;
+}
+
+#pragma mark - Helper
+
+- (void)relaunchAppWithBrowserSigninMode:(BrowserSigninMode)mode {
+  std::string xmlPolicyValue("<integer>");
+  xmlPolicyValue += base::NumberToString(static_cast<int>(mode));
+  xmlPolicyValue += "</integer>";
+  [self relaunchAppWithPolicyKey:policy::key::kBrowserSignin
+                  xmlPolicyValue:xmlPolicyValue];
+}
+
+// Sets policy value and relaunches the app.
+- (void)relaunchAppWithPolicyKey:(std::string)policyKey
+                  xmlPolicyValue:(std::string)xmlPolicyValue {
+  std::string policyData = std::string("<dict><key>") + policyKey + "</key>" +
+                           xmlPolicyValue + "</dict>";
+  // Configure the policy to force sign-in.
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  config.additional_args.push_back(policyData);
+  // Relaunch the app to take the configuration into account.
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+}
+
+// Checks that the sign-in screen for enterprise is displayed.
+- (void)verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+    (FRESigninIntent)FRESigninIntent {
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notNil()];
+  NSString* title = nil;
+  NSString* subtitle = nil;
+  NSArray* disclaimerStrings = nil;
+  switch (FRESigninIntent) {
+    case FRESigninIntentRegular:
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+        subtitle = l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+      } else {
+        subtitle =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      }
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninForcedByPolicy:
+      title =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
+      subtitle = l10n_util::GetNSString(
+          IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninDisabledByPolicy:
+      if ([ChromeEarlGrey isIPadIdiom]) {
+        title =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD);
+      } else {
+        title = l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
+      }
+      subtitle =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninWithSyncDisabledPolicy:
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      // Note: With SyncDisabled, the "benefits" string is not used.
+      subtitle =
+          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninWithPolicy:
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+        subtitle = l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+      } else {
+        subtitle =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      }
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
+      ];
+      break;
+    case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
+      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
+      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+        subtitle = l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
+      } else {
+        subtitle =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
+      }
+      disclaimerStrings = @[
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
+        l10n_util::GetNSString(
+            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
+      ];
+      break;
+  }
+  // Validate the Title text.
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(title),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Validate the Subtitle text.
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(subtitle),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+  // Validate the Managed text.
+  [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
+}
+
+// Checks the disclaimer footer with the list of strings. `strings` can contain
+// "BEGIN_LINK" and "END_LINK" for URL tags.
+- (void)verifyDisclaimerFooterWithStrings:(NSArray*)strings {
+  NSString* disclaimerText = [strings componentsJoinedByString:@" "];
+  // Remove URL tags.
+  disclaimerText =
+      [disclaimerText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
+                                                withString:@""];
+  disclaimerText =
+      [disclaimerText stringByReplacingOccurrencesOfString:@"END_LINK"
+                                                withString:@""];
+  // Check the footer.
+  [[self elementInteractionWithGreyMatcher:grey_allOf(
+                                               grey_text(disclaimerText),
+                                               grey_sufficientlyVisible(), nil)
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Checks that the search engine choice screen is being displayed when the
+// feature is enabled. If the feature is not enabled, checks that the default
+// browser screen is displayed.
+- (void)verifyChoiceScreenOrDefaultBrowserIsDisplayed {
+  if ([ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
+    [[EarlGrey
+        selectElementWithMatcher:
+            grey_accessibilityID(
+                first_run::kSearchEngineChoiceTitleAccessibilityIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    return;
+  }
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)acceptSyncOrHistory {
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    // Accept the history opt-in screen.
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  } else {
+    // Accept sync.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kTangibleSyncViewAccessibilityIdentifier)]
+        assertWithMatcher:grey_notNil()];
+    [[self elementInteractionWithGreyMatcher:
+               chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                        scrollViewIdentifier:
+                            kPromoStyleScrollViewAccessibilityIdentifier]
+        performAction:grey_tap()];
+  }
+}
+
+- (void)verifySyncOrHistoryEnabled:(BOOL)enabled {
+  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
+    if (enabled) {
+      GREYAssertTrue([ChromeEarlGrey isSyncHistoryDataTypeSelected],
+                     @"History sync was unexpectedly disabled.");
+    } else {
+      GREYAssertFalse([ChromeEarlGrey isSyncHistoryDataTypeSelected],
+                      @"History sync was unexpectedly enabled.");
+    }
+  } else {
+    [SigninEarlGrey verifySyncUIEnabled:enabled];
+  }
+}
+
+- (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName {
+  // Opens the default search engine settings menu.
+  [ChromeEarlGreyUI openSettingsMenu];
+  // Verifies that the correct search engine is selected. The default engine's
+  // name appears in the name of the selected row.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
+      assertWithMatcher:grey_allOf(grey_accessibilityValue(searchEngineName),
+                                   grey_sufficientlyVisible(), nil)];
+}
+
+// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
+// scroll.
+- (GREYElementInteraction*)
+    elementInteractionWithGreyMatcher:(id<GREYMatcher>)matcher
+                 scrollViewIdentifier:(NSString*)scrollViewIdentifier {
+  id<GREYMatcher> scrollViewMatcher =
+      grey_accessibilityID(scrollViewIdentifier);
+  // Needs to scroll slowly to make sure to not miss a cell if it is not
+  // currently on the screen. It should not be bigger than the visible part
+  // of the collection view.
+  id<GREYAction> searchAction = grey_scrollInDirection(kGREYDirectionDown, 200);
+  return [[EarlGrey selectElementWithMatcher:matcher]
+         usingSearchAction:searchAction
+      onElementWithMatcher:scrollViewMatcher];
+}
+
+@end
+
+// Test first run stages without search engine choice
+@interface FirstRunTestCaseWithoutSearchEngineChoice : FirstRunTestCase
+
+@end
+
+@implementation FirstRunTestCaseWithoutSearchEngineChoice
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.additional_args.push_back(std::string("--") +
+                                   switches::kDisableSearchEngineChoiceScreen);
   if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
@@ -1290,6 +1552,26 @@ void DismissScreensAfterSigninAndSync() {
       assertWithMatcher:grey_notNil()];
 }
 
+@end
+
+// Tests first run stages with search engine choice
+@interface FirstRunTestCaseWithSearchEngineChoice : FirstRunTestCase
+
+@end
+
+@implementation FirstRunTestCaseWithSearchEngineChoice
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // Set the country to one that is eligible for the choice screen (in this
+  // case, France).
+  config.additional_args.push_back("--search-engine-choice-country=FR");
+  config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
+  return config;
+}
+
+#pragma mark - Tests
+
 // Tests that the Search Engine Choice screen is displayed, that the primary
 // button is correctly updated when the user selects a search engine then
 // scrolls down and that it correctly sets the default search engine.
@@ -1372,256 +1654,4 @@ void DismissScreensAfterSigninAndSync() {
   DismissScreensAfterChoiceScreen();
   [self verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
-
-#pragma mark - Helper
-
-- (void)relaunchAppWithBrowserSigninMode:(BrowserSigninMode)mode {
-  std::string xmlPolicyValue("<integer>");
-  xmlPolicyValue += base::NumberToString(static_cast<int>(mode));
-  xmlPolicyValue += "</integer>";
-  [self relaunchAppWithPolicyKey:policy::key::kBrowserSignin
-                  xmlPolicyValue:xmlPolicyValue];
-}
-
-// Sets policy value and relaunches the app.
-- (void)relaunchAppWithPolicyKey:(std::string)policyKey
-                  xmlPolicyValue:(std::string)xmlPolicyValue {
-  std::string policyData = std::string("<dict><key>") + policyKey + "</key>" +
-                           xmlPolicyValue + "</dict>";
-  // Configure the policy to force sign-in.
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-  config.additional_args.push_back(
-      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
-  config.additional_args.push_back(policyData);
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
-// Checks that the sign-in screen for enterprise is displayed.
-- (void)verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
-    (FRESigninIntent)FRESigninIntent {
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     first_run::kFirstRunSignInScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_notNil()];
-  NSString* title = nil;
-  NSString* subtitle = nil;
-  NSArray* disclaimerStrings = nil;
-  switch (FRESigninIntent) {
-    case FRESigninIntentRegular:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninForcedByPolicy:
-      title =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE_SIGNIN_FORCED);
-      subtitle = l10n_util::GetNSString(
-          IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SIGNIN_FORCED);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninDisabledByPolicy:
-      if ([ChromeEarlGrey isIPadIdiom]) {
-        title =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPAD);
-      } else {
-        title = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TITLE_IPHONE);
-      }
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_WELCOME_SCREEN_SUBTITLE);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithSyncDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      // Note: With SyncDisabled, the "benefits" string is not used.
-      subtitle =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_METRIC_REPORTING),
-      ];
-      break;
-    case FRESigninIntentSigninWithUMAReportingDisabledPolicy:
-      title = l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_TITLE);
-      if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-        subtitle = l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_SIGNIN_BENEFITS_SUBTITLE_SHORT);
-      } else {
-        subtitle =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_SUBTITLE_SHORT);
-      }
-      disclaimerStrings = @[
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_BROWSER_MANAGED),
-        l10n_util::GetNSString(
-            IDS_IOS_FIRST_RUN_WELCOME_SCREEN_TERMS_OF_SERVICE),
-      ];
-      break;
-  }
-  // Validate the Title text.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(title),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-  // Validate the Subtitle text.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(subtitle),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-  // Validate the Managed text.
-  [self verifyDisclaimerFooterWithStrings:disclaimerStrings];
-}
-
-// Checks the disclaimer footer with the list of strings. `strings` can contain
-// "BEGIN_LINK" and "END_LINK" for URL tags.
-- (void)verifyDisclaimerFooterWithStrings:(NSArray*)strings {
-  NSString* disclaimerText = [strings componentsJoinedByString:@" "];
-  // Remove URL tags.
-  disclaimerText =
-      [disclaimerText stringByReplacingOccurrencesOfString:@"BEGIN_LINK"
-                                                withString:@""];
-  disclaimerText =
-      [disclaimerText stringByReplacingOccurrencesOfString:@"END_LINK"
-                                                withString:@""];
-  // Check the footer.
-  [[self elementInteractionWithGreyMatcher:grey_allOf(
-                                               grey_text(disclaimerText),
-                                               grey_sufficientlyVisible(), nil)
-                      scrollViewIdentifier:
-                          kPromoStyleScrollViewAccessibilityIdentifier]
-      assertWithMatcher:grey_notNil()];
-}
-
-// Checks that the search engine choice screen is being displayed when the
-// feature is enabled. If the feature is not enabled, checks that the default
-// browser screen is displayed.
-- (void)verifyChoiceScreenOrDefaultBrowserIsDisplayed {
-  if ([ChromeEarlGreyAppInterface IsSearchEngineChoiceScreenEnabledFre]) {
-    [[EarlGrey
-        selectElementWithMatcher:
-            grey_accessibilityID(
-                first_run::kSearchEngineChoiceTitleAccessibilityIdentifier)]
-        assertWithMatcher:grey_sufficientlyVisible()];
-    return;
-  }
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_accessibilityID(
-              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-- (void)acceptSyncOrHistory {
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    // Accept the history opt-in screen.
-    [[EarlGrey selectElementWithMatcher:
-                   chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()]
-        performAction:grey_tap()];
-  } else {
-    // Accept sync.
-    [[EarlGrey
-        selectElementWithMatcher:grey_accessibilityID(
-                                     kTangibleSyncViewAccessibilityIdentifier)]
-        assertWithMatcher:grey_notNil()];
-    [[self elementInteractionWithGreyMatcher:
-               chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
-                        scrollViewIdentifier:
-                            kPromoStyleScrollViewAccessibilityIdentifier]
-        performAction:grey_tap()];
-  }
-}
-
-- (void)verifySyncOrHistoryEnabled:(BOOL)enabled {
-  if ([ChromeEarlGrey isReplaceSyncWithSigninEnabled]) {
-    if (enabled) {
-      GREYAssertTrue([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                     @"History sync was unexpectedly disabled.");
-    } else {
-      GREYAssertFalse([ChromeEarlGrey isSyncHistoryDataTypeSelected],
-                      @"History sync was unexpectedly enabled.");
-    }
-  } else {
-    [SigninEarlGrey verifySyncUIEnabled:enabled];
-  }
-}
-
-- (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName {
-  // Opens the default search engine settings menu.
-  [ChromeEarlGreyUI openSettingsMenu];
-  // Verifies that the correct search engine is selected. The default engine's
-  // name appears in the name of the selected row.
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSearchEngineButton()]
-      assertWithMatcher:grey_allOf(grey_accessibilityValue(searchEngineName),
-                                   grey_sufficientlyVisible(), nil)];
-}
-
-// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
-// scroll.
-- (GREYElementInteraction*)
-    elementInteractionWithGreyMatcher:(id<GREYMatcher>)matcher
-                 scrollViewIdentifier:(NSString*)scrollViewIdentifier {
-  id<GREYMatcher> scrollViewMatcher =
-      grey_accessibilityID(scrollViewIdentifier);
-  // Needs to scroll slowly to make sure to not miss a cell if it is not
-  // currently on the screen. It should not be bigger than the visible part
-  // of the collection view.
-  id<GREYAction> searchAction = grey_scrollInDirection(kGREYDirectionDown, 200);
-  return [[EarlGrey selectElementWithMatcher:matcher]
-         usingSearchAction:searchAction
-      onElementWithMatcher:scrollViewMatcher];
-}
-
 @end
