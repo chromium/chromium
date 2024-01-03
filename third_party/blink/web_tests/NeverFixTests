@@ -76,6 +76,10 @@
 [ Win ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
 [ Mac10.15 ] virtual/text-antialias/mac-system-ui-width.html [ Skip ]
 
+# Tests Mac system fallback for character.
+[ Linux ] virtual/text-antialias/mac-fallback-font-for-character.html [ Skip ]
+[ Win ] virtual/text-antialias/mac-fallback-font-for-character.html [ Skip ]
+
 # Tests Mac system font oblique faces.
 [ Linux ] virtual/text-antialias/mac-system-ui-slant.html [ Skip ]
 [ Win ] virtual/text-antialias/mac-system-ui-slant.html [ Skip ]

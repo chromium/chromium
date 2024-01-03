@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<!-- This test checks whether the correct fallback font is used to display different
+unicode code points with different styles. -->
+<div style="display: flex;">
+  <div id="text" style="flex: 1;"></div>
+  <div id="emoji" style="flex: 1;"></div>
+  <div id="cjk" style="flex: 1;"></div>
+</div>
+<script>
+
+  function appendStyledTexts(elem, text, weight) {
+    const divWeight = document.createElement("div");
+    divWeight.style.fontWeight = weight;
+    divWeight.appendChild(text);
+    elem.appendChild(divWeight);
+
+    const divWeightStyle = divWeight.cloneNode(true);
+    divWeightStyle.style.fontStyle = "italic";
+    elem.appendChild(divWeightStyle);
+
+    const divWeightStretch = divWeight.cloneNode(true);
+    divWeightStretch.style.fontStretch = "condensed";
+    elem.appendChild(divWeightStretch);
+  }
+
+  const elemText = document.getElementById("text");
+  const elemEmoji = document.getElementById("emoji");
+  const elemCJK = document.getElementById("cjk");
+
+  for (var weight = 100; weight <= 900; weight += 100) {
+    // "Times" fallback font should be used to display latin text.
+    const text = document.createTextNode("abc");
+    // "Apple Color Emoji" fallback font should be used to display emojis.
+    const textEmoji = document.createTextNode("😊");
+    // ".PingFang SC" fallback font should be used to display the following
+    // chinese code points.
+    const textCJK = document.createTextNode("𫭼𬜯𠁨");
+
+    appendStyledTexts(elemText, text, weight);
+    appendStyledTexts(elemEmoji, textEmoji, weight);
+    appendStyledTexts(elemCJK, textCJK, weight);
+  }
+</script>

@@ -630,4 +630,23 @@ int ToCSSFontWeight(float ct_font_weight) {
   return kNormalWeightValue;
 }
 
+float ToCTFontWeight(int css_weight) {
+  if (css_weight <= 50 || css_weight >= 950) {
+    return 0.0;
+  }
+  const float weights[] = {
+      -0.80,  // Thin (Hairline)
+      -0.60,  // Extra Light (Ultra Light)
+      -0.40,  // Light
+      0.0,    // Normal (Regular)
+      0.23,   // Medium
+      0.30,   // Semi Bold (Demi Bold)
+      0.40,   // Bold
+      0.56,   // Extra Bold (Ultra Bold)
+      0.62,   // Black (Heavy)
+  };
+  int index = (css_weight - 50) / 100;
+  return weights[index];
+}
+
 }  // namespace blink
