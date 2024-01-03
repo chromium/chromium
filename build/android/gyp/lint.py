@@ -200,8 +200,7 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
-def _RunLint(create_cache,
-             custom_lint_jar_path,
+def _RunLint(custom_lint_jar_path,
              lint_jar_path,
              backported_methods_path,
              config_path,
@@ -222,13 +221,13 @@ def _RunLint(create_cache,
              testonly_target=False,
              warnings_as_errors=False):
   logging.info('Lint starting')
-
-  if create_cache:
-    # Occasionally lint may crash due to re-using intermediate files from older
-    # lint runs. See https://crbug.com/1258178 for context.
-    logging.info('Clearing cache dir %s before creating cache.', cache_dir)
-    shutil.rmtree(cache_dir, ignore_errors=True)
-    os.makedirs(cache_dir)
+  if not cache_dir:
+    # Use per-target cache directory when --cache-dir is not used.
+    cache_dir = os.path.join(lint_gen_dir, 'cache')
+    # Lint complains if the directory does not exist.
+    # When --create-cache is used, ninja will create this directory because the
+    # stamp file is created within it.
+    os.makedirs(cache_dir, exist_ok=True)
 
   if baseline and not os.path.exists(baseline):
     # Generating new baselines is only done locally, and requires more memory to
@@ -413,7 +412,6 @@ def _ParseArgs(argv):
   parser.add_argument('--backported-methods',
                       help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
-                      required=True,
                       help='Path to the directory in which the android cache '
                       'directory tree should be stored.')
   parser.add_argument('--config-path', help='Path to lint suppressions file.')
@@ -516,8 +514,7 @@ def main():
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
-  _RunLint(args.create_cache,
-           args.custom_lint_jar_path,
+  _RunLint(args.custom_lint_jar_path,
            args.lint_jar_path,
            args.backported_methods,
            args.config_path,
