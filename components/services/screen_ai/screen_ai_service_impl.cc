@@ -229,7 +229,7 @@ void ScreenAIService::InitializeOCR(
 
 void ScreenAIService::InitializeOCRInternal(
     mojo::PendingReceiver<mojom::OCRService> ocr_service_receiver,
-    InitializeMainContentExtractionCallback callback,
+    InitializeOCRCallback callback,
     std::unique_ptr<PreloadedModelData> model_data) {
   // `model_data` contains the content of the model files and its accessors are
   // passed to the library. It should be kept in memory until after library
