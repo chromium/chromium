@@ -489,6 +489,11 @@ size_t GetIndexOfElement(const FormData& form_data,
   return form_data.fields.size();
 }
 
+bool HasTextInputs(const FormData& form_data) {
+  return base::ranges::any_of(form_data.fields,
+                              &FormFieldData::IsTextInputElement);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // Returns a prediction whether the form that contains |username_element| and
 // |password_element| will be ready for submission after filling these two
@@ -1896,8 +1901,9 @@ void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
 
   std::unique_ptr<FormData> submitted_form_data = GetFormDataFromWebForm(form);
 
-  if (!submitted_form_data)
+  if (!submitted_form_data || !HasTextInputs(*submitted_form_data)) {
     return;
+  }
 
   submitted_form_data->submission_event =
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION;

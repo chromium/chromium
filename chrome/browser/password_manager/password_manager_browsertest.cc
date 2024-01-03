@@ -3989,6 +3989,24 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       password_manager::ManagePasswordsReferrer::kPasswordsGoogleWebsite));
 }
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, FormWithoutTextInputs) {
+  base::HistogramTester histogram_tester;
+
+  // Navigate to a page with a form without text inputs.
+  NavigateToFile("/password/no_text_inputs.html");
+
+  // Submit the form.
+  PasswordsNavigationObserver observer(WebContents());
+  std::string submit_pw_form =
+      "document.getElementById('input_submit_button').click();";
+  ASSERT_TRUE(content::ExecJs(WebContents(), submit_pw_form));
+  ASSERT_TRUE(observer.Wait());
+
+  // Verify that no form was seen on the browser side.
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.FormVisited.PerProfileType", 0);
+}
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // This test suite only applies to Gaia signin page, and checks that the
 // signin interception bubble and the password bubbles never conflict.
