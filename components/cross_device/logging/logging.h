@@ -13,9 +13,9 @@
 // Use the CD_LOG() macro for all logging related to Cross Device Features so
 // the debug page can reflect all logs related to this feature in the internal
 // debug WebUI (chrome://nearby-internals).
-#define CD_LOG(severity, feature)                                          \
-  CrossDeviceScopedLogMessage(__FILE__, __LINE__, logging::LOG_##severity, \
-                              feature)                                     \
+#define CD_LOG(severity, feature)                                              \
+  CrossDeviceScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity, \
+                              feature)                                         \
       .stream()
 
 // An intermediate object used by the CD_LOG macro, wrapping a

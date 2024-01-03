@@ -13,7 +13,7 @@
 // page can reflect all logs related to this feature in the internal debug WebUI
 // (chrome://nearby-internals).
 #define NS_LOG(severity) \
-  ScopedLogMessage(__FILE__, __LINE__, logging::LOG_##severity).stream()
+  ScopedLogMessage(__FILE__, __LINE__, logging::LOGGING_##severity).stream()
 
 // An intermediate object used by the NS_LOG macro, wrapping a
 // logging::LogMessage instance. When this object is destroyed, the message will

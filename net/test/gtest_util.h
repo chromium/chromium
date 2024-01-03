@@ -70,21 +70,22 @@ class StringPieceHasSubstrMatcher {
 
 // Internal implementation for the EXPECT_DFATAL and ASSERT_DFATAL
 // macros.  Do not use this directly.
-#define GTEST_DFATAL_(statement, severity, matcher, fail)                    \
-  do {                                                                       \
-    ::base::test::MockLog gtest_log;                                         \
-    ::net::test::ScopedDisableExitOnDFatal gtest_disable_exit;               \
-    using ::testing::_;                                                      \
-    EXPECT_CALL(gtest_log, Log(_, _, _, _, _))                               \
-        .WillRepeatedly(::testing::Return(false));                           \
-    EXPECT_CALL(gtest_log, Log(::logging::LOG_##severity, _, _, _, matcher)) \
-        .Times(::testing::AtLeast(1))                                        \
-        .WillOnce(::testing::Return(false));                                 \
-    gtest_log.StartCapturingLogs();                                          \
-    { statement; }                                                           \
-    gtest_log.StopCapturingLogs();                                           \
-    if (!testing::Mock::VerifyAndClear(&gtest_log))                          \
-      fail("");                                                              \
+#define GTEST_DFATAL_(statement, severity, matcher, fail)             \
+  do {                                                                \
+    ::base::test::MockLog gtest_log;                                  \
+    ::net::test::ScopedDisableExitOnDFatal gtest_disable_exit;        \
+    using ::testing::_;                                               \
+    EXPECT_CALL(gtest_log, Log(_, _, _, _, _))                        \
+        .WillRepeatedly(::testing::Return(false));                    \
+    EXPECT_CALL(gtest_log,                                            \
+                Log(::logging::LOGGING_##severity, _, _, _, matcher)) \
+        .Times(::testing::AtLeast(1))                                 \
+        .WillOnce(::testing::Return(false));                          \
+    gtest_log.StartCapturingLogs();                                   \
+    { statement; }                                                    \
+    gtest_log.StopCapturingLogs();                                    \
+    if (!testing::Mock::VerifyAndClear(&gtest_log))                   \
+      fail("");                                                       \
   } while (false)
 
 // The EXPECT_DFATAL and ASSERT_DFATAL macros are lightweight

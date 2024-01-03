@@ -22,9 +22,9 @@ namespace quick_pair {
 // Examples:
 //   QP_LOG(INFO) << "Waiting for " << x << " pending requests.";
 //   QP_LOG(ERROR) << "Request failed: " << error_string;
-#define QP_LOG(severity)                                     \
-  ash::quick_pair::ScopedLogMessage(__FILE__, __LINE__,      \
-                                    logging::LOG_##severity) \
+#define QP_LOG(severity)                                         \
+  ash::quick_pair::ScopedLogMessage(__FILE__, __LINE__,          \
+                                    logging::LOGGING_##severity) \
       .stream()
 
 // Disables all logging while in scope. Intended to be called only from test
