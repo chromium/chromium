@@ -15,7 +15,6 @@
 #include "base/location.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -512,7 +511,7 @@ class QuicStreamFactory::Job {
   bool connection_retried_ = false;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION QuicChromiumClientSession* session_ = nullptr;
+  raw_ptr<QuicChromiumClientSession> session_ = nullptr;
   HostResolverEndpointResult endpoint_result_;
   // If connection migraiton is supported, |network_| denotes the network on
   // which |session_| is created.
@@ -1857,7 +1856,7 @@ int QuicStreamFactory::CreateSessionSync(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
@@ -1897,7 +1896,7 @@ int QuicStreamFactory::CreateSessionAsync(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP
@@ -1929,7 +1928,7 @@ void QuicStreamFactory::FinishCreateSession(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
     std::unique_ptr<DatagramClientSocket> socket,
     int rv) {
@@ -1961,7 +1960,7 @@ bool QuicStreamFactory::CreateSessionHelper(
     base::TimeTicks dns_resolution_start_time,
     base::TimeTicks dns_resolution_end_time,
     const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
+    raw_ptr<QuicChromiumClientSession>* session,
     handles::NetworkHandle* network,
     std::unique_ptr<DatagramClientSocket> socket) {
   // TODO(https://crbug.com/1416409): This logic only knows how to try one IP

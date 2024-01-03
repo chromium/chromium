@@ -486,7 +486,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                         base::TimeTicks dns_resolution_start_time,
                         base::TimeTicks dns_resolution_end_time,
                         const NetLogWithSource& net_log,
-                        QuicChromiumClientSession** session,
+                        raw_ptr<QuicChromiumClientSession>* session,
                         handles::NetworkHandle* network);
   int CreateSessionAsync(CompletionOnceCallback callback,
                          const QuicSessionAliasKey& key,
@@ -497,7 +497,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                          base::TimeTicks dns_resolution_start_time,
                          base::TimeTicks dns_resolution_end_time,
                          const NetLogWithSource& net_log,
-                         QuicChromiumClientSession** session,
+                         raw_ptr<QuicChromiumClientSession>* session,
                          handles::NetworkHandle* network);
   void FinishCreateSession(CompletionOnceCallback callback,
                            const QuicSessionAliasKey& key,
@@ -508,7 +508,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,
-                           QuicChromiumClientSession** session,
+                           raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket,
                            int rv);
@@ -520,7 +520,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                            base::TimeTicks dns_resolution_start_time,
                            base::TimeTicks dns_resolution_end_time,
                            const NetLogWithSource& net_log,
-                           QuicChromiumClientSession** session,
+                           raw_ptr<QuicChromiumClientSession>* session,
                            handles::NetworkHandle* network,
                            std::unique_ptr<DatagramClientSocket> socket);
   void ActivateSession(const QuicSessionAliasKey& key,
