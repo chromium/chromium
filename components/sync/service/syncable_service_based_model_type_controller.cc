@@ -91,6 +91,13 @@ class ControllerDelegate : public ModelTypeControllerDelegate {
     GetBridgeDelegate()->ClearMetadataIfStopped();
   }
 
+  void ReportBridgeErrorForTest() override {
+    if (!bridge_) {
+      return;
+    }
+    GetBridgeDelegate()->ReportBridgeErrorForTest();  // IN-TEST
+  }
+
  private:
   ModelTypeControllerDelegate* GetBridgeDelegate() const {
     DCHECK(bridge_);

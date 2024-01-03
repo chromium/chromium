@@ -804,6 +804,14 @@ void BookmarkModelTypeProcessor::ClearMetadataIfStopped() {
   }
 }
 
+void BookmarkModelTypeProcessor::ReportBridgeErrorForTest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DisconnectSync();
+  activation_request_.error_handler.Run(
+      syncer::ModelError(FROM_HERE, "Report error for test"));
+}
+
 void BookmarkModelTypeProcessor::StopTrackingMetadataAndResetTracker() {
   // DisconnectSync() should have been called by the caller.
   DCHECK(!worker_);

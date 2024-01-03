@@ -54,6 +54,7 @@ class PasswordSyncControllerDelegateAndroid
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

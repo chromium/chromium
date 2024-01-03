@@ -59,6 +59,7 @@ class NigoriModelTypeProcessor : public ModelTypeProcessor,
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   // NigoriLocalChangeProcessor implementation.
   void ModelReadyToSync(NigoriSyncBridge* bridge,

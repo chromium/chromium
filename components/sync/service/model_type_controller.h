@@ -51,6 +51,7 @@ class ModelTypeController : public DataTypeController {
   void GetTypeEntitiesCount(base::OnceCallback<void(const TypeEntitiesCount&)>
                                 callback) const override;
   void RecordMemoryUsageAndCountsHistograms() override;
+  void ReportBridgeErrorForTest() override;
 
   ModelTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);
 

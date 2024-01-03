@@ -258,6 +258,9 @@ class SyncServiceImpl : public SyncService,
 
   SyncClient* GetSyncClientForTest();
 
+  // Simulates data type error reported by the bridge.
+  void ReportDataTypeErrorForTest(ModelType type);
+
  private:
   enum UnrecoverableErrorReason {
     ERROR_REASON_ENGINE_INIT_FAILURE,

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -1426,6 +1427,13 @@ void SyncServiceImpl::OnPreferredDataTypesPrefChange(
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return sync_client_.get();
+}
+
+void SyncServiceImpl::ReportDataTypeErrorForTest(ModelType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_IS_TEST();
+  CHECK(data_type_controllers_.find(type) != data_type_controllers_.end());
+  data_type_controllers_[type]->ReportBridgeErrorForTest();  // IN-TEST
 }
 
 void SyncServiceImpl::AddObserver(SyncServiceObserver* observer) {

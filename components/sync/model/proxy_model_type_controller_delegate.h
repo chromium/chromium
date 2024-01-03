@@ -43,6 +43,7 @@ class ProxyModelTypeControllerDelegate : public ModelTypeControllerDelegate {
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
  private:
   // Post the given task (that requires the destination delegate to run) to

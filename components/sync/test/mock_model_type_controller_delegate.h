@@ -34,6 +34,7 @@ class MockModelTypeControllerDelegate : public ModelTypeControllerDelegate {
               (const override));
   MOCK_METHOD(void, RecordMemoryUsageAndCountsHistograms, (), (override));
   MOCK_METHOD(void, ClearMetadataIfStopped, (), (override));
+  MOCK_METHOD(void, ReportBridgeErrorForTest, (), (override));
 };
 
 }  // namespace syncer

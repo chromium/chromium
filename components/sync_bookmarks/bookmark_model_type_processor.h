@@ -73,6 +73,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
   // Encodes all sync metadata into a string, representing a state that can be
   // restored via ModelReadyToSync() below.

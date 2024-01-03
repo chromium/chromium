@@ -39,6 +39,7 @@ class ForwardingModelTypeControllerDelegate
       const override;
   void RecordMemoryUsageAndCountsHistograms() override;
   void ClearMetadataIfStopped() override;
+  void ReportBridgeErrorForTest() override;
 
  private:
   const raw_ptr<ModelTypeControllerDelegate, AcrossTasksDanglingUntriaged>

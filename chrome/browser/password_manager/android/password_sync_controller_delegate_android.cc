@@ -198,4 +198,9 @@ void PasswordSyncControllerDelegateAndroid::ClearMetadataIfStopped() {
   // No metadata is managed by PasswordSyncControllerDelegateAndroid.
 }
 
+void PasswordSyncControllerDelegateAndroid::ReportBridgeErrorForTest() {
+  // Not supported for Android.
+  NOTREACHED();
+}
+
 }  // namespace password_manager

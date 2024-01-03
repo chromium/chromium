@@ -60,6 +60,12 @@ void ClearMetadataIfStoppedHelperOnModelThread(
   delegate->ClearMetadataIfStopped();
 }
 
+void ReportBridgeErrorOnModelThreadForTest(  // IN-TEST
+    base::WeakPtr<ModelTypeControllerDelegate> delegate) {
+  CHECK(delegate);
+  delegate->ReportBridgeErrorForTest();  // IN-TEST
+}
+
 // Rurns some task on the destination task runner (backend sequence), first
 // exercising |delegate_provider| *also* in the backend sequence.
 void RunModelTask(
@@ -123,6 +129,11 @@ void ProxyModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {
 void ProxyModelTypeControllerDelegate::ClearMetadataIfStopped() {
   PostTask(FROM_HERE,
            base::BindOnce(&ClearMetadataIfStoppedHelperOnModelThread));
+}
+
+void ProxyModelTypeControllerDelegate::ReportBridgeErrorForTest() {
+  PostTask(FROM_HERE,
+           base::BindOnce(&ReportBridgeErrorOnModelThreadForTest));  // IN-TEST
 }
 
 void ProxyModelTypeControllerDelegate::PostTask(
