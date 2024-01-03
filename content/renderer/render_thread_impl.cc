@@ -1318,12 +1318,7 @@ void RenderThreadImpl::SetBatterySaverMode(bool battery_saver_mode_enabled) {
     base::MessagePump::ResetAlignWakeUpsState();
   }
 
-  if (!blink::MainThreadIsolate()) {
-    return;
-  }
-
-  blink::MainThreadIsolate()->SetBatterySaverMode(battery_saver_mode_enabled);
-  blink::SetBatterySaverModeForWorkerThreadIsolates(battery_saver_mode_enabled);
+  blink::SetBatterySaverModeForAllIsolates(battery_saver_mode_enabled);
 }
 
 void RenderThreadImpl::SetIsLockedToSite() {
