@@ -44,6 +44,12 @@ suite('ComposeApp', () => {
     return testProxy.remote.$.flushForTesting();
   }
 
+  function mockPartialResponse(result: string = 'partial response'):
+      Promise<void> {
+    testProxy.remote.partialResponseReceived({result});
+    return testProxy.remote.$.flushForTesting();
+  }
+
   async function initializeNewAppWithConsentAndMsbbState(
       consent: ConsentState, msbb: boolean): Promise<ComposeAppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -625,5 +631,20 @@ suite('ComposeApp', () => {
     }));
     const args = await testProxy.whenCalled('setUserFeedback');
     assertEquals(args.reason, args.UserFeedback);
+  });
+
+  test('PartialResponseIsShown', async () => {
+    mockInput('Some fake input.');
+    app.$.submitButton.click();
+    await testProxy.whenCalled('compose');
+
+    // A partial response is shown.
+    await mockPartialResponse('partial response');
+    assertTrue(isVisible(app.$.partialResultText));
+    assertEquals(app.$.partialResultText.innerText.trim(), 'partial response');
+
+    // The final response hides the partial response text.
+    await mockResponse();
+    assertFalse(isVisible(app.$.partialResultText));
   });
 });

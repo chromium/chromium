@@ -179,6 +179,15 @@ class ComposeSession : public compose::mojom::ComposeSessionPageHandler {
       bool was_input_edited,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  void ModelExecutionProgress(
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult
+          result);
+  void ModelExecutionComplete(
+      base::TimeDelta request_delta,
+      bool was_input_edited,
+      optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+
   // Adds page content to the session context.
   void AddPageContentToSession(std::string inner_text);
 

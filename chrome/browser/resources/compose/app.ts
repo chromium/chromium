@@ -24,7 +24,7 @@ import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, PartialComposeResponse, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -60,6 +60,7 @@ export interface ComposeAppElement {
     undoButton: CrButtonElement,
     refreshButton: HTMLElement,
     resultContainer: HTMLElement,
+    partialResultText: HTMLElement,
     submitButton: CrButtonElement,
     submitEditButton: CrButtonElement,
     textarea: ComposeTextareaElement,
@@ -117,6 +118,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: false,
       },
       response_: {
+        type: Object,
+        value: null,
+      },
+      partialResponse_: {
         type: Object,
         value: null,
       },
@@ -213,6 +218,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private isSubmitEnabled_: boolean;
   private loading_: boolean;
   private response_: ComposeResponse|undefined;
+  private partialResponse_: PartialComposeResponse|undefined;
   private saveAppStateDebouncer_: Debouncer;
   private selectedLength_: Length;
   private selectedTone_: Tone;
@@ -230,6 +236,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
     });
+    this.router_.partialResponseReceived.addListener(
+        (partialResponse: PartialComposeResponse) => {
+          this.partialComposeResponseReceived_(partialResponse);
+        });
   }
 
   override connectedCallback() {
@@ -282,6 +292,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.input_ = initialState.initialInput;
       }
       this.textSelected_ = initialState.textSelected;
+      this.partialResponse_ = undefined;
       const composeState = initialState.composeState;
       this.feedbackState_ = userFeedbackToFeedbackOption(composeState.feedback);
       this.loading_ = composeState.hasPendingRequest;
@@ -313,6 +324,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private getTrimmedResult_(): string|undefined {
     return this.response_?.result.trim();
+  }
+
+  private getTrimmedPartialResult_(): string|undefined {
+    return this.partialResponse_?.result.trim();
   }
 
   private onConsentNoThanksButtonClick_() {
@@ -485,6 +500,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     assert(this.submitted_);
     this.loading_ = true;
     this.response_ = undefined;
+    this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.compose(this.input_, inputEdited);
   }
@@ -494,20 +510,36 @@ export class ComposeAppElement extends ComposeAppElementBase {
     assert(this.submitted_);
     this.loading_ = true;
     this.response_ = undefined;
+    this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
     this.apiProxy_.rewrite(style);
   }
 
   private composeResponseReceived_(response: ComposeResponse) {
     this.response_ = response;
+    this.partialResponse_ = undefined;
     this.loading_ = false;
     this.undoEnabled_ = response.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.requestUpdateScroll();
   }
 
+  private partialComposeResponseReceived_(partialResponse:
+                                              PartialComposeResponse) {
+    assert(!this.response_);
+    this.partialResponse_ = partialResponse;
+  }
+
+  private loadingIndictorShown_(): boolean {
+    return this.loading_ && !this.hasPartialResponse_();
+  }
+
   private hasSuccessfulResponse_(): boolean {
     return this.response_?.status === ComposeStatus.kOk;
+  }
+
+  private hasPartialResponse_(): boolean {
+    return Boolean(this.partialResponse_);
   }
 
   private hasFailedResponse_(): boolean {
@@ -575,6 +607,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       }
       // Restore state to the state returned by Undo.
       this.response_ = state.response;
+      this.partialResponse_ = undefined;
       this.undoEnabled_ = Boolean(state.response?.undoAvailable);
       this.feedbackState_ = userFeedbackToFeedbackOption(state.feedback);
 

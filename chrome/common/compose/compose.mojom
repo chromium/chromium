@@ -75,6 +75,12 @@ struct ComposeResponse {
   bool undo_available;
 };
 
+// An intermediate compose response, which is available before the final
+// response is complete.
+struct PartialComposeResponse {
+  string result;
+};
+
 // Snapshot of state that can describe current state or be used to
 // fully restore a previous state.
 struct ComposeState {
@@ -219,4 +225,8 @@ interface ComposeDialog {
   // WebUI, this is an event rather than a callback on the original `Compose`
   // call above.
   ResponseReceived(ComposeResponse response);
+
+  // Called when a compose request is not yet fulfilled, but a partial response
+  // is available.
+  PartialResponseReceived(PartialComposeResponse partial_response);
 };

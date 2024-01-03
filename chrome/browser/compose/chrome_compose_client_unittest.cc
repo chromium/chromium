@@ -117,6 +117,9 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
   MOCK_METHOD(void,
               ResponseReceived,
               (compose::mojom::ComposeResponsePtr response));
+  MOCK_METHOD(void,
+              PartialResponseReceived,
+              (compose::mojom::PartialComposeResponsePtr response));
 };
 
 }  // namespace
@@ -391,6 +394,8 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   const std::string input = "a user typed this";
   optimization_guide::proto::ComposeRequest context_request;
   *context_request.mutable_page_metadata() = ComposePageMetadata();
+  optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
+      saved_callback;
   EXPECT_CALL(session(), AddContext(EqualsProto(context_request)));
   EXPECT_CALL(session(), ExecuteModel(EqualsProto(ComposeRequest(input)), _))
       .WillOnce(testing::WithArg<1>(testing::Invoke(
@@ -402,16 +407,17 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
                 OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
                                           /*is_complete=*/false),
                 nullptr);
-            // Then send the full response.
-            base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-                FROM_HERE,
-                base::BindOnce(std::move(callback),
-                               OptimizationGuideResponse(
-                                   ComposeResponse(true, "Cucumbers")),
-                               nullptr));
+            saved_callback = callback;
           })));
   ShowDialogAndBindMojo();
 
+  base::test::TestFuture<compose::mojom::PartialComposeResponsePtr>
+      partial_future;
+  EXPECT_CALL(compose_dialog(), PartialResponseReceived(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](compose::mojom::PartialComposeResponsePtr response) {
+            partial_future.SetValue(std::move(response));
+          }));
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
       .WillRepeatedly(
@@ -421,13 +427,22 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
 
   page_handler()->Compose(input, false);
 
-  compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucu", result->result);
+  compose::mojom::PartialComposeResponsePtr partial_result =
+      partial_future.Take();
+  EXPECT_EQ("Cucu", partial_result->result);
 
-  result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucumbers", result->result);
+  // Request the initial state, and verify there's still a pending request.
+  base::test::TestFuture<compose::mojom::OpenMetadataPtr> initial_state_future;
+  page_handler()->RequestInitialState(initial_state_future.GetCallback());
+  compose::mojom::OpenMetadataPtr initial_state = initial_state_future.Take();
+  EXPECT_TRUE(initial_state->compose_state->has_pending_request);
+
+  // Then send the full response.
+  saved_callback.Run(
+      OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")), nullptr);
+  auto complete_result = test_future.Take();
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, complete_result->status);
+  EXPECT_EQ("Cucumbers", complete_result->result);
 
   // Check that a single response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
@@ -479,23 +494,29 @@ TEST_F(ChromeComposeClientTest, TestComposeSessionIgnoresPreviousResponse) {
           })));
   ShowDialogAndBindMojo();
 
-  base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;
+  base::test::TestFuture<compose::mojom::PartialComposeResponsePtr>
+      partial_response;
+  EXPECT_CALL(compose_dialog(), PartialResponseReceived(_))
+      .WillRepeatedly(testing::Invoke(
+          [&](compose::mojom::PartialComposeResponsePtr response) {
+            partial_response.SetValue(std::move(response));
+          }));
+
+  base::test::TestFuture<compose::mojom::ComposeResponsePtr> complete_response;
   EXPECT_CALL(compose_dialog(), ResponseReceived(_))
       .WillRepeatedly(
           testing::Invoke([&](compose::mojom::ComposeResponsePtr response) {
-            test_future.SetValue(std::move(response));
+            complete_response.SetValue(std::move(response));
           }));
 
   page_handler()->Compose(input, false);
 
-  compose::mojom::ComposeResponsePtr result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucu", result->result);
+  EXPECT_EQ("Cucu", partial_response.Get()->result);
 
   page_handler()->Compose(input2, false);
-  result = test_future.Take();
-  EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
-  EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_EQ(compose::mojom::ComposeStatus::kOk,
+            complete_response.Get()->status);
+  EXPECT_EQ("Cucumbers", complete_response.Get()->result);
 
   // Check that a single response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,
@@ -603,8 +624,9 @@ TEST_F(ChromeComposeClientTest, TestComposeNoParsedAny) {
           [&](optimization_guide::
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
-            std::move(callback).Run(optimization_guide::StreamingResponse(),
-                                    nullptr);
+            std::move(callback).Run(
+                optimization_guide::StreamingResponse{.is_complete = true},
+                nullptr);
           })));
 
   base::test::TestFuture<compose::mojom::ComposeResponsePtr> test_future;

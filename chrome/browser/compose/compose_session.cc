@@ -335,6 +335,39 @@ void ComposeSession::ModelExecutionCallback(
     return;
   }
 
+  if (result.has_value() && !result->is_complete) {
+    ModelExecutionProgress(result);
+    return;
+  }
+
+  ModelExecutionComplete(request_delta, was_input_edited, result,
+                         std::move(log_entry));
+}
+
+void ComposeSession::ModelExecutionProgress(
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result) {
+  CHECK(base::FeatureList::IsEnabled(
+      optimization_guide::features::kOptimizationGuideOnDeviceModel));
+  if (!dialog_remote_.is_bound()) {
+    return;
+  }
+  auto response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::ComposeResponse>(result->response);
+  if (!response) {
+    DLOG(ERROR) << "Failed to parse partial compose response";
+    return;
+  }
+  auto partial_ui_response = compose::mojom::PartialComposeResponse::New();
+  partial_ui_response->result = response->output();
+  dialog_remote_->PartialResponseReceived(std::move(partial_ui_response));
+}
+
+void ComposeSession::ModelExecutionComplete(
+    base::TimeDelta request_delta,
+    bool was_input_edited,
+    optimization_guide::OptimizationGuideModelStreamingExecutionResult result,
+    std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  // Handle 'complete' results.
   current_state_->has_pending_request = false;
 
   compose::mojom::ComposeStatus status =
@@ -347,6 +380,7 @@ void ComposeSession::ModelExecutionCallback(
                                 was_input_edited);
     return;
   }
+  DCHECK(result->is_complete);
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ComposeResponse>(result->response);
@@ -358,22 +392,19 @@ void ComposeSession::ModelExecutionCallback(
                                 was_input_edited);
     return;
   }
-  DCHECK(result->is_complete ||
-         base::FeatureList::IsEnabled(
-             optimization_guide::features::kOptimizationGuideOnDeviceModel));
 
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
   current_state_->response = ui_response->Clone();
-  if (result->is_complete) {
-    // Log successful response status.
-    LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
-    compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
 
-    SaveMostRecentOkStateToUndoStack();
-    most_recent_ok_state_->SetMojoState(current_state_->Clone());
-  }
+  // Log successful response status.
+  LogComposeResponseStatus(compose::mojom::ComposeStatus::kOk);
+  compose::LogComposeRequestDuration(request_delta, /* is_valid */ true);
+
+  SaveMostRecentOkStateToUndoStack();
+  most_recent_ok_state_->SetMojoState(current_state_->Clone());
+
   ui_response->undo_available = !undo_states_.empty();
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(std::move(ui_response));
