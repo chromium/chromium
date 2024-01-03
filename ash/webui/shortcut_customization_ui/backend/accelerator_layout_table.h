@@ -14,6 +14,7 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/webui/shortcut_customization_ui/backend/text_accelerator_part.h"
 #include "base/containers/fixed_flat_set.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/event_constants.h"
@@ -157,11 +158,6 @@ enum NonConfigurableActions {
   kAmbientMoveToEndOfWord,
 };
 
-// Used to separate text accelerator parts in the UI e.g ctrl + 1.
-enum TextAcceleratorDelimiter {
-  kPlusSign,
-};
-
 // Contains details for UI styling of an accelerator.
 struct AcceleratorLayoutDetails {
   // The accelerator action id associated for a source. Concat `source` and
@@ -187,25 +183,6 @@ struct AcceleratorLayoutDetails {
 
   // The source of which the accelerator is from.
   mojom::AcceleratorSource source;
-};
-
-// Represents a replacement for part of a non-configurable accelerator.
-// Contains the text to display as well as its type (Modifier, Key, Plain Text)
-// which is needed to determine how to display the text in the shortcut
-// customization app.
-class TextAcceleratorPart : public mojom::TextAcceleratorPart {
- public:
-  explicit TextAcceleratorPart(ui::EventFlags modifier);
-  explicit TextAcceleratorPart(ui::KeyboardCode key_code);
-  explicit TextAcceleratorPart(const std::u16string& plain_text);
-  explicit TextAcceleratorPart(TextAcceleratorDelimiter delimiter);
-  TextAcceleratorPart(const TextAcceleratorPart&);
-  TextAcceleratorPart& operator=(const TextAcceleratorPart&);
-  ~TextAcceleratorPart();
-
-  // If the part is a keycode, we store it so that we will always have a way
-  // to get the accurate localized key string to display.
-  std::optional<ui::KeyboardCode> keycode;
 };
 
 // Contains info related to a non-configurable accelerator. A non-configurable

@@ -20,6 +20,8 @@ static_library("backend") {
     "search/search_concept_registry.h",
     "search/search_handler.cc",
     "search/search_handler.h",
+    "text_accelerator_part.cc",
+    "text_accelerator_part.h",
   ]
 
   deps = [
