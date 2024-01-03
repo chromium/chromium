@@ -55,8 +55,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
 // intervals `refresh_interval` apart for a short period of time. This provides
 // the video encoder, downstream, several copies of the last frame so that it
 // may clear up lossy encoding artifacts.
-class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
-    : public base::SupportsWeakPtr<VideoRtpStream> {
+class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream final {
  public:
   VideoRtpStream(std::unique_ptr<media::cast::VideoSender> video_sender,
                  base::WeakPtr<RtpStreamClient> client,
@@ -73,6 +72,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
 
   void SetTargetPlayoutDelay(base::TimeDelta playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
+
+  base::WeakPtr<VideoRtpStream> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   void OnRefreshTimerFired();
@@ -91,6 +94,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoRtpStream
   // Set to true when a request for a refresh frame has been made.  This is
   // cleared once the next frame is received.
   bool expecting_a_refresh_frame_{false};
+
+  base::WeakPtrFactory<VideoRtpStream> weak_ptr_factory_{this};
 
   friend class RtpStreamTest;
 };
