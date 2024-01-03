@@ -27,8 +27,10 @@ void SubresourceFilterProfileContext::SetEmbedderData(
 }
 
 void SubresourceFilterProfileContext::Shutdown() {
-  settings_manager_.reset();
+  // `ads_intervention_manager_` holds a raw_ptr to `settings_manager_`. Make
+  // sure they are reset in the right order to avoid holding a dangling pointer.
   ads_intervention_manager_.reset();
+  settings_manager_.reset();
 }
 
 }  // namespace subresource_filter
