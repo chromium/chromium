@@ -4109,7 +4109,7 @@
 <translation id="4159784952369912983">Фиолетовый</translation>
 <translation id="4163560723127662357">Неизвестная клавиатура</translation>
 <translation id="4165942112764990069">Адрес <ph name="USER_EMAIL" /> не принадлежит действительной организации. Обратитесь к администратору. Если вы администратор, перейдите на страницу g.co/ChromeEnterpriseAccount и настройте аккаунт организации.</translation>
-<translation id="4165986682804962316">Настройки сайта</translation>
+<translation id="4165986682804962316">Настройки сайтов</translation>
 <translation id="4167212649627589331">Приложение "<ph name="APP_NAME" />" пытается получить доступ к устройству "<ph name="DEVICE_NAME" />". Чтобы предоставить его, переведите в выключенное положение переключатель, позволяющий управлять настройками конфиденциальности устройства "<ph name="DEVICE_NAME" />".</translation>
 <translation id="4167393659000039775">Google не несет ответственности за потерю данных. Операционная система <ph name="DEVICE_OS" /> может не работать на несертифицированных моделях устройств. Подробная информация доступна на странице g.co/flex/InstallGuide.</translation>
 <translation id="4167924027691268367">Другие действия для быстрой команды "<ph name="SHORTCUT_TITLE" />"</translation>
@@ -10145,7 +10145,7 @@
 <translation id="8962083179518285172">Скрыть детали</translation>
 <translation id="8962863356073277855">URL необходимо указать в формате https://www.example.com.</translation>
 <translation id="8962918469425892674">Этот сайт использует датчики движения и освещенности</translation>
-<translation id="8963117664422609631">Перейти в настройки сайта</translation>
+<translation id="8963117664422609631">Перейти в настройки сайтов</translation>
 <translation id="8965037249707889821">Введите старый пароль</translation>
 <translation id="8966809848145604011">Другие профили</translation>
 <translation id="8967427617812342790">Добавить в список для чтения</translation>
