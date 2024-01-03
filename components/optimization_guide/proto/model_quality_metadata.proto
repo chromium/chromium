@@ -16,7 +16,14 @@ import "third_party/metrics_proto/system_profile.proto";
 // Contains metadata about a specific feature's AiLoggingData (e.g. training
 // opt-out, etc.).
 message LoggingMetadata {
+  reserved 2;
+
   metrics.SystemProfileProto system_profile = 1;
+
+  // The client's unique identifier. Each ModelExecutionFeature will have a
+  // different ID every day. It should only be used for model quality logging,
+  // and should not be linked to any other data sources.
+  int64 client_id = 3;
 }
 
 // Data about model execution. This includes information about whether it was

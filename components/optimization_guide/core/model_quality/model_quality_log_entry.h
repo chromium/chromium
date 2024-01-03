@@ -24,6 +24,10 @@ class ModelQualityLogEntry {
     return log_ai_data_request_.get()->mutable_logging_metadata();
   }
 
+  int64_t client_id() const {
+    return log_ai_data_request_.get()->mutable_logging_metadata()->client_id();
+  }
+
   template <typename FeatureType>
   FeatureType::Quality* quality_data() {
     return FeatureType::GetLoggingData(*log_ai_data_request_)
