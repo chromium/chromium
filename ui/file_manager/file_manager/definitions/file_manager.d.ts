@@ -43,8 +43,6 @@ declare global {
     IN_TEST: boolean;
     JSErrorCount: number;
     store: Store;
-    /** Log action data in the console for debugging purpose. */
-    DEBUG_STORE: boolean;
 
     /** Namespace used for test utils. */
     test: any;

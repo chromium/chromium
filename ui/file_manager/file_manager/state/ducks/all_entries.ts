@@ -8,7 +8,7 @@ import {getIcon} from '../../common/js/file_type.js';
 import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {recordInterval, recordSmallCount, startInterval} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
-import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
+import {iconSetToCSSBackgroundImageValue, isDebugStoreEnabled} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH, shouldProvideIcons, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -106,12 +106,16 @@ function clearCachedEntriesReducer(state: State): State {
     }
   }
 
+  const isDebugStore = isDebugStoreEnabled();
   for (const key of Object.keys(entries)) {
     if (entriesToKeep.has(key)) {
       continue;
     }
 
     delete entries[key];
+    if (isDebugStore) {
+      console.log(`Clear entry: ${key}`);
+    }
   }
 
   return state;

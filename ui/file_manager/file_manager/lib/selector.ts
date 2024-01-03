@@ -9,6 +9,8 @@
 
 import type {ReactiveController, ReactiveControllerHost} from 'chrome://resources/mwc/lit/index.js';
 
+import {isDebugStoreEnabled} from '../common/js/util.js';
+
 type Callback<T> = (value: T) => void;
 type Unsubscribe = () => void;
 
@@ -125,10 +127,10 @@ export class SelectorNode<T> implements Selector<T> {
    *     selector node is constructed. The arguments of select() must match the
    *     order and type of what is emitted by the parents. This typing match is
    *     not enforced here because SelectorNodes are only meant to be created by
-   *     the Store. Users of the Store should use `combineXSelectors()` to combine
-   *     selectors.
+   *     the Store. Users of the Store should use `combineXSelectors()` to
+   * combine selectors.
    * @param name An optional human-readable name used for debugging purposes.
-   *     Named selectors will log to the console when window.DEBUG_STORE is set,
+   *     Named selectors will log to the console when DEBUG_STORE is set,
    *     whenever they emit a new value.
    */
   constructor(
@@ -145,8 +147,8 @@ export class SelectorNode<T> implements Selector<T> {
    *
    * Slice's default selectors are then connected to the store's source node,
    * and additional selector nodes can then be created from store and slices'
-   * default selectors using `combineXSelectors()` (and resulting selectors can be
-   * further combined using `combineXSelectors()`).
+   * default selectors using `combineXSelectors()` (and resulting selectors can
+   * be further combined using `combineXSelectors()`).
    */
   static createSourceNode<T>(select: () => T, name?: string) {
     return new SelectorNode<T>([], select, name);
@@ -220,7 +222,7 @@ export class SelectorNode<T> implements Selector<T> {
       return false;
     }
 
-    if (window.DEBUG_STORE && this.name) {
+    if (isDebugStoreEnabled() && this.name) {
       console.log(`Selector '${this.name}' emitted a new value:`);
       console.log(newValue);
     }

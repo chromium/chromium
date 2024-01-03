@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isDebugStoreEnabled} from '../common/js/util.js';
+
 import {type ActionsProducerGen, ConcurrentActionInvalidatedError, isActionsProducer} from './actions_producer.js';
 import {type Selector, SelectorEmitter, SelectorNode} from './selector.js';
 
@@ -330,7 +332,8 @@ export class BaseStore<State> {
 
   /** Apply the `action` to the Store by calling the reducer.  */
   protected reduce(action: Action) {
-    if (window.DEBUG_STORE) {
+    const isDebugStore = isDebugStoreEnabled();
+    if (isDebugStore) {
       console.groupCollapsed(`Action: ${action.type}`);
       console.dir(action.payload);
     }
@@ -353,7 +356,7 @@ export class BaseStore<State> {
       this.selectorEmitter_.processChange();
     }
 
-    if (window.DEBUG_STORE) {
+    if (isDebugStore) {
       console.groupEnd();
     }
   }
