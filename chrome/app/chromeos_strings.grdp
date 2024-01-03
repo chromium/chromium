@@ -49,8 +49,8 @@
   </message>
 
   <!-- MultiDevice setup dialog. -->
-  <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to accept conditions and begin MultiDevice setup workflow.">
-    Accept &amp; continue
+  <message name="IDS_MULTIDEVICE_SETUP_ACCEPT_LABEL" desc="Label for button to connect an Android phone to the Chromebook to enable cross-device features.">
+    Connect
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_TRY_AGAIN_LABEL" desc="Label for button to retry setup upon failure.">
     Try again
@@ -77,7 +77,7 @@
     Connect to your phone - Dialog
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_HEADER" desc="Header for multidevice setup page.">
-    Connect to your phone
+    Connect your Android phone for a seamless experience
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AFTER_QUICK_START_HEADER" desc="Header for multidevice setup page for users who have already connected their phone earlier with Quick Start.">
     Stay connected with your phone
@@ -85,8 +85,8 @@
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MESSAGE" desc="Summary to tell user that they can share their Android's capabilities with their ChromeOS device; includes details on specific features that can be used and a link to an information page">
     You can text from your computer, share your internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> with your phone.<ph name="FOOTNOTE_POINTER">$2<ex>*</ex></ph> <ph name="LINK_BEGIN">&lt;a href="$3<ex>https://support.google.com/chromebook/?p=multidevice</ex>" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that the exact set of features available to users differs according to the device model used.">
-    <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Features vary by device
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FOOTNOTE" desc="Footnote for multi-device feature setup page, which indicates that new features may be added, and the exact set of features available to users differs according to the device model used.">
+    <ph name="FOOTNOTE_POINTER">$1<ex>*</ex></ph>Offer new features as they become available, and features vary by device
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SINGLE_DEVICE_HEADER" desc="Label appearing over the name of an Android phone which this Chromebook can connect to.">
     Device detected
@@ -99,16 +99,13 @@
     <ph name="DEVICE_NAME">$1<ex>Pixel 2</ex></ph> (offline)
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_FEATURE_LIST_HEADER" desc="Header to introduce a list of the features that the user is agreeing to in the multi-device setup.">
-    When you connect your devices, you agree that your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> can:
+    By connecting your phone, you can:
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_AWM_DESCRIPTION" desc="Description of a feature that shows text messages received by the user's phone as notification on their Chromebook and a link to an information page.">
     Send you notifications and default to remembering this computer for Messages. <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://support.google.com/chromebook/?p=messages</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_MIRROR_PHONE_NOTIFICATIONS" desc="Tell the user that Better Together can automatically mirror notifications from their phone to their Chromebook.">
     Mirror notifications from your phone
-  </message>
-  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC" desc="Description of a feature that syncs Wi-Fi network configurations between ChromeOS devices and a connected Android phone">
-    Sync Wi-Fi networks with your phone
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_CAMERA_ROLL" desc="Description of a feature that allows user to download most recent items in camera roll on the connected Android phone">
     Access your phone's camera roll
@@ -118,6 +115,30 @@
   </message>
   <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_ADD_FEATURES" desc="Tell the user that Better Together can offer to add new features to that use their phone's connection to their Chromebook">
     Offer new features as they become available
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_PHONE_HUB_TITLE" desc="Name of a feature. Phone Hub allows a user to view their phone's photos, notifications, and apps. It also allows them to reply to messages recieved on the phone.">
+    Phone Hub
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_PHONE_HUB_DESCRIPTION" desc="Description of a feature that allows a user to view their phone's photos, notifications, and apps. It also allows them to reply to messages recieved on the phone.">
+    View your phone's photos and apps. Quickly reply to messaging notifications.
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SMART_LOCK_TITLE" desc="Name of a feature. This feature allows users to unlock their Chromebook from their phone if they're logged in.">
+    Smart Lock
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_SMART_LOCK_DESCRIPTION" desc="Description of a feature that allows a user to unlock their Chromebook using a connected Android phone.">
+    Use your phone to unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC_TITLE" desc="Name of a feature. Wi-Fi Sync allows user to sync network configurations between ChromeOS devices and a connected Android phone.">
+    Wi-Fi Sync
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_WIFI_SYNC_DESCRIPTION" desc="Description of a feature that syncs Wi-Fi network configurations between ChromeOS devices and a connected Android phone.">
+    Share Wi-Fi settings between your devices.
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTANT_TETHERING_TITLE" desc="Name of a feature. This feature automatically offers the user to tether to their phone if their Chromebook is offline and their phone supports tethering.">
+    Instant Tethering
+  </message>
+  <message name="IDS_MULTIDEVICE_SETUP_START_SETUP_PAGE_INSTANT_TETHERING_DESCRIPTION" desc="Description of a feature that allows a user to connect to their phone's hotspot from their Chromebook.">
+    Automatically connect to your phone's hotspot.
   </message>
 
   <!-- Update Screen Strings -->

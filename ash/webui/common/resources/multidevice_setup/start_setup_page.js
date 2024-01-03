@@ -118,11 +118,11 @@ Polymer({
     },
 
     /** @private */
-    phoneHubCameraRollEnabled_: {
+    phoneHubEnabled_: {
       type: Boolean,
       value() {
-        return loadTimeData.valueExists('phoneHubCameraRollEnabled') &&
-            loadTimeData.getBoolean('phoneHubCameraRollEnabled');
+        return loadTimeData.valueExists('phoneHubEnabled') &&
+            loadTimeData.getBoolean('phoneHubEnabled');
       },
     },
 
@@ -176,8 +176,6 @@ Polymer({
     this.addWebUIListener(
         'multidevice_setup.initializeSetupFlow',
         () => this.initializeSetupFlow_());
-
-    this.addAccessibilityLabel_();
   },
 
   /**
@@ -193,23 +191,11 @@ Polymer({
   },
 
   /**
-   * Since web links cannot be opened in OOBE as there is no web browser, this
-   * attaches a listener to open a webview modal in OOBE when "Learn More" links
-   * are clicked.
+   * If the user used Quick Start, this method retrieves and sets the ID of the
+   * phone a user used to complete the flow earlier in OOBE.
    * @private
    */
   initializeSetupFlow_() {
-    // The "Learn More" links are inside a grdp string, so we cannot actually
-    // add an onclick handler directly to the html. Instead, grab the two and
-    // manaully add onclick handlers.
-    const helpArticleLinks = [
-      this.$$('#multidevice-summary-message a'),
-    ];
-    for (let i = 0; i < helpArticleLinks.length; i++) {
-      helpArticleLinks[i].onclick = this.fire.bind(
-          this, 'open-learn-more-webview-requested', helpArticleLinks[i].href);
-    }
-
     this.mojoInterfaceProvider_.getMojoServiceRemote()
         .getQuickStartPhoneInstanceID()
         .then(({qsPhoneInstanceId}) => {
@@ -222,23 +208,6 @@ Polymer({
         .catch((error) => {
           console.warn('Mojo service failure: ' + error);
         });
-  },
-
-  /**
-   * Adds ARIA description to "Learn More" links since the link tag is embedded
-   * in the grdp string without additional attributes.
-   * @private
-   */
-  addAccessibilityLabel_() {
-    // Since the "Learn More" links are inside a grdp string, we add the
-    // attribute here.
-    const helpArticleLinks = [
-      this.$$('#multidevice-summary-message a'),
-    ];
-    for (let i = 0; i < helpArticleLinks.length; i++) {
-      helpArticleLinks[i].setAttribute(
-          'aria-describedby', 'multidevice-summary-message');
-    }
   },
 
   /**
