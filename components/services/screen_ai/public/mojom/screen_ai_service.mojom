@@ -45,6 +45,9 @@ struct WordBox {
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
+
+  // This word is separated from next word by space.
+  bool has_space_after;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI

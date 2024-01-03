@@ -580,6 +580,7 @@ mojom::VisualAnnotationPtr ConvertProtoToVisualAnnotation(
       word_box->word = word.utf8_string();
       word_box->dictionary_word = word.dictionary_word();
       word_box->language = word.language();
+      word_box->has_space_after = word.has_space_after();
       line_box->words.push_back(std::move(word_box));
     }
     annotation->lines.push_back(std::move(line_box));
