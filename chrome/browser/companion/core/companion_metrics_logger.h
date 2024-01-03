@@ -153,6 +153,10 @@ class CompanionMetricsLogger {
   // Logging method corresponding to visual query suggestions.
   void OnVisualSuggestionsResult(const VisualSuggestionsMetrics& metrics);
 
+  // Logging method corresponding to `OnServerSideUrlFilterEvent`
+  // in companion.mojom.
+  void OnServerSideUrlFilterEvent();
+
  private:
   // Meant to be called at destruction. Flushes the UKM metrics.
   void FlushStats();

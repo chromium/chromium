@@ -117,6 +117,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Companion.ServerSideUrlFilterEvent" enum="Boolean"
+    expires_after="2024-04-28">
+  <owner>srna@google.com</owner>
+  <owner>src/chrome/browser/companion/OWNERS</owner>
+  <summary>
+    Records that a URL was excluded from VQS triggering due to pXLQ or
+    pornography signals from Diner. Recorded after URL RPC check and before VQS
+    rendering.
+  </summary>
+</histogram>
+
 <histogram name="Companion.SidePanel.OpenTrigger" enum="SidePanelOpenTrigger"
     expires_after="2024-06-30">
   <owner>shaktisahu@chromium.org</owner>
