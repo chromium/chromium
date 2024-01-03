@@ -10,7 +10,26 @@
 
 import type {ActionFactory} from '../../lib/base_store.js';
 
-import {promisify} from './api.js';
+/**
+ * Calls the `fn` function which should expect the callback as last argument.
+ *
+ * Resolves with the result of the `fn`.
+ *
+ * Rejects if there is `chrome.runtime.lastError`.
+ */
+export async function promisify<T>(fn: Function, ...args: any[]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const callback = (result: T) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError.message);
+      } else {
+        resolve(result);
+      }
+    };
+
+    fn(...args, callback);
+  });
+}
 
 export function iconSetToCSSBackgroundImageValue(
     iconSet: chrome.fileManagerPrivate.IconSet): string {
