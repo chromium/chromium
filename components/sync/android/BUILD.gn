@@ -11,6 +11,7 @@ generate_jni("jni_headers") {
 }
 
 android_library("sync_java") {
+  public_deps = [ ":explicit_passphrase_platform_client_interface_java" ]
   deps = [
     "//base:base_java",
     "//components/signin/public/android:java",
@@ -25,6 +26,16 @@ android_library("sync_java") {
     "java/src/org/chromium/components/sync/Passphrase.java",
     "java/src/org/chromium/components/sync/SyncService.java",
     "java/src/org/chromium/components/sync/SyncServiceImpl.java",
+  ]
+}
+
+android_library("explicit_passphrase_platform_client_interface_java") {
+  sources = [ "java/src/org/chromium/components/sync/ExplicitPassphrasePlatformClient.java" ]
+
+  # Public because CoreAccountInfo and NigoriKey are in the API.
+  public_deps = [
+    "//components/signin/public/android:java",
+    "//components/sync/protocol:protocol_java",
   ]
 }
 
