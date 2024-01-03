@@ -4225,6 +4225,38 @@ void MediaStreamManager::GetZoomLevel(
 
   controller->GetZoomLevel(std::move(callback));
 }
+
+void MediaStreamManager::SetZoomLevel(
+    GlobalRenderFrameHostId capturer_rfh_id,
+    const base::UnguessableToken& session_id,
+    int zoom_level,
+    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  DeviceRequest* const request = FindRequestByVideoSessionId(session_id);
+  if (!request) {
+    std::move(callback).Run(blink::mojom::CapturedSurfaceControlResult::
+                                kCapturedSurfaceNotFoundError);
+    return;
+  }
+  if (request->requesting_render_frame_host_id != capturer_rfh_id) {
+    std::move(callback).Run(
+        blink::mojom::CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  CapturedSurfaceController* const controller =
+      request->GetCapturedSurfaceController();
+  if (!controller) {
+    std::move(callback).Run(
+        blink::mojom::CapturedSurfaceControlResult::kUnknownError);
+    return;
+  }
+
+  controller->SetZoomLevel(zoom_level, std::move(callback));
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void MediaStreamManager::RegisterDispatcherHost(

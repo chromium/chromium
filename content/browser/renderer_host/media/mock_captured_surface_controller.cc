@@ -45,4 +45,20 @@ void MockCapturedSurfaceController::GetZoomLevel(
       .Run(get_zoom_level_result.first, get_zoom_level_result.second);
 }
 
+void MockCapturedSurfaceController::SetSetZoomLevelResponse(
+    blink::mojom::CapturedSurfaceControlResult set_zoom_level_result) {
+  set_zoom_level_result_ = set_zoom_level_result;
+}
+
+void MockCapturedSurfaceController::SetZoomLevel(
+    int zoom_level,
+    base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+        reply_callback) {
+  CHECK(set_zoom_level_result_);
+  const blink::mojom::CapturedSurfaceControlResult set_zoom_level_result =
+      *set_zoom_level_result_;
+  set_zoom_level_result_ = absl::nullopt;
+  std::move(reply_callback).Run(set_zoom_level_result);
+}
+
 }  // namespace content

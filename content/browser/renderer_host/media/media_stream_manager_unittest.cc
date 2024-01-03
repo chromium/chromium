@@ -384,6 +384,7 @@ blink::StreamControls GetAudioStreamControls(std::string hmac_device_id) {
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
   kGetZoomLevel,
+  kSetZoomLevel,
 };
 
 // Make an arbitrary valid CapturedWheelAction.
@@ -1887,6 +1888,8 @@ class MediaStreamManagerCapturedSurfaceControlTest
               CapturedSurfaceControlResult::kSuccess);
           captured_surface_controller->SetGetZoomLevelResponse(
               100, CapturedSurfaceControlResult::kSuccess);
+          captured_surface_controller->SetSetZoomLevelResponse(
+              CapturedSurfaceControlResult::kSuccess);
           return base::WrapUnique<CapturedSurfaceController>(
               captured_surface_controller.release());
         }));
@@ -1931,6 +1934,14 @@ class MediaStreamManagerCapturedSurfaceControlTest
         MakeGetZoomLevelCallback());
   }
 
+  void SetZoomLevel(
+      GlobalRenderFrameHostId gdm_rfhid,
+      absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
+    media_stream_manager_->SetZoomLevel(
+        gdm_rfhid, session_id.value_or(video_device_.session_id()), 100,
+        MakeCallback());
+  }
+
   void RunTestedAction(
       GlobalRenderFrameHostId gdm_rfhid,
       absl::optional<base::UnguessableToken> session_id = absl::nullopt) {
@@ -1941,6 +1952,10 @@ class MediaStreamManagerCapturedSurfaceControlTest
       }
       case CapturedSurfaceControlAPI::kGetZoomLevel: {
         GetZoomLevel(gdm_rfhid, session_id);
+        return;
+      }
+      case CapturedSurfaceControlAPI::kSetZoomLevel: {
+        SetZoomLevel(gdm_rfhid, session_id);
         return;
       }
     }
@@ -1959,7 +1974,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     MediaStreamManagerCapturedSurfaceControlTest,
     testing::Values(CapturedSurfaceControlAPI::kSendWheel,
-                    CapturedSurfaceControlAPI::kGetZoomLevel));
+                    CapturedSurfaceControlAPI::kGetZoomLevel,
+                    CapturedSurfaceControlAPI::kSetZoomLevel));
 
 TEST_P(MediaStreamManagerCapturedSurfaceControlTest, SuccessfulIfValid) {
   SCOPED_TRACE("SuccessfulIfValid");

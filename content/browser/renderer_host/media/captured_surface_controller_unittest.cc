@@ -152,6 +152,33 @@ TEST_F(CapturedSurfaceControllerTestBase, GetZoomLevelUnknownError) {
   run_loop.Run();
 }
 
+class SetZoomLevelTest : public CapturedSurfaceControllerTestBase,
+                         public ::testing::WithParamInterface<int> {
+ public:
+  SetZoomLevelTest() : zoom_level_(GetParam()) {}
+  const int zoom_level_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SetZoomLevelTest,
+    ::testing::Values(
+        static_cast<int>(std::ceil(100 * blink::kMinimumPageZoomFactor)),
+        static_cast<int>(std::floor(100 * blink::kMaximumPageZoomFactor))));
+
+TEST_P(SetZoomLevelTest, SetZoomLevelSuccess) {
+  permission_manager_->SetPermissionResult(CSCPermissionResult::kGranted);
+  base::RunLoop run_loop;
+  controller_->SetZoomLevel(
+      zoom_level_, MakeCallbackExpectingResult(&run_loop, CSCResult::kSuccess));
+  run_loop.Run();
+
+  EXPECT_EQ(zoom_level_,
+            std::round(100 * blink::PageZoomLevelToZoomFactor(
+                                 content::HostZoomMap::GetZoomLevel(
+                                     captured_wc_.get()))));
+}
+
 enum class CapturedSurfaceControlAPI {
   kSendWheel,
   kSetZoomLevel,

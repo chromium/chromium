@@ -736,20 +736,8 @@ void MediaStreamDispatcherHost::SetZoomLevel(
     return;
   }
 
-  const GlobalRenderFrameHostId captured_id =
-      media_stream_manager_->video_capture_manager()
-          ->GetGlobalRenderFrameHostId(device_id);
-  if (!captured_id) {
-    // Either the capture session has ended, or the capture was not of a tab.
-    // Note that this is not a BadMessage, because the session might have
-    // ended asynchronously.
-    std::move(callback).Run(
-        CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError);
-    return;
-  }
-
-  // TODO(crbug.com/1466247): Implement (with a permission prompt).
-  std::move(callback).Run(CapturedSurfaceControlResult::kUnknownError);
+  media_stream_manager_->SetZoomLevel(render_frame_host_id_, device_id,
+                                      zoom_level, std::move(callback));
 }
 
 void MediaStreamDispatcherHost::OnSubCaptureTargetValidationComplete(

@@ -53,7 +53,7 @@ class CONTENT_EXPORT CapturedSurfaceController {
           blink::mojom::CapturedSurfaceControlResult result)> reply_callback);
 
   // Set the zoom level of the captured tab.
-  void SetZoomLevel(
+  virtual void SetZoomLevel(
       int zoom_level,
       base::OnceCallback<void(CapturedSurfaceControlResult)> reply_callback);
 

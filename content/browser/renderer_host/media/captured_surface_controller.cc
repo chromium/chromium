@@ -69,11 +69,13 @@ CapturedSurfaceControlResult DoSetZoomLevel(WebContentsMediaCaptureId wc_id,
 
   RenderFrameHost* const rfh = RenderFrameHost::FromID(
       wc_id.render_process_id, wc_id.main_render_frame_id);
-  if (!rfh) {
+  WebContents* const captured_wc = WebContents::FromRenderFrameHost(rfh);
+  if (!captured_wc) {
     return CapturedSurfaceControlResult::kCapturedSurfaceNotFoundError;
   }
-
-  // TODO(crbug.com/1466247): Implement.
+  content::HostZoomMap::SetZoomLevel(
+      captured_wc,
+      blink::PageZoomFactorToZoomLevel(static_cast<double>(zoom_level) / 100));
   return CapturedSurfaceControlResult::kSuccess;
 }
 

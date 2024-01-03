@@ -36,11 +36,21 @@ class MockCapturedSurfaceController final : public CapturedSurfaceController {
                          blink::mojom::CapturedSurfaceControlResult result)>
                         reply_callback) override;
 
+  void SetSetZoomLevelResponse(
+      blink::mojom::CapturedSurfaceControlResult set_zoom_level_result);
+
+  void SetZoomLevel(
+      int zoom_level,
+      base::OnceCallback<void(blink::mojom::CapturedSurfaceControlResult)>
+          reply_callback) override;
+
  private:
   absl::optional<blink::mojom::CapturedSurfaceControlResult> send_wheel_result_;
   absl::optional<std::pair<absl::optional<int>,
                            blink::mojom::CapturedSurfaceControlResult>>
       get_zoom_level_result_;
+  absl::optional<blink::mojom::CapturedSurfaceControlResult>
+      set_zoom_level_result_;
 };
 
 }  // namespace content
