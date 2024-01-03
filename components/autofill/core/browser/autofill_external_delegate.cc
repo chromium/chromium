@@ -992,12 +992,11 @@ void AutofillExternalDelegate::FillFieldByFieldFillingSuggestion(
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(
     const AutofillProfile& profile,
     const Suggestion& suggestion) {
-  if (const std::optional<std::pair<std::u16string, FieldType>>
-          filling_value_and_type = GetFillingValueAndTypeForProfile(
-              profile, manager_->app_locale(),
-              AutofillType(*suggestion.field_by_field_filling_type_used),
-              query_field_, manager_->client().GetAddressNormalizer())) {
-    const auto& [filling_value, filling_type] = *filling_value_and_type;
+  const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
+      profile, manager_->app_locale(),
+      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
+      manager_->client().GetAddressNormalizer());
+  if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kPreview, mojom::TextReplacement::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.popup_item_id);
@@ -1051,12 +1050,11 @@ void AutofillExternalDelegate::FillAddressFieldByFieldFillingSuggestion(
                                                          ->section] = {
       autofill_trigger_field->Type().GetStorableType()};
 
-  if (const std::optional<std::pair<std::u16string, FieldType>>
-          filling_value_and_type = GetFillingValueAndTypeForProfile(
-              profile, manager_->app_locale(),
-              AutofillType(*suggestion.field_by_field_filling_type_used),
-              query_field_, manager_->client().GetAddressNormalizer())) {
-    const auto& [filling_value, filling_type] = *filling_value_and_type;
+  const auto& [filling_value, filling_type] = GetFillingValueAndTypeForProfile(
+      profile, manager_->app_locale(),
+      AutofillType(*suggestion.field_by_field_filling_type_used), query_field_,
+      manager_->client().GetAddressNormalizer());
+  if (!filling_value.empty()) {
     manager_->FillOrPreviewField(
         mojom::ActionPersistence::kFill, mojom::TextReplacement::kReplaceAll,
         query_form_, query_field_, filling_value, suggestion.popup_item_id);

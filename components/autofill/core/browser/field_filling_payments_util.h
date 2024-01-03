@@ -18,8 +18,9 @@ class CreditCard;
 struct FormFieldData;
 
 // Returns the appropriate `credit_card` value based on `field_type` to fill
-// into `field`, and nullopt if no value could be found for the given `field`.
-std::optional<std::u16string> GetFillingValueForCreditCard(
+// into `field`, and an empty string if no value could be found for the given
+// `field`.
+std::u16string GetFillingValueForCreditCard(
     const CreditCard& credit_card,
     const std::u16string& cvc,
     const std::string& app_locale,

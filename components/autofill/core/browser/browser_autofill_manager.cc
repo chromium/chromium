@@ -3159,13 +3159,11 @@ bool BrowserAutofillManager::FillField(
                 *absl::get<const AutofillProfile*>(profile_or_credit_card),
                 app_locale_, autofill_field.Type(), field_data,
                 client().GetAddressNormalizer(), failure_to_fill)
-                .value_or(std::make_pair(u"", UNKNOWN_TYPE))
           : std::make_pair(
                 GetFillingValueForCreditCard(
                     *absl::get<const CreditCard*>(profile_or_credit_card), cvc,
                     app_locale_, action_persistence, autofill_field,
-                    failure_to_fill)
-                    .value_or(u""),
+                    failure_to_fill),
                 autofill_field.Type().GetStorableType());
 
   // Do not attempt to fill empty values as it would skew the metrics.
