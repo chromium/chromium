@@ -10,6 +10,8 @@
 using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
 using chromeos::mojo_service_manager::mojom::ServiceState;
 
+namespace media {
+
 std::unique_ptr<MojoServiceManagerObserver> MojoServiceManagerObserver::Create(
     const std::string& service_name,
     base::RepeatingClosure on_register_callback,
@@ -48,11 +50,13 @@ void MojoServiceManagerObserver::OnServiceEvent(
 
   switch (event->type) {
     case chromeos::mojo_service_manager::mojom::ServiceEvent::Type::kRegistered:
+      LOG(WARNING) << service_name_ << " is registered.";
       on_register_callback_.Run();
       return;
 
     case chromeos::mojo_service_manager::mojom::ServiceEvent::Type::
         kUnRegistered:
+      LOG(WARNING) << service_name_ << " is unregistered.";
       on_unregister_callback_.Run();
       return;
 
@@ -68,10 +72,13 @@ void MojoServiceManagerObserver::QueryCallback(
     case ErrorOrServiceState::Tag::kState:
       switch (result->get_state()->which()) {
         case ServiceState::Tag::kRegisteredState:
+          LOG(WARNING) << service_name_ << " has been registered during query.";
           on_register_callback_.Run();
           break;
 
         case ServiceState::Tag::kUnregisteredState:
+          LOG(WARNING) << service_name_
+                       << " has not been registered during query.";
           break;
 
         case ServiceState::Tag::kDefaultType:
@@ -89,3 +96,5 @@ void MojoServiceManagerObserver::QueryCallback(
       break;
   }
 }
+
+}  // namespace media

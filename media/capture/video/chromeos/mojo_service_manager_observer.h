@@ -10,6 +10,7 @@
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+namespace media {
 // MojoServiceManagerObserver is used to observe the service state of the mojo
 // service which can be requested from mojo service manager.
 // Its construction and destruction have to be on the ui thread.
@@ -68,5 +69,7 @@ class MojoServiceManagerObserver
 
   base::WeakPtrFactory<MojoServiceManagerObserver> weak_ptr_factory_{this};
 };
+
+}  // namespace media
 
 #endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_MOJO_SERVICE_MANAGER_OBSERVER_H_

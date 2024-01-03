@@ -42,9 +42,6 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
-using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
-using chromeos::mojo_service_manager::mojom::ServiceState;
-
 namespace media {
 
 namespace {
@@ -679,7 +676,8 @@ void CameraHalDispatcherImpl::GetCameraSWPrivacySwitchStateOnProxyThread(
         callback) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   if (!camera_service_.is_bound()) {
-    LOG(ERROR) << "Camera HAL server is not registered";
+    LOG(ERROR) << "CameraHalDispatcherImpl has not connected to cros_camera "
+                  "service yet.";
     std::move(callback).Run(cros::mojom::CameraPrivacySwitchState::UNKNOWN);
     return;
   }
@@ -690,7 +688,8 @@ void CameraHalDispatcherImpl::SetCameraSWPrivacySwitchStateOnProxyThread(
     cros::mojom::CameraPrivacySwitchState state) {
   DCHECK(proxy_task_runner_->BelongsToCurrentThread());
   if (!camera_service_.is_bound()) {
-    LOG(ERROR) << "Camera HAL server is not registered";
+    LOG(ERROR) << "CameraHalDispatcherImpl has not connected to cros_camera "
+                  "service yet.";
     return;
   }
   camera_service_->SetCameraSWPrivacySwitchState(state);
