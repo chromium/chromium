@@ -67,13 +67,12 @@ void AddToHomescreenMediator::StartForAppBanner(
   // initialization.
   event_callback_.Run(AddToHomescreenInstaller::Event::UI_SHOWN, *params_);
 
-  if (params_->app_type == AddToHomescreenParams::AppType::NATIVE) {
+  if (params_->app_type == AppType::NATIVE) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_AddToHomescreenMediator_setNativeAppInfo(env, java_ref_,
                                                   params_->native_app_data);
   } else {
-    bool is_webapk =
-        (params_->app_type == AddToHomescreenParams::AppType::WEBAPK);
+    bool is_webapk = (params_->app_type == AppType::WEBAPK);
     SetWebAppInfo(params_->shortcut_info->name, params_->shortcut_info->url,
                   is_webapk);
   }
@@ -102,14 +101,22 @@ void AddToHomescreenMediator::StartForAppMenu(
 
 void AddToHomescreenMediator::AddToHomescreen(
     JNIEnv* env,
-    const JavaParamRef<jstring>& j_user_title) {
-  if (!params_ || GetWebContents() == nullptr)
+    const JavaParamRef<jstring>& j_user_title,
+    jint j_app_type) {
+  if (!params_ || GetWebContents() == nullptr) {
     return;
+  }
+  AppType selected_app_type = static_cast<AppType>(j_app_type);
+  if (params_->app_type != selected_app_type) {
+    CHECK(selected_app_type == AppType::SHORTCUT &&
+          params_->app_type == AppType::WEBAPK);
+    params_->app_type = selected_app_type;
+  }
 
-  if (params_->app_type == AddToHomescreenParams::AppType::SHORTCUT) {
+  if (params_->app_type == AppType::SHORTCUT) {
     params_->shortcut_info->user_title =
         base::android::ConvertJavaStringToUTF16(env, j_user_title);
-  } else if (params_->app_type == AddToHomescreenParams::AppType::WEBAPK) {
+  } else if (params_->app_type == AppType::WEBAPK) {
     AppBannerManager* app_banner_manager =
         AppBannerManager::FromWebContents(GetWebContents());
     app_banner_manager->TrackInstallPath(/* bottom_sheet= */ false,
@@ -172,7 +179,7 @@ void AddToHomescreenMediator::OnUserTitleAvailable(
 void AddToHomescreenMediator::OnDataAvailable(
     const ShortcutInfo& info,
     const SkBitmap& display_icon,
-    AddToHomescreenParams::AppType app_type,
+    AppType app_type,
     const InstallableStatusCode status_code) {
   params_ = std::make_unique<AddToHomescreenParams>();
   params_->app_type = app_type;
@@ -185,7 +192,7 @@ void AddToHomescreenMediator::OnDataAvailable(
   SetIcon(display_icon);
 
   // Log what was shown in the App menu and what action was taken here.
-  bool is_webapk = params_->app_type == AddToHomescreenParams::AppType::WEBAPK;
+  bool is_webapk = params_->app_type == AppType::WEBAPK;
   auto entry = AppTypeToMenuEntry::kAppTypeFinalEntry;
 
   switch (app_menu_type_) {
@@ -215,8 +222,7 @@ void AddToHomescreenMediator::RecordEventForAppMenu(
     AddToHomescreenInstaller::Event event,
     const AddToHomescreenParams& a2hs_params) {
   content::WebContents* web_contents = GetWebContents();
-  if (!web_contents ||
-      a2hs_params.app_type == AddToHomescreenParams::AppType::NATIVE) {
+  if (!web_contents || a2hs_params.app_type == AppType::NATIVE) {
     return;
   }
 

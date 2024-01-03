@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
+import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.InstallTrigger;
 import org.chromium.components.webapps.R;
 import org.chromium.components.webapps.WebappInstallSource;
@@ -169,7 +170,7 @@ public class PwaBottomSheetController
     // AddToHomescreenViewDelegate:
 
     @Override
-    public void onAddToHomescreen(String title) {
+    public void onAddToHomescreen(String title, @AppType int type) {
         onAddToHomescreen();
     }
 
