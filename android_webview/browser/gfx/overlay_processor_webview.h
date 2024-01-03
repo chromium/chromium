@@ -7,7 +7,6 @@
 
 #include "android_webview/browser/gfx/display_scheduler_webview.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
@@ -39,9 +38,7 @@ class OverlayProcessorWebView : public viz::OverlayProcessorSurfaceControl,
     ~ScopedSurfaceControlAvailable();
 
    private:
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION OverlayProcessorWebView* processor_;
+    raw_ptr<OverlayProcessorWebView> processor_;
   };
 
   OverlayProcessorWebView(
