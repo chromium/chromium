@@ -945,20 +945,33 @@ TEST_F(PopupViewViewsTest, CellSubPopupResetAfterSuggestionsUpdates) {
       << "The cell's sub-popup should be closed.";
 }
 
-TEST_F(PopupViewViewsTest, NoSubPopupOpenIfNotEligible) {
-  controller().set_suggestions({
+// TODO(crbug.com/1515280): Enable on ChromeOS when test setup in the death
+// subprocess is fixed.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// `PopupViewViewsTest` is not used in death tests because it sets up a complex
+// environment (namely creates a `TestingProfile`) that fails to be created in
+// the sub-process (see `ASSERT_DEATH` doc for details). This fail hides
+// the real death reason to be tested.
+using PopupViewViewsDeathTest = ChromeViewsTestBase;
+TEST_F(PopupViewViewsDeathTest, OpenSubPopupWithNoChildrenCheckCrash) {
+  NiceMock<MockAutofillPopupController> controller;
+  controller.set_suggestions({
       // Regular suggestion with no children,
       Suggestion(u"Suggestion #1"),
       Suggestion(u"Suggestion #2"),
   });
-  CreateAndShowView();
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  std::unique_ptr<PopupViewViews> view =
+      std::make_unique<PopupViewViews>(controller.GetWeakPtr());
+  raw_ptr<PopupViewViews> view_ptr = widget->SetContentsView(std::move(view));
+  view_ptr->Show(AutoselectFirstSuggestion(false));
 
-  view().SetSelectedCell(CellIndex{0, CellType::kControl},
-                         PopupCellSelectionSource::kNonUserInput);
-  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
-  EXPECT_EQ(test_api(view()).GetOpenSubPopupRow(), std::nullopt)
-      << "Opening a sub-popup should happen.";
+  ASSERT_DEATH(
+      view_ptr->SetSelectedCell(CellIndex{0, CellType::kControl},
+                                PopupCellSelectionSource::kNonUserInput),
+      "can_open_sub_popup");
 }
+#endif
 
 TEST_F(PopupViewViewsTest, SubPopupHidingOnNoSelection) {
   ui::MouseEvent fake_event(ui::ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
@@ -1039,6 +1052,34 @@ TEST_F(PopupViewViewsTest, SubPopupOwnSelectionPreventsHiding) {
 
   EXPECT_NE(test_api(view()).GetOpenSubPopupRow(), std::nullopt);
   EXPECT_EQ(test_api(*sub_view).GetOpenSubPopupRow(), std::nullopt);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOpensWithNoAutoselectByMouse) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+  });
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(),
+              OpenSubPopup(_, _, AutoselectFirstSuggestion(false)));
+
+  view().SetSelectedCell(CellIndex{0, CellType::kControl},
+                         PopupCellSelectionSource::kMouse);
+  task_environment()->FastForwardBy(PopupViewViews::kMouseOpenSubPopupDelay);
+}
+
+TEST_F(PopupViewViewsTest, SubPopupOpensWithAutoselectByRightKey) {
+  controller().set_suggestions({
+      CreateSuggestionWithChildren({Suggestion(u"Child #1")}),
+  });
+  CreateAndShowView();
+
+  EXPECT_CALL(controller(),
+              OpenSubPopup(_, _, AutoselectFirstSuggestion(true)));
+
+  SimulateKeyPress(ui::VKEY_DOWN);
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  task_environment()->FastForwardBy(PopupViewViews::kNonMouseOpenSubPopupDelay);
 }
 
 // TODO(crbug.com/1489673): Enable once the view shows itself properly.
