@@ -111,7 +111,6 @@ void ReplaceSharedElementWithTexture(
 
   auto* texture_quad =
       target_render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  float vertex_opacity[] = {1.f, 1.f, 1.f, 1.f};
   texture_quad->SetNew(
       /*shared_quad_state=*/copied_quad_state,
       /*rect=*/shared_element_quad.rect,
@@ -122,7 +121,7 @@ void ReplaceSharedElementWithTexture(
       /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
       /*background_color=*/SkColors::kTransparent,
-      /*vertex_opacity=*/vertex_opacity, /*y_flipped=*/false,
+      /*y_flipped=*/false,
       /*nearest_neighbor=*/false,
       /*secure_output_only=*/false,
       /*protected_video_type=*/gfx::ProtectedVideoType::kClear);

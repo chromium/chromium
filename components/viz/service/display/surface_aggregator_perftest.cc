@@ -134,9 +134,11 @@ class SurfaceAggregatorPerfTest : public VizPerfTest {
         bool nearest_neighbor = false;
         quad->SetAll(sqs, rect, visible_rect, needs_blending, ResourceId(j),
                      gfx::Size(), premultiplied_alpha, uv_top_left,
-                     uv_bottom_right, background_color, vertex_opacity, flipped,
+                     uv_bottom_right, background_color, flipped,
                      nearest_neighbor, /*secure_output_only=*/false,
                      gfx::ProtectedVideoType::kClear);
+
+        quad->set_vertex_opacity(vertex_opacity);
       }
       sqs = pass->CreateAndAppendSharedQuadState();
       sqs->opacity = opacity;

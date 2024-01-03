@@ -374,7 +374,6 @@ void NinePatchGenerator::AppendQuads(
   client_resource_provider->ValidateResource(resource);
 #endif
 
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   constexpr bool flipped = false;
   constexpr bool premultiplied_alpha = true;
 
@@ -387,8 +386,8 @@ void NinePatchGenerator::AppendQuads(
       auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       quad->SetNew(shared_quad_state, output_rect, visible_rect, needs_blending,
                    resource, premultiplied_alpha, image_rect.origin(),
-                   image_rect.bottom_right(), SkColors::kTransparent,
-                   vertex_opacity, flipped, nearest_neighbor_,
+                   image_rect.bottom_right(), SkColors::kTransparent, flipped,
+                   nearest_neighbor_,
                    /*secure_output_only=*/false,
                    gfx::ProtectedVideoType::kClear);
     }

@@ -791,7 +791,6 @@ void VideoResourceUpdater::AppendQuads(
       bool premultiplied_alpha =
           frame_resource_type_ == VideoFrameResourceType::RGBA_PREMULTIPLIED;
 
-      float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
       bool flipped = !frame->metadata().texture_origin_is_top_left;
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
@@ -801,8 +800,8 @@ void VideoResourceUpdater::AppendQuads(
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
                            needs_blending, frame_resources_[0].id,
                            premultiplied_alpha, uv_top_left, uv_bottom_right,
-                           SkColors::kTransparent, opacity, flipped,
-                           nearest_neighbor, false, protected_video_type);
+                           SkColors::kTransparent, flipped, nearest_neighbor,
+                           false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
       // Set the is_stream_video flag for STREAM_TEXTURE. Is used downstream
       // (e.g. *_layer_overlay.cc).

@@ -1747,15 +1747,14 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       if (requires_texture_draw_quad) {
         viz::TextureDrawQuad* texture_quad =
             render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-        float vertex_opacity[4] = {1.0, 1.0, 1.0, 1.0};
-        texture_quad->SetNew(
-            quad_state, quad_rect, quad_rect,
-            /* needs_blending=*/!are_contents_opaque, current_resource_.id,
-            /* premultiplied*/ true, uv_crop.origin(), uv_crop.bottom_right(),
-            background_color, vertex_opacity,
-            /* flipped=*/false, /* nearest*/ false,
-            state_.basic_state.only_visible_on_secure_output,
-            gfx::ProtectedVideoType::kClear);
+        texture_quad->SetNew(quad_state, quad_rect, quad_rect,
+                             /* needs_blending=*/!are_contents_opaque,
+                             current_resource_.id,
+                             /* premultiplied*/ true, uv_crop.origin(),
+                             uv_crop.bottom_right(), background_color,
+                             /* flipped=*/false, /* nearest*/ false,
+                             state_.basic_state.only_visible_on_secure_output,
+                             gfx::ProtectedVideoType::kClear);
         if (current_resource_.is_overlay_candidate)
           texture_quad->set_resource_size_in_pixels(current_resource_.size);
 

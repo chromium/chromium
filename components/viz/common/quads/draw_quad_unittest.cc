@@ -297,7 +297,6 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool y_flipped = true;
   bool nearest_neighbor = true;
   bool secure_output_only = true;
@@ -307,8 +306,9 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
+  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(visible_rect, copy_quad->visible_rect);
   EXPECT_EQ(blending, copy_quad->needs_blending);
@@ -325,8 +325,8 @@ TEST(DrawQuadTest, CopyTextureDrawQuad) {
 
   CREATE_QUAD_ALL(TextureDrawQuad, resource_id, resource_size_in_pixels,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
   EXPECT_EQ(DrawQuad::Material::kTextureContent, copy_quad->material);
   EXPECT_EQ(resource_id, copy_quad->resource_id());
   EXPECT_EQ(resource_size_in_pixels, copy_quad->resource_size_in_pixels());
@@ -570,7 +570,6 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   bool premultiplied_alpha = true;
   gfx::PointF uv_top_left(0.5f, 224.f);
   gfx::PointF uv_bottom_right(51.5f, 260.f);
-  const float vertex_opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool y_flipped = true;
   bool nearest_neighbor = true;
   bool secure_output_only = true;
@@ -580,8 +579,8 @@ TEST_F(DrawQuadIteratorTest, TextureDrawQuad) {
   CREATE_SHARED_STATE();
   CREATE_QUAD_NEW(TextureDrawQuad, visible_rect, needs_blending, resource_id,
                   premultiplied_alpha, uv_top_left, uv_bottom_right,
-                  SkColors::kTransparent, vertex_opacity, y_flipped,
-                  nearest_neighbor, secure_output_only, protected_video_type);
+                  SkColors::kTransparent, y_flipped, nearest_neighbor,
+                  secure_output_only, protected_video_type);
   EXPECT_EQ(resource_id, quad_new->resource_id());
   EXPECT_EQ(1, IterateAndCount(quad_new));
   EXPECT_EQ(NextId(resource_id), quad_new->resource_id());

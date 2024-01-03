@@ -165,8 +165,9 @@ void UIResourceLayer::AppendQuads(viz::CompositorRenderPass& render_pass,
   quad->SetNew(quad_state, quad_state->quad_layer_rect,
                quad_state->visible_quad_layer_rect, needs_blending,
                viz_resource_id, kPremultiplied, uv_top_left(),
-               uv_bottom_right(), SkColors::kTransparent, vertex_opacity_,
-               kFlipped, kNearest, kSecureOutputOnly, kVideoType);
+               uv_bottom_right(), SkColors::kTransparent, kFlipped, kNearest,
+               kSecureOutputOnly, kVideoType);
+  quad->set_vertex_opacity(vertex_opacity_);
 }
 
 }  // namespace cc::slim

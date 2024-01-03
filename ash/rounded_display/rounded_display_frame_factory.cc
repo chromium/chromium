@@ -375,8 +375,6 @@ void RoundedDisplayFrameFactory::AppendQuad(
   viz::TextureDrawQuad* texture_quad =
       render_pass_out.CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
 
-  constexpr float kVertexOpacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-
   // Since a single gutter is created for the full layer and we re-render the
   // full texture making the quad_rect same as the layer_rect.
   const gfx::Rect& quad_rect = layer_rect;
@@ -389,7 +387,7 @@ void RoundedDisplayFrameFactory::AppendQuad(
       /*needs_blending=*/true, resource.id,
       /*premultiplied=*/true, /*uv_top_left=*/gfx::PointF(0, 0),
       /*uv_bottom_right=*/gfx::PointF(1, 1),
-      /*background=*/SkColors::kTransparent, kVertexOpacity,
+      /*background=*/SkColors::kTransparent,
       /*flipped=*/false,
       /*nearest=*/false,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear);

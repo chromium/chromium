@@ -124,15 +124,14 @@ void PaintedScrollbarLayerImpl::AppendQuads(
 
   if (thumb_resource_id && !visible_thumb_quad_rect.IsEmpty()) {
     bool needs_blending = true;
-    const float opacity[] = {painted_opacity_, painted_opacity_,
-                             painted_opacity_, painted_opacity_};
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
     quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
                  scaled_visible_thumb_quad_rect, needs_blending,
                  thumb_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
+    quad->set_vertex_opacity(painted_opacity_);
     ValidateQuadResources(quad);
   }
 
@@ -151,7 +150,7 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       visible_track_quad_rect, internal_contents_scale_);
   if (track_resource_id && !visible_track_quad_rect.IsEmpty()) {
     bool needs_blending = !contents_opaque();
-    float opacity[] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float opacity = 1.0f;
     if (IsFluentOverlayScrollbarEnabled()) {
       // Scale the opacity value linearly in function of the current thumb
       // thickness. When thickness scale factor is kIdleThickness, then the
@@ -163,17 +162,16 @@ void PaintedScrollbarLayerImpl::AppendQuads(
       const float opacity_scaled =
           (thumb_thickness_scale_factor() - GetIdleThicknessScale()) /
           (1.f - GetIdleThicknessScale());
-      for (auto& v : opacity) {
-        v = opacity_scaled;
-      }
+      opacity = opacity_scaled;
     }
     auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
     quad->SetNew(shared_quad_state, scaled_track_quad_rect,
                  scaled_visible_track_quad_rect, needs_blending,
                  track_resource_id, premultipled_alpha, uv_top_left,
-                 uv_bottom_right, SkColors::kTransparent, opacity, flipped,
+                 uv_bottom_right, SkColors::kTransparent, flipped,
                  nearest_neighbor, /*secure_output_only=*/false,
                  gfx::ProtectedVideoType::kClear);
+    quad->set_vertex_opacity(opacity);
     ValidateQuadResources(quad);
   }
 }

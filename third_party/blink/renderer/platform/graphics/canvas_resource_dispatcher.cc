@@ -297,8 +297,6 @@ bool CanvasResourceDispatcher::PrepareFrame(
   constexpr bool kPremultipliedAlpha = true;
   constexpr gfx::PointF uv_top_left(0.f, 0.f);
   constexpr gfx::PointF uv_bottom_right(1.f, 1.f);
-  constexpr float vertex_opacity[4] = {1.f, 1.f, 1.f, 1.f};
-
   // Accelerated resources have the origin of coordinates in the upper left
   // corner while canvases have it in the lower left corner. The DrawQuad is
   // marked as vertically flipped unless someone else has done the flip for us.
@@ -306,8 +304,8 @@ bool CanvasResourceDispatcher::PrepareFrame(
       SharedGpuContext::IsGpuCompositingEnabled() && needs_vertical_flip;
   quad->SetAll(sqs, bounds, bounds, needs_blending, resource_id,
                canvas_resource_size, kPremultipliedAlpha, uv_top_left,
-               uv_bottom_right, SkColors::kTransparent, vertex_opacity,
-               yflipped, nearest_neighbor, /*secure_output=*/false,
+               uv_bottom_right, SkColors::kTransparent, yflipped,
+               nearest_neighbor, /*secure_output=*/false,
                gfx::ProtectedVideoType::kClear);
   frame->render_pass_list.push_back(std::move(pass));
 

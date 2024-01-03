@@ -614,7 +614,6 @@ TextureDrawQuad* CreateCandidateQuadAt(
   bool premultiplied_alpha = false;
   bool flipped = false;
   bool nearest_neighbor = false;
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
       parent_resource_provider, child_resource_provider, child_context_provider,
@@ -623,8 +622,8 @@ TextureDrawQuad* CreateCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, vertex_opacity,
-                       flipped, nearest_neighbor, /*secure_output_only=*/false,
+                       kUVBottomRight, SkColors::kTransparent, flipped,
+                       nearest_neighbor, /*secure_output_only=*/false,
                        protected_video_type);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
@@ -701,7 +700,6 @@ TextureDrawQuad* CreateTransparentCandidateQuadAt(
   bool premultiplied_alpha = false;
   bool flipped = false;
   bool nearest_neighbor = false;
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   gfx::Size resource_size_in_pixels = rect.size();
   bool is_overlay_candidate = true;
   ResourceId resource_id = CreateResource(
@@ -711,8 +709,8 @@ TextureDrawQuad* CreateTransparentCandidateQuadAt(
   auto* overlay_quad = render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
   overlay_quad->SetNew(shared_quad_state, rect, rect, needs_blending,
                        resource_id, premultiplied_alpha, kUVTopLeft,
-                       kUVBottomRight, SkColors::kTransparent, vertex_opacity,
-                       flipped, nearest_neighbor, /*secure_output_only=*/false,
+                       kUVBottomRight, SkColors::kTransparent, flipped,
+                       nearest_neighbor, /*secure_output_only=*/false,
                        gfx::ProtectedVideoType::kClear);
   overlay_quad->set_resource_size_in_pixels(resource_size_in_pixels);
 
@@ -743,7 +741,6 @@ TextureDrawQuad* CreateQuadWithRoundedDisplayMasksAt(
   bool premultiplied_alpha = true;
   bool flipped = false;
   bool nearest_neighbor = false;
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   gfx::Size resource_size_in_pixels = rect.size();
   ResourceId resource_id = CreateResource(
       parent_resource_provider, child_resource_provider, child_context_provider,
@@ -753,7 +750,7 @@ TextureDrawQuad* CreateQuadWithRoundedDisplayMasksAt(
   overlay_quad->SetNew(
       shared_quad_state, rect, rect, needs_blending, resource_id,
       premultiplied_alpha, kUVTopLeft, kUVBottomRight, SkColors::kTransparent,
-      vertex_opacity, flipped, nearest_neighbor,
+      flipped, nearest_neighbor,
       /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
   overlay_quad->rounded_display_masks_info = rounded_display_masks_info;
 
@@ -1797,7 +1794,6 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
   const auto kCandidateRectA = gfx::Rect(0, 0, 16, 16);
   // Add a bigger quad below the previous one, but not occluded.
   const auto kCandidateRectB = gfx::Rect(20, 20, 16, 16);
-  float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   ResourceId resource_id_a =
       CreateResource(resource_provider_.get(), child_resource_provider_.get(),
                      child_provider_.get(), kCandidateRectA.size(),
@@ -1822,9 +1818,9 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     quad_small->SetNew(
         shared_quad_state_a, kCandidateRectA, kCandidateRectA,
         false /*needs_blending*/, resource_id_a, false /*premultiplied_alpha*/,
-        kUVTopLeft, kUVBottomRight, SkColors::kTransparent, vertex_opacity,
-        false /*flipped*/, false /*nearest_neighbor*/,
-        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
+        kUVTopLeft, kUVBottomRight, SkColors::kTransparent, false /*flipped*/,
+        false /*nearest_neighbor*/, false /*secure_output_only*/,
+        gfx::ProtectedVideoType::kClear);
     quad_small->set_resource_size_in_pixels(kCandidateRectA.size());
     AddExpectedRectToOverlayProcessor(gfx::RectF(kCandidateRectA));
 
@@ -1837,7 +1833,7 @@ TEST_F(SingleOverlayOnTopTest, StablePrioritizeIntervalFrame) {
     quad_big->SetNew(shared_quad_state_b, kCandidateRectB, kCandidateRectB,
                      false /*needs_blending*/, resource_id_b,
                      false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-                     SkColors::kTransparent, vertex_opacity, false /*flipped*/,
+                     SkColors::kTransparent, false /*flipped*/,
                      false /*nearest_neighbor*/, false /*secure_output_only*/,
                      gfx::ProtectedVideoType::kClear);
     quad_big->set_resource_size_in_pixels(kCandidateRectB.size());
@@ -3088,14 +3084,12 @@ TEST_F(ChangeSingleOnTopTest, DoNotPromoteIfContentsDontChange) {
     // Create a quad with the resource ID selected above.
     TextureDrawQuad* original_quad =
         main_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-    float vertex_opacity[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     original_quad->SetNew(
         pass->shared_quad_state_list.back(), pass->output_rect,
         pass->output_rect, false /*needs_blending*/, resource_id,
         false /*premultiplied_alpha*/, kUVTopLeft, kUVBottomRight,
-        SkColors::kTransparent, vertex_opacity, false /*flipped*/,
-        false /*nearest_neighbor*/, false /*secure_output_only*/,
-        gfx::ProtectedVideoType::kClear);
+        SkColors::kTransparent, false /*flipped*/, false /*nearest_neighbor*/,
+        false /*secure_output_only*/, gfx::ProtectedVideoType::kClear);
     original_quad->set_resource_size_in_pixels(pass->output_rect.size());
 
     // Add something behind it.
