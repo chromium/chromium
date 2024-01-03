@@ -7442,11 +7442,10 @@ const char kQuickOfficeForceFileDownloadDescription[] =
 const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";
 const char kChromeOSDirectVideoDecoderDescription[] =
     "Enables the hardware-accelerated ChromeOS direct media::VideoDecoder "
-    "implementation. Note that this might be entirely disallowed by the "
-    "--platform-disallows-chromeos-direct-video-decoder command line switch "
-    "which is added for platforms where said direct VideoDecoder does not work "
-    "or is not well tested (see the disable_cros_video_decoder USE flag in "
-    "ChromeOS). This flag is supported only on non-Intel and non-AMD devices.";
+    "implementation. This might be disabled on platforms where said direct "
+    "VideoDecoder does not work or is not well tested (see the "
+    "disable_cros_video_decoder USE flag in ChromeOS). This flag only has an "
+    "effect on non-Intel and non-AMD devices (i.e. on ARM-based SoCs).";
 #endif  // !BUILDFLAG(USE_VAAPI)
 const char kChromeOSHWVBREncodingName[] =
     "ChromeOS Hardware Variable Bitrate Encoding";
