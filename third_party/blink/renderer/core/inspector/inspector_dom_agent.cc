@@ -1797,7 +1797,10 @@ std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
     bool pierce,
     NodeToIdMap* nodes_map,
     protocol::Array<protocol::DOM::Node>* flatten_result) {
-  int id = Bind(node, nodes_map);
+  // If no `nodes_map` is provided, do the best effort to provide a node id,
+  // but do not create one if it's not there, since absence of the map implies
+  // we're not pushing the node to the front-end at the moment.
+  const int id = nodes_map ? Bind(node, nodes_map) : BoundNodeId(node);
   String local_name;
   String node_value;
 
