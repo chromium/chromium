@@ -34,7 +34,7 @@ public final class ViewResizerUtilTest {
         int expectedPadding = 20;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, /* minWidePaddingPixels= */ expectedPadding);
+                        mContext, null, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 
@@ -45,7 +45,7 @@ public final class ViewResizerUtilTest {
         int expectedPadding = 50;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, /* minWidePaddingPixels= */ 20);
+                        mContext, null, /* minWidePaddingPixels= */ 20);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 
@@ -57,7 +57,7 @@ public final class ViewResizerUtilTest {
         int expectedPadding = 60;
         int res =
                 ViewResizerUtil.computePaddingForWideDisplay(
-                        mContext, /* minWidePaddingPixels= */ expectedPadding);
+                        mContext, null, /* minWidePaddingPixels= */ expectedPadding);
         assertEquals("Padding is not as expected.", expectedPadding, res);
     }
 }

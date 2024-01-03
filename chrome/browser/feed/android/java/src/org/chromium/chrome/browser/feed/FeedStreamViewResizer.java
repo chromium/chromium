@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.BuildInfo;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -26,6 +27,7 @@ public class FeedStreamViewResizer extends ViewResizer {
     // The aspect ratio of large images or video previews, computed based on 1280:720.
     private static final float FEED_IMAGE_OR_VIDEO_ASPECT_RATIO = 1.778f;
 
+    private final View mView;
     private final Activity mActivity;
 
     /**
@@ -43,6 +45,7 @@ public class FeedStreamViewResizer extends ViewResizer {
             int defaultPaddingPixels,
             int minWidePaddingPixels) {
         super(view, config, defaultPaddingPixels, minWidePaddingPixels);
+        mView = view;
         mActivity = activity;
     }
 
@@ -125,8 +128,13 @@ public class FeedStreamViewResizer extends ViewResizer {
 
     private float getScreenWidth() {
         Resources resources = mUiConfig.getContext().getResources();
-        float dpToPx = resources.getDisplayMetrics().density;
-        float screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
+        float screenWidth;
+        if (BuildInfo.getInstance().isAutomotive && mView != null) {
+            screenWidth = mView.getMeasuredWidth();
+        } else {
+            float dpToPx = resources.getDisplayMetrics().density;
+            screenWidth = resources.getConfiguration().screenWidthDp * dpToPx;
+        }
         return screenWidth;
     }
 

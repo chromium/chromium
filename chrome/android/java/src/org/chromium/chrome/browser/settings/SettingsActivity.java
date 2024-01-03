@@ -273,7 +273,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @NonNull
     private Integer getItemOffset(DisplayStyle displayStyle) {
         if (displayStyle.isWide()) {
-            return ViewResizerUtil.computePaddingForWideDisplay(this, mMinWidePaddingPixels);
+            return ViewResizerUtil.computePaddingForWideDisplay(this, null, mMinWidePaddingPixels);
         }
         return 0;
     }
