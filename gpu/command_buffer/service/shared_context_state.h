@@ -174,7 +174,9 @@ class GPU_GLES2_EXPORT SharedContextState
   }
   GrContextType gr_context_type() const { return gr_context_type_; }
   // Handles Skia-reported shader compilation errors.
-  void compileError(const char* shader, const char* errors) override;
+  void compileError(const char* shader,
+                    const char* errors,
+                    bool shaderWasCached) override;
   gles2::FeatureInfo* feature_info() { return feature_info_.get(); }
   gles2::ContextState* context_state() const { return context_state_.get(); }
   bool context_lost() const { return !!context_lost_reason_; }
