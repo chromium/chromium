@@ -802,12 +802,13 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   auto iter = all_data_.find(local_cache_guid_);
   DCHECK(iter != all_data_.end());
 
+  std::unique_ptr<DeviceInfo> local_device_info =
+      SpecificsToModel(*iter->second);
   local_device_info_provider_->Initialize(
       local_cache_guid_, GetLocalClientName(),
       local_device_name_info_.manufacturer_name,
       local_device_name_info_.model_name,
-      local_device_name_info_.full_hardware_class,
-      SpecificsToModel(*iter->second));
+      local_device_name_info_.full_hardware_class, local_device_info.get());
 
   // This probably isn't strictly needed, but in case the cache_guid has changed
   // we save the new one to prefs.
