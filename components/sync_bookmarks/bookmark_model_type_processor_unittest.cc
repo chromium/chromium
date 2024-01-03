@@ -248,10 +248,10 @@ class ProxyCommitQueue : public syncer::CommitQueue {
 class BookmarkModelTypeProcessorTest : public testing::Test {
  public:
   BookmarkModelTypeProcessorTest()
-      : processor_(std::make_unique<BookmarkModelTypeProcessor>(
+      : bookmark_model_(std::make_unique<TestBookmarkModelView>()),
+        processor_(std::make_unique<BookmarkModelTypeProcessor>(
             &bookmark_undo_service_,
-            syncer::WipeModelUponSyncDisabledBehavior::kNever)),
-        bookmark_model_(std::make_unique<TestBookmarkModelView>()) {
+            syncer::WipeModelUponSyncDisabledBehavior::kNever)) {
     processor_->SetFaviconService(&favicon_service_);
   }
 
@@ -370,8 +370,10 @@ class BookmarkModelTypeProcessorTest : public testing::Test {
   BookmarkUndoService bookmark_undo_service_;
   NiceMock<favicon::MockFaviconService> favicon_service_;
   NiceMock<syncer::MockCommitQueue> mock_commit_queue_;
-  std::unique_ptr<BookmarkModelTypeProcessor> processor_;
   std::unique_ptr<TestBookmarkModelView> bookmark_model_;
+  // `processor_` might hold a raw_ptr to `bookmark_model_`. It should be
+  // destroyed first to avoid holding a briefly dangling pointer.
+  std::unique_ptr<BookmarkModelTypeProcessor> processor_;
 };
 
 TEST_F(BookmarkModelTypeProcessorTest, ShouldDoInitialMergeWithZeroBookmarks) {
