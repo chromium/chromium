@@ -363,17 +363,6 @@ chromium-metrics-reviews@google.com.
       label="The reporter was destroyed, likely on page navigation or close."/>
 </enum>
 
-<enum name="WebAppMoverResult">
-  <summary>Result of executing the WebAppMover on Chrome startup.</summary>
-  <int value="0" label="Invalid Finch Configuration"/>
-  <int value="1" label="App-to-install already installed"/>
-  <int value="2" label="Apps-to-uninstall not installed"/>
-  <int value="3" label="App-to-install is not installable"/>
-  <int value="4" label="Failure during uninstall"/>
-  <int value="5" label="Failure during install"/>
-  <int value="6" label="Success"/>
-</enum>
-
 <enum name="WebAppOpenMode">
   <int value="0" label="kInWindowOther">
     Launched installed web app in standalone window by any method other than
