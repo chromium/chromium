@@ -124,7 +124,7 @@ void HandleImageUrlResponse(
 
 }  // namespace
 
-ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_GetForProfile(
+ScopedJavaLocalRef<jobject> JNI_BookmarkBridge_NativeGetForProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

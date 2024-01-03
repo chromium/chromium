@@ -60,7 +60,7 @@ class BookmarkBridge {
      */
     static BookmarkModel getForProfile(Profile profile) {
         ThreadUtils.assertOnUiThread();
-        return BookmarkBridgeJni.get().getForProfile(profile);
+        return BookmarkBridgeJni.get().nativeGetForProfile(profile);
     }
 
     @CalledByNative
@@ -860,7 +860,8 @@ class BookmarkBridge {
     }
 
     @CalledByNative
-    private void bookmarkModelLoaded() {
+    @VisibleForTesting
+    void bookmarkModelLoaded() {
         mIsNativeBookmarkModelLoaded = true;
         notifyBookmarkModelLoaded();
     }
@@ -1008,7 +1009,7 @@ class BookmarkBridge {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        BookmarkModel getForProfile(Profile profile);
+        BookmarkModel nativeGetForProfile(Profile profile);
 
         void getImageUrlForBookmark(long nativeBookmarkBridge, GURL url, Callback<GURL> callback);
 
@@ -1024,6 +1025,7 @@ class BookmarkBridge {
 
         BookmarkId getDefaultReadingListFolder(long nativeBookmarkBridge);
 
+        // TODO(crbug.com/1515332): Remove this method.
         void getAllFoldersWithDepths(
                 long nativeBookmarkBridge, List<BookmarkId> folderList, List<Integer> depthList);
 
@@ -1061,6 +1063,7 @@ class BookmarkBridge {
 
         boolean doesBookmarkExist(long nativeBookmarkBridge, long id, int type);
 
+        // TODO(crbug.com/1515332): Remove this method.
         void getBookmarksForFolder(
                 long nativeBookmarkBridge, BookmarkId folderId, List<BookmarkItem> bookmarksList);
 
@@ -1079,7 +1082,7 @@ class BookmarkBridge {
                 int index);
 
         BookmarkId addBookmark(
-                long nativeBookmarkBridge, BookmarkId parent, int index, String title, GURL url);
+                long nativeBookmarkBridge, BookmarkId parentId, int index, String title, GURL url);
 
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkId parentId, String title, GURL url);
