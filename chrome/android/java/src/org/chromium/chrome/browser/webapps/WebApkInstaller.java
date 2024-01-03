@@ -11,15 +11,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
-import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder.WebApkUserTheme;
 import org.chromium.components.webapps.WebApkInstallResult;
-import org.chromium.ui.util.ColorUtils;
 
 /**
  * Java counterpart to webapk_installer.h
@@ -113,12 +110,6 @@ public class WebApkInstaller {
                                     fetchCallback);
                 };
         mInstallDelegate.installAsync(packageName, version, title, token, callback);
-        @WebApkUserTheme
-        int themeSetting =
-                (ColorUtils.inNightMode(ContextUtils.getApplicationContext()))
-                        ? WebApkUserTheme.DARK_THEME
-                        : WebApkUserTheme.LIGHT_THEME;
-        WebApkUmaRecorder.recordUserThemeWhenInstall(themeSetting);
     }
 
     private void notify(@WebApkInstallResult int result) {

@@ -145,11 +145,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Sent when WebAPK is closed"/>
 </enum>
 
-<enum name="WebApkUserTheme">
-  <int value="0" label="Light Theme"/>
-  <int value="1" label="Dark Theme"/>
-</enum>
-
 </enums>
 
 </histogram-configuration>
