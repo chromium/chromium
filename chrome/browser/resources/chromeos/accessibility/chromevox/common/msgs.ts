@@ -8,11 +8,8 @@
  */
 
 export class Msgs {
-  /**
-   * Return the current locale.
-   * @return {string} The locale.
-   */
-  static getLocale() {
+  /** Return the current locale. */
+  static getLocale(): string {
     return chrome.i18n.getMessage('locale');
   }
 
@@ -22,22 +19,22 @@ export class Msgs {
    * If we can't find a message, throw an exception.  This allows us to catch
    * typos early.
    *
-   * @param {string} messageId The id.
-   * @param {Array<string>=} opt_subs Substitution strings.
-   * @return {string} The localized message.
+   * @param messageId The id.
+   * @param subs Substitution strings.
+   * @return The localized message.
    */
-  static getMsg(messageId, opt_subs) {
-    let message = Msgs.Untranslated[messageId.toUpperCase()];
+  static getMsg(messageId: string, subs?: string[]): string {
+    let message: string = Msgs.Untranslated[messageId.toUpperCase()];
     if (message !== undefined) {
-      return Msgs.applySubstitutions_(message, opt_subs);
+      return Msgs.applySubstitutions_(message, subs);
     }
-    message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, opt_subs);
+    message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, subs);
     if ((message === undefined || message === '') &&
         messageId.endsWith('_brl')) {
       // Braille string entries are optional. If we couldn't find a braille-
       // specific string, try again without the '_brl' suffix.
       message = chrome.i18n.getMessage(
-          Msgs.NAMESPACE_ + messageId.replace('_brl', ''), opt_subs);
+          Msgs.NAMESPACE_ + messageId.replace('_brl', ''), subs);
     }
 
     if (message === undefined || message === '') {
@@ -49,14 +46,12 @@ export class Msgs {
   /**
    * Returns the message with the given message ID, formatted for the given
    * count.
-   *
-   * @param {string} messageId
-   * @param {number} count
-   * @param {Array<string>=} opt_subs Substitution strings.
-   * @return {string} The localized and formatted message.
+   * @param subs Substitution strings.
+   * @return The localized and formatted message.
    */
-  static getMsgWithCount(messageId, count, opt_subs) {
-    return new goog.i18n.MessageFormat(Msgs.getMsg(messageId, opt_subs))
+  static getMsgWithCount(
+    messageId: string, count: number, subs?: string[]): string {
+    return new goog.i18n.MessageFormat(Msgs.getMsg(messageId, subs))
         .format({COUNT: count});
   }
 
@@ -67,9 +62,9 @@ export class Msgs {
    * attribute. The value of the msgid attributes are looked up as message
    * IDs and the resulting text is used as the text content of the elements.
    *
-   * @param {Node} root The root node where the translation should be performed.
+   * @param root The root node where the translation should be performed.
    */
-  static addTranslatedMessagesToDom(root) {
+  static addTranslatedMessagesToDom(root: Element): void {
     const elts = root.querySelectorAll('.i18n');
     for (let i = 0; i < elts.length; i++) {
       const msgid = elts[i].getAttribute('msgid');
@@ -87,47 +82,36 @@ export class Msgs {
   }
 
   /**
-   * Retuns a number formatted correctly.
-   *
-   * @param {number} num The number.
-   * @return {string} The number in the correct locale.
+   * Returns a number formatted correctly.
+   * @return The number in the correct locale.
    */
-  static getNumber(num) {
+  static getNumber(num: number): string {
     return '' + num;
   }
 
   /**
-   * Applies substitions of the form $N, where N is a number from 1 to 9, to a
+   * Applies substitutions of the form $N, where N is a number from 1 to 9, to a
    * string. The numbers are one-based indices into |opt_subs|.
-   * @param {string} message
-   * @param {Array<string>=} opt_subs
-   * @return {string}
-   * @private
    */
-  static applySubstitutions_(message, opt_subs) {
-    if (opt_subs) {
-      for (let i = 0; i < opt_subs.length; i++) {
-        message = message.replace('$' + (i + 1), opt_subs[i]);
+  private static applySubstitutions_(message: string, subs?: string[]): string {
+    if (subs) {
+      for (let i = 0; i < subs.length; i++) {
+        message = message.replace('$' + (i + 1), subs[i]);
       }
     }
     return message;
   }
 }
 
-/**
- * The namespace for all Chromevox messages.
- * @type {string}
- * @const
- * @private
- */
-Msgs.NAMESPACE_ = 'chromevox_';
+export namespace Msgs {
+/** The namespace for all Chromevox messages. */
+export const NAMESPACE_ = 'chromevox_';
 
 /**
  * Strings that are displayed in the user interface but don't need
  * be translated.
- * @type {Object<string>}
  */
-Msgs.Untranslated = {
+export const Untranslated: Record<string, string> = {
   /** The unchecked state for a checkbox in braille. */
   CHECKBOX_UNCHECKED_STATE_BRL: '( )',
   /** The checked state for a checkbox in braille. */
@@ -179,3 +163,4 @@ Msgs.Untranslated = {
   /** Brailled when describing an ARIA value text. */
   ARIA_VALUE_TEXT_BRL: '$1',
 };
+}

@@ -27,6 +27,7 @@ ts_modules = [
   "background/editing/text_edit_handler.ts",
   "background/event/desktop_automation_interface.ts",
   "background/input/background_keyboard_handler.ts",
+  "common/msgs.ts",
 ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
@@ -141,7 +142,6 @@ chromevox_es6_modules = [
   "common/learn_mode_bridge.js",
   "common/locale_output_helper.js",
   "common/log_types.js",
-  "common/msgs.js",
   "common/panel_bridge.js",
   "common/panel_command.js",
   "common/panel_menu_data.js",
@@ -200,6 +200,7 @@ ts_library("ts_build") {
     "//tools/typescript/definitions/context_menus.d.ts",
     "../definitions/automation.d.ts",
     "../definitions/extensions.d.ts",
+    "../definitions/goog_i18n.d.ts",
     "../definitions/runtime.d.ts",
     "../definitions/i18n.d.ts",
     "../definitions/tabs.d.ts",
@@ -404,8 +405,6 @@ if (is_chromeos_ash) {
     ]
     deps = [ ":chromevox_test_messages_js" ]
   }
-
-  # These tests can run in a pure V8 renderer (e.g. no DOM).
 
   # These tests need a full extension renderer.
   js2gtest("chromevox_extension_js_tests") {
