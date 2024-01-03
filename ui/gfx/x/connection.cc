@@ -34,6 +34,7 @@
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/visual_manager.h"
 #include "ui/gfx/x/window_event_manager.h"
+#include "ui/gfx/x/wm_sync.h"
 #include "ui/gfx/x/xfixes.h"
 #include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xkb.h"
@@ -906,6 +907,10 @@ void Connection::OnRootPropertyChanged(Atom property,
                                        const GetPropertyResponse& value) {
   Atom check_atom = GetAtom("_NET_SUPPORTING_WM_CHECK");
   if (property == check_atom) {
+    // We've detected a new window manager, which may have different behavior
+    // when attempting to use WmSync.  Attempt to sync with the window manager
+    // so we know which behavior WmSync should use.
+    AttemptSyncWithWm();
     wm_props_.reset();
     Window wm_window = GetWindowPropertyAsWindow(value);
     if (wm_window != Window::None) {
@@ -927,6 +932,17 @@ bool Connection::WmSupportsEwmh() const {
     return *wm_check == wm_window;
   }
   return false;
+}
+
+void Connection::AttemptSyncWithWm() {
+  synced_with_wm_ = false;
+  wm_sync_ = std::make_unique<WmSync>(
+      this, base::BindOnce(&Connection::OnWmSynced, base::Unretained(this)),
+      true);
+}
+
+void Connection::OnWmSynced() {
+  synced_with_wm_ = true;
 }
 
 }  // namespace x11

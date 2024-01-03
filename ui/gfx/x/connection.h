@@ -32,6 +32,7 @@ class Event;
 class KeyboardState;
 class PropertyCache;
 class VisualManager;
+class WmSync;
 class WriteBuffer;
 
 enum WmState : uint32_t {
@@ -233,6 +234,10 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   }
 
   WindowEventManager& window_event_manager() { return window_event_manager_; }
+
+  // Indicates if the connection was able to successfully sync with the
+  // window manager.
+  bool synced_with_wm() const { return synced_with_wm_; }
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -516,6 +521,10 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   bool WmSupportsEwmh() const;
 
+  void AttemptSyncWithWm();
+
+  void OnWmSynced();
+
   std::string display_string_;
   int default_screen_id_ = 0;
   std::unique_ptr<xcb_connection_t, void (*)(xcb_connection_t*)> connection_ = {
@@ -572,6 +581,9 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   std::unique_ptr<VisualManager> visual_manager_;
 
   std::unique_ptr<AtomCache> atom_cache_;
+
+  std::unique_ptr<WmSync> wm_sync_;
+  bool synced_with_wm_ = false;
 
   std::unique_ptr<PropertyCache> root_props_;
   std::unique_ptr<PropertyCache> wm_props_;

@@ -27,7 +27,19 @@ Window GetWindowForEvent(const Event& event) {
 }  // namespace
 
 WmSync::WmSync(Connection* connection, base::OnceClosure on_synced)
+    : WmSync(connection, std::move(on_synced), connection->synced_with_wm()) {}
+
+WmSync::WmSync(Connection* connection,
+               base::OnceClosure on_synced,
+               bool sync_with_wm)
     : connection_(connection), on_synced_(std::move(on_synced)) {
+  if (!sync_with_wm) {
+    connection_->GetInputFocus().OnResponse(base::BindOnce(
+        &WmSync::OnGetInputFocusResponse, weak_ptr_factory_.GetWeakPtr()));
+    connection_->Flush();
+    return;
+  }
+
   constexpr EventMask event_mask =
       EventMask::StructureNotify | EventMask::PropertyChange;
 
@@ -67,11 +79,17 @@ WmSync::~WmSync() {
 }
 
 void WmSync::OnEvent(const Event& xevent) {
-  if (GetWindowForEvent(xevent) == window_) {
+  if (window_ != Window::None && GetWindowForEvent(xevent) == window_) {
     Cleanup();
     std::move(on_synced_).Run();
     // `this` may be deleted.
   }
+}
+
+void WmSync::OnGetInputFocusResponse(GetInputFocusResponse response) {
+  Cleanup();
+  std::move(on_synced_).Run();
+  // `this` may be deleted.
 }
 
 void WmSync::Cleanup() {

@@ -20,4 +20,28 @@ TEST(WmSyncTest, Basic) {
   }
 }
 
+TEST(WmSyncTest, SyncWithServer) {
+  Connection* connection = Connection::Get();
+
+  bool synced = false;
+  WmSync wm_sync(connection,
+                 base::BindOnce([](bool* synced) { *synced = true; }, &synced),
+                 false);
+  while (!synced) {
+    connection->DispatchAll();
+  }
+}
+
+TEST(WmSyncTest, SyncWithWm) {
+  Connection* connection = Connection::Get();
+
+  bool synced = false;
+  WmSync wm_sync(connection,
+                 base::BindOnce([](bool* synced) { *synced = true; }, &synced),
+                 true);
+  while (!synced) {
+    connection->DispatchAll();
+  }
+}
+
 }  // namespace x11
