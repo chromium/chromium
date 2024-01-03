@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
+#include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
 
 namespace autofill {
@@ -42,7 +43,7 @@ struct SuggestionsContext {
   RAW_PTR_EXCLUSION AutofillField* focused_field = nullptr;
   bool is_autofill_available = false;
   bool is_context_secure = false;
-  bool is_filling_credit_card = false;
+  FillingProduct filling_product = FillingProduct::kNone;
   // Flag to indicate whether all suggestions come from Google Payments.
   bool should_display_gpay_logo = false;
   SuppressReason suppress_reason = SuppressReason::kNotSuppressed;

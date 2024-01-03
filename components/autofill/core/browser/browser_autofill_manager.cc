@@ -1159,10 +1159,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     }
 
     if (!suggestions.empty()) {
-      if (context.is_filling_credit_card) {
+      if (context.filling_product == FillingProduct::kCreditCard) {
         AutofillMetrics::LogIsQueriedCreditCardFormSecure(
             context.is_context_secure);
-      } else {
+      }
+      if (context.filling_product == FillingProduct::kAddress) {
         AutofillMetrics::LogAddressSuggestionsCount(suggestions.size());
       }
     }
@@ -3399,8 +3400,6 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     suggestions->clear();
     return;
   }
-
-  // Log interactions of forms that are autofillable.
   if (got_autofillable_form) {
     auto* logger = GetEventFormLogger(*context->focused_field);
     if (logger) {
@@ -3408,12 +3407,10 @@ void BrowserAutofillManager::GetAvailableSuggestions(
                                                 signin_state_for_metrics_);
     }
   }
-  context->is_filling_credit_card =
-      trigger_source ==
-          AutofillSuggestionTriggerSource::kManualFallbackPayments ||
-      (got_autofillable_form &&
-       context->focused_field->Type().group() == FieldTypeGroup::kCreditCard);
-
+  context->filling_product = GetPreferredSuggestionFillingProduct(
+      got_autofillable_form ? context->focused_field->Type().GetStorableType()
+                            : UNKNOWN_TYPE,
+      trigger_source);
   // If the feature is enabled and this is a mixed content form, we show a
   // warning message and don't offer autofill. The warning is shown even if
   // there are no autofill suggestions available.
@@ -3443,14 +3440,14 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     return;
   }
 
-  if (context->is_filling_credit_card) {
+  if (context->filling_product == FillingProduct::kCreditCard) {
     FieldType trigger_field_type =
         context->focused_field
             ? context->focused_field->Type().GetStorableType()
             : UNKNOWN_TYPE;
     *suggestions = GetCreditCardSuggestions(field, trigger_field_type,
                                             context->should_display_gpay_logo);
-  } else {
+  } else if (context->filling_product == FillingProduct::kAddress) {
     // Profile suggestions fill ac=unrecognized fields only when triggered
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
@@ -3467,51 +3464,53 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     }
   }
 
-  // Ablation experiment:
-  FormTypeForAblationStudy form_type = context->is_filling_credit_card
-                                           ? FormTypeForAblationStudy::kPayment
-                                           : FormTypeForAblationStudy::kAddress;
-  // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
-  // no ablation happens in the following.
-  AblationGroup ablation_group = client().GetAblationStudy().GetAblationGroup(
-      client().GetLastCommittedPrimaryMainFrameURL(), form_type);
-  context->ablation_group = ablation_group;
-  // Note that we don't set the ablation group if there are no suggestions.
-  // In that case we stick to kDefault.
-  context->conditional_ablation_group =
-      !suggestions->empty() ? ablation_group : AblationGroup::kDefault;
+  // Ablation experiment
+  if (context->filling_product == FillingProduct::kAddress ||
+      context->filling_product == FillingProduct::kCreditCard) {
+    FormTypeForAblationStudy form_type =
+        context->filling_product == FillingProduct::kCreditCard
+            ? FormTypeForAblationStudy::kPayment
+            : FormTypeForAblationStudy::kAddress;
+    // If ablation_group is AblationGroup::kDefault or AblationGroup::kControl,
+    // no ablation happens in the following.
+    AblationGroup ablation_group = client().GetAblationStudy().GetAblationGroup(
+        client().GetLastCommittedPrimaryMainFrameURL(), form_type);
+    context->ablation_group = ablation_group;
+    // Note that we don't set the ablation group if there are no suggestions.
+    // In that case we stick to kDefault.
+    context->conditional_ablation_group =
+        !suggestions->empty() ? ablation_group : AblationGroup::kDefault;
 
-  // In both cases (credit card and address forms), we inform the other event
-  // logger also about the ablation.
-  // This prevents for example that for an encountered address form we log a
-  // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be recorded
-  // by the credit_card_form_event_logger_).
-  // For the complementary event logger, the conditional ablation status is
-  // logged as kDefault to not imply that data would be filled without ablation.
-  if (context->is_filling_credit_card) {
-    credit_card_form_event_logger_->SetAblationStatus(
-        context->ablation_group, context->conditional_ablation_group);
-    address_form_event_logger_->SetAblationStatus(context->ablation_group,
-                                                  AblationGroup::kDefault);
-  } else {
-    address_form_event_logger_->SetAblationStatus(
-        context->ablation_group, context->conditional_ablation_group);
-    credit_card_form_event_logger_->SetAblationStatus(context->ablation_group,
-                                                      AblationGroup::kDefault);
+    // In both cases (credit card and address forms), we inform the other event
+    // logger also about the ablation.
+    // This prevents for example that for an encountered address form we log a
+    // sample Autofill.Funnel.ParsedAsType.CreditCard = 0 (which would be
+    // recorded by the credit_card_form_event_logger_). For the complementary
+    // event logger, the conditional ablation status is logged as kDefault to
+    // not imply that data would be filled without ablation.
+    if (context->filling_product == FillingProduct::kCreditCard) {
+      credit_card_form_event_logger_->SetAblationStatus(
+          context->ablation_group, context->conditional_ablation_group);
+      address_form_event_logger_->SetAblationStatus(context->ablation_group,
+                                                    AblationGroup::kDefault);
+    } else if (context->filling_product == FillingProduct::kAddress) {
+      address_form_event_logger_->SetAblationStatus(
+          context->ablation_group, context->conditional_ablation_group);
+      credit_card_form_event_logger_->SetAblationStatus(
+          context->ablation_group, AblationGroup::kDefault);
+    }
+
+    if (!suggestions->empty() && ablation_group == AblationGroup::kAblation) {
+      // Logic for disabling/ablating autofill.
+      context->suppress_reason = SuppressReason::kAblation;
+      suggestions->clear();
+      return;
+    }
   }
-
-  if (!suggestions->empty() && ablation_group == AblationGroup::kAblation) {
-    // Logic for disabling/ablating autofill.
-    context->suppress_reason = SuppressReason::kAblation;
-    suggestions->clear();
+  if (suggestions->empty() ||
+      context->filling_product != FillingProduct::kCreditCard) {
     return;
   }
-
-  // Returns early if no suggestion is available or suggestions are not for
-  // cards.
-  if (suggestions->empty() || !context->is_filling_credit_card)
-    return;
-
   // Don't provide credit card suggestions for non-secure pages, but do
   // provide them for secure pages with passive mixed content (see
   // implementation of IsContextSecure).

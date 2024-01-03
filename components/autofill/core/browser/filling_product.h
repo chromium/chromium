@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PRODUCT_H_
 
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 
@@ -25,6 +27,17 @@ enum class FillingProduct {
 };
 
 FillingProduct GetFillingProductFromPopupItemId(PopupItemId popup_item_id);
+
+FillingProduct GetFillingProductFromFieldTypeGroup(
+    FieldTypeGroup field_type_group);
+
+// Returns the filling product likely to be used for suggestions given
+// `trigger_field_type` and `suggestion_trigger_source`. This might not be the
+// definitive product used because for example the product could not yield any
+// suggestion and we'd fallback to another product.
+FillingProduct GetPreferredSuggestionFillingProduct(
+    FieldType trigger_field_type,
+    AutofillSuggestionTriggerSource suggestion_trigger_source);
 
 }  // namespace autofill
 
