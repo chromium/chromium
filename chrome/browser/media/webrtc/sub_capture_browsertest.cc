@@ -320,22 +320,22 @@ class RegionCaptureBrowserTest : public WebRtcTestBase {
     // across all other documents and therefore allow communication
     // between them all over a shared BroadcastChannel.
     tab_info->SetUpMailman(servers_[kMailmanServer]->GetURL(
-        "/webrtc/region_capture_mailman.html"));
+        "/webrtc/sub_capture_mailman.html"));
   }
 
   // Set up all (necessary) tabs, loads iframes, and start capturing the
   // relevant tab.
   void SetUpTest(Frame capturing_entity, bool self_capture) {
     // Other page (for other-tab-capture).
-    SetUpPage("/webrtc/region_capture_other_main.html",
+    SetUpPage("/webrtc/sub_capture_other_main.html",
               servers_[kOtherPageTopLevelDocument].get(),
-              "/webrtc/region_capture_other_embedded.html",
+              "/webrtc/sub_capture_other_embedded.html",
               servers_[kOtherPageEmbeddedDocument].get(), &tabs_[kOtherTab]);
 
     // Main page (for self-capture). Instantiate it second to help it get focus.
-    SetUpPage("/webrtc/region_capture_main.html",
+    SetUpPage("/webrtc/sub_capture_main.html",
               servers_[kMainPageTopLevelDocument].get(),
-              "/webrtc/region_capture_embedded.html",
+              "/webrtc/sub_capture_embedded.html",
               servers_[kMainPageEmbeddedDocument].get(), &tabs_[kMainTab]);
 
     DCHECK(command_line_);
