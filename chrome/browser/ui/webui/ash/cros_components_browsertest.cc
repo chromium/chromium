@@ -199,6 +199,72 @@ static constexpr const ComponentTestData kComponentsTestData[] = {
         .component_name = "cros-textfield",
         .gtest_name = "CrosTextfield",
     },
+    {
+        .script_src =
+            "chrome://resources/cros_components/icon_button/icon-button.js",
+        .component_name = "cros-icon-button",
+        .gtest_name = "CrosIconButton",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/dropdown/dropdown.js",
+        .component_name = "cros-dropdown",
+        .gtest_name = "CrosDropdown",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/dropdown/dropdown_option.js",
+        .component_name = "cros-dropdown-option",
+        .gtest_name = "CrosDropdownOption",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/tabs/tabs.js",
+        .component_name = "cros-tabs",
+        .gtest_name = "CrosTabs",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/tabs/tab.js",
+        .component_name = "cros-tab",
+        .gtest_name = "CrosTab",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/menu/menu.js",
+        .component_name = "cros-menu",
+        .gtest_name = "CrosMenu",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/menu/menu_item.js",
+        .component_name = "cros-menu-item",
+        .gtest_name = "CrosMenuItem",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/menu/menu_separator.js",
+        .component_name = "cros-menu-separator",
+        .gtest_name = "CrosMenuSeparator",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/menu/sub_menu_item.js",
+        .component_name = "cros-sub-menu-item",
+        .gtest_name = "CrosSubMenuItem",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/snackbar/snackbar.js",
+        .component_name = "cros-snackbar",
+        .gtest_name = "CrosSnackbar",
+    },
+    {
+        .script_src =
+            "chrome://resources/cros_components/snackbar/snackbar-item.js",
+        .component_name = "cros-snackbar-item",
+        .gtest_name = "CrosSnackbarItem",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
