@@ -99,6 +99,9 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     std::optional<RequestPermissionCallback> callback_;
   };
 
+  ArcUsbHostPermissionManager(Profile* profile,
+                              ArcAppListPrefs* arc_app_list_prefs,
+                              ArcUsbHostBridge* arc_usb_host_bridge);
   ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;
   ArcUsbHostPermissionManager& operator=(const ArcUsbHostPermissionManager&) =
       delete;
@@ -154,11 +157,8 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   friend class ArcUsbHostPermissionManagerFactory;
   friend class ArcUsbHostPermissionTest;
 
-  ArcUsbHostPermissionManager(Profile* profile,
-                              ArcAppListPrefs* arc_app_list_prefs,
-                              ArcUsbHostBridge* arc_usb_host_bridge);
-
-  static ArcUsbHostPermissionManager* Create(content::BrowserContext* context);
+  static std::unique_ptr<ArcUsbHostPermissionManager> Create(
+      content::BrowserContext* context);
 
   // Restores granted permissions. Called in constructor. Device list scan
   // permission and device access permission for persistent devices will be

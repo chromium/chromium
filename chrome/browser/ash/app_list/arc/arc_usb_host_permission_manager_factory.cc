@@ -44,7 +44,8 @@ ArcUsbHostPermissionManagerFactory::ArcUsbHostPermissionManagerFactory()
 ArcUsbHostPermissionManagerFactory::~ArcUsbHostPermissionManagerFactory() =
     default;
 
-KeyedService* ArcUsbHostPermissionManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ArcUsbHostPermissionManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return ArcUsbHostPermissionManager::Create(context);
 }
