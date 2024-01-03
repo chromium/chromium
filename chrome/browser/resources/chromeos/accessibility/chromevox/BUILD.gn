@@ -27,6 +27,7 @@ ts_modules = [
   "background/editing/text_edit_handler.ts",
   "background/event/desktop_automation_interface.ts",
   "background/input/background_keyboard_handler.ts",
+  "background/logging/log_manager.ts",
   "common/msgs.ts",
 ]
 
@@ -97,7 +98,6 @@ chromevox_es6_modules = [
   "background/input/smart_sticky_mode.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
-  "background/logging/log_manager.js",
   "background/logging/log_store.js",
   "background/logging/log_url_watcher.js",
   "background/math_handler.js",

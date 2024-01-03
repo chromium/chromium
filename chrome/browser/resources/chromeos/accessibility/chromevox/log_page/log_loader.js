@@ -2,6 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {LogPage} from './log_page.js';
+import {LogPage} from './log.js';
 
 document.addEventListener('DOMContentLoaded', () => LogPage.init(), false);

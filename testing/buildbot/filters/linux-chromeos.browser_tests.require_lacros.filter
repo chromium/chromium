@@ -75,6 +75,7 @@ TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 -SelectToSpeakTest.SpeakStatusTray
 -StickyKeysBrowserTest.OpenTrayMenu
 -StickyKeysBrowserTest.OverlayShown
+-LoggedInSpokenFeedbackTest.OpenLogPage*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.TouchExploreStatusTray*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfBlockedAppIconBadgeAnnouncement*
 -TestAsNormalAndGuestUser/SpokenFeedbackTest.ShelfNotificationBadgeAnnouncement*

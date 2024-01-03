@@ -9,6 +9,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/public/cpp/accelerators.h"
@@ -381,6 +382,23 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, LearnModeEscapeWithGesture) {
   sm_.ExpectSpeech("Escape");
   sm_.ExpectSpeech("Stopping Learn Mode");
 
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, OpenLogPage) {
+  // Enabling earcon logging should not crash ChromeVox at startup
+  // (see b/318531241).
+  AccessibilityManager::Get()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityChromeVoxEnableEarconLogging, true);
+  EnableChromeVox();
+  StablizeChromeVoxState();
+
+  // Open the log page.
+  sm_.Call([this]() {
+    SendKeyPressWithSearch(ui::VKEY_O);
+    SendKeyPress(ui::VKEY_W);
+  });
+  sm_.ExpectSpeech("chromevox-log");
   sm_.Replay();
 }
 
