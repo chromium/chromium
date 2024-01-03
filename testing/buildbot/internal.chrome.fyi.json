@@ -6,7 +6,7 @@
       {
         "args": [
           "--target-platform=android",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--git-revision=${got_revision}"
         ],
         "merge": {
@@ -29,13 +29,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android30",
-              "path": ".android_emulator/generic_android30"
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android30"
+              "caches": "android_30_google_apis_x86"
             }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -46,7 +46,7 @@
       {
         "args": [
           "--target-platform=webview",
-          "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb",
           "--git-revision=${got_revision}"
         ],
         "merge": {
@@ -69,13 +69,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android30",
-              "path": ".android_emulator/generic_android30"
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android30"
+              "caches": "android_30_google_apis_x86"
             }
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"

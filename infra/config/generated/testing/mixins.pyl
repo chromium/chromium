@@ -25,18 +25,18 @@
   },
   '11-x86-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android30.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android30',
+          'caches': 'android_30_google_apis_x86',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android30',
-          'path': '.android_emulator/generic_android30',
+          'name': 'android_30_google_apis_x86',
+          'path': '.android_emulator/android_30_google_apis_x86',
         },
       ],
     },
