@@ -672,6 +672,9 @@ void VideoDecoderPipeline::ResetTask(base::OnceClosure reset_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
+#if BUILDFLAG(IS_CHROMEOS)
+  drop_transcrypted_buffers_ = true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   need_apply_new_resolution = false;
   decoder_->Reset(base::BindOnce(&VideoDecoderPipeline::OnResetDone,
                                  decoder_weak_this_, std::move(reset_cb)));
@@ -700,6 +703,10 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
     if (auxiliary_frame_pool_)
       auxiliary_frame_pool_->ReleaseAllFrames();
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  drop_transcrypted_buffers_ = false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   client_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
 }
@@ -1220,6 +1227,11 @@ void VideoDecoderPipeline::OnBufferTranscrypted(
   if (!transcrypted_buffer) {
     OnError("Error in buffer transcryption");
     std::move(decode_callback).Run(DecoderStatus::Codes::kFailed);
+    return;
+  }
+
+  if (drop_transcrypted_buffers_) {
+    std::move(decode_callback).Run(DecoderStatus::Codes::kAborted);
     return;
   }
 
