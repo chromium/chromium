@@ -58,9 +58,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 
-constexpr char kCommandResultCodeHistogramName[] =
-    "AppPreloadService.WebAppInstall.CommandResultCode";
-
 int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers) {
     return simple_loader->ResponseInfo()->headers->response_code();
@@ -69,11 +66,24 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   }
 }
 
-// TODO(b/315077325): Rename histogram to be related to AppInstallService
-// instead of AppPreloadService.
-void RecordInstallResultMetric(apps::WebAppInstallResult result) {
-  base::UmaHistogramEnumeration("AppPreloadService.WebAppInstall.InstallResult",
-                                result);
+void RecordInstallResultMetric(apps::AppInstallSurface surface,
+                               apps::WebAppInstallResult result) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult", result);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppInstallService.WebAppInstaller.InstallResult.",
+                    base::ToString(surface)}),
+      result);
+}
+
+void RecordCommandResultMetric(apps::AppInstallSurface surface,
+                               webapps::InstallResultCode code) {
+  base::UmaHistogramEnumeration(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode", code);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"Apps.AppInstallService.WebAppInstaller.CommandResultCode.",
+                    base::ToString(surface)}),
+      code);
 }
 
 }  // namespace
@@ -154,7 +164,8 @@ void WebAppInstaller::InstallAppImpl(InstallRequest request) {
   if (!resource_request->url.is_valid()) {
     LOG(ERROR) << "Manifest URL for " << request.data.name
                << "is invalid: " << resource_request->url;
-    RecordInstallResultMetric(WebAppInstallResult::kInvalidManifestUrl);
+    RecordInstallResultMetric(request.surface,
+                              WebAppInstallResult::kInvalidManifestUrl);
     std::move(request.callback).Run(/*success=*/false);
     return;
   }
@@ -184,16 +195,18 @@ void WebAppInstaller::OnManifestRetrieved(
     LOG(ERROR) << "Downloading manifest failed for " << request.data.name
                << " with error code: " << GetResponseCode(url_loader.get());
 
-    RecordInstallResultMetric(url_loader->NetError() ==
-                                      net::ERR_HTTP_RESPONSE_CODE_FAILURE
-                                  ? WebAppInstallResult::kManifestResponseError
-                                  : WebAppInstallResult::kManifestNetworkError);
+    RecordInstallResultMetric(
+        request.surface,
+        url_loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE
+            ? WebAppInstallResult::kManifestResponseError
+            : WebAppInstallResult::kManifestNetworkError);
     std::move(request.callback).Run(/*success=*/false);
     return;
   }
 
   if (response->empty()) {
-    RecordInstallResultMetric(WebAppInstallResult::kManifestResponseEmpty);
+    RecordInstallResultMetric(request.surface,
+                              WebAppInstallResult::kManifestResponseEmpty);
     std::move(request.callback).Run(/*success=*/false);
     return;
   }
@@ -237,7 +250,7 @@ void WebAppInstaller::OnManifestRetrieved(
     web_app_provider_bridge->InstallPreloadWebApp(
         std::move(web_app_install_info),
         base::BindOnce(&WebAppInstaller::OnAppInstalled,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), request.surface,
                        std::move(request.callback)));
     return;
   } else {
@@ -261,19 +274,20 @@ void WebAppInstaller::OnManifestRetrieved(
             /*manifest_url=*/web_app_data.original_manifest_url,
             std::move(*response), expected_app_id,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
-                           weak_ptr_factory_.GetWeakPtr(),
+                           weak_ptr_factory_.GetWeakPtr(), request.surface,
                            std::move(request.callback))));
   }
 }
 
-void WebAppInstaller::OnAppInstalled(
-    WebAppInstalledCallback callback,
-    const webapps::AppId& app_id,
-    webapps::InstallResultCode code) {
+void WebAppInstaller::OnAppInstalled(AppInstallSurface surface,
+                                     WebAppInstalledCallback callback,
+                                     const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
   bool success = webapps::IsSuccess(code);
-  RecordInstallResultMetric(success ? WebAppInstallResult::kSuccess
+  RecordInstallResultMetric(surface,
+                            success ? WebAppInstallResult::kSuccess
                                     : WebAppInstallResult::kWebAppInstallError);
-  base::UmaHistogramEnumeration(kCommandResultCodeHistogramName, code);
+  RecordCommandResultMetric(surface, code);
 
   std::move(callback).Run(success);
 }

@@ -135,10 +135,19 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallApp) {
       });
   ASSERT_TRUE(found);
 
-  histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppInstallResult::kSuccess, 1);
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.InstallResult",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult."
+      "AppPreloadServiceOem",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 

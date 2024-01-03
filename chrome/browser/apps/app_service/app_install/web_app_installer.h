@@ -88,7 +88,9 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
   void OnManifestRetrieved(InstallRequest request,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
-  void OnAppInstalled(WebAppInstalledCallback callback,
+  void OnAppInstalled(AppInstallSurface surface,
+                      WebAppInstalledCallback callback,
+
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
 

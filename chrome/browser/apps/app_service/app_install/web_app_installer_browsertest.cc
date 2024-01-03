@@ -147,10 +147,19 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneOemApp) {
       std::nullopt, GURL("https://www.example.com/index.html"));
   VerifyAppInstalled(app_id, "Example App", InstallReason::kOem);
 
-  histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppInstallResult::kSuccess, 1);
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.InstallResult",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult."
+      "AppPreloadServiceOem",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
@@ -166,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   })";
   SetManifestResponse(AddIconToManifest(kManifestTemplate));
 
+  base::HistogramTester histograms;
   base::test::TestFuture<bool> result;
   installer.InstallApp(
       AppInstallSurface::kAppPreloadServiceDefault,
@@ -178,6 +188,21 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   auto app_id = web_app::GenerateAppId(
       std::nullopt, GURL("https://www.example.com/index.html"));
   VerifyAppInstalled(app_id, "Example App", InstallReason::kDefault);
+
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult."
+      "AppPreloadServiceDefault",
+      WebAppInstallResult::kSuccess, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceDefault",
+      webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
@@ -225,10 +250,19 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       std::nullopt, GURL("https://www.example2.com/index.html"));
   VerifyAppInstalled(app_id2, "Example App2", InstallReason::kOem);
 
-  histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppInstallResult::kSuccess, 2);
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.InstallResult",
+      WebAppInstallResult::kSuccess, 2);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult."
+      "AppPreloadServiceOem",
+      WebAppInstallResult::kSuccess, 2);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kSuccessNewInstall, 2);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kSuccessNewInstall, 2);
 }
 
@@ -318,10 +352,19 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
       app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {});
   ASSERT_FALSE(found);
 
-  histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppInstallResult::kWebAppInstallError, 1);
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.InstallResult",
+      WebAppInstallResult::kWebAppInstallError, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.InstallResult."
+      "AppPreloadServiceOem",
+      WebAppInstallResult::kWebAppInstallError, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kExpectedAppIdCheckFailed, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kExpectedAppIdCheckFailed, 1);
 }
 
@@ -372,7 +415,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   ASSERT_FALSE(found);
 
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kNotValidManifestForWebApp, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kNotValidManifestForWebApp, 1);
 }
 
@@ -409,7 +456,11 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
   ASSERT_FALSE(result.Get());
 
   histograms.ExpectBucketCount(
-      "AppPreloadService.WebAppInstall.CommandResultCode",
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode",
+      webapps::InstallResultCode::kIconDownloadingFailed, 1);
+  histograms.ExpectBucketCount(
+      "Apps.AppInstallService.WebAppInstaller.CommandResultCode."
+      "AppPreloadServiceOem",
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
 }
 

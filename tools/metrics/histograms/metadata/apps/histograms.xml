@@ -31,6 +31,13 @@ chromium-metrics-reviews@google.com.
   <variant name="TabletMode" summary="Tablet mode"/>
 </variants>
 
+<variants name="AppInstallSurface">
+  <variant name="" summary="All surfaces"/>
+  <variant name=".AppInstallNavigationThrottle" summary="URI navigation"/>
+  <variant name=".AppPreloadServiceDefault" summary="Default preload"/>
+  <variant name=".AppPreloadServiceOem" summary="OEM preload"/>
+</variants>
+
 <variants name="AppType">
   <variant name="Arc" summary="Android apps"/>
   <variant name="Borealis" summary="Borealis apps"/>
@@ -223,29 +230,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="AppPreloadService.WebAppInstall.CommandResultCode"
-    enum="WebAppInstallResultCode" expires_after="2024-06-20">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    The result code of the web app install command used to install a web app
-    through the App Preload Service. This gives specific detail about errors
-    within the web apps system. Recorded every time the App Preload Service
-    attempts to install a web app (e.g. during OOBE).
-  </summary>
-</histogram>
-
-<histogram name="AppPreloadService.WebAppInstall.InstallResult"
-    enum="AppPreloadServiceWebAppInstallResult" expires_after="2024-06-20">
-  <owner>tsergeant@chromium.org</owner>
-  <owner>chromeos-apps-foundation-team@google.com</owner>
-  <summary>
-    The overall result of installing a web app through the App Preload Service.
-    Recorded every time the App Preload Service attempts to install a web app
-    (e.g. during OOBE).
-  </summary>
-</histogram>
-
 <histogram name="Apps.ActivatedCount.{AppType}" units="units"
     expires_after="2022-07-01">
   <owner>nancylingwang@chromium.org</owner>
@@ -277,12 +261,32 @@ chromium-metrics-reviews@google.com.
     Records the result of a request to install an app via AppInstallService for
     a given install surface.
   </summary>
-  <token key="AppInstallSurface">
-    <variant name="" summary="All surfaces"/>
-    <variant name=".AppInstallNavigationThrottle" summary="URI navigation"/>
-    <variant name=".AppPreloadServiceDefault" summary="Default preload"/>
-    <variant name=".AppPreloadServiceOem" summary="OEM preload"/>
-  </token>
+  <token key="AppInstallSurface" variants="AppInstallSurface"/>
+</histogram>
+
+<histogram
+    name="Apps.AppInstallService.WebAppInstaller.CommandResultCode{AppInstallSurface}"
+    enum="WebAppInstallResultCode" expires_after="2024-06-20">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The result code of the web app install command used to install a web app
+    through the App Install Service for a given install surface. This gives
+    specific detail about errors within the web apps system.
+  </summary>
+  <token key="AppInstallSurface" variants="AppInstallSurface"/>
+</histogram>
+
+<histogram
+    name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
+    enum="WebAppInstallResultCode" expires_after="2024-06-20">
+  <owner>tsergeant@chromium.org</owner>
+  <owner>chromeos-apps-foundation-team@google.com</owner>
+  <summary>
+    The overall result of installing a web app through the App Install Service
+    for a given install surface.
+  </summary>
+  <token key="AppInstallSurface" variants="AppInstallSurface"/>
 </histogram>
 
 <histogram name="Apps.AppLaunch" enum="AppLaunch" expires_after="2024-06-30">
