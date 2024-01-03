@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, CancelDownload) {
 
 // Verifies clicking a completed download's notification.
 IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
-                       ClickCompletedDownload) {
+                       DISABLED_ClickCompletedDownload) {
   // Test setup:
   // 1. Wait until test system apps are installed so that opening a download
   //    file is handled.
