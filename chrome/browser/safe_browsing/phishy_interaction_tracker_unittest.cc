@@ -19,7 +19,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -89,7 +88,6 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
         base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
     browser_process_->SetSafeBrowsingService(sb_service_.get());
 
-    feature_list_.InitAndEnableFeature(safe_browsing::kAntiPhishingTelemetry);
     ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
     phishy_interaction_tracker_ =
         base::WrapUnique(new PhishyInteractionTracker(web_contents()));
@@ -216,9 +214,6 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   std::unique_ptr<PhishyInteractionTracker> phishy_interaction_tracker_;
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {

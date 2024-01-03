@@ -139,10 +139,7 @@ void SafeBrowsingLoudErrorUI::PopulateStringsForHtml(
 
 void SafeBrowsingLoudErrorUI::HandleCommand(
     SecurityInterstitialCommand command) {
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
-    UpdateInterstitialInteractionData(command);
-  }
+  UpdateInterstitialInteractionData(command);
 
   switch (command) {
     case CMD_PROCEED: {

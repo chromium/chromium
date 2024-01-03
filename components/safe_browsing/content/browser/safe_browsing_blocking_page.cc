@@ -131,11 +131,8 @@ SafeBrowsingBlockingPage::GetTypeForTesting() {
 }
 
 void SafeBrowsingBlockingPage::OnInterstitialClosing() {
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
-    interstitial_interactions_ =
-        sb_error_ui()->get_interstitial_interaction_data();
-  }
+  interstitial_interactions_ =
+      sb_error_ui()->get_interstitial_interaction_data();
 
   // If this is a phishing interstitial and the user did not make a decision
   // through the UI, record that interaction in UMA
@@ -143,11 +140,8 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::CLOSE_INTERSTITIAL_WITHOUT_UI);
 
-    // If kAntiPhishingTelemetry is enabled, add
-    // CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction to interactions.
-    if (interstitial_interactions_ &&
-        (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-         base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey))) {
+    // Add CMD_CLOSE_INTERSTITIAL_WITHOUT_UI interaction to interactions.
+    if (interstitial_interactions_) {
       interstitial_interactions_->insert_or_assign(
           security_interstitials::SecurityInterstitialCommand::
               CMD_CLOSE_INTERSTITIAL_WITHOUT_UI,
@@ -192,11 +186,9 @@ void SafeBrowsingBlockingPage::SendFallbackReport(
   if (num_visits >= 0) {
     report->set_repeat_visit(num_visits > 0);
   }
-  if ((base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-       base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) &&
-      (report->type() == ClientSafeBrowsingReportRequest::URL_PHISHING ||
-       report->type() ==
-           ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING)) {
+  if (report->type() == ClientSafeBrowsingReportRequest::URL_PHISHING ||
+      report->type() ==
+          ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_PHISHING) {
     client_report_utils::FillInterstitialInteractionsHelper(report.get(),
                                                             interactions);
   }
@@ -234,11 +226,8 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
 
   // Finish computing threat details. TriggerManager will decide if its safe to
   // send the report.
-  if (base::FeatureList::IsEnabled(safe_browsing::kAntiPhishingTelemetry) ||
-      base::FeatureList::IsEnabled(safe_browsing::kRedWarningSurvey)) {
-    trigger_manager_->SetInterstitialInteractions(
-        std::move(interstitial_interactions_));
-  }
+  trigger_manager_->SetInterstitialInteractions(
+      std::move(interstitial_interactions_));
   bool is_hats_candidate = false;
   if (base::FeatureList::IsEnabled(kRedWarningSurvey)) {
     is_hats_candidate =

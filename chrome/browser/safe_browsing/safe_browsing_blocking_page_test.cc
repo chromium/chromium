@@ -1054,27 +1054,6 @@ class SafeBrowsingBlockingPageBrowserTest
   net::EmbeddedTestServer https_server_;
 };
 
-class AntiPhishingTelemetryBrowserTest
-    : public SafeBrowsingBlockingPageBrowserTest {
- public:
-  AntiPhishingTelemetryBrowserTest() {
-    base::test::FeatureRefAndParams anti_phishing_telemetry_feature(
-        safe_browsing::kAntiPhishingTelemetry, {});
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {anti_phishing_telemetry_feature}, {});
-  }
-  ~AntiPhishingTelemetryBrowserTest() override = default;
-
-  void SetUp() override { SafeBrowsingBlockingPageBrowserTest::SetUp(); }
-
-  content::WebContents* GetWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 class SafeBrowsingHatsSurveyBrowserTest
     : public SafeBrowsingBlockingPageBrowserTest {
  public:
@@ -2415,6 +2394,9 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   // The timstamp of the warning shown should be in CSBRRs.
   EXPECT_TRUE(report.has_warning_shown_timestamp_msec());
 }
+
+class AntiPhishingTelemetryBrowserTest
+    : public SafeBrowsingBlockingPageBrowserTest {};
 
 INSTANTIATE_TEST_SUITE_P(
     AntiPhishingTelemetryBrowserTestWithThreatTypeAndIsolationSetting,

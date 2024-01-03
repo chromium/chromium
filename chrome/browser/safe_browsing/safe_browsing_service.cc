@@ -553,8 +553,7 @@ bool SafeBrowsingService::SendPhishyInteractionsReport(
     const GURL& url,
     const GURL& page_url,
     const PhishySiteInteractionMap& phishy_interaction_data) {
-  if (!base::FeatureList::IsEnabled(kAntiPhishingTelemetry) || !profile ||
-      !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
     return false;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
