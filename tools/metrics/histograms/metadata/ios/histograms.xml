@@ -3123,7 +3123,22 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-06-01">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rohitrao@chromium.org</owner>
-  <summary>Number of bookmarks indexed during initial indexation.</summary>
+  <summary>
+    Number of bookmarks indexed during initial indexation. Starting in M122,
+    this is batched. Only recorded on successful reindexing.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Spotlight.BookmarksReindexRestarted" units="units"
+    expires_after="2024-06-01">
+  <owner>ameurhosni@google.com</owner>
+  <owner>stkhapugin@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    How many times full bookmarks reindex had to restart due to a model mutation
+    that happened during reindexing. Logged for each interruption (so for 3
+    interruptions it will log values 1, 2, and 3).
+  </summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.DonatedIntentType"
