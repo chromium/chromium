@@ -10623,16 +10623,6 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
-<histogram name="UI.ScreenWin.UpdateDisplaysTime" units="ms"
-    expires_after="2023-12-31">
-  <owner>davidbienvenu@chromium.org</owner>
-  <owner>robliao@chromium.org</owner>
-  <summary>
-    Records the time spent in UpdateAllDisplaysAndNotify. Only logged on
-    Windows.
-  </summary>
-</histogram>
-
 <histogram name="UnifiedConsent.MakeSearchesAndBrowsingBetter.OnProfileLoad"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: Core metric for monitoring user settings for making searches and browsing better. -->
