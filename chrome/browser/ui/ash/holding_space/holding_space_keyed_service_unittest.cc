@@ -3426,12 +3426,16 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
       FileSuggestionType::kDriveFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
-           /*new_prediction_reason=*/std::nullopt, std::nullopt}});
+           /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
+           /*new_score=*/std::nullopt}});
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
-           /*new_prediction_reason=*/std::nullopt, std::nullopt}});
+           /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
+           /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3459,6 +3463,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3485,6 +3490,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
@@ -3502,9 +3508,11 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
       /*suggestions=*/
       std::vector<FileSuggestData>{{FileSuggestionType::kDriveFile, file_path_1,
                                     /*new_prediction_reason=*/std::nullopt,
+                                    /*timestamp=*/std::nullopt,
                                     /*new_score=*/std::nullopt},
                                    {FileSuggestionType::kDriveFile, file_path_3,
                                     /*new_prediction_reason=*/std::nullopt,
+                                    /*timestamp=*/std::nullopt,
                                     /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3552,12 +3560,15 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, downloads_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kLocalFile, other_folder_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt},
           {FileSuggestionType::kLocalFile, file_path,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3585,6 +3596,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kDriveFile, file_path_1,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3611,6 +3623,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
       /*suggestions=*/std::vector<FileSuggestData>{
           {FileSuggestionType::kLocalFile, file_path_2,
            /*new_prediction_reason=*/std::nullopt,
+           /*timestamp=*/std::nullopt,
            /*new_score=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
@@ -3730,6 +3743,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
                                    /*new_prediction_reason=*/std::nullopt,
+                                   /*timestamp=*/std::nullopt,
                                    /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
@@ -3790,6 +3804,7 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
                               /*suggestions=*/std::vector<FileSuggestData>{
                                   {FileSuggestionType::kLocalFile, local_file,
                                    /*new_prediction_reason=*/std::nullopt,
+                                   /*timestamp=*/std::nullopt,
                                    /*new_score=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 

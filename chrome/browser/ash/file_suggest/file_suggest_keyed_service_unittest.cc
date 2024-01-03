@@ -136,6 +136,7 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
       suggested_file_paths.push_back(mount_point->CreateArbitraryFile());
       suggestions.emplace_back(type, suggested_file_paths.back(),
                                /*new_prediction_reason=*/std::nullopt,
+                               /*timestamp=*/std::nullopt,
                                /*new_score=*/std::nullopt);
     }
     file_suggest_service_->SetSuggestionsForType(type, suggestions);

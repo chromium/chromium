@@ -4,9 +4,15 @@
 
 #include "chrome/browser/ash/file_suggest/drive_recent_file_suggestion_provider.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/i18n/time_formatting.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -21,7 +27,33 @@
 namespace ash {
 namespace {
 
-constexpr base::TimeDelta kMaxLastModifiedTime = base::Days(8);
+constexpr base::TimeDelta kMaxLastModifiedOrViewedTime = base::Days(8);
+
+drivefs::mojom::QueryParametersPtr CreateRecentlyModifiedQuery() {
+  auto query = drivefs::mojom::QueryParameters::New();
+  query->modified_time = base::Time::Now() - kMaxLastModifiedOrViewedTime;
+  query->modified_time_operator =
+      drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
+  query->page_size = 10;
+  query->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query->sort_direction =
+      drivefs::mojom::QueryParameters::SortDirection::kDescending;
+  query->sort_field = drivefs::mojom::QueryParameters::SortField::kLastModified;
+  return query;
+}
+
+drivefs::mojom::QueryParametersPtr CreateRecentlyViewedQuery() {
+  auto query = drivefs::mojom::QueryParameters::New();
+  query->page_size = 10;
+  query->query_source =
+      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
+  query->sort_direction =
+      drivefs::mojom::QueryParameters::SortDirection::kDescending;
+  query->sort_field =
+      drivefs::mojom::QueryParameters::SortField::kLastViewedByMe;
+  return query;
+}
 
 }  // namespace
 
@@ -57,67 +89,91 @@ void DriveRecentFileSuggestionProvider::GetSuggestFileData(
     return;
   }
 
-  auto query = drivefs::mojom::QueryParameters::New();
-  query->sort_field = drivefs::mojom::QueryParameters::SortField::kLastModified;
-  query->sort_direction =
-      drivefs::mojom::QueryParameters::SortDirection::kDescending;
-  query->query_source =
-      drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
-  query->modified_time = base::Time::Now() - kMaxLastModifiedTime;
-  query->modified_time_operator =
-      drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
-  query->page_size = 10;
+  base::RepeatingClosure search_callback = base::BarrierClosure(
+      2, base::BindOnce(
+             &DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted,
+             weak_factory_.GetWeakPtr()));
+  PerformSearch(CreateRecentlyModifiedQuery(), drive_service, search_callback);
+  PerformSearch(CreateRecentlyViewedQuery(), drive_service, search_callback);
+}
 
+void DriveRecentFileSuggestionProvider::PerformSearch(
+    drivefs::mojom::QueryParametersPtr query,
+    drive::DriveIntegrationService* drive_service,
+    base::RepeatingClosure callback) {
   drive_service->GetDriveFsHost()->PerformSearch(
       std::move(query),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(&DriveRecentFileSuggestionProvider::OnSearchDriveFs,
-                         weak_factory_.GetWeakPtr()),
-          drive::FileError::FILE_ERROR_ABORT, absl::nullopt));
+          base::BindOnce(
+              &DriveRecentFileSuggestionProvider::OnSearchRequestComplete,
+              weak_factory_.GetWeakPtr(), std::move(callback)),
+          drive::FileError::FILE_ERROR_ABORT, /*items=*/absl::nullopt));
 }
 
 void DriveRecentFileSuggestionProvider::MaybeUpdateItemSuggestCache(
     base::PassKey<FileSuggestKeyedService>) {}
 
-void DriveRecentFileSuggestionProvider::OnSearchDriveFs(
+void DriveRecentFileSuggestionProvider::OnSearchRequestComplete(
+    base::RepeatingClosure callback,
     drive::FileError error,
     absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
-  if (error != drive::FileError::FILE_ERROR_OK || !items) {
-    on_drive_results_ready_callback_list_.Notify(absl::nullopt);
+  if (error == drive::FileError::FILE_ERROR_OK && items) {
+    for (auto& item : *items) {
+      query_result_files_by_path_.emplace(item->path,
+                                          std::move(item->metadata));
+    }
+  }
+  callback.Run();
+}
+
+void DriveRecentFileSuggestionProvider::OnRecentFilesSearchesCompleted() {
+  std::vector<FileSuggestData> results;
+
+  drive::DriveIntegrationService* const drive_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
+  if (!drive_service || !drive_service->IsMounted()) {
+    query_result_files_by_path_.clear();
+    on_drive_results_ready_callback_list_.Notify(results);
     return;
   }
 
-  std::vector<FileSuggestData> results;
-  for (const auto& item : *items) {
-    base::Time modified_time = item->metadata->modification_time;
-    std::u16string relative_date =
-        ui::TimeFormat::RelativeDate(modified_time, nullptr);
+  for (const auto& item : query_result_files_by_path_) {
+    const base::Time& modified_time = item.second->modification_time;
+    const base::Time& viewed_time = item.second->last_viewed_by_me_time;
+
+    const bool is_view_more_recent = viewed_time > modified_time;
+
+    const base::Time timestamp =
+        is_view_more_recent ? viewed_time : modified_time;
     // TODO(b/316180378): Localize justification strings.
+    const std::u16string action_string = is_view_more_recent
+                                             ? u"[Needs i18n] You viewed"
+                                             : u"[Needs i18n] Modified";
+    const std::u16string relative_date =
+        ui::TimeFormat::RelativeDate(timestamp, nullptr);
     std::u16string justification;
     if (!relative_date.empty()) {
       justification = base::JoinString(
-          {u"[Needs i18n] Modified", base::ToLowerASCII(relative_date)}, u" ");
+          {action_string, base::ToLowerASCII(relative_date)}, u" ");
     } else {
       justification = base::JoinString(
-          {u"[Needs i18n] Modified", base::TimeFormatShortDate(modified_time)},
-          u" ");
-    }
-
-    drive::DriveIntegrationService* const drive_service =
-        drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
-    if (!drive_service || !drive_service->IsMounted()) {
-      continue;
+          {action_string, base::TimeFormatShortDate(timestamp)}, u" ");
     }
 
     base::FilePath root("/");
     base::FilePath path = drive_service->GetMountPointPath();
-    if (!root.AppendRelativePath(item->path, &path)) {
+    if (!root.AppendRelativePath(item.first, &path)) {
       continue;
     }
 
     results.emplace_back(FileSuggestionType::kDriveFile, path, justification,
-                         absl::nullopt);
+                         timestamp, /*new_score=*/absl::nullopt);
   }
+
+  query_result_files_by_path_.clear();
+
+  base::ranges::sort(results, base::ranges::greater(),
+                     &ash::FileSuggestData::timestamp);
 
   on_drive_results_ready_callback_list_.Notify(results);
 }

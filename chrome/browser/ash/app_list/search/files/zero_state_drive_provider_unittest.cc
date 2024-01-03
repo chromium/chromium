@@ -254,6 +254,7 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
     suggestions.emplace_back(ash::FileSuggestionType::kDriveFile,
                              suggested_file_path,
                              /*new_prediction_reason=*/std::nullopt,
+                             /*timestamp=*/std::nullopt,
                              /*new_score=*/std::nullopt);
   }
 
