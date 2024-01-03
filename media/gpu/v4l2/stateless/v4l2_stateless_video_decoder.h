@@ -170,6 +170,11 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // Aspect ratio from config to use for output frames.
   VideoAspectRatio aspect_ratio_;
 
+  // Signals that there weren't enough surfaces to decode, so
+  // |ServiceDecodeRequestQueue| should be called after dequeuing the next input
+  // buffer.
+  bool paused_waiting_for_surface_ = false;
+
   // Int32 safe ID generator, starting at 0. Generated IDs are used to uniquely
   // identify a Decode() request for stateless backends. BitstreamID is just
   // a "phantom type" (see StrongAlias), essentially just a name.

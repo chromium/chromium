@@ -238,11 +238,7 @@ std::string InputQueue::Description() {
 }
 
 uint32_t InputQueue::BufferMinimumCount() {
-  // TODO: This number has been cargo culting around for a while. One buffer
-  // could be enough as there is buffering elsewhere in the system. This
-  // number should be revisited after end to end playback is completed and
-  // performance tuning is done.
-  return 8;
+  return 1;
 }
 
 std::unique_ptr<OutputQueue> OutputQueue::Create(
@@ -472,7 +468,9 @@ std::string OutputQueue::Description() {
 }
 
 uint32_t OutputQueue::BufferMinimumCount() {
-  return 4;
+  // TODO(frkoenig) : VP9 can have up to a max of 8 reference frames. This
+  // function will eventually need to request buffers based on the codec/clip.
+  return 10;
 }
 
 }  // namespace media

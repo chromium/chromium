@@ -551,7 +551,16 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
 void V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers(Buffer buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(1);
+
+  // Put the just dequeued buffer into the list of available input buffers.
   input_queue_->Reclaim(buffer);
+
+  // A surface can only be created when there is a free input buffer. Now that
+  // a buffer has been returned the backlog of decode requests can be processed.
+  if (paused_waiting_for_surface_) {
+    paused_waiting_for_surface_ = false;
+    ServiceDecodeRequestQueue();
+  }
 }
 
 void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
@@ -608,8 +617,9 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
 
         break;
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
-        NOTREACHED() << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
-        break;
+        VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
+        paused_waiting_for_surface_ = true;
+        return;
       case AcceleratedVideoDecoder::kDecodeError:
         VLOGF(1) << "AcceleratedVideoDecoder::kDecodeError.";
         done = true;
