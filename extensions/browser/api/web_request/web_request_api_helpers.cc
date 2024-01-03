@@ -935,8 +935,9 @@ static bool MergeRedirectUrlOfResponsesHelper(
   bool redirected = false;
 
   for (const auto& delta : deltas) {
-    if (delta.new_url.is_empty())
+    if (!delta.new_url.is_valid()) {
       continue;
+    }
     if (consider_only_cancel_scheme_urls &&
         !delta.new_url.SchemeIs(url::kDataScheme) &&
         delta.new_url.spec() != "about:blank") {

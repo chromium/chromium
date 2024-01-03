@@ -679,7 +679,7 @@ base::Value::Dict SummarizeResponseDelta(
   if (delta.cancel) {
     details.Set(activity_log::kCancelKey, true);
   }
-  if (!delta.new_url.is_empty()) {
+  if (delta.new_url.is_valid()) {
     details.Set(activity_log::kNewUrlKey, delta.new_url.spec());
   }
 

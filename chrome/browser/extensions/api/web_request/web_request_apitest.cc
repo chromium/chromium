@@ -5266,6 +5266,57 @@ IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
               net::SiteForCookies::FromOrigin(top_level_origin))));
 }
 
+// Regression test for crbug.com/1510422 to validate that redirection to an
+// invalid URL by extension does not crash the browser.
+IN_PROC_BROWSER_TEST_P(RedirectInfoWebRequestApiTest,
+                       VerifyInvalidUrlRedirection) {
+  TestExtensionDir test_dir;
+  static constexpr char kInvalidUrl[] = "https://www.invalid.[ss]com/";
+  test_dir.WriteManifest(R"({
+        "name": "Simple Redirect",
+          "manifest_version": 2,
+          "version": "0.1",
+          "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                     base::StringPrintf(R"(
+        chrome.webRequest.onBeforeRequest.addListener(function(details) {
+          if (details.url.includes('hello.html')) {
+            var redirectUrl = '%s';
+            return {redirectUrl: redirectUrl};
+          }
+        }, {urls: ['*://redirect.test/*']}, ['blocking']);
+        chrome.test.sendMessage('ready');
+      )",
+                                        kInvalidUrl));
+
+  // Since we can't catch the error in the extension's JS, we instead listen to
+  // the error come into the error console.
+  ErrorConsoleTestObserver error_observer(2u, profile());
+  error_observer.EnableErrorCollection();
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to the URL that should be redirected, and check that the extension
+  // navigation happens successfully.
+  content::TestNavigationObserver navigation_observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  GURL url = embedded_test_server()->GetURL("redirect.test", "/hello.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+
+  error_observer.WaitForErrors();
+  const ErrorList& errors =
+      ErrorConsole::Get(profile())->GetErrorsForExtension(extension->id());
+  ASSERT_EQ(2u, errors.size());
+  EXPECT_EQ(
+      base::ASCIIToUTF16(base::StringPrintf(
+          "Unchecked runtime.lastError: redirectUrl '%s' is not a valid URL.",
+          kInvalidUrl)),
+      errors[1]->message());
+}
 
 class ProxyCORSWebRequestApiTest
     : public ExtensionApiTest,
