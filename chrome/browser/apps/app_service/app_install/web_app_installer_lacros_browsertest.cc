@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
+
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -89,19 +90,19 @@ class WebAppInstallerLacrosBrowserTest
   std::string manifest_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallOemApp) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallApp) {
   // Assert Lacros is running.
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/index.html");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_OEM);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
+  AppInstallData app_install_data(
+      PackageId::FromString("web:https://www.example.com/index.html").value());
+  app_install_data.name = "Example app";
+  WebAppInstallData& web_app_data =
+      app_install_data.app_type_data.emplace<WebAppInstallData>();
+  web_app_data.original_manifest_url =
+      GURL("https://www.example.com/manifest.json");
+  web_app_data.proxied_manifest_url = https_server()->GetURL("/manifest.json");
+  web_app_data.document_url = GURL("https://www.example.com");
 
   constexpr char kManifestTemplate[] = R"({
     "name": "Example App",
@@ -117,7 +118,10 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallOemApp) {
 
   // Install the app.
   WebAppInstaller installer(GetAshProfile());
-  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
+  installer.InstallAllApps(
+      {{.surface = AppInstallSurface::kAppPreloadServiceOem,
+        .data = std::move(app_install_data)}},
+      result.GetCallback());
   ASSERT_TRUE(result.Get());
 
   // Check the app is installed in app_registry_cache.
@@ -138,47 +142,6 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallOemApp) {
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kSuccessNewInstall, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest,
-                       InstallDefaultApp) {
-  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-
-  proto::AppPreloadListResponse_App app;
-  app.set_name("Example App");
-  app.set_package_id("web:https://www.example.com/index.html");
-  app.set_install_reason(proto::AppPreloadListResponse::INSTALL_REASON_DEFAULT);
-
-  auto* web_extras = app.mutable_web_extras();
-  web_extras->set_original_manifest_url(
-      "https://www.example.com/manifest.json");
-  web_extras->set_manifest_url(https_server()->GetURL("/manifest.json").spec());
-
-  constexpr char kManifestTemplate[] = R"({
-    "name": "Example App",
-    "start_url": "/index.html",
-    "scope": "/",
-    "icons": $1
-  })";
-
-  SetManifestResponse(AddIconToManifest(kManifestTemplate));
-
-  // Install the app.
-  base::test::TestFuture<bool> result;
-  WebAppInstaller installer(GetAshProfile());
-  installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
-  ASSERT_TRUE(result.Get());
-
-  // Wait for update to be registered with the app registry cache.
-  auto app_id = web_app::GenerateAppId(
-      std::nullopt, GURL("https://www.example.com/index.html"));
-  AppReadinessWaiter(GetAshProfile(), app_id).Await();
-  bool found =
-      app_registry_cache().ForOneApp(app_id, [](const AppUpdate& update) {
-        EXPECT_EQ(update.Name(), "Example App");
-        EXPECT_EQ(update.InstallReason(), InstallReason::kDefault);
-      });
-  ASSERT_TRUE(found);
 }
 
 }  // namespace apps

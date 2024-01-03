@@ -16,6 +16,16 @@
 
 namespace apps {
 
+// Additions to this enum must also update the
+// Apps.AppInstallService.AppInstallResult histogram.
+enum class AppInstallSurface {
+  kAppInstallNavigationThrottle,
+  kAppPreloadServiceOem,
+  kAppPreloadServiceDefault,
+};
+
+std::ostream& operator<<(std::ostream& out, AppInstallSurface surface);
+
 // App icons hosted by Almanac for use during app installation.
 struct AppInstallIcon {
   GURL url;

@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/common/web_app_id.h"
@@ -59,16 +59,15 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
   WebAppInstaller(const WebAppInstaller&) = delete;
   WebAppInstaller& operator=(const WebAppInstaller&) = delete;
 
-  // Attempts to install each of the `apps` and calls `callback` after all
-  // installations have completed. Must only be called if `app.GetPlatform()`
-  // returns `AppType::kWeb`.
-  void InstallAllApps(std::vector<PreloadAppDefinition> apps,
+  // Attempts to install each of the `requests` and calls `callback` after all
+  // installations have completed. Must only be called if
+  // `request.data.app_type_data` holds `WebAppInstallData`.
+  struct InstallRequest {
+    AppInstallSurface surface;
+    AppInstallData data;
+  };
+  void InstallAllApps(std::vector<InstallRequest> requests,
                       WebAppInstalledCallback callback);
-
-  // Returns the app ID for the given `app` if it were to be installed as a web
-  // app. Does not validate whether the `app` is valid and able to be installed.
-  // Must only be called if `app.GetPlatform()` returns `AppType::kWeb`.
-  std::string GetAppId(const PreloadAppDefinition& app) const;
 
  private:
   // croapi::WebAppServiceAsh::Observer overrides:
@@ -79,9 +78,8 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
   // WebAppProvider is ready.
   void InstallAllAppsWhenReady();
 
-  void InstallAppImpl(PreloadAppDefinition app,
-                      WebAppInstalledCallback callback);
-  void OnManifestRetrieved(PreloadAppDefinition app,
+  void InstallAppImpl(InstallRequest request, WebAppInstalledCallback callback);
+  void OnManifestRetrieved(InstallRequest request,
                            WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
@@ -95,7 +93,7 @@ class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
       web_app_service_observer_{this};
 
   bool lacros_is_connected_;
-  std::optional<std::vector<PreloadAppDefinition>> apps_for_installation_;
+  std::optional<std::vector<InstallRequest>> requests_for_installation_;
   WebAppInstalledCallback installation_complete_callback_;
 
   raw_ptr<Profile> profile_;

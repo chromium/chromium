@@ -103,12 +103,11 @@ WebAppInstaller::WebAppInstaller(Profile* profile)
 
 WebAppInstaller::~WebAppInstaller() = default;
 
-void WebAppInstaller::InstallAllApps(
-    std::vector<PreloadAppDefinition> apps,
-    WebAppInstalledCallback callback) {
+void WebAppInstaller::InstallAllApps(std::vector<InstallRequest> requests,
+                                     WebAppInstalledCallback callback) {
   CHECK(!installation_complete_callback_);
   installation_complete_callback_ = std::move(callback);
-  apps_for_installation_ = apps;
+  requests_for_installation_ = requests;
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
     if (lacros_is_connected_) {
@@ -124,47 +123,42 @@ void WebAppInstaller::InstallAllApps(
   }
 }
 
-std::string WebAppInstaller::GetAppId(
-    const PreloadAppDefinition& app) const {
-  // The app's "Web app manifest ID" is the equivalent of the unhashed app ID.
-  return web_app::GenerateAppIdFromManifestId(app.GetWebAppManifestId());
-}
-
 void WebAppInstaller::OnWebAppProviderBridgeConnected() {
   lacros_is_connected_ = true;
   InstallAllAppsWhenReady();
 }
 
 void WebAppInstaller::InstallAllAppsWhenReady() {
-  if (!apps_for_installation_.has_value()) {
+  if (!requests_for_installation_.has_value()) {
     return;
   }
 
   // Request installation of any remaining apps. If there are no apps to
   // install, OnAllAppInstallationFinished will be called immediately.
   const auto install_barrier_callback = base::BarrierCallback<bool>(
-      apps_for_installation_.value().size(),
+      requests_for_installation_.value().size(),
       base::BindOnce(&WebAppInstaller::OnAllAppInstallationFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  for (const PreloadAppDefinition& app : apps_for_installation_.value()) {
-    CHECK_EQ(app.GetPlatform(), AppType::kWeb);
-    InstallAppImpl(app, install_barrier_callback);
+  for (InstallRequest& request : requests_for_installation_.value()) {
+    CHECK_EQ(request.data.package_id.app_type(), AppType::kWeb);
+    InstallAppImpl(std::move(request), install_barrier_callback);
   }
 
   // Reset the values after installation has been performed.
-  apps_for_installation_ = std::nullopt;
+  requests_for_installation_ = std::nullopt;
 }
 
-void WebAppInstaller::InstallAppImpl(
-    PreloadAppDefinition app,
-    WebAppInstalledCallback callback) {
+void WebAppInstaller::InstallAppImpl(InstallRequest request,
+                                     WebAppInstalledCallback callback) {
   // Retrieve web manifest
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(app.GetWebAppManifestUrl());
+  resource_request->url =
+      absl::get<WebAppInstallData>(request.data.app_type_data)
+          .proxied_manifest_url;
 
   if (!resource_request->url.is_valid()) {
-    LOG(ERROR) << "Manifest URL for " << app.GetName()
+    LOG(ERROR) << "Manifest URL for " << request.data.name
                << "is invalid: " << resource_request->url;
     RecordInstallResultMetric(WebAppInstallResult::kInvalidManifestUrl);
     std::move(callback).Run(/*success=*/false);
@@ -183,18 +177,18 @@ void WebAppInstaller::InstallAppImpl(
   loader_ptr->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&WebAppInstaller::OnManifestRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), app, std::move(callback),
-                     std::move(simple_loader)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request),
+                     std::move(callback), std::move(simple_loader)),
       kMaxManifestSizeInBytes);
 }
 
 void WebAppInstaller::OnManifestRetrieved(
-    PreloadAppDefinition app,
+    InstallRequest request,
     WebAppInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response) {
   if (url_loader->NetError() != net::OK) {
-    LOG(ERROR) << "Downloading manifest failed for " << app.GetName()
+    LOG(ERROR) << "Downloading manifest failed for " << request.data.name
                << " with error code: " << GetResponseCode(url_loader.get());
 
     RecordInstallResultMetric(url_loader->NetError() ==
@@ -211,6 +205,11 @@ void WebAppInstaller::OnManifestRetrieved(
     return;
   }
 
+  webapps::AppId expected_app_id = web_app::GenerateAppIdFromManifestId(
+      GURL(request.data.package_id.identifier()));
+
+  auto& web_app_data = absl::get<WebAppInstallData>(request.data.app_type_data);
+
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
@@ -223,16 +222,24 @@ void WebAppInstaller::OnManifestRetrieved(
       std::move(callback).Run(/*success=*/false);
       return;
     }
+
     auto web_app_install_info = crosapi::mojom::PreloadWebAppInstallInfo::New();
-    web_app_install_info->document_url =
-        GURL(app.GetWebAppManifestId()).GetWithEmptyPath();
-    web_app_install_info->manifest_url = app.GetWebAppOriginalManifestUrl();
-    web_app_install_info->expected_app_id = GetAppId(app);
+    web_app_install_info->document_url = web_app_data.document_url;
+    web_app_install_info->manifest_url = web_app_data.original_manifest_url;
+    web_app_install_info->expected_app_id = expected_app_id;
     web_app_install_info->manifest = std::move(*response);
-    web_app_install_info->install_source =
-        app.IsDefaultApp()
-            ? crosapi::mojom::PreloadWebAppInstallSource::kDefaultPreload
-            : crosapi::mojom::PreloadWebAppInstallSource::kOemPreload;
+    web_app_install_info->install_source = [&] {
+      switch (request.surface) {
+        case AppInstallSurface::kAppInstallNavigationThrottle:
+          // TODO(b/315078159): Support non-preload installs over crosapi.
+          NOTREACHED();
+          [[fallthrough]];
+        case AppInstallSurface::kAppPreloadServiceOem:
+          return crosapi::mojom::PreloadWebAppInstallSource::kOemPreload;
+        case AppInstallSurface::kAppPreloadServiceDefault:
+          return crosapi::mojom::PreloadWebAppInstallSource::kDefaultPreload;
+      }
+    }();
 
     web_app_provider_bridge->InstallPreloadWebApp(
         std::move(web_app_install_info),
@@ -240,16 +247,25 @@ void WebAppInstaller::OnManifestRetrieved(
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   } else {
-    webapps::WebappInstallSource install_source =
-        app.IsDefaultApp() ? webapps::WebappInstallSource::PRELOADED_DEFAULT
-                           : webapps::WebappInstallSource::PRELOADED_OEM;
+    webapps::WebappInstallSource install_source = [&] {
+      switch (request.surface) {
+        case AppInstallSurface::kAppInstallNavigationThrottle:
+          // TODO(b/315078159): Add nav throttle as a new surface.
+          NOTREACHED();
+          [[fallthrough]];
+        case AppInstallSurface::kAppPreloadServiceOem:
+          return webapps::WebappInstallSource::PRELOADED_OEM;
+        case AppInstallSurface::kAppPreloadServiceDefault:
+          return webapps::WebappInstallSource::PRELOADED_DEFAULT;
+      }
+    }();
 
     provider->command_manager().ScheduleCommand(
         std::make_unique<web_app::InstallPreloadedVerifiedAppCommand>(
             install_source,
-            /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
-            /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
-            std::move(*response), GetAppId(app),
+            /*document_url=*/web_app_data.document_url,
+            /*manifest_url=*/web_app_data.original_manifest_url,
+            std::move(*response), expected_app_id,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback))));

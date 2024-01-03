@@ -24,6 +24,11 @@ void AppInstallServiceLacros::InstallApp(AppInstallSurface surface,
     switch (surface) {
       case AppInstallSurface::kAppInstallNavigationThrottle:
         return Surface::kAppInstallNavigationThrottle;
+      case AppInstallSurface::kAppPreloadServiceOem:
+      case AppInstallSurface::kAppPreloadServiceDefault:
+        // Preloads should be installed from Ash, not Lacros.
+        NOTREACHED();
+        return Surface::kUnknown;
     }
   }();
   params->package_id = package_id.ToString();

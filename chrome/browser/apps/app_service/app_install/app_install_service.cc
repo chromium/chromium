@@ -8,13 +8,6 @@
 
 namespace apps {
 
-std::ostream& operator<<(std::ostream& out, AppInstallSurface surface) {
-  switch (surface) {
-    case AppInstallSurface::kAppInstallNavigationThrottle:
-      return out << "AppInstallNavigationThrottle";
-  }
-}
-
 AppInstallService::~AppInstallService() = default;
 
 }  // namespace apps

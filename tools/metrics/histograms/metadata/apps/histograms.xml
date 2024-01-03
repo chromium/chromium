@@ -280,6 +280,8 @@ chromium-metrics-reviews@google.com.
   <token key="AppInstallSurface">
     <variant name="" summary="All surfaces"/>
     <variant name=".AppInstallNavigationThrottle" summary="URI navigation"/>
+    <variant name=".AppPreloadServiceDefault" summary="Default preload"/>
+    <variant name=".AppPreloadServiceOem" summary="OEM preload"/>
   </token>
 </histogram>
 

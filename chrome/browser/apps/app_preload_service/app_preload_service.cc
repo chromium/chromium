@@ -163,14 +163,20 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     return;
   }
 
-  // Filter out any apps that should not be installed.
-  std::erase_if(apps.value(), [this](const PreloadAppDefinition& app) {
-    return !ShouldInstallApp(app);
-  });
+  std::vector<WebAppInstaller::InstallRequest> requests;
+  for (const PreloadAppDefinition& app : apps.value()) {
+    if (ShouldInstallApp(app)) {
+      requests.push_back({
+          .surface = app.GetInstallSurface(),
+          .data = app.ToAppInstallData(),
+      });
+    }
+  }
 
   web_app_installer_->InstallAllApps(
-      apps.value(), base::BindOnce(&AppPreloadService::OnFirstLoginFlowComplete,
-                                   weak_ptr_factory_.GetWeakPtr(), start_time));
+      std::move(requests),
+      base::BindOnce(&AppPreloadService::OnFirstLoginFlowComplete,
+                     weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
 void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
@@ -213,8 +219,7 @@ bool AppPreloadService::ShouldInstallApp(const PreloadAppDefinition& app) {
   bool installed = false;
 
   proxy->AppRegistryCache().ForOneApp(
-      web_app_installer_->GetAppId(app),
-      [&installed, expected_reason](const AppUpdate& app) {
+      app.GetWebAppId(), [&installed, expected_reason](const AppUpdate& app) {
         // It's possible that if APS requests the same app to be installed for
         // multiple reasons, this check could incorrectly return false, as App
         // Service only reports the highest priority install reason. This is

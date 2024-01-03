@@ -8,16 +8,11 @@
 #include <iosfwd>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_types.h"
 
 namespace apps {
 
 class PackageId;
-
-enum class AppInstallSurface {
-  kAppInstallNavigationThrottle,
-};
-
-std::ostream& operator<<(std::ostream& out, AppInstallSurface surface);
 
 class AppInstallService {
  public:

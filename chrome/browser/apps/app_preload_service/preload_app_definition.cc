@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "url/gurl.h"
 
@@ -48,6 +49,11 @@ bool PreloadAppDefinition::IsTestApp() const {
          proto::AppPreloadListResponse::INSTALL_REASON_TEST;
 }
 
+AppInstallSurface PreloadAppDefinition::GetInstallSurface() const {
+  return IsDefaultApp() ? AppInstallSurface::kAppPreloadServiceDefault
+                        : AppInstallSurface::kAppPreloadServiceOem;
+}
+
 GURL PreloadAppDefinition::GetWebAppManifestUrl() const {
   DCHECK_EQ(GetPlatform(), AppType::kWeb);
 
@@ -65,6 +71,22 @@ GURL PreloadAppDefinition::GetWebAppManifestId() const {
   DCHECK(package_id_.has_value());
 
   return GURL(package_id_->identifier());
+}
+
+std::string PreloadAppDefinition::GetWebAppId() const {
+  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  return web_app::GenerateAppIdFromManifestId(GetWebAppManifestId());
+}
+
+AppInstallData PreloadAppDefinition::ToAppInstallData() const {
+  DCHECK_EQ(GetPlatform(), AppType::kWeb);
+  AppInstallData result(package_id_.value());
+  result.name = GetName();
+  auto& web_app_data = result.app_type_data.emplace<WebAppInstallData>();
+  web_app_data.original_manifest_url = GetWebAppOriginalManifestUrl();
+  web_app_data.proxied_manifest_url = GetWebAppManifestUrl();
+  web_app_data.document_url = GetWebAppManifestId().GetWithEmptyPath();
+  return result;
 }
 
 std::ostream& operator<<(std::ostream& os, const PreloadAppDefinition& app) {
