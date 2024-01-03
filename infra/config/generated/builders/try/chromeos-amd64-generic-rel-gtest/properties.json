@@ -115,6 +115,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "cq": "path-based",
+  "cq": "required",
   "recipe": "chromium/orchestrator"
 }
