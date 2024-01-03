@@ -16,8 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -235,8 +233,6 @@ const char kOverview[] = "overview";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 const char kCustomerLogo[] = "customerLogo";
-
-const char kPowerfulExtensionsCountHistogram[] = "Extensions.PowerfulCount";
 
 namespace {
 
@@ -1266,14 +1262,8 @@ void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
       extensions::ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))
           ->enabled_extensions();
 
-  base::Value::List powerful_extensions = GetPowerfulExtensions(extensions);
-
-  // The number of extensions to be reported in chrome://management with
-  // powerful permissions.
-  base::UmaHistogramCounts1000(kPowerfulExtensionsCountHistogram,
-                               powerful_extensions.size());
-
-  ResolveJavascriptCallback(args[0] /* callback_id */, powerful_extensions);
+  ResolveJavascriptCallback(args[0] /* callback_id */,
+                            GetPowerfulExtensions(extensions));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

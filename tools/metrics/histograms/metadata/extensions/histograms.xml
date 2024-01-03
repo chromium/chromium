@@ -3806,17 +3806,6 @@ of interesting buckets, such as "internal + external".
   </summary>
 </histogram>
 
-<histogram name="Extensions.PowerfulCount" units="extensions"
-    expires_after="2021-12-01">
-  <owner>tnagel@chromium.org</owner>
-  <owner>chrome-privacy-core@chromium.org</owner>
-  <summary>
-    The number of extensions reported in chrome://management UI with powerful
-    permissions. This number is recorded every time the user opens
-    chrome://management UI.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ProcessManagerStartupHostsTime2" units="ms"
     expires_after="2024-06-30">
   <owner>rdevlin.cronin@chromium.org</owner>
