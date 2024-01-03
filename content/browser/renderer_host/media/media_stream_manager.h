@@ -542,7 +542,7 @@ class CONTENT_EXPORT MediaStreamManager
       const std::string& label) const;
   DeviceRequest* FindRequest(const std::string& label) const;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Find a request by the session-ID of its video device.
   // (In case of multiple video devices - any of them would fit.)
   // TOOD(crbug.com/1466247): Remove this after making the Captured Surface
@@ -554,7 +554,7 @@ class CONTENT_EXPORT MediaStreamManager
       GlobalRenderFrameHostId capturer_rfh_id,
       const base::UnguessableToken& session_id,
       blink::mojom::CapturedSurfaceControlResult& result);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Clones an existing device identified by |existing_device_session_id| and
   // returns it. If no such device is found, it returns absl::nullopt.
