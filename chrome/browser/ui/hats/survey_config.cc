@@ -186,8 +186,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
       kHatsSurveyTriggerSettingsPrivacy,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"3P cookies blocked",
-                               "Privacy Sandbox enabled"});
+      std::vector<std::string>{"3P cookies blocked"});
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForSecurityPage,
       kHatsSurveyTriggerSettingsSecurity,
@@ -204,8 +203,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
       /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"3P cookies blocked",
-                               "Privacy Sandbox enabled"});
+      std::vector<std::string>{"3P cookies blocked"});
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   survey_configs.emplace_back(&features::kHappinessTrackingSurveysGetMostChrome,

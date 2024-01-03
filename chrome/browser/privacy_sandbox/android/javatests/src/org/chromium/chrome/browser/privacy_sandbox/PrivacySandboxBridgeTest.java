@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -41,18 +40,6 @@ public class PrivacySandboxBridgeTest {
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
 
     private UserActionTester mUserActionTester;
-
-    @Test
-    @SmallTest
-    public void testToggleSandboxSetting() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    PrivacySandboxBridge.setPrivacySandboxEnabled(false);
-                    assertFalse(PrivacySandboxBridge.isPrivacySandboxEnabled());
-                    PrivacySandboxBridge.setPrivacySandboxEnabled(true);
-                    assertTrue(PrivacySandboxBridge.isPrivacySandboxEnabled());
-                });
-    }
 
     @Test
     @SmallTest

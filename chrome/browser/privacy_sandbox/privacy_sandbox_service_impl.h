@@ -70,7 +70,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
   bool IsPromptOpenForBrowser(Browser* browser) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
-  void SetPrivacySandboxEnabled(bool enabled) override;
   bool IsPrivacySandboxEnabled() override;
   bool IsPrivacySandboxManaged() override;
   bool IsPrivacySandboxRestricted() override;

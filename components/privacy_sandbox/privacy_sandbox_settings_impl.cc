@@ -682,11 +682,6 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
-  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
-  if (!IsAllowed(status)) {
-    return false;
-  }
-
   // For Measurement and Relevance APIs, we explicitly do not require the
   // underlying pref to be enabled if there is a local flag enabling the APIs to
   // allow for local testing.
@@ -695,7 +690,8 @@ bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
     return true;
   }
 
-  return pref_service_->GetBoolean(prefs::kPrivacySandboxApisEnabledV2);
+  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
+  return IsAllowed(status);
 }
 
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
@@ -706,10 +702,6 @@ void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
 
 void PrivacySandboxSettingsImpl::SetTopicsBlockedForTesting() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
-}
-
-void PrivacySandboxSettingsImpl::SetPrivacySandboxEnabled(bool enabled) {
-  pref_service_->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, enabled);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxRestricted() const {

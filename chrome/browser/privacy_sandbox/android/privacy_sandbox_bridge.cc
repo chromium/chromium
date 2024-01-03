@@ -70,12 +70,6 @@ static jboolean JNI_PrivacySandboxBridge_IsRestrictedNoticeEnabled(
   return GetPrivacySandboxService()->IsRestrictedNoticeEnabled();
 }
 
-static void JNI_PrivacySandboxBridge_SetPrivacySandboxEnabled(
-    JNIEnv* env,
-    jboolean enabled) {
-  GetPrivacySandboxService()->SetPrivacySandboxEnabled(enabled);
-}
-
 static ScopedJavaLocalRef<jobjectArray>
 JNI_PrivacySandboxBridge_GetCurrentTopTopics(JNIEnv* env) {
   return ToJavaTopicsArray(env,

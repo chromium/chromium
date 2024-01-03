@@ -32,10 +32,6 @@ public class PrivacySandboxBridge {
         return PrivacySandboxBridgeJni.get().isRestrictedNoticeEnabled();
     }
 
-    public static void setPrivacySandboxEnabled(boolean enabled) {
-        PrivacySandboxBridgeJni.get().setPrivacySandboxEnabled(enabled);
-    }
-
     public static List<Topic> getCurrentTopTopics() {
         return sortTopics(Arrays.asList(PrivacySandboxBridgeJni.get().getCurrentTopTopics()));
     }
@@ -134,8 +130,6 @@ public class PrivacySandboxBridge {
         boolean isFirstPartySetsDataAccessManaged();
 
         boolean isPartOfManagedFirstPartySet(String origin);
-
-        void setPrivacySandboxEnabled(boolean enabled);
 
         void setFirstPartySetsDataAccessEnabled(boolean enabled);
 

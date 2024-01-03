@@ -95,11 +95,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public void setPrivacySandboxEnabled(boolean enabled) {
-        mIsPrivacySandboxEnabled = enabled;
-    }
-
-    @Override
     public void setFirstPartySetsDataAccessEnabled(boolean enabled) {}
 
     @Override

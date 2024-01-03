@@ -100,13 +100,11 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(HatsHandlerTest, PrivacySettingsHats) {
-  PrivacySandboxSettingsFactory::GetForProfile(profile())
-      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
   SurveyBitsData expected_product_specific_data = {
-      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
+      {"3P cookies blocked", true}};
 
   // Check that both interacting with the privacy card, and running Safety Check
   // result in a survey request with the appropriate product specific data.
@@ -305,13 +303,9 @@ class HatsHandlerNoSandboxTest : public HatsHandlerTest {
 };
 
 TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
-  PrivacySandboxSettingsFactory::GetForProfile(profile())
-      ->SetPrivacySandboxEnabled(false);
   profile()->GetPrefs()->SetInteger(
       prefs::kCookieControlsMode,
       static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  SurveyBitsData expected_product_specific_data = {
-      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
   // Enable targeting for users who have not seen the Privacy Sandbox page and
   // ensure the handler does not attempt to launch the survey.
   EXPECT_CALL(*mock_hats_service_,
@@ -323,27 +317,6 @@ TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
   base::Value::List args;
   args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args);
-  task_environment()->RunUntilIdle();
-}
-
-TEST_F(HatsHandlerTest, PrivacySandboxHats) {
-  // Check that the handler correctly forwards the survey request to the
-  // HaTS service and also includes the appropriate product specific data.
-  PrivacySandboxSettingsFactory::GetForProfile(profile())
-      ->SetPrivacySandboxEnabled(false);
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  SurveyBitsData expected_product_specific_data = {
-      {"3P cookies blocked", true}, {"Privacy Sandbox enabled", false}};
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(
-                  kHatsSurveyTriggerPrivacySandbox, web_contents(), 10000,
-                  expected_product_specific_data, _, true, _, _, _));
-  base::Value::List args;
-  args.Append(static_cast<int>(
-      HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
   handler()->HandleTrustSafetyInteractionOccurred(args);
   task_environment()->RunUntilIdle();
 }

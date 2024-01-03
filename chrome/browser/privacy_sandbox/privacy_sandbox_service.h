@@ -164,11 +164,6 @@ class PrivacySandboxService : public KeyedService {
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
 
-  // Disables the Privacy Sandbox completely if |enabled| is false. If |enabled|
-  // is true, context specific as well as restriction checks will still be
-  // performed to determine if specific APIs are available in specific contexts.
-  virtual void SetPrivacySandboxEnabled(bool enabled) = 0;
-
   // Used by the UI to check if the API is enabled. This is a UI function ONLY.
   // Checks the primary pref directly, and _only_ the primary pref. There are
   // many other reasons that API access may be denied that are not checked by

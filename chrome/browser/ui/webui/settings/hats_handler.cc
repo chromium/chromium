@@ -32,12 +32,8 @@ SurveyBitsData GetPrivacySettingsProductSpecificBitsData(Profile* profile) {
       static_cast<content_settings::CookieControlsMode>(
           profile->GetPrefs()->GetInteger(prefs::kCookieControlsMode)) ==
       content_settings::CookieControlsMode::kBlockThirdParty;
-  const bool privacy_sandbox_enabled =
-      PrivacySandboxSettingsFactory::GetForProfile(profile)
-          ->IsPrivacySandboxEnabled();
 
-  return {{"3P cookies blocked", third_party_cookies_blocked},
-          {"Privacy Sandbox enabled", privacy_sandbox_enabled}};
+  return {{"3P cookies blocked", third_party_cookies_blocked}};
 }
 
 // Generate the Product Specific bits data which accompanies M1 Ad Privacy
@@ -255,16 +251,6 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
   bool require_same_origin = false;
 
   switch (interaction) {
-    case TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX: {
-      trigger = kHatsSurveyTriggerPrivacySandbox;
-      timeout_ms =
-          features::kHappinessTrackingSurveysForDesktopPrivacySandboxTime.Get()
-              .InMilliseconds();
-      product_specific_bits_data =
-          GetPrivacySettingsProductSpecificBitsData(profile);
-      require_same_origin = true;
-      break;
-    }
     case TrustSafetyInteraction::RAN_SAFETY_CHECK:
       [[fallthrough]];
     case TrustSafetyInteraction::USED_PRIVACY_CARD: {

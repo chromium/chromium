@@ -294,14 +294,6 @@ class PrivacySandboxSettings : public KeyedService {
   // Blocks Topics pref for testing.
   virtual void SetTopicsBlockedForTesting() = 0;
 
-  // Disables the Privacy Sandbox completely if |enabled| is false, if |enabled|
-  // is true, more granular checks will still be performed, and the delegate
-  // consulted, to determine if specific APIs are available in specific
-  // contexts.
-  // DEPRECATED: Use `SetAllPrivacySandboxAllowedForTesting()` to allow all
-  // Privacy Sandbox prefs or per-API block-for-testing functions.
-  virtual void SetPrivacySandboxEnabled(bool enabled) = 0;
-
   // Returns whether the Privacy Sandbox is being restricted by the associated
   // delegate. Forwards directly to the corresponding delegate function.
   // Virtual to allow mocking in tests.
