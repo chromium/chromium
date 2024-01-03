@@ -40,8 +40,8 @@ const CGFloat kTitleInset = 10.0;
 const CGFloat kFontSize = 14.0;
 const CGFloat kFaviconSize = 16.0;
 
-// Width of the title label gradient view.
-const CGFloat kTitleGradientWidth = 16.0f;
+// Width of gradient views.
+const CGFloat kGradientWidth = 16.0f;
 
 // Returns the default favicon image.
 UIImage* DefaultFavicon() {
@@ -66,6 +66,7 @@ UIImage* DefaultFavicon() {
 
   // Cell separator.
   UIView* _trailingSeparatorView;
+  UIView* _trailingGradientView;
 
   // Wether the decoration layers have been updated.
   BOOL _decorationLayersUpdated;
@@ -88,6 +89,7 @@ UIImage* DefaultFavicon() {
     _decorationLayersUpdated = NO;
 
     UIView* contentView = self.contentView;
+    contentView.layer.masksToBounds = YES;
 
     _topLeftCornerView = [self createTopCornerView];
     [contentView addSubview:_topLeftCornerView];
@@ -115,6 +117,9 @@ UIImage* DefaultFavicon() {
 
     _trailingSeparatorView = [self createSepartorView];
     [self addSubview:_trailingSeparatorView];
+
+    _trailingGradientView = [self createGradientView];
+    [self addSubview:_trailingGradientView];
 
     [self setupConstraints];
     [self setupDecorationLayers];
@@ -184,6 +189,7 @@ UIImage* DefaultFavicon() {
                            endColor:backgroundColor];
 
   // Update decoration views visibility.
+  _trailingGradientView.hidden = selected;
   _leftTailView.hidden = !selected;
   _rightTailView.hidden = !selected;
   _topLeftCornerView.hidden = !selected;
@@ -365,8 +371,7 @@ UIImage* DefaultFavicon() {
       constraintEqualToAnchor:_titleContainer.trailingAnchor];
   [NSLayoutConstraint activateConstraints:@[
     _titleGradientViewTrailingConstraint,
-    [_titleGradientView.widthAnchor
-        constraintEqualToConstant:kTitleGradientWidth],
+    [_titleGradientView.widthAnchor constraintEqualToConstant:kGradientWidth],
     [_titleGradientView.heightAnchor
         constraintEqualToAnchor:_titleContainer.heightAnchor],
     [_titleGradientView.centerYAnchor
@@ -415,6 +420,18 @@ UIImage* DefaultFavicon() {
     [_trailingSeparatorView.heightAnchor
         constraintLessThanOrEqualToConstant:kSeparatorMaxHeight],
     [_trailingSeparatorView.centerYAnchor
+        constraintEqualToAnchor:contentView.centerYAnchor],
+  ]];
+
+  /// `_trailingGradientView` constraints.
+  [NSLayoutConstraint activateConstraints:@[
+    [_trailingGradientView.trailingAnchor
+        constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
+    [_trailingGradientView.widthAnchor
+        constraintEqualToConstant:kGradientWidth],
+    [_trailingGradientView.heightAnchor
+        constraintEqualToAnchor:contentView.heightAnchor],
+    [_trailingGradientView.centerYAnchor
         constraintEqualToAnchor:contentView.centerYAnchor],
   ]];
 }
@@ -467,7 +484,7 @@ UIImage* DefaultFavicon() {
 }
 
 // Returns a new gradient view.
-- (GradientView*)createTitleGradientView {
+- (GradientView*)createGradientView {
   GradientView* gradientView = [[GradientView alloc]
       initWithStartColor:[[UIColor colorNamed:kGrey200Color]
                              colorWithAlphaComponent:0]
@@ -487,7 +504,7 @@ UIImage* DefaultFavicon() {
   _titleLabel = [self createTitleLabel];
   [titleContainer addSubview:_titleLabel];
 
-  _titleGradientView = [self createTitleGradientView];
+  _titleGradientView = [self createGradientView];
   [titleContainer addSubview:_titleGradientView];
 
   return titleContainer;
