@@ -13,7 +13,6 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_service.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS_ASH));
 
@@ -30,9 +29,6 @@ class AppInstallServiceAsh : public AppInstallService {
   void InstallApp(AppInstallSurface surface,
                   PackageId package_id,
                   base::OnceClosure callback) override;
-  void InstallApp(AppInstallSurface surface,
-                  AppInstallData data,
-                  base::OnceCallback<void(bool success)> callback) override;
 
  private:
   void InstallAppWithDeviceInfo(AppInstallSurface surface,
@@ -47,7 +43,6 @@ class AppInstallServiceAsh : public AppInstallService {
   raw_ref<Profile> profile_;
   DeviceInfoManager device_info_manager_;
   AppInstallAlmanacConnector connector_;
-  WebAppInstaller web_app_installer_;
 
   base::WeakPtrFactory<AppInstallServiceAsh> weak_ptr_factory_{this};
 };

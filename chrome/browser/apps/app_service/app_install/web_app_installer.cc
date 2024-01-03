@@ -113,48 +113,53 @@ WebAppInstaller::WebAppInstaller(Profile* profile)
 
 WebAppInstaller::~WebAppInstaller() = default;
 
-void WebAppInstaller::InstallApp(AppInstallSurface surface,
-                                 AppInstallData data,
-                                 WebAppInstalledCallback callback) {
-  CHECK(absl::holds_alternative<WebAppInstallData>(data.app_type_data));
-  pending_requests_.emplace_back(surface, std::move(data), std::move(callback));
+void WebAppInstaller::InstallAllApps(std::vector<InstallRequest> requests,
+                                     WebAppInstalledCallback callback) {
+  CHECK(!installation_complete_callback_);
+  installation_complete_callback_ = std::move(callback);
+  requests_for_installation_ = requests;
 
   if (web_app::IsWebAppsCrosapiEnabled()) {
     if (lacros_is_connected_) {
-      InstallPendingRequests();
+      InstallAllAppsWhenReady();
     }
   } else {
     auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
     CHECK(provider);
     provider->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&WebAppInstaller::InstallPendingRequests,
+        FROM_HERE, base::BindOnce(&WebAppInstaller::InstallAllAppsWhenReady,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-WebAppInstaller::InstallRequest::InstallRequest(
-    AppInstallSurface surface,
-    AppInstallData data,
-    WebAppInstalledCallback callback)
-    : surface(surface), data(std::move(data)), callback(std::move(callback)) {}
-
-WebAppInstaller::InstallRequest::InstallRequest(InstallRequest&&) = default;
-WebAppInstaller::InstallRequest::~InstallRequest() = default;
-
 void WebAppInstaller::OnWebAppProviderBridgeConnected() {
   lacros_is_connected_ = true;
-  InstallPendingRequests();
+  InstallAllAppsWhenReady();
 }
 
-void WebAppInstaller::InstallPendingRequests() {
-  for (InstallRequest& request : std::exchange(pending_requests_, {})) {
-    CHECK_EQ(request.data.package_id.app_type(), AppType::kWeb);
-    InstallAppImpl(std::move(request));
+void WebAppInstaller::InstallAllAppsWhenReady() {
+  if (!requests_for_installation_.has_value()) {
+    return;
   }
-  CHECK(pending_requests_.empty());
+
+  // Request installation of any remaining apps. If there are no apps to
+  // install, OnAllAppInstallationFinished will be called immediately.
+  const auto install_barrier_callback = base::BarrierCallback<bool>(
+      requests_for_installation_.value().size(),
+      base::BindOnce(&WebAppInstaller::OnAllAppInstallationFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  for (InstallRequest& request : requests_for_installation_.value()) {
+    CHECK_EQ(request.data.package_id.app_type(), AppType::kWeb);
+    InstallAppImpl(std::move(request), install_barrier_callback);
+  }
+
+  // Reset the values after installation has been performed.
+  requests_for_installation_ = std::nullopt;
 }
 
-void WebAppInstaller::InstallAppImpl(InstallRequest request) {
+void WebAppInstaller::InstallAppImpl(InstallRequest request,
+                                     WebAppInstalledCallback callback) {
   // Retrieve web manifest
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url =
@@ -166,7 +171,7 @@ void WebAppInstaller::InstallAppImpl(InstallRequest request) {
                << "is invalid: " << resource_request->url;
     RecordInstallResultMetric(request.surface,
                               WebAppInstallResult::kInvalidManifestUrl);
-    std::move(request.callback).Run(/*success=*/false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -183,12 +188,13 @@ void WebAppInstaller::InstallAppImpl(InstallRequest request) {
       profile_->GetURLLoaderFactory().get(),
       base::BindOnce(&WebAppInstaller::OnManifestRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
-                     std::move(simple_loader)),
+                     std::move(callback), std::move(simple_loader)),
       kMaxManifestSizeInBytes);
 }
 
 void WebAppInstaller::OnManifestRetrieved(
     InstallRequest request,
+    WebAppInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response) {
   if (url_loader->NetError() != net::OK) {
@@ -200,14 +206,14 @@ void WebAppInstaller::OnManifestRetrieved(
         url_loader->NetError() == net::ERR_HTTP_RESPONSE_CODE_FAILURE
             ? WebAppInstallResult::kManifestResponseError
             : WebAppInstallResult::kManifestNetworkError);
-    std::move(request.callback).Run(/*success=*/false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
   if (response->empty()) {
     RecordInstallResultMetric(request.surface,
                               WebAppInstallResult::kManifestResponseEmpty);
-    std::move(request.callback).Run(/*success=*/false);
+    std::move(callback).Run(/*success=*/false);
     return;
   }
 
@@ -225,7 +231,7 @@ void WebAppInstaller::OnManifestRetrieved(
             ->web_app_service_ash()
             ->GetWebAppProviderBridge();
     if (!web_app_provider_bridge) {
-      std::move(request.callback).Run(/*success=*/false);
+      std::move(callback).Run(/*success=*/false);
       return;
     }
 
@@ -251,7 +257,7 @@ void WebAppInstaller::OnManifestRetrieved(
         std::move(web_app_install_info),
         base::BindOnce(&WebAppInstaller::OnAppInstalled,
                        weak_ptr_factory_.GetWeakPtr(), request.surface,
-                       std::move(request.callback)));
+                       std::move(callback)));
     return;
   } else {
     webapps::WebappInstallSource install_source = [&] {
@@ -275,7 +281,7 @@ void WebAppInstaller::OnManifestRetrieved(
             std::move(*response), expected_app_id,
             base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(), request.surface,
-                           std::move(request.callback))));
+                           std::move(callback))));
   }
 }
 
@@ -290,6 +296,13 @@ void WebAppInstaller::OnAppInstalled(AppInstallSurface surface,
   RecordCommandResultMetric(surface, code);
 
   std::move(callback).Run(success);
+}
+
+void WebAppInstaller::OnAllAppInstallationFinished(
+    const std::vector<bool>& results) {
+  CHECK(installation_complete_callback_);
+  std::move(installation_complete_callback_)
+      .Run(base::ranges::all_of(results, [](bool b) { return b; }));
 }
 
 }  // namespace apps
