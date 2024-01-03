@@ -118,10 +118,8 @@ IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallApp) {
 
   // Install the app.
   WebAppInstaller installer(GetAshProfile());
-  installer.InstallAllApps(
-      {{.surface = AppInstallSurface::kAppPreloadServiceOem,
-        .data = std::move(app_install_data)}},
-      result.GetCallback());
+  installer.InstallApp(AppInstallSurface::kAppPreloadServiceOem,
+                       std::move(app_install_data), result.GetCallback());
   ASSERT_TRUE(result.Get());
 
   // Check the app is installed in app_registry_cache.

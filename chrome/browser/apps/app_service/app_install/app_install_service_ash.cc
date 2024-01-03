@@ -95,7 +95,10 @@ const GURL& GetIconUrl(const std::vector<AppInstallIcon>& icons) {
 }  // namespace
 
 AppInstallServiceAsh::AppInstallServiceAsh(Profile& profile)
-    : profile_(profile), device_info_manager_(&*profile_) {}
+    : profile_(profile),
+      device_info_manager_(&*profile_),
+      web_app_installer_(&*profile_) {}
+
 AppInstallServiceAsh::~AppInstallServiceAsh() = default;
 
 void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
@@ -108,6 +111,13 @@ void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
       base::BindOnce(&AppInstallServiceAsh::InstallAppWithDeviceInfo,
                      weak_ptr_factory_.GetWeakPtr(), surface,
                      std::move(package_id), std::move(callback)));
+}
+
+void AppInstallServiceAsh::InstallApp(
+    AppInstallSurface surface,
+    AppInstallData data,
+    base::OnceCallback<void(bool success)> callback) {
+  web_app_installer_.InstallApp(surface, std::move(data), std::move(callback));
 }
 
 void AppInstallServiceAsh::InstallAppWithDeviceInfo(AppInstallSurface surface,

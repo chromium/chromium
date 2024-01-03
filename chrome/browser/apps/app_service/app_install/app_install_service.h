@@ -21,6 +21,13 @@ class AppInstallService {
   virtual void InstallApp(AppInstallSurface surface,
                           PackageId package_id,
                           base::OnceClosure callback) = 0;
+
+// Not needed by Lacros clients so can avoid adding to the crosapi.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  virtual void InstallApp(AppInstallSurface surface,
+                          AppInstallData data,
+                          base::OnceCallback<void(bool success)> callback) = 0;
+#endif
 };
 
 }  // namespace apps

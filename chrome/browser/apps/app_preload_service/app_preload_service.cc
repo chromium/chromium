@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
+#include "chrome/browser/apps/app_service/app_install/app_install_service.h"
 #include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -78,8 +80,7 @@ BASE_FEATURE(kAppPreloadServiceEnableTestApps,
 AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
-      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
-      web_app_installer_(std::make_unique<WebAppInstaller>(profile)) {
+      device_info_manager_(std::make_unique<DeviceInfoManager>(profile)) {
   if (g_disable_preloads_on_startup_for_testing_) {
     return;
   }
@@ -163,20 +164,31 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     return;
   }
 
-  std::vector<WebAppInstaller::InstallRequest> requests;
+  std::vector<const PreloadAppDefinition*> apps_to_install;
   for (const PreloadAppDefinition& app : apps.value()) {
     if (ShouldInstallApp(app)) {
-      requests.push_back({
-          .surface = app.GetInstallSurface(),
-          .data = app.ToAppInstallData(),
-      });
+      apps_to_install.push_back(&app);
     }
   }
-
-  web_app_installer_->InstallAllApps(
-      std::move(requests),
-      base::BindOnce(&AppPreloadService::OnFirstLoginFlowComplete,
+  const auto install_barrier_callback = base::BarrierCallback<bool>(
+      apps_to_install.size(),
+      base::BindOnce(&AppPreloadService::OnAppInstallationsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), start_time));
+  AppInstallService& install_service =
+      AppServiceProxyFactory::GetForProfile(profile_)->AppInstallService();
+  for (const PreloadAppDefinition* app : apps_to_install) {
+    install_service.InstallApp(
+        app->IsDefaultApp() ? AppInstallSurface::kAppPreloadServiceDefault
+                            : AppInstallSurface::kAppPreloadServiceOem,
+        app->ToAppInstallData(), install_barrier_callback);
+  }
+}
+
+void AppPreloadService::OnAppInstallationsCompleted(
+    base::TimeTicks start_time,
+    const std::vector<bool>& results) {
+  OnFirstLoginFlowComplete(start_time,
+                           base::ranges::all_of(results, std::identity{}));
 }
 
 void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,
