@@ -170,6 +170,7 @@ source_set("url_test_support") {
     "gurl_abstract_tests.h",
     "origin_abstract_tests.cc",
     "origin_abstract_tests.h",
+    "url_canon_icu_test_helpers.h",
   ]
 
   public_deps = [
@@ -271,6 +272,15 @@ fuzzer_test("url_idna_icu_fuzzer") {
     ":url",
     "//third_party/icu:icuuc",
     "//third_party/icu/fuzzers:fuzzer_support",
+  ]
+}
+
+fuzzer_test("url_canon_icu_fuzzer") {
+  sources = [ "url_canon_icu_fuzzer.cc" ]
+  deps = [
+    ":url",
+    ":url_test_support",
+    "//third_party/icu:icuuc",
   ]
 }
 
