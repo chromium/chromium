@@ -12571,8 +12571,7 @@
     "OsSettingsRevampWayfindingStudy": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros"
+                "chromeos"
             ],
             "experiments": [
                 {
