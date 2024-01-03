@@ -395,18 +395,6 @@ class RenderViewImplTest : public RenderViewTest {
     return waiter.common_params()->Clone();
   }
 
-  template <class T>
-  typename T::Param ProcessAndReadIPC() {
-    base::RunLoop().RunUntilIdle();
-    const IPC::Message* message =
-        render_thread_->sink().GetUniqueMessageMatching(T::ID);
-    typename T::Param param;
-    EXPECT_TRUE(message);
-    if (message)
-      T::Read(message, &param);
-    return param;
-  }
-
 #if BUILDFLAG(IS_OZONE)
   int SendKeyEventOzone(MockKeyboard::Layout layout,
                         int key_code,
@@ -831,7 +819,6 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
       blink::kWebNavigationTypeFormSubmitted;
   form_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(form_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -851,7 +838,6 @@ TEST_F(RenderViewImplTest, BeginNavigation) {
   popup_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   popup_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyNewForegroundTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(popup_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 }
@@ -882,7 +868,6 @@ TEST_F(RenderViewImplTest, BeginNavigationHandlesAllTopLevel) {
     navigation_info->navigation_policy = blink::kWebNavigationPolicyCurrentTab;
     navigation_info->navigation_type = kNavTypes[i];
 
-    render_thread_->sink().ClearMessages();
     frame()->BeginNavigation(std::move(navigation_info));
     EXPECT_TRUE(frame()->IsURLOpened());
   }
@@ -909,7 +894,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   navigation_info->navigation_policy = blink::kWebNavigationPolicyCurrentTab;
 
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -928,7 +912,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   webui_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   webui_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(webui_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -954,7 +937,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
       blink::kWebNavigationTypeFormSubmitted;
   data_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyCurrentTab;
-  render_thread_->sink().ClearMessages();
   frame()->BeginNavigation(std::move(data_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
 
@@ -979,7 +961,6 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_navigation_info->navigation_type = blink::kWebNavigationTypeLinkClicked;
   popup_navigation_info->navigation_policy =
       blink::kWebNavigationPolicyNewForegroundTab;
-  render_thread_->sink().ClearMessages();
   RenderFrameImpl::FromWebFrame(new_web_view->MainFrame())
       ->BeginNavigation(std::move(popup_navigation_info));
   EXPECT_TRUE(frame()->IsURLOpened());
@@ -1842,7 +1823,6 @@ TEST_F(RenderViewImplTextInputStateChanged,
       "virtualkeyboardpolicy=\"auto\"></input>"
       "</body>"
       "</html>");
-  render_thread_->sink().ClearMessages();
   ExecuteJavaScriptForTests(
       "document.getElementById('test1').focus(); "
       "navigator.virtualKeyboard.show();");
@@ -1993,7 +1973,6 @@ TEST_F(RenderViewImplTest, ImeComposition) {
     // TODO(hbono): we should verify messages to be sent from the back-end.
     main_frame_widget()->UpdateTextInputState();
     base::RunLoop().RunUntilIdle();
-    render_thread_->sink().ClearMessages();
 
     if (ime_message->result) {
       // Retrieve the content of this page and compare it with the expected
@@ -2023,7 +2002,6 @@ TEST_F(RenderViewImplTest, OnSetTextDirection) {
       "<div id=\"result\" contenteditable=\"true\"></div>"
       "</body>"
       "</html>");
-  render_thread_->sink().ClearMessages();
 
   static const struct {
     base::i18n::TextDirection direction;
@@ -2721,7 +2699,6 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
   // Navigate once, then reload.
   LoadHTML(url_string);
   base::RunLoop().RunUntilIdle();
-  render_thread_->sink().ClearMessages();
 
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL(url_string);
@@ -2746,7 +2723,6 @@ TEST_F(RenderViewImplTest, NavigationStartForSameProcessHistoryNavigation) {
   LoadHTML("<div id=pagename>Page C</div>");
   blink::PageState forward_state = GetCurrentPageState();
   base::RunLoop().RunUntilIdle();
-  render_thread_->sink().ClearMessages();
 
   // Go back.
   auto common_params_back = blink::CreateCommonNavigationParams();

@@ -352,21 +352,32 @@ class CONTENT_EXPORT RenderFrameImpl
 
 #endif  // BUILDFLAG(ENABLE_PPAPI)
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // IPC::Sender
   bool Send(IPC::Message* msg) override;
 
   // IPC::Listener
   bool OnMessageReceived(const IPC::Message& msg) override;
-  void OnAssociatedInterfaceRequest(
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
+
+#define LEGACY_IPC_OVERRIDE override
+#else
+#define LEGACY_IPC_OVERRIDE
+#endif
+
+  void OnAssociatedInterfaceRequest(const std::string& interface_name,
+                                    mojo::ScopedInterfaceEndpointHandle handle)
+      LEGACY_IPC_OVERRIDE;
+
+#undef LEGACY_IPC_OVERRIDE
 
   // RenderFrame implementation:
   RenderFrame* GetMainRenderFrame() override;
   RenderAccessibility* GetRenderAccessibility() override;
   std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter(
       ui::AXMode ax_mode) override;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   int GetRoutingID() override;
+#endif
   blink::WebLocalFrame* GetWebFrame() override;
   const blink::WebLocalFrame* GetWebFrame() const override;
   blink::WebView* GetWebView() override;

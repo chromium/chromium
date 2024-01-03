@@ -93,7 +93,6 @@ TEST_F(RenderViewTest, MacTestCmdUp) {
   RenderFrameImpl::FromWebFrame(web_view_->MainFrame()->ToWebLocalFrame())
       ->set_send_content_state_immediately(true);
   LoadHTML(kRawHtml);
-  render_thread_->sink().ClearMessages();
 
   const char* kArrowDownScrollDown = "40,false,false,true,false\n9844";
   blink_widget->AddEditCommandForNextKeyEvent(

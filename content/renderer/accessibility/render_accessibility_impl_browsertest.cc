@@ -267,8 +267,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     return static_cast<RenderFrameImpl*>(RenderViewTest::GetMainRenderFrame());
   }
 
-  IPC::TestSink* sink() { return sink_; }
-
   RenderAccessibilityImpl* GetRenderAccessibilityImpl() {
     auto* accessibility_manager = frame()->GetRenderAccessibilityManager();
     DCHECK(accessibility_manager);
@@ -296,8 +294,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     blink::WebRuntimeFeatures::EnableAccessibilityExposeHTMLElement(true);
 
     RenderViewTest::SetUp();
-
-    sink_ = &render_thread_->sink();
 
     // Ensure that a valid RenderAccessibilityImpl object is created and
     // associated to the RenderFrame, so that calls from tests to methods of
@@ -355,9 +351,6 @@ class RenderAccessibilityImplTest : public RenderViewTest {
     GetRenderAccessibilityImpl()->GetAXContext()->UpdateAXForAllDocuments();
     task_environment_.RunUntilIdle();
   }
-
- private:
-  raw_ptr<IPC::TestSink, ExperimentalRenderer> sink_;
 };
 
 TEST_F(RenderAccessibilityImplTest, SendFullAccessibilityTreeOnReload) {

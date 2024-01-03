@@ -163,6 +163,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
 AgentSchedulingGroup::~AgentSchedulingGroup() = default;
 
 bool AgentSchedulingGroup::OnMessageReceived(const IPC::Message& message) {
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   DCHECK_NE(message.routing_id(), MSG_ROUTING_CONTROL);
 
   auto* listener = GetListener(message.routing_id());
@@ -170,6 +171,9 @@ bool AgentSchedulingGroup::OnMessageReceived(const IPC::Message& message) {
     return false;
 
   return listener->OnMessageReceived(message);
+#else
+  return false;
+#endif
 }
 
 void AgentSchedulingGroup::OnBadMessageReceived(const IPC::Message& message) {
@@ -191,6 +195,7 @@ void AgentSchedulingGroup::OnAssociatedInterfaceRequest(
                  agent_group_scheduler_->DefaultTaskRunner());
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool AgentSchedulingGroup::Send(IPC::Message* message) {
   std::unique_ptr<IPC::Message> msg(message);
 
@@ -208,35 +213,38 @@ bool AgentSchedulingGroup::Send(IPC::Message* message) {
   DCHECK(channel_);
   return channel_->Send(msg.release());
 }
+#endif
 
-void AgentSchedulingGroup::AddRoute(int32_t routing_id, Listener* listener) {
+void AgentSchedulingGroup::AddFrameRoute(
+    int32_t routing_id,
+    RenderFrameImpl* render_frame,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK(!listener_map_.Lookup(routing_id));
-  listener_map_.AddWithID(listener, routing_id);
-  render_thread_->AddRoute(routing_id, listener);
+  listener_map_.AddWithID(render_frame, routing_id);
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+  render_thread_->AddRoute(routing_id, render_frame);
+#endif
 
   // See warning in `GetAssociatedInterface`.
   // Replay any `GetAssociatedInterface` calls for this route.
   auto range = pending_receivers_.equal_range(routing_id);
   for (auto iter = range.first; iter != range.second; ++iter) {
     ReceiverData& data = iter->second;
-    listener->OnAssociatedInterfaceRequest(data.name,
-                                           data.receiver.PassHandle());
+    render_frame->OnAssociatedInterfaceRequest(data.name,
+                                               data.receiver.PassHandle());
   }
   pending_receivers_.erase(range.first, range.second);
-}
-
-void AgentSchedulingGroup::AddFrameRoute(
-    int32_t routing_id,
-    IPC::Listener* listener,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  AddRoute(routing_id, listener);
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   render_thread_->AttachTaskRunnerToRoute(routing_id, std::move(task_runner));
+#endif
 }
 
-void AgentSchedulingGroup::RemoveRoute(int32_t routing_id) {
+void AgentSchedulingGroup::RemoveFrameRoute(int32_t routing_id) {
   DCHECK(listener_map_.Lookup(routing_id));
   listener_map_.Remove(routing_id);
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   render_thread_->RemoveRoute(routing_id);
+#endif
 }
 
 void AgentSchedulingGroup::DidUnloadRenderFrame(
@@ -460,7 +468,7 @@ void AgentSchedulingGroup::GetAssociatedInterface(
   }
 }
 
-Listener* AgentSchedulingGroup::GetListener(int32_t routing_id) {
+RenderFrameImpl* AgentSchedulingGroup::GetListener(int32_t routing_id) {
   DCHECK_NE(routing_id, MSG_ROUTING_CONTROL);
 
   return listener_map_.Lookup(routing_id);

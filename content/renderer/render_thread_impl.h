@@ -153,18 +153,22 @@ class CONTENT_EXPORT RenderThreadImpl
   // RenderThread implementation:
   IPC::SyncChannel* GetChannel() override;
   std::string GetLocale() override;
+
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   IPC::SyncMessageFilter* GetSyncMessageFilter() override;
   void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
   void AttachTaskRunnerToRoute(
       int32_t routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void RemoveRoute(int32_t routing_id) override;
+  void AddFilter(IPC::MessageFilter* filter) override;
+  void RemoveFilter(IPC::MessageFilter* filter) override;
+#endif
+
   bool GenerateFrameRoutingID(int32_t& routing_id,
                               blink::LocalFrameToken& frame_token,
                               base::UnguessableToken& devtools_frame_token,
                               blink::DocumentToken& document_token) override;
-  void AddFilter(IPC::MessageFilter* filter) override;
-  void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
@@ -378,7 +382,9 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnChannelError() override;
 
   // ChildThread
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   bool OnControlMessageReceived(const IPC::Message& msg) override;
+#endif
   void RecordAction(const base::UserMetricsAction& action) override;
   void RecordComputedAction(const std::string& action) override;
 

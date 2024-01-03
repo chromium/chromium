@@ -695,6 +695,7 @@ std::string RenderThreadImpl::GetLocale() {
   return lang;
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 IPC::SyncMessageFilter* RenderThreadImpl::GetSyncMessageFilter() {
   return sync_message_filter();
 }
@@ -714,6 +715,16 @@ void RenderThreadImpl::RemoveRoute(int32_t routing_id) {
   GetChannel()->RemoveListenerTaskRunner(routing_id);
 }
 
+void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {
+  channel()->AddFilter(filter);
+}
+
+void RenderThreadImpl::RemoveFilter(IPC::MessageFilter* filter) {
+  channel()->RemoveFilter(filter);
+}
+
+#endif
+
 mojom::RendererHost* RenderThreadImpl::GetRendererHost() {
   if (!renderer_host_) {
     DCHECK(GetChannel());
@@ -729,14 +740,6 @@ bool RenderThreadImpl::GenerateFrameRoutingID(
     blink::DocumentToken& document_token) {
   return render_message_filter()->GenerateFrameRoutingID(
       &routing_id, &frame_token, &devtools_frame_token, &document_token);
-}
-
-void RenderThreadImpl::AddFilter(IPC::MessageFilter* filter) {
-  channel()->AddFilter(filter);
-}
-
-void RenderThreadImpl::RemoveFilter(IPC::MessageFilter* filter) {
-  channel()->RemoveFilter(filter);
 }
 
 void RenderThreadImpl::AddObserver(RenderThreadObserver* observer) {
@@ -1270,6 +1273,7 @@ void RenderThreadImpl::OnProcessFinalRelease() {
   NOTREACHED();
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
   for (auto& observer : observers_) {
     if (observer.OnControlMessageReceived(msg))
@@ -1278,6 +1282,7 @@ bool RenderThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {
 
   return false;
 }
+#endif
 
 void RenderThreadImpl::SetProcessState(
     mojom::RenderProcessBackgroundState background_state,

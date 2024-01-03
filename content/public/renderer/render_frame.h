@@ -12,6 +12,7 @@
 
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
@@ -85,15 +86,20 @@ class AXTreeSnapshotter {
 // This interface wraps functionality, which is specific to frames, such as
 // navigation. It provides communication with a corresponding RenderFrameHost
 // in the browser process.
-class CONTENT_EXPORT RenderFrame : public IPC::Listener,
-                                   public IPC::Sender,
-                                   public base::SupportsUserData {
+class CONTENT_EXPORT RenderFrame :
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+    public IPC::Listener,
+    public IPC::Sender,
+#endif
+    public base::SupportsUserData {
  public:
   // Returns the RenderFrame given a WebLocalFrame.
   static RenderFrame* FromWebFrame(blink::WebLocalFrame* web_frame);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Returns the RenderFrame given a routing id.
   static RenderFrame* FromRoutingID(int routing_id);
+#endif
 
   // Visit all live RenderFrames.
   static void ForEach(RenderFrameVisitor* visitor);
@@ -112,8 +118,10 @@ class CONTENT_EXPORT RenderFrame : public IPC::Listener,
   virtual std::unique_ptr<AXTreeSnapshotter> CreateAXTreeSnapshotter(
       ui::AXMode ax_mode) = 0;
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Get the routing ID of the frame.
   virtual int GetRoutingID() = 0;
+#endif
 
   // Returns the associated WebView.
   virtual blink::WebView* GetWebView() = 0;

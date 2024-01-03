@@ -1497,10 +1497,12 @@ RenderFrameImpl* RenderFrameImpl::Create(
     return new RenderFrameImpl(std::move(params));
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // static
 RenderFrame* RenderFrame::FromRoutingID(int routing_id) {
   return RenderFrameImpl::FromRoutingID(routing_id);
 }
+#endif
 
 // static
 RenderFrameImpl* RenderFrameImpl::FromRoutingID(int routing_id) {
@@ -1922,7 +1924,7 @@ RenderFrameImpl::~RenderFrameImpl() {
 
   base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(routing_id_);
   g_routing_id_frame_map.Get().erase(routing_id_);
-  agent_scheduling_group_->RemoveRoute(routing_id_);
+  agent_scheduling_group_->RemoveFrameRoute(routing_id_);
 }
 
 void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
@@ -2029,12 +2031,12 @@ void RenderFrameImpl::ScriptedPrint() {
     observer.ScriptedPrint(user_initiated);
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 bool RenderFrameImpl::Send(IPC::Message* message) {
   return agent_scheduling_group_->Send(message);
 }
 
 bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // We may get here while detaching, when the WebFrame has been deleted.  Do
   // not process any messages in this state.
   if (!frame_)
@@ -2050,9 +2052,9 @@ bool RenderFrameImpl::OnMessageReceived(const IPC::Message& msg) {
     if (observer.OnMessageReceived(msg))
       return true;
   }
-#endif
   return false;
 }
+#endif
 
 void RenderFrameImpl::OnAssociatedInterfaceRequest(
     const std::string& interface_name,
@@ -2308,9 +2310,11 @@ std::unique_ptr<AXTreeSnapshotter> RenderFrameImpl::CreateAXTreeSnapshotter(
   return std::make_unique<AXTreeSnapshotterImpl>(this, ax_mode);
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 int RenderFrameImpl::GetRoutingID() {
   return routing_id_;
 }
+#endif
 
 blink::WebLocalFrame* RenderFrameImpl::GetWebFrame() {
   DCHECK(frame_);

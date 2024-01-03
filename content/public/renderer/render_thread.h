@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -60,6 +61,8 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
 
   virtual IPC::SyncChannel* GetChannel() = 0;
   virtual std::string GetLocale() = 0;
+
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   virtual IPC::SyncMessageFilter* GetSyncMessageFilter() = 0;
 
   // Called to add or remove a listener for a particular message routing ID.
@@ -73,15 +76,17 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
       int32_t routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
   virtual void RemoveRoute(int32_t routing_id) = 0;
+
+  // These map to IPC::ChannelProxy methods.
+  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
+  virtual void RemoveFilter(IPC::MessageFilter* filter) = 0;
+#endif
+
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,
       blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token,
       blink::DocumentToken& document_token) = 0;
-
-  // These map to IPC::ChannelProxy methods.
-  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
-  virtual void RemoveFilter(IPC::MessageFilter* filter) = 0;
 
   // Add/remove observers for the process.
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
