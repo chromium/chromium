@@ -3808,8 +3808,6 @@
           # Skylab currently doesn't support use of LUCI_CONTEXT, so Gold cannot
           # automatically get the service account to authenticate with.
           '--service-account=/creds/service_accounts/skylab-drone.json',
-          # TODO(b/317209177): Remove after Vulkan behavior is fixed.
-          '--disable-features=Vulkan,DefaultANGLEVulkan',
         ],
       },
     },
