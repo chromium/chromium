@@ -945,8 +945,7 @@ bool InlineNode::SetTextWithOffset(LayoutText* layout_text,
 
   String new_text(std::move(new_text_in));
   TextOffsetMap offset_map;
-  new_text = layout_text->StyleRef().ApplyTextTransform(
-      new_text, layout_text->PreviousCharacter(), &offset_map);
+  new_text = layout_text->TransformAndSecureText(new_text, offset_map);
   layout_text->SetTextInternal(new_text);
   layout_text->SetHasVariableLengthTransform(!offset_map.IsEmpty());
 

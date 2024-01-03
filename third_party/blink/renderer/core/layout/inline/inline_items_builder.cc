@@ -527,12 +527,9 @@ void InlineItemsBuilderTemplate<MappingBuilder>::AppendText(
   }
   String original = layout_text->OriginalText();
   TextOffsetMap offset_map;
-  // TODO(crbug.com/486880): -webkit-text-security never changes the length by
-  // accident. It's ok to apply only text-transform for now.
-  String transformed = layout_text->StyleRef().ApplyTextTransform(
-      original, text_.length() ? text_[text_.length() - 1] : kSpaceCharacter,
-      &offset_map);
-  DCHECK_EQ(layout_text->GetText().length(), transformed.length());
+  String transformed =
+      layout_text->TransformAndSecureText(original, offset_map);
+  DCHECK_EQ(layout_text->GetText(), transformed);
   const Vector<uint8_t> length_map = TransformedString::CreateLengthMap(
       original.length(), transformed.length(), offset_map);
   AppendText(TransformedString(layout_text->GetText(),

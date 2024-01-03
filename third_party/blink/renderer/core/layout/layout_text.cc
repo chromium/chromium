@@ -90,7 +90,7 @@ struct SameSizeAsLayoutText : public LayoutObject {
 ASSERT_SIZE(LayoutText, SameSizeAsLayoutText);
 
 class SecureTextTimer;
-typedef HeapHashMap<WeakMember<LayoutText>, Member<SecureTextTimer>>
+typedef HeapHashMap<WeakMember<const LayoutText>, Member<SecureTextTimer>>
     SecureTextTimerMap;
 static SecureTextTimerMap& GetSecureTextTimers() {
   DEFINE_STATIC_LOCAL(const Persistent<SecureTextTimerMap>, map,
@@ -106,6 +106,17 @@ class SecureTextTimer final : public GarbageCollected<SecureTextTimer>,
             TaskType::kUserInteraction)),
         layout_text_(layout_text),
         last_typed_character_offset_(-1) {}
+
+  static SecureTextTimer* ActiveInstanceFor(const LayoutText* layout_text) {
+    auto it = GetSecureTextTimers().find(layout_text);
+    if (it != GetSecureTextTimers().end()) {
+      SecureTextTimer* secure_text_timer = it->value;
+      if (secure_text_timer && secure_text_timer->IsActive()) {
+        return secure_text_timer;
+      }
+    }
+    return nullptr;
+  }
 
   void RestartWithNewText(unsigned last_typed_character_offset) {
     last_typed_character_offset_ = last_typed_character_offset;
@@ -236,7 +247,7 @@ void LayoutText::StyleDidChange(StyleDifference diff,
       old_style ? old_style->TextSecurity() : ETextSecurity::kNone;
   if (old_transform != new_style.TextTransform() ||
       old_security != new_style.TextSecurity())
-    TransformText();
+    TransformAndSecureOriginalText();
 
   // This is an optimization that kicks off font load before layout.
   if (!GetText().ContainsOnlyWhitespaceOrEmpty())
@@ -836,7 +847,7 @@ void LayoutText::SetTextWithOffset(String text, unsigned offset, unsigned len) {
   valid_ng_items_ = false;
 }
 
-void LayoutText::TransformText() {
+void LayoutText::TransformAndSecureOriginalText() {
   NOT_DESTROYED();
   if (String text_to_transform = OriginalText()) {
     ForceSetText(std::move(text_to_transform));
@@ -877,55 +888,51 @@ void LayoutText::SetTextInternal(String text) {
   DCHECK(!IsBR() || (TextLength() == 1 && text_[0] == kNewlineCharacter));
 }
 
-void LayoutText::ApplyTextTransform() {
+String LayoutText::TransformAndSecureText(const String& original,
+                                          TextOffsetMap& offset_map) const {
   NOT_DESTROYED();
   if (const ComputedStyle* style = Style()) {
-    TextOffsetMap offset_map;
-    text_ = style->ApplyTextTransform(text_, PreviousCharacter(), &offset_map);
-    has_variable_length_transform_ = !offset_map.IsEmpty();
+    String transformed =
+        style->ApplyTextTransform(original, PreviousCharacter(), &offset_map);
 
     // We use the same characters here as for list markers.
     // See CollectUACounterStyleRules() in ua_counter_style_map.cc.
     switch (style->TextSecurity()) {
       case ETextSecurity::kNone:
-        break;
+        return transformed;
       case ETextSecurity::kCircle:
-        SecureText(kWhiteBulletCharacter);
-        break;
+        return SecureText(transformed, kWhiteBulletCharacter);
       case ETextSecurity::kDisc:
-        SecureText(kBulletCharacter);
-        break;
+        return SecureText(transformed, kBulletCharacter);
       case ETextSecurity::kSquare:
-        SecureText(kBlackSquareCharacter);
+        return SecureText(transformed, kBlackSquareCharacter);
     }
   }
+  return original;
 }
 
-void LayoutText::SecureText(UChar mask) {
+String LayoutText::SecureText(const String& plain, UChar mask) const {
   NOT_DESTROYED();
-  if (!text_.length())
-    return;
+  if (!plain.length()) {
+    return plain;
+  }
 
   int last_typed_character_offset_to_reveal = -1;
   UChar revealed_text;
-  auto it = GetSecureTextTimers().find(this);
-  SecureTextTimer* secure_text_timer =
-      it != GetSecureTextTimers().end() ? it->value : nullptr;
-  if (secure_text_timer && secure_text_timer->IsActive()) {
+  if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
     last_typed_character_offset_to_reveal =
         secure_text_timer->LastTypedCharacterOffset();
     if (last_typed_character_offset_to_reveal >= 0)
-      revealed_text = text_[last_typed_character_offset_to_reveal];
+      revealed_text = plain[last_typed_character_offset_to_reveal];
   }
 
-  text_.Fill(mask);
+  String masked = plain;
+  masked.Fill(mask);
   if (last_typed_character_offset_to_reveal >= 0) {
-    text_.replace(last_typed_character_offset_to_reveal, 1,
-                  String(&revealed_text, 1u));
-    // text_ may be updated later before timer fires. We invalidate the
-    // last_typed_character_offset_ to avoid inconsistency.
-    secure_text_timer->Invalidate();
+    masked.replace(last_typed_character_offset_to_reveal, 1,
+                   String(&revealed_text, 1u));
   }
+  return masked;
 }
 
 void LayoutText::SetTextIfNeeded(String text) {
@@ -975,7 +982,14 @@ void LayoutText::TextDidChange() {
 
 void LayoutText::TextDidChangeWithoutInvalidation() {
   NOT_DESTROYED();
-  ApplyTextTransform();
+  TextOffsetMap offset_map;
+  text_ = TransformAndSecureText(text_, offset_map);
+  has_variable_length_transform_ = !offset_map.IsEmpty();
+  if (auto* secure_text_timer = SecureTextTimer::ActiveInstanceFor(this)) {
+    // text_ may be updated later before timer fires. We invalidate the
+    // last_typed_character_offset_ to avoid inconsistency.
+    secure_text_timer->Invalidate();
+  }
 
   if (AXObjectCache* cache = GetDocument().ExistingAXObjectCache())
     cache->TextChanged(this);

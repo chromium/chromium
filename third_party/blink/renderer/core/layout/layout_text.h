@@ -171,7 +171,12 @@ class CORE_EXPORT LayoutText : public LayoutObject {
   void SetTextWithOffset(String, unsigned offset, unsigned len);
   void SetTextInternal(String);
 
-  virtual void TransformText();
+  // Apply text-transform and -webkit-text-security to OriginalText(), and
+  // store its result to text_.
+  virtual void TransformAndSecureOriginalText();
+  // Apply text-transform and -webkit-text-security to the specified string.
+  String TransformAndSecureText(const String& original,
+                                TextOffsetMap& offset_map) const;
 
   PhysicalRect LocalSelectionVisualRect() const final;
   PhysicalRect LocalCaretRect(
@@ -386,8 +391,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
 
   void DeleteTextBoxes();
 
-  void ApplyTextTransform();
-  void SecureText(UChar mask);
+  String SecureText(const String& plain, UChar mask) const;
 
   bool IsText() const final {
     NOT_DESTROYED();

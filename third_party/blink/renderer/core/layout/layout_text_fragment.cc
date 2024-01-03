@@ -149,7 +149,7 @@ void LayoutTextFragment::SetTextFragment(String text,
   fragment_length_ = length;
 }
 
-void LayoutTextFragment::TransformText() {
+void LayoutTextFragment::TransformAndSecureOriginalText() {
   NOT_DESTROYED();
   // Note, we have to call LayoutText::TextDidChange()| here because, if we use
   // our version we will, potentially, screw up the first-letter settings where
