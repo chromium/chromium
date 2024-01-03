@@ -71,6 +71,7 @@ public class WebXrArSanityTest {
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
+    @DisabledTest(message = "https://crbug.com/1515317")
     public void testShortRecording() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_basic_all_ar_features", PAGE_LOAD_TIMEOUT_S);
