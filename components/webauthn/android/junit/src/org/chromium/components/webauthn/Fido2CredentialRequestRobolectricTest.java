@@ -104,7 +104,8 @@ public class Fido2CredentialRequestRobolectricTest {
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
-
+        WebauthnModeProvider.getInstance()
+                .setWebAuthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
         mRequest = new Fido2CredentialRequest(/* intentSender= */ null);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);

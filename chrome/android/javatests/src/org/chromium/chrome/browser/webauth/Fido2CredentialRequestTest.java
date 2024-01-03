@@ -76,6 +76,7 @@ import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
 import org.chromium.components.webauthn.WebAuthnCredentialDetails;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
@@ -467,6 +468,9 @@ public class Fido2CredentialRequestTest {
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
+        WebauthnModeProvider.getInstance()
+                .setWebAuthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+
         mRequest = new Fido2CredentialRequest(mIntentSender);
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 

@@ -31,6 +31,7 @@ import android.os.Bundle;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -55,6 +56,7 @@ import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.ShadowWebContentStatics;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
@@ -97,6 +99,7 @@ public class CredManHelperRobolectricTest {
     @Mock private Callback<Integer> mErrorCallback;
     @Mock private Barrier mBarrier;
     @Mock private CredManRequestDecorator mRequestDecorator;
+    @Mock private WebauthnModeProvider mWebAuthnModeProvider;
     @Mock private CredManCreateCredentialRequestHelper mCredManCreateCredentialRequestHelper;
     @Mock private CreateCredentialRequest mCreateCredentialRequest;
     @Mock private CredManGetCredentialRequestHelper mCredManGetCredentialRequestHelper;
@@ -136,12 +139,16 @@ public class CredManHelperRobolectricTest {
         CredManGetCredentialRequestHelper.setInstanceForTesting(mCredManGetCredentialRequestHelper);
         when(mCredManGetCredentialRequestHelper.getGetCredentialRequest(any()))
                 .thenReturn(mGetCredentialRequest);
-
-        mCredManHelper =
-                new CredManHelper(
-                        mBridgeProvider, /* playServicesAvailable= */ true, mRequestDecorator);
+        WebauthnModeProvider.setInstanceForTesting(mWebAuthnModeProvider);
+        when(mWebAuthnModeProvider.getCredManRequestDecorator()).thenReturn(mRequestDecorator);
+        mCredManHelper = new CredManHelper(mBridgeProvider, /* playServicesAvailable= */ true);
         mCredManHelper.setMetricsHelperForTesting(mMetricsHelper);
         when(mContext.getSystemService(Context.CREDENTIAL_SERVICE)).thenReturn(mCredentialManager);
+    }
+
+    @After
+    public void tearDown() {
+        WebauthnModeProvider.setInstanceForTesting(null);
     }
 
     @Test

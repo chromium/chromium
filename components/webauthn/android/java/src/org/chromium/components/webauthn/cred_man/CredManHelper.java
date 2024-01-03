@@ -35,6 +35,7 @@ import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManPrepareRequestEnum;
@@ -77,14 +78,11 @@ public class CredManHelper {
         WebAuthnBrowserBridge getBridge();
     }
 
-    public CredManHelper(
-            BridgeProvider bridgeProvider,
-            boolean playServicesAvailable,
-            CredManRequestDecorator credManRequestDecorator) {
+    public CredManHelper(BridgeProvider bridgeProvider, boolean playServicesAvailable) {
         mMetricsHelper = new CredManMetricsHelper();
         mBridgeProvider = bridgeProvider;
         mPlayServicesAvailable = playServicesAvailable;
-        mCredManRequestDecorator = credManRequestDecorator;
+        mCredManRequestDecorator = WebauthnModeProvider.getInstance().getCredManRequestDecorator();
     }
 
     /** Create a credential using the Android 14 CredMan API. */

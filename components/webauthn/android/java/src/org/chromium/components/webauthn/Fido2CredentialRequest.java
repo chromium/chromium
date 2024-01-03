@@ -38,7 +38,6 @@ import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
-import org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -117,9 +116,7 @@ public class Fido2CredentialRequest
     public Fido2CredentialRequest(FidoIntentSender intentSender) {
         mIntentSender = intentSender;
         mPlayServicesAvailable = Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
-        mCredManHelper =
-                new CredManHelper(
-                        this, mPlayServicesAvailable, GpmCredManRequestDecorator.getInstance());
+        mCredManHelper = new CredManHelper(this, mPlayServicesAvailable);
         mBarrier = new Barrier(this::returnErrorAndResetCallback);
     }
 
