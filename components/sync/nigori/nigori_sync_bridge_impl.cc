@@ -48,6 +48,13 @@ enum class KeyDerivationMethodStateForMetrics {
   kMaxValue = SCRYPT_8192_8_11
 };
 
+// When enabled, if the local state contains a corrupted cross-user sharing key
+// pair (i.e. the public key does not match the private key), the whole state
+// will be dropped and re-downloaded from the server.
+BASE_FEATURE(kSyncDropNigoriStateWhenKeyPairCorrupted,
+             "SyncDropNigoriStateWhenKeyPairCorrupted",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
     const absl::optional<KeyDerivationParams>& key_derivation_params) {
   if (!key_derivation_params.has_value()) {
@@ -236,20 +243,26 @@ absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
 
 // These values are persisted to UMA. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(crbug.com/1511180): add a bucket for the pending keys state.
-enum class CrossUserSharingKeyPairStateForUMA {
+enum class CrossUserSharingKeyPairState {
   kValidKeyPair = 0,
   kPublicKeyNotInitialized = 1,
   kPublicKeyVersionInvalid = 2,
   kCorruptedKeyPair = 3,
 
-  kMaxValue = kCorruptedKeyPair,
+  // The key pair can't be checked while pending keys are not decrypted.
+  kPendingKeysNotEmpty = 4,
+
+  kMaxValue = kPendingKeysNotEmpty,
 };
 
-CrossUserSharingKeyPairStateForUMA GetCrossUserSharingPublicKeyState(
+CrossUserSharingKeyPairState GetCrossUserSharingPublicKeyState(
     const NigoriState& nigori_state) {
+  if (nigori_state.pending_keys) {
+    return CrossUserSharingKeyPairState::kPendingKeysNotEmpty;
+  }
+
   if (!nigori_state.cross_user_sharing_public_key.has_value()) {
-    return CrossUserSharingKeyPairStateForUMA::kPublicKeyNotInitialized;
+    return CrossUserSharingKeyPairState::kPublicKeyNotInitialized;
   }
 
   // Key version existence is guaranteed by NigoriState::CreateFromLocalProto().
@@ -257,7 +270,7 @@ CrossUserSharingKeyPairStateForUMA GetCrossUserSharingPublicKeyState(
 
   if (!nigori_state.cryptographer->HasKeyPair(
           nigori_state.cross_user_sharing_key_pair_version.value())) {
-    return CrossUserSharingKeyPairStateForUMA::kPublicKeyVersionInvalid;
+    return CrossUserSharingKeyPairState::kPublicKeyVersionInvalid;
   }
 
   const CrossUserSharingPublicPrivateKeyPair& key_pair =
@@ -265,9 +278,9 @@ CrossUserSharingKeyPairStateForUMA GetCrossUserSharingPublicKeyState(
           nigori_state.cross_user_sharing_key_pair_version.value());
   if (key_pair.GetRawPublicKey() !=
       nigori_state.cross_user_sharing_public_key->GetRawPublicKey()) {
-    return CrossUserSharingKeyPairStateForUMA::kCorruptedKeyPair;
+    return CrossUserSharingKeyPairState::kCorruptedKeyPair;
   }
-  return CrossUserSharingKeyPairStateForUMA::kValidKeyPair;
+  return CrossUserSharingKeyPairState::kValidKeyPair;
 }
 
 }  // namespace
@@ -360,10 +373,24 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   }
 
   // Restore data.
-  state_ = syncer::NigoriState::CreateFromLocalProto(
-      deserialized_data->nigori_model());
+  syncer::NigoriState restored_state =
+      syncer::NigoriState::CreateFromLocalProto(
+          deserialized_data->nigori_model());
+
+  CrossUserSharingKeyPairState key_pair_state =
+      GetCrossUserSharingPublicKeyState(restored_state);
   base::UmaHistogramEnumeration("Sync.CrossUserSharingKeyPairState",
-                                GetCrossUserSharingPublicKeyState(state_));
+                                key_pair_state);
+  if (key_pair_state == CrossUserSharingKeyPairState::kCorruptedKeyPair &&
+      base::FeatureList::IsEnabled(kSyncDropNigoriStateWhenKeyPairCorrupted)) {
+    // The public key doesn't match the private key. This is likely just a local
+    // state, so drop the current state and re-download the Nigori node from the
+    // server.
+    processor_->ModelReadyToSync(this, NigoriMetadataBatch());
+    return;
+  }
+
+  state_ = std::move(restored_state);
 
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;

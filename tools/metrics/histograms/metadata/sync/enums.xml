@@ -65,6 +65,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Public key not initialized"/>
   <int value="2" label="Public key version invalid"/>
   <int value="3" label="Corrupted public-private key pair"/>
+  <int value="4" label="Pending keys are non-empty"/>
 </enum>
 
 <enum name="FaviconAvailabilityStatus">
