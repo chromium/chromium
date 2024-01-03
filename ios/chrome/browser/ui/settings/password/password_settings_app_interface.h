@@ -42,6 +42,12 @@
 // Removes all credentials stored in the profile store.
 + (BOOL)clearProfilePasswordStore;
 
+// Removes all credentials stored in the account store.
++ (BOOL)clearAccountPasswordStore;
+
+// Removes all credentials from both the profile and the account store.
++ (BOOL)clearPasswordStores;
+
 // Creates multiple password form with index being part of the username,
 // password, origin and realm in the profile store.
 + (void)saveExamplePasswordToProfileWithCount:(NSInteger)count;
@@ -67,10 +73,10 @@
                                      username:(NSString*)username
                                        origin:(NSString*)origin;
 
-// Creates a muted compromised password form in profile password.
-+ (BOOL)saveMutedCompromisedPasswordToProfilePassword:(NSString*)password
-                                             username:(NSString*)userName
-                                               origin:(NSString*)origin;
+// Creates a muted compromised password form in profile store.
++ (BOOL)saveMutedCompromisedPasswordToProfileStore:(NSString*)password
+                                          username:(NSString*)userName
+                                            origin:(NSString*)origin;
 
 // Creates a blocked password form for given origin in profile store.
 + (BOOL)saveExampleBlockedOriginToProfileStore:(NSString*)origin;
@@ -81,8 +87,11 @@
                                         username:(NSString*)username
                                           origin:(NSString*)origin;
 
-// Gets number of password form stored in the profile store.
+// Returns the number of password forms stored in the profile store.
 + (NSInteger)passwordProfileStoreResultsCount;
+
+// Returns the number of password forms stored in the account store.
++ (NSInteger)passwordAccountStoreResultsCount;
 
 // Returns YES if credential service is enabled.
 + (BOOL)isCredentialsServiceEnabled;

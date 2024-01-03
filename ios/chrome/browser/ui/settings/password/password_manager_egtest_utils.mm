@@ -216,9 +216,9 @@ void SaveMutedCompromisedPasswordFormToProfileStore(NSString* origin,
                                                     NSString* username,
                                                     NSString* password) {
   GREYAssert([PasswordSettingsAppInterface
-                 saveMutedCompromisedPasswordToProfilePassword:password
-                                                      username:username
-                                                        origin:origin],
+                 saveMutedCompromisedPasswordToProfileStore:password
+                                                   username:username
+                                                     origin:origin],
              kPasswordStoreErrorMessage);
 }
 

@@ -17,6 +17,8 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
@@ -63,11 +65,13 @@ void ClearRelevantData() {
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");
+  [PasswordSettingsAppInterface clearPasswordStores];
 
   [ChromeEarlGrey clearFakeSyncServerData];
   WaitForEntitiesOnFakeServer(0, syncer::AUTOFILL_PROFILE);
   WaitForEntitiesOnFakeServer(0, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(0, syncer::HISTORY);
+  WaitForEntitiesOnFakeServer(0, syncer::PASSWORDS);
   WaitForEntitiesOnFakeServer(0, syncer::READING_LIST);
 }
 
@@ -515,10 +519,11 @@ void ClearRelevantData() {
                               title:kReadingListTitle
                                read:YES],
                 @"Unable to add Reading List item");
+  password_manager_test_utils::SavePasswordFormToProfileStore();
 
   WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
   WaitForEntitiesOnFakeServer(1, syncer::READING_LIST);
-  // TODO(crbug.com/1486420): Also add a password.
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
 
   // Restart Chrome with UNO phase 2 enabled.
   [self relaunchWithIdentity:fakeIdentity
@@ -537,6 +542,13 @@ void ClearRelevantData() {
                                                 name:kBookmarkTitle
                                            inStorage:bookmarks::StorageType::
                                                          kLocalOrSyncable];
+  // Similarly the password.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should be in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store");
 
   // Restart Chrome with UNO phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
@@ -557,6 +569,13 @@ void ClearRelevantData() {
       verifyExistenceOfBookmarkWithURL:kBookmarkUrl
                                   name:kBookmarkTitle
                              inStorage:bookmarks::StorageType::kAccount];
+  // Similarly the password.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
 
   // The reading list item should still exist, and *not* have a crossed-cloud
   // icon (no crossed-cloud icon means that it's in the account store).

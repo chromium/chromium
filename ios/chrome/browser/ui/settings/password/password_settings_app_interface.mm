@@ -194,6 +194,31 @@ bool ClearProfilePasswordStore() {
   return consumer.GetStoreResults().empty();
 }
 
+bool ClearAccountPasswordStore() {
+  GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time(), base::DoNothing());
+  FakeStoreConsumer consumer;
+  if (!consumer.FetchAccountStoreResults()) {
+    return false;
+  }
+  return consumer.GetStoreResults().empty();
+}
+
+bool ClearPasswordStores() {
+  GetPasswordProfileStore()->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time(), base::DoNothing());
+  GetPasswordAccountStore()->RemoveLoginsCreatedBetween(
+      base::Time(), base::Time(), base::DoNothing());
+  FakeStoreConsumer consumer;
+  if (!consumer.FetchProfileStoreResults()) {
+    return false;
+  }
+  if (!consumer.FetchAccountStoreResults()) {
+    return false;
+  }
+  return consumer.GetStoreResults().empty();
+}
+
 }  // namespace
 
 @implementation PasswordSettingsAppInterface
@@ -297,9 +322,9 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   return SaveToPasswordProfileStore(example);
 }
 
-+ (BOOL)saveMutedCompromisedPasswordToProfilePassword:(NSString*)password
-                                             username:(NSString*)userName
-                                               origin:(NSString*)origin {
++ (BOOL)saveMutedCompromisedPasswordToProfileStore:(NSString*)password
+                                          username:(NSString*)userName
+                                            origin:(NSString*)origin {
   PasswordForm example;
   example.username_value = base::SysNSStringToUTF16(userName);
   example.password_value = base::SysNSStringToUTF16(password);
@@ -341,8 +366,24 @@ static std::unique_ptr<ScopedPasswordSettingsReauthModuleOverride>
   return consumer.GetStoreResults().size();
 }
 
++ (NSInteger)passwordAccountStoreResultsCount {
+  FakeStoreConsumer consumer;
+  if (!consumer.FetchAccountStoreResults()) {
+    return -1;
+  }
+  return consumer.GetStoreResults().size();
+}
+
 + (BOOL)clearProfilePasswordStore {
   return ClearProfilePasswordStore();
+}
+
++ (BOOL)clearAccountPasswordStore {
+  return ClearAccountPasswordStore();
+}
+
++ (BOOL)clearPasswordStores {
+  return ClearPasswordStores();
 }
 
 + (BOOL)isCredentialsServiceEnabled {
