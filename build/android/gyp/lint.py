@@ -72,7 +72,8 @@ def _SrcRelative(path):
   return os.path.relpath(path, build_utils.DIR_SOURCE_ROOT)
 
 
-def _GenerateProjectFile(android_manifest,
+def _GenerateProjectFile(lint_gen_dir,
+                         android_manifest,
                          android_sdk_root,
                          cache_dir,
                          sources=None,
@@ -99,6 +100,9 @@ def _GenerateProjectFile(android_manifest,
   main_module.set('name', 'main')
   main_module.set('android', 'true')
   main_module.set('library', 'false')
+  # Required to make lint-resources.xml be written to a per-target path.
+  # https://crbug.com/1515070
+  main_module.set('partial-results-dir', lint_gen_dir)
   if android_sdk_version:
     main_module.set('compile_sdk_version', android_sdk_version)
   manifest = ElementTree.SubElement(main_module, 'manifest')
@@ -324,12 +328,10 @@ def _RunLint(create_cache,
       srcjar_sources.extend(build_utils.ExtractAll(srcjar, path=srcjar_dir))
 
   logging.info('Generating project file')
-  project_file_root = _GenerateProjectFile(lint_android_manifest_path,
-                                           android_sdk_root, cache_dir, sources,
-                                           classpath, srcjar_sources,
-                                           resource_sources, custom_lint_jars,
-                                           custom_annotation_zips,
-                                           android_sdk_version, baseline)
+  project_file_root = _GenerateProjectFile(
+      lint_gen_dir, lint_android_manifest_path, android_sdk_root, cache_dir,
+      sources, classpath, srcjar_sources, resource_sources, custom_lint_jars,
+      custom_annotation_zips, android_sdk_version, baseline)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
   _WriteXmlFile(project_file_root, project_xml_path)
