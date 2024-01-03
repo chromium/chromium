@@ -119,6 +119,9 @@ class SyncableServiceBasedBridgeTest : public ::testing::Test {
   }
 
   void ShutdownBridge() {
+    // |bridge_| must outlive |start_syncing_sync_processor_|, so reset it
+    // first.
+    start_syncing_sync_processor_.reset();
     bridge_.reset();
     // The mock is still delegating to |real_processor_|, so we reset it too.
     ASSERT_TRUE(testing::Mock::VerifyAndClear(&mock_processor_));
