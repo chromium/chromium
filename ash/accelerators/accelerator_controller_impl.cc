@@ -44,6 +44,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace ash {
@@ -155,13 +156,11 @@ void RecordNewTab(const ui::Accelerator& accelerator) {
     base::RecordAction(UserMetricsAction("Accel_NewTab_T"));
 }
 
-void HandleSwitchToLastUsedIme(const ui::Accelerator& accelerator) {
+void RecordSwitchToLastUsedIme(bool key_pressed) {
   base::RecordAction(UserMetricsAction("Accel_Previous_Ime"));
-  if (accelerator.key_state() == ui::Accelerator::KeyState::PRESSED) {
+  if (key_pressed) {
     RecordImeSwitchByAccelerator();
-    Shell::Get()->ime_controller()->SwitchToLastUsedIme();
   }
-  // Else: consume the Ctrl+Space ET_KEY_RELEASED event but do not do anything.
 }
 
 bool CanHandleSwitchIme(const ui::Accelerator& accelerator) {
@@ -931,6 +930,9 @@ void AcceleratorControllerImpl::PerformAction(
         action == AcceleratorAction::kVolumeUp);
   }
 
+  const bool key_pressed =
+      accelerator.key_state() == ui::Accelerator::KeyState::PRESSED;
+
   // If your accelerator invokes more than one line of code, please either
   // implement it in your module's controller code or pull it into a HandleFoo()
   // function above.
@@ -1293,7 +1295,8 @@ void AcceleratorControllerImpl::PerformAction(
       HandleSwitchIme(accelerator);
       break;
     case AcceleratorAction::kSwitchToLastUsedIme:
-      HandleSwitchToLastUsedIme(accelerator);
+      RecordSwitchToLastUsedIme(key_pressed);
+      accelerators::SwitchToLastUsedIme(key_pressed);
       break;
     case AcceleratorAction::kSwitchToNextIme:
       RecordSwitchToNextIme(accelerator);
