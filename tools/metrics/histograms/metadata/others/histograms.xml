@@ -11022,15 +11022,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="Vibration.Context" enum="NavigatorVibrationType"
-    expires_after="2019-01-30">
-  <owner>binlu@google.com</owner>
-  <summary>
-    Records instances of navigator.vibrate. Includes whether or not it comes
-    with a user gesture, same-origin subframe or cross-origin subframe.
-  </summary>
-</histogram>
-
 <histogram name="ViewResourceAdapter.GetBitmapInterval" units="ms"
     expires_after="M82">
   <owner>wychen@chromium.org</owner>
