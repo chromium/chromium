@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import "ios/chrome/browser/drive/model/drive_upload_task.h"
+
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
 
@@ -13,12 +15,11 @@ DriveTabHelper::~DriveTabHelper() = default;
 
 void DriveTabHelper::AddDownloadToSaveToDrive(web::DownloadTask* task,
                                               id<SystemIdentity> identity) {
-  ResetSaveToDriveData(DownloadTaskSaveToDriveData{
-      .task = task,
-      .identity = identity,
-  });
+  ResetSaveToDriveData(task, identity);
 }
 
+// TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
+// `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
 std::optional<DownloadTaskSaveToDriveData>
 DriveTabHelper::GetDownloadTaskSaveToDriveData() const {
   return download_task_save_to_drive_data_;
@@ -29,7 +30,11 @@ DriveTabHelper::GetDownloadTaskSaveToDriveData() const {
 void DriveTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   switch (task->GetState()) {
     case web::DownloadTask::State::kComplete:
-      // TODO(crbug.com/1495354): Start uploading the file to Drive.
+      upload_task_->SetFileToUpload(task->GetResponsePath(),
+                                    task->GenerateFileName(),
+                                    task->GetMimeType());
+      upload_task_->Start();
+      break;
     case web::DownloadTask::State::kCancelled:
     case web::DownloadTask::State::kInProgress:
     case web::DownloadTask::State::kFailed:
@@ -40,18 +45,23 @@ void DriveTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
 }
 
 void DriveTabHelper::OnDownloadDestroyed(web::DownloadTask* task) {
-  ResetSaveToDriveData(std::nullopt);
+  ResetSaveToDriveData(nullptr, nil);
 }
 
 #pragma mark - Private
 
-void DriveTabHelper::ResetSaveToDriveData(
-    std::optional<DownloadTaskSaveToDriveData> data) {
-  download_task_save_to_drive_data_ = data;
+void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
+                                          id<SystemIdentity> identity) {
   download_task_obs_.Reset();
-  if (data) {
-    download_task_obs_.Observe(data->task);
+  upload_task_.reset();
+  download_task_save_to_drive_data_.reset();
+  if (!task || !identity) {
+    return;
   }
+  upload_task_ = std::make_unique<DriveUploadTask>();
+  download_task_obs_.Observe(task);
+  download_task_save_to_drive_data_ =
+      DownloadTaskSaveToDriveData{.task = task, .identity = identity};
 }
 
 #pragma mark - web::WebStateUserData

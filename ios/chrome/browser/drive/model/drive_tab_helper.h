@@ -12,6 +12,8 @@
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+class DriveUploadTask;
+
 // Manages Save to Drive tab-scoped state i.e. if a `DownloadTask` is received
 // through AddDownloadToSaveToDrive(...) then this tab helper
 // - 1 - memorises the task, what `SystemIdentity` will be used to save the
@@ -30,6 +32,8 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   void AddDownloadToSaveToDrive(web::DownloadTask* task,
                                 id<SystemIdentity> identity);
   // Returns Save to Drive data associated with the current download task.
+  // TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
+  // `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
   std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData()
       const;
 
@@ -41,9 +45,11 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   void OnDownloadUpdated(web::DownloadTask* task) override;
   void OnDownloadDestroyed(web::DownloadTask* task) override;
 
-  // Resets the Save to Drive data i.e. stop observing the current task, and
-  // start observing the task in `data` if any.
-  void ResetSaveToDriveData(std::optional<DownloadTaskSaveToDriveData> data);
+  // Resets `download_task_obs_` and `upload_task_`. If `task` and `identity`
+  // are non-nil, `task` will be observed and a new upload task will be created
+  // with identity.
+  void ResetSaveToDriveData(web::DownloadTask* task,
+                            id<SystemIdentity> identity);
 
   // Associated WebState.
   raw_ptr<web::WebState> web_state_;
@@ -54,6 +60,9 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   using ScopedDownloadTaskObservation =
       base::ScopedObservation<web::DownloadTask, web::DownloadTaskObserver>;
   ScopedDownloadTaskObservation download_task_obs_{this};
+  // Drive upload task associated with the observed download task. Should be
+  // started as soon as the download task is completed.
+  std::unique_ptr<DriveUploadTask> upload_task_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
