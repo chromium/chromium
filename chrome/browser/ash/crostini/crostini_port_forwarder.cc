@@ -88,14 +88,15 @@ CrostiniPortForwarder::CrostiniPortForwarder(Profile* profile)
     // Select the first active network for now.
     const ash::DeviceState* device = network_state_handler->GetDeviceState(
         active_networks[0]->device_path());
-    current_interface_ = device->interface();
     if (device) {
+      current_interface_ = device->interface();
       ip_address_ = device->GetIpAddressByType(shill::kTypeIPv4);
       if (ip_address_.empty()) {
         ip_address_ = device->GetIpAddressByType(shill::kTypeIPv6);
       }
     } else {
       ip_address_ = "";
+      current_interface_ = kDefaultInterfaceToForward;
     }
   }
 }
