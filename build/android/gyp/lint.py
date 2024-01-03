@@ -111,10 +111,16 @@ def _GenerateProjectFile(lint_gen_dir,
     for srcjar_file in srcjar_sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', srcjar_file)
+      # Cannot add generated="true" since then lint does not scan them, and
+      # we get "UnusedResources" lint errors when resources are used only by
+      # generated files.
   if sources:
     for source in sources:
       src = ElementTree.SubElement(main_module, 'src')
       src.set('file', source)
+      # Cannot set test="true" since we sometimes put Test.java files beside
+      # non-test files, which lint does not allow:
+      # "Test sources cannot be in the same source root as production files"
   if classpath:
     for file_path in classpath:
       classpath_element = ElementTree.SubElement(main_module, 'classpath')
