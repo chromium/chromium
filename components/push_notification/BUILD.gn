@@ -4,6 +4,11 @@
 
 source_set("push_notification") {
   sources = [
+    "push_notification_client.h",
+    "push_notification_client_id.cc",
+    "push_notification_client_id.h",
+    "push_notification_client_manager.cc",
+    "push_notification_client_manager.h",
     "push_notification_service.cc",
     "push_notification_service.h",
   ]
