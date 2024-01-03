@@ -162,6 +162,12 @@ XMLPUBFUN void
 	xmlCleanupCharEncodingHandlers	(void);
 XMLPUBFUN void
 	xmlRegisterCharEncodingHandler	(xmlCharEncodingHandlerPtr handler);
+XMLPUBFUN int
+	xmlLookupCharEncodingHandler	(xmlCharEncoding enc,
+					 xmlCharEncodingHandlerPtr *out);
+XMLPUBFUN int
+	xmlOpenCharEncodingHandler	(const char *name,
+					 xmlCharEncodingHandlerPtr *out);
 XMLPUBFUN xmlCharEncodingHandlerPtr
 	xmlGetCharEncodingHandler	(xmlCharEncoding enc);
 XMLPUBFUN xmlCharEncodingHandlerPtr

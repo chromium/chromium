@@ -211,6 +211,10 @@ typedef enum {
     XML_ERR_USER_STOP, /* 111 */
     XML_ERR_COMMENT_ABRUPTLY_ENDED, /* 112 */
     XML_WAR_ENCODING_MISMATCH, /* 113 */
+    XML_ERR_RESOURCE_LIMIT, /* 114 */
+    XML_ERR_ARGUMENT, /* 115 */
+    XML_ERR_SYSTEM, /* 116 */
+    XML_ERR_REDECL_PREDEF_ENTITY, /* 117 */
     XML_NS_ERR_XML_NAMESPACE = 200,
     XML_NS_ERR_UNDEFINED_NAMESPACE, /* 201 */
     XML_NS_ERR_QNAME, /* 202 */
@@ -861,10 +865,10 @@ typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
 /** DOC_DISABLE */
 #define XML_GLOBALS_ERROR \
   XML_OP(xmlLastError, xmlError, XML_DEPRECATED) \
-  XML_OP(xmlGenericError, xmlGenericErrorFunc, XML_EMPTY) \
-  XML_OP(xmlGenericErrorContext, void *, XML_EMPTY) \
-  XML_OP(xmlStructuredError, xmlStructuredErrorFunc, XML_EMPTY) \
-  XML_OP(xmlStructuredErrorContext, void *, XML_EMPTY)
+  XML_OP(xmlGenericError, xmlGenericErrorFunc, XML_NO_ATTR) \
+  XML_OP(xmlGenericErrorContext, void *, XML_NO_ATTR) \
+  XML_OP(xmlStructuredError, xmlStructuredErrorFunc, XML_NO_ATTR) \
+  XML_OP(xmlStructuredErrorContext, void *, XML_NO_ATTR)
 
 #define XML_OP XML_DECLARE_GLOBAL
 XML_GLOBALS_ERROR

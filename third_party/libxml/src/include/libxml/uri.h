@@ -52,14 +52,25 @@ struct _xmlURI {
  */
 XMLPUBFUN xmlURIPtr
 		xmlCreateURI		(void);
+XMLPUBFUN int
+		xmlBuildURISafe		(const xmlChar *URI,
+					 const xmlChar *base,
+					 xmlChar **out);
 XMLPUBFUN xmlChar *
 		xmlBuildURI		(const xmlChar *URI,
 					 const xmlChar *base);
+XMLPUBFUN int
+		xmlBuildRelativeURISafe	(const xmlChar *URI,
+					 const xmlChar *base,
+					 xmlChar **out);
 XMLPUBFUN xmlChar *
 		xmlBuildRelativeURI	(const xmlChar *URI,
 					 const xmlChar *base);
 XMLPUBFUN xmlURIPtr
 		xmlParseURI		(const char *str);
+XMLPUBFUN int
+		xmlParseURISafe		(const char *str,
+					 xmlURIPtr *uri);
 XMLPUBFUN xmlURIPtr
 		xmlParseURIRaw		(const char *str,
 					 int raw);

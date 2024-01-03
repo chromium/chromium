@@ -461,7 +461,8 @@ xmlStrncat(xmlChar *cur, const xmlChar *add, int len) {
         return(NULL);
     ret = (xmlChar *) xmlRealloc(cur, (size_t) size + len + 1);
     if (ret == NULL) {
-        return(cur);
+        xmlFree(cur);
+        return(NULL);
     }
     memcpy(&ret[size], add, len);
     ret[size + len] = 0;
@@ -499,9 +500,8 @@ xmlStrncatNew(const xmlChar *str1, const xmlChar *str2, int len) {
     if ((size < 0) || (size > INT_MAX - len))
         return(NULL);
     ret = (xmlChar *) xmlMalloc((size_t) size + len + 1);
-    if (ret == NULL) {
-        return(xmlStrndup(str1, size));
-    }
+    if (ret == NULL)
+        return(NULL);
     memcpy(ret, str1, size);
     memcpy(&ret[size], str2, len);
     ret[size + len] = 0;

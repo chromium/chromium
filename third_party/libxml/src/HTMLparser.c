@@ -4844,12 +4844,22 @@ htmlParseDocument(htmlParserCtxtPtr ctxt) {
     }
 
     /*
-     * SAX: beginning of the document processing.
+     * Document locator is unused. Only for backward compatibility.
      */
-    if ((ctxt->sax) && (ctxt->sax->setDocumentLocator))
-        ctxt->sax->setDocumentLocator(ctxt->userData, &xmlDefaultSAXLocator);
+    if ((ctxt->sax) && (ctxt->sax->setDocumentLocator)) {
+        xmlSAXLocator copy = xmlDefaultSAXLocator;
+        ctxt->sax->setDocumentLocator(ctxt->userData, &copy);
+    }
 
     xmlDetectEncoding(ctxt);
+
+    /*
+     * This is wrong but matches long-standing behavior. In most cases,
+     * a document starting with an XML declaration will specify UTF-8.
+     */
+    if (((ctxt->input->flags & XML_INPUT_HAS_ENCODING) == 0) &&
+        (xmlStrncmp(ctxt->input->cur, BAD_CAST "<?xm", 4) == 0))
+        xmlSwitchEncoding(ctxt, XML_CHAR_ENCODING_UTF8);
 
     /*
      * Wipe out everything which is before the first '<'
@@ -5113,7 +5123,8 @@ htmlNewSAXParserCtxt(const htmlSAXHandler *sax, void *userData)
  * @buffer:  a pointer to a char array
  * @size:  the size of the array
  *
- * Create a parser context for an HTML in-memory document.
+ * Create a parser context for an HTML in-memory document. The input buffer
+ * must not contain a terminating null byte.
  *
  * Returns the new parser context or NULL
  */
@@ -5408,6 +5419,16 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		 */
 	        goto done;
             case XML_PARSER_START:
+                /*
+                 * This is wrong but matches long-standing behavior. In most
+                 * cases, a document starting with an XML declaration will
+                 * specify UTF-8.
+                 */
+                if (((ctxt->input->flags & XML_INPUT_HAS_ENCODING) == 0) &&
+                    (xmlStrncmp(ctxt->input->cur, BAD_CAST "<?xm", 4) == 0)) {
+                    xmlSwitchEncoding(ctxt, XML_CHAR_ENCODING_UTF8);
+                }
+
 	        /*
 		 * Very first chars read from the document flow.
 		 */
@@ -5416,9 +5437,10 @@ htmlParseTryOrFinish(htmlParserCtxtPtr ctxt, int terminate) {
 		    SKIP_BLANKS;
                     avail = in->end - in->cur;
 		}
-		if ((ctxt->sax) && (ctxt->sax->setDocumentLocator))
-		    ctxt->sax->setDocumentLocator(ctxt->userData,
-						  &xmlDefaultSAXLocator);
+                if ((ctxt->sax) && (ctxt->sax->setDocumentLocator)) {
+                    xmlSAXLocator copy = xmlDefaultSAXLocator;
+                    ctxt->sax->setDocumentLocator(ctxt->userData, &copy);
+                }
 		if ((ctxt->sax) && (ctxt->sax->startDocument) &&
 	            (!ctxt->disableSAX))
 		    ctxt->sax->startDocument(ctxt->userData);
@@ -6307,7 +6329,7 @@ htmlAttrAllowed(const htmlElemDesc* elt, const xmlChar* attr, int legacy) {
  *	for other nodes, HTML_NA (no checks performed)
  */
 htmlStatus
-htmlNodeStatus(const htmlNodePtr node, int legacy) {
+htmlNodeStatus(htmlNodePtr node, int legacy) {
   if ( ! node )
     return HTML_INVALID ;
 
@@ -6611,7 +6633,8 @@ htmlReadFile(const char *filename, const char *encoding, int options)
  * @encoding:  the document encoding, or NULL
  * @options:  a combination of htmlParserOption(s)
  *
- * parse an XML in-memory document and build a tree.
+ * Parse an HTML in-memory document and build a tree. The input buffer must
+ * not contain a terminating null byte.
  *
  * Returns the resulting document tree
  */
@@ -6803,7 +6826,8 @@ htmlCtxtReadFile(htmlParserCtxtPtr ctxt, const char *filename,
  * @encoding:  the document encoding, or NULL
  * @options:  a combination of htmlParserOption(s)
  *
- * parse an XML in-memory document and build a tree.
+ * Parse an HTML in-memory document and build a tree. The input buffer must
+ * not contain a terminating null byte.
  * This reuses the existing @ctxt parser context
  *
  * Returns the resulting document tree

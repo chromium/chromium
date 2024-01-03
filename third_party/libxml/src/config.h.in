@@ -71,9 +71,6 @@
 /* Have shl_load based dso */
 #undef HAVE_SHLLOAD
 
-/* Define to 1 if you have the `snprintf' function. */
-#undef HAVE_SNPRINTF
-
 /* Define to 1 if you have the `stat' function. */
 #undef HAVE_STAT
 
@@ -116,17 +113,8 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Whether va_copy() is available */
-#undef HAVE_VA_COPY
-
-/* Define to 1 if you have the `vsnprintf' function. */
-#undef HAVE_VSNPRINTF
-
 /* Define to 1 if you have the <zlib.h> header file. */
 #undef HAVE_ZLIB_H
-
-/* Whether __va_copy() is available */
-#undef HAVE___VA_COPY
 
 /* Define to the sub-directory where libtool stores uninstalled libraries. */
 #undef LT_OBJDIR
@@ -159,9 +147,6 @@
 
 /* Support for IPv6 */
 #undef SUPPORT_IP6
-
-/* Define if va_list is an array type */
-#undef VA_LIST_IS_ARRAY
 
 /* Version number of package */
 #undef VERSION

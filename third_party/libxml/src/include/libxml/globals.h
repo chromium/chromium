@@ -30,10 +30,6 @@ typedef struct _xmlGlobalState xmlGlobalState;
 typedef xmlGlobalState *xmlGlobalStatePtr;
 
 XML_DEPRECATED XMLPUBFUN void
-xmlInitGlobals(void);
-XML_DEPRECATED XMLPUBFUN void
-xmlCleanupGlobals(void);
-XML_DEPRECATED XMLPUBFUN void
 xmlInitializeGlobalState(xmlGlobalStatePtr gs);
 XML_DEPRECATED XMLPUBFUN
 xmlGlobalStatePtr xmlGetGlobalState(void);

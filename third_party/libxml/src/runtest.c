@@ -11,7 +11,7 @@
  * daniel@veillard.com
  */
 
-#include "config.h"
+#include "libxml.h"
 #include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -398,19 +398,17 @@ testStructuredErrorHandler(void *ctx ATTRIBUTE_UNUSED, const xmlError *err) {
     /*
      * Maintain the compatibility with the legacy error handling
      */
-    if (ctxt != NULL) {
+    if ((ctxt != NULL) && (ctxt->input != NULL)) {
         input = ctxt->input;
-        if ((input != NULL) && (input->filename == NULL) &&
+        if ((input->filename == NULL) &&
             (ctxt->inputNr > 1)) {
             cur = input;
             input = ctxt->inputTab[ctxt->inputNr - 2];
         }
-        if (input != NULL) {
-            if (input->filename)
-                channel(data, "%s:%d: ", input->filename, input->line);
-            else if ((line != 0) && (domain == XML_FROM_PARSER))
-                channel(data, "Entity: line %d: ", input->line);
-        }
+        if (input->filename)
+            channel(data, "%s:%d: ", input->filename, input->line);
+        else if ((line != 0) && (domain == XML_FROM_PARSER))
+            channel(data, "Entity: line %d: ", input->line);
     } else {
         if (file != NULL)
             channel(data, "%s:%d: ", file, line);
@@ -603,10 +601,6 @@ static char *resultFilename(const char *filename, const char *out,
         out = "";
 
     strncpy(suffixbuff,suffix,499);
-#ifdef VMS
-    if(strstr(base,".") && suffixbuff[0]=='.')
-      suffixbuff[0]='_';
-#endif
 
     if (snprintf(res, 499, "%s%s%s", out, base, suffixbuff) >= 499)
         res[499] = 0;
@@ -2139,6 +2133,12 @@ pushBoundaryTest(const char *filename, const char *result,
     int size, res, numCallbacks;
     int cur = 0;
     unsigned long avail, oldConsumed, consumed;
+
+    /*
+     * HTML encoding detection doesn't work when data is fed bytewise.
+     */
+    if (strcmp(filename, "./test/HTML/xml-declaration-1.html") == 0)
+        return(0);
 
     /*
      * If the parser made progress, check that exactly one construct was

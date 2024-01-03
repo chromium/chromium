@@ -2503,6 +2503,96 @@ xmlFreeID(xmlIDPtr id) {
 
 
 /**
+ * xmlAddIDSafe:
+ * @doc:  pointer to the document
+ * @value:  the value name
+ * @attr:  the attribute holding the ID
+ * @id:  pointer to new xmlIdPtr (optional)
+ *
+ * Register a new id declaration
+ *
+ * Returns 1 on success, 0 if the ID already exists, -1 if a memory
+ * allocation fails.
+ */
+int
+xmlAddIDSafe(xmlDocPtr doc, const xmlChar *value, xmlAttrPtr attr,
+             int streaming, xmlIDPtr *id) {
+    xmlIDPtr ret;
+    xmlIDTablePtr table;
+    int res;
+
+    if (id != NULL)
+        *id = NULL;
+
+    if (doc == NULL) {
+	return(-1);
+    }
+    if ((value == NULL) || (value[0] == 0)) {
+	return(0);
+    }
+    if (attr == NULL) {
+	return(-1);
+    }
+
+    /*
+     * Create the ID table if needed.
+     */
+    table = (xmlIDTablePtr) doc->ids;
+    if (table == NULL)  {
+        doc->ids = table = xmlHashCreateDict(0, doc->dict);
+    }
+    if (table == NULL)
+        return(-1);
+
+    ret = (xmlIDPtr) xmlMalloc(sizeof(xmlID));
+    if (ret == NULL)
+	return(-1);
+    memset(ret, 0, sizeof(*ret));
+
+    /*
+     * fill the structure.
+     */
+    ret->doc = doc;
+    ret->value = xmlStrdup(value);
+    if (ret->value == NULL) {
+        xmlFreeID(ret);
+        return(-1);
+    }
+    if (streaming) {
+	/*
+	 * Operating in streaming mode, attr is gonna disappear
+	 */
+	if (doc->dict != NULL)
+	    ret->name = xmlDictLookup(doc->dict, attr->name, -1);
+	else
+	    ret->name = xmlStrdup(attr->name);
+        if (ret->name == NULL) {
+            xmlFreeID(ret);
+            return(-1);
+        }
+	ret->attr = NULL;
+    } else {
+	ret->attr = attr;
+	ret->name = NULL;
+    }
+    ret->lineno = xmlGetLineNo(attr->parent);
+
+    res = xmlHashAdd(table, value, ret);
+    if (res <= 0) {
+	xmlFreeID(ret);
+	return(res);
+    }
+    if (attr != NULL) {
+	attr->atype = XML_ATTRIBUTE_ID;
+        attr->id = ret;
+    }
+
+    if (id != NULL)
+        *id = ret;
+    return(1);
+}
+
+/**
  * xmlAddID:
  * @ctxt:  the validation context
  * @doc:  pointer to the document
@@ -2516,74 +2606,26 @@ xmlFreeID(xmlIDPtr id) {
 xmlIDPtr
 xmlAddID(xmlValidCtxtPtr ctxt, xmlDocPtr doc, const xmlChar *value,
          xmlAttrPtr attr) {
-    xmlIDPtr ret;
-    xmlIDTablePtr table;
+    xmlIDPtr id;
+    int res;
 
-    if (doc == NULL) {
-	return(NULL);
+    res = xmlAddIDSafe(doc, value, attr, xmlIsStreaming(ctxt), &id);
+    if (res < 0) {
+        xmlVErrMemory(ctxt, "malloc failed");
     }
-    if ((value == NULL) || (value[0] == 0)) {
-	return(NULL);
-    }
-    if (attr == NULL) {
-	return(NULL);
-    }
-
-    /*
-     * Create the ID table if needed.
-     */
-    table = (xmlIDTablePtr) doc->ids;
-    if (table == NULL)  {
-        doc->ids = table = xmlHashCreateDict(0, doc->dict);
-    }
-    if (table == NULL) {
-	xmlVErrMemory(ctxt,
-		"xmlAddID: Table creation failed!\n");
-        return(NULL);
-    }
-
-    ret = (xmlIDPtr) xmlMalloc(sizeof(xmlID));
-    if (ret == NULL) {
-	xmlVErrMemory(ctxt, "malloc failed");
-	return(NULL);
-    }
-
-    /*
-     * fill the structure.
-     */
-    ret->value = xmlStrdup(value);
-    ret->doc = doc;
-    if (xmlIsStreaming(ctxt)) {
-	/*
-	 * Operating in streaming mode, attr is gonna disappear
-	 */
-	if (doc->dict != NULL)
-	    ret->name = xmlDictLookup(doc->dict, attr->name, -1);
-	else
-	    ret->name = xmlStrdup(attr->name);
-	ret->attr = NULL;
-    } else {
-	ret->attr = attr;
-	ret->name = NULL;
-    }
-    ret->lineno = xmlGetLineNo(attr->parent);
-
-    if (xmlHashAddEntry(table, value, ret) < 0) {
 #ifdef LIBXML_VALID_ENABLED
-	/*
-	 * The id is already defined in this DTD.
-	 */
-	if (ctxt != NULL) {
-	    xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
-			    "ID %s already defined\n", value, NULL, NULL);
-	}
-#endif /* LIBXML_VALID_ENABLED */
-	xmlFreeID(ret);
-	return(NULL);
+    else if (res == 0) {
+        if (ctxt != NULL) {
+            /*
+             * The id is already defined in this DTD.
+             */
+            xmlErrValidNode(ctxt, attr->parent, XML_DTD_ID_REDEFINED,
+                            "ID %s already defined\n", value, NULL, NULL);
+        }
     }
-    if (attr != NULL)
-	attr->atype = XML_ATTRIBUTE_ID;
-    return(ret);
+#endif /* LIBXML_VALID_ENABLED */
+
+    return(id);
 }
 
 static void
@@ -2679,30 +2721,20 @@ xmlIsID(xmlDocPtr doc, xmlNodePtr elem, xmlAttrPtr attr) {
 int
 xmlRemoveID(xmlDocPtr doc, xmlAttrPtr attr) {
     xmlIDTablePtr table;
-    xmlIDPtr id;
-    xmlChar *ID;
 
     if (doc == NULL) return(-1);
-    if (attr == NULL) return(-1);
+    if ((attr == NULL) || (attr->id == NULL)) return(-1);
 
     table = (xmlIDTablePtr) doc->ids;
     if (table == NULL)
         return(-1);
 
-    ID = xmlNodeListGetString(doc, attr->children, 1);
-    if (ID == NULL)
+    if (xmlHashRemoveEntry(table, attr->id->value, xmlFreeIDTableEntry) < 0)
         return(-1);
-    xmlValidNormalizeString(ID);
 
-    id = xmlHashLookup(table, ID);
-    if (id == NULL || id->attr != attr) {
-        xmlFree(ID);
-        return(-1);
-    }
-
-    xmlHashRemoveEntry(table, ID, xmlFreeIDTableEntry);
-    xmlFree(ID);
     attr->atype = 0;
+    attr->id = NULL;
+
     return(0);
 }
 

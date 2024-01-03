@@ -249,6 +249,12 @@ XMLPUBFUN void
 #endif /* LIBXML_OUTPUT_ENABLED */
 
 /* IDs */
+XMLPUBFUN int
+		xmlAddIDSafe	       (xmlDocPtr doc,
+					const xmlChar *value,
+					xmlAttrPtr attr,
+					int streaming,
+					xmlIDPtr *id);
 XMLPUBFUN xmlIDPtr
 		xmlAddID	       (xmlValidCtxtPtr ctxt,
 					xmlDocPtr doc,

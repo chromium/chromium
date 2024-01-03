@@ -55,9 +55,11 @@ xmlInitDictInternal(void);
 XML_HIDDEN void
 xmlCleanupDictInternal(void);
 
-unsigned
+XML_HIDDEN unsigned
 xmlDictComputeHash(const xmlDict *dict, const xmlChar *string);
-xmlHashedString
+XML_HIDDEN unsigned
+xmlDictCombineHash(unsigned v1, unsigned v2);
+XML_HIDDEN xmlHashedString
 xmlDictLookupHashed(xmlDictPtr dict, const xmlChar *name, int len);
 
 XML_HIDDEN void

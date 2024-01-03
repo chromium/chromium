@@ -13,6 +13,7 @@
 #include <libxml/xmlversion.h>
 #include <libxml/xmlerror.h>
 #include <libxml/xmlstring.h>
+#include <libxml/tree.h>
 
 #ifdef LIBXML_SCHEMAS_ENABLED
 

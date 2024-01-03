@@ -373,6 +373,18 @@ xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors error, const char *info)
         case XML_IO_UNKNOWN:
             errmsg = "I/O error";
             break;
+        case XML_ERR_RESOURCE_LIMIT:
+            errmsg = "Resource limit exceeded";
+            break;
+        case XML_ERR_ARGUMENT:
+            errmsg = "Invalid argument";
+            break;
+        case XML_ERR_SYSTEM:
+            errmsg = "Out of system resources";
+            break;
+        case XML_ERR_REDECL_PREDEF_ENTITY:
+            errmsg = "Invalid redeclaration of predefined entity";
+            break;
 #if 0
         case:
             errmsg = "";
@@ -849,7 +861,14 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
              *   the single character #xA.
              */
             if (c == '\r') {
-                *len = ((cur[1] == '\n') ? 2 : 1);
+                /*
+                 * TODO: This function shouldn't change the 'cur' pointer
+                 * as side effect, but the NEXTL macro in parser.c relies
+                 * on this behavior when incrementing line numbers.
+                 */
+                if (cur[1] == '\n')
+                    ctxt->input->cur++;
+                *len = 1;
                 c = '\n';
             } else if (c == 0) {
                 if (ctxt->input->cur >= ctxt->input->end) {
@@ -2120,7 +2139,7 @@ xmlClearParserCtxt(xmlParserCtxtPtr ctxt)
  * Returns an xmlParserNodeInfo block pointer or NULL
  */
 const xmlParserNodeInfo *
-xmlParserFindNodeInfo(const xmlParserCtxtPtr ctx, const xmlNodePtr node)
+xmlParserFindNodeInfo(xmlParserCtxtPtr ctx, xmlNodePtr node)
 {
     unsigned long pos;
 
@@ -2186,8 +2205,8 @@ xmlClearNodeInfoSeq(xmlParserNodeInfoSeqPtr seq)
  * Returns a long indicating the position of the record
  */
 unsigned long
-xmlParserFindNodeInfoIndex(const xmlParserNodeInfoSeqPtr seq,
-                           const xmlNodePtr node)
+xmlParserFindNodeInfoIndex(xmlParserNodeInfoSeqPtr seq,
+                           xmlNodePtr node)
 {
     unsigned long upper, lower, middle;
     int found = 0;
@@ -2228,7 +2247,7 @@ xmlParserFindNodeInfoIndex(const xmlParserNodeInfoSeqPtr seq,
  */
 void
 xmlParserAddNodeInfo(xmlParserCtxtPtr ctxt,
-                     const xmlParserNodeInfoPtr info)
+                     xmlParserNodeInfoPtr info)
 {
     unsigned long pos;
 

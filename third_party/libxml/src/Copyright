@@ -1,6 +1,6 @@
-Except where otherwise noted in the source code (e.g. the files dict.c,
-list.c and the trio files, which are covered by a similar licence but
-with different Copyright notices) all the files are:
+Except where otherwise noted in the source code (e.g. the files dict.c and
+list.c, which are covered by a similar licence but with different Copyright
+notices) all the files are:
 
  Copyright (C) 1998-2012 Daniel Veillard.  All Rights Reserved.
 
