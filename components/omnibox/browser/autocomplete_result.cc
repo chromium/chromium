@@ -187,22 +187,19 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   //   to show 2 URL-what-you-typed suggestions.
   // - Don't transfer action matches since matches are annotated and converted
   //   on every pass to keep them associated with the triggering match.
+  // Exclude specialized suggestion types from being transferred to prevent
+  // user-visible artifacts.
   base::EraseIf(old_matches->matches_, [](const auto& old_match) {
     return old_match.type == AutocompleteMatchType::PEDAL ||
            (old_match.provider && old_match.provider->done()) ||
            old_match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-           old_match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+           old_match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
+           old_match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
+           old_match.type == AutocompleteMatchType::TILE_SUGGESTION;
   });
 
   if (old_matches->empty())
     return;
-
-  // Exclude specialized suggestion types from being transferred to prevent
-  // user-visible artifacts.
-  base::EraseIf(old_matches->matches_, [](const auto& match) {
-    return match.type == AutocompleteMatchType::TILE_NAVSUGGEST ||
-           match.type == AutocompleteMatchType::TILE_SUGGESTION;
-  });
 
   if (empty()) {
     // If we've got no matches we can copy everything from the last result.

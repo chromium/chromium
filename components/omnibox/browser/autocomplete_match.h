@@ -886,6 +886,8 @@ struct AutocompleteMatch {
   // however, providers pass ALL suggestion candidates to the controller. When
   // this flag is true, this match is an "extra" suggestion that would've
   // originally been culled by the provider.
+  // TODO(yoangela|manukh): Currently unused except in tests. Remove if not
+  //   needed. Might be needed when increasing the max provider limit?
   bool culled_by_provider = false;
 
   // True for shortcut suggestions that were boosted. Used for grouping logic.

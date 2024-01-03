@@ -1030,6 +1030,8 @@ void AutocompleteController::UpdateResult(UpdateType update_type) {
   OldResult old_result(update_type, input_, &internal_result_);
   AggregateNewMatches();
 
+  MlRerank(old_result);
+
   if (update_type == UpdateType::kSyncPass ||
       update_type == UpdateType::kAsyncPass ||
       update_type == UpdateType::kLastAsyncPassExceptDoc) {
@@ -1040,7 +1042,6 @@ void AutocompleteController::UpdateResult(UpdateType update_type) {
                                         &old_result.matches_to_transfer);
   }
 
-  MlRerank(old_result);
   internal_result_.SortAndCull(input_, template_url_service_,
                                triggered_feature_service_,
                                old_result.default_match_to_preserve);
