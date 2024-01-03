@@ -2050,17 +2050,17 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
 #endif // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #endif // BUILDFLAG(ENABLE_EXTENSIONS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  { key::kTabOrganizationAllowed,
+  { key::kTabOrganizerSettings,
     optimization_guide::model_execution::prefs::kTabOrganizationEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  { key::kComposeAllowed,
+  { key::kHelpMeWriteSettings,
     optimization_guide::model_execution::prefs::kComposeEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
-  { key::kWallpaperSearchAllowed,
+  { key::kCreateThemesSettings,
     optimization_guide::model_execution::prefs::kWallpaperSearchEnterprisePolicyAllowed,
     base::Value::Type::INTEGER},
 #endif

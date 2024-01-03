@@ -1527,7 +1527,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   // Disable logging via via the enterprise policy to state
   // kAllowWithoutLogging.
   policies.Set(
-      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           optimization_guide::model_execution::prefs::
@@ -1547,7 +1547,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
   ogks->UploadModelQualityLogs(std::move(log_entry_1));
 
   // Disable logging via via the enterprise policy to kDisable state.
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::
@@ -1568,7 +1568,7 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceEnterpriseBrowserTest,
 
   // Enable logging via via the enterprise policy to state kAllow this shouldn't
   // stop upload.
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+  policies.Set(policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
                policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    optimization_guide::model_execution::prefs::
