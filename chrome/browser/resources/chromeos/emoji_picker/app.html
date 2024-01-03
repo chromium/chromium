@@ -355,7 +355,9 @@
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
     gif-support$="[[gifSupport]]"
     jelly-support$="[[jellySupport]]"
-    close-gif-nudge-overlay="[[closeGifNudgeOverlay]]">
+    close-gif-nudge-overlay="[[closeGifNudgeOverlay]]"
+    global-tone="[[getGlobalTone()]]"
+    global-gender="[[getGlobalGender()]]">
   </emoji-search>
 
 <div id="list-container" class$="[[computeListContainerClass(category, status)]]">
@@ -473,6 +475,8 @@
           gif-support$="[[gifSupport]]"
           jelly-support$="[[jellySupport]]"
           group="[[item.name]]"
+          global-tone="[[getGlobalTone()]]"
+          global-gender="[[getGlobalGender()]]"
           preferred="[[item.preferences]]"
           clearable$="[[item.isHistory]]"
           category$="[[item.category]]"

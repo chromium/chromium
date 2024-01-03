@@ -118,6 +118,7 @@ export class EmojiPickerApp extends PolymerElement {
   categoriesGroupElements: EmojiGroupElement[];
   activeInfiniteGroupId: string|null; // null before Trending GIFs are fetched
   private categoriesHistory: {[index in CategoryEnum]: RecentlyUsedStore|null};
+  private emojiPreferences = new EmojiPreferencesStore();
   private pagination: number;
   private searchLazyIndexing: boolean;
   private textSubcategoryBarEnabled: boolean;
@@ -1165,6 +1166,20 @@ export class EmojiPickerApp extends PolymerElement {
   }
 
   /**
+   * Gets the global emoji skin tone preference.
+   */
+  private getGlobalTone() {
+    return this.emojiPreferences.getTone();
+  }
+
+  /**
+   * Gets the global emoji gender preference.
+   */
+  private getGlobalGender() {
+    return this.emojiPreferences.getGender();
+  }
+
+  /**
    * Handles the event where history or preferences are modified for a
    * category.
    *
@@ -1251,11 +1266,11 @@ export class EmojiPickerApp extends PolymerElement {
     }
 
     if (tone !== undefined) {
-      EmojiPreferencesStore.setTone(tone);
+      this.emojiPreferences.setTone(tone);
     }
 
     if (gender !== undefined) {
-      EmojiPreferencesStore.setGender(gender);
+      this.emojiPreferences.setGender(gender);
     }
   }
 

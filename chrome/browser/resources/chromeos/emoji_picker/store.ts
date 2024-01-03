@@ -225,25 +225,25 @@ interface EmojiPreferences {
 }
 
 export class EmojiPreferencesStore {
-  private static store = new Store<EmojiPreferences>(
+  private store = new Store<EmojiPreferences>(
       'emoji-preferences', {tone: null, gender: null});
 
-  static getTone(): Tone|null {
-    return EmojiPreferencesStore.store.data.tone;
+  getTone(): Tone|null {
+    return this.store.data.tone;
   }
 
-  static setTone(tone: Tone) {
-    EmojiPreferencesStore.store.data.tone = tone;
-    EmojiPreferencesStore.store.save();
+  setTone(tone: Tone) {
+    this.store.data.tone = tone;
+    this.store.save();
   }
 
-  static getGender(): Gender|null {
-    return EmojiPreferencesStore.store.data.gender;
+  getGender(): Gender|null {
+    return this.store.data.gender;
   }
 
-  static setGender(gender: Gender) {
-    EmojiPreferencesStore.store.data.gender = gender;
-    EmojiPreferencesStore.store.save();
+  setGender(gender: Gender) {
+    this.store.data.gender = gender;
+    this.store.save();
   }
 }
 
