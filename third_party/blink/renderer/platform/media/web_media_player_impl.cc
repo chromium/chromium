@@ -1628,6 +1628,8 @@ void WebMediaPlayerImpl::SetCdmInternal(WebContentDecryptionModule* cdm) {
   cdm_config_ = web_cdm->GetCdmConfig();
   DCHECK(!cdm_config_->key_system.empty());
 
+  media_log_->SetProperty<MediaLogProperty::kSetCdm>(cdm_config_.value());
+
   media_metrics_provider_->SetKeySystem(cdm_config_->key_system);
   if (cdm_config_->use_hw_secure_codecs)
     media_metrics_provider_->SetIsHardwareSecure();

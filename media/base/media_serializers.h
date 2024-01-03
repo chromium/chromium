@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
+#include "media/base/cdm_config.h"
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
 #include "media/base/renderer.h"
@@ -240,6 +241,20 @@ template <>
 struct MediaSerializer<SampleFormat> {
   static inline base::Value Serialize(SampleFormat value) {
     return base::Value(SampleFormatToString(value));
+  }
+};
+
+// Class (complex)
+template <>
+struct MediaSerializer<CdmConfig> {
+  static base::Value Serialize(const CdmConfig& value) {
+    base::Value::Dict result;
+    FIELD_SERIALIZE("key_system", value.key_system);
+    FIELD_SERIALIZE("allow_distinctive_identifier",
+                    value.allow_distinctive_identifier);
+    FIELD_SERIALIZE("allow_persistent_state", value.allow_persistent_state);
+    FIELD_SERIALIZE("use_hw_secure_codecs", value.use_hw_secure_codecs);
+    return base::Value(std::move(result));
   }
 };
 

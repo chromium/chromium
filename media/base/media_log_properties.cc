@@ -18,6 +18,7 @@ std::string MediaLogPropertyKeyToString(MediaLogProperty property) {
     STRINGIFY(kBitrate);
     STRINGIFY(kMaxDuration);
     STRINGIFY(kStartTime);
+    STRINGIFY(kSetCdm);
     STRINGIFY(kIsCdmAttached);
     STRINGIFY(kIsStreaming);
     STRINGIFY(kFrameUrl);
