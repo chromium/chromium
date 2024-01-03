@@ -39,8 +39,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
@@ -49,7 +47,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
-#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -109,7 +106,6 @@
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/platform/platform_channel.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/temporary_shared_resource_path_chromeos.h"
 #include "ui/base/ui_base_features.h"
@@ -389,19 +385,6 @@ BrowserLauncher::LaunchParamsFromBackground DoLacrosBackgroundWorkPreLaunch(
   return params;
 }
 
-std::string GetXdgRuntimeDir() {
-  // If ash-chrome was given an environment variable, use it.
-  std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::string xdg_runtime_dir;
-  if (env->GetVar("XDG_RUNTIME_DIR", &xdg_runtime_dir)) {
-    return xdg_runtime_dir;
-  }
-
-  // Otherwise provide the default for Chrome OS devices.
-  return "/run/chrome";
-}
-
-
 void SetLaunchOnLoginPref(bool launch_on_login) {
   ProfileManager::GetPrimaryUserProfile()->GetPrefs()->SetBoolean(
       browser_util::kLaunchOnLoginPref, launch_on_login);
@@ -579,23 +562,6 @@ class BrowserVersionServiceDelegate : public BrowserVersionServiceAsh::Delegate,
 };
 
 }  // namespace
-
-// To be sure the lacros is running with neutral thread type.
-class LacrosThreadTypeDelegate : public base::LaunchOptions::PreExecDelegate {
- public:
-  void RunAsyncSafe() override {
-    // TODO(crbug.com/1289736): Currently, this is causing some deadlock issue.
-    // It looks like inside the function, we seem to call async unsafe API.
-    // For the mitigation, disabling this temporarily.
-    // We should revisit here, and see the impact of performance.
-    // SetCurrentThreadType() needs file I/O on /proc and /sys.
-    // base::ScopedAllowBlocking allow_blocking;
-    // base::PlatformThread::SetCurrentThreadType(
-    //     base::ThreadType::kDefault);
-    // When this class becomes usable, `options.pre_exec_delegate` should be
-    // assigned an object  of this class in `StartWithLogFile`.
-  }
-};
 
 // static
 BrowserManager* BrowserManager::Get() {
@@ -1102,139 +1068,33 @@ void BrowserManager::StartWithLogFile(
   std::string chrome_path = lacros_path_.MaybeAsASCII();
   LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
 
-  // If Ash is an unknown channel then this is not a production build and we
-  // should be using an unknown channel for Lacros as well. This prevents Lacros
-  // from picking up Finch experiments.
-  version_info::Channel update_channel = version_info::Channel::UNKNOWN;
-  if (chrome::GetChannel() != version_info::Channel::UNKNOWN) {
-    DCHECK(lacros_selection_.has_value());
-    update_channel = browser_util::GetLacrosSelectionUpdateChannel(
-        lacros_selection_.value());
-    // If we don't have channel information, we default to the "dev" channel.
-    if (update_channel == version_info::Channel::UNKNOWN) {
-      update_channel = browser_util::kLacrosDefaultChannel;
-    }
-  }
-
-  base::LaunchOptions options;
-  options.environment["EGL_PLATFORM"] = "surfaceless";
-  options.environment["XDG_RUNTIME_DIR"] = GetXdgRuntimeDir();
-  options.environment["CHROME_VERSION_EXTRA"] =
-      version_info::GetChannelString(update_channel);
-
-  if (base::FeatureList::IsEnabled(ash::features::kLacrosWaylandLogging)) {
-    options.environment["WAYLAND_DEBUG"] = "1";
-  }
-
-  // LsbRelease and LsbReleaseTime are used by sys_info in Lacros to determine
-  // hardware class.
-  std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::string lsb_release;
-  std::string lsb_release_time;
-  if (env->GetVar(base::kLsbReleaseKey, &lsb_release) &&
-      env->GetVar(base::kLsbReleaseTimeKey, &lsb_release_time)) {
-    options.environment[base::kLsbReleaseKey] = std::move(lsb_release);
-    options.environment[base::kLsbReleaseTimeKey] = std::move(lsb_release_time);
-  }
-
-  std::string additional_env =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          ash::switches::kLacrosChromeAdditionalEnv);
-  base::StringPairs env_pairs;
-  if (base::SplitStringIntoKeyValuePairsUsingSubstr(additional_env, '=', "####",
-                                                    &env_pairs)) {
-    for (const auto& env_pair : env_pairs) {
-      if (!env_pair.first.empty()) {
-        LOG(WARNING) << "Applying lacros env " << env_pair.first << "="
-                     << env_pair.second;
-        options.environment[env_pair.first] = env_pair.second;
-      }
-    }
-  }
-
-  options.kill_on_parent_death = true;
-
-  if (params.logfd.is_valid()) {
-    // These options will assign stdout/stderr fds to logfd in the fd table of
-    // the new process.
-    options.fds_to_remap.push_back(
-        std::make_pair(params.logfd.get(), STDOUT_FILENO));
-    options.fds_to_remap.push_back(
-        std::make_pair(params.logfd.get(), STDERR_FILENO));
-  }
-
-  // For backward compatibility, we want to pass all the parameters at
-  // startup if we're not launching at login screen.
-  // Vice versa, if we're launching at login screen, we want to split
-  // the parameters in pre-login and post-login.
-  base::ScopedFD startup_fd = browser_util::CreateStartupData(
-      environment_provider_.get(),
-      browser_util::InitialBrowserAction(
-          mojom::InitialBrowserAction::kDoNotOpenWindow),
-      !keep_alive_features_.empty(), lacros_selection_,
-      !launching_at_login_screen);
-
-  // Hardcoded to use FD 3 to make the ash-chrome's behavior more predictable.
-  // Lacros-chrome should not depend on the hardcoded value though. Instead
-  // it should take a look at the value passed via the command line flag.
-  // TODO(mayukoaiba): This part and the one in BrowserLauncher depending on
-  // whether `startup_fd` is valid or not need to be consistent.
-  constexpr int kStartupDataFD = 3;
-  if (startup_fd.is_valid()) {
-    options.fds_to_remap.emplace_back(startup_fd.get(), kStartupDataFD);
-  }
-
-  // If at login screen, open an anonymous pipe to pass post-login parameters to
-  // Lacros later on.
-  // TODO(mayukoaiba): This part and the one in BrowserLauncher depending on
-  // `launching_at_login_screen` need to be consistent.
-  base::ScopedFD read_pipe_fd;
-  constexpr int kPostLoginDataFD = 4;
-  if (launching_at_login_screen) {
-    bool success = base::CreatePipe(&read_pipe_fd, &postlogin_pipe_fd_);
-    DCHECK(success);
-
-    // Pass the read side of the pipe to the Lacros process.
-    options.fds_to_remap.emplace_back(read_pipe_fd.get(), kPostLoginDataFD);
-  }
+  // Ensures that this is the first time to initialize `crosapi_id` before
+  // calling `browser_launcher_.LaunchProcess`.
+  CHECK(!crosapi_id_.has_value());
+  CHECK(lacros_selection_.has_value());
 
   // Lacros-chrome starts with kNormal type
   // TODO(crbug.com/1289736):When `LacrosThreadTypeDelegate` becomes usable,
   // `options.pre_exec_delegate` should be assigned a `LacrosThreadTypeDelegate`
   // object.
-
-  // Set up Mojo channel.
-  // Prepare to invite lacros-chrome to the Mojo universe of Crosapi.
-  mojo::PlatformChannel channel;
-  std::string channel_flag_value;
-  channel.PrepareToPassRemoteEndpoint(&options.fds_to_remap,
-                                      &channel_flag_value);
-
-  DCHECK(!crosapi_id_.has_value());
-  // Use new Crosapi mojo connection to detect process termination always.
-  crosapi_id_ = CrosapiManager::Get()->SendInvitation(
-      channel.TakeLocalEndpoint(),
-      base::BindOnce(&BrowserManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()));
-
-  // Create the lacros-chrome subprocess.
-  base::RecordAction(base::UserMetricsAction("Lacros.Launch"));
-  lacros_launch_time_ = base::TimeTicks::Now();
-
-  // If lacros_process_ already exists, because it does not call waitpid(2),
-  // the process will never be collected.
-  if (!browser_launcher_.LaunchProcess(
+  std::optional<BrowserLauncher::LaunchResults> launch_results =
+      browser_launcher_.LaunchProcess(
           lacros_path_, params, launching_at_login_screen,
-          startup_fd.is_valid() ? std::optional(kStartupDataFD) : std::nullopt,
-          launching_at_login_screen ? std::optional(kPostLoginDataFD)
-                                    : std::nullopt,
-          channel_flag_value, options)) {
+          lacros_selection_.value(),
+          base::BindOnce(&BrowserManager::OnMojoDisconnected,
+                         weak_factory_.GetWeakPtr()),
+          keep_alive_features_.empty(), *environment_provider_.get());
+  if (!launch_results) {
     // We give up, as this is most likely a permanent problem.
     SetState(State::UNAVAILABLE);
     return;
   }
+
+  crosapi_id_ = launch_results->crosapi_id;
+  postlogin_pipe_fd_ = std::move(launch_results->postlogin_pipe_fd);
+  lacros_launch_time_ = launch_results->lacros_launch_time;
+
   SetState(launching_at_login_screen ? State::PRE_LAUNCHED : State::STARTING);
-  channel.RemoteProcessLaunchAttempted();
 }
 
 void BrowserManager::EmitLoginPromptVisibleCalled() {
@@ -1342,7 +1202,6 @@ void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
   if (!browser_launcher_.IsProcessValid()) {
     return;
   }
-
   DCHECK(state_ == State::PRE_LAUNCHED || state_ == State::STARTING ||
          state_ == State::RUNNING);
 

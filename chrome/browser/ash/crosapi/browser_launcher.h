@@ -16,12 +16,18 @@
 #include "base/functional/callback_forward.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_id.h"
+#include "chrome/common/channel_info.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
 
 namespace base {
 struct LaunchOptions;
 }  // namespace base
 
 namespace crosapi {
+
+class EnvironmentProvider;
 
 // Manages launching and terminating Lacros process.
 // TODO(crbug.com/1495590): Extract launching logic from BrowserManager to
@@ -64,15 +70,66 @@ class BrowserLauncher {
     std::vector<std::string> lacros_additional_args;
   };
 
+  // Parameters to handle command line and options used to launching Lacros.
+  struct LaunchParams {
+   public:
+    LaunchParams(base::CommandLine command_line, base::LaunchOptions options);
+    LaunchParams(LaunchParams&&);
+    LaunchParams& operator=(LaunchParams&&);
+    LaunchParams(const LaunchParams&) = delete;
+    LaunchParams& operator=(const LaunchParams&) = delete;
+    ~LaunchParams();
+
+    base::CommandLine command_line;
+
+    base::LaunchOptions options;
+  };
+
+  // Results from `LaunchProcess` and needs to be passed to
+  // BrowserManager.
+  struct LaunchResults {
+   public:
+    LaunchResults();
+    LaunchResults(LaunchResults&&);
+    LaunchResults& operator=(LaunchResults&&);
+    LaunchResults(const LaunchResults&) = delete;
+    LaunchResults& operator=(const LaunchResults&) = delete;
+    ~LaunchResults();
+
+    // ID for the current Crosapi connection.
+    // Available only when lacros-chrome is running.
+    CrosapiId crosapi_id;
+
+    // Pipe FDs through which Ash and Lacros exchange post-login parameters.
+    base::ScopedFD postlogin_pipe_fd;
+
+    // Time when the lacros process was launched.
+    base::TimeTicks lacros_launch_time;
+  };
+
   // Launches a process of the given options, which are expected to be Lacros's
   // ones.
-  bool LaunchProcess(const base::FilePath& chrome_path,
-                     const LaunchParamsFromBackground& params,
-                     bool launching_at_login_screen,
-                     std::optional<int> startup_data_fd,
-                     std::optional<int> postlogin_data_fd,
-                     std::string_view channel_flag_value,
-                     const base::LaunchOptions& options);
+  // Following is explanation for Arguments.
+  // `chrome_path`: Initializes `command_line`.
+  // `params`: Parameters used to launch Lacros that are calculated on a
+  // background sequence.
+  // `launching_at_login_screen`: Whether lacros is launching at login screen.
+  // `postlogin_pipe_fd`: Pipe FDs through which Ash and Lacros exchange
+  // post-login parameters.
+  // `lacros_selection`: Whether "rootfs" or "stateful" lacros is selected.
+  // `mojo_disconnection_cb`: Callback function setting up mojo connection.
+  // `BrowserManager::OnMojoDisconnected` is called.
+  // `is_keep_alive_enabled`: Whether `keep_alive_features` is empty.
+  // `environment_provider`: Passes ash-chrome specific flags/configurations to
+  // lacros-chrome.
+  std::optional<LaunchResults> LaunchProcess(
+      const base::FilePath& chrome_path,
+      const LaunchParamsFromBackground& params,
+      bool launching_at_login_screen,
+      browser_util::LacrosSelection lacros_selection,
+      base::OnceClosure mojo_disconnection_cb,
+      bool is_keep_alive_enabled,
+      EnvironmentProvider& environment_provider);
 
   // Returns true if process is valid.
   bool IsProcessValid();
@@ -92,42 +149,30 @@ class BrowserLauncher {
   void EnsureProcessTerminated(base::OnceClosure callback,
                                base::TimeDelta timeout);
 
-  // Returns command line from command line initialized by
-  // `InitializeParameters` for unit test.
-  base::CommandLine InitializeParametersForTesting(
-      const base::FilePath& chrome_path,
-      const LaunchParamsFromBackground& params,
-      bool launching_at_login_screen,
-      std::optional<int> startup_data_fd,
-      std::optional<int> postlogin_data_fd,
-      std::string_view channel_flag_value);
-
   // Returns reference to `process_` for testing.
   const base::Process& GetProcessForTesting();
 
   // Makes `LaunchProcessWithParameters` usable within the unit tests.
-  bool LaunchProcessForTesting(const base::CommandLine& command_line,
-                               const base::LaunchOptions& options);
+  bool LaunchProcessForTesting(const LaunchParams& parameters);
 
   // Sets up additional flags for unit tests.
   // This function overwrites `command_line` with the desired flags.
   void SetUpAdditionalParametersForTesting(LaunchParamsFromBackground& params,
-                                           base::CommandLine& command_line);
+                                           LaunchParams& parameters);
 
  private:
-  // Initializes the command line for launching Lacros.
-  base::CommandLine InitializeParameters(
+  LaunchParams CreateLaunchParams(
       const base::FilePath& chrome_path,
       const LaunchParamsFromBackground& params,
       bool launching_at_login_screen,
-      std::optional<int> startup_data_fd,
-      std::optional<int> postlogin_data_fd,
-      std::string_view channel_flag_value);
+      std::optional<int> startup_fd,
+      std::optional<int> read_pipe_fd,
+      mojo::PlatformChannel& channel,
+      browser_util::LacrosSelection lacros_selection);
 
   // Launches a process , which is executed in `LaunchProcess`.
   // This is also used for unittest.
-  bool LaunchProcessWithParameters(const base::CommandLine& command_line,
-                                   const base::LaunchOptions& options);
+  bool LaunchProcessWithParameters(const LaunchParams& parameters);
 
   // Process handle for the lacros_chrome process.
   base::Process process_;
