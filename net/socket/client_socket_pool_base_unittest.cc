@@ -545,7 +545,6 @@ class TestConnectJobFactory : public ConnectJobFactory {
       const ProxyChain& proxy_chain,
       const absl::optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
       const SSLConfig* ssl_config_for_origin,
-      const SSLConfig* base_ssl_configs_for_proxies,
       bool force_tunnel,
       PrivacyMode privacy_mode,
       const OnHostResolutionCallback& resolution_callback,

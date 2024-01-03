@@ -796,8 +796,6 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
   server_ssl_config_.alpn_protos = session_->GetAlpnProtos();
   server_ssl_config_.application_settings = session_->GetApplicationSettings();
 
-  SSLConfig base_proxy_ssl_config;
-
   // TODO(https://crbug.com/964642): Also enable 0-RTT for TLS proxies.
   server_ssl_config_.early_data_enabled = session_->params().enable_early_data;
 
@@ -885,8 +883,8 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
 
     return PreconnectSocketsForHttpRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, server_ssl_config_, base_proxy_ssl_config,
-        request_info_.privacy_mode, request_info_.network_anonymization_key,
+        proxy_info_, server_ssl_config_, request_info_.privacy_mode,
+        request_info_.network_anonymization_key,
         request_info_.secure_dns_policy, net_log_, num_streams_,
         std::move(callback));
   }
@@ -910,14 +908,14 @@ int HttpStreamFactory::Job::DoInitConnectionImpl() {
     websocket_server_ssl_config.alpn_protos = {kProtoHTTP11};
     return InitSocketHandleForWebSocketRequest(
         destination_, request_info_.load_flags, priority_, session_,
-        proxy_info_, websocket_server_ssl_config, base_proxy_ssl_config,
-        request_info_.privacy_mode, request_info_.network_anonymization_key,
-        net_log_, connection_.get(), io_callback_, proxy_auth_callback);
+        proxy_info_, websocket_server_ssl_config, request_info_.privacy_mode,
+        request_info_.network_anonymization_key, net_log_, connection_.get(),
+        io_callback_, proxy_auth_callback);
   }
 
   return InitSocketHandleForHttpRequest(
       destination_, request_info_.load_flags, priority_, session_, proxy_info_,
-      server_ssl_config_, base_proxy_ssl_config, request_info_.privacy_mode,
+      server_ssl_config_, request_info_.privacy_mode,
       request_info_.network_anonymization_key, request_info_.secure_dns_policy,
       request_info_.socket_tag, net_log_, connection_.get(), io_callback_,
       proxy_auth_callback);
