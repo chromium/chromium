@@ -142,9 +142,6 @@ constexpr size_t kMaxRecentFormSignaturesToRemember = 3;
 // This is used for sites that change multiple things consecutively.
 constexpr base::TimeDelta kWaitTimeForDynamicForms = base::Milliseconds(200);
 
-// Characters to be removed from the string before comparisons.
-constexpr char16_t kCharsToBeRemoved[] = u"-_/\\.";
-
 std::string_view GetSkipFieldFillLogMessage(
     FieldFillingSkipReason skip_reason) {
   switch (skip_reason) {
@@ -518,15 +515,6 @@ size_t TypeValueFormFillingLimit(FieldType field_type) {
   }
 }
 
-// Removes whitespace and `kCharsToBeRemoved` from the `value` and returns it.
-std::u16string RemoveWhiteSpaceAndConjugatingCharacters(
-    const std::u16string& value) {
-  std::u16string sanitized_value;
-  base::TrimWhitespace(value, base::TRIM_ALL, &sanitized_value);
-  base::RemoveChars(sanitized_value, kCharsToBeRemoved, &sanitized_value);
-  return sanitized_value;
-}
-
 std::string_view ActionPersistenceToString(
     mojom::ActionPersistence action_persistence) {
   switch (action_persistence) {
@@ -852,24 +840,6 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
       // Note that the feature is experimental, and `plus_address_service` will
       // be null if the feature is not enabled (it's disabled by default).
       form_for_autocomplete.fields[i].should_autocomplete = false;
-    }
-
-    // If the field was edited by the user and there existed an autofillable
-    // value for the field, log whether the value on submission is same as the
-    // autofillable value.
-    if (submitted_form->field(i)
-            ->value_not_autofilled_over_existing_value_hash() &&
-        (submitted_form->field(i)->properties_mask & kUserTyped)) {
-      // Compare and record if the currently filled value is same as the
-      // non-empty value that was to be autofilled in the field.
-      std::u16string sanitized_submitted_value =
-          RemoveWhiteSpaceAndConjugatingCharacters(
-              submitted_form->field(i)->value);
-      AutofillMetrics::
-          LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
-              *submitted_form->field(i)
-                   ->value_not_autofilled_over_existing_value_hash() ==
-              base::FastHash(base::UTF16ToUTF8(sanitized_submitted_value)));
     }
 
     // The context menu was shown in this field, log the metrics by
@@ -2642,57 +2612,6 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // ignored the operation could be for a different card or address.
     filling_context->forced_fill_values.clear();
   }
-}
-
-bool BrowserAutofillManager::ShouldPreventAutofillFromOverridingPrefilledField(
-    mojom::ActionPersistence action_persistence,
-    AutofillField& cached_field,
-    const FormFieldData& field_data,
-    bool is_initiating_field,
-    const AutofillProfile& profile) {
-  // Keeping the credit card fields out of the experiment group.
-  // The default behaviour would be to override the credit card pre-filled
-  // fields.
-  if (cached_field.Type().group() == FieldTypeGroup::kCreditCard) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillPreventOverridingPrefilledValues)) {
-    return false;
-  }
-
-  cached_field.set_value_not_autofilled_over_existing_value_hash(std::nullopt);
-
-  // Some sites have empty values in the fields, for example.
-  if (std::u16string sanitized_field_value =
-          RemoveWhiteSpaceAndConjugatingCharacters(field_data.value);
-      !field_data.IsSelectOrSelectListElement() &&
-      !sanitized_field_value.empty() && !is_initiating_field) {
-    std::string unused_failure_to_fill;
-    const std::u16string kEmptyCvc{};
-    std::u16string fill_value = GetFillingValueAndTypeForProfile(
-                                    profile, app_locale_, cached_field.Type(),
-                                    field_data, client().GetAddressNormalizer())
-                                    .value_or(std::make_pair(u"", UNKNOWN_TYPE))
-                                    .first;
-    std::u16string sanitized_fill_value =
-        RemoveWhiteSpaceAndConjugatingCharacters(fill_value);
-
-    if (action_persistence == mojom::ActionPersistence::kFill &&
-        !sanitized_fill_value.empty() &&
-        !base::EqualsCaseInsensitiveASCII(sanitized_field_value,
-                                          sanitized_fill_value) &&
-        !cached_field.value.empty()) {
-      // Save the value that was supposed to be autofilled for this
-      // field if the field contained an initial value.
-      cached_field.set_value_not_autofilled_over_existing_value_hash(
-          base::FastHash(base::UTF16ToUTF8(sanitized_fill_value)));
-    }
-    return true;
-  }
-
-  return false;
 }
 
 std::unique_ptr<FormStructure> BrowserAutofillManager::ValidateSubmittedForm(

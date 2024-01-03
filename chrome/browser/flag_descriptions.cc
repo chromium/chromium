@@ -622,12 +622,6 @@ const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =
     "When enabled, Autofill will attempt to find standalone CVC fields for VCN "
     "card on file when parsing forms.";
 
-const char kAutofillPreventOverridingPrefilledValuesName[] =
-    "Prevent Autofill from overriding prefilled field values";
-const char kAutofillPreventOverridingPrefilledValuesDescription[] =
-    "When enabled, Autofill won't override any field values that have not been "
-    "filled by Autofill";
-
 const char kAutofillMoreProminentPopupName[] = "More prominent Autofill popup";
 const char kAutofillMoreProminentPopupDescription[] =
     "If enabled Autofill's popup becomes more prominent, i.e. its shadow "

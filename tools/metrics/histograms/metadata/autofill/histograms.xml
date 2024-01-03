@@ -2455,20 +2455,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2"
-    enum="Boolean" expires_after="2024-04-12">
-  <owner>vidhanj@google.com</owner>
-  <owner>koerber@google.com</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    This metric is recorderd on form submission for each field that had an
-    initial value on page load and was edited by the user later on. The result
-    of the equality comparison between the submitted field value and supposedly
-    autofillable value is emitted by this metric.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.KeyMetrics.FillingAcceptance{AutofillFormType}"
     enum="BooleanAutofillFillingAcceptance" expires_after="2024-12-12">
   <owner>battre@chromium.org</owner>

@@ -497,19 +497,6 @@ class BrowserAutofillManager : public AutofillManager {
       const AutofillTriggerDetails trigger_details,
       bool is_refill = false);
 
-  // Returns true if the field value should not be overridden by Autofill.
-  // Selection fields are excluded from this check because they may have a
-  // non-empty value. If the initiating element had a prefilled value but the
-  // autofill suggestion is present that includes the currently filled value in
-  // the field as a substring, Autofill would override the filled value in that
-  // case.
-  [[nodiscard]] bool ShouldPreventAutofillFromOverridingPrefilledField(
-      mojom::ActionPersistence action_persistence,
-      AutofillField& cached_field,
-      const FormFieldData& field_data,
-      bool is_initiating_field,
-      const AutofillProfile& profile);
-
   // Creates a FormStructure using the FormData received from the renderer. Will
   // return an empty scoped_ptr if the data should not be processed for upload
   // or personal data.

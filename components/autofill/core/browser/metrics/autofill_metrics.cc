@@ -3021,14 +3021,6 @@ void AutofillMetrics::LogImageFetcherRequestLatency(
 }
 
 // static
-void AutofillMetrics::
-    LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(bool is_same) {
-  base::UmaHistogramBoolean(
-      "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue2",
-      is_same);
-}
-
-// static
 void AutofillMetrics::LogAutocompletePredictionCollisionState(
     PredictionState prediction_state,
     AutocompleteState autocomplete_state) {

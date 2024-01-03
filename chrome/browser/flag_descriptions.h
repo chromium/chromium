@@ -361,9 +361,6 @@ extern const char
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 
-extern const char kAutofillPreventOverridingPrefilledValuesName[];
-extern const char kAutofillPreventOverridingPrefilledValuesDescription[];
-
 extern const char kAutofillShowAutocompleteDeleteButtonName[];
 extern const char kAutofillShowAutocompleteDeleteButtonDescription[];
 

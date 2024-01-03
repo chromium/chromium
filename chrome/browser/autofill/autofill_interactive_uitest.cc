@@ -1269,9 +1269,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectListFieldAndFill) {
   DoModifySelectFieldAndFill(this, /*should_test_selectlist=*/true);
 }
 
-// Test that autofill works when the website prefills the form when
-// |kAutofillPreventOverridingPrefilledValues| is not enabled, otherwise, the
-// prefilled field values are not overridden.
+// Test that autofill works when the website prefills the form.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
   const char kPrefillScript[] =
       R"( <script>
@@ -1292,18 +1290,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, PrefillFormAndFill) {
   ASSERT_TRUE(
       AutofillFlow(GetElementById("firstname"), this,
                    {.after_focus = base::BindLambdaForTesting(Delete)}));
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPreventOverridingPrefilledValues)) {
-    EXPECT_EQ("Milton", GetFieldValueById("firstname"));
-    EXPECT_EQ("Bell", GetFieldValueById("lastname"));
-    EXPECT_EQ("3243 Notre-Dame Ouest", GetFieldValueById("address1"));
-    EXPECT_EQ("apt 843", GetFieldValueById("address2"));
-    EXPECT_EQ("Montreal", GetFieldValueById("city"));
-    EXPECT_EQ("H5D 4D3", GetFieldValueById("zip"));
-    EXPECT_EQ("15142223344", GetFieldValueById("phone"));
-  } else {
-    EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
-  }
+  EXPECT_THAT(GetFormValues(), ValuesAre(kDefaultAddress));
 }
 
 // Test that autofill doesn't refill a field modified by the user.

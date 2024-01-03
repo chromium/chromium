@@ -1309,12 +1309,6 @@ class AutofillMetrics {
   // Logs the roundtrip latency for fetching an image in AutofillImageFetcher.
   static void LogImageFetcherRequestLatency(const base::TimeDelta& latency);
 
-  // Logs whether the submitted field value is same as the non-empty value
-  // to be autofilled in the field, when the field had a different prefilled
-  // value.
-  static void LogIsValueNotAutofilledOverExistingValueSameAsSubmittedValue(
-      bool is_same);
-
   // Logs a field's (PredictionState, AutocompleteState) pair on form submit.
   static void LogAutocompletePredictionCollisionState(
       PredictionState prediction_state,

@@ -8768,13 +8768,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableStickyManualFallbackForCards)},
 
-    {"autofill-prevent-overriding-prefilled-values",
-     flag_descriptions::kAutofillPreventOverridingPrefilledValuesName,
-     flag_descriptions::kAutofillPreventOverridingPrefilledValuesDescription,
-     kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillPreventOverridingPrefilledValues)},
-
     {"autofill-show-autocomplete-delete-button",
      flag_descriptions::kAutofillShowAutocompleteDeleteButtonName,
      flag_descriptions::kAutofillShowAutocompleteDeleteButtonDescription,

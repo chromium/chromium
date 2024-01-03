@@ -291,17 +291,6 @@ class AutofillField : public FormFieldData {
     return is_most_recent_single_username_candidate_;
   }
 
-  // Getter and Setter methods for
-  // |value_not_autofilled_over_existing_value_hash_|.
-  void set_value_not_autofilled_over_existing_value_hash(
-      std::optional<size_t> value_not_autofilled_over_existing_value_hash) {
-    value_not_autofilled_over_existing_value_hash_ =
-        value_not_autofilled_over_existing_value_hash;
-  }
-  std::optional<size_t> value_not_autofilled_over_existing_value_hash() const {
-    return value_not_autofilled_over_existing_value_hash_;
-  }
-
   // For each type in |possible_types_| that's missing from
   // |possible_types_validities_|, will add it to the
   // |possible_types_validities_| and will set its validity to UNVALIDATED. This
@@ -469,10 +458,6 @@ class AutofillField : public FormFieldData {
   IsMostRecentSingleUsernameCandidate
       is_most_recent_single_username_candidate_ =
           IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
-
-  // Stores the hash of the value which is supposed to be autofilled in the
-  // field but was not due to a prefilled value.
-  std::optional<size_t> value_not_autofilled_over_existing_value_hash_;
 
   // Set to true if the context menu was triggered and shown on the field.
   bool was_context_menu_shown_ = false;

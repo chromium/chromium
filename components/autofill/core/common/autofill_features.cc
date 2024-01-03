@@ -459,13 +459,6 @@ BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Autofill would not override the field values that were either
-// filled by Autofill or on page load.
-// TODO(crbug/1275649): Remove once experiment is finished.
-BASE_FEATURE(kAutofillPreventOverridingPrefilledValues,
-             "AutofillPreventOverridingPrefilledValues",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, use the parsing patterns from a JSON file for heuristics, rather
 // than the hardcoded ones from autofill_regex_constants.cc.
 // The specific pattern set is controlled by the
