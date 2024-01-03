@@ -22,6 +22,7 @@ html {
   --action-row-button-border: rgb(128, 134, 139);
   --action-row-button-hover-brightness: 96%;
   --element-hover: rgb(242, 242, 242);
+  --element-border-radius: 15px;
   --text-color: black;
   --header-shadow-color: rgba(0, 0, 0, .4);
   --link-color: var(--google-blue-700);

@@ -7,7 +7,7 @@
   button {
     font-size: 125%;
     font-weight: bolder;
-    border: 1px solid rgba(0, 0, 0, .06);
+    border: 1px solid var(--action-row-button-border);
   }
 
   select:focus {
@@ -28,7 +28,7 @@
     [role="cell"] > * {
       width: 100%;
       box-sizing: border-box;
-      background: none;
+      background: var(--page-background);
     }
 
     [role="cell"] > *:not(select) {
@@ -37,10 +37,11 @@
 
     [role="cell"] > *:not(.error) {
       border: none;
+      color: var(--text-color);
     }
 
     [role="cell"]:not(.row-remove-btn-cell) {
-      border-right: 1px solid rgba(0, 0, 0, .06);
+      border-right: 1px solid var(--table-border);
     }
 
     [role="cell"] > select {
@@ -56,7 +57,7 @@
   @media only screen and (max-width: 710px) {
     :host {
       display: block;
-      border: 1px solid black;
+      border: 1px solid var(--table-border);
       margin-bottom: 5px;
     }
 
@@ -67,6 +68,9 @@
     }
 
     select, input {
+      background: var(--page-background);
+      border: 1px solid var(--table-border);
+      color: var(--text-color);
       padding: 5px;
       margin-top: 5px;
       margin-right: 5px;
@@ -77,6 +81,8 @@
     }
 
     button {
+      background: var(--action-row-button-background);
+      border: 1px solid var(--action-row-button-border);
       padding: 5px;
       margin: 5px;
       display: flex;
