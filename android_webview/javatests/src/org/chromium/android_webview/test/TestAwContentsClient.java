@@ -484,21 +484,16 @@ public class TestAwContentsClient extends NullContentsClient {
                         + "] "
                         + consoleMessage.message();
         switch (consoleMessage.messageLevel()) {
-            case AwConsoleMessage.MESSAGE_LEVEL_TIP:
-            case AwConsoleMessage.MESSAGE_LEVEL_LOG:
-                Log.i(TAG, "onConsoleMessage " + formattedMessage);
-                break;
-            case AwConsoleMessage.MESSAGE_LEVEL_WARNING:
-                Log.w(TAG, "onConsoleMessage " + formattedMessage);
-                break;
-            case AwConsoleMessage.MESSAGE_LEVEL_ERROR:
-                Log.e(TAG, "onConsoleMessage " + formattedMessage);
-                break;
-            default:
-                // Should not be reached, but fall-through anyway.
-            case AwConsoleMessage.MESSAGE_LEVEL_DEBUG:
-                Log.d(TAG, "onConsoleMessage " + formattedMessage);
-                break;
+            case AwConsoleMessage.MESSAGE_LEVEL_TIP, AwConsoleMessage.MESSAGE_LEVEL_LOG -> Log.i(
+                    TAG, "onConsoleMessage " + formattedMessage);
+            case AwConsoleMessage.MESSAGE_LEVEL_WARNING -> Log.w(
+                    TAG, "onConsoleMessage " + formattedMessage);
+            case AwConsoleMessage.MESSAGE_LEVEL_ERROR -> Log.e(
+                    TAG, "onConsoleMessage " + formattedMessage);
+            case AwConsoleMessage.MESSAGE_LEVEL_DEBUG -> Log.d(
+                    TAG, "onConsoleMessage " + formattedMessage);
+            default -> throw new RuntimeException(
+                    "unrecognized log level: " + consoleMessage.messageLevel());
         }
     }
 
