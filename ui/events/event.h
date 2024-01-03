@@ -88,7 +88,10 @@ class EVENTS_EXPORT Event {
 
   // This is only intended to be used externally by classes that are modifying
   // events in an EventRewriter.
-  void set_flags(int flags) { flags_ = flags; }
+  void set_flags(int flags) {
+    flags_ = flags;
+    OnFlagsUpdated();
+  }
 
   EventTarget* target() const { return target_; }
   EventPhase phase() const { return phase_; }
@@ -321,6 +324,10 @@ class EVENTS_EXPORT Event {
   void set_cancelable(bool cancelable) { cancelable_ = cancelable; }
 
   void set_time_stamp(base::TimeTicks time_stamp) { time_stamp_ = time_stamp; }
+
+  // Override per concrete class if some data needs to get invalidated or
+  // updated when the event flags are updated.
+  virtual void OnFlagsUpdated() {}
 
  private:
   friend class EventTestApi;
@@ -926,6 +933,10 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // Normalizes flags_ so that it describes the state after the event.
   // (Native X11 event flags describe the state before the event.)
   void NormalizeFlags();
+
+  // Invalidates the DomKey associated with this event as the flags updating can
+  // change the semantic meaning of the key.
+  void OnFlagsUpdated() override;
 
   // Event:
   std::string ToString() const override;

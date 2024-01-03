@@ -545,6 +545,83 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
             ConvertToString(*continuation.passthrough_event));
 }
 
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       ModifiersAffectComputedDomKeyKeyEvent) {
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
+          static_cast<int>(ui::DomKey::Constant<'a'>::Character), ui::EF_NONE,
+          /*key_display=*/""))));
+
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_SHIFT_DOWN),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_SHIFT_DOWN,
+                ui::DomCode::US_A, ui::DomKey::Constant<'A'>::Character)),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       ModifiersAffectComputedDomKeyMouseEvent) {
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_A, static_cast<int>(ui::DomCode::US_A),
+          static_cast<int>(ui::DomKey::Constant<'a'>::Character), ui::EF_NONE,
+          /*key_display=*/""))));
+
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED,
+                             ui::EF_SHIFT_DOWN | ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_SHIFT_DOWN,
+                ui::DomCode::US_A, ui::DomKey::Constant<'A'>::Character)),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       ModifierPressedAffectsDomKeyOnOtherDevices) {
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"",
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_SHIFT, static_cast<int>(ui::DomCode::SHIFT_LEFT),
+          static_cast<int>(ui::DomKey::SHIFT), ui::EF_SHIFT_DOWN,
+          /*key_display=*/""))));
+
+  rewriter_->RewriteEvent(
+      CreateMouseButtonEvent(ui::ET_MOUSE_PRESSED, ui::EF_FORWARD_MOUSE_BUTTON,
+                             ui::EF_FORWARD_MOUSE_BUTTON),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_SHIFT, ui::EF_SHIFT_DOWN,
+                ui::DomCode::SHIFT_LEFT, ui::DomKey::SHIFT)),
+            ConvertToString(*continuation.passthrough_event));
+
+  continuation.reset();
+  rewriter_->RewriteEvent(
+      CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_NONE,
+                           ui::DomCode::US_A,
+                           ui::DomKey::Constant<'a'>::Character),
+      continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_A, ui::EF_SHIFT_DOWN,
+                ui::DomCode::US_A, ui::DomKey::Constant<'A'>::Character)),
+            ConvertToString(*continuation.passthrough_event));
+}
+
 class MouseButtonObserverTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<EventRewriterTestData> {};
@@ -1191,7 +1268,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::VKEY_B,
                                    ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
                                    ui::DomCode::US_B,
-                                   ui::DomKey::Constant<'b'>::Character)}},
+                                   ui::DomKey::Constant<'B'>::Character)}},
 
             // MouseEvent rewriting test cases:
             // Remap Middle -> CTRL + SHIFT + B.
@@ -1209,7 +1286,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::VKEY_B,
                                    ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
                                    ui::DomCode::US_B,
-                                   ui::DomKey::Constant<'b'>::Character)}},
+                                   ui::DomKey::Constant<'B'>::Character)}},
             // Remap Middle -> CTRL + SHIFT + B with ALT down.
             {{GetButton(mojom::CustomizableButton::kMiddle),
               mojom::KeyEvent(
@@ -1227,7 +1304,7 @@ INSTANTIATE_TEST_SUITE_P(
                                    ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN |
                                        ui::EF_ALT_DOWN,
                                    ui::DomCode::US_B,
-                                   ui::DomKey::Constant<'b'>::Character)}},
+                                   ui::DomKey::Constant<'B'>::Character)}},
             // Remap Back -> Meta.
             {{GetButton(mojom::CustomizableButton::kBack),
               mojom::KeyEvent(ui::VKEY_LWIN,
@@ -1535,7 +1612,7 @@ INSTANTIATE_TEST_SUITE_P(
                                   ui::VKEY_Z,
                                   ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
                                   ui::DomCode::US_Z,
-                                  ui::DomKey::Constant<'z'>::Character)},
+                                  ui::DomKey::Constant<'Z'>::Character)},
             {mojom::StaticShortcutAction::kZoomIn,
              CreateKeyButtonEvent(ui::ET_KEY_PRESSED,
                                   ui::VKEY_OEM_PLUS,

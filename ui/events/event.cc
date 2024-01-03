@@ -1076,6 +1076,10 @@ DomKey KeyEvent::GetDomKey() const {
   return key_;
 }
 
+void KeyEvent::OnFlagsUpdated() {
+  key_ = DomKey::NONE;
+}
+
 char16_t KeyEvent::GetCharacter() const {
   // Determination of key_ may be done lazily.
   if (key_ == DomKey::NONE)
