@@ -257,6 +257,7 @@ def _RunLint(create_cache,
       build_utils.JAVA_HOME,
       '--path-variables',
       f'SRC={pathvar_src}',
+      '--offline',
       '--quiet',  # Silences lint's "." progress updates.
       '--stacktrace',  # Prints full stacktraces for internal lint errors.
       '--disable',
