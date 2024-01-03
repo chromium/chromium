@@ -2691,6 +2691,9 @@ void SkiaOutputSurfaceImplOnGpu::CreateSharedImage(
     uint32_t usage,
     std::string debug_label,
     gpu::SurfaceHandle surface_handle) {
+  if (context_is_lost_) {
+    return;
+  }
   shared_image_factory_->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin, alpha_type,
       surface_handle, usage, std::move(debug_label));
@@ -2754,8 +2757,12 @@ void SkiaOutputSurfaceImplOnGpu::SetSharedImagePurgeable(
 gpu::SkiaImageRepresentation* SkiaOutputSurfaceImplOnGpu::GetSkiaRepresentation(
     gpu::Mailbox mailbox) {
   auto it = skia_representations_.find(mailbox);
-  // The cache entry should already have been created in CreateSharedImage().
-  DCHECK(it != skia_representations_.end());
+  if (it == skia_representations_.end()) {
+    // The cache entry should already have been created in CreateSharedImage(),
+    // except if context was lost.
+    DCHECK(context_is_lost_);
+    return nullptr;
+  }
 
   if (!it->second) {
     it->second = shared_image_representation_factory_->ProduceSkia(
