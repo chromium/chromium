@@ -286,9 +286,11 @@ void FakeSkiaOutputSurface::CopyOutput(
 
   if (request->result_destination() ==
       CopyOutputResult::Destination::kNativeTextures) {
-    // TODO(rivr): This implementation is incomplete and doesn't copy
-    // anything into the mailbox, but currently the only tests that use this
-    // don't actually check the returned texture data.
+    // NOTE: This implementation is incomplete and doesn't copy anything into
+    // the mailbox, but currently the only tests that use this don't actually
+    // check the returned texture data. A corollary to this fact is that the
+    // usage flags passed in are currently arbitrary, since callers don't
+    // actually do anything meaningful with the SharedImage.
     auto* sii = GetSharedImageInterface();
     auto client_shared_image = sii->CreateSharedImage(
         SinglePlaneFormat::kRGBA_8888, geometry.result_selection.size(),
