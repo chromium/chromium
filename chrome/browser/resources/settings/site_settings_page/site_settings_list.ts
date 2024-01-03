@@ -169,6 +169,15 @@ class SettingsSiteSettingsListElement extends
       return Promise.resolve();
     }
 
+    if (category === ContentSettingsTypes.PERFORMANCE) {
+      const index = this.categoryList.map(e => e.id).indexOf(
+          ContentSettingsTypes.PERFORMANCE);
+      this.set(
+          `categoryList.${index}.subLabel`,
+          this.i18n('siteSettingsPerformanceSublabel'));
+      return Promise.resolve();
+    }
+
     return this.browserProxy_.getDefaultValueForContentType(category).then(
         defaultValue => {
           this.updateDefaultValueLabel_(category, defaultValue.setting);

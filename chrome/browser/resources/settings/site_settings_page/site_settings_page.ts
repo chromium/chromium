@@ -343,6 +343,14 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsZoomLevels',
       icon: 'settings:zoom-in',
     },
+    {
+      route: routes.PERFORMANCE,
+      id: Id.PERFORMANCE,
+      label: 'siteSettingsPerformance',
+      icon: 'settings:performance',
+      enabledLabel: 'siteSettingsPerformanceSublabel',
+      disabledLabel: 'siteSettingsPerformanceSublabel',
+    },
   ];
   if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
     categoryList.push({
@@ -467,6 +475,7 @@ export class SettingsSiteSettingsPageElement extends
               Id.FEDERATED_IDENTITY_API,
               Id.ANTI_ABUSE,
               Id.SITE_DATA,
+              Id.PERFORMANCE,
             ]),
           };
         },

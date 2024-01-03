@@ -48,6 +48,11 @@ void AddSiteToExceptionsList(PrefService* pref_service,
   }
 }
 
+void ClearSiteExceptionsList(PrefService* pref_service) {
+  pref_service->SetList(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptions, {});
+}
+
 uint64_t GetDiscardedMemorySavingsInBytes(content::WebContents* contents) {
   const auto* const pre_discard_resource_usage =
       performance_manager::user_tuning::UserPerformanceTuningManager::

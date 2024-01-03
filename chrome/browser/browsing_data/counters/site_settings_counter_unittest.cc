@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -302,6 +303,18 @@ TEST_F(SiteSettingsCounterTest, TranslatedSitesCounting) {
   translate_prefs->AddSiteToNeverPromptList("maps.google.com");
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
+  EXPECT_EQ(2, GetResult());
+}
+
+TEST_F(SiteSettingsCounterTest, DiscardingExceptionsCounting) {
+  base::Value::List exclusion_list;
+  exclusion_list.Append("www.google.com");
+  exclusion_list.Append("drive.google.com");
+  profile()->GetPrefs()->SetList(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
+      std::move(exclusion_list));
+
+  counter()->Restart();
   EXPECT_EQ(2, GetResult());
 }
 
