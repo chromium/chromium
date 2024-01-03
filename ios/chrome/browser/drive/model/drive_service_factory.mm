@@ -15,7 +15,7 @@ namespace drive {
 
 // static
 DriveService* DriveServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
+    web::BrowserState* browser_state) {
   return static_cast<DriveService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

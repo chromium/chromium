@@ -8,14 +8,17 @@
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 
-DriveUploadTask::DriveUploadTask() = default;
+DriveUploadTask::DriveUploadTask(std::unique_ptr<DriveFileUploader> uploader)
+    : uploader_{std::move(uploader)} {}
 
 DriveUploadTask::~DriveUploadTask() = default;
 
 #pragma mark - Public
 
 id<SystemIdentity> DriveUploadTask::GetIdentity() const {
+  // TODO(crbug.com/1495354): Return the identity used to upload the file.
   return nil;
 }
 
@@ -25,6 +28,10 @@ void DriveUploadTask::SetFileToUpload(const base::FilePath& path,
   file_path_ = path;
   suggested_file_name_ = suggested_name;
   file_mime_type_ = mime_type;
+}
+
+void DriveUploadTask::SetDestinationFolderName(const std::string& folder_name) {
+  folder_name_ = folder_name;
 }
 
 #pragma mark - UploadTask

@@ -4,8 +4,10 @@
 
 #import "ios/chrome/browser/ui/save_to_drive/save_to_drive_mediator.h"
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -73,7 +75,9 @@ class SaveToDriveMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
+    browser_state_ = TestChromeBrowserState::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(browser_state_.get());
     DriveTabHelper::CreateForWebState(web_state_.get());
     FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
@@ -103,6 +107,8 @@ class SaveToDriveMediatorTest : public PlatformTest {
         DownloadManagerTabHelper::FromWebState(web_state_.get()));
   }
 
+  base::test::TaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   FakeSaveToDriveCommandsHandler* save_to_drive_commands_handler_;

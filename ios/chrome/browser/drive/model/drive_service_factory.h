@@ -10,8 +10,6 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-class ChromeBrowserState;
-
 namespace drive {
 
 class DriveService;
@@ -20,7 +18,7 @@ class DriveService;
 // instances of ChromeBrowserState.
 class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
  public:
-  static DriveService* GetForBrowserState(ChromeBrowserState* browser_state);
+  static DriveService* GetForBrowserState(web::BrowserState* browser_state);
   static DriveServiceFactory* GetInstance();
 
  private:

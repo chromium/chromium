@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
 
+#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "testing/platform_test.h"
 
 // DriveUploadTask unit tests.
@@ -11,7 +12,7 @@ class DriveUploadTaskTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    task_ = std::make_unique<DriveUploadTask>();
+    task_ = std::make_unique<DriveUploadTask>(nullptr);
   }
 
   std::unique_ptr<DriveUploadTask> task_;

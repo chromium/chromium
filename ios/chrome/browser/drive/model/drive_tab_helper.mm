@@ -4,7 +4,13 @@
 
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
+#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
+#import "ios/chrome/browser/drive/model/drive_service.h"
+#import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/drive_upload_task.h"
+
+using drive::DriveService;
+using drive::DriveServiceFactory;
 
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
@@ -58,7 +64,13 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   if (!task || !identity) {
     return;
   }
-  upload_task_ = std::make_unique<DriveUploadTask>();
+  DriveService* drive_service =
+      DriveServiceFactory::GetForBrowserState(web_state_->GetBrowserState());
+  std::unique_ptr<DriveFileUploader> file_uploader =
+      drive_service->CreateFileUploader(identity);
+  upload_task_ = std::make_unique<DriveUploadTask>(std::move(file_uploader));
+  upload_task_->SetDestinationFolderName(
+      drive_service->GetSuggestedFolderName());
   download_task_obs_.Observe(task);
   download_task_save_to_drive_data_ =
       DownloadTaskSaveToDriveData{.task = task, .identity = identity};
