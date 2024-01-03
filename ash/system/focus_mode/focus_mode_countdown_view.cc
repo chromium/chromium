@@ -22,7 +22,7 @@ namespace ash {
 
 namespace {
 
-constexpr int kCountdownViewHeight = 72;
+constexpr int kCountdownViewHeight = 62;
 constexpr int kSpaceBetweenButtons = 8;
 constexpr int kBarWidth = 200;
 constexpr int kBarHeight = 8;

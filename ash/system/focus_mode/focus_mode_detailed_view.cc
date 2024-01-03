@@ -73,8 +73,8 @@ constexpr auto kToggleViewHeight = 64;
 
 // Timer view constants.
 constexpr auto kTimerViewBorderInsets = gfx::Insets::TLBR(4, 0, 8, 8);
-constexpr auto kTimerViewHeaderInsets = gfx::Insets::VH(10, 24);
-constexpr auto kTimerSettingViewInsets = gfx::Insets::TLBR(8, 16, 12, 16);
+constexpr auto kTimerViewHeaderInsets = gfx::Insets::TLBR(14, 24, 10, 24);
+constexpr auto kTimerSettingViewInsets = gfx::Insets::TLBR(0, 16, 12, 16);
 constexpr int kTimerSettingViewMaxCharacters = 3;
 constexpr int kTimerSettingViewTextHeight = 32;
 constexpr int kTimerSettingViewBetweenChildSpacing = 8;
