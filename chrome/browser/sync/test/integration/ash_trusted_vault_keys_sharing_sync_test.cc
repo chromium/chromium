@@ -284,6 +284,12 @@ class AshTrustedVaultKeysSharingSyncTest : public SyncTest {
         GetSyncingUserAccountKey(), base::DoNothing());
   }
 
+  void AddTrustedRecoveryMethodThroughCrosapi() {
+    trusted_vault_backend_remote_->AddTrustedRecoveryMethod(
+        GetSyncingUserAccountKey(), kTestRecoveryMethodPublicKey,
+        /*method_type_hint=*/0, base::DoNothing());
+  }
+
   TrustedVaultStateNotifiedToCrosapiObserverChecker
   CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
       TrustedVaultStateNotifiedToCrosapiObserverChecker::ExpectedNotification
@@ -576,6 +582,58 @@ IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
 
   EXPECT_TRUE(degraded_recoverability_notified_checker_2.Wait());
   EXPECT_FALSE(FetchDegradedRecoveribilityStateThroughCrosapi());
+}
+
+IN_PROC_BROWSER_TEST_F(AshTrustedVaultKeysSharingSyncTest,
+                       ShouldAddRecoveryMethodThroughCrosapi) {
+  ASSERT_TRUE(SetupSyncAndTrustedVaultFakes());
+  SetupCrosapi();
+
+  // Wait until device is registered, otherwise it won't be able to follow key
+  // rotations.
+  ASSERT_TRUE(TrustedVaultDeviceRegisteredStateChecker(
+                  GetSyncingUserAccountInfo().gaia, GetProfile(0))
+                  .Wait());
+
+  // Mimic transition to kTrustedVaultPassphrase and entering degraded
+  // recoverability state.
+  std::vector<uint8_t> trusted_vault_key =
+      security_domains_server().RotateTrustedVaultKey(
+          trusted_vault::GetConstantTrustedVaultKey());
+  security_domains_server().RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  SetNigoriInFakeServer(
+      syncer::BuildTrustedVaultNigoriSpecifics({trusted_vault_key}),
+      GetFakeServer());
+  ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
+  // Degraded recoverability notification should be be shown.
+  auto notification = GetSyncNotification();
+  ASSERT_TRUE(notification);
+  ASSERT_THAT(notification->title(),
+              Eq(l10n_util::GetStringUTF16(
+                  IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE)));
+  ASSERT_THAT(
+      notification->message(),
+      Eq(l10n_util::GetStringUTF16(
+          IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_PASSWORDS_ERROR_BUBBLE_VIEW_MESSAGE)));
+
+  // Resolve degraded recoverability state through Crosapi. Notification should
+  // be removed and Ash should notify through Crosapi about recoverability state
+  // change.
+  auto degraded_recoverability_notified_checker =
+      CreateTrustedVaultStateNotifiedToCrosapiObserverChecker(
+          TrustedVaultStateNotifiedToCrosapiObserverChecker::
+              ExpectedNotification::kRecoverabilityStateChanged);
+  AddTrustedRecoveryMethodThroughCrosapi();
+
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
+  EXPECT_THAT(GetSyncNotification(), Eq(absl::nullopt));
+  EXPECT_TRUE(degraded_recoverability_notified_checker.Wait());
 }
 
 }  // namespace
