@@ -24,7 +24,6 @@ class ImageView;
 class StyledLabel;
 class ImageButton;
 class BubbleDialogDelegate;
-class LabelButton;
 }  // namespace views
 
 class DownloadBubbleNavigationHandler;
@@ -191,7 +190,6 @@ class DownloadBubbleSecurityView : public views::View,
   raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_ =
       nullptr;
 
-  raw_ptr<views::LabelButton, DanglingUntriaged> secondary_button_ = nullptr;
   raw_ptr<views::StyledLabel> title_ = nullptr;
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<ParagraphsView> paragraphs_ = nullptr;

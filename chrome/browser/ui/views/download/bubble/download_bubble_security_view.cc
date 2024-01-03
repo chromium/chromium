@@ -626,7 +626,6 @@ void DownloadBubbleSecurityView::UpdateButton(
     if (button_info.color) {
       button->SetEnabledTextColorIds(*button_info.color);
     }
-    secondary_button_ = button;
   } else {
     bubble_delegate_->SetAcceptCallbackWithClose(callback);
   }
@@ -645,7 +644,6 @@ void DownloadBubbleSecurityView::UpdateButton(
 void DownloadBubbleSecurityView::UpdateButtons() {
   bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_NONE);
   bubble_delegate_->SetDefaultButton(ui::DIALOG_BUTTON_NONE);
-  secondary_button_ = nullptr;
 
   if (ui_info_.subpage_buttons.size() > 0) {
     bubble_delegate_->SetButtons(ui::DIALOG_BUTTON_OK);
