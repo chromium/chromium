@@ -101,6 +101,12 @@ class RealboxActionElement extends PolymerElement {
     }
   }
 
+  private onActionMouseDown_(e: Event) {
+    if (loadTimeData.getBoolean('realboxCr23ExpandedStateLayout')) {
+      e.preventDefault();  // Prevents default browser action (focus).
+    }
+  }
+
   private showCr23ActionIcon_(): boolean {
     // Action icons are webkit-mask-image when chrome refresh expanded state
     // layout is enabled.
