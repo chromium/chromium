@@ -249,7 +249,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "toolbar_chrome_refresh.icon",
     "trailing_scroll.icon",
     "translate.icon",
-    "translate_chrome_refresh.icon",
     "trash_can.icon",
     "trash_can_light.icon",
     "trash_can_refresh.icon",
