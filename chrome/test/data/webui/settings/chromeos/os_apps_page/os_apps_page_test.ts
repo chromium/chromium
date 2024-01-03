@@ -14,7 +14,6 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {disableAnimationsAndTransitions} from 'chrome://webui-test/test_api.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {FakeAppNotificationHandler} from './app_notifications_page/fake_app_notification_handler.js';
@@ -80,8 +79,6 @@ function preliminarySetupForAndroidAppsSubpage(
 
   androidAppsBrowserProxy = new TestAndroidAppsBrowserProxy();
   AndroidAppsBrowserProxyImpl.setInstanceForTesting(androidAppsBrowserProxy);
-
-  disableAnimationsAndTransitions();
 }
 
 function createApp(
@@ -266,8 +263,6 @@ suite('AppsPageTests', () => {
   }
 
   suiteSetup(() => {
-    disableAnimationsAndTransitions();
-
     loadTimeData.overrideValues({
       showOsSettingsAppNotificationsRow: true,
       isPlayStoreAvailable: true,
