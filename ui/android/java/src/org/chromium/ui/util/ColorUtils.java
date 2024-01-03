@@ -148,7 +148,7 @@ public class ColorUtils {
      * @return Opaque version of the given color.
      */
     public static @ColorInt int getOpaqueColor(@ColorInt int color) {
-        return Color.rgb(Color.red(color), Color.green(color), Color.blue(color));
+        return color | 0xFF000000;
     }
 
     /**
