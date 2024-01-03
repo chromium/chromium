@@ -166,6 +166,10 @@ class WebAppUiManagerImpl : public BrowserListObserver,
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnBrowserCloseCancelled(Browser* browser,
+                               BrowserClosingStatus reason) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void OnBrowserRemoved(Browser* browser) override;
 
 #if BUILDFLAG(IS_CHROMEOS)

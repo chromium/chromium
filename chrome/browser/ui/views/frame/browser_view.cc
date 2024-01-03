@@ -4128,10 +4128,13 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
   if (tabstrip_ && !tabstrip_->IsTabStripCloseable())
     return views::CloseRequestResult::kCannotClose;
 
-  // Give beforeunload handlers the chance to cancel the close before we hide
-  // the window below.
-  if (!browser_->ShouldCloseWindow())
+  // Give beforeunload handlers, the user, or policy the chance to cancel the
+  // close before we hide the window below.
+  if (const auto closing_status = browser_->HandleBeforeClose();
+      closing_status != BrowserClosingStatus::kPermitted) {
+    BrowserList::NotifyBrowserCloseCancelled(browser_.get(), closing_status);
     return views::CloseRequestResult::kCannotClose;
+  }
 
   views::CloseRequestResult result = views::CloseRequestResult::kCanClose;
   if (!browser_->tab_strip_model()->empty()) {

@@ -106,6 +106,15 @@ namespace web_modal {
 class WebContentsModalDialogHost;
 }
 
+// This enum is not a member of `Browser` so that it can be forward
+// declared in `unload_controller.h` to avoid circular includes.
+enum class BrowserClosingStatus {
+  kPermitted,
+  kDeniedByUser,
+  kDeniedByPolicy,
+  kDeniedUnloadHandlersNeedTime
+};
+
 class Browser : public TabStripModelObserver,
                 public WebContentsCollection::Observer,
                 public content::WebContentsDelegate,
@@ -533,9 +542,9 @@ class Browser : public TabStripModelObserver,
   // close the browser (for example, warning if there are downloads in progress
   // that would be interrupted).
   //
-  // Distinct from ShouldCloseWindow() (which calls this method) because this
-  // method does not consider beforeunload handler, only things the user should
-  // be prompted about.
+  // Distinct from HandleBeforeClose() (which calls this method) because
+  // this method does not consider beforeunload handler, only things the user
+  // should be prompted about.
   //
   // If no warnings are needed, the method returns kOkToClose, indicating that
   // the close can proceed immediately, and the callback is not called. If the
@@ -544,15 +553,24 @@ class Browser : public TabStripModelObserver,
   WarnBeforeClosingResult MaybeWarnBeforeClosing(
       WarnBeforeClosingCallback warn_callback);
 
-  // Gives beforeunload handlers the chance to cancel the close. Returns whether
-  // to proceed with the close. If called while the process begun by
-  // TryToCloseWindow is in progress, returns false without taking action.
+  // Gives beforeunload handlers the chance to cancel the close. Returns the
+  // closing status. Closing can be denied due to different reasons.
+  // This function checks if unload handlers are still executing. It further
+  // may ask the user for permission to close the browser (e.g. if downloads
+  // are ongoing).
+  // If this function is called
+  // * but the user denied closure after being prompted, it returns
+  // `BrowserClosingStatus::kDeniedByUser`.
+  // * but the closure is not permitted by policy, it returns
+  // `BrowserClosingStatus::kDeniedByPolicy`.
+  // * while the process begun by TryToCloseWindow is in progress, it returns
+  // `BrowserClosingStatus::kDeniedUnloadHandlersNeedTime`.
   //
   // If you don't care about beforeunload handlers and just want to prompt the
   // user that they might lose an in-progress operation, call
-  // MaybeWarnBeforeClosing() instead (ShouldCloseWindow() also calls this
+  // MaybeWarnBeforeClosing() instead (HandleBeforeClose() also calls this
   // method).
-  bool ShouldCloseWindow();
+  BrowserClosingStatus HandleBeforeClose();
 
   // Begins the process of confirming whether the associated browser can be
   // closed. If there are no tabs with beforeunload handlers it will immediately
@@ -1105,7 +1123,7 @@ class Browser : public TabStripModelObserver,
 
   // Called when all warnings have completed when attempting to close the
   // browser directly (e.g. via hotkey, close button, terminate signal, etc.)
-  // Used as a WarnBeforeClosingCallback by ShouldCloseWindow().
+  // Used as a WarnBeforeClosingCallback by HandleBeforeClose().
   void FinishWarnBeforeClosing(WarnBeforeClosingResult result);
 
   // Assorted utility functions ///////////////////////////////////////////////

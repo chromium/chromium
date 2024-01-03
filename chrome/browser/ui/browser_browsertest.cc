@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -32,6 +33,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -73,7 +75,12 @@
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -133,6 +140,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -371,7 +380,8 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
 
 }  // namespace
 
-class BrowserTest : public extensions::ExtensionBrowserTest {
+class BrowserTest : public extensions::ExtensionBrowserTest,
+                    public BrowserListObserver {
  protected:
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -413,6 +423,12 @@ class BrowserTest : public extensions::ExtensionBrowserTest {
     NOTREACHED();
     return nullptr;
   }
+
+  // BrowserListObserver:
+  MOCK_METHOD(void,
+              OnBrowserCloseCancelled,
+              (Browser * browser, BrowserClosingStatus reason),
+              (override));
 };
 
 // Launch the app on a page with no title, check that the app title was set
@@ -3170,3 +3186,58 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, CreatePictureInPicture) {
   ASSERT_TRUE(popup_browser->is_type_picture_in_picture());
 }
 #endif  // !IS_CHROMEOS_LACROS
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
+  base::ScopedObservation<BrowserList, BrowserListObserver> observer(this);
+  observer.Observe(BrowserList::GetInstance());
+
+  base::test::TestFuture<void> policy_refresh_sync_future;
+  web_app::WebAppProvider::GetForWebApps(profile())
+      ->policy_manager()
+      .SetRefreshPolicySettingsCompletedCallbackForTesting(
+          policy_refresh_sync_future.GetCallback());
+
+  const absl::Cleanup policy_cleanup = [this]() {
+    // Clear policy values, otherwise we won't be able to gracefully close the
+    // browser test.
+    profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+  };
+
+  // Set up policy values.
+  static constexpr char kCalculatorAppUrl[] = "https://calculator.apps.chrome/";
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppSettings,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kManifestId, kCalculatorAppUrl)
+              .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
+              .Set(web_app::kPreventClose, true)));
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kUrlKey, kCalculatorAppUrl)
+              .Set(web_app::kDefaultLaunchContainerKey,
+                   web_app::kDefaultLaunchContainerWindowValue)));
+  ASSERT_TRUE(policy_refresh_sync_future.Wait());
+
+  apps::AppUpdateWaiter waiter(
+      profile(), web_app::kCalculatorAppId,
+      base::BindRepeating([](const apps::AppUpdate& update) {
+        return update.AllowClose().has_value() && !update.AllowClose().value();
+      }));
+  waiter.Await();
+
+  Browser* const browser =
+      web_app::LaunchWebAppBrowser(profile(), web_app::kCalculatorAppId);
+  ASSERT_TRUE(browser);
+
+  EXPECT_EQ(BrowserClosingStatus::kDeniedByPolicy,
+            browser->HandleBeforeClose());
+  EXPECT_CALL(*this, OnBrowserCloseCancelled(
+                         browser, BrowserClosingStatus::kDeniedByPolicy))
+      .Times(1);
+  browser->OnWindowClosing();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)

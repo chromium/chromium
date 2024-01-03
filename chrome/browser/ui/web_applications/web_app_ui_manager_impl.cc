@@ -179,6 +179,21 @@ void UninstallWebAppWithDialogFromStartupSwitch(const webapps::AppId& app_id,
 
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_CHROMEOS)
+void ShowPreventCloseToast(const web_app::WebAppRegistrar& registrar,
+                           const webapps::AppId& app_id) {
+  // TODO(b/317413108): Implement Toast on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::ToastManager::Get()->Show(
+      {kPreventCloseToastIdPrefix + app_id,
+       ash::ToastCatalogName::kAppNotClosable,
+       base::i18n::MessageFormatter::FormatWithNamedArgs(
+           l10n_util::GetStringUTF16(IDS_PREVENT_CLOSE_TOAST_MESSAGE),
+           /*name0=*/"APP_NAME", registrar.GetAppShortName(app_id))});
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 }  // namespace
 
 // static
@@ -593,6 +608,21 @@ void WebAppUiManagerImpl::OnBrowserAdded(Browser* browser) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void WebAppUiManagerImpl::OnBrowserCloseCancelled(Browser* browser,
+                                                  BrowserClosingStatus reason) {
+  DCHECK(started_);
+  if (!IsBrowserForInstalledApp(browser) ||
+      reason != BrowserClosingStatus::kDeniedByPolicy) {
+    return;
+  }
+
+  ShowPreventCloseToast(
+      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(),
+      GetAppIdForBrowser(browser));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
   DCHECK(started_);
   if (!IsBrowserForInstalledApp(browser)) {
@@ -628,26 +658,13 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
 void WebAppUiManagerImpl::TabCloseCancelled(
     const content::WebContents* contents) {
-  // TODO(b/317413108): Implement Toast for Ctrl + q.
-  // TODO(b/317413108): Implement Toast on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const webapps::AppId* app_id = GetAppIdForWindow(contents);
   if (!app_id) {
     return;
   }
 
-  ash::ToastData toast_data{
-      /*id=*/kPreventCloseToastIdPrefix + *app_id,
-      ash::ToastCatalogName::kAppNotClosable,
-      /*text=*/
-      base::i18n::MessageFormatter::FormatWithNamedArgs(
-          l10n_util::GetStringUTF16(IDS_PREVENT_CLOSE_TOAST_MESSAGE),
-          /*name0=*/"APP_NAME",
-          WebAppProvider::GetForWebApps(profile_)
-              ->registrar_unsafe()
-              .GetAppShortName(*app_id))};
-  ash::ToastManager::Get()->Show(std::move(toast_data));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowPreventCloseToast(
+      WebAppProvider::GetForWebApps(profile_)->registrar_unsafe(), *app_id);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

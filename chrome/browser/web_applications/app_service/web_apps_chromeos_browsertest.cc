@@ -272,9 +272,59 @@ IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
 
   if (IsPreventCloseEnabled()) {
     EXPECT_EQ(1, browser->tab_strip_model()->count());
-    EXPECT_TRUE(base::test::RunUntil([&]() -> bool {
+    EXPECT_TRUE(base::test::RunUntil([] {
       return ash::ToastManager::Get()->IsToastShown(
-          std::string("prevent_close_toast_id-") + web_app::kCalculatorAppId);
+          base::StrCat({"prevent_close_toast_id-", web_app::kCalculatorAppId}));
+    }));
+  } else {
+    EXPECT_EQ(0, browser->tab_strip_model()->count());
+  }
+
+  // Clear policy values, otherwise we won't be able to gracefully close stop
+  // browser test.
+  profile()->GetPrefs()->SetList(prefs::kWebAppSettings, base::Value::List());
+}
+
+IN_PROC_BROWSER_TEST_P(WebAppsPreventCloseChromeOsBrowserTest,
+                       CloseWindowAttemptShowsToast) {
+  // Set up policy values.
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppSettings,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kManifestId, kCalculatorAppUrl)
+              .Set(web_app::kRunOnOsLogin, web_app::kRunWindowed)
+              .Set(web_app::kPreventClose, IsPreventCloseEnabled())));
+  profile()->GetPrefs()->SetList(
+      prefs::kWebAppInstallForceList,
+      base::Value::List().Append(
+          base::Value::Dict()
+              .Set(web_app::kUrlKey, kCalculatorAppUrl)
+              .Set(web_app::kDefaultLaunchContainerKey,
+                   web_app::kDefaultLaunchContainerWindowValue)));
+
+  // Wait until prefs are propagated and App `allow_close` field is updated to
+  // expected value.
+  apps::AppUpdateWaiter waiter(
+      profile(), web_app::kCalculatorAppId,
+      base::BindRepeating(
+          [](bool expected_allow_close, const apps::AppUpdate& update) {
+            return update.AllowClose().has_value() &&
+                   update.AllowClose().value() == expected_allow_close;
+          },
+          !IsPreventCloseEnabled()));
+  waiter.Await();
+
+  Browser* const browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  ASSERT_TRUE(browser);
+
+  chrome::CloseWindow(browser);
+
+  if (IsPreventCloseEnabled()) {
+    EXPECT_EQ(1, browser->tab_strip_model()->count());
+    EXPECT_TRUE(base::test::RunUntil([] {
+      return ash::ToastManager::Get()->IsToastShown(
+          base::StrCat({"prevent_close_toast_id-", web_app::kCalculatorAppId}));
     }));
   } else {
     EXPECT_EQ(0, browser->tab_strip_model()->count());
