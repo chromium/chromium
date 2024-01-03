@@ -39,6 +39,11 @@ DevToolsBrowserContextManager& DevToolsBrowserContextManager::GetInstance() {
 
 Profile* DevToolsBrowserContextManager::GetProfileById(
     const std::string& context_id) {
+  Profile* default_profile =
+      ProfileManager::GetLastUsedProfile()->GetOriginalProfile();
+  if (context_id == default_profile->UniqueId()) {
+    return default_profile;
+  }
   auto it = otr_profiles_.find(context_id);
   if (it == otr_profiles_.end())
     return nullptr;
