@@ -63,6 +63,11 @@ BASE_FEATURE(kDelayOnFramePresent,
 BASE_FEATURE(kNoDelayOnFirstFramePresent,
              "NoDelayOnFirstFramePresent",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use CVDisplayLink timing for PresentationFeedback timestamps.
+BASE_FEATURE(kNewPresentationFeedbackTimeStamps,
+             "NewPresentationFeedbackTimeStamps",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 }  // namespace
 
@@ -124,7 +129,7 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     gfx::FrameData data) {
   TRACE_EVENT0("gpu", "ImageTransportSurfaceOverlayMac::Present");
 
-  // Only one commited CALayer tree is permitted. Populate the last frame if
+  // Only one commited CALayer tree is permitted. Populate the previous frame if
   // there is already a commited CALayer tree waiting to be populated. At the
   // end of this function, another commited CALayer tree will be produced.
   if (num_committed_ca_layer_trees_ >= 1) {
@@ -165,6 +170,10 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
         "Gpu.Mac.BackpressureUs", base::TimeTicks::Now() - start_time,
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
   }
+#if BUILDFLAG(IS_MAC)
+  // The GPU has finished all the drawing commands.
+  ready_timestamp_ = base::TimeTicks::Now();
+#endif
 
   // Update the CALayer tree in the GPU process.
   base::TimeTicks before_transaction_time = base::TimeTicks::Now();
@@ -177,6 +186,10 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "GPU.IOSurface.CATransactionTimeUs", transaction_time,
         kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
+
+#if BUILDFLAG(IS_MAC)
+    latch_timestamp_ = base::TimeTicks::Now();
+#endif
   }
 
   // Delay PopulateCALayerParameters until the next Vsync on Mac. No delay if
@@ -204,7 +217,8 @@ void ImageTransportSurfaceOverlayMacEGL::Present(
   // this is not the first frame after vsync stops.
   if (vsync_callback_mac_) {
     vsync_callback_mac_keep_alive_counter_ = kMaxKeepAliveCounter;
-    if (delay_presenetation_until_next_vsync) {
+    if (delay_presenetation_until_next_vsync &&
+        base::FeatureList::IsEnabled(kDelayOnFramePresent)) {
       // PopulateCALayerParameters will be called in OnVSyncPresentation.
       return;
     }
@@ -248,6 +262,21 @@ void ImageTransportSurfaceOverlayMacEGL::PopulateCALayerParameters() {
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::Hertz(60),
                                      /*flags=*/0);
   feedback.ca_layer_error_code = ca_layer_error_code_;
+
+#if BUILDFLAG(IS_MAC)
+  if (base::FeatureList::IsEnabled(kNewPresentationFeedbackTimeStamps)) {
+    feedback.ready_timestamp = ready_timestamp_;
+    feedback.latch_timestamp = latch_timestamp_;
+    feedback.interval = frame_interval_;
+    feedback.timestamp = GetDisplaytime(latch_timestamp_);
+
+    // `update_vsync_params_callback` is not available in
+    // SkiaOutputSurfaceImpl::BufferPresented(). Setting kVSync here will not
+    // update vsync params.
+    feedback.flags = gfx::PresentationFeedback::kHWCompletion |
+                     gfx::PresentationFeedback::kVSync;
+  }
+#endif
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
@@ -318,8 +347,7 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
 
 #if BUILDFLAG(IS_MAC)
 void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource) ||
-      !base::FeatureList::IsEnabled(kDelayOnFramePresent)) {
+  if (!base::FeatureList::IsEnabled(features::kCVDisplayLinkBeginFrameSource)) {
     return;
   }
 
@@ -341,8 +369,44 @@ void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
   display_id_ = display_id;
 }
 
+base::TimeTicks ImageTransportSurfaceOverlayMacEGL::GetDisplaytime(
+    base::TimeTicks latch_time) {
+  // From the CVDisplayLink params dump:
+  // |next_display_time_| ~= |current_display_time_| + |frame_interval|.
+  // params.display_time ~= params.callback_time + 1.5x |frame_interval|.
+
+  if (latch_time < current_display_time_) {
+    return current_display_time_;
+  }
+
+  // We missed the current display_time, the presentation will happen in
+  // |next_display_time_|.
+  if (latch_time < next_display_time_ && !current_display_time_.is_null()) {
+    return next_display_time_;
+  }
+
+  // For the situation of the first frame after BeginFrame, or when
+  // CVDisplayLink is heavily delayed, try to get an estimate.
+  if (!next_display_time_.is_null() && !frame_interval_.is_zero()) {
+    return latch_time.SnappedToNextTick(next_display_time_, frame_interval_);
+  }
+
+  // When there is no display_time info, just use the latch_time.
+  // This could be the very first frame after the browser starts,
+  return latch_time;
+}
+
 void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
     ui::VSyncParamsMac params) {
+  // Documentation for the CVDisplayLink display_time
+  // https://developer.apple.com/documentation/corevideo/cvdisplaylinkoutputcallback
+
+  current_display_time_ = next_display_time_;
+  if (params.display_times_valid) {
+    next_display_time_ = params.display_timebase;
+    frame_interval_ = params.display_interval;
+  }
+
   if (num_committed_ca_layer_trees_) {
     PopulateCALayerParameters();
   } else {
