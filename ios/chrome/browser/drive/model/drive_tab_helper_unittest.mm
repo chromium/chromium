@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -50,10 +51,10 @@ TEST_F(DriveTabHelperTest, StopsObservingDestroyedDownloadTask) {
   EXPECT_EQ(std::nullopt, helper_->GetDownloadTaskSaveToDriveData());
   FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
   helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);
-  DownloadTaskSaveToDriveData expected_save_to_drive_data{
-      .task = download_task_.get(), .identity = identity};
-  EXPECT_EQ(expected_save_to_drive_data,
-            helper_->GetDownloadTaskSaveToDriveData());
+  UploadTask* upload_task =
+      helper_->GetUploadTaskForDownload(download_task_.get());
+  ASSERT_NE(nullptr, upload_task);
+  EXPECT_EQ(identity, upload_task->GetIdentity());
   download_task_.reset();
-  EXPECT_EQ(std::nullopt, helper_->GetDownloadTaskSaveToDriveData());
+  EXPECT_EQ(nullptr, helper_->GetUploadTaskForDownload(download_task_.get()));
 }

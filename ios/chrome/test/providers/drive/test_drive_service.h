@@ -16,6 +16,8 @@ class TestDriveService final : public DriveService {
 
   // DriveService implementation
   bool IsSupported() const final;
+  std::unique_ptr<DriveFileUploader> CreateFileUploader(
+      id<SystemIdentity> identity) final;
 };
 
 }  // namespace drive

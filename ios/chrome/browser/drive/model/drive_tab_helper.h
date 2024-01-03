@@ -13,6 +13,8 @@
 #import "ios/web/public/web_state_user_data.h"
 
 class DriveUploadTask;
+@protocol SystemIdentity;
+class UploadTask;
 
 // Manages Save to Drive tab-scoped state i.e. if a `DownloadTask` is received
 // through AddDownloadToSaveToDrive(...) then this tab helper
@@ -34,8 +36,9 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // Returns Save to Drive data associated with the current download task.
   // TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
   // `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
-  std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData()
-      const;
+  std::optional<DownloadTaskSaveToDriveData> GetDownloadTaskSaveToDriveData();
+  // Returns the upload task associated with `download_task`, if any.
+  UploadTask* GetUploadTaskForDownload(web::DownloadTask* task);
 
  private:
   friend class web::WebStateUserData<DriveTabHelper>;
@@ -54,8 +57,6 @@ class DriveTabHelper : public web::WebStateUserData<DriveTabHelper>,
   // Associated WebState.
   raw_ptr<web::WebState> web_state_;
 
-  // Save to Drive data associated with the current download task.
-  std::optional<DownloadTaskSaveToDriveData> download_task_save_to_drive_data_;
   // Scoped observation to observe the `DownloadTask`.
   using ScopedDownloadTaskObservation =
       base::ScopedObservation<web::DownloadTask, web::DownloadTaskObserver>;

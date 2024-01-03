@@ -4,6 +4,18 @@
 
 #import "ios/chrome/test/providers/drive/test_drive_service.h"
 
+#import "ios/chrome/browser/drive/model/drive_file_uploader.h"
+
+// Test implementation for `DriveFileUploader`.
+class TestDriveFileUploader final : public DriveFileUploader {
+ public:
+  TestDriveFileUploader(id<SystemIdentity> identity) : identity_(identity) {}
+  id<SystemIdentity> GetIdentity() const final { return identity_; }
+
+ private:
+  id<SystemIdentity> identity_;
+};
+
 namespace drive {
 
 TestDriveService::TestDriveService() = default;
@@ -13,6 +25,11 @@ TestDriveService::~TestDriveService() = default;
 
 bool TestDriveService::IsSupported() const {
   return true;
+}
+
+std::unique_ptr<DriveFileUploader> TestDriveService::CreateFileUploader(
+    id<SystemIdentity> identity) {
+  return std::make_unique<TestDriveFileUploader>(identity);
 }
 
 }  // namespace drive

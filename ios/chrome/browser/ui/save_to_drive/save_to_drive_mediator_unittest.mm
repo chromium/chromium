@@ -7,6 +7,7 @@
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
+#import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/save_to_drive_commands.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -145,17 +146,16 @@ TEST_F(SaveToDriveMediatorTest, HidesSaveToDriveOnWebStateHidden) {
 // when `startDownloadAndSaveToDriveWithIdentity:` is invoked.
 TEST_F(SaveToDriveMediatorTest, AddsDownloadToSaveToDrive) {
   id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
-  EXPECT_EQ(
-      nullptr,
-      GetDownloadManagerTabHelper()->download_task_added_to_save_to_drive_);
-  EXPECT_EQ(std::nullopt,
-            GetDriveTabHelper()->GetDownloadTaskSaveToDriveData());
+  FakeDownloadManagerTabHelper* download_helper = GetDownloadManagerTabHelper();
+  DriveTabHelper* drive_helper = GetDriveTabHelper();
+  EXPECT_EQ(nullptr, download_helper->download_task_added_to_save_to_drive_);
+  EXPECT_EQ(nullptr,
+            drive_helper->GetUploadTaskForDownload(download_task_.get()));
   [mediator_ startDownloadAndSaveToDriveWithIdentity:identity];
-  EXPECT_EQ(
-      download_task_.get(),
-      GetDownloadManagerTabHelper()->download_task_added_to_save_to_drive_);
-  DownloadTaskSaveToDriveData expected_save_to_drive_data{
-      .task = download_task_.get(), .identity = identity};
-  EXPECT_EQ(expected_save_to_drive_data,
-            GetDriveTabHelper()->GetDownloadTaskSaveToDriveData());
+  EXPECT_EQ(download_task_.get(),
+            download_helper->download_task_added_to_save_to_drive_);
+  UploadTask* upload_task =
+      drive_helper->GetUploadTaskForDownload(download_task_.get());
+  EXPECT_NE(nullptr, upload_task);
+  EXPECT_EQ(identity, upload_task->GetIdentity());
 }

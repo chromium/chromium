@@ -18,8 +18,7 @@ DriveUploadTask::~DriveUploadTask() = default;
 #pragma mark - Public
 
 id<SystemIdentity> DriveUploadTask::GetIdentity() const {
-  // TODO(crbug.com/1495354): Return the identity used to upload the file.
-  return nil;
+  return uploader_->GetIdentity();
 }
 
 void DriveUploadTask::SetFileToUpload(const base::FilePath& path,

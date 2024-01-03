@@ -27,8 +27,21 @@ void DriveTabHelper::AddDownloadToSaveToDrive(web::DownloadTask* task,
 // TODO(crbug.com/1495354): Remove `GetDownloadTaskSaveToDriveData()` and use
 // `GetUploadTaskForDownload()` and `GetUploadIdentityForDownload()` instead.
 std::optional<DownloadTaskSaveToDriveData>
-DriveTabHelper::GetDownloadTaskSaveToDriveData() const {
-  return download_task_save_to_drive_data_;
+DriveTabHelper::GetDownloadTaskSaveToDriveData() {
+  web::DownloadTask* download_task = download_task_obs_.GetSource();
+  if (!download_task) {
+    return std::nullopt;
+  }
+  return DownloadTaskSaveToDriveData{.task = download_task,
+                                     .identity = upload_task_->GetIdentity()};
+}
+
+UploadTask* DriveTabHelper::GetUploadTaskForDownload(
+    web::DownloadTask* download_task) {
+  if (!download_task || download_task_obs_.GetSource() != download_task) {
+    return nullptr;
+  }
+  return upload_task_.get();
 }
 
 #pragma mark - web::DownloadTaskObserver
@@ -60,7 +73,6 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
                                           id<SystemIdentity> identity) {
   download_task_obs_.Reset();
   upload_task_.reset();
-  download_task_save_to_drive_data_.reset();
   if (!task || !identity) {
     return;
   }
@@ -72,8 +84,6 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   upload_task_->SetDestinationFolderName(
       drive_service->GetSuggestedFolderName());
   download_task_obs_.Observe(task);
-  download_task_save_to_drive_data_ =
-      DownloadTaskSaveToDriveData{.task = task, .identity = identity};
 }
 
 #pragma mark - web::WebStateUserData
