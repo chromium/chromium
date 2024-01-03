@@ -665,6 +665,9 @@ public final class ProductionSupportedFlagList {
                 "Enables showing the cancel dialog by calling preventDefault() "
                         + "on beforeunload event."),
         Flag.baseFeature(
+            BlinkFeatures.CLOSE_WATCHER,
+            "Enables the CloseWatcher JS API and integrates behavior with dialog and popover elements."),
+        Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
                         + "an existing pending commit navigation in progress."),
