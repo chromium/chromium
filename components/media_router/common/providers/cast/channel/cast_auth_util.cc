@@ -48,6 +48,16 @@ BASE_FEATURE(kEnforceFallbackCRLRevocationChecking,
              "CastFallbackCRLRevocation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enforce certificate revocation when enabled.
+// If disabled, any revocation failures are ignored.
+//
+// This flags only controls the enforcement. Revocation is checked regardless.
+//
+// This flag tracks the changes necessary to fully enforce revocation.
+BASE_FEATURE(kEnforceRevocationChecking,
+             "CastCertificateRevocation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 const char kParseErrorPrefix[] = "Failed to parse auth message: ";
@@ -60,16 +70,6 @@ const int kNonceSizeInBytes = 16;
 
 // The number of hours after which a nonce is regenerated.
 long kNonceExpirationTimeInHours = 24;
-
-// Enforce certificate revocation when enabled.
-// If disabled, any revocation failures are ignored.
-//
-// This flags only controls the enforcement. Revocation is checked regardless.
-//
-// This flag tracks the changes necessary to fully enforce revocation.
-BASE_FEATURE(kEnforceRevocationChecking,
-             "CastCertificateRevocation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace cast_crypto = ::cast_certificate;
 

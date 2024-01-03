@@ -33,6 +33,9 @@ constexpr CastChannelFlags kFlagsCRLMissing =
 constexpr CastChannelFlags kFlagsSHA1AndCRLMissing =
     static_cast<CastChannelFlags>(CastChannelFlag::kSha1DigestAlgorithm) |
     static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing);
+constexpr CastChannelFlags kFlagsInvalidCRL =
+    static_cast<CastChannelFlags>(CastChannelFlag::kCRLInvalid) |
+    static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing);
 constexpr CastChannelFlags kFlagsInvalidFallbackCRL =
     static_cast<CastChannelFlags>(CastChannelFlag::kInvalidFallbackCRL) |
     static_cast<CastChannelFlags>(CastChannelFlag::kCRLMissing);
@@ -231,6 +234,59 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithInvalidFallbackCRL) {
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA, result.error_type);
   EXPECT_EQ(kFlagsInvalidFallbackCRL, result.flags);
+}
+
+TEST_F(CastAuthUtilTest,
+       VerifyInvalidCRLWithFeatureFlagEnforceRevocationChecking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnforceRevocationChecking);
+  std::string signed_data;
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  AuthResult result = VerifyCredentials(auth_response, signed_data);
+  EXPECT_FALSE(result.success());
+  EXPECT_EQ(AuthResult::ERROR_CRL_INVALID, result.error_type);
+  EXPECT_EQ(kFlagsInvalidCRL, result.flags);
+}
+
+TEST_F(CastAuthUtilTest,
+       VerifyMissingCRLWithoutFeatureFlagEnforceRevocationChecking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  std::string signed_data;
+  scoped_feature_list.InitAndDisableFeature(kEnforceRevocationChecking);
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  AuthResult result = VerifyCredentials(auth_response, signed_data);
+  EXPECT_TRUE(result.success());
+  EXPECT_EQ(AuthResult::ERROR_NONE, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
+}
+
+TEST_F(CastAuthUtilTest,
+       VerifyParsingErrorWithFeatureFlagEnforceRevocationChecking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kEnforceRevocationChecking);
+
+  std::string signed_data;
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  MangleString(auth_response.mutable_client_auth_certificate());
+  AuthResult result = VerifyCredentials(auth_response, signed_data);
+  EXPECT_FALSE(result.success());
+  // will early return if the CRL is invalid
+  EXPECT_EQ(AuthResult::ERROR_CRL_INVALID, result.error_type);
+  EXPECT_EQ(kFlagsInvalidCRL, result.flags);
+}
+
+TEST_F(CastAuthUtilTest,
+       VerifyParsingErrorWithoutFeatureFlagEnforceRevocationChecking) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  std::string signed_data;
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  MangleString(auth_response.mutable_client_auth_certificate());
+  AuthResult result = VerifyCredentials(auth_response, signed_data);
+  EXPECT_FALSE(result.success());
+  // will NOT early return if the flag is off
+  EXPECT_EQ(AuthResult::ERROR_CERT_PARSING_FAILED, result.error_type);
+  EXPECT_EQ(kFlagsCRLMissing, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {

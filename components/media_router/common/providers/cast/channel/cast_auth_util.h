@@ -32,6 +32,7 @@ using ::cast::channel::CastMessage;
 BASE_DECLARE_FEATURE(kEnforceNonceChecking);
 BASE_DECLARE_FEATURE(kEnforceSHA256Checking);
 BASE_DECLARE_FEATURE(kEnforceFallbackCRLRevocationChecking);
+BASE_DECLARE_FEATURE(kEnforceRevocationChecking);
 
 struct AuthResult {
  public:
