@@ -4613,7 +4613,7 @@
           Default
         </message>
         <message name="IDS_SETTINGS_APN_DIALOG_APN_TYPE_ATTACH_CHECKBOX" desc="Label for checkbox that specifies that the attach APN type will be used">
-          Attach
+          <ph name="ATTACH">Attach</ph> (<ph name="IA">IA</ph>)
         </message>
         <message name="IDS_SETTINGS_APN_A11Y_DEFAULT_AND_ATTACH_APN" desc="Accessibility text for when an APN is both a default and an attach APN">
           APN is type default and attach.
