@@ -10867,13 +10867,14 @@
             "platforms": [
                 "chromeos",
                 "chromeos_lacros",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20230608",
+                    "name": "Enabled_20240103",
                     "params": {
                         "MmapSafeBrowsingDatabaseAsync": "true"
                     },
