@@ -47,6 +47,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Remind Me Later"/>
 </enum>
 
+<enum name="ContentNotificationSetUpListPromoEvent">
+  <int value="0" label="Notification promo Sheet shown"/>
+  <int value="1" label="Notification promo Sheet dismissed"/>
+  <int value="2" label="OS Notification permission prompt shown"/>
+</enum>
+
 <enum name="ContentSettingBubbleAction">
   <int value="1" label="kOpened"/>
   <int value="2" label="kPermissionAllowed"/>

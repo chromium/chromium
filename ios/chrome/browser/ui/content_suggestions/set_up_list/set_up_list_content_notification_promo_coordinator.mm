@@ -68,6 +68,7 @@ using base::UserMetricsAction;
                                         animated:YES
                                       completion:nil];
   _viewController.presentationController.delegate = self;
+  [self logHistogramForEvent:ContentNotificationSetUpListPromoEvent::kShown];
 }
 
 - (void)stop {
@@ -85,6 +86,8 @@ using base::UserMetricsAction;
     };
   }
   [_viewController dismissViewControllerAnimated:YES completion:completion];
+  [self
+      logHistogramForEvent:ContentNotificationSetUpListPromoEvent::kDismissed];
   _viewController = nil;
   self.delegate = nil;
 }
@@ -114,6 +117,8 @@ using base::UserMetricsAction;
       // is displayed on the main thread.
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf presentPushNotificationPermissionAlert];
+        [weakSelf logHistogramForEvent:ContentNotificationSetUpListPromoEvent::
+                                           kPromptShown];
       });
     } else {
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -198,6 +203,10 @@ using base::UserMetricsAction;
 - (void)logHistogramForAction:(ContentNotificationSetUpListPromoAction)action {
   UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Action",
                           action);
+}
+
+- (void)logHistogramForEvent:(ContentNotificationSetUpListPromoEvent)event {
+  UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Event", event);
 }
 
 #pragma mark - Private
