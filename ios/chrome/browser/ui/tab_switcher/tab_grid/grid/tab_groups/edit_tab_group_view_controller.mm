@@ -7,6 +7,12 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+namespace {
+constexpr CGFloat kBackgroundAlpha = 0.6;
+}
 
 @implementation EditTabGroupViewController
 
@@ -20,8 +26,21 @@
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
+  [super viewDidLoad];
   self.view.accessibilityIdentifier = kEditTabGroupIdentifier;
-  self.view.backgroundColor = UIColor.redColor;
+  if (!UIAccessibilityIsReduceTransparencyEnabled()) {
+    self.view.backgroundColor = [[UIColor colorNamed:kGrey900Color]
+        colorWithAlphaComponent:kBackgroundAlpha];
+    UIBlurEffect* blurEffect =
+        [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    UIVisualEffectView* blurEffectView =
+        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+    blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:blurEffectView];
+    AddSameConstraints(self.view, blurEffectView);
+  } else {
+    self.view.backgroundColor = [UIColor blackColor];
+  }
 }
 
 @end
