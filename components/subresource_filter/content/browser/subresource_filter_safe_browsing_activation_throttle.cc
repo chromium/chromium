@@ -73,17 +73,17 @@ SubresourceFilterSafeBrowsingActivationThrottle::
             database_manager)
     : NavigationThrottle(handle),
       io_task_runner_(std::move(io_task_runner)),
-      database_client_(new SubresourceFilterSafeBrowsingClient(
-                           std::move(database_manager),
-                           AsWeakPtr(),
-                           io_task_runner_,
-                           base::SingleThreadTaskRunner::GetCurrentDefault()),
+      database_client_(nullptr,
                        base::OnTaskRunnerDeleter(
                            base::FeatureList::IsEnabled(
                                safe_browsing::kSafeBrowsingOnUIThread)
                                ? base::SequencedTaskRunner::GetCurrentDefault()
                                : io_task_runner_)),
       delegate_(delegate) {
+  database_client_.reset(new SubresourceFilterSafeBrowsingClient(
+      std::move(database_manager), weak_ptr_factory_.GetWeakPtr(),
+      io_task_runner_, base::SingleThreadTaskRunner::GetCurrentDefault()));
+
   DCHECK(IsInSubresourceFilterRoot(handle));
   CheckCurrentUrl();
   DCHECK(!check_results_.empty());

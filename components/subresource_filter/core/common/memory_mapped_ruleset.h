@@ -19,8 +19,7 @@ namespace subresource_filter {
 // A reference-counted wrapper around base::MemoryMappedFile. The |ruleset_file|
 // supplied in the constructor is kept memory-mapped and is safe to access until
 // the last reference to this instance is dropped.
-class MemoryMappedRuleset : public base::RefCounted<MemoryMappedRuleset>,
-                            public base::SupportsWeakPtr<MemoryMappedRuleset> {
+class MemoryMappedRuleset final : public base::RefCounted<MemoryMappedRuleset> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
   static scoped_refptr<MemoryMappedRuleset> CreateAndInitialize(
@@ -34,12 +33,17 @@ class MemoryMappedRuleset : public base::RefCounted<MemoryMappedRuleset>,
   const uint8_t* data() const { return ruleset_.data(); }
   size_t length() const { return base::strict_cast<size_t>(ruleset_.length()); }
 
+  base::WeakPtr<MemoryMappedRuleset> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   friend class base::RefCounted<MemoryMappedRuleset>;
   MemoryMappedRuleset();
   ~MemoryMappedRuleset();
 
   base::MemoryMappedFile ruleset_;
+  base::WeakPtrFactory<MemoryMappedRuleset> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_filter

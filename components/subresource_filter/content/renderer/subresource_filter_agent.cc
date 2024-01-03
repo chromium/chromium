@@ -345,7 +345,7 @@ void SubresourceFilterAgent::ConstructFilter(
   base::OnceClosure first_disallowed_load_callback(
       base::BindOnce(&SubresourceFilterAgent::
                          SignalFirstSubresourceDisallowedForCurrentDocument,
-                     AsWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()));
   auto filter = std::make_unique<WebDocumentSubresourceFilterImpl>(
       url::Origin::Create(url), activation_state, std::move(ruleset),
       std::move(first_disallowed_load_callback));
@@ -383,7 +383,7 @@ void SubresourceFilterAgent::WillCreateWorkerFetchContext(
           std::move(ruleset_file),
           base::BindOnce(&SubresourceFilterAgent::
                              SignalFirstSubresourceDisallowedForCurrentDocument,
-                         AsWeakPtr())));
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void SubresourceFilterAgent::OnOverlayPopupAdDetected() {

@@ -19,9 +19,8 @@ namespace subresource_filter {
 
 class MemoryMappedRuleset;
 // Performs filtering of subresource loads in the scope of a given document.
-class WebDocumentSubresourceFilterImpl
-    : public blink::WebDocumentSubresourceFilter,
-      public base::SupportsWeakPtr<WebDocumentSubresourceFilterImpl> {
+class WebDocumentSubresourceFilterImpl final
+    : public blink::WebDocumentSubresourceFilter {
  public:
   // This builder class is used for creating the subresource filter for workers
   // and worklets. For workers and threaded worklets, this is created on the
@@ -82,6 +81,10 @@ class WebDocumentSubresourceFilterImpl
     return filter_.activation_state();
   }
 
+  base::WeakPtr<WebDocumentSubresourceFilterImpl> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   LoadPolicy getLoadPolicyImpl(
       const blink::WebURL& url,
@@ -90,6 +93,8 @@ class WebDocumentSubresourceFilterImpl
   mojom::ActivationState activation_state_;
   DocumentSubresourceFilter filter_;
   base::OnceClosure first_disallowed_load_callback_;
+  base::WeakPtrFactory<WebDocumentSubresourceFilterImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace subresource_filter

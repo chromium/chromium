@@ -118,7 +118,7 @@ class IndexedRulesetLocator {
 //
 // Obsolete files deletion and rulesets indexing are posted to
 // |background_task_runner|.
-class RulesetService : public base::SupportsWeakPtr<RulesetService> {
+class RulesetService {
  public:
   // Enumerates the possible outcomes of indexing a ruleset and writing it to
   // disk. Used in UMA histograms, so the order of enumerators should not be
@@ -271,6 +271,8 @@ class RulesetService : public base::SupportsWeakPtr<RulesetService> {
   bool is_initialized_;
 
   const base::FilePath indexed_ruleset_base_dir_;
+
+  base::WeakPtrFactory<RulesetService> weak_ptr_factory_{this};
 };
 
 }  // namespace subresource_filter
