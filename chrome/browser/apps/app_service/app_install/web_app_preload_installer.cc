@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
 
 #include <memory>
 
@@ -33,6 +33,8 @@ namespace {
 // Maximum size of the manifest file. 1MB.
 constexpr int kMaxManifestSizeInBytes = 1024 * 1024;
 
+// TODO(b/315077325): Rename annotation to be related to AppInstallService
+// instead of AppPreloadService.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("app_preload_service_web_installer",
                                         R"(
@@ -67,6 +69,8 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   }
 }
 
+// TODO(b/315077325): Rename histogram to be related to AppInstallService
+// instead of AppPreloadService.
 void RecordInstallResultMetric(apps::WebAppPreloadResult result) {
   base::UmaHistogramEnumeration("AppPreloadService.WebAppInstall.InstallResult",
                                 result);

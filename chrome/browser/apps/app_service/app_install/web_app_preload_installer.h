@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_WEB_APP_PRELOAD_INSTALLER_H_
-#define CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_WEB_APP_PRELOAD_INSTALLER_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_
 
 #include <memory>
 #include <optional>
@@ -51,6 +51,8 @@ using WebAppPreloadInstalledCallback = base::OnceCallback<void(bool success)>;
 // WebAppPreloadInstaller manages all communication with the web apps system
 // (including crosapi where needed) for the purpose of installing preloaded web
 // apps.
+// TODO(b/315077325): Detach from preloads as a generic way to install web apps
+// using Almanac install info.
 class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
  public:
   explicit WebAppPreloadInstaller(Profile* profile);
@@ -104,4 +106,4 @@ class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_PRELOAD_SERVICE_WEB_APP_PRELOAD_INSTALLER_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_

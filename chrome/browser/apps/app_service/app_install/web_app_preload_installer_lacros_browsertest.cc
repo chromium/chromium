@@ -1,10 +1,10 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/apps/app_preload_service/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
