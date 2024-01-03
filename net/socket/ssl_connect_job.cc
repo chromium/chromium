@@ -464,9 +464,8 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     ech_retry_configs_ = ssl_socket_->GetECHRetryConfigs();
     net_log().AddEvent(
         NetLogEventType::SSL_CONNECT_JOB_RESTART_WITH_ECH_CONFIG_LIST, [&] {
-          base::Value::Dict dict;
-          dict.Set("bytes", NetLogBinaryValue(*ech_retry_configs_));
-          return dict;
+          return base::Value::Dict().Set(
+              "bytes", NetLogBinaryValue(*ech_retry_configs_));
         });
 
     ResetStateForRestart();
