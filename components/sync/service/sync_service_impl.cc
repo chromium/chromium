@@ -29,6 +29,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "components/sync/android/explicit_passphrase_platform_client.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
@@ -1295,6 +1296,9 @@ void SyncServiceImpl::SetEncryptionBootstrapToken(
     const std::string& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_prefs_.SetEncryptionBootstrapToken(bootstrap_token);
+#if BUILDFLAG(IS_ANDROID)
+  SendExplicitPassphraseToJavaPlatformClient(this);
+#endif
 }
 
 std::string SyncServiceImpl::GetEncryptionBootstrapToken() const {

@@ -324,6 +324,19 @@ public class FakeServerHelper {
                 () -> FakeServerHelperJni.get().getBookmarkBarFolderId(mNativeFakeServer));
     }
 
+    /**
+     * Sets a custom passphrase nigori.
+     *
+     * @param passphrase the plaintext custom passphrase to set.
+     */
+    public void setCustomPassphraseNigori(String passphrase) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    FakeServerHelperJni.get()
+                            .setCustomPassphraseNigori(mNativeFakeServer, passphrase);
+                });
+    }
+
     /** Sets trusted vault nigori with keys derived from trustedVaultKey on the server. */
     public void setTrustedVaultNigori(byte[] trustedVaultKey) {
         TestThreadUtils.runOnUiThreadBlocking(
@@ -394,6 +407,8 @@ public class FakeServerHelper {
         String getBookmarkBarFolderId(long fakeServer);
 
         void deleteEntity(long fakeServer, String id, String clientDefinedUniqueTag);
+
+        void setCustomPassphraseNigori(long fakeServer, String passphrase);
 
         void setTrustedVaultNigori(long fakeServer, byte[] trustedVaultKey);
 
