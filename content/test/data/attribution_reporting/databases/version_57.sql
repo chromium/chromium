@@ -15,8 +15,8 @@ CREATE TABLE source_destinations(source_id INTEGER NOT NULL,destination_site TEX
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 
 INSERT INTO meta VALUES('mmap_status','-1');
-INSERT INTO meta VALUES('version','56');
-INSERT INTO meta VALUES('last_compatible_version','56');
+INSERT INTO meta VALUES('version','57');
+INSERT INTO meta VALUES('last_compatible_version','57');
 
 CREATE INDEX sources_by_active_reporting_origin ON sources(event_level_active,aggregatable_active,reporting_origin);
 
@@ -41,11 +41,5 @@ CREATE INDEX rate_limit_reporting_origin_idx ON rate_limits(scope,source_site,de
 CREATE INDEX rate_limit_time_idx ON rate_limits(time);
 
 CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
-
-INSERT INTO sources VALUES(2,2,3,4,5,6,7,8,9,10,11,0,13,14,15,16,17,18,19,20);
-INSERT INTO source_destinations VALUES(2,2); -- Corresponding source destination for corrupted source
-INSERT INTO dedup_keys VALUES(2,2,3); -- Corresponding dedup key for corrupted source
-INSERT INTO reports VALUES(2,2,3,4,5,6,7,8,9,10,1,12); -- Report with corrupted source.
-INSERT INTO reports VALUES(3,3,3,4,5,6,7,8,9,10,1,12); -- Corrupted report.
 
 COMMIT;

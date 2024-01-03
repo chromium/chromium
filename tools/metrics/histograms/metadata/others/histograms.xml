@@ -2893,8 +2893,23 @@ chromium-metrics-reviews@google.com.
     Records the cause of report corruption when deserializing from the database.
     Multiple ReportCorruptionStatus values can be associated to a single report
     as a report can be corrupted for multiple reasons. Reports are scanned
-    during database initialization.
+    during database initialization and migration.
   </summary>
+</histogram>
+
+<histogram name="Conversions.Corrupt{Types}DeletedOnMigration"
+    enum="ConversionCorruptReportStatus" expires_after="2024-05-05">
+  <owner>tquintanilla@chromium.org</owner>
+  <owner>apaseltiner@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the number of corrupted reports/sources with reports deleted from
+    the database. Reports/sources are deleted during database migration.
+  </summary>
+  <token key="Types">
+    <variant name="Reports"/>
+    <variant name="Sources"/>
+  </token>
 </histogram>
 
 <histogram name="Conversions.CreateReportStatus9"

@@ -47,11 +47,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 56;
+  static constexpr int kCurrentVersionNumber = 57;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 56;
+  static constexpr int kCompatibleVersionNumber = 57;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -118,12 +118,21 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kMaxValue = kStoredSourceConstructionFailed,
   };
 
+  struct DeletionCounts {
+    int sources = 0;
+    int reports = 0;
+  };
+
+  // Deletes corrupt sources/reports if `deletion_counts` is not `nullptr`.
+  void VerifyReports(DeletionCounts* deletion_counts);
+
  private:
   using ReportCorruptionStatusSet =
       base::EnumSet<ReportCorruptionStatus,
                     ReportCorruptionStatus::kAnyFieldCorrupted,
                     ReportCorruptionStatus::kMaxValue>;
 
+  struct ReportCorruptionStatusSetAndIds;
   struct StoredSourceData;
 
   enum class DbStatus {
@@ -205,8 +214,6 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kError,
   };
 
-  void RecordValidReports() VALID_CONTEXT_REQUIRED(sequence_checker_);
-
   void RecordSourcesPerSourceOrigin() VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   ReportAlreadyStoredStatus ReportAlreadyStored(
@@ -251,11 +258,11 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                      AttributionReport::Type report_type)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  base::expected<AttributionReport, ReportCorruptionStatusSet>
+  base::expected<AttributionReport, ReportCorruptionStatusSetAndIds>
   ReadReportFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  base::expected<StoredSourceData, ReportCorruptionStatusSet>
+  base::expected<StoredSourceData, ReportCorruptionStatusSetAndIds>
   ReadSourceFromStatement(sql::Statement&)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -264,6 +271,9 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
 
   std::vector<AttributionReport> GetReportsInternal(base::Time max_report_time,
                                                     int limit)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool DeleteReportInternal(AttributionReport::Id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   absl::optional<base::Time> GetNextReportTime(sql::StatementID id,
