@@ -20618,7 +20618,8 @@
                     },
                     "enable_features": [
                         "DefaultANGLEVulkan",
-                        "Vulkan"
+                        "Vulkan",
+                        "VulkanFromANGLE"
                     ]
                 }
             ]
