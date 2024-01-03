@@ -22,6 +22,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "base/check.h"
@@ -53,6 +54,7 @@
 namespace ash {
 namespace {
 
+constexpr int kAddNewTaskIconSize = 24;
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr int kListViewBetweenChildSpacing = 2;
@@ -61,24 +63,33 @@ constexpr int kMaximumTasks = 100;
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
 
-std::unique_ptr<views::LabelButton> CreateAddNewTaskButton(
-    views::Button::PressedCallback callback) {
-  auto add_new_task_button = std::make_unique<views::LabelButton>(
-      std::move(callback),
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL));
-  add_new_task_button->SetID(
-      base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
-  add_new_task_button->SetImageModel(
-      views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kGlanceablesTasksAddNewTaskIcon,
-                                     cros_tokens::kFocusRingColor));
-  add_new_task_button->SetImageLabelSpacing(18);
-  add_new_task_button->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(13, 18)));
-  add_new_task_button->SetEnabledTextColorIds(cros_tokens::kFocusRingColor);
-  return add_new_task_button;
-}
+class AddNewTaskButton : public views::LabelButton {
+  METADATA_HEADER(AddNewTaskButton, views::LabelButton)
+ public:
+  explicit AddNewTaskButton(views::Button::PressedCallback callback)
+      : views::LabelButton(
+            std::move(callback),
+            l10n_util::GetStringUTF16(
+                IDS_GLANCEABLES_TASKS_ADD_NEW_TASK_BUTTON_LABEL)) {
+    SetID(base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton));
+    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
+                  ui::ImageModel::FromVectorIcon(
+                      kGlanceablesTasksAddNewTaskIcon,
+                      cros_tokens::kCrosSysPrimary, kAddNewTaskIconSize));
+    SetImageLabelSpacing(14);
+    SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(8, 0)));
+    SetEnabledTextColorIds(cros_tokens::kCrosSysPrimary);
+    label()->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
+        TypographyToken::kCrosButton2));
+  }
+
+  AddNewTaskButton(const AddNewTaskButton&) = delete;
+  AddNewTaskButton& operator=(const AddNewTaskButton&) = delete;
+  ~AddNewTaskButton() override = default;
+};
+
+BEGIN_METADATA(AddNewTaskButton)
+END_METADATA
 
 }  // namespace
 
@@ -133,9 +144,12 @@ GlanceablesTasksView::GlanceablesTasksView(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
 
-  add_new_task_button_ = list_view->AddChildView(CreateAddNewTaskButton(
-      base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
-                          base::Unretained(this))));
+  add_new_task_button_ =
+      list_view->AddChildView(std::make_unique<AddNewTaskButton>(
+          base::BindRepeating(&GlanceablesTasksView::AddNewTaskButtonPressed,
+                              base::Unretained(this))));
+  // Hide `add_new_task_button_` until the initial task list update.
+  add_new_task_button_->SetVisible(false);
 
   task_items_container_view_ =
       list_view->AddChildView(std::make_unique<views::View>());
@@ -153,7 +167,7 @@ GlanceablesTasksView::GlanceablesTasksView(
           base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
                               base::Unretained(this),
                               TasksLaunchSource::kHeaderButton),
-          IconButton::Type::kMedium, &kGlanceablesTasksIcon,
+          IconButton::Type::kSmall, &kGlanceablesTasksIcon,
           IDS_GLANCEABLES_TASKS_HEADER_ICON_ACCESSIBLE_NAME));
   header_icon->SetBackgroundColor(SK_ColorTRANSPARENT);
   header_icon->SetProperty(views::kMarginsKey, kHeaderIconButtonMargins);
@@ -268,6 +282,7 @@ void GlanceablesTasksView::UpdateTasksList(
     bool initial_update,
     const ui::ListModel<api::Task>* tasks) {
   if (initial_update) {
+    add_new_task_button_->SetVisible(true);
     base::UmaHistogramCounts100(
         "Ash.Glanceables.TimeManagement.TasksCountInDefaultTaskList",
         tasks->item_count());
