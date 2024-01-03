@@ -295,7 +295,9 @@ void SharedStorageWorkletHost::SelectURL(
     const absl::optional<std::string>& context_id,
     const absl::optional<url::Origin>& aggregation_coordinator_origin,
     SelectURLCallback callback) {
-  // TODO(https://crbug.com/1473742): `page_` can somehow be null.
+  // `page_` can be null. See test
+  // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
+  // SitePerProcessBrowserTest.
   if (!page_) {
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/
@@ -469,7 +471,9 @@ void SharedStorageWorkletHost::Run(
     const absl::optional<std::string>& context_id,
     const absl::optional<url::Origin>& aggregation_coordinator_origin,
     RunCallback callback) {
-  // TODO(https://crbug.com/1473742): `page_` can somehow be null.
+  // `page_` can be null. See test
+  // MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation in
+  // SitePerProcessBrowserTest.
   if (!page_) {
     std::move(callback).Run(
         /*success=*/false, /*error_message=*/

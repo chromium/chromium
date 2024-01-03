@@ -14,14 +14,17 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -1722,4 +1725,75 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          SitePerProcessSSLBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+
+// This test sets up a main frame which has an OOPIF. The main frame commits a
+// same-site navigation. The test then stops at the stage where the unload
+// handler of the OOPIF is running and the main frame RenderFrameHost's
+// `DocumentAssociatedData` is retrieved from the OOPIF. The test shows that
+// the `DocumentAssociatedData` is different from the one before navigation if
+// RenderDocument feature is not enabled for all frames. One place we have seen
+// this issue is in Protected Audience auctions. Please see crbug.com/1422301.
+IN_PROC_BROWSER_TEST_P(
+    SitePerProcessBrowserTest,
+    MainFrameDocumentAssociatedDataChangesOnSameSiteNavigation) {
+  GURL initial_url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL next_url(embedded_test_server()->GetURL("login.a.com", "/title1.html"));
+
+  // 1) Navigate on a page with an OOPIF.
+  EXPECT_TRUE(NavigateToURL(shell(), initial_url));
+
+  FrameTreeNode* root_ftn = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* main_rfh = root_ftn->current_frame_host();
+
+  // 2) Act as if there was an infinite unload handler in the OOPIF.
+  RenderFrameHostImpl* child_rfh = root_ftn->child_at(0)->current_frame_host();
+
+  child_rfh->DoNotDeleteForTesting();
+
+  // Set an arbitrarily long timeout to ensure the subframe unload timer doesn't
+  // fire before we call OnDetach().
+  child_rfh->SetSubframeUnloadTimeoutForTesting(base::Seconds(30));
+
+  // With BackForwardCache, old document doesn't fire unload handlers as the
+  // page is stored in BackForwardCache on navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_USES_UNLOAD_EVENT);
+
+  // 3) Retrieve the fenced frame url mapping id associated with the owned page
+  // by the main RenderFrameHost's `DocumentAssociatedData`. Since
+  // `DocumentAssociatedData` does not change its owned page during its
+  // lifetime, this id also uniquely identifies `DocumentAssociatedData`.
+  FencedFrameURLMapping::Id fenced_frame_url_mapping_id =
+      child_rfh->GetPage().fenced_frame_urls_map().unique_id();
+  base::WeakPtr<PageImpl> weak_ptr_page = child_rfh->GetPage().GetWeakPtrImpl();
+
+  // 4) Navigate the main frame to a same-site url. The unload handler of the
+  // OOPIF is running.
+  EXPECT_TRUE(NavigateToURL(shell(), next_url));
+  EXPECT_TRUE(child_rfh->IsPendingDeletion());
+
+  // 5) If RenderDocument feature is not enabled for all frames, the main frame
+  // RenderFrameHost will be the same.
+  EXPECT_EQ(
+      main_rfh ==
+          web_contents()->GetPrimaryFrameTree().root()->current_frame_host(),
+      GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
+
+  // 6) If RenderDocument feature is not enabled for all frames, verify
+  // `DocumentAssociatedData` has changed by comparing fenced frame url mapping
+  // ids.
+  FencedFrameURLMapping::Id fenced_frame_url_mapping_id_after_navigation =
+      child_rfh->GetPage().fenced_frame_urls_map().unique_id();
+
+  EXPECT_EQ(fenced_frame_url_mapping_id !=
+                fenced_frame_url_mapping_id_after_navigation,
+            GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
+
+  // 7)  If RenderDocument feature is not enabled for all frames, verify
+  // `PageImpl` has changed by checking the weak pointer.
+  EXPECT_EQ(weak_ptr_page == nullptr,
+            GetRenderDocumentLevel() < RenderDocumentLevel::kAllFrames);
+}
+
 }  // namespace content
