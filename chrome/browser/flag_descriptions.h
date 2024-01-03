@@ -1268,9 +1268,6 @@ extern const char kLogJsConsoleMessagesDescription[];
 extern const char kUndoAutofillName[];
 extern const char kUndoAutofillDescription[];
 
-extern const char kUnthrottledNestedTimeoutName[];
-extern const char kUnthrottledNestedTimeoutDescription[];
-
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

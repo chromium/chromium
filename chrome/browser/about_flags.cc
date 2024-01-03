@@ -2959,13 +2959,6 @@ const FeatureEntry::FeatureVariation kRestoreTabsOnFREVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kUnthrottledNestedTimeout_NestingLevel = {
-    "nesting", "15"};
-
-const FeatureEntry::FeatureVariation kUnthrottledNestedTimeout_Variations[] = {
-    {"15", &kUnthrottledNestedTimeout_NestingLevel, 1, nullptr},
-};
-
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 constexpr FeatureEntry::FeatureParam kCscStagingEnvVariation[] = {
     {"companion-homepage-url",
@@ -9360,14 +9353,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDownloadWarningImprovementsDescription,
      kOsLinux | kOsLacros | kOsMac | kOsWin | kOsCrOS,
      MULTI_VALUE_TYPE(kDownloadWarningImprovementsChoices)},
-
-    {"unthrottled-nested-timeout",
-     flag_descriptions::kUnthrottledNestedTimeoutName,
-     flag_descriptions::kUnthrottledNestedTimeoutDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kMaxUnthrottledTimeoutNestingLevel,
-         kUnthrottledNestedTimeout_Variations,
-         "NestingLevel")},
 
     {"reduce-accept-language", flag_descriptions::kReduceAcceptLanguageName,
      flag_descriptions::kReduceAcceptLanguageDescription, kOsAll,

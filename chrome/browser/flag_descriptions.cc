@@ -2240,16 +2240,6 @@ const char kUndoAutofillDescription[] =
     "Allows reverting Autofill filling operations. Replaces Clear Form "
     "functionality";
 
-const char kUnthrottledNestedTimeoutName[] =
-    "Increase the nesting threshold before which setTimeout(..., <4ms) start "
-    "being clamped.";
-const char kUnthrottledNestedTimeoutDescription[] =
-    "setTimeout(..., 0) is commonly used to break down long Javascript tasks. "
-    "Under this flag, setTimeouts and setIntervals with an interval < 4ms are "
-    "not clamped as aggressively. This improves short horizon performance, but "
-    "websites abusing the API will still eventually have their setTimeouts "
-    "clamped.";
-
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 const char kMediaRouterCastAllowAllIPsDescription[] =
