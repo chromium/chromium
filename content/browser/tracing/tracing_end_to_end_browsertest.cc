@@ -14,6 +14,16 @@
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_proto.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/tracing/perfetto_platform.h"
+#include "base/tracing/perfetto_task_runner.h"
+#include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/ipc/service_ipc_host.h"  // nogncheck
+#include "third_party/perfetto/protos/perfetto/common/tracing_service_state.gen.h"
+#endif
+
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 namespace content {
 
@@ -420,6 +430,181 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest,
   EXPECT_THAT(result2.value(),
               ::testing::ElementsAre(std::vector<std::string>{"detail_level"}));
 }
+
+#if BUILDFLAG(IS_POSIX)
+class SystemTracingEndToEndBrowserTest : public ContentBrowserTest {
+ public:
+  void SetUp() override {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    ASSERT_EQ(0, setenv("PERFETTO_PRODUCER_SOCK_NAME",
+                        temp_dir_.GetPath()
+                            .Append(FILE_PATH_LITERAL("producer"))
+                            .value()
+                            .c_str(),
+                        /*overwrite=*/true));
+    ASSERT_EQ(0, setenv("PERFETTO_CONSUMER_SOCK_NAME",
+                        temp_dir_.GetPath()
+                            .Append(FILE_PATH_LITERAL("consumer"))
+                            .value()
+                            .c_str(),
+                        /*overwrite=*/true));
+    feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerForTesting(true);
+
+    ContentBrowserTest::SetUp();
+  }
+
+  void PreRunTestOnMainThread() override {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
+    base::RunLoop system_service_creation;
+
+    task_runner_->PostTaskAndReply(
+        FROM_HERE, base::BindLambdaForTesting([this]() {
+          perfetto_task_runner_ =
+              std::make_unique<base::tracing::PerfettoTaskRunner>(
+                  task_runner_.get());
+          system_service_ = perfetto::ServiceIPCHost::CreateInstance(
+              perfetto_task_runner_.get());
+          system_service_->Start(perfetto::GetProducerSocket(),
+                                 perfetto::GetConsumerSocket());
+          system_service_->service()->SetSMBScrapingEnabled(true);
+        }),
+        system_service_creation.QuitClosure());
+    system_service_creation.Run();
+
+    DCHECK(system_service_);
+    EXPECT_TRUE(WaitForCurrentProcessConnected());
+
+    ContentBrowserTest::PreRunTestOnMainThread();
+  }
+
+  void PostRunTestOnMainThread() override {
+    task_runner_->DeleteSoon(FROM_HERE, std::move(system_service_));
+    task_runner_->DeleteSoon(FROM_HERE, std::move(perfetto_task_runner_));
+    unlink(perfetto::GetProducerSocket());
+    unlink(perfetto::GetConsumerSocket());
+
+    ContentBrowserTest::PostRunTestOnMainThread();
+  }
+
+  void TearDown() override {
+    ASSERT_EQ(0, unsetenv("PERFETTO_PRODUCER_SOCK_NAME"));
+    ASSERT_EQ(0, unsetenv("PERFETTO_CONSUMER_SOCK_NAME"));
+  }
+
+ private:
+  // Waits for the current process to connect to the tracing service as a
+  // producer.
+  bool WaitForCurrentProcessConnected() {
+    std::string current_process_name = tracing::PerfettoTracedProcess::Get()
+                                           ->perfetto_platform_for_testing()
+                                           ->GetCurrentProcessName();
+    std::unique_ptr<perfetto::TracingSession> session =
+        perfetto::Tracing::NewTrace(perfetto::kSystemBackend);
+    for (size_t i = 0; i < 100; i++) {
+      auto result = session->QueryServiceStateBlocking();
+      perfetto::protos::gen::TracingServiceState state;
+      EXPECT_TRUE(result.success);
+      EXPECT_TRUE(state.ParseFromArray(result.service_state_data.data(),
+                                       result.service_state_data.size()));
+      for (const auto& producer : state.producers()) {
+        if (producer.name() == current_process_name) {
+          return true;
+        }
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    return false;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir temp_dir_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<base::tracing::PerfettoTaskRunner> perfetto_task_runner_;
+  std::unique_ptr<perfetto::ServiceIPCHost> system_service_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest, SimpleTraceEvent) {
+  base::test::TestTraceProcessor ttp;
+  ttp.StartTrace(base::test::DefaultTraceConfig("foo", false),
+                 perfetto::kSystemBackend);
+
+  {
+    // A simple trace event
+    TRACE_EVENT("foo", "test_event");
+  }
+
+  absl::Status status = ttp.StopAndParseTrace();
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query = "SELECT name FROM slice WHERE cat = 'foo'";
+  auto result = ttp.RunQuery(query);
+  ASSERT_TRUE(result.has_value()) << result.error();
+
+  EXPECT_THAT(result.value(),
+              ::testing::ElementsAre(std::vector<std::string>{"name"},
+                                     std::vector<std::string>{"test_event"}));
+}
+
+// The test fails on Android because Renderers can't connect to an arbitrary
+// socket.
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that system tracing works from a sandboxed process (Renderer).
+IN_PROC_BROWSER_TEST_F(SystemTracingEndToEndBrowserTest, PerformanceMark) {
+  auto session = perfetto::Tracing::NewTrace(perfetto::kSystemBackend);
+  session->Setup(base::test::DefaultTraceConfig("blink.user_timing", false));
+  base::RunLoop start_session;
+  session->SetOnStartCallback(
+      [&start_session]() { start_session.QuitWhenIdle(); });
+  session->Start();
+  start_session.Run();
+
+  Shell* tab = CreateBrowser();
+
+  // Wait until the renderer connects to the tracing service and starts tracing.
+  // We do this by periodically emitting a performance mark and checking the
+  // trace contents for its name. This can lead to multiple marks appearing in
+  // the trace (e.g. if the renderer does startup tracing for some time before
+  // connecting to the service), but it doesn't matter. We just want to make
+  // sure that at least one of them is there.
+  std::vector<char> trace;
+  for (size_t i = 0; i < 100; i++) {
+    EXPECT_TRUE(ExecJs(tab, "performance.mark('mark1');"));
+
+    base::RunLoop flush;
+    session->Flush([&flush](bool) { flush.QuitWhenIdle(); });
+    flush.Run();
+
+    std::vector<char> buffer = session->ReadTraceBlocking();
+    trace.insert(trace.end(), buffer.begin(), buffer.end());
+    std::vector<char> mark_name = {'m', 'a', 'r', 'k', '1'};
+    auto it = std::search(buffer.begin(), buffer.end(), mark_name.begin(),
+                          mark_name.end());
+    if (it != buffer.end()) {
+      break;
+    }
+  }
+
+  base::test::TestTraceProcessorImpl ttp;
+  absl::Status status = ttp.ParseTrace(trace);
+  ASSERT_TRUE(status.ok()) << status.message();
+
+  std::string query =
+      "SELECT name FROM slice "
+      "WHERE cat = 'blink.user_timing' AND name = 'mark1' LIMIT 1";
+  auto result = ttp.ExecuteQuery(query);
+  ASSERT_TRUE(result.ok()) << result.error();
+
+  EXPECT_THAT(result.result(),
+              ::testing::ElementsAre(std::vector<std::string>{"name"},
+                                     std::vector<std::string>{"mark1"}));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace content
 #endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
