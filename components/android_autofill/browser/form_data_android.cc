@@ -4,11 +4,13 @@
 
 #include "components/android_autofill/browser/form_data_android.h"
 
+#include <functional>
 #include <memory>
 #include <string_view>
 #include <tuple>
 
 #include "base/containers/flat_map.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
@@ -68,18 +70,8 @@ bool FormDataAndroid::GetSimilarFieldIndex(const FormFieldData& field,
   return false;
 }
 
-bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
-  // Note that comparing unique renderer ids alone is not a strict enough check,
-  // since these remain constant even if the page has dynamically modified its
-  // fields to have different labels, form control types, etc.
-  auto SimilarityTuple = [](const FormData& f) {
-    return std::tuple_cat(
-        std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
-                 f.name_attribute, f.url, f.action, f.is_form_tag),
-        std::make_tuple(f.fields.size()));
-  };
-
-  if (SimilarityTuple(form_) != SimilarityTuple(form)) {
+bool FormDataAndroid::SimilarFieldsAs(const FormData& form) const {
+  if (fields_.size() != form.fields.size()) {
     return false;
   }
   for (size_t i = 0; i < fields_.size(); ++i) {
@@ -88,6 +80,46 @@ bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
     }
   }
   return true;
+}
+
+bool FormDataAndroid::SimilarFormAs(const FormData& form) const {
+  // Note that comparing unique renderer ids alone is not a strict enough check,
+  // since these remain constant even if the page has dynamically modified its
+  // fields to have different labels, form control types, etc.
+  auto SimilarityTuple = [](const FormData& f) {
+    return std::tie(f.host_frame, f.unique_renderer_id, f.name, f.id_attribute,
+                    f.name_attribute, f.url, f.action, f.is_form_tag);
+  };
+  return SimilarityTuple(form_) == SimilarityTuple(form) &&
+         SimilarFieldsAs(form);
+}
+
+FormDataAndroid::SimilarityCheckResult
+FormDataAndroid::SimilarFormAsWithDiagnosis(const FormData& form) const {
+  SimilarityCheckResult result = kFormsAreSimilar;
+
+  // Helper function that sets the `component` bit in `result` if the
+  // `projection` of `form_` and `form` differs.
+  auto check_component = [&](auto projection,
+                             SimilarityCheckComponent component) {
+    if (std::invoke(projection, form_) != std::invoke(projection, form)) {
+      result.value() |= base::to_underlying(component);
+    }
+  };
+  check_component(&FormData::global_id, SimilarityCheckComponent::kGlobalId);
+  check_component(&FormData::name, SimilarityCheckComponent::kName);
+  check_component(&FormData::id_attribute,
+                  SimilarityCheckComponent::kIdAttribute);
+  check_component(&FormData::name_attribute,
+                  SimilarityCheckComponent::kNameAttribute);
+  check_component(&FormData::url, SimilarityCheckComponent::kUrl);
+  check_component(&FormData::action, SimilarityCheckComponent::kAction);
+  check_component(&FormData::is_form_tag, SimilarityCheckComponent::kIsFormTag);
+
+  if (!SimilarFieldsAs(form)) {
+    result.value() |= base::to_underlying(SimilarityCheckComponent::kFields);
+  }
+  return result;
 }
 
 void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {

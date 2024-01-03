@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/form_data.h"
 
@@ -55,6 +57,33 @@ class FormDataAndroid {
   // session.
   bool SimilarFormAs(const FormData& form) const;
 
+  enum class SimilarityCheckComponent {
+    kGlobalId = 1 << 0,
+    kName = 1 << 1,
+    kIdAttribute = 1 << 2,
+    kNameAttribute = 1 << 3,
+    kUrl = 1 << 4,
+    kAction = 1 << 5,
+    kIsFormTag = 1 << 6,
+    kFields = 1 << 7,
+    kMaxValue = kFields
+  };
+  using SimilarityCheckResult =
+      base::StrongAlias<struct SimilarityCheckResultTag,
+                        std::underlying_type_t<SimilarityCheckComponent>>;
+  static constexpr auto kFormsAreSimilar = SimilarityCheckResult(0);
+  // The smallest integer larger than the maximum value that
+  // `SimilarityCheckResult` can take.
+  static constexpr auto kSimilaryCheckResultExclusiveMaximum =
+      base::to_underlying(SimilarityCheckComponent::kMaxValue) << 1;
+
+  // Performs the same similarity check as `SimilarFormAs` but returns a more
+  // detailed description of how two forms differ:
+  // - If the two forms are similar, it returns `kFormsAreSimilar`.
+  // - If the two forms are similar, it returns a bitmask of differening
+  //   `SimilarityCheckComponent`s.
+  SimilarityCheckResult SimilarFormAsWithDiagnosis(const FormData& form) const;
+
   // Is invoked when the form field specified by `index` is changed to a new
   // `value`.
   void OnFormFieldDidChange(size_t index, std::u16string_view value);
@@ -72,6 +101,10 @@ class FormDataAndroid {
   SessionId session_id() const { return session_id_; }
 
  private:
+  // Returns whether the fields of `this` are similar to the fields of `form`.
+  // Returns `false` if the number of fields differs.
+  bool SimilarFieldsAs(const FormData& form) const;
+
   // The session id of this form. It is used to generate virtual view ids for
   // the `ViewStructure` shared with the Android AutofillManager framework.
   const SessionId session_id_;

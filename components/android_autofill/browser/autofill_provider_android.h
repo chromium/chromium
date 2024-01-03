@@ -58,6 +58,10 @@ class AutofillProviderAndroid : public AutofillProvider,
 
   static constexpr char kPrefillRequestStateUma[] =
       "Autofill.WebView.PrefillRequestState";
+  // The name of the UMA that is emitted when a form similarity check between a
+  // cached form and the interacted form fails.
+  static constexpr char kSimilarityCheckCacheRequestUma[] =
+      "Autofill.WebView.FormSimilarityCheck.CachedForm";
 
   static void CreateForWebContents(content::WebContents* web_contents);
 

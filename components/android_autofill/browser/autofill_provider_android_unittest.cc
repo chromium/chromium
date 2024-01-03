@@ -689,6 +689,8 @@ TEST_F(AutofillProviderAndroidTest, NoSecondPrefillRequest) {
   histogram_tester.ExpectUniqueSample(
       AutofillProviderAndroid::kPrefillRequestStateUma,
       PrefillRequestState::kRequestNotSentMaxNumberReached, 1);
+  histogram_tester.ExpectTotalCount(
+      AutofillProviderAndroid::kSimilarityCheckCacheRequestUma, 0);
 }
 
 // Tests that the session id used in a prefill request is also used for starting
@@ -770,6 +772,8 @@ TEST_F(AutofillProviderAndroidTest,
   histogram_tester.ExpectUniqueSample(
       AutofillProviderAndroid::kPrefillRequestStateUma,
       PrefillRequestState::kRequestSentFormChanged, 1);
+  histogram_tester.ExpectTotalCount(
+      AutofillProviderAndroid::kSimilarityCheckCacheRequestUma, 1);
 }
 
 // Tests that the session id used in a prefill request is only used once to
