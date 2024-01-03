@@ -50,7 +50,7 @@ class SpotlightBookmarkModelBridge;
 @property(nonatomic, assign) BOOL modelUpdatesShouldBeIgnored;
 
 // The operation for processing the next batch of bookmarks from the indexing
-// queue, if any.
+// stack, if any.
 @property(nonatomic, weak) NSOperation* nextBatchOperation;
 
 @end
@@ -78,7 +78,7 @@ class SpotlightBookmarkModelBridge;
   // Timer that counts how long it takes to index all bookmarks.
   std::unique_ptr<base::ElapsedTimer> _initialIndexTimer;
 
-  // The nodes stored in this queue will be indexed.
+  // The nodes stored in this stack will be indexed.
   std::stack<const bookmarks::BookmarkNode*> _indexingStack;
 
   // Number of times the indexing was interrupted by model updates.
@@ -300,11 +300,11 @@ class SpotlightBookmarkModelBridge;
 - (void)refreshNodeInIndex:(const bookmarks::BookmarkNode*)node {
   _indexingStack.push(node);
   if (!self.nextBatchOperation) {
-    [self indexNextBatchInQueue];
+    [self indexNextBatchInStack];
   }
 }
 
-- (void)indexNextBatchInQueue {
+- (void)indexNextBatchInStack {
   self.nextBatchOperation = nil;
 
   if (self.isShuttingDown) {
@@ -338,7 +338,7 @@ class SpotlightBookmarkModelBridge;
   // Dispatch the next batch asynchronously to avoid blocking the main thread.
   __weak BookmarksSpotlightManager* weakSelf = self;
   NSOperation* nextBatchOperation = [NSBlockOperation blockOperationWithBlock:^{
-    [weakSelf indexNextBatchInQueue];
+    [weakSelf indexNextBatchInStack];
   }];
 
   [[NSOperationQueue mainQueue] addOperation:nextBatchOperation];
@@ -376,7 +376,7 @@ class SpotlightBookmarkModelBridge;
   self.modelUpdatesShouldBeIgnored = NO;
   self.modelUpdatesShouldCauseFullReindex = YES;
 
-  // Indexing queue should be empty. There should be no ongoing indexing
+  // Indexing stack should be empty. There should be no ongoing indexing
   // operations.
   DCHECK(_indexingStack.empty());
   DCHECK(!self.nextBatchOperation);
@@ -401,7 +401,7 @@ class SpotlightBookmarkModelBridge;
     _indexingStack.push(_accountBookmarkModel->root_node());
   }
   _initialIndexTimer = std::make_unique<base::ElapsedTimer>();
-  [self indexNextBatchInQueue];
+  [self indexNextBatchInStack];
 
   UMA_HISTOGRAM_COUNTS_1000("IOS.Spotlight.BookmarksInitialIndexSize",
                             _pendingLargeIconTasksCount);
@@ -430,7 +430,7 @@ class SpotlightBookmarkModelBridge;
   return localOrSyncableNodes;
 }
 
-// Clears the reindex queue.
+// Clears the reindex stack.
 - (void)stopIndexing {
   _initialIndexTimer.reset();
   _indexingStack = std::stack<const bookmarks::BookmarkNode*>();
