@@ -18,6 +18,7 @@
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"

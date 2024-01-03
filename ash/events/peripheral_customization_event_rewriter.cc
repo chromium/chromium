@@ -10,6 +10,7 @@
 
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -29,6 +30,8 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/mouse_button_property.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -134,6 +137,7 @@ int ConvertKeyCodeToFlags(ui::KeyboardCode key_code) {
     case ui::VKEY_RWIN:
       return ui::EF_COMMAND_DOWN;
     case ui::VKEY_CONTROL:
+    case ui::VKEY_RCONTROL:
       return ui::EF_CONTROL_DOWN;
     case ui::VKEY_SHIFT:
     case ui::VKEY_LSHIFT:
@@ -596,7 +600,17 @@ bool PeripheralCustomizationEventRewriter::RewriteEventFromButton(
 
   if (remapping_action->is_key_event()) {
     const auto& key_event = remapping_action->get_key_event();
-    rewritten_event = RewriteEventToKeyEvent(event, *key_event);
+    auto entry = FindKeyCodeEntry(key_event->vkey);
+    // If no entry can be found, use the stored key_event struct.
+    if (!entry) {
+      rewritten_event = RewriteEventToKeyEvent(event, *key_event);
+    } else {
+      rewritten_event = RewriteEventToKeyEvent(
+          event, mojom::KeyEvent(entry->resulting_key_code,
+                                 static_cast<int>(entry->dom_code),
+                                 static_cast<int>(entry->dom_key),
+                                 key_event->modifiers, ""));
+    }
   }
 
   if (remapping_action->is_static_shortcut_action()) {

@@ -12,6 +12,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
+#include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
@@ -31,6 +32,7 @@
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/mouse_button_property.h"
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/test/test_event_rewriter_continuation.h"
@@ -484,6 +486,62 @@ TEST_F(PeripheralCustomizationEventRewriterTest,
                               ui::DomCode::CONTROL_LEFT, ui::EF_NONE,
                               ui::DomKey::CONTROL, /*time_stamp=*/{});
   EXPECT_EQ(ConvertToString(expected_event),
+            ConvertToString(*continuation.passthrough_event));
+}
+
+TEST_F(PeripheralCustomizationEventRewriterTest,
+       SwitchingLayoutsUpdatesDomKey) {
+  std::unique_ptr<ui::StubKeyboardLayoutEngine> layout_engine =
+      std::make_unique<ui::StubKeyboardLayoutEngine>();
+  ui::KeyboardLayoutEngineManager::ResetKeyboardLayoutEngine();
+  ui::KeyboardLayoutEngineManager::SetKeyboardLayoutEngine(layout_engine.get());
+
+  const std::vector<ui::StubKeyboardLayoutEngine::CustomLookupEntry> us_table =
+      {{ui::DomCode::MINUS, /*character=*/u'-', /*character_shifted=*/u'_',
+        ui::KeyboardCode::VKEY_OEM_MINUS},
+       {ui::DomCode::BRACKET_LEFT, /*character=*/u'[',
+        /*character_shifted=*/u'{', ui::KeyboardCode::VKEY_OEM_4}};
+
+  // Provide a custom layout that mimics behavior of a de-DE keyboard.
+  // In the German keyboard, VKEY_OEM_4 is located at DomCode position MINUS
+  // with DomKey `ß`. With positional remapping, VKEY_OEM_4 is remapped to
+  // search for DomCode BRACKET_LEFT, resulting in DomKey `ü`.
+  const std::vector<ui::StubKeyboardLayoutEngine::CustomLookupEntry> de_table =
+      {{ui::DomCode::MINUS, /*character=*/u'ß', /*character_shifted=*/u'?',
+        ui::KeyboardCode::VKEY_OEM_4},
+       {ui::DomCode::BRACKET_LEFT, /*character=*/u'ü',
+        /*character_shifted=*/u'Ü', ui::KeyboardCode::VKEY_OEM_1}};
+
+  layout_engine->SetCustomLookupTableForTesting(us_table);
+
+  TestEventRewriterContinuation continuation;
+  mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"", mojom::Button::NewVkey(ui::VKEY_0),
+      mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
+          ui::VKEY_OEM_MINUS, static_cast<int>(ui::DomCode::MINUS),
+          static_cast<int>(ui::DomKey::Constant<'-'>::Character), ui::EF_NONE,
+          /*key_display=*/""))));
+
+  rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0),
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_OEM_MINUS, ui::EF_NONE,
+                ui::DomCode::MINUS, ui::DomKey::Constant<'-'>::Character)),
+            ConvertToString(*continuation.passthrough_event));
+
+  // Switch to German (DE) layout table and expect the remapped button to have a
+  // different VKEY and DomKey.
+  layout_engine->SetCustomLookupTableForTesting(de_table);
+  ash::AcceleratorKeycodeLookupCache::Get()->Clear();
+
+  continuation.reset();
+  rewriter_->RewriteEvent(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0),
+                          continuation.weak_ptr_factory_.GetWeakPtr());
+  ASSERT_TRUE(continuation.passthrough_event);
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(
+                ui::ET_KEY_PRESSED, ui::VKEY_OEM_4, ui::EF_NONE,
+                ui::DomCode::MINUS, ui::DomKey::Constant<u'ß'>::Character)),
             ConvertToString(*continuation.passthrough_event));
 }
 
@@ -1264,10 +1322,10 @@ TEST_P(ButtonRewritingTest, MouseRewriteEvent) {
 class ModifierRewritingTest
     : public PeripheralCustomizationEventRewriterTest,
       public testing::WithParamInterface<
-          std::tuple<ui::KeyboardCode, ui::EventFlags>> {
+          std::tuple<ui::KeyboardCode, ui::DomCode, ui::EventFlags>> {
   void SetUp() override {
     PeripheralCustomizationEventRewriterTest::SetUp();
-    std::tie(key_code, flag) = GetParam();
+    std::tie(key_code, dom_code, flag) = GetParam();
   }
 
   void TearDown() override {
@@ -1276,6 +1334,7 @@ class ModifierRewritingTest
 
  protected:
   ui::KeyboardCode key_code;
+  ui::DomCode dom_code;
   ui::EventFlags flag;
 };
 
@@ -1283,15 +1342,17 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ModifierRewritingTest,
     testing::ValuesIn(
-        std::vector<std::tuple<ui::KeyboardCode, ui::EventFlags>>({
-            {ui::VKEY_LWIN, ui::EF_COMMAND_DOWN},
-            {ui::VKEY_RWIN, ui::EF_COMMAND_DOWN},
-            {ui::VKEY_SHIFT, ui::EF_SHIFT_DOWN},
-            {ui::VKEY_LSHIFT, ui::EF_SHIFT_DOWN},
-            {ui::VKEY_RSHIFT, ui::EF_SHIFT_DOWN},
-            {ui::VKEY_CONTROL, ui::EF_CONTROL_DOWN},
-            {ui::VKEY_MENU, ui::EF_ALT_DOWN},
-            {ui::VKEY_RMENU, ui::EF_ALT_DOWN},
+        std::vector<std::tuple<ui::KeyboardCode, ui::DomCode, ui::EventFlags>>({
+            {ui::VKEY_LWIN, ui::DomCode::META_LEFT, ui::EF_COMMAND_DOWN},
+            {ui::VKEY_RWIN, ui::DomCode::META_RIGHT, ui::EF_COMMAND_DOWN},
+            {ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_LSHIFT, ui::DomCode::SHIFT_LEFT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_RSHIFT, ui::DomCode::SHIFT_RIGHT, ui::EF_SHIFT_DOWN},
+            {ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT, ui::EF_CONTROL_DOWN},
+            {ui::VKEY_RCONTROL, ui::DomCode::CONTROL_RIGHT,
+             ui::EF_CONTROL_DOWN},
+            {ui::VKEY_MENU, ui::DomCode::ALT_LEFT, ui::EF_ALT_DOWN},
+            {ui::VKEY_RMENU, ui::DomCode::ALT_RIGHT, ui::EF_ALT_DOWN},
         })));
 
 TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
@@ -1300,16 +1361,16 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          key_code, (int)dom_code, (int)ui::DomKey::NONE, flag,
           /*key_display=*/""))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(
-      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
-      ConvertToString(*continuation.passthrough_event));
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code,
+                                                 flag, dom_code)),
+            ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
   rewriter_->RewriteEvent(
@@ -1326,7 +1387,7 @@ TEST_P(ModifierRewritingTest, ModifierKeyCombo) {
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
-                                                 ui::EF_NONE)),
+                                                 ui::EF_NONE, dom_code)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
@@ -1345,7 +1406,7 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          key_code, (int)dom_code, (int)ui::DomKey::NONE, flag,
           /*key_display=*/""))));
 
   const ui::EventFlags test_flag =
@@ -1355,9 +1416,9 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(
-      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
-      ConvertToString(*continuation.passthrough_event));
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code,
+                                                 flag, dom_code)),
+            ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
   rewriter_->RewriteEvent(
@@ -1374,7 +1435,7 @@ TEST_P(ModifierRewritingTest, MultiModifierKeyCombo) {
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
-                                                 ui::EF_NONE)),
+                                                 ui::EF_NONE, dom_code)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
@@ -1395,16 +1456,16 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
   mouse_settings_->button_remappings.push_back(mojom::ButtonRemapping::New(
       "", mojom::Button::NewVkey(ui::VKEY_0),
       mojom::RemappingAction::NewKeyEvent(mojom::KeyEvent::New(
-          key_code, (int)ui::DomCode::NONE, (int)ui::DomKey::NONE, flag,
+          key_code, (int)dom_code, (int)ui::DomKey::NONE, flag,
           /*key_display=*/""))));
 
   rewriter_->RewriteEvent(
       CreateKeyButtonEvent(ui::ET_KEY_PRESSED, ui::VKEY_0, ui::EF_NONE),
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
-  EXPECT_EQ(
-      ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code, flag)),
-      ConvertToString(*continuation.passthrough_event));
+  EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_PRESSED, key_code,
+                                                 flag, dom_code)),
+            ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();
   rewriter_->RewriteEvent(
@@ -1425,7 +1486,7 @@ TEST_P(ModifierRewritingTest, MouseEvent) {
       continuation.weak_ptr_factory_.GetWeakPtr());
   ASSERT_TRUE(continuation.passthrough_event);
   EXPECT_EQ(ConvertToString(CreateKeyButtonEvent(ui::ET_KEY_RELEASED, key_code,
-                                                 ui::EF_NONE)),
+                                                 ui::EF_NONE, dom_code)),
             ConvertToString(*continuation.passthrough_event));
 
   continuation.reset();

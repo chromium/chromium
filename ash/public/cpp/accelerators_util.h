@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "ash/public/cpp/accelerator_keycode_lookup_cache.h"
 #include "ash/public/cpp/ash_public_export.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -24,7 +26,19 @@ ASH_PUBLIC_EXPORT std::u16string KeycodeToKeyString(
     bool remap_positional_key = true);
 
 // Returns the string to display in the UI for the given key.
-ASH_PUBLIC_EXPORT std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
+ASH_PUBLIC_EXPORT std::u16string GetKeyDisplay(
+    ui::KeyboardCode key_code,
+    bool remap_positional_key = true);
+
+// Returns the `DomCode`, `DomKey`, and a string to display for the given
+// `key_code`. The lookup of the keycode entry is remapped based on the US
+// layout keycodes based on `remap_positional_key`. Returns nullptr if no valid
+// `KeyCodeLookupEntry` can be produced from the given `key_code`.
+ASH_PUBLIC_EXPORT
+absl::optional<AcceleratorKeycodeLookupCache::KeyCodeLookupEntry>
+FindKeyCodeEntry(ui::KeyboardCode key_code,
+                 ui::DomCode dom_code = ui::DomCode::NONE,
+                 bool remap_positional_key = true);
 
 }  // namespace ash
 

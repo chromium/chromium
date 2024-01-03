@@ -11,6 +11,7 @@
 
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -21,8 +22,6 @@
 // http://www.w3.org/TR/uievents/
 
 namespace ui {
-
-enum class DomCode : uint32_t;
 
 enum class DomKeyLocation { STANDARD, LEFT, RIGHT, NUMPAD };
 
@@ -83,13 +82,17 @@ class KeycodeConverter {
   // that are treated positionally for keyboard shortcuts, this returns the
   // DomCode of that key in the US layout. Any other key returns
   // |DomCode::NONE|.
-  static DomCode MapUSPositionalShortcutKeyToDomCode(KeyboardCode key_code);
+  static DomCode MapUSPositionalShortcutKeyToDomCode(
+      KeyboardCode key_code,
+      DomCode original_dom_code = ui::DomCode::NONE);
 
   // If |code| is one of the keys (plus, minus, brackets, period, comma) that
   // are treated positionally for keyboard shortcuts, this returns the
   // KeyboardCode (aka VKEY) of that key in the US layout. Any other key
   // returns |VKEY_UNKNOWN|
-  static KeyboardCode MapPositionalDomCodeToUSShortcutKey(DomCode code);
+  static KeyboardCode MapPositionalDomCodeToUSShortcutKey(
+      DomCode code,
+      KeyboardCode original_key_code = VKEY_UNKNOWN);
 #endif
 
   // Conversion between DOM Code string and DomCode enum values.

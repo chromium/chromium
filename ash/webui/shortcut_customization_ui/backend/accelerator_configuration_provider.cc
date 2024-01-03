@@ -47,6 +47,9 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_key.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
@@ -219,14 +222,44 @@ std::vector<mojom::TextAcceleratorPartPtr> GenerateTextAcceleratorParts(
   return result;
 }
 
+// Hide accelerators if they are either:
+// 1. In the `kHiddenAccelerators` map.
+// 2. Not positionally remapped in the current keyboard layout, but are
+//    positional remapped in the US layout. This is because these accelerators
+//    would be impossible to utilize as the shortcut key_code is unable to be
+//    produced in the current layout.
 bool IsAcceleratorHidden(AcceleratorActionId action_id,
                          const ui::Accelerator& accelerator) {
   const auto& iter = GetHiddenAcceleratorMap().find(action_id);
-  if (iter == GetHiddenAcceleratorMap().end()) {
+  if (iter != GetHiddenAcceleratorMap().end()) {
+    const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
+    if (base::Contains(hidden_accelerators, accelerator)) {
+      return true;
+    }
+  }
+
+  auto keycode_entry =
+      FindKeyCodeEntry(accelerator.key_code(), accelerator.code());
+  if (!keycode_entry) {
     return false;
   }
-  const std::vector<ui::Accelerator>& hidden_accelerators = iter->second;
-  return base::Contains(hidden_accelerators, accelerator);
+
+  // Hide any accelerators which are not remapped in the current layout, but
+  // are remapped in the us_layout.
+
+  // As an example, the Semicolon key in the French (fr) keyboard layout is 'm'.
+  // If I set a keyboard shortcut to Ctrl + ; in the us layout and then switch
+  // to the fr layout, when I press Ctrl + m (; in us), the resulting key_code
+  // will not correspond to Ctrl + ; in the US layout. This means the Ctrl + ;
+  // shortcut must be hidden as it is not possible to trigger.
+  const bool current_layout_vkey_is_remapped =
+      ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+          keycode_entry->dom_code, keycode_entry->resulting_key_code) !=
+      ui::VKEY_UNKNOWN;
+  const bool us_layout_vkey_is_remapped =
+      ui::KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
+          accelerator.key_code(), keycode_entry->dom_code) != ui::DomCode::NONE;
+  return !current_layout_vkey_is_remapped && us_layout_vkey_is_remapped;
 }
 
 std::optional<std::u16string> GetReservedAcceleratorName(

@@ -146,7 +146,7 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (try_rewriting_positional_keys_for_chromevox_) {
       const ui::KeyboardCode remapped_key_code =
           ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-              key_event->code());
+              key_event->code(), key_event->key_code());
       if (remapped_key_code != ui::VKEY_UNKNOWN)
         rewritten_key_event->set_key_code(remapped_key_code);
     }

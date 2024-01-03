@@ -254,8 +254,6 @@ const ReservedAcceleratorsMap& GetReservedAcceleratorsMap();
 
 std::optional<AcceleratorLayoutDetails> GetAcceleratorLayout(uint32_t id);
 
-std::u16string GetKeyDisplay(ui::KeyboardCode key_code);
-
 // A fixed set of accelerators that should not have a layout. This is used for
 // integrity check to make sure when a new accelerator is added, either it has
 // been added to `kAcceleratorLayouts` or here.

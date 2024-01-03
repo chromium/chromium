@@ -162,7 +162,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorMap {
       // If there's a valid remapping, use that |KeyboardCode| instead.
       KeyboardCode remapped_key_code =
           KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-              accelerator.code());
+              accelerator.code(), accelerator.key_code());
       lookup_key_code = remapped_key_code != VKEY_UNKNOWN ? remapped_key_code
                                                           : lookup_key_code;
     }

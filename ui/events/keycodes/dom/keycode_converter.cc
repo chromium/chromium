@@ -103,6 +103,46 @@ uint32_t EvdevCodeToXkbKeycode(int evdev_code) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+bool IsAlphaNumericKeyboardCode(KeyboardCode key_code) {
+  return (key_code >= VKEY_A && key_code <= VKEY_Z) ||
+         (key_code >= VKEY_0 && key_code <= VKEY_9);
+}
+
+bool ShouldPositionallyRemapKey(KeyboardCode key_code, DomCode code) {
+  switch (code) {
+    // Following set of keys should only be positionally remapped if the
+    // original key_code is not an alphanumeric key. This is because there are
+    // many layouts where the OEM keys in the US layout are instead
+    // alphabetic keys in the other layout. In this case, the shortcut using the
+    // key should be mapped to the semantic meaning (the letter/number) instead
+    // of the position.
+
+    // An example is the French layout where the semicolon key on the US layout
+    // is the "m" key on the French keyboard. This prevents us from remapping
+    // the "m" key on the French keyboard to "semicolon" for the purposes of
+    // shortcuts.
+    case DomCode::SEMICOLON:
+    case DomCode::QUOTE:
+    case DomCode::BACKSLASH:
+    case DomCode::BACKQUOTE:
+    case DomCode::INTL_BACKSLASH:
+      return !IsAlphaNumericKeyboardCode(key_code);
+    case DomCode::BRACKET_LEFT:
+    case DomCode::BRACKET_RIGHT:
+    case DomCode::MINUS:
+    case DomCode::EQUAL:
+    case DomCode::COMMA:
+    case DomCode::PERIOD:
+    case DomCode::SLASH:
+    default:
+      return true;
+  }
+}
+
+#endif
+
 }  // namespace
 
 // static
@@ -177,7 +217,12 @@ int KeycodeConverter::DomCodeToEvdevCode(DomCode code) {
 #if BUILDFLAG(IS_CHROMEOS)
 // static
 DomCode KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
-    KeyboardCode key_code) {
+    KeyboardCode key_code,
+    DomCode original_dom_code) {
+  if (!ShouldPositionallyRemapKey(key_code, original_dom_code)) {
+    return DomCode::NONE;
+  }
+
   // VKEY Mapping: http://kbdlayout.info/kbdus/overview+virtualkeys
   // DomCode Mapping:
   //     https://www.w3.org/TR/DOM-Level-3-Events-code/#writing-system-keys
@@ -196,6 +241,16 @@ DomCode KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
       return DomCode::COMMA;
     case VKEY_OEM_PERIOD:
       return DomCode::PERIOD;
+    case VKEY_OEM_1:
+      return DomCode::SEMICOLON;
+    case VKEY_OEM_7:
+      return DomCode::QUOTE;
+    case VKEY_OEM_3:
+      return DomCode::BACKQUOTE;
+    case VKEY_OEM_5:
+      return DomCode::BACKSLASH;
+    case VKEY_OEM_102:
+      return DomCode::INTL_BACKSLASH;
     default:
       return DomCode::NONE;
   }
@@ -203,7 +258,12 @@ DomCode KeycodeConverter::MapUSPositionalShortcutKeyToDomCode(
 
 // static
 KeyboardCode KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
-    DomCode code) {
+    DomCode code,
+    KeyboardCode original_key_code) {
+  if (!ShouldPositionallyRemapKey(original_key_code, code)) {
+    return VKEY_UNKNOWN;
+  }
+
   // VKEY Mapping: http://kbdlayout.info/kbdus/overview+virtualkeys
   // DomCode Mapping:
   //     https://www.w3.org/TR/DOM-Level-3-Events-code/#writing-system-keys
@@ -222,6 +282,16 @@ KeyboardCode KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
       return VKEY_OEM_COMMA;
     case DomCode::PERIOD:
       return VKEY_OEM_PERIOD;
+    case DomCode::SEMICOLON:
+      return VKEY_OEM_1;
+    case DomCode::QUOTE:
+      return VKEY_OEM_7;
+    case DomCode::BACKQUOTE:
+      return VKEY_OEM_3;
+    case DomCode::BACKSLASH:
+      return VKEY_OEM_5;
+    case DomCode::INTL_BACKSLASH:
+      return VKEY_OEM_102;
     default:
       return VKEY_UNKNOWN;
   }

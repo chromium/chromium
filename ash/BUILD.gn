@@ -3013,6 +3013,7 @@ component("ash") {
     "//services/viz/public/mojom",
     "//ui/color/dynamic_color",
     "//ui/events/ozone/evdev:keyboard_mouse_combo_metrics",
+    "//ui/events/ozone/layout",
     "//ui/shell_dialogs",
 
     # TODO(msw): Remove this; ash should not depend on blink/webkit.
