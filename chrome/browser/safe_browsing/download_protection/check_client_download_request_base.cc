@@ -158,11 +158,6 @@ void CheckClientDownloadRequestBase::FinishRequest(
     DownloadCheckResultReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!request_start_time_.is_null()) {
-    base::UmaHistogramEnumeration(
-        "SBClientDownload.DownloadRequestNetworkStats", reason, REASON_MAX);
-  }
-
   auto settings = ShouldUploadBinary(reason);
   if (settings.has_value()) {
     UploadBinary(result, reason, std::move(settings.value()));

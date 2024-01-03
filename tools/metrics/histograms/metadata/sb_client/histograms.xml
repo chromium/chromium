@@ -204,19 +204,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DownloadRequestNetworkStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2024-02-11">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the results of SafeBrowsing binary download checks which caused a
-    server ping.
-
-    Warning: this histogram was expired from 2021-05-06 to 2021-12-02; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
     enum="HttpResponseCode" expires_after="2024-03-17">
   <owner>drubery@chromium.org</owner>
@@ -302,7 +289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsLocalDecryptionPrompt"
-    enum="BooleanRequested" expires_after="2024-02-11">
+    enum="BooleanRequested" expires_after="2024-04-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
