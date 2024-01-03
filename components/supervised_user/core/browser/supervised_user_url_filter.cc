@@ -723,20 +723,24 @@ SupervisedUserURLFilter::GetWebFilterType() const {
                             : WebFilterType::kAllowAllSites;
 }
 
-void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
+bool SupervisedUserURLFilter::EmitURLFilterMetrics() const {
+  // Do not record metrics if the parent web filter configuration is not
+  // applied to the user.
   if (!is_filter_initialized_) {
-    return;
+    return false;
   }
 
+  ReportWebFilterTypeMetrics();
+  ReportManagedSiteListMetrics();
+  return true;
+}
+
+void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
   base::UmaHistogramEnumeration(kWebFilterTypeHistogramName,
                                 GetWebFilterType());
 }
 
 void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
-  if (!is_filter_initialized_) {
-    return;
-  }
-
   if (url_map_.empty() && allowed_host_list_.empty() &&
       blocked_host_list_.empty()) {
     base::UmaHistogramEnumeration(kManagedSiteListHistogramName,

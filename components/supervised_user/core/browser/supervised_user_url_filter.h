@@ -230,12 +230,17 @@ class SupervisedUserURLFilter {
 
   WebFilterType GetWebFilterType() const;
 
-  // Reports FamilyUser.WebFilterType metrics when `is_filter_initialized_` is
-  // true.
+  // Emits URL filter metrics based on the parent web filter configuration
+  // applied to the supervised user. Returns true if one or more metrics were
+  // emitted.
+  bool EmitURLFilterMetrics() const;
+
+  // Reports FamilyUser.WebFilterType metrics based on parent web filter type
+  // configuration.
   void ReportWebFilterTypeMetrics() const;
 
-  // Reports FamilyUser.ManagedSiteList metrics when `is_filter_initialized_` is
-  // true.
+  // Reports FamilyUser.ManagedSiteList metrics based on parent web filter allow
+  // and blocklist configuration.
   void ReportManagedSiteListMetrics() const;
 
   // Set value for `is_filter_initialized_`.

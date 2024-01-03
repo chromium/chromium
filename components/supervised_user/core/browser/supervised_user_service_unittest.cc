@@ -103,6 +103,50 @@ class SupervisedUserServiceTest : public SupervisedUserServiceTestBase {
       : SupervisedUserServiceTestBase(/*is_supervised=*/true) {}
 };
 
+// Tests that changes in parent configuration for web filter types are recorded.
+TEST_F(SupervisedUserServiceTest, WebFilterTypeOnPrefsChange) {
+  base::HistogramTester histogram_tester;
+
+  // Tests filter "try to block mature sites".
+  syncable_pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(FilteringBehavior::kAllow));
+  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+
+  // This should not increase since only changes from the default are recorded.
+  histogram_tester.ExpectUniqueSample(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kTryToBlockMatureSites,
+      /*expected_bucket_count=*/0);
+
+  // Tests filter "allow all sites".
+  syncable_pref_service_.SetBoolean(prefs::kSupervisedUserSafeSites, false);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kAllowAllSites,
+      /*expected_count=*/1);
+
+  // Tests filter "only allow certain sites".
+  syncable_pref_service_.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(FilteringBehavior::kBlock));
+  service_->GetURLFilter()->SetDefaultFilteringBehavior(
+      FilteringBehavior::kBlock);
+  histogram_tester.ExpectBucketCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*sample=*/
+      SupervisedUserURLFilter::WebFilterType::kCertainSites,
+      /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(
+      SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest(),
+      /*expected_count=*/2);
+}
+
+// Tests that changes to the allow or blocklist of the parent configuration are
+// recorded.
 TEST_F(SupervisedUserServiceTest, ManagedSiteListTypeMetricOnPrefsChange) {
   base::HistogramTester histogram_tester;
 
