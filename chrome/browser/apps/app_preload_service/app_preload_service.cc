@@ -20,7 +20,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_service_factory.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,7 +79,7 @@ AppPreloadService::AppPreloadService(Profile* profile)
     : profile_(profile),
       server_connector_(std::make_unique<AppPreloadServerConnector>()),
       device_info_manager_(std::make_unique<DeviceInfoManager>(profile)),
-      web_app_installer_(std::make_unique<WebAppPreloadInstaller>(profile)) {
+      web_app_installer_(std::make_unique<WebAppInstaller>(profile)) {
   if (g_disable_preloads_on_startup_for_testing_) {
     return;
   }

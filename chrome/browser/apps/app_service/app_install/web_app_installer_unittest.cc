@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
@@ -13,7 +13,7 @@
 
 namespace apps {
 
-class WebAppPreloadInstallerTest : public testing::Test {
+class WebAppInstallerTest : public testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
@@ -30,8 +30,8 @@ class WebAppPreloadInstallerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(WebAppPreloadInstallerTest, GetAppId) {
-  WebAppPreloadInstaller installer(profile());
+TEST_F(WebAppInstallerTest, GetAppId) {
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app;
   app.set_package_id("web:https://cursive.apps.chrome/");

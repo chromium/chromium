@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 
 #include <memory>
 
@@ -71,7 +71,7 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
 
 // TODO(b/315077325): Rename histogram to be related to AppInstallService
 // instead of AppPreloadService.
-void RecordInstallResultMetric(apps::WebAppPreloadResult result) {
+void RecordInstallResultMetric(apps::WebAppInstallResult result) {
   base::UmaHistogramEnumeration("AppPreloadService.WebAppInstall.InstallResult",
                                 result);
 }
@@ -80,7 +80,7 @@ void RecordInstallResultMetric(apps::WebAppPreloadResult result) {
 
 namespace apps {
 
-WebAppPreloadInstaller::WebAppPreloadInstaller(Profile* profile)
+WebAppInstaller::WebAppInstaller(Profile* profile)
     : profile_(profile) {
   // Check CrosapiManager::IsInitialized as it is not initialized in some unit
   // tests. This should never fail in production code.
@@ -101,11 +101,11 @@ WebAppPreloadInstaller::WebAppPreloadInstaller(Profile* profile)
   }
 }
 
-WebAppPreloadInstaller::~WebAppPreloadInstaller() = default;
+WebAppInstaller::~WebAppInstaller() = default;
 
-void WebAppPreloadInstaller::InstallAllApps(
+void WebAppInstaller::InstallAllApps(
     std::vector<PreloadAppDefinition> apps,
-    WebAppPreloadInstalledCallback callback) {
+    WebAppInstalledCallback callback) {
   CHECK(!installation_complete_callback_);
   installation_complete_callback_ = std::move(callback);
   apps_for_installation_ = apps;
@@ -119,23 +119,23 @@ void WebAppPreloadInstaller::InstallAllApps(
     CHECK(provider);
     provider->on_registry_ready().Post(
         FROM_HERE,
-        base::BindOnce(&WebAppPreloadInstaller::InstallAllAppsWhenReady,
+        base::BindOnce(&WebAppInstaller::InstallAllAppsWhenReady,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-std::string WebAppPreloadInstaller::GetAppId(
+std::string WebAppInstaller::GetAppId(
     const PreloadAppDefinition& app) const {
   // The app's "Web app manifest ID" is the equivalent of the unhashed app ID.
   return web_app::GenerateAppIdFromManifestId(app.GetWebAppManifestId());
 }
 
-void WebAppPreloadInstaller::OnWebAppProviderBridgeConnected() {
+void WebAppInstaller::OnWebAppProviderBridgeConnected() {
   lacros_is_connected_ = true;
   InstallAllAppsWhenReady();
 }
 
-void WebAppPreloadInstaller::InstallAllAppsWhenReady() {
+void WebAppInstaller::InstallAllAppsWhenReady() {
   if (!apps_for_installation_.has_value()) {
     return;
   }
@@ -144,7 +144,7 @@ void WebAppPreloadInstaller::InstallAllAppsWhenReady() {
   // install, OnAllAppInstallationFinished will be called immediately.
   const auto install_barrier_callback = base::BarrierCallback<bool>(
       apps_for_installation_.value().size(),
-      base::BindOnce(&WebAppPreloadInstaller::OnAllAppInstallationFinished,
+      base::BindOnce(&WebAppInstaller::OnAllAppInstallationFinished,
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (const PreloadAppDefinition& app : apps_for_installation_.value()) {
@@ -156,9 +156,9 @@ void WebAppPreloadInstaller::InstallAllAppsWhenReady() {
   apps_for_installation_ = std::nullopt;
 }
 
-void WebAppPreloadInstaller::InstallAppImpl(
+void WebAppInstaller::InstallAppImpl(
     PreloadAppDefinition app,
-    WebAppPreloadInstalledCallback callback) {
+    WebAppInstalledCallback callback) {
   // Retrieve web manifest
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(app.GetWebAppManifestUrl());
@@ -166,7 +166,7 @@ void WebAppPreloadInstaller::InstallAppImpl(
   if (!resource_request->url.is_valid()) {
     LOG(ERROR) << "Manifest URL for " << app.GetName()
                << "is invalid: " << resource_request->url;
-    RecordInstallResultMetric(WebAppPreloadResult::kInvalidManifestUrl);
+    RecordInstallResultMetric(WebAppInstallResult::kInvalidManifestUrl);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -182,15 +182,15 @@ void WebAppPreloadInstaller::InstallAppImpl(
 
   loader_ptr->DownloadToString(
       profile_->GetURLLoaderFactory().get(),
-      base::BindOnce(&WebAppPreloadInstaller::OnManifestRetrieved,
+      base::BindOnce(&WebAppInstaller::OnManifestRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), app, std::move(callback),
                      std::move(simple_loader)),
       kMaxManifestSizeInBytes);
 }
 
-void WebAppPreloadInstaller::OnManifestRetrieved(
+void WebAppInstaller::OnManifestRetrieved(
     PreloadAppDefinition app,
-    WebAppPreloadInstalledCallback callback,
+    WebAppInstalledCallback callback,
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     std::unique_ptr<std::string> response) {
   if (url_loader->NetError() != net::OK) {
@@ -199,14 +199,14 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
 
     RecordInstallResultMetric(url_loader->NetError() ==
                                       net::ERR_HTTP_RESPONSE_CODE_FAILURE
-                                  ? WebAppPreloadResult::kManifestResponseError
-                                  : WebAppPreloadResult::kManifestNetworkError);
+                                  ? WebAppInstallResult::kManifestResponseError
+                                  : WebAppInstallResult::kManifestNetworkError);
     std::move(callback).Run(/*success=*/false);
     return;
   }
 
   if (response->empty()) {
-    RecordInstallResultMetric(WebAppPreloadResult::kManifestResponseEmpty);
+    RecordInstallResultMetric(WebAppInstallResult::kManifestResponseEmpty);
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -236,7 +236,7 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
 
     web_app_provider_bridge->InstallPreloadWebApp(
         std::move(web_app_install_info),
-        base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
+        base::BindOnce(&WebAppInstaller::OnAppInstalled,
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     return;
   } else {
@@ -250,25 +250,25 @@ void WebAppPreloadInstaller::OnManifestRetrieved(
             /*document_url=*/GURL(app.GetWebAppManifestId()).GetWithEmptyPath(),
             /*manifest_url=*/app.GetWebAppOriginalManifestUrl(),
             std::move(*response), GetAppId(app),
-            base::BindOnce(&WebAppPreloadInstaller::OnAppInstalled,
+            base::BindOnce(&WebAppInstaller::OnAppInstalled,
                            weak_ptr_factory_.GetWeakPtr(),
                            std::move(callback))));
   }
 }
 
-void WebAppPreloadInstaller::OnAppInstalled(
-    WebAppPreloadInstalledCallback callback,
+void WebAppInstaller::OnAppInstalled(
+    WebAppInstalledCallback callback,
     const webapps::AppId& app_id,
     webapps::InstallResultCode code) {
   bool success = webapps::IsSuccess(code);
-  RecordInstallResultMetric(success ? WebAppPreloadResult::kSuccess
-                                    : WebAppPreloadResult::kWebAppInstallError);
+  RecordInstallResultMetric(success ? WebAppInstallResult::kSuccess
+                                    : WebAppInstallResult::kWebAppInstallError);
   base::UmaHistogramEnumeration(kCommandResultCodeHistogramName, code);
 
   std::move(callback).Run(success);
 }
 
-void WebAppPreloadInstaller::OnAllAppInstallationFinished(
+void WebAppInstaller::OnAllAppInstallationFinished(
     const std::vector<bool>& results) {
   CHECK(installation_complete_callback_);
   std::move(installation_complete_callback_)

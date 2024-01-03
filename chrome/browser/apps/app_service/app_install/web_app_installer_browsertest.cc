@@ -9,7 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_preload_service/preload_app_definition.h"
 #include "chrome/browser/apps/app_preload_service/proto/app_preload.pb.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,13 +28,13 @@
 
 namespace apps {
 
-class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
+class WebAppInstallerBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
     https_server_.RegisterRequestHandler(
-        base::BindRepeating(&WebAppPreloadInstallerBrowserTest::HandleRequest,
+        base::BindRepeating(&WebAppInstallerBrowserTest::HandleRequest,
                             base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
@@ -124,8 +124,8 @@ class WebAppPreloadInstallerBrowserTest : public InProcessBrowserTest {
   std::string manifest2_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOneOemApp) {
-  WebAppPreloadInstaller installer(profile());
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOneOemApp) {
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/index.html",
@@ -149,15 +149,15 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOneOemApp) {
   VerifyAppInstalled(app_id, "Example App", InstallReason::kOem);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppPreloadResult::kSuccess, 1);
+                               WebAppInstallResult::kSuccess, 1);
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        InstallOneDefaultApp) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/index.html",
@@ -181,9 +181,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   VerifyAppInstalled(app_id, "Example App", InstallReason::kDefault);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        InstallMultipleOemApps) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/index.html",
@@ -223,15 +223,15 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   VerifyAppInstalled(app_id2, "Example App2", InstallReason::kOem);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppPreloadResult::kSuccess, 2);
+                               WebAppInstallResult::kSuccess, 2);
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kSuccessNewInstall, 2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        InstallWithManifestId) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/index.html",
@@ -259,13 +259,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
 
 // Reinstalling an existing user-installed app should not overwrite manifest
 // data, but will add the OEM install reason.
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallOverUserApp) {
   constexpr char kStartUrl[] = "https://www.example.com/";
   constexpr char kOriginalManifestUrl[] =
       "https://www.example.com/manifest.json";
   constexpr char kUserAppName[] = "User Installed App";
 
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   auto app_id = web_app::test::InstallDummyWebApp(profile(), kUserAppName,
                                                   GURL(kStartUrl));
@@ -288,9 +288,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallOverUserApp) {
 }
 
 // The manifest id in the proto does not match the calculated manifest id.
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        InstallMismatchedDataManifestId) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/manifest_id",
@@ -315,15 +315,15 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_FALSE(found);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppPreloadResult::kWebAppInstallError, 1);
+                               WebAppInstallResult::kWebAppInstallError, 1);
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kExpectedAppIdCheckFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        ManifestFileIsNotJSON) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/manifest_id",
@@ -341,9 +341,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
   ASSERT_FALSE(found);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        ManifestFileIsHasMissingFields) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/manifest_id",
@@ -368,9 +368,9 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
       webapps::InstallResultCode::kNotValidManifestForWebApp, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest,
                        ManifestWithFailingIcons) {
-  WebAppPreloadInstaller installer(profile());
+  WebAppInstaller installer(profile());
 
   proto::AppPreloadListResponse_App app = CreateValidPreloadApp(
       "Example App", "web:https://www.example.com/manifest_id",
@@ -403,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest,
       webapps::InstallResultCode::kIconDownloadingFailed, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerBrowserTest, InstallNoApps) {
-  WebAppPreloadInstaller installer(profile());
+IN_PROC_BROWSER_TEST_F(WebAppInstallerBrowserTest, InstallNoApps) {
+  WebAppInstaller installer(profile());
   base::test::TestFuture<bool> result;
   std::vector<PreloadAppDefinition> apps;
   installer.InstallAllApps(apps, result.GetCallback());

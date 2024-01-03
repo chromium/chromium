@@ -4,7 +4,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/apps/app_service/app_install/web_app_preload_installer.h"
+#include "chrome/browser/apps/app_service/app_install/web_app_installer.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -28,7 +28,7 @@
 
 namespace apps {
 
-class WebAppPreloadInstallerLacrosBrowserTest
+class WebAppInstallerLacrosBrowserTest
     : public crosapi::AshRequiresLacrosBrowserTestBase {
  public:
   void SetUp() override {
@@ -42,7 +42,7 @@ class WebAppPreloadInstallerLacrosBrowserTest
     AshRequiresLacrosBrowserTestBase::SetUpOnMainThread();
 
     https_server_.RegisterRequestHandler(base::BindRepeating(
-        &WebAppPreloadInstallerLacrosBrowserTest::HandleRequest,
+        &WebAppInstallerLacrosBrowserTest::HandleRequest,
         base::Unretained(this)));
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
@@ -89,7 +89,7 @@ class WebAppPreloadInstallerLacrosBrowserTest
   std::string manifest_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
+IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest, InstallOemApp) {
   // Assert Lacros is running.
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
   base::test::TestFuture<bool> result;
 
   // Install the app.
-  WebAppPreloadInstaller installer(GetAshProfile());
+  WebAppInstaller installer(GetAshProfile());
   installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_TRUE(result.Get());
 
@@ -134,13 +134,13 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest, InstallOemApp) {
   ASSERT_TRUE(found);
 
   histograms.ExpectBucketCount("AppPreloadService.WebAppInstall.InstallResult",
-                               WebAppPreloadResult::kSuccess, 1);
+                               WebAppInstallResult::kSuccess, 1);
   histograms.ExpectBucketCount(
       "AppPreloadService.WebAppInstall.CommandResultCode",
       webapps::InstallResultCode::kSuccessNewInstall, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebAppInstallerLacrosBrowserTest,
                        InstallDefaultApp) {
   ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
 
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(WebAppPreloadInstallerLacrosBrowserTest,
 
   // Install the app.
   base::test::TestFuture<bool> result;
-  WebAppPreloadInstaller installer(GetAshProfile());
+  WebAppInstaller installer(GetAshProfile());
   installer.InstallAllApps({PreloadAppDefinition(app)}, result.GetCallback());
   ASSERT_TRUE(result.Get());
 

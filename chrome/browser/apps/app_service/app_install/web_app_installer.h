@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_
-#define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_
+#ifndef CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_INSTALLER_H_
+#define CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_INSTALLER_H_
 
 #include <memory>
 #include <optional>
@@ -25,11 +25,11 @@ class SimpleURLLoader;
 
 namespace apps {
 
-// The result of a call to WebAppPreloadInstaller::InstallApp. These values are
+// The result of a call to WebAppInstaller::InstallApp. These values are
 // persisted to logs. Entries should not be renumbered and numeric values should
 // never be reused.
-enum class WebAppPreloadResult {
-  // Preloaded app was successfully installed.
+enum class WebAppInstallResult {
+  // Web app was successfully installed.
   kSuccess = 0,
   // Web app manifest URL was invalid and could not be downloaded.
   kInvalidManifestUrl = 1,
@@ -46,25 +46,24 @@ enum class WebAppPreloadResult {
   kMaxValue = kWebAppInstallError
 };
 
-using WebAppPreloadInstalledCallback = base::OnceCallback<void(bool success)>;
+using WebAppInstalledCallback = base::OnceCallback<void(bool success)>;
 
-// WebAppPreloadInstaller manages all communication with the web apps system
-// (including crosapi where needed) for the purpose of installing preloaded web
-// apps.
+// WebAppInstaller manages all communication with the web apps system
+// (including crosapi where needed) for the purpose of installing web apps.
 // TODO(b/315077325): Detach from preloads as a generic way to install web apps
 // using Almanac install info.
-class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
+class WebAppInstaller : public crosapi::WebAppServiceAsh::Observer {
  public:
-  explicit WebAppPreloadInstaller(Profile* profile);
-  ~WebAppPreloadInstaller() override;
-  WebAppPreloadInstaller(const WebAppPreloadInstaller&) = delete;
-  WebAppPreloadInstaller& operator=(const WebAppPreloadInstaller&) = delete;
+  explicit WebAppInstaller(Profile* profile);
+  ~WebAppInstaller() override;
+  WebAppInstaller(const WebAppInstaller&) = delete;
+  WebAppInstaller& operator=(const WebAppInstaller&) = delete;
 
   // Attempts to install each of the `apps` and calls `callback` after all
   // installations have completed. Must only be called if `app.GetPlatform()`
   // returns `AppType::kWeb`.
   void InstallAllApps(std::vector<PreloadAppDefinition> apps,
-                      WebAppPreloadInstalledCallback callback);
+                      WebAppInstalledCallback callback);
 
   // Returns the app ID for the given `app` if it were to be installed as a web
   // app. Does not validate whether the `app` is valid and able to be installed.
@@ -81,12 +80,12 @@ class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
   void InstallAllAppsWhenReady();
 
   void InstallAppImpl(PreloadAppDefinition app,
-                      WebAppPreloadInstalledCallback callback);
+                      WebAppInstalledCallback callback);
   void OnManifestRetrieved(PreloadAppDefinition app,
-                           WebAppPreloadInstalledCallback callback,
+                           WebAppInstalledCallback callback,
                            std::unique_ptr<network::SimpleURLLoader> url_loader,
                            std::unique_ptr<std::string> response);
-  void OnAppInstalled(WebAppPreloadInstalledCallback callback,
+  void OnAppInstalled(WebAppInstalledCallback callback,
                       const webapps::AppId& app_id,
                       webapps::InstallResultCode code);
   void OnAllAppInstallationFinished(const std::vector<bool>& results);
@@ -97,13 +96,13 @@ class WebAppPreloadInstaller : public crosapi::WebAppServiceAsh::Observer {
 
   bool lacros_is_connected_;
   std::optional<std::vector<PreloadAppDefinition>> apps_for_installation_;
-  WebAppPreloadInstalledCallback installation_complete_callback_;
+  WebAppInstalledCallback installation_complete_callback_;
 
   raw_ptr<Profile> profile_;
 
-  base::WeakPtrFactory<WebAppPreloadInstaller> weak_ptr_factory_{this};
+  base::WeakPtrFactory<WebAppInstaller> weak_ptr_factory_{this};
 };
 
 }  // namespace apps
 
-#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_PRELOAD_INSTALLER_H_
+#endif  // CHROME_BROWSER_APPS_APP_SERVICE_APP_INSTALL_WEB_APP_INSTALLER_H_

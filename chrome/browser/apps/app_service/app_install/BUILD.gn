@@ -34,8 +34,8 @@ source_set("app_install_service") {
       "app_install_almanac_connector.h",
       "app_install_service_ash.cc",
       "app_install_service_ash.h",
-      "web_app_preload_installer.cc",
-      "web_app_preload_installer.h",
+      "web_app_installer.cc",
+      "web_app_installer.h",
     ]
 
     deps += [
@@ -84,7 +84,7 @@ source_set("unit_tests") {
 
   sources = [
     "app_install_navigation_throttle_unittest.cc",
-    "web_app_preload_installer_unittest.cc",
+    "web_app_installer_unittest.cc",
   ]
 
   deps = [
@@ -119,8 +119,8 @@ source_set("browser_tests") {
   sources = [ "app_install_navigation_throttle_browsertest.cc" ]
   if (is_chromeos_ash) {
     sources += [
-      "web_app_preload_installer_browsertest.cc",
-      "web_app_preload_installer_lacros_browsertest.cc",
+      "web_app_installer_browsertest.cc",
+      "web_app_installer_lacros_browsertest.cc",
     ]
   }
 
