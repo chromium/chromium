@@ -889,14 +889,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kStartSurface,
                                     kStartSurfaceVariations,
                                     "StartSurface")},
-    {"autofill-address-verification-in-save-prompt",
-     flag_descriptions::kEnableAutofillAddressSavePromptAddressVerificationName,
-     flag_descriptions::
-         kEnableAutofillAddressSavePromptAddressVerificationDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillAddressProfileSavePromptAddressVerificationSupport)},
     {"incognito-ntp-revamp", flag_descriptions::kIncognitoNtpRevampName,
      flag_descriptions::kIncognitoNtpRevampDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIncognitoNtpRevamp)},

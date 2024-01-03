@@ -340,11 +340,6 @@ const char kEditPasswordsInSettingsName[] = "Edit passwords in settings";
 const char kEditPasswordsInSettingsDescription[] =
     "Enables password editing in settings.";
 
-const char kEnableAutofillAddressSavePromptAddressVerificationName[] =
-    "Autofill Address Save Prompts Address Verification";
-const char kEnableAutofillAddressSavePromptAddressVerificationDescription[] =
-    "Enable the address verification support in Autofill address save prompts.";
-
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =

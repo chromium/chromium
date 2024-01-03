@@ -18,13 +18,6 @@ BASE_FEATURE(kAutofillAcrossIframesIos,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_across_iframes_ios)
 
-// When enabled, address data will be verified and autocorrected in the
-// save/update prompt before saving an address profile. Relevant only if the
-// AutofillAddressProfileSavePrompt feature is enabled.
-BASE_FEATURE(kAutofillAddressProfileSavePromptAddressVerificationSupport,
-             "AutofillAddressProfileSavePromptAddressVerificationSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Use the heuristic parser to detect unfillable numeric types in field labels
 // and grant the heuristic precedence over non-override server predictions.
 BASE_FEATURE(kAutofillGivePrecedenceToNumericQuantities,
