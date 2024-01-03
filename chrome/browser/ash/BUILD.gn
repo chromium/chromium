@@ -4162,7 +4162,7 @@ source_set("ash") {
     "//chromeos/components/cdm_factory_daemon/mojom",
     "//chromeos/components/certificate_provider",
     "//chromeos/components/disks:prefs",
-    "//chromeos/components/kcer:key_permissions_proto",
+    "//chromeos/components/kcer:chaps_proto",
     "//chromeos/components/kiosk",
     "//chromeos/components/mgs",
     "//chromeos/components/mojo_bootstrap",
