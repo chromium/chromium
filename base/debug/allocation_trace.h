@@ -11,7 +11,7 @@
 #include <bit>
 #include <cstdint>
 
-#include "base/allocator/dispatcher/subsystem.h"
+#include "base/allocator/dispatcher/notification_data.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
@@ -215,16 +215,13 @@ class BASE_EXPORT AllocationTraceRecorder {
   // details. The functions are marked NO_INLINE. All other functions called but
   // the one taking the call stack are marked ALWAYS_INLINE. This way we ensure
   // the number of frames recorded from these functions is fixed.
-
-  // Handle all allocation events.
-  NOINLINE void OnAllocation(
-      const void* allocated_address,
-      size_t allocated_size,
-      base::allocator::dispatcher::AllocationSubsystem subsystem,
-      const char* type);
+  inline void OnAllocation(
+      const base::allocator::dispatcher::AllocationNotificationData&
+          allocation_data);
 
   // Handle all free events.
-  NOINLINE void OnFree(const void* freed_address);
+  inline void OnFree(
+      const base::allocator::dispatcher::FreeNotificationData& free_data);
 
   // Access functions to retrieve the current content of the recorder.
   // Note: Since the recorder is usually updated upon each allocation or free,
@@ -249,6 +246,13 @@ class BASE_EXPORT AllocationTraceRecorder {
   AllocationTraceRecorderStatistics GetRecorderStatistics() const;
 
  private:
+  // Handle all allocation events.
+  NOINLINE void OnAllocation(const void* allocated_address,
+                             size_t allocated_size);
+
+  // Handle all free events.
+  NOINLINE void OnFree(const void* freed_address);
+
   ALWAYS_INLINE size_t GetNextIndex();
 
   ALWAYS_INLINE static constexpr size_t WrapIdxIfNeeded(size_t idx);
@@ -264,6 +268,18 @@ class BASE_EXPORT AllocationTraceRecorder {
   std::atomic<size_t> total_number_of_collisions_ = 0;
 #endif
 };
+
+inline void AllocationTraceRecorder::OnAllocation(
+    const base::allocator::dispatcher::AllocationNotificationData&
+        allocation_data) {
+  OnAllocation(allocation_data.address(), allocation_data.size());
+}
+
+// Handle all free events.
+inline void AllocationTraceRecorder::OnFree(
+    const base::allocator::dispatcher::FreeNotificationData& free_data) {
+  OnFree(free_data.address());
+}
 
 ALWAYS_INLINE constexpr size_t AllocationTraceRecorder::WrapIdxIfNeeded(
     size_t idx) {

@@ -8,6 +8,8 @@
 #include <cinttypes>
 
 #include "base/allocator/dispatcher/dispatcher.h"
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/shim/allocator_shim.h"
 #include "base/debug/alias.h"
 #include "base/memory/raw_ptr.h"
@@ -23,7 +25,9 @@ namespace base {
 
 using ScopedSuppressRandomnessForTesting =
     PoissonAllocationSampler::ScopedSuppressRandomnessForTesting;
+using base::allocator::dispatcher::AllocationNotificationData;
 using base::allocator::dispatcher::AllocationSubsystem;
+using base::allocator::dispatcher::FreeNotificationData;
 
 class SamplingHeapProfilerTest : public ::testing::Test {
  public:
@@ -261,13 +265,15 @@ TEST_F(SamplingHeapProfilerTest, MAYBE_MANUAL_SamplerMicroBenchmark) {
 
   base::TimeTicks t0 = base::TimeTicks::Now();
   for (int i = 1; i <= kNumAllocations; ++i) {
-    sampler->OnAllocation(reinterpret_cast<void*>(static_cast<intptr_t>(i)),
-                          allocation_size, AllocationSubsystem::kAllocatorShim,
-                          nullptr);
+    sampler->OnAllocation(AllocationNotificationData(
+        reinterpret_cast<void*>(static_cast<intptr_t>(i)), allocation_size,
+        nullptr, AllocationSubsystem::kAllocatorShim));
   }
   base::TimeTicks t1 = base::TimeTicks::Now();
   for (int i = 1; i <= kNumAllocations; ++i)
-    sampler->OnFree(reinterpret_cast<void*>(static_cast<intptr_t>(i)));
+    sampler->OnFree(
+        FreeNotificationData(reinterpret_cast<void*>(static_cast<intptr_t>(i)),
+                             AllocationSubsystem::kAllocatorShim));
   base::TimeTicks t2 = base::TimeTicks::Now();
 
   printf(
@@ -351,9 +357,10 @@ TEST_F(SamplingHeapProfilerTest, HookedAllocatorMuted) {
     // Manual allocations should be captured.
     sampler->AddSamplesObserver(&collector);
     void* const kAddress = reinterpret_cast<void*>(0x1234);
-    sampler->OnAllocation(kAddress, 10000,
-                          AllocationSubsystem::kManualForTesting, nullptr);
-    sampler->OnFree(kAddress);
+    sampler->OnAllocation(AllocationNotificationData(
+        kAddress, 10000, nullptr, AllocationSubsystem::kManualForTesting));
+    sampler->OnFree(
+        FreeNotificationData(kAddress, AllocationSubsystem::kManualForTesting));
     sampler->RemoveSamplesObserver(&collector);
     EXPECT_TRUE(collector.sample_added);
     EXPECT_TRUE(collector.sample_removed);

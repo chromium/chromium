@@ -5,6 +5,8 @@
 #include <thread>
 #include <vector>
 
+#include "base/allocator/dispatcher/notification_data.h"
+#include "base/allocator/dispatcher/subsystem.h"
 #include "base/debug/allocation_trace.h"
 #include "base/strings/stringprintf.h"
 #include "base/timer/lap_timer.h"
@@ -39,9 +41,10 @@ struct HandlerFunctionExecutor<HandlerFunctionSelector::OnAllocation> {
     // Since the recorder just stores the value, we can use any value for
     // address and size that we want.
     recorder.OnAllocation(
-        &recorder, sizeof(recorder),
-        base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator,
-        nullptr);
+        base::allocator::dispatcher::AllocationNotificationData(
+            &recorder, sizeof(recorder), nullptr,
+            base::allocator::dispatcher::AllocationSubsystem::
+                kPartitionAllocator));
   }
 };
 
@@ -49,7 +52,9 @@ template <>
 struct HandlerFunctionExecutor<HandlerFunctionSelector::OnFree> {
   void operator()(
       base::debug::tracer::AllocationTraceRecorder& recorder) const {
-    recorder.OnFree(&recorder);
+    recorder.OnFree(base::allocator::dispatcher::FreeNotificationData(
+        &recorder,
+        base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator));
   }
 };
 }  // namespace

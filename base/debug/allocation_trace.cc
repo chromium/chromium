@@ -48,11 +48,8 @@ AllocationTraceRecorderStatistics::AllocationTraceRecorderStatistics(
     : total_number_of_allocations(total_number_of_allocations) {}
 #endif
 
-void AllocationTraceRecorder::OnAllocation(
-    const void* allocated_address,
-    size_t allocated_size,
-    base::allocator::dispatcher::AllocationSubsystem subsystem,
-    const char* type) {
+void AllocationTraceRecorder::OnAllocation(const void* allocated_address,
+                                           size_t allocated_size) {
   // Record the allocation into the next available slot, allowing for failure
   // due to the slot already being in-use by another
   // OperationRecord::Initialize*() call from another thread.
