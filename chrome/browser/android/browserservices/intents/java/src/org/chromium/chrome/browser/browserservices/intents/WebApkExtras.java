@@ -34,14 +34,18 @@ public class WebApkExtras {
     /** URL that the WebAPK should navigate to when launched from the homescreen. */
     public final String manifestStartUrl;
 
-    /** Id field of the Web Manifest. */
-    public final String manifestId;
+    /**
+     * Id field of the Web Manifest. Empty or null means this is from an older version of
+     * shell(<155) that did not set this value.
+     */
+    @Nullable public final String manifestId;
 
     /**
-     * Key of the WebAPK. It's either the Manifest URL or the Manifest Unique ID depending on the
-     * situation.
+     * Key of the WebAPK. The value should either be the same as the Manifest URL or the Manifest
+     * Unique ID, or empty depending on the situation. Empty or null means this is from an older
+     * version of shell (<155) that did not set this value.
      */
-    public final String appKey;
+    @Nullable public final String appKey;
 
     /** The source from where the WebAPK is installed. */
     public final @WebApkDistributor int distributor;
