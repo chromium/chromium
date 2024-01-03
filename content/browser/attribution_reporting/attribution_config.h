@@ -74,7 +74,7 @@ struct CONTENT_EXPORT AttributionConfig {
 
     // Default constants for max info gain in bits per source type.
     // Rounded up to nearest e-5 digit.
-    static constexpr double kDefaultMaxNavigationInfoGain = 11.46173;
+    static constexpr double kDefaultMaxNavigationInfoGain = 11.5;
     static constexpr double kDefaultMaxEventInfoGain = 6.5;
 
     // Controls the max number bits of information that can be associated with
