@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/threading/thread_checker.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_device_name.h"
@@ -96,7 +95,7 @@ class PulseAudioInputStream : public AgcAudioStream<AudioInputStream> {
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION pa_stream* handle_;
+  raw_ptr<pa_stream> handle_;
 
   AmplitudePeakDetector peak_detector_;
 

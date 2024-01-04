@@ -71,7 +71,7 @@ constexpr SampleFormat kInputSampleFormat = kSampleFormatS16;
 // |stream|.
 bool CreateInputStream(pa_threaded_mainloop* mainloop,
                        pa_context* context,
-                       pa_stream** stream,
+                       raw_ptr<pa_stream>* stream,
                        const AudioParameters& params,
                        const std::string& device_id,
                        pa_stream_notify_cb_t stream_callback,
@@ -81,9 +81,9 @@ bool CreateInputStream(pa_threaded_mainloop* mainloop,
 // otherwise false. This function will create a new Pulse threaded mainloop,
 // and the handles of the mainloop, context and stream will be returned by
 // |mainloop|, |context| and |stream|.
-bool CreateOutputStream(pa_threaded_mainloop** mainloop,
-                        pa_context** context,
-                        pa_stream** stream,
+bool CreateOutputStream(raw_ptr<pa_threaded_mainloop>* mainloop,
+                        raw_ptr<pa_context>* context,
+                        raw_ptr<pa_stream>* stream,
                         const AudioParameters& params,
                         const std::string& device_id,
                         const std::string& app_name,
