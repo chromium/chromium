@@ -9,6 +9,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
@@ -139,7 +140,7 @@ void BoardingPassExtractor::ExtractBoardingPassWithScript(
     const std::string& script,
     ExtractBoardingPassCallback callback) {
   blink::WebLocalFrame* main_frame = render_frame()->GetWebFrame();
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
+  v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
   blink::WebScriptSource source =
       blink::WebScriptSource(blink::WebString::FromUTF8(script));
 
