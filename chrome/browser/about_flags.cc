@@ -2096,13 +2096,32 @@ const FeatureEntry::FeatureVariation kNtpPhotosModuleOptInArtWorkVariations[] =
       std::size(kNtpPhotosModuleStockpileArtWork), nullptr}};
 
 const FeatureEntry::FeatureParam
-    kNtpRealboxCr23ExpandedStateBgMatchesSteadyState[]{
+    kNtpRealboxCr23NoShadowExpandedStateBgMatchesSteadyState[]{
         {"kNtpRealboxCr23ExpandedStateBgMatchesOmnibox", "false"},
-    };
+        {"kNtpRealboxCr23SteadyStateShadow", "false"}};
+const FeatureEntry::FeatureParam
+    kNtpRealboxCr23ShadowExpandedStateBgMatchesOmnibox[]{
+        {"kNtpRealboxCr23ExpandedStateBgMatchesOmnibox", "true"},
+        {"kNtpRealboxCr23SteadyStateShadow", "true"}};
+const FeatureEntry::FeatureParam
+    kNtpRealboxCr23ShadowExpandedStateBgMatchesSteadyState[]{
+        {"kNtpRealboxCr23ExpandedStateBgMatchesOmnibox", "false"},
+        {"kNtpRealboxCr23SteadyStateShadow", "true"}};
+
 const FeatureEntry::FeatureVariation kNtpRealboxCr23ThemingVariations[] = {
-    {" - Dark mode background color matches steady state",
-     kNtpRealboxCr23ExpandedStateBgMatchesSteadyState,
-     std::size(kNtpRealboxCr23ExpandedStateBgMatchesSteadyState), nullptr},
+    {" - Steady state shadow",
+     kNtpRealboxCr23ShadowExpandedStateBgMatchesOmnibox,
+     std::size(kNtpRealboxCr23ShadowExpandedStateBgMatchesOmnibox), nullptr},
+    {" - No steady state shadow + Dark mode background color matches steady"
+     "state",
+     kNtpRealboxCr23NoShadowExpandedStateBgMatchesSteadyState,
+     std::size(kNtpRealboxCr23NoShadowExpandedStateBgMatchesSteadyState),
+     nullptr},
+    {" -  Steady state shadow + Dark mode background color matches steady "
+     "state",
+     kNtpRealboxCr23ShadowExpandedStateBgMatchesSteadyState,
+     std::size(kNtpRealboxCr23ShadowExpandedStateBgMatchesSteadyState),
+     nullptr},
 };
 
 const FeatureEntry::FeatureParam kNtpRealboxRevertWidthOnBlur[] = {
