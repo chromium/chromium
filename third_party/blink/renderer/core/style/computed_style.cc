@@ -726,9 +726,7 @@ bool ComputedStyle::NonInheritedEqual(const ComputedStyle& other) const {
 }
 
 bool ComputedStyle::InheritedDataShared(const ComputedStyle& other) const {
-  // We use a by-value check that is a bit more expensive than
-  // pointer comparison, but yields many more full MPC hits,
-  // so it generally makes up for it.
+  // This is a fast check that only looks if the data structures are shared.
   return ComputedStyleBase::InheritedDataShared(other);
 }
 

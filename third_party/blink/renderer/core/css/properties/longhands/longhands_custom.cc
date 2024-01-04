@@ -5369,7 +5369,6 @@ void ListStyleType::ApplyValue(StyleResolverState& state,
 
   DCHECK(value.IsCustomIdentValue());
   const auto& custom_ident_value = To<CSSCustomIdentValue>(value);
-  state.SetHasTreeScopedReference();
   builder.SetListStyleType(ListStyleTypeData::CreateCounterStyle(
       custom_ident_value.Value(), custom_ident_value.GetTreeScope()));
 }
