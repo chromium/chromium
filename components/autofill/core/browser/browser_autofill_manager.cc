@@ -1855,8 +1855,9 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
 
   // If the filling happened too long ago, maybe this is just an effect of
   // the user pressing a "reset form" button.
-  if (delta >= kLimitBeforeRefill)
+  if (delta >= limit_before_refill_) {
     return;
+  }
 
   auto* logger = GetEventFormLogger(*autofill_field);
   if (logger) {
@@ -3252,12 +3253,12 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   base::TimeTicks now = AutofillTickClock::NowTicks();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
-  if (filling_context->attempted_refill && delta < kLimitBeforeRefill) {
+  if (filling_context->attempted_refill && delta < limit_before_refill_) {
     address_form_event_logger_->OnSubsequentRefillAttempt(
         signin_state_for_metrics_, form_structure);
   }
 
-  return !filling_context->attempted_refill && delta < kLimitBeforeRefill;
+  return !filling_context->attempted_refill && delta < limit_before_refill_;
 }
 
 void BrowserAutofillManager::ScheduleRefill(

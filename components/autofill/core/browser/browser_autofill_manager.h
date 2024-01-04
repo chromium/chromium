@@ -757,6 +757,11 @@ class BrowserAutofillManager : public AutofillManager {
   // attempts for dynamic forms.
   std::map<FormGlobalId, std::unique_ptr<FillingContext>> filling_context_;
 
+  // The maximum amount of time between a change in the form and the original
+  // fill that triggers a refill. This value is only changed in browser tests,
+  // where time cannot be mocked, to avoid flakiness.
+  base::TimeDelta limit_before_refill_ = kLimitBeforeRefill;
+
   // Used to record metrics. This should be set at the beginning of the
   // interaction and re-used throughout the context of this manager.
   AutofillMetrics::PaymentsSigninState signin_state_for_metrics_ =

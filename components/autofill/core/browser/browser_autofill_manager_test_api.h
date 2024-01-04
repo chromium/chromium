@@ -48,6 +48,10 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
     return manager_->external_delegate_.get();
   }
 
+  void set_limit_before_refill(base::TimeDelta limit) {
+    manager_->limit_before_refill_ = limit;
+  }
+
   bool ShouldTriggerRefill(const FormStructure& form_structure,
                            RefillTriggerReason refill_trigger_reason) {
     return manager_->ShouldTriggerRefill(form_structure, refill_trigger_reason);
