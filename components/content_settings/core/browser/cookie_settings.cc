@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -346,9 +347,7 @@ bool CookieSettings::IsThirdPartyCookiesAllowedScheme(
           ContentSettingsType::COOKIES);
   const std::vector<std::string> allowed_schemes =
       content_settings_info->third_party_cookie_allowed_secondary_schemes();
-  const auto it =
-      std::find(allowed_schemes.begin(), allowed_schemes.end(), scheme);
-  return it != allowed_schemes.end();
+  return base::Contains(allowed_schemes, scheme);
 }
 
 bool CookieSettings::IsStorageAccessApiEnabled() const {
