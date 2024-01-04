@@ -171,6 +171,9 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
       -net::OK, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.Status", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kUploadSuccessful, 1);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestMultipleUploads) {
@@ -195,6 +198,9 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestMultipleUploads) {
       -net::OK, 2);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.Status", 2);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kUploadSuccessful, 2);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenLoggingDisabled) {
@@ -208,6 +214,9 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenLoggingDisabled) {
 
   // When logging is disabled there should be no pending requests.
   VerifyNumberOfPendingRequests(0);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kLoggingNotEnabled, 1);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestUploadWhenRequestIsEmpty) {
@@ -231,6 +240,10 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestNetErrorResponse) {
       net::HTTP_NOT_FOUND, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelQualityLogsUploaderService.NetErrorCode", 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploadService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kNetError, 1);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestBadResponse) {

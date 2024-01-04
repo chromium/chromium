@@ -239,6 +239,17 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="The request was cancelled"/>
 </enum>
 
+<enum name="OptimizationGuideModelQualityLogsUploadStatus">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="UploadSuccessful">Logs upload was successful.</int>
+  <int value="2" label="Logging Not Enabled">
+    Upload is disabled due to logging feature not enabled.
+  </int>
+  <int value="3" label="Net Error">
+    Upload was not successful because of network error.
+  </int>
+</enum>
+
 <enum name="OptimizationGuideOnDeviceAddContextResult">
   <int value="0" label="Used Server"/>
   <int value="1" label="Used on-device">
