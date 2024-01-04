@@ -474,7 +474,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHoldingSpaceSuggestions);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudge);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
+BASE_DECLARE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHomeButtonQuickAppAccess);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kHotspot);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kVirtualKeyboardNewHeader);
@@ -1055,7 +1055,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHoldingSpaceWallpaperNudgeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsHoldingSpaceWallpaperNudgeRateLimitingEnabled();
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonQuickAppAccessEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHomeButtonWithTextEnabled();

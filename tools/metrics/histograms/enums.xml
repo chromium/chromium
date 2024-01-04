@@ -26914,6 +26914,8 @@ from previous Chrome versions.
   <int value="-1520952503" label="SearchReadyOmnibox:enabled"/>
   <int value="-1520901408" label="FuseBoxDebug:disabled"/>
   <int value="-1520855274" label="PWAFullCodeCache:disabled"/>
+  <int value="-1520821533"
+      label="HoldingSpaceWallpaperNudgeForceEligibility:disabled"/>
   <int value="-1520645293" label="InterestFeedNoticeCardAutoDismiss:disabled"/>
   <int value="-1520630395" label="DefaultPassthroughCommandDecoder:disabled"/>
   <int value="-1517929127" label="DelegatedCompositing:enabled"/>
@@ -28035,6 +28037,8 @@ from previous Chrome versions.
       label="ExperimentalAccessibilityColorEnhancementSettings:disabled"/>
   <int value="-1002537430" label="HudDisplayForPerformanceMetrics:disabled"/>
   <int value="-1002494650" label="WebviewTagMPArchBehavior:disabled"/>
+  <int value="-1002421482"
+      label="HoldingSpaceWallpaperNudgeForceEligibility:enabled"/>
   <int value="-1001837588" label="EnableAppReinstallZeroState:enabled"/>
   <int value="-1000695123"
       label="AccessibilitySelectToSpeakPageMigration:disabled"/>
@@ -30953,6 +30957,7 @@ from previous Chrome versions.
   <int value="370486304" label="enable-origin-chip-on-srp"/>
   <int value="370926002" label="FirmwareUpdateUIV2:enabled"/>
   <int value="371268743" label="OmniboxUIExperimentVerticalMargin:disabled"/>
+  <int value="371496127" label="HoldingSpaceWallpaperNudge:enabled"/>
   <int value="372460068" label="QuickUnlockFingerprint:disabled"/>
   <int value="373177941" label="DockedMagnifier:enabled"/>
   <int value="373193557" label="LongPressBackNewDesign:enabled"/>
@@ -31948,6 +31953,7 @@ from previous Chrome versions.
   <int value="845659238" label="DevicePosture:enabled"/>
   <int value="846887449" label="BluetoothFlossTelephony:disabled"/>
   <int value="846951416" label="CopylessPaste:enabled"/>
+  <int value="847000540" label="HoldingSpaceWallpaperNudge:disabled"/>
   <int value="848005486" label="WebViewLegacyTlsSupport:disabled"/>
   <int value="848324390" label="enable-lock-screen-apps"/>
   <int value="849235409" label="Prerender2InNewTab:enabled"/>

@@ -137,7 +137,7 @@ WallpaperView* GetWallpaperViewNearestPoint(
 // before. It should be no more than once in a 24 hour period, no more than 3
 // times total, and never if the user has pinned a file before.
 bool NudgeShouldBeShown() {
-  if (!features::IsHoldingSpaceWallpaperNudgeRateLimitingEnabled()) {
+  if (features::IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled()) {
     return true;
   }
 

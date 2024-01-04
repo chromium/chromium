@@ -1470,8 +1470,8 @@ const base::FeatureParam<bool>
 // Ignores the rate limiting of holding space wallpaper nudge so that it will
 // show every time a user drags a file over the wallpaper. Enabling this flag
 // does nothing unless `kHoldingSpaceWallpaperNudge` is also enabled.
-BASE_FEATURE(kHoldingSpaceWallpaperNudgeIgnoreRateLimiting,
-             "HoldingSpaceWallpaperNudgeIgnoreRateLimiting",
+BASE_FEATURE(kHoldingSpaceWallpaperNudgeForceEligibility,
+             "HoldingSpaceWallpaperNudgeForceEligibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHomeButtonQuickAppAccess,
@@ -3563,10 +3563,10 @@ bool IsHoldingSpaceWallpaperNudgeEnabledCounterfactually() {
          kHoldingSpaceWallpaperNudgeEnabledCounterfactually.Get();
 }
 
-bool IsHoldingSpaceWallpaperNudgeRateLimitingEnabled() {
+bool IsHoldingSpaceWallpaperNudgeForceEligibilityEnabled() {
   return IsHoldingSpaceWallpaperNudgeEnabled() &&
-         !base::FeatureList::IsEnabled(
-             kHoldingSpaceWallpaperNudgeIgnoreRateLimiting);
+         base::FeatureList::IsEnabled(
+             kHoldingSpaceWallpaperNudgeForceEligibility);
 }
 
 bool IsHomeButtonQuickAppAccessEnabled() {

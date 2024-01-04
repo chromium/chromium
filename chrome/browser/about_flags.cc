@@ -2872,6 +2872,17 @@ const FeatureEntry::FeatureVariation kCaptureModeEducationVariations[] = {
     {"Quick Settings Nudge", kCaptureModeEducationQuickSettingsNudge,
      std::size(kCaptureModeEducationQuickSettingsNudge), nullptr}};
 
+const FeatureEntry::FeatureParam
+    kHoldingSpaceWallpaperNudgeDropToPinDisabled[] = {{"drop-to-pin", "false"}};
+const FeatureEntry::FeatureParam kHoldingSpaceWallpaperNudgeDropToPinEnabled[] =
+    {{"drop-to-pin", "true"}};
+const FeatureEntry::FeatureVariation kHoldingSpaceWallpaperNudgeVariations[] = {
+    {"with drop-to-pin", kHoldingSpaceWallpaperNudgeDropToPinEnabled,
+     std::size(kHoldingSpaceWallpaperNudgeDropToPinEnabled), nullptr},
+    {"without drop-to-pin", kHoldingSpaceWallpaperNudgeDropToPinDisabled,
+     std::size(kHoldingSpaceWallpaperNudgeDropToPinDisabled), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -9773,6 +9784,18 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHoldingSpaceSuggestionsName,
      flag_descriptions::kHoldingSpaceSuggestionsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kHoldingSpaceSuggestions)},
+    {"enable-holding-space-wallpaper-nudge",
+     flag_descriptions::kHoldingSpaceWallpaperNudgeName,
+     flag_descriptions::kHoldingSpaceWallpaperNudgeDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kHoldingSpaceWallpaperNudge,
+                                    kHoldingSpaceWallpaperNudgeVariations,
+                                    "HoldingSpaceWallpaperNudge")},
+    {"enable-holding-space-wallpaper-nudge-force-eligibility",
+     flag_descriptions::kHoldingSpaceWallpaperNudgeForceEligibilityName,
+     flag_descriptions::kHoldingSpaceWallpaperNudgeForceEligibilityDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         ash::features::kHoldingSpaceWallpaperNudgeForceEligibility)},
     {"enable-welcome-tour", flag_descriptions::kWelcomeTourName,
      flag_descriptions::kWelcomeTourDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kWelcomeTour)},

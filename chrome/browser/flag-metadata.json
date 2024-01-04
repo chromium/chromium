@@ -2896,6 +2896,16 @@
     "expiry_milestone": 123
   },
   {
+    "name": "enable-holding-space-wallpaper-nudge",
+    "owners": [ "//ash/user_education/OWNERS" ],
+    "expiry_milestone": 123
+  },
+  {
+    "name": "enable-holding-space-wallpaper-nudge-force-eligibility",
+    "owners": [ "//ash/user_education/OWNERS" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-hostname-setting",
     "owners": [ "khorimoto@chromium.org", "cros-connectivity@google.com" ],
     "expiry_milestone": 125
