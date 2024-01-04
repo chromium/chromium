@@ -1,0 +1,4 @@
+CONSOLE ERROR: Unsafe attempt to initiate navigation for frame with URL 'http://127.0.0.1:8000/security/no-popup-from-sandbox-top.html' from frame with URL 'data:text/html,%0A       <script>%0A       var win = window.open('about:blank', '_top');%0A       console.log(win ?%20%27FAIL%27%20:%20%27PASS%27);%0A%20%20%20%20%20%20%20%3C/script%3E'. The frame attempting navigation of the top-level window is sandboxed, but the flag of 'allow-top-navigation' or 'allow-top-navigation-by-user-activation' is not set.
+
+CONSOLE MESSAGE: PASS
+To run this test outside of DumpRenderTree, please disable your popup blocker!

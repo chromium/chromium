@@ -1,0 +1,5 @@
+CONSOLE ERROR: Unsafe attempt to initiate navigation for frame with URL 'http://127.0.0.1:8000/security/sandboxed-iframe-form-top.html' from frame with URL 'http://127.0.0.1:8000/security/resources/sandboxed-iframe-form-top.html'. The frame attempting navigation of the top-level window is sandboxed, but the flag of 'allow-top-navigation' or 'allow-top-navigation-by-user-activation' is not set.
+
+This tests passes if the sandboxed frame cannot navigate the top frame.
+
+PASS
