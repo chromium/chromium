@@ -43,7 +43,7 @@ class FakeConnectionManager : public ConnectionManager {
  private:
   // ConnectionManager:
   Status GetStatus() const override;
-  void AttemptNearbyConnection() override;
+  bool AttemptNearbyConnection() override;
   void Disconnect() override;
   void SendMessage(const std::string& payload) override;
   void RegisterPayloadFile(

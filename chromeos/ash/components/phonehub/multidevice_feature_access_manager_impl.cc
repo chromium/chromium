@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/connection_scheduler.h"
 #include "chromeos/ash/components/phonehub/message_sender.h"
+#include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/pref_names.h"
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
@@ -258,7 +259,8 @@ void MultideviceFeatureAccessManagerImpl::OnNotificationSetupRequested() {
     case FeatureStatus::kEnabledButDisconnected:
       SetNotificationSetupOperationStatus(
           NotificationAccessSetupOperation::Status::kConnecting);
-      connection_scheduler_->ScheduleConnectionNow();
+      connection_scheduler_->ScheduleConnectionNow(
+          phonehub::DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
       NOTREACHED();
@@ -289,7 +291,8 @@ void MultideviceFeatureAccessManagerImpl::OnCombinedSetupRequested(
     case FeatureStatus::kEnabledButDisconnected:
       SetCombinedSetupOperationStatus(
           CombinedAccessSetupOperation::Status::kConnecting);
-      connection_scheduler_->ScheduleConnectionNow();
+      connection_scheduler_->ScheduleConnectionNow(
+          DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
       NOTREACHED();
@@ -313,7 +316,8 @@ void MultideviceFeatureAccessManagerImpl::OnFeatureSetupConnectionRequested() {
     case FeatureStatus::kUnavailableBluetoothOff:
       SetFeatureSetupConnectionOperationStatus(
           FeatureSetupConnectionOperation::Status::kConnecting);
-      connection_scheduler_->ScheduleConnectionNow();
+      connection_scheduler_->ScheduleConnectionNow(
+          DiscoveryEntryPoint::kMultiDeviceFeatureSetup);
       break;
     default:
       NOTREACHED();
