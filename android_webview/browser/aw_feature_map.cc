@@ -43,6 +43,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &features::kWebViewInjectPlatformJsApis,
     &features::kWebViewMediaIntegrityApi,
+    &safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
 };
 
 // static
