@@ -1,20 +1,20 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WALLET_USAGE_DATA_SYNC_BRIDGE_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WALLET_USAGE_DATA_SYNC_BRIDGE_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_AUTOFILL_WALLET_OFFER_SYNC_BRIDGE_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_AUTOFILL_WALLET_OFFER_SYNC_BRIDGE_H_
 
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
-#include "components/sync/model/mutable_data_batch.h"
 
 namespace autofill {
 
@@ -23,31 +23,29 @@ class AutofillWebDataBackend;
 class AutofillWebDataService;
 class PaymentsAutofillTable;
 
-// Sync bridge responsible for applying remote changes of usage data to the
+// Sync bridge responsible for applying remote changes of offer data to the
 // local database.
-class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
-                                          public syncer::ModelTypeSyncBridge {
+class AutofillWalletOfferSyncBridge : public base::SupportsUserData::Data,
+                                      public syncer::ModelTypeSyncBridge {
  public:
   // Factory method that hides dealing with change_processor and also stores the
-  // created bridge within `web_data_service`. This method should only be
-  // called on `web_data_service`'s DB thread.
+  // created bridge within |web_data_service|. This method should only be
+  // called on |web_data_service|'s DB thread.
   static void CreateForWebDataServiceAndBackend(
       AutofillWebDataBackend* webdata_backend,
       AutofillWebDataService* web_data_service);
 
-  static AutofillWalletUsageDataSyncBridge* FromWebDataService(
+  static syncer::ModelTypeSyncBridge* FromWebDataService(
       AutofillWebDataService* web_data_service);
 
-  explicit AutofillWalletUsageDataSyncBridge(
+  AutofillWalletOfferSyncBridge(
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       AutofillWebDataBackend* web_data_backend);
+  ~AutofillWalletOfferSyncBridge() override;
 
-  AutofillWalletUsageDataSyncBridge(const AutofillWalletUsageDataSyncBridge&) =
-      delete;
-  AutofillWalletUsageDataSyncBridge& operator=(
-      const AutofillWalletUsageDataSyncBridge&) = delete;
-
-  ~AutofillWalletUsageDataSyncBridge() override;
+  AutofillWalletOfferSyncBridge(const AutofillWalletOfferSyncBridge&) = delete;
+  AutofillWalletOfferSyncBridge& operator=(
+      const AutofillWalletOfferSyncBridge&) = delete;
 
   // ModelTypeSyncBridge
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -62,11 +60,17 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
   void GetAllDataForDebugging(DataCallback callback) override;
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  bool SupportsIncrementalUpdates() const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
-  bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
  private:
+  // Helper function to send all offer data to the callback.
+  void GetAllDataImpl(DataCallback callback);
+
+  // Merges synced remote offer data.
+  void MergeRemoteData(const syncer::EntityChangeList& entity_data);
+
   // Returns the table associated with the |web_data_backend_|.
   PaymentsAutofillTable* GetAutofillTable();
 
@@ -74,15 +78,9 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
 
   // Synchronously load sync metadata from the autofill table and pass it to the
   // processor so that it can start tracking changes.
-  void LoadMetadata();
+  void LoadAutofillOfferMetadata();
 
-  // Gets all local data and performs a filter on the usage_data_id if
-  // available. If filter(usage_data_id) returns true, the associated
-  // AutofillWalletUsageData will be returned in the batch.
-  std::unique_ptr<syncer::MutableDataBatch> GetDataAndFilter(
-      base::RepeatingCallback<bool(const std::string&)> filter);
-
-  // AutofillWalletUsageSyncBridge is owned by |web_data_backend_| through
+  // AutofillWalletOfferSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
   const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
@@ -92,4 +90,4 @@ class AutofillWalletUsageDataSyncBridge : public base::SupportsUserData::Data,
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_WALLET_USAGE_DATA_SYNC_BRIDGE_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_AUTOFILL_WALLET_OFFER_SYNC_BRIDGE_H_

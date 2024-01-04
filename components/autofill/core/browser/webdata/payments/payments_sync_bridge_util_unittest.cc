@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
 #include <vector>
 
@@ -17,7 +17,7 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
-#include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
+#include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_test_util.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
@@ -65,19 +65,19 @@ EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
   return data;
 }
 
-class AutofillSyncBridgeUtilTest : public testing::Test {
+class PaymentsSyncBridgeUtilTest : public testing::Test {
  public:
-  AutofillSyncBridgeUtilTest() = default;
+  PaymentsSyncBridgeUtilTest() = default;
 
-  AutofillSyncBridgeUtilTest(const AutofillSyncBridgeUtilTest&) = delete;
-  AutofillSyncBridgeUtilTest& operator=(const AutofillSyncBridgeUtilTest&) =
+  PaymentsSyncBridgeUtilTest(const PaymentsSyncBridgeUtilTest&) = delete;
+  PaymentsSyncBridgeUtilTest& operator=(const PaymentsSyncBridgeUtilTest&) =
       delete;
 
-  ~AutofillSyncBridgeUtilTest() override {}
+  ~PaymentsSyncBridgeUtilTest() override {}
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
-TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
+TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   syncer::EntityChangeList entity_data;
   // Add two credit cards.
   std::string credit_card_id_1 = "credit_card_1";
@@ -193,7 +193,7 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
 
 // Verify that the billing address id from the card saved on disk is kept if it
 // is a local profile guid.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepLocalAddresses) {
   std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
@@ -227,7 +227,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
 // Verify that the billing address id from the card saved on disk is overwritten
 // if it does not refer to a local profile.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_OverwriteOtherAddresses) {
   std::string old_billing_id = "1234";
   std::string new_billing_id = "9876";
@@ -257,7 +257,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 }
 
 // Verify that the use stats on disk are kept when server cards are synced.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepUseStats) {
   TestAutofillClock test_clock;
   base::Time arbitrary_time = base::Time::FromSecondsSinceUnixEpoch(25);
@@ -291,7 +291,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
 // Verify that the credential data on disk are kept when server cards are
 // synced.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        CopyRelevantWalletMetadataAndCvc_KeepCredentialData) {
   std::vector<CreditCard> cards_from_local_storage;
   std::vector<CreditCard> wallet_cards;
@@ -316,7 +316,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
 // Test to ensure the general-purpose fields from an AutofillOfferData are
 // correctly converted to an AutofillOfferSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
+TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
   sync_pb::AutofillOfferSpecifics offer_specifics;
   AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
@@ -349,7 +349,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
 
 // Test to ensure the card-linked offer-specific fields from an
 // AutofillOfferData are correctly converted to an AutofillOfferSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
+TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
   sync_pb::AutofillOfferSpecifics offer_specifics;
   AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
@@ -370,7 +370,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
 
 // Test to ensure the promo code offer-specific fields from an AutofillOfferData
 // are correctly converted to an AutofillOfferSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
+TEST_F(PaymentsSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
   sync_pb::AutofillOfferSpecifics offer_specifics;
   AutofillOfferData offer_data = test::GetPromoCodeOfferData();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
@@ -381,7 +381,7 @@ TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
 
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
 // the two given data sets have the same size.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        ShouldResetAutofillWalletData_SameDataSetSize) {
   std::vector<std::unique_ptr<AutofillOfferData>> old_offer_data;
   std::vector<AutofillOfferData> new_offer_data;
@@ -401,7 +401,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
 // the two given data sets have different size.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        ShouldResetAutofillWalletData_DifferentDataSetSize) {
   std::vector<std::unique_ptr<AutofillOfferData>> old_offer_data;
   std::vector<AutofillOfferData> new_offer_data;
@@ -415,7 +415,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
 }
 
 // Ensures that function IsOfferSpecificsValid is working correctly.
-TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
+TEST_F(PaymentsSyncBridgeUtilTest, IsOfferSpecificsValid) {
   sync_pb::AutofillOfferSpecifics specifics;
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &specifics);
@@ -471,7 +471,7 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
 
 // Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
 // converted to AutofillWalletUsageSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
+TEST_F(PaymentsSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
   sync_pb::AutofillWalletUsageSpecifics usage_specifics;
   AutofillWalletUsageData usage_data =
       AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1());
@@ -492,7 +492,7 @@ TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
 
 // Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
 // converted to AutofillWalletUsageSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest, VirtualCardUsageDataFromUsageSpecifics) {
+TEST_F(PaymentsSyncBridgeUtilTest, VirtualCardUsageDataFromUsageSpecifics) {
   sync_pb::AutofillWalletUsageSpecifics usage_specifics;
   SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(
       AutofillWalletUsageData::ForVirtualCard(test::GetVirtualCardUsageData1()),
@@ -513,7 +513,7 @@ TEST_F(AutofillSyncBridgeUtilTest, VirtualCardUsageDataFromUsageSpecifics) {
 
 // Test to ensure that WalletCredential struct data for CVV storage is correctly
 // converted to AutofillWalletCredentialSpecifics.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        AutofillWalletCredentialSpecificsFromStructData) {
   std::unique_ptr<ServerCvc> server_cvc = std::make_unique<ServerCvc>(
       1234, u"890", base::Time::UnixEpoch() + base::Milliseconds(25000));
@@ -533,7 +533,7 @@ TEST_F(AutofillSyncBridgeUtilTest,
             25000);
 }
 
-TEST_F(AutofillSyncBridgeUtilTest, AutofillWalletStructDataFromUsageSpecifics) {
+TEST_F(PaymentsSyncBridgeUtilTest, AutofillWalletStructDataFromUsageSpecifics) {
   sync_pb::AutofillWalletCredentialSpecifics wallet_credential_specifics;
   wallet_credential_specifics.set_instrument_id("123");
   wallet_credential_specifics.set_cvc("890");
@@ -560,7 +560,7 @@ TEST_F(AutofillSyncBridgeUtilTest, AutofillWalletStructDataFromUsageSpecifics) {
 // is correctly converted to AutofillWalletCredentialSpecifics and then from
 // the converted AutofillWalletCredentialSpecifics to WalletCredential struct
 // data. In the end we compare the original and the converted struct data.
-TEST_F(AutofillSyncBridgeUtilTest,
+TEST_F(PaymentsSyncBridgeUtilTest,
        AutofillWalletCredentialStructDataRoundTripTest) {
   // Step 1 - Convert WalletCredential struct data to
   // AutofillWalletCredentialSpecifics.
