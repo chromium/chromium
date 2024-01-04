@@ -107,7 +107,7 @@ export class XfPasswordDialog extends HTMLElement {
         this.success_ = false;
         this.resolve_ = resolve;
         this.reject_ = reject;
-        if (password != null) {
+        if (password !== null) {
           this.input_.value = password;
           // An invalid password has previously been entered for this file.
           // Display an 'invalid password' error message.

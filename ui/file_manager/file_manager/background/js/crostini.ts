@@ -135,7 +135,7 @@ export class CrostiniImpl {
   private unregisterSharedPath_(vmName: string, path: string) {
     const vms = this.sharedPaths_[path];
     if (vms) {
-      const newVms = vms.filter(vm => vm != vmName);
+      const newVms = vms.filter(vm => vm !== vmName);
       if (newVms.length > 0) {
         this.sharedPaths_[path] = newVms;
       } else {

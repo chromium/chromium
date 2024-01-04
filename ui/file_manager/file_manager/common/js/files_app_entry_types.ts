@@ -209,7 +209,7 @@ export class EntryList extends FilesAppDirEntry {
     // Only VolumeEntry can have prefix set because it sets on VolumeInfo,
     // which is then used on LocationInfo/PathComponent.
     const volumeEntry: VolumeEntry = entry as VolumeEntry;
-    if (volumeEntry.typeName == 'VolumeEntry') {
+    if (volumeEntry.typeName === 'VolumeEntry') {
       volumeEntry.setPrefix(this);
     }
   }
@@ -430,10 +430,10 @@ export class VolumeEntry extends FilesAppDirEntry {
 
   /** String used to determine the icon. */
   get iconName(): string {
-    if (this.volumeInfo.volumeType == VolumeType.GUEST_OS) {
+    if (this.volumeInfo.volumeType === VolumeType.GUEST_OS) {
       return vmTypeToIconName(this.volumeInfo.vmType);
     }
-    if (this.volumeInfo.volumeType == VolumeType.DOWNLOADS) {
+    if (this.volumeInfo.volumeType === VolumeType.DOWNLOADS) {
       return VolumeType.MY_FILES;
     }
     return this.volumeInfo.volumeType;
@@ -501,7 +501,7 @@ export class VolumeEntry extends FilesAppDirEntry {
     // VolumeInfo, which is then used on
     // LocationInfo/PathComponent.
     const volumeEntry = entry as unknown as VolumeEntry;
-    if (volumeEntry.typeName == 'VolumeEntry') {
+    if (volumeEntry.typeName === 'VolumeEntry') {
       volumeEntry.setPrefix(this);
     }
   }

@@ -482,7 +482,7 @@ export class RemoteCallFilesApp extends RemoteCall {
           fulfill(undefined);
         } else {
           try {
-            fulfill(response == '' ? true : JSON.parse(response));
+            fulfill(response === '' ? true : JSON.parse(response));
           } catch (e) {
             console.error(`Failed to parse "${response}" due to ${e}`);
             fulfill(false);
@@ -579,7 +579,7 @@ export class RemoteCallFilesApp extends RemoteCall {
   async windowOriginExists(expectedOrigin) {
     const command = {name: 'expectWindowOrigin', expectedOrigin};
     const windowExists = await sendTestMessage(command);
-    return windowExists == 'true';
+    return windowExists === 'true';
   }
 
   /**
@@ -641,7 +641,7 @@ export class RemoteCallFilesApp extends RemoteCall {
       files.sort();
 
       const notReadyRows =
-          files.filter((row) => row.filter((cell) => cell == '...').length);
+          files.filter((row) => row.filter((cell) => cell === '...').length);
 
       if (notReadyRows.length === 0 && files.length !== lengthBefore &&
           files.length !== 0) {
@@ -927,7 +927,7 @@ export class RemoteCallFilesApp extends RemoteCall {
     // TODO: Implement for other menus.
     if (menu === 'context-menu') {
       menuId = '#file-context-menu';
-    } else if (menu == 'tasks') {
+    } else if (menu === 'tasks') {
       menuId = '#tasks-menu';
     }
 

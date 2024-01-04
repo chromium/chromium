@@ -1471,8 +1471,9 @@ class DirectoryTreeSelectors_ {
    * @return {boolean}
    */
   isInsideDrive(type) {
-    return type == 'drive_recent' || type == 'drive_shared_with_me' ||
-        type == 'drive_offline' || type == 'shared_drive' || type == 'computer';
+    return type === 'drive_recent' || type === 'drive_shared_with_me' ||
+        type === 'drive_offline' || type === 'shared_drive' ||
+        type === 'computer';
   }
 
   /**
@@ -1504,7 +1505,7 @@ class DirectoryTreeSelectors_ {
     if (typeof modifiers.acceptDrop !== 'undefined') {
       appendedSelectors.push(modifiers.acceptDrop ? '.accepts' : '.denies');
     }
-    if (typeof modifiers.hasChildren != 'undefined') {
+    if (typeof modifiers.hasChildren !== 'undefined') {
       appendedSelectors.push(
           `[has-children="${String(modifiers.hasChildren)}"]`);
     }

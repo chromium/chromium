@@ -223,7 +223,7 @@ export function isTeamDriveRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 3 && isSharedDriveEntry(entry);
+  return tree.length === 3 && isSharedDriveEntry(entry);
 }
 
 /**
@@ -234,7 +234,7 @@ export function isTeamDrivesGrandRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 2 && isSharedDriveEntry(entry);
+  return tree.length === 2 && isSharedDriveEntry(entry);
 }
 
 /**
@@ -245,7 +245,7 @@ export function isSharedDriveEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' && tree[1] == SHARED_DRIVES_DIRECTORY_NAME;
+  return tree[0] === '' && tree[1] === SHARED_DRIVES_DIRECTORY_NAME;
 }
 
 /**
@@ -268,7 +268,7 @@ export function getTeamDriveName(entry: Entry|FakeEntry|FilesAppEntry): string {
  * Returns true if the given root type is for a container of recent files.
  */
 export function isRecentRootType(rootType: RootType|null) {
-  return rootType == RootType.RECENT;
+  return rootType === RootType.RECENT;
 }
 
 /**
@@ -289,7 +289,7 @@ export function isComputersRoot(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 3 && isComputersEntry(entry);
+  return tree.length === 3 && isComputersEntry(entry);
 }
 
 /**
@@ -300,14 +300,14 @@ export function isComputersEntry(entry: Entry|FilesAppEntry) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree[0] == '' && tree[1] == COMPUTERS_DIRECTORY_NAME;
+  return tree[0] === '' && tree[1] === COMPUTERS_DIRECTORY_NAME;
 }
 
 /**
  * Returns true if the given root type is Trash.
  */
 export function isTrashRootType(rootType: RootType|null) {
-  return rootType == RootType.TRASH;
+  return rootType === RootType.TRASH;
 }
 
 /**
@@ -391,11 +391,11 @@ export function isSiblingEntry(
     entry1: Entry|FilesAppEntry, entry2: Entry|FilesAppEntry): boolean {
   const path1 = entry1.fullPath.split('/');
   const path2 = entry2.fullPath.split('/');
-  if (path1.length != path2.length) {
+  if (path1.length !== path2.length) {
     return false;
   }
   for (let i = 0; i < path1.length - 1; i++) {
-    if (path1[i] != path2[i]) {
+    if (path1[i] !== path2[i]) {
       return false;
     }
   }

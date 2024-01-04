@@ -285,7 +285,7 @@ testcase.toolbarMultiMenuFollowsButton = async () => {
       return pending(
           caller,
           `Waiting for the menu and button to be aligned: ` +
-              `${openButton.renderedLeft} != ${menu.renderedLeft}`);
+              `${openButton.renderedLeft} !== ${menu.renderedLeft}`);
     }
   });
 };

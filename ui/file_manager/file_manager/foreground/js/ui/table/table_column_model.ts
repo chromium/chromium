@@ -66,7 +66,7 @@ export class TableColumnModel extends EventTarget {
     if (index < 0 || index >= this.columns_.length) {
       return;
     }
-    if (name != this.columns_[index]!.name) {
+    if (name !== this.columns_[index]!.name) {
       return;
     }
 
@@ -104,7 +104,7 @@ export class TableColumnModel extends EventTarget {
 
     const column = this.columns_[index]!;
     width = Math.max(width, MIMIMAL_WIDTH);
-    if (width == column.absoluteWidth) {
+    if (width === column.absoluteWidth) {
       return;
     }
 
@@ -166,7 +166,7 @@ export class TableColumnModel extends EventTarget {
    * Normalizes widths to make their sum 100%.
    */
   normalizeWidths(contentWidth: number) {
-    if (this.size == 0) {
+    if (this.size === 0) {
       return;
     }
     const c = this.columns_[0]!;
@@ -189,7 +189,7 @@ export class TableColumnModel extends EventTarget {
    */
   indexOf(id: string): number {
     for (let i = 0; i < this.size; i++) {
-      if (this.getId(i) == id) {
+      if (this.getId(i) === id) {
         return i;
       }
     }
@@ -207,7 +207,7 @@ export class TableColumnModel extends EventTarget {
     }
 
     const column = this.columns_[index]!;
-    if (column.visible == visible) {
+    if (column.visible === visible) {
       return;
     }
 

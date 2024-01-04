@@ -544,5 +544,5 @@ export async function testFakeEntry() {
   }, notReached /* error */);
 
   // It should be called for getMetadata and for getParent.
-  await waitUntil(() => callCounter == 2);
+  await waitUntil(() => callCounter === 2);
 }

@@ -222,11 +222,11 @@ async function transferBetweenVolumes(transferInfo) {
   // Wait for the file list to change, if the test is expected to pass.
   const dstContentsAfterPaste = dstContents.slice();
   const ignoreFileSize =
-      transferInfo.source.volumeName == 'drive_shared_with_me' ||
-      transferInfo.source.volumeName == 'drive_offline' ||
-      transferInfo.destination.volumeName == 'drive_shared_with_me' ||
-      transferInfo.destination.volumeName == 'drive_offline' ||
-      transferInfo.destination.volumeName == 'my_files';
+      transferInfo.source.volumeName === 'drive_shared_with_me' ||
+      transferInfo.source.volumeName === 'drive_offline' ||
+      transferInfo.destination.volumeName === 'drive_shared_with_me' ||
+      transferInfo.destination.volumeName === 'drive_offline' ||
+      transferInfo.destination.volumeName === 'my_files';
 
   // If we expected the transfer to succeed, add the pasted file to the list
   // of expected rows.

@@ -46,7 +46,7 @@ export class DlpMetadataProvider extends MetadataProvider {
 
     try {
       const dlpMetadataList = await getDlpMetadata(entries);
-      if (dlpMetadataList.length != entries.length) {
+      if (dlpMetadataList.length !== entries.length) {
         console.warn(`Requested ${entries.length} entries, got ${
             dlpMetadataList.length}.`);
         return requests.map(() => new MetadataItem());

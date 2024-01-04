@@ -277,7 +277,7 @@ export class VolumeInfoImpl implements VolumeInfo {
               this.sharedDriveDisplayRoot_ = sharedDrivesRoot as DirectoryEntry;
             },
             error => {
-              if (error.name != 'NotFoundError') {
+              if (error.name !== 'NotFoundError') {
                 throw error;
               }
             });
@@ -305,7 +305,7 @@ export class VolumeInfoImpl implements VolumeInfo {
               this.computersDisplayRoot_ = computersRoot as DirectoryEntry;
             },
             (error) => {
-              if (error.name != 'NotFoundError') {
+              if (error.name !== 'NotFoundError') {
                 throw error;
               }
             });

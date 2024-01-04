@@ -84,7 +84,7 @@ async function waitQuickViewClose(appId) {
 
   function checkQuickViewElementsDisplayNone(elements) {
     chrome.test.assertTrue(Array.isArray(elements));
-    if (elements.length == 0 || elements[0].styles.display !== 'none') {
+    if (elements.length === 0 || elements[0].styles.display !== 'none') {
       return pending(caller, 'Waiting for Quick View to close.');
     }
   }
@@ -3291,7 +3291,7 @@ testcase.openQuickViewUmaViaSelectionMenu = async () => {
   // Wait until the selection menu is visible.
   function checkElementsDisplayVisible(elements) {
     chrome.test.assertTrue(Array.isArray(elements));
-    if (elements.length == 0 || elements[0].styles.display === 'none') {
+    if (elements.length === 0 || elements[0].styles.display === 'none') {
       return pending(caller, 'Waiting for Selection Menu to be visible.');
     }
   }
@@ -3373,7 +3373,7 @@ testcase.openQuickViewUmaViaSelectionMenuKeyboard = async () => {
   // Wait until the selection menu is visible.
   function checkElementsDisplayVisible(elements) {
     chrome.test.assertTrue(Array.isArray(elements));
-    if (elements.length == 0 || elements[0].styles.display === 'none') {
+    if (elements.length === 0 || elements[0].styles.display === 'none') {
       return pending(caller, 'Waiting for Selection Menu to be visible.');
     }
   }

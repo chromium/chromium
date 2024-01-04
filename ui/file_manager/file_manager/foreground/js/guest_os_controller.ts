@@ -62,7 +62,7 @@ export class GuestOsController {
       const navigationModelItem = new NavigationModelFakeItem(
           guest.displayName, NavigationModelItemType.GUEST_OS, guestOsEntry);
       const volumeType =
-          guest.vmType == chrome.fileManagerPrivate.VmType.ARCVM ?
+          guest.vmType === chrome.fileManagerPrivate.VmType.ARCVM ?
           VolumeType.ANDROID_FILES :
           VolumeType.GUEST_OS;
 

@@ -112,6 +112,8 @@ export class ImageLoaderClient {
         ImageLoaderClient.recordBinary('Cached', true);
         let cachedValue = this.cache_.get(cacheKey);
         // Check if the image in cache is up to date. If not, then remove it.
+        // It relies on comparing `null` equals to `undefined`.
+        // eslint-disable-next-line eqeqeq
         if (cachedValue && cachedValue.timestamp != request.timestamp) {
           this.cache_.remove(cacheKey);
           cachedValue = null;
@@ -187,7 +189,7 @@ export class ImageLoaderClient {
    */
   static loadToImage(request, image, onSuccess, onError) {
     const callback = (result) => {
-      if (!result || result.status == LoadImageResponseStatus.ERROR) {
+      if (!result || result.status === LoadImageResponseStatus.ERROR) {
         onError();
         return;
       }

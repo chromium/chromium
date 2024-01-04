@@ -480,10 +480,10 @@ export class ImageRequestTask {
     xhr.responseType = 'blob';
 
     xhr.onreadystatechange = () => {
-      if (xhr.readyState != 4) {
+      if (xhr.readyState !== 4) {
         return;
       }
-      if (xhr.status != 200) {
+      if (xhr.status !== 200) {
         onFailure(xhr.status);
         return;
       }

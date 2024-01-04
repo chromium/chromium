@@ -271,7 +271,7 @@ export class MetadataBoxController {
             return;
           }
 
-          if (this.quickViewModel_.getSelectedEntry() != entry) {
+          if (this.quickViewModel_.getSelectedEntry() !== entry) {
             return;
           }
 

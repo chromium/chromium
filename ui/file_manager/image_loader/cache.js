@@ -247,7 +247,7 @@ export class ImageCache {
       }
 
       // Check if both entries are available or both unavailable.
-      if (!!metadataEntry != !!dataEntry) {
+      if (!!metadataEntry !== !!dataEntry) {
         console.warn('Inconsistent cache database.');
         onFailure();
         return;
@@ -257,7 +257,7 @@ export class ImageCache {
       if (!metadataEntry) {
         // The image not found.
         onFailure();
-      } else if (metadataEntry.timestamp != timestamp) {
+      } else if (metadataEntry.timestamp !== timestamp) {
         // The image is not up to date, so remove it.
         this.removeImage(key, () => {}, () => {}, transaction);
         onFailure();

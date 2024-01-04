@@ -223,7 +223,7 @@ function getMessageFromProgressEvent(
   // TODO(b/295438773): Remove this special case for the "in use" error once
   // the files app error strings are made consistent and an "in use" string is
   // properly added.
-  if (event.errorName == 'InUseError' && event.itemCount == 1) {
+  if (event.errorName === 'InUseError' && event.itemCount === 1) {
     switch (event.type) {
       case chrome.fileManagerPrivate.IOTaskType.MOVE:
         return str('MOVE_IN_USE_ERROR');

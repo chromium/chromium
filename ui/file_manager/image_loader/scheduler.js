@@ -86,11 +86,11 @@ export class Scheduler {
 
     // Remove from the internal queues with pending tasks.
     const newIndex = this.newTasks_.indexOf(task);
-    if (newIndex != -1) {
+    if (newIndex !== -1) {
       this.newTasks_.splice(newIndex, 1);
     }
     const pendingIndex = this.pendingTasks_.indexOf(task);
-    if (pendingIndex != -1) {
+    if (pendingIndex !== -1) {
       this.pendingTasks_.splice(pendingIndex, 1);
     }
 

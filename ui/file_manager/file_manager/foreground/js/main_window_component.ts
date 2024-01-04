@@ -112,7 +112,7 @@ export class MainWindowComponent {
     // Also the 2nd parameter of handleTouchEvents is just passed back to the
     // callback. Therefore we can pass a dummy value -1.
     this.tapHandler_.handleTouchEvents(event, -1, (_e, _index, eventType) => {
-      if (eventType == TapEvent.TAP) {
+      if (eventType === TapEvent.TAP) {
         const target = event.target as HTMLElement;
         // Taps on the checkmark should only toggle select the item.
         if (target.classList.contains('detail-checkmark') ||
@@ -418,7 +418,7 @@ export class MainWindowComponent {
     const dm = this.directoryModel_.getFileList();
     for (let index = 0; index < dm.length; ++index) {
       const name = dm.item(index)!.name;
-      if (name.substring(0, text.length).toLowerCase() == text) {
+      if (name.substring(0, text.length).toLowerCase() === text) {
         const selectionModel =
             this.ui_.listContainer.currentList.selectionModel;
         if (selectionModel) {

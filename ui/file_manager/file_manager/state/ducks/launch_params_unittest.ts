@@ -23,7 +23,7 @@ export function testUpdateLaunchParameters() {
   };
   assertDeepEquals(
       want, firstState,
-      `1. ${JSON.stringify(want)} != ${JSON.stringify(firstState)}`);
+      `1. ${JSON.stringify(want)} !== ${JSON.stringify(firstState)}`);
   // Update dialogType
   store.dispatch(setLaunchParameters({
     dialogType: DialogType.FULL_PAGE,
@@ -32,5 +32,5 @@ export function testUpdateLaunchParameters() {
   want.dialogType = DialogType.FULL_PAGE;
   assertDeepEquals(
       want, secondState,
-      `1. ${JSON.stringify(want)} != ${JSON.stringify(secondState)}`);
+      `1. ${JSON.stringify(want)} !== ${JSON.stringify(secondState)}`);
 }

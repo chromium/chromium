@@ -324,7 +324,7 @@ export class DialogFooter {
           if (!description) {
             // Set the first time.
             description = currentDescription;
-          } else if (description != currentDescription) {
+          } else if (description !== currentDescription) {
             // No single description, fall through to the extension list.
             description = null;
             break;
@@ -401,7 +401,7 @@ export class DialogFooter {
 
   selectTargetNameInFilenameInput() {
     const selectionEnd = this.filenameInput.value.lastIndexOf('.');
-    if (selectionEnd == -1) {
+    if (selectionEnd === -1) {
       this.filenameInput.select();
     } else {
       this.filenameInput.select(0, selectionEnd);

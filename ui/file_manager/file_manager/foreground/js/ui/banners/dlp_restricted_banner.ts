@@ -55,7 +55,7 @@ export class DlpRestrictedBanner extends StateBanner {
    * determines the text used in the banner.
    */
   override onFilteredContext(context: {type: DialogType}) {
-    if (!context || context.type == null) {
+    if (!context || context.type === null) {
       console.warn('Context not supplied or dialog type key missing.');
       return;
     }

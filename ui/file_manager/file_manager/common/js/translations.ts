@@ -207,14 +207,14 @@ export function getEntryLabel(
   }
 
   // Special case for MyFiles/Downloads, MyFiles/PvmDefault and MyFiles/Camera.
-  if (locationInfo && locationInfo.rootType == RootType.DOWNLOADS) {
-    if (entry.fullPath == '/Downloads') {
+  if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS) {
+    if (entry.fullPath === '/Downloads') {
       return str('DOWNLOADS_DIRECTORY_LABEL');
     }
-    if (entry.fullPath == '/PvmDefault') {
+    if (entry.fullPath === '/PvmDefault') {
       return str('PLUGIN_VM_DIRECTORY_LABEL');
     }
-    if (entry.fullPath == '/Camera') {
+    if (entry.fullPath === '/Camera') {
       return str('CAMERA_DIRECTORY_LABEL');
     }
   }
@@ -249,7 +249,7 @@ export function secondsToRemainingTimeString(seconds: number) {
       locale, {style: 'unit', unit: 'minute', unitDisplay: 'long'});
 
   const hours = Math.floor(minutes / 60);
-  if (hours == 0) {
+  if (hours === 0) {
     // Less than one hour. Display remaining time in minutes.
     return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(minutes));
   }
@@ -259,7 +259,7 @@ export function secondsToRemainingTimeString(seconds: number) {
   const hourFormatter = new Intl.NumberFormat(
       locale, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
 
-  if (minutes == 0) {
+  if (minutes === 0) {
     // Hours but no minutes.
     return strf('TIME_REMAINING_ESTIMATE', hourFormatter.format(hours));
   }

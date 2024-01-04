@@ -586,7 +586,7 @@ export class DirectoryItem extends FilesTreeItem {
     this.lastElementChild.removeChild(/** @type {!TreeItem} */ (child));
     // @ts-ignore: error TS2339: Property 'items' does not exist on type
     // 'DirectoryItem'.
-    if (this.items.length == 0) {
+    if (this.items.length === 0) {
       this.hasChildren = false;
     }
   }
@@ -1423,7 +1423,7 @@ class VolumeItem extends DirectoryItem {
       icon.setAttribute('use-generic-provided-icon', '');
     }
 
-    if (volumeInfo.volumeType == VolumeType.GUEST_OS) {
+    if (volumeInfo.volumeType === VolumeType.GUEST_OS) {
       icon.setAttribute(
           'volume-type-icon', vmTypeToIconName(volumeInfo.vmType));
     } else {

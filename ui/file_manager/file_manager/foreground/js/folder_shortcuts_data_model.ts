@@ -346,7 +346,7 @@ export class FolderShortcutsDataModel extends
       }
     }
     // If value is not added yet, add it at the last.
-    if (addedIndex == -1) {
+    if (addedIndex === -1) {
       this.array_.push(value);
       addedIndex = this.length;
     }

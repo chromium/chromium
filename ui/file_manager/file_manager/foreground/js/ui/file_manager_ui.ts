@@ -556,7 +556,7 @@ export class FileManagerUI {
     // Set the initial focus. When there is no focus, the active element is the
     // <body>.
     let targetElement = null;
-    if (this.dialogType_ == DialogType.SELECT_SAVEAS_FILE) {
+    if (this.dialogType_ === DialogType.SELECT_SAVEAS_FILE) {
       targetElement = this.dialogFooter.filenameInput;
     } else if (this.listContainer.currentListType !== ListType.UNINITIALIZED) {
       targetElement = this.listContainer.currentList;

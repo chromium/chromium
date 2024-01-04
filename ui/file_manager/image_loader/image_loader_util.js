@@ -22,7 +22,7 @@ ImageLoaderUtil.shouldProcess = function(width, height, request) {
       ImageLoaderUtil.resizeDimensions(width, height, request);
 
   // Dimensions has to be adjusted.
-  if (targetDimensions.width != width || targetDimensions.height != height) {
+  if (targetDimensions.width !== width || targetDimensions.height !== height) {
     return true;
   }
 

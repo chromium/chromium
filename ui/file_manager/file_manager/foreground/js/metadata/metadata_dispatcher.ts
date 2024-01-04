@@ -211,7 +211,7 @@ interface WorkerGlobalScope {
 // the 'this' keyword in lambdas.
 const global = self as WorkerGlobalScope;
 
-if (global.constructor.name == 'SharedWorkerGlobalScope') {
+if (global.constructor.name === 'SharedWorkerGlobalScope') {
   global.addEventListener('connect', e => {
     const port = e.ports[0]!;
     new MetadataDispatcher(port);

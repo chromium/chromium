@@ -299,9 +299,9 @@ export class DriveSyncHandlerImpl extends EventTarget {
       // If offline, hide any sync progress notifications. When online again,
       // the Drive sync client may retry syncing and trigger
       // onFileTransfersUpdated events, causing it to be shown again.
-      if (state.type ==
+      if (state.type ===
               chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
-          state.reason ==
+          state.reason ===
               chrome.fileManagerPrivate.DriveOfflineReason.NO_NETWORK) {
         this.dispatchEvent(new Event(this.getCompletedEventName()));
       }

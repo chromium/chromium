@@ -285,7 +285,7 @@ export async function awaitAsyncTestResult(resultPromise) {
     await resultPromise;
   } catch (error) {
     // If the test has failed, ignore the exception and return.
-    if (error == 'chrome.test.failure') {
+    if (error === 'chrome.test.failure') {
       return;
     }
 
@@ -317,7 +317,7 @@ window.addEventListener('load', () => {
     },
     // Request the root entry paths.
     mode => {
-      if (JSON.parse(mode) != chrome.extension.inIncognitoContext) {
+      if (JSON.parse(mode) !== chrome.extension.inIncognitoContext) {
         return;
       }
       sendBrowserTestCommand({name: 'getRootPaths'}, steps.shift());

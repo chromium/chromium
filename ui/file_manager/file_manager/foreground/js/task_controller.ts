@@ -163,7 +163,7 @@ export class TaskController {
             const match = /\.(\w+)$/g.exec(selection.entries[i]!.toURL());
             if (match) {
               const ext = match[1]!.toUpperCase();
-              if (extensions.indexOf(ext) == -1) {
+              if (extensions.indexOf(ext) === -1) {
                 extensions.push(ext);
               }
             }
@@ -171,7 +171,7 @@ export class TaskController {
 
           let format = '';
 
-          if (extensions.length == 1) {
+          if (extensions.length === 1) {
             format = extensions[0]!;
           }
 
@@ -241,11 +241,11 @@ export class TaskController {
     const tasks = fileTasks.getAnnotatedTasks();
 
     combobutton.hidden =
-        tasks.length == 0 || fileTasks.entries.some(e => e.isDirectory);
+        tasks.length === 0 || fileTasks.entries.some(e => e.isDirectory);
 
     // Even if the task menu button is hidden, we still update the items if
     // tasks exist since they are used for the right-click context menu.
-    if (tasks.length == 0) {
+    if (tasks.length === 0) {
       return;
     }
 
@@ -527,8 +527,8 @@ export class TaskController {
     }
 
     this.canExecuteDefaultTask_ =
-        defaultTask != null && !defaultTask.isDlpBlocked;
-    this.shouldHideDefaultTask_ = defaultTask == null;
+        defaultTask !== null && !defaultTask.isDlpBlocked;
+    this.shouldHideDefaultTask_ = defaultTask === null;
     this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
     this.canExecuteOpenActions_ =
         taskCount > 1 || (taskCount === 1 && !defaultTask);
@@ -651,7 +651,7 @@ export class TaskController {
       // that's encrypted.
       const selectionEntries = existingOperation['entries'];
       const params = existingOperation['params'];
-      if (selectionEntries.length == 1) {
+      if (selectionEntries.length === 1) {
         this.startGetPasswordThenExtractTask_(selectionEntries[0]!, params);
       } else {
         for (const entry of selectionEntries) {

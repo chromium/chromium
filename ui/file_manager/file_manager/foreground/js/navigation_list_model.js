@@ -360,7 +360,7 @@ export class NavigationListModel extends EventTarget {
       let permutation;
 
       // Build the volumeList.
-      if (listType == ListType.VOLUME_LIST) {
+      if (listType === ListType.VOLUME_LIST) {
         // The volume is mounted or unmounted.
         const newList = [];
 
@@ -391,7 +391,7 @@ export class NavigationListModel extends EventTarget {
         for (let i = 0; i < this.shortcutList_.length; i++) {
           permutation.push(i + this.volumeList_.length);
         }
-      } else if (listType == ListType.SHORTCUT_LIST) {
+      } else if (listType === ListType.SHORTCUT_LIST) {
         // Build the shortcutList.
 
         // volumeList part has not been changed, so the permutation should be
@@ -458,7 +458,7 @@ export class NavigationListModel extends EventTarget {
         }
 
         this.shortcutList_ = newList;
-      } else if (listType == ListType.ANDROID_APP_LIST) {
+      } else if (listType === ListType.ANDROID_APP_LIST) {
         this.androidAppList_ = [];
         // @ts-ignore: error TS2551: Property 'androidAppListModel_' does not
         // exist on type 'permutedHandler'. Did you mean 'androidAppList_'?
@@ -821,7 +821,7 @@ export class NavigationListModel extends EventTarget {
       // type 'FilesAppEntry | EntryList | VolumeEntry'.
       for (const volume of myFilesEntry.getUiChildren()) {
         if (!volume.volumeInfo ||
-            volume.volumeInfo.volumeType != VolumeType.GUEST_OS) {
+            volume.volumeInfo.volumeType !== VolumeType.GUEST_OS) {
           continue;
         }
         // @ts-ignore: error TS7006: Parameter 'v' implicitly has an 'any' type.
@@ -903,7 +903,7 @@ export class NavigationListModel extends EventTarget {
     const disableRemovables =
         this.volumeManager_.isDisabled(VolumeType.REMOVABLE);
     for (const [devicePath, removableGroup] of groupRemovables().entries()) {
-      if (removableGroup.length == 1 && !isSinglePartitionFormatEnabled()) {
+      if (removableGroup.length === 1 && !isSinglePartitionFormatEnabled()) {
         // Add unpartitioned removable device as a regular volume.
         this.navigationItems_.push(removableGroup[0]);
         removableGroup[0].section = NavigationSection.REMOVABLE;
@@ -1059,7 +1059,7 @@ export class NavigationListModel extends EventTarget {
   findDownloadsVolumeIndex_() {
     for (let i = 0; i < this.volumeList_.length; i++) {
       // @ts-ignore: error TS2532: Object is possibly 'undefined'.
-      if (this.volumeList_[i].volumeInfo.volumeType == VolumeType.DOWNLOADS) {
+      if (this.volumeList_[i].volumeInfo.volumeType === VolumeType.DOWNLOADS) {
         return i;
       }
     }

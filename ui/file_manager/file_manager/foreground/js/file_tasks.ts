@@ -159,9 +159,9 @@ export class FileTasks {
   /** Returns whether the system is currently offline. */
   private static isOffline_(volumeManager: VolumeManager): boolean {
     const connection = volumeManager.getDriveConnectionState();
-    return connection.type ==
+    return connection.type ===
         chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE &&
-        connection.reason ==
+        connection.reason ===
         chrome.fileManagerPrivate.DriveOfflineReason.NO_NETWORK;
   }
 
@@ -297,7 +297,7 @@ export class FileTasks {
     }
 
     // Legacy Files app task type is 'app', Files SWA is 'web'.
-    if (!(taskType === 'app' || taskType == 'web')) {
+    if (!(taskType === 'app' || taskType === 'web')) {
       return false;
     }
     const parsedActionId = parseActionId(actionId);

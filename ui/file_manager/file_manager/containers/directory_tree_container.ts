@@ -522,7 +522,7 @@ export class DirectoryTreeContainer {
     if (!volumeData) {
       return;
     }
-    if (volumeData.volumeType == VolumeType.GUEST_OS) {
+    if (volumeData.volumeType === VolumeType.GUEST_OS) {
       element.setAttribute(
           'volume-type-for-testing', vmTypeToIconName(volumeData.vmType));
     } else {

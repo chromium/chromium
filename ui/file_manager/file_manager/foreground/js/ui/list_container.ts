@@ -101,7 +101,7 @@ export class ListContainer {
       }
     }, {passive: true});
     this.element.addEventListener('touchend', (e: TouchEvent) => {
-      if (e.touches.length == 0) {
+      if (e.touches.length === 0) {
         // contextmenu event will be sent right after touchend.
         setTimeout(() => this.allowContextMenuByTouch_ = false);
       }
@@ -264,7 +264,7 @@ export class ListContainer {
   private onKeyDown_(event: Event) {
     // Ignore keydown handler in the rename input box.
     const srcElement = event.srcElement as HTMLElement | null;
-    if (srcElement?.tagName == 'INPUT') {
+    if (srcElement?.tagName === 'INPUT') {
       event.stopImmediatePropagation();
       return;
     }
@@ -278,7 +278,7 @@ export class ListContainer {
     const srcElement = event.srcElement as HTMLElement | null;
 
     // Ignore keypress handler in the rename input box.
-    if (srcElement?.tagName == 'INPUT' || event.ctrlKey || event.metaKey ||
+    if (srcElement?.tagName === 'INPUT' || event.ctrlKey || event.metaKey ||
         event.altKey) {
       event.stopImmediatePropagation();
       return;

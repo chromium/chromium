@@ -194,9 +194,9 @@ export class ProgressCenterItem {
 
   /** Whether the item can be canceled or not. */
   get cancelable(): boolean {
-    return !!(this.state == ProgressItemState.PROGRESSING &&
+    return !!(this.state === ProgressItemState.PROGRESSING &&
               this.cancelCallback && this.single) ||
-        !!(this.state == ProgressItemState.PAUSED && this.cancelCallback);
+        !!(this.state === ProgressItemState.PAUSED && this.cancelCallback);
   }
 
   /** Clones the item. */

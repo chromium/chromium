@@ -137,7 +137,7 @@ export class Id3Parser extends MetadataParser {
         this.readString_(reader, frame.encoding, end - reader.tell());
 
 
-    if (frame.format == '-->') {
+    if (frame.format === '-->') {
       frame.imageUrl = reader.readNullTerminatedString(end - reader.tell());
     } else {
       frame.imageUrl = reader.readImage(end - reader.tell());
@@ -160,7 +160,7 @@ export class Id3Parser extends MetadataParser {
     frame.description =
         this.readString_(reader, frame.encoding, end - reader.tell());
 
-    if (frame.mime == '-->') {
+    if (frame.mime === '-->') {
       frame.imageUrl = reader.readNullTerminatedString(end - reader.tell());
     } else {
       frame.imageUrl = reader.readImage(end - reader.tell());
@@ -190,10 +190,10 @@ export class Id3Parser extends MetadataParser {
 
     const position = reader.tell();
 
-    frame.name = (majorVersion == 2) ? reader.readNullTerminatedString(3) :
-                                       reader.readNullTerminatedString(4);
+    frame.name = (majorVersion === 2) ? reader.readNullTerminatedString(3) :
+                                        reader.readNullTerminatedString(4);
 
-    if (frame.name == '') {
+    if (frame.name === '') {
       return null;
     }
 
@@ -223,7 +223,7 @@ export class Id3Parser extends MetadataParser {
     if (handler) {
       handler.call(
           this, reader, majorVersion, frame, reader.tell() + frame.size);
-    } else if (frame.name.charAt(0) == 'T' || frame.name.charAt(0) == 'W') {
+    } else if (frame.name.charAt(0) === 'T' || frame.name.charAt(0) === 'W') {
       this.readTextFrame_(
           reader, majorVersion, frame, reader.tell() + frame.size);
     }
@@ -248,7 +248,7 @@ export class Id3Parser extends MetadataParser {
         await MetadataParser.readFileBytes(file, file.size - 128, file.size);
 
     // Attempts to extract ID3v1 tag from 128 bytes long ByteBuffer
-    if (reader.readString(3) == 'TAG') {
+    if (reader.readString(3) === 'TAG') {
       this.vlog('id3v1 found');
       const title = reader.readNullTerminatedString(30).trim();
 
@@ -302,11 +302,11 @@ export class Id3Parser extends MetadataParser {
     reader = await MetadataParser.readFileBytes(file, 10, 10 + id3v2.size);
 
     if ((id3v2.majorVersion > 2) &&
-        ((id3v2.flags & Id3Parser.V2.FLAG_EXTENDED_HEADER) != 0)) {
+        ((id3v2.flags & Id3Parser.V2.FLAG_EXTENDED_HEADER) !== 0)) {
       // Skip extended header if found
-      if (id3v2.majorVersion == 3) {
+      if (id3v2.majorVersion === 3) {
         reader.seek(reader.readScalar(4, false) - 4);
-      } else if (id3v2.majorVersion == 4) {
+      } else if (id3v2.majorVersion === 4) {
         reader.seek(Id3Parser.readSynchSafe_(reader, 4) - 4);
       }
     }

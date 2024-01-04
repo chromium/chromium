@@ -78,7 +78,7 @@ async function setUpFileEntrySet(volume) {
   const driveEntryPromise = addEntries(['drive'], driveEntries);
 
   await Promise.all([localEntryPromise, driveEntryPromise]);
-  if (volume == 'drive') {
+  if (volume === 'drive') {
     return driveEntries;
   }
   return BASIC_LOCAL_ENTRY_SET;

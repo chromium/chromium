@@ -332,8 +332,8 @@ export class VolumeManagerImpl extends
           // Finish after all volumes have been processed, or at least Downloads
           // or Drive.
           const isDriveOrDownloads = volumeInfo &&
-              (volumeInfo.volumeType == VolumeType.DOWNLOADS ||
-               volumeInfo.volumeType == VolumeType.DRIVE);
+              (volumeInfo.volumeType === VolumeType.DOWNLOADS ||
+               volumeInfo.volumeType === VolumeType.DRIVE);
           if (counter === volumeMetadataList.length || isDriveOrDownloads) {
             finishInitialization();
           }
@@ -562,14 +562,15 @@ export class VolumeManagerImpl extends
     if (volumeInfo.volumeType === VolumeType.DRIVE) {
       // For Drive, the roots are /root, /team_drives, /Computers and /other,
       // instead of /. Root URLs contain trailing slashes.
-      if (entry.fullPath == '/root' || entry.fullPath.indexOf('/root/') === 0) {
+      if (entry.fullPath === '/root' ||
+          entry.fullPath.indexOf('/root/') === 0) {
         rootType = RootType.DRIVE;
         isReadOnly = volumeInfo.isReadOnly;
         isRootEntry = entry.fullPath === '/root';
       } else if (
-          entry.fullPath == SHARED_DRIVES_DIRECTORY_PATH ||
+          entry.fullPath === SHARED_DRIVES_DIRECTORY_PATH ||
           entry.fullPath.indexOf(SHARED_DRIVES_DIRECTORY_PATH + '/') === 0) {
-        if (entry.fullPath == SHARED_DRIVES_DIRECTORY_PATH) {
+        if (entry.fullPath === SHARED_DRIVES_DIRECTORY_PATH) {
           rootType = RootType.SHARED_DRIVES_GRAND_ROOT;
           isReadOnly = true;
           isRootEntry = true;
@@ -585,9 +586,9 @@ export class VolumeManagerImpl extends
           }
         }
       } else if (
-          entry.fullPath == COMPUTERS_DIRECTORY_PATH ||
+          entry.fullPath === COMPUTERS_DIRECTORY_PATH ||
           entry.fullPath.indexOf(COMPUTERS_DIRECTORY_PATH + '/') === 0) {
-        if (entry.fullPath == COMPUTERS_DIRECTORY_PATH) {
+        if (entry.fullPath === COMPUTERS_DIRECTORY_PATH) {
           rootType = RootType.COMPUTERS_GRAND_ROOT;
           isReadOnly = true;
           isRootEntry = true;
@@ -641,7 +642,7 @@ export class VolumeManagerImpl extends
       // we prohibit write operations on it in the UI level to avoid confusion.
       // Users can still have write access in sub directories like
       // /Play files/Pictures, /Play files/DCIM, etc...
-      if (volumeInfo.volumeType == VolumeType.ANDROID_FILES && isRootEntry) {
+      if (volumeInfo.volumeType === VolumeType.ANDROID_FILES && isRootEntry) {
         isReadOnly = true;
       } else {
         isReadOnly = volumeInfo.isReadOnly;

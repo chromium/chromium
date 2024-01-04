@@ -154,8 +154,8 @@ export function splitExtension(path: string): [string, string] {
     dotPosition = -1;
   }
 
-  const filename = dotPosition != -1 ? path.substr(0, dotPosition) : path;
-  const extension = dotPosition != -1 ? path.substr(dotPosition) : '';
+  const filename = dotPosition !== -1 ? path.substr(0, dotPosition) : path;
+  const extension = dotPosition !== -1 ? path.substr(dotPosition) : '';
   return [filename, extension];
 }
 

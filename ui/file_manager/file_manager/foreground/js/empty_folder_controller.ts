@@ -134,7 +134,7 @@ export class EmptyFolderController {
     }
     // If the error is not NO_MODIFICATION_ALLOWED_ERR, return. This is
     // equivalent to the ACCESS_DENIED error thrown by ODFS.
-    if (event.detail.error.name !=
+    if (event.detail.error.name !==
         FileErrorToDomError.NO_MODIFICATION_ALLOWED_ERR) {
       this.updateUi_();
       return;
@@ -284,7 +284,7 @@ export class EmptyFolderController {
       return;
     }
 
-    if (svgRef == ODFS_REAUTHENTICATION_REQUIRED) {
+    if (svgRef === ODFS_REAUTHENTICATION_REQUIRED) {
       this.showOdfsReauthenticationMessage_();
       return;
     }

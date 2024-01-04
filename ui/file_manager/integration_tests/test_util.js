@@ -230,7 +230,7 @@ export async function getBrowserWindows(expectedInitialCount = 0) {
  * @return {Promise} Promise to be fulfilled when the entries are added.
  */
 export async function addEntries(volumeNames, entries, opt_callback) {
-  if (volumeNames.length == 0) {
+  if (volumeNames.length === 0) {
     opt_callback && opt_callback(true);
     return;
   }

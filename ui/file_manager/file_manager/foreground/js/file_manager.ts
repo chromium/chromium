@@ -939,7 +939,7 @@ export class FileManager {
     const table = queryRequiredElement('.detail-table', dom);
     FileTable.decorate(
         table, this.metadataModel_, this.volumeManager_, this.ui,
-        this.dialogType == DialogType.FULL_PAGE);
+        this.dialogType === DialogType.FULL_PAGE);
     const grid = queryRequiredElement('.thumbnail-grid', dom);
     FileGrid.decorate(grid, this.metadataModel_, this.volumeManager_, this.ui);
 
@@ -967,10 +967,10 @@ export class FileManager {
    * Constructs table and grid (heavy operation).
    */
   private async initFileList_(): Promise<void> {
-    const singleSelection = this.dialogType == DialogType.SELECT_OPEN_FILE ||
-        this.dialogType == DialogType.SELECT_FOLDER ||
-        this.dialogType == DialogType.SELECT_UPLOAD_FOLDER ||
-        this.dialogType == DialogType.SELECT_SAVEAS_FILE;
+    const singleSelection = this.dialogType === DialogType.SELECT_OPEN_FILE ||
+        this.dialogType === DialogType.SELECT_FOLDER ||
+        this.dialogType === DialogType.SELECT_UPLOAD_FOLDER ||
+        this.dialogType === DialogType.SELECT_SAVEAS_FILE;
 
     assert(this.volumeManager_);
     assert(this.metadataModel_);
@@ -1245,7 +1245,7 @@ export class FileManager {
     // Resolve the selectionURL to selectionEntry or to currentDirectoryEntry in
     // case of being a display root or a default directory to open files.
     if (this.launchParams_.selectionURL) {
-      if (this.launchParams_.selectionURL == this.recentEntry_.toURL()) {
+      if (this.launchParams_.selectionURL === this.recentEntry_.toURL()) {
         nextCurrentDirEntry = this.recentEntry_;
       } else {
         try {
@@ -1544,7 +1544,7 @@ export class FileManager {
     // loading unpacked extensions).
     if (allowedPaths === AllowedPaths.NATIVE_PATH &&
         !isFolderDialogType(this.launchParams_.type)) {
-      if (this.launchParams_.type == DialogType.SELECT_SAVEAS_FILE) {
+      if (this.launchParams_.type === DialogType.SELECT_SAVEAS_FILE) {
         allowedPaths = AllowedPaths.NATIVE_PATH;
       } else {
         allowedPaths = AllowedPaths.ANY_PATH;
@@ -1560,7 +1560,7 @@ export class FileManager {
    */
   private getSourceRestriction_(): chrome.fileManagerPrivate.SourceRestriction {
     const allowedPaths = this.getAllowedPaths_();
-    if (allowedPaths == AllowedPaths.NATIVE_PATH) {
+    if (allowedPaths === AllowedPaths.NATIVE_PATH) {
       return chrome.fileManagerPrivate.SourceRestriction.NATIVE_SOURCE;
     }
     return chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE;

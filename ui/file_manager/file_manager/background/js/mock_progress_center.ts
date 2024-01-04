@@ -49,6 +49,6 @@ export class MockProgressCenter implements ProgressCenter {
    * @param state State to filter by.
    */
   getItemsByState(state: ProgressItemState): ProgressCenterItem[] {
-    return Object.values(this.items).filter(item => item.state == state);
+    return Object.values(this.items).filter(item => item.state === state);
   }
 }

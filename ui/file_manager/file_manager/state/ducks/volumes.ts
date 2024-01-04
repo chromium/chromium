@@ -317,7 +317,7 @@ function addVolumeReducer(currentState: State, payload: {
           return (
               v.volumeType === VolumeType.REMOVABLE &&
               removableGroupKey(v) === groupingKey &&
-              v.volumeId != volumeInfo.volumeId);
+              v.volumeId !== volumeInfo.volumeId);
         });
 
     if (shouldGroup) {

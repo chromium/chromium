@@ -38,7 +38,7 @@ enum SearchInputState {
  * directory.
  */
 function isInRecent(dir: CurrentDirectory|undefined): boolean {
-  return dir?.rootType == RootType.RECENT;
+  return dir?.rootType === RootType.RECENT;
 }
 
 /**
@@ -145,27 +145,27 @@ function createFileCategoryOptions(state: State): XfOption[] {
     {
       value: chrome.fileManagerPrivate.FileCategory.ALL,
       text: str('SEARCH_OPTIONS_TYPES_ALL_TYPES'),
-      default: fileCategory == chrome.fileManagerPrivate.FileCategory.ALL,
+      default: fileCategory === chrome.fileManagerPrivate.FileCategory.ALL,
     },
     {
       value: chrome.fileManagerPrivate.FileCategory.AUDIO,
       text: str('SEARCH_OPTIONS_TYPES_AUDIO'),
-      default: fileCategory == chrome.fileManagerPrivate.FileCategory.AUDIO,
+      default: fileCategory === chrome.fileManagerPrivate.FileCategory.AUDIO,
     },
     {
       value: chrome.fileManagerPrivate.FileCategory.DOCUMENT,
       text: str('SEARCH_OPTIONS_TYPES_DOCUMENTS'),
-      default: fileCategory == chrome.fileManagerPrivate.FileCategory.DOCUMENT,
+      default: fileCategory === chrome.fileManagerPrivate.FileCategory.DOCUMENT,
     },
     {
       value: chrome.fileManagerPrivate.FileCategory.IMAGE,
       text: str('SEARCH_OPTIONS_TYPES_IMAGES'),
-      default: fileCategory == chrome.fileManagerPrivate.FileCategory.IMAGE,
+      default: fileCategory === chrome.fileManagerPrivate.FileCategory.IMAGE,
     },
     {
       value: chrome.fileManagerPrivate.FileCategory.VIDEO,
       text: str('SEARCH_OPTIONS_TYPES_VIDEOS'),
-      default: fileCategory == chrome.fileManagerPrivate.FileCategory.VIDEO,
+      default: fileCategory === chrome.fileManagerPrivate.FileCategory.VIDEO,
     },
   ];
 }

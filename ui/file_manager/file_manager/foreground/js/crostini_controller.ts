@@ -88,11 +88,11 @@ export class CrostiniController {
     const toast =
         (count: number, msgSingle: string, msgPlural: string, action: string,
          subPage: string, umaItem: MenuCommandsForUma) => {
-          if (!showToast || count == 0) {
+          if (!showToast || count === 0) {
             return;
           }
           filesToast.show(
-              count == 1 ? str(msgSingle) : strf(msgPlural, count), {
+              count === 1 ? str(msgSingle) : strf(msgPlural, count), {
                 text: str(action),
                 callback: () => {
                   chrome.fileManagerPrivate.openSettingsSubpage(subPage);

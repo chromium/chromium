@@ -105,7 +105,7 @@ export class Table extends HTMLDivElement {
 
   set selectionModel(selectionModel: ListSelectionModel|
                      ListSingleSelectionModel) {
-    if (this.list.selectionModel != selectionModel) {
+    if (this.list.selectionModel !== selectionModel) {
       if (this.dataModel) {
         selectionModel.adjustLength(this.dataModel.length);
       }
@@ -321,13 +321,13 @@ export class Table extends HTMLDivElement {
   sort(i: number) {
     const cm = this.columnModel_!;
     const sortStatus = this.list.dataModel!.sortStatus;
-    if (sortStatus.field == cm.getId(i)) {
-      const sortDirection = sortStatus.direction == 'desc' ? 'asc' : 'desc';
+    if (sortStatus.field === cm.getId(i)) {
+      const sortDirection = sortStatus.direction === 'desc' ? 'asc' : 'desc';
       this.list.dataModel!.sort(sortStatus.field, sortDirection);
     } else {
       this.list.dataModel!.sort(cm.getId(i)!, cm.getDefaultOrder(i));
     }
-    if (this.selectionModel.selectedIndex == -1) {
+    if (this.selectionModel.selectedIndex === -1) {
       this.list.scrollTop = 0;
     }
   }

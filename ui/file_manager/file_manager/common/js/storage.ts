@@ -61,7 +61,7 @@ class StorageChangeTracker {
   /** Processes storage event and notifies listeners. */
   private onStorageEvent_(event: StorageEvent) {
     const {key, newValue} = event;
-    if (key == null || newValue == null) {
+    if (key === null || newValue === null) {
       return;
     }
 

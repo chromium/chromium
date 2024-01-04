@@ -78,7 +78,7 @@ export class MpegParser extends MetadataParser {
           return null;
         }
         atom = atom.parent;
-        if (atom.name == name) {
+        if (atom.name === name) {
           return atom;
         }
       }
@@ -90,7 +90,7 @@ export class MpegParser extends MetadataParser {
 
     function parseMvhd(br: ByteReader, atom: Atom) {
       const version = br.readScalar(4, false, atom.end);
-      const offset = (version == 0) ? 8 : 16;
+      const offset = (version === 0) ? 8 : 16;
       br.seek(offset, SeekOrigin.SEEK_CUR);
       const timescale = br.readScalar(4, false, atom.end);
       const duration = br.readScalar(4, false, atom.end);
@@ -108,7 +108,7 @@ export class MpegParser extends MetadataParser {
 
     function parseStsd(br: ByteReader, atom: Atom) {
       const track = findParentAtom(atom, 'trak');
-      if (track && track.trackType == 'vide') {
+      if (track && track.trackType === 'vide') {
         br.seek(40, SeekOrigin.SEEK_CUR);
         metadata.width = br.readScalar(2, false, atom.end);
         metadata.height = br.readScalar(2, false, atom.end);
@@ -229,7 +229,7 @@ export class MpegParser extends MetadataParser {
   parseMpegAtomsInRange(
       parser: ParseTree, br: ByteReader, parentAtom: Atom, filePos: number) {
     let count = 0;
-    for (let offset = parentAtom.start; offset != parentAtom.end;) {
+    for (let offset = parentAtom.start; offset !== parentAtom.end;) {
       if (count++ > 100) {
         // Most likely we are looping through a corrupt file.
         throw new Error(
@@ -302,7 +302,7 @@ export class MpegParser extends MetadataParser {
 
       // Check the available data size. It should be either exactly
       // what we requested or HEADER_SIZE bytes less (for the last atom).
-      if (bufLength != atomEnd && bufLength != size) {
+      if (bufLength !== atomEnd && bufLength !== size) {
         throw new Error(
             'Read failure @' + filePos + ', ' +
             'requested ' + size + ', read ' + bufLength);
@@ -316,7 +316,7 @@ export class MpegParser extends MetadataParser {
       }
 
       filePos += bufLength;
-      if (bufLength == size) {
+      if (bufLength === size) {
         // The previous read returned everything we asked for, including
         // the next atom header at the end of the buffer.
         // Parse this header and schedule the next read.

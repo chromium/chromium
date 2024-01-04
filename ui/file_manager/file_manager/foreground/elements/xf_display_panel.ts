@@ -129,7 +129,7 @@ export class DisplayPanel extends HTMLElement {
   updateProgress() {
     let total = 0;
 
-    if (this.items_.length == 0) {
+    if (this.items_.length === 0) {
       return;
     }
     let errors = 0;
@@ -161,7 +161,7 @@ export class DisplayPanel extends HTMLElement {
     // error) if no operations are ongoing.
     if (progressCount > 0) {
       // Make sure we have a progress indicator on the summary panel.
-      if (summaryPanel.indicator != 'largeprogress') {
+      if (summaryPanel.indicator !== 'largeprogress') {
         summaryPanel.indicator = 'largeprogress';
       }
       summaryPanel.primaryText = strf('PERCENT_COMPLETE', total.toFixed(0));
@@ -171,7 +171,7 @@ export class DisplayPanel extends HTMLElement {
       return;
     }
 
-    if (summaryPanel.indicator != 'status') {
+    if (summaryPanel.indicator !== 'status') {
       // Make sure we have a status indicator on the summary panel.
       summaryPanel.indicator = 'status';
     }
@@ -376,8 +376,8 @@ export class DisplayPanel extends HTMLElement {
           `generateWarningMessage_ expected errors > 0, but got ${errors}.`);
       return '';
     }
-    return errors == 1 ? str('ERROR_PROGRESS_SUMMARY_SINGLE') :
-                         strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
+    return errors === 1 ? str('ERROR_PROGRESS_SUMMARY_SINGLE') :
+                          strf('ERROR_PROGRESS_SUMMARY_PLURAL', errors);
   }
 
   /**

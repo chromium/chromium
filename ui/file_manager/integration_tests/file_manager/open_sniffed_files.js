@@ -64,7 +64,7 @@ async function sniffedFileOpen(path, entry) {
   // Find the main (normal) browser window.
   let normalWindow = undefined;
   for (let i = 0; i < browserWindows.length; ++i) {
-    if (browserWindows[i].type == 'normal') {
+    if (browserWindows[i].type === 'normal') {
       normalWindow = browserWindows[i];
       break;
     }

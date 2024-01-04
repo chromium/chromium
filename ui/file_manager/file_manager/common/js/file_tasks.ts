@@ -76,7 +76,7 @@ export function getDefaultTask(
 
   // 2. Most recently executed or sole non-generic task.
   const latest = nonGenericTasks[0]!;
-  if (nonGenericTasks.length == 1 ||
+  if (nonGenericTasks.length === 1 ||
       taskHistory.getLastExecutedTime(latest.descriptor)) {
     return latest;
   }

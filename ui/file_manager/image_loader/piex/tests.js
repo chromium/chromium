@@ -17,8 +17,8 @@ program.on('--help', function help() {
 });
 
 program.explain = () => {
-  return undefined != process.argv.find((element) => {
-    return element == '--help' || element == '-h';
+  return undefined !== process.argv.find((element) => {
+    return element === '--help' || element === '-h';
   });
 };
 
@@ -78,7 +78,7 @@ const puppeteer = require('puppeteer');
     waitUntil: 'networkidle2',
   });
 
-  await page.mainFrame().waitForFunction('document.title == "READY"');
+  await page.mainFrame().waitForFunction('document.title === "READY"');
 
   const sleep = (time) => {
     return new Promise(resolve => setTimeout(resolve, time));
@@ -118,7 +118,7 @@ const puppeteer = require('puppeteer');
       return window.runTest(image);
     }, images[i]);
 
-    await page.mainFrame().waitForFunction('document.title == "DONE"');
+    await page.mainFrame().waitForFunction('document.title === "DONE"');
 
     if (program.debug) {
       await sleep(2000);

@@ -130,7 +130,7 @@ testcase.pluginVmDirectoryNotSharedErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'App (Windows)').length);
+      1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(
@@ -204,7 +204,7 @@ testcase.pluginVmFileOnExternalDriveErrorDialog = async () => {
   const appOptions = await remoteCall.callRemoteTestUtil(
       'queryAllElements', appId, ['#tasks-menu [tabindex]']);
   chrome.test.assertEq(
-      1, appOptions.filter(el => el.text == 'App (Windows)').length);
+      1, appOptions.filter(el => el.text === 'App (Windows)').length);
 
   // Click on the Plugin VM app, and wait for error dialog.
   await remoteCall.callRemoteTestUtil(

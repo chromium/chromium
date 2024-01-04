@@ -70,7 +70,7 @@ export class BreadcrumbContainer {
       }
     }
 
-    if (currentDirectory.status == PropStatus.SUCCESS &&
+    if (currentDirectory.status === PropStatus.SUCCESS &&
         this.currentFileKey_ !== key) {
       this.show_(
           state.currentDirectory?.key || '',

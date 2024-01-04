@@ -108,20 +108,21 @@ export class MultiMenu extends Menu {
                 if (subMenu.hidden) {
                   break;
                 }
-                if (this.subMenuOnLeft && key == 'ArrowLeft') {
+                if (this.subMenuOnLeft && key === 'ArrowLeft') {
                   this.moveSelectionToSubMenu_(subMenu);
                 } else if (
-                    this.subMenuOnLeft === false && key == 'ArrowRight') {
+                    this.subMenuOnLeft === false && key === 'ArrowRight') {
                   this.moveSelectionToSubMenu_(subMenu);
                 }
               }
             } else {
               const subMenu = this.currentMenu;
               // We only move off the sub-menu if we're on the top item
-              if (subMenu.selectedIndex == 0) {
-                if (this.subMenuOnLeft && key == 'ArrowRight') {
+              if (subMenu.selectedIndex === 0) {
+                if (this.subMenuOnLeft && key === 'ArrowRight') {
                   this.moveSelectionToTopMenu_(subMenu);
-                } else if (this.subMenuOnLeft === false && key == 'ArrowLeft') {
+                } else if (
+                    this.subMenuOnLeft === false && key === 'ArrowLeft') {
                   this.moveSelectionToTopMenu_(subMenu);
                 }
               }

@@ -111,7 +111,7 @@ export async function validateFileName(
   if (!areHiddenFilesVisible && /\.crdownload$/i.test(name)) {
     throw Error(str('ERROR_RESERVED_NAME'));
   }
-  if (!areHiddenFilesVisible && name[0] == '.') {
+  if (!areHiddenFilesVisible && name[0] === '.') {
     throw Error(str('ERROR_HIDDEN_NAME'));
   }
 
@@ -159,7 +159,7 @@ export async function renameFile(
     try {
       await getEntry(parent, newName, entry.isFile, {create: false});
     } catch (error: any) {
-      if (error.name == FileErrorToDomError.NOT_FOUND_ERR) {
+      if (error.name === FileErrorToDomError.NOT_FOUND_ERR) {
         return moveEntryTo(entry, parent, newName);
       }
 
@@ -180,8 +180,8 @@ export async function renameFile(
 function getRenameErrorMessage(
     error: DOMError, entry: Entry|FilesAppEntry, newName: string): Error {
   if (error &&
-      (error.name == FileErrorToDomError.PATH_EXISTS_ERR ||
-       error.name == FileErrorToDomError.TYPE_MISMATCH_ERR)) {
+      (error.name === FileErrorToDomError.PATH_EXISTS_ERR ||
+       error.name === FileErrorToDomError.TYPE_MISMATCH_ERR)) {
     // Check the existing entry is file or not.
     // 1) If the entry is a file:
     //   a) If we get PATH_EXISTS_ERR, a file exists.
@@ -190,9 +190,9 @@ function getRenameErrorMessage(
     //   a) If we get PATH_EXISTS_ERR, a directory exists.
     //   b) If we get TYPE_MISMATCH_ERR, a file exists.
     return Error(strf(
-        (entry.isFile && error.name == FileErrorToDomError.PATH_EXISTS_ERR) ||
+        (entry.isFile && error.name === FileErrorToDomError.PATH_EXISTS_ERR) ||
                 (!entry.isFile &&
-                 error.name == FileErrorToDomError.TYPE_MISMATCH_ERR) ?
+                 error.name === FileErrorToDomError.TYPE_MISMATCH_ERR) ?
             'FILE_ALREADY_EXISTS' :
             'DIRECTORY_ALREADY_EXISTS',
         newName));

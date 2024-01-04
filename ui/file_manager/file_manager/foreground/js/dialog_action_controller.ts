@@ -249,8 +249,8 @@ export class DialogActionController {
       }
     };
     // Record the root types of chosen files in OPEN dialog.
-    if (this.dialogType_ == DialogType.SELECT_OPEN_FILE ||
-        this.dialogType_ == DialogType.SELECT_OPEN_MULTI_FILE) {
+    if (this.dialogType_ === DialogType.SELECT_OPEN_FILE ||
+        this.dialogType_ === DialogType.SELECT_OPEN_MULTI_FILE) {
       recordEnum('OpenFiles.RootType', currentRootType, RootTypesForUMA);
     }
     if (selection.multiple) {
