@@ -105,6 +105,36 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest, OpenFeedbackPage) {
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
+IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
+                       TestDialogClosedAfterPageScrolled) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/compose/test2.html")));
+  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
+  auto* client = ChromeComposeClient::FromWebContents(web_contents);
+  client->GetComposeEnabling().SetEnabledForTesting(true);
+
+  // get point of element
+  gfx::PointF textarea_center =
+      content::GetCenterCoordinatesOfElementWithId(web_contents, "elem1");
+  autofill::FormFieldData field_data;
+  field_data.bounds = gfx::RectF((textarea_center), gfx::SizeF(1, 1));
+
+  client->ShowComposeDialog(
+      autofill::AutofillComposeDelegate::UiEntryPoint::kAutofillPopup,
+      field_data, std::nullopt, base::NullCallback());
+
+  EXPECT_TRUE(client->IsDialogShowing());
+
+  // Scroll on page
+  blink::WebGestureEvent event;
+  event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
+  client->DidGetUserInteraction(event);
+
+  EXPECT_FALSE(client->IsDialogShowing());
+}
+
 // Start ClientPrefsBrowserTest methods.
 IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest,
                        GetConsentStateFromPrefs) {

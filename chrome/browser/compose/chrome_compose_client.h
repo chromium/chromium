@@ -102,6 +102,11 @@ class ChromeComposeClient
   // to more accurately save and remove state.
   void PrimaryPageChanged(content::Page& page) override;
 
+  // content::WebContentsObserver implementation.
+  // Called when there has been direct user interaction with the WebContents.
+  // Used to close the dialog when the user scrolls.
+  void DidGetUserInteraction(const blink::WebInputEvent& event) override;
+
   void SetOptimizationGuideForTest(
       optimization_guide::OptimizationGuideDecider* opt_guide);
 
@@ -116,6 +121,9 @@ class ChromeComposeClient
   // If there is an active session calls the OpenFeedbackPage method on it.
   // Used only for testing.
   void OpenFeedbackPageForTest(std::string feedback_id);
+
+  // Returns true when the dialog is showing and false otherwise.
+  bool IsDialogShowing();
 
  protected:
   explicit ChromeComposeClient(content::WebContents* web_contents);

@@ -101,6 +101,10 @@ void ChromeComposeDialogController::Close() {
   }
 }
 
+bool ChromeComposeDialogController::IsDialogShowing() {
+  return bubble_ && !bubble_->GetWidget()->IsClosed();
+}
+
 ChromeComposeDialogController::ChromeComposeDialogController(
     content::WebContents* web_contents)
     : web_contents_(web_contents->GetWeakPtr()) {}

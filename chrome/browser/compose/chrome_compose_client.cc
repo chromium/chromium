@@ -452,6 +452,11 @@ void ChromeComposeClient::SetSessionIdForTest(base::Token session_id) {
   session_id_for_test_ = session_id;
 }
 
+bool ChromeComposeClient::IsDialogShowing() {
+  return compose_dialog_controller_ &&
+         compose_dialog_controller_->IsDialogShowing();
+}
+
 int ChromeComposeClient::GetSessionCountForTest() {
   return sessions_.size();
 }
@@ -468,6 +473,15 @@ void ChromeComposeClient::PrimaryPageChanged(content::Page& page) {
 
   compose::ComposeTextUsageLogger::GetOrCreateForCurrentDocument(
       &page.GetMainDocument());
+}
+
+void ChromeComposeClient::DidGetUserInteraction(
+    const blink::WebInputEvent& event) {
+  if (IsDialogShowing() &&
+      event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
+    // TODO(b/318571287): Log when the dialog is closed due to scrolling.
+    compose_dialog_controller_->Close();
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeComposeClient);
