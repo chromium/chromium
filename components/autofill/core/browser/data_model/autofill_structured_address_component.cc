@@ -255,13 +255,8 @@ void AddressComponent::GetTypes(bool storable_only,
 
 std::optional<FieldType> AddressComponent::GetStorableTypeOf(
     FieldType type) const {
-  if (IsSupportedType(type)) {
-    return storage_type_;
-  }
-  for (const std::unique_ptr<AddressComponent>& subcomponent : subcomponents_) {
-    if (auto storeable_type = subcomponent->GetStorableTypeOf(type)) {
-      return storeable_type;
-    }
+  if (const AddressComponent* node = GetNodeForType(type)) {
+    return node->GetStorageType();
   }
   return std::nullopt;
 }
