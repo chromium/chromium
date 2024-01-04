@@ -371,3 +371,51 @@ test((t) => {
   assert_equals(getComputedStyle(c).zIndex, 'auto');
 }, 'Implicit rule within nested @scope (proximity)');
 </script>
+
+<template id=test_nested_scope_inside_an_is>
+  <div>
+    <style>
+      @scope (.a) {
+        .b {
+          /* When nesting, because we’re  inside a defined scope,
+             the `:scope` should reference the scoping root node properly, and
+             check for the presence of an extra class on it, essentially
+             being equal to `:scope.x .b { z-index: 1 }`. */
+          &:is(:scope.x *) {
+            z-index: 1;
+          }
+          /* This should not match, as we have a defined scope, and should
+             not skip to the root. */
+          &:is(:root:scope *) {
+            z-index: 2;
+          }
+        }
+        /* The nested case can be though of the following when expanded: */
+        .c:is(:scope.x *) {
+          z-index: 3;
+        }
+      }
+    </style>
+    <div class="b">
+    </div>
+    <div class="a x">
+      <div class="b">
+      </div>
+      <div class="c">
+      </div>
+    </div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_nested_scope_inside_an_is.content.cloneNode(true));
+
+  let b_outside = document.querySelector('.b');
+  let b_inside = document.querySelector('.a .b');
+  let c = document.querySelector('.c');
+  assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
+  assert_equals(getComputedStyle(b_inside).zIndex, '1');
+  assert_equals(getComputedStyle(c).zIndex, '3');
+}, 'Nested :scope inside an :is');
+</script>

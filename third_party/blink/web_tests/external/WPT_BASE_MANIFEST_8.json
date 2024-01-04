@@ -2191,6 +2191,13 @@
        ]
       ]
      },
+     "fieldset-first-line-crash.html": [
+      "096558db61b598007870d941f28edde609ae4246",
+      [
+       null,
+       {}
+      ]
+     ],
      "grid-definition": {
       "grid-add-item-with-positioned-items-crash.html": [
        "7b2ed99f223ed4333c265f242b3f043afd9232b6",
@@ -4638,6 +4645,13 @@
       ]
      ],
      "crashtests": {
+      "chrome-bug-1512988.html": [
+       "babe3ca704118e1b3441868cd26cbc405f4965cc",
+       [
+        null,
+        {}
+       ]
+      ],
       "orthogonal-percent-height-multicol-crash.html": [
        "aca93d23fc067ee64eb54f91fec5dbebb16d94d6",
        [
@@ -105438,6 +105452,19 @@
      ],
      "at-supports-selector-placeholder.html": [
       "8ad858581478dad4721079b54c079fd93fab57c7",
+      [
+       null,
+       [
+        [
+         "/css/css-conditional/at-supports-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "at-supports-selector-webkit-slider-thumb.tentative.html": [
+      "3f777a7574a6d493c4d8a2fc2360c65cd1048ff4",
       [
        null,
        [
@@ -307366,6 +307393,10 @@
       "661016619c0c46c113dedc57aa890f62b35e137c",
       []
      ],
+     "scope-nesting-expected.txt": [
+      "790cc187f52296cde5b97777e95c11a8ed084fde",
+      []
+     ],
      "scope-visited-ref.html": [
       "91efd659216ab1de4efdfe2cac961bc6200ae62b",
       []
@@ -343745,7 +343776,7 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "cd6506dd2307e52bb5e20cf95d788dbf7d159961",
+      "0cbe9013842e33b4929f400fd31b4ca77fdb536e",
       []
      ],
      "getComputedStyle-width-scroll.tentative-expected.txt": [
@@ -394518,11 +394549,11 @@
      []
     ],
     "helpers.js": [
-     "56d941a3ed89382eb4d6a863444a9d57c5edccfe",
+     "5b30749bf377ca03aaa791b3a815033f9460cbda",
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "9782940d803ebc0e818560b392888f60ef56dc74",
+     "71ec1cdcc8742221eb47f5cce38ad0abecef27e3",
      []
     ],
     "remote-desktop-client-override.tentative.https-expected.txt": [
@@ -442450,7 +442481,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "44e5b7536aed6c3e33cbdf32640270f55cbcac83",
+      "4a21629d116f3281bd6a90ade69e37f3346d1b08",
       [
        null,
        {}
@@ -453574,7 +453605,7 @@
        ]
       ],
       "clip-path-computed.html": [
-       "8ec27a1472eac7cd5e0b4420a96f0b1c7ccfc793",
+       "481c1140b4d0c7564c89cf04d25b9228e5af9d86",
        [
         null,
         {}
@@ -471346,7 +471377,7 @@
       ]
      ],
      "getComputedStyle-pseudo.html": [
-      "35c5efe3fa83bd800e29714f3bc84ab3ded3244e",
+      "c07347a1973cf2fa9105907bbdd0015081bed417",
       [
        null,
        {}
@@ -531771,7 +531802,7 @@
        ]
       ],
       "window-properties.https.html": [
-       "c61fb04ae24ab8ec4c9c385dc99e25f35891b756",
+       "2fb408cdc9967ddc069e6686833cd74f04afba10",
        [
         null,
         {}
@@ -580449,6 +580480,15 @@
          {}
         ]
        ],
+       "event-handler-onmove.html": [
+        "e4454a20a15fa2ae20d4caf1574f0b97be7dbc45",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "event-handler-onresize.html": [
         "0e44e7272f02513c6de0c5aecc96f09005ad7396",
         [
@@ -598969,7 +599009,7 @@
      ]
     ],
     "permissions-policy-frame-policy-allowed-for-self.https.sub.html": [
-     "1aa219bffe8883f19a57314f2c54b0fc4f0df04d",
+     "563b7a80ebeb138680dff508d8cb0e0f2d6f79d1",
      [
       null,
       {
@@ -598987,7 +599027,7 @@
      ]
     ],
     "permissions-policy-frame-policy-allowed-for-some.https.sub.html": [
-     "a27018e98f16589151e368fe922edcbc3475ea6d",
+     "4515679c184aa7cc3e4b5caafee306f653ba626d",
      [
       null,
       {
@@ -598996,7 +599036,7 @@
      ]
     ],
     "permissions-policy-frame-policy-disallowed-for-all.https.sub.html": [
-     "e7869b1ea1a25309f47fadc01c9732fb3e77d8a9",
+     "8d5c3f43f439ca633234bcc873750c1ac0cea6a5",
      [
       null,
       {
@@ -654428,8 +654468,34 @@
       }
      ]
     ],
+    "public-key-credential-creation-options-from-json.https.window.js": [
+     "c0f1a08cf903b8b0f504df08e56be00c3a1e3248",
+     [
+      "webauthn/public-key-credential-creation-options-from-json.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
+        ],
+        [
+         "script",
+         "/resources/utils.js"
+        ],
+        [
+         "script",
+         "helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "public-key-credential-to-json.https.window.js": [
-     "1fbd4341cc597eb1f0a5140a5fd8f608056fb255",
+     "8ef25132197dda690d7ad36f63307f4a4f8ef7f1",
      [
       "webauthn/public-key-credential-to-json.https.window.html",
       {
