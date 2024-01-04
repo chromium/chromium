@@ -10356,6 +10356,22 @@
             ]
         }
     ],
+    "LocalPasswordForConsumers": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LocalPasswordForConsumers"
+                    ],
+                    "min_os_version": "15732.0.0"
+                }
+            ]
+        }
+    ],
     "LofnPermissiveUsbPassthrough": [
         {
             "platforms": [
