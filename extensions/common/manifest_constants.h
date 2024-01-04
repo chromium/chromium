@@ -680,8 +680,8 @@ inline constexpr char kManifestUnreadable[] =
     "Manifest file is missing or unreadable";
 inline constexpr char kManifestV2IsDeprecatedWarning[] =
     "Manifest version 2 is deprecated, and support will be removed in 2024. "
-    "See https://developer.chrome.com/docs/extensions/migrating/mv2-sunset/ for"
-    " more details.";
+    "See https://developer.chrome.com/docs/extensions/develop/migrate/mv2-deprecation-timeline"
+    " for details.";
 inline constexpr char kManifestVersionTooHighWarning[] =
     "The maximum currently-supported manifest version is *, but this is *.  "
     "Certain features may not work as expected.";
