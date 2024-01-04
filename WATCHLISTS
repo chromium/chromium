@@ -1200,7 +1200,8 @@
                   'google_apis/gcm/',
     },
     'generic_sensor': {
-      'filepath': 'services/device/generic_sensor/|'\
+      'filepath': 'content/browser/generic_sensor/|'\
+                  'services/device/generic_sensor/|'\
                   'third_party/blink/renderer/modules/sensor/',
     },
     'geolocation': {
