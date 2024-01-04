@@ -92,12 +92,21 @@ base::flat_map<VkFormat, VkImageUsageFlags> CreateImageUsageCache(
 bool IsFormatSupported(viz::SharedImageFormat format,
                        gfx::GpuMemoryBufferType gmb_type,
                        uint32_t usage) {
+  // GL interop does not work with external sampler. Also, see
+  // https://crbug.com/1394888.
+  // NOTE: At the current time this check is elided on Fuchsia as there is no
+  // alternative backing that can be used in this case on Fuchsia, which results
+  // in test failures if this short-circuit is applied. Fuchsia does not
+  // actually rely on GL interop via ExternalVkImageBacking - instead, it relies
+  // on Skia to do YUV/RGB conversion using Vulkan before accessing textures via
+  // GL (implemented by setting VideoFrame's MailboxHolder::texture_target to
+  // zero on Fuchsia and checking it everywhere necessary).
+  // TODO(crbug.com/1310026): Enable ImageBackingOzone to be used for all planes
+  // in Fuchsia and enable this check for Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
   if (HasGLES2ReadOrWriteUsage(usage) ||
       usage & SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT) {
     if (format.IsLegacyMultiplanar() || format.PrefersExternalSampler()) {
-      // GL interop does not work with external sampler. Also, see
-      // https://crbug.com/1394888.
       return false;
     }
   }
