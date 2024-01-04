@@ -43,7 +43,6 @@ class AutomationInternalCustomBindingsTest
     auto automation_internal_bindings =
         std::make_unique<AutomationInternalCustomBindings>(script_context,
                                                            bindings_system());
-    automation_internal_bindings_ = automation_internal_bindings.get();
     script_context->module_system()->RegisterNativeHandler(
         "automationInternal", std::move(automation_internal_bindings));
 
@@ -55,10 +54,6 @@ class AutomationInternalCustomBindingsTest
         automation_api->IsAvailableToExtension(extension.get());
     EXPECT_TRUE(availability.is_available()) << availability.message();
   }
-
- private:
-  raw_ptr<AutomationInternalCustomBindings, DanglingUntriaged>
-      automation_internal_bindings_ = nullptr;
 };
 
 TEST_F(AutomationInternalCustomBindingsTest, ActionStringMapping) {
