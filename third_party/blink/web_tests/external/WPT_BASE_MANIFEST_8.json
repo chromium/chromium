@@ -87986,7 +87986,7 @@
       ]
      ],
      "color-mix-currentcolor-background-repaint-parent.html": [
-      "eb0b979800baabe1895b1e6c0e09bbfd317ceb63",
+      "af894546942453cb50b30334a6a49ab3383d2418",
       [
        null,
        [
@@ -87999,7 +87999,7 @@
       ]
      ],
      "color-mix-currentcolor-background-repaint.html": [
-      "04578125cd55045dd525a7fca5fb6524f22e53ee",
+      "e584c4f9a838847e4f606c300ee31ef2677ec5a1",
       [
        null,
        [
@@ -88012,7 +88012,7 @@
       ]
      ],
      "color-mix-currentcolor-border-repaint-parent.html": [
-      "0e2c627532a02cd91c59c0b68be937c895c4a20b",
+      "a8d55ace8fce3e01e9c15e354342d298b627c07b",
       [
        null,
        [
@@ -88025,7 +88025,7 @@
       ]
      ],
      "color-mix-currentcolor-border-repaint.html": [
-      "f8ac80f5152eba5738b9f25b9bbdc6f0694b63ed",
+      "aeacd72d3d27d26a4cfca69c382c3565e2979971",
       [
        null,
        [
@@ -88038,7 +88038,7 @@
       ]
      ],
      "color-mix-currentcolor-outline-repaint-parent.html": [
-      "69d42c1808cd0435e8cceec5a848d0c348b75be5",
+      "e13880560637dd6483b58230d925d76084182505",
       [
        null,
        [
@@ -88051,7 +88051,7 @@
       ]
      ],
      "color-mix-currentcolor-outline-repaint.html": [
-      "764a1af93223b64f93c0e639366babec42ce818c",
+      "87f87b0edb7fe9aab0e32537cce90ebeb8f97262",
       [
        null,
        [
@@ -457163,6 +457163,13 @@
      ],
      "focused-element-in-excluded-subtree.html": [
       "85b3107802d134ed4a23f2bbfd05f6f3f84977b3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "focused-element-nested-anchor.html": [
+      "727da4046e69c926da7cb74c7a74bd5600f3599b",
       [
        null,
        {}
