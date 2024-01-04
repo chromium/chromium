@@ -19,14 +19,6 @@
     width: 200px;
   }
 
-  :host-context(body.jelly-enabled) #smartPrivacyIllo {
-    display: none;
-  }
-
-  :host-context(body:not(.jelly-enabled)) #smartPrivacyIlloJelly {
-    display: none;
-  }
-
   .large-icon {
     --iron-icon-fill-color: var(--cros-icon-color-prominent);
     --iron-icon-stroke-color: var(--cros-icon-color-prominent);
@@ -42,17 +34,8 @@
   }
 </style>
 
-<iron-media-query query="(prefers-color-scheme: dark)"
-    query-matches="{{isDarkModeActive_}}">
-</iron-media-query>
 <div class="banner">
-  <!-- No alt since image is purely decorative. -->
-  <img id="smartPrivacyIllo"
-      class="left-float-graphic"
-      src="[[getImageSource_(isDarkModeActive_)]]"
-      alt="" aria-hidden="true">
-
-  <iron-icon id="smartPrivacyIlloJelly"
+  <iron-icon id="smartPrivacyIllo"
       icon="os-settings-illo:smart-privacy"
       class="left-float-graphic">
   </iron-icon>

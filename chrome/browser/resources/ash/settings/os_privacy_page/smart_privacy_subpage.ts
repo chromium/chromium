@@ -9,7 +9,6 @@
 
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '/shared/settings/controls/settings_slider.js';
 import '../settings_shared.css.js';
@@ -63,14 +62,6 @@ export class SettingsSmartPrivacySubpage extends
   static get properties() {
     return {
       /**
-       * Whether the smart privacy page is being rendered in dark mode.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
        * Whether or not quick dim is enabled.
        */
       isQuickDimEnabled_: {
@@ -115,7 +106,6 @@ export class SettingsSmartPrivacySubpage extends
     };
   }
 
-  private isDarkModeActive_: boolean;
   private isQuickDimEnabled_: boolean;
   private isSnoopingProtectionEnabled_: boolean;
   private smartPrivacyQuickLockRangeMs_: SliderTick[];
@@ -127,18 +117,6 @@ export class SettingsSmartPrivacySubpage extends
     }
 
     this.attemptDeepLink();
-  }
-
-  /**
-   * Returns the image source based on whether the smart privacy page is being
-   * rendered in dark mode.
-   * @returns {string}
-   * @private
-   */
-  private getImageSource_(): string {
-    return this.isDarkModeActive_ ?
-        'chrome://os-settings/images/smart_privacy_dark.svg' :
-        'chrome://os-settings/images/smart_privacy.svg';
   }
 }
 
