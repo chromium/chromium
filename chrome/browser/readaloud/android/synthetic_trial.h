@@ -57,6 +57,9 @@ class SyntheticTrial {
    *
    * This function sets a pref so that the trial will be reactivated in future
    * sessions.
+   *
+   * This method only registers the trial the first time it is called.
+   * Subsequent calls have no effect.
    */
   void Activate();
 
