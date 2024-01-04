@@ -6,38 +6,23 @@ import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {FileTapHandler, TapEvent} from './file_tap_handler.js';
 
-/** @type {!FileTapHandler} handler the handler. */
-let handler;
+let handler: FileTapHandler;
 
-/**
- * @type {!Element}
- */
-let dummyTarget;
+let dummyTarget: Element;
 
-/**
- * @type {!Array<!Object>}
- */
-let events;
+let events: Array<{index: number, eventType: TapEvent}>;
 
-/**
- * @type {function(!Event, number, !TapEvent):boolean}
- */
-// @ts-ignore: error TS6133: 'e' is declared but its value is never read.
-const handleTap = (e, index, eventType) => {
-  events.push({index: index, eventType: eventType});
-  return false;
-};
+const handleTap =
+    (_e: TouchEvent, index: number, eventType: TapEvent): boolean => {
+      events.push({index, eventType});
+      return false;
+    };
 
-/**
- * @param {number} identifier
- * @param {number} clientX
- * @param {number} clientY
- */
-function createTouch(identifier, clientX, clientY) {
+function createTouch(identifier: number, clientX: number, clientY: number) {
   return new Touch({
-    identifier: identifier,
-    clientX: clientX,
-    clientY: clientY,
+    identifier,
+    clientX,
+    clientY,
     target: dummyTarget,
   });
 }
@@ -70,11 +55,8 @@ export function testTap() {
 
   // A tap event should be emitted for a single tap.
   assertEquals(1, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
-  assertEquals(TapEvent.TAP, events[0].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
-  assertEquals(0, events[0].index);
+  assertEquals(TapEvent.TAP, events[0]!.eventType);
+  assertEquals(0, events[0]!.index);
 }
 
 export function testTapMoveTolerance() {
@@ -129,12 +111,8 @@ export async function testLongTap() {
   });
   // A long press should be emitted if there was no movement.
   assertEquals(1, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
-  assertEquals(TapEvent.LONG_PRESS, events[0].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type
-  // 'Object'.
-  assertEquals(0, events[0].index);
+  assertEquals(TapEvent.LONG_PRESS, events[0]!.eventType);
+  assertEquals(0, events[0]!.index);
   handler.handleTouchEvents(
       new TouchEvent('touchend', {
         cancelable: true,
@@ -145,12 +123,8 @@ export async function testLongTap() {
       1, handleTap);
   // A long tap should be emitted if there was no movement.
   assertEquals(2, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
-  assertEquals(TapEvent.LONG_TAP, events[1].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type
-  // 'Object'.
-  assertEquals(0, events[1].index);
+  assertEquals(TapEvent.LONG_TAP, events[1]!.eventType);
+  assertEquals(0, events[1]!.index);
 }
 
 export async function testLongTapMoveTolerance() {
@@ -244,11 +218,8 @@ export function testTwoFingerTap() {
 
   // A two-finger tap event should be emitted, allowing for slight movement.
   assertEquals(1, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
-  assertEquals(TapEvent.TWO_FINGER_TAP, events[0].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
-  assertEquals(0, events[0].index);
+  assertEquals(TapEvent.TWO_FINGER_TAP, events[0]!.eventType);
+  assertEquals(0, events[0]!.index);
 
   // case 2: Release the first touch point first.
   handler.handleTouchEvents(
@@ -286,9 +257,6 @@ export function testTwoFingerTap() {
 
   // A two-finger tap event should be emitted.
   assertEquals(2, events.length);
-  // @ts-ignore: error TS2339: Property 'eventType' does not exist on type
-  // 'Object'.
-  assertEquals(TapEvent.TWO_FINGER_TAP, events[1].eventType);
-  // @ts-ignore: error TS2339: Property 'index' does not exist on type 'Object'.
-  assertEquals(10, events[1].index);
+  assertEquals(TapEvent.TWO_FINGER_TAP, events[1]!.eventType);
+  assertEquals(10, events[1]!.index);
 }
