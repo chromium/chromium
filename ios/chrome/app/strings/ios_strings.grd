@@ -4323,7 +4323,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Username copied
       </message>
       <message name="IDS_IOS_SETTING_IPH_SIGNIN" desc="Message for an IPH shown after users signs-in from the sign-in row in settings page. It informs the users that they can control all their data type synchronization to their account from a single page.">
-        You can now control all your account settings in one place
+        You can always manage what's saved in your Google Account
       </message>
       <message name="IDS_IOS_SETTING_OFF" desc="Generic status label displayed in Settings to show that a setting is currently turned off. [Length: 5em] [iOS only]" meaning="The setting is off.">
         Off
