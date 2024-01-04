@@ -62,6 +62,19 @@ TEST_F(UrlMatcherWithBypassTest, AddDomainWithBypass_NoSubdomainMatching) {
                    .matches);
 }
 
+TEST_F(UrlMatcherWithBypassTest, BuildBypassMatcher_Dedupes) {
+  auto resource_owner = masked_domain_list::ResourceOwner();
+  resource_owner.add_owned_properties("example.com");
+  resource_owner.add_owned_properties("example2.com");
+  auto* resource = resource_owner.add_owned_resources();
+  resource->set_domain("example.com");
+  auto bypass_matcher =
+      UrlMatcherWithBypass::BuildBypassMatcher(resource_owner);
+
+  // 2 distinct domains become 4 rules because of subdomain matching rules.
+  EXPECT_EQ(bypass_matcher.rules().size(), 4u);
+}
+
 class UrlMatcherWithBypassMatchTest : public testing::TestWithParam<MatchTest> {
 };
 
