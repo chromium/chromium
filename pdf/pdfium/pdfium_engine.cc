@@ -24,6 +24,7 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -3410,9 +3411,9 @@ ScopedFPDFBitmap PDFiumEngine::CreateBitmap(const gfx::Rect& rect,
     return nullptr;
   }
   int format = has_alpha ? FPDFBitmap_BGRA : FPDFBitmap_BGRx;
-  return ScopedFPDFBitmap(
-      FPDFBitmap_CreateEx(rect.width(), rect.height(), format,
-                          region.value().buffer.data(), region.value().stride));
+  return ScopedFPDFBitmap(FPDFBitmap_CreateEx(
+      rect.width(), rect.height(), format, region.value().buffer.data(),
+      base::checked_cast<int>(region.value().stride)));
 }
 
 void PDFiumEngine::GetPDFiumRect(int page_index,
