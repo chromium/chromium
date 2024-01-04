@@ -40,15 +40,6 @@
 # crbug.com/1416437
 -org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.*
 
-# crbug.com/1429436
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testUndoToolbarGroup
-
-# crbug.com/1429439
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionTabsOnly
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionView
--org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
-
 # crbug.com/1429444
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testTabSwitcherScrim
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnNoNextTab
@@ -78,10 +69,10 @@
 # crbug.com/1416433
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndLostActivationLongTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testWindowServerRedirect
-
 
 # crbug.com/1432046
 -org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
@@ -129,6 +120,7 @@
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_INCOGNITO_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_CCT_REGULAR_TAB
+-org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__REGULAR_TAB_INCOGNITO_CCT
 
 # crbug.com/1512916
 -org.chromium.chrome.browser.gesturenav.NavigationHandlerTest.testCloseChromeAtHistoryStackHead
@@ -193,4 +185,13 @@
 
 # crbug.com/1513741
 -org.chromium.chrome.browser.tab.TabUmaTest.testNoCreationStateNoTabUma
+-org.chromium.chrome.browser.tab.TabUmaTest.testTabStatusWhenSwitchedToLazyLoads
 
+# crbug.com/1515446
+-org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+
+# crbug.com/1515448
+-org.chromium.chrome.browser.site_settings.FamilyLinkControlsTest.*
+
+# crbug.com/1515449
+-org.chromium.chrome.browser.TabsTest.testHideKeyboardWhenOpeningWindow
