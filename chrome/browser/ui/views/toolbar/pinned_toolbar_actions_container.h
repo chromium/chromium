@@ -25,12 +25,14 @@ class Browser;
 class BrowserView;
 
 // Container for pinned actions shown in the toolbar.
+// TODO(crbug.com/1514477): Re-enable animation after the race condition issue
+// is addressed.
 class PinnedToolbarActionsContainer
-    : public ToolbarIconContainerView,
+    : public views::View,
       public PinnedToolbarActionsModel::Observer,
       public views::DragController,
       public ToolbarController::PinnedActionsDelegate {
-  METADATA_HEADER(PinnedToolbarActionsContainer, ToolbarIconContainerView)
+  METADATA_HEADER(PinnedToolbarActionsContainer, views::View)
 
  public:
   class PinnedActionToolbarButton : public ToolbarButton,
@@ -93,8 +95,9 @@ class PinnedToolbarActionsContainer
   void UpdateDividerFlexSpecification();
   void MovePinnedActionBy(actions::ActionId action_id, int delta);
 
-  // ToolbarIconContainerView:
-  void UpdateAllIcons() override;
+  void UpdateAllIcons();
+
+  // views::View:
   void OnThemeChanged() override;
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
