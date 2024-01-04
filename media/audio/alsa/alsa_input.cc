@@ -274,17 +274,21 @@ void AlsaPcmInputStream::Stop() {
 void AlsaPcmInputStream::Close() {
   if (device_handle_) {
     Stop();
-    int error = alsa_util::CloseDevice(wrapper_, device_handle_);
-    if (error < 0)
-      HandleError("PcmClose", error);
+    int error =
+        alsa_util::CloseDevice(wrapper_, device_handle_.ExtractAsDangling());
 
-    if (mixer_handle_)
-      alsa_util::CloseMixer(wrapper_, mixer_handle_, device_name_);
+    if (error < 0) {
+      HandleError("PcmClose", error);
+    }
+
+    mixer_element_handle_ = nullptr;
+
+    if (mixer_handle_) {
+      alsa_util::CloseMixer(wrapper_, mixer_handle_.ExtractAsDangling(),
+                            device_name_);
+    }
 
     audio_buffer_.reset();
-    device_handle_ = nullptr;
-    mixer_handle_ = nullptr;
-    mixer_element_handle_ = nullptr;
   }
 
   audio_manager_->ReleaseInputStream(this);
