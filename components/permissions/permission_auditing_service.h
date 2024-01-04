@@ -32,9 +32,7 @@ struct PermissionUsageSession;
 // For each combination of permission type and origin, the history is
 // stored on disk as a series of PermissionUsageSessions. Sessions expire
 // at the latest after 3 months, or when browsing data or history is cleared.
-class PermissionAuditingService
-    : public KeyedService,
-      public base::SupportsWeakPtr<PermissionAuditingService> {
+class PermissionAuditingService final : public KeyedService {
  public:
   typedef base::OnceCallback<void(std::vector<PermissionUsageSession>)>
       PermissionUsageHistoryCallback;
@@ -96,6 +94,10 @@ class PermissionAuditingService
   // Returns the time delta between two consequent expiration iterations.
   static base::TimeDelta GetUsageSessionCullingInterval();
 
+  base::WeakPtr<PermissionAuditingService> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   void ExpireOldSessions();
 
@@ -108,6 +110,8 @@ class PermissionAuditingService
       nullptr;
 
   base::RepeatingTimer timer_;
+
+  base::WeakPtrFactory<PermissionAuditingService> weak_ptr_factory_{this};
 };
 
 }  // namespace permissions
