@@ -129,9 +129,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, assign) web::WebStateID lastInsertedItemID;
-// Identifier of the latest dragged item. This property is set when the item is
+// Latest dragged item. This property is set when the item is
 // long pressed which does not always result in a drag action.
-@property(nonatomic, assign) web::WebStateID draggedItemID;
+@property(nonatomic, strong) TabSwitcherItem* draggedItem;
 // Animator to show or hide the empty state.
 @property(nonatomic, strong) UIViewPropertyAnimator* emptyStateAnimator;
 // The layout for the tab grid.
@@ -821,7 +821,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
 - (void)collectionView:(UICollectionView*)collectionView
     dragSessionWillBegin:(id<UIDragSession>)session {
-  [self.dragDropHandler dragWillBeginForItemWithID:_draggedItemID];
+  [self.dragDropHandler dragWillBeginForItem:_draggedItem];
   self.dragEndAtNewIndex = NO;
   self.localDragActionInProgress = YES;
   base::UmaHistogramEnumeration(kUmaGridViewDragDropTabs,
@@ -877,8 +877,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
   CHECK(itemIdentifier.type == GridItemType::Tab);
   if (_mode != TabGridModeSelection) {
-    _draggedItemID = itemIdentifier.tabSwitcherItem.identifier;
-    return @[ [self.dragDropHandler dragItemForItemWithID:_draggedItemID] ];
+    _draggedItem = itemIdentifier.tabSwitcherItem;
+    return @[ [self.dragDropHandler dragItemForItem:_draggedItem] ];
   }
 
   // Make sure that the long pressed cell is selected before initiating a drag

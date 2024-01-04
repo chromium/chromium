@@ -808,17 +808,12 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   return dragItems;
 }
 
-- (UIDragItem*)dragItemForItemWithID:(web::WebStateID)itemID {
-  web::WebState* webState = GetWebState(
-      self.webStateList, WebStateSearchCriteria{
-                             .identifier = itemID,
-                             .pinned_state = PinnedState::kNonPinned,
-                         });
-  return CreateTabDragItem(webState);
+- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
+  return [self dragItemForItemWithID:item.identifier];
 }
 
-- (void)dragWillBeginForItemWithID:(web::WebStateID)itemID {
-  _dragItemID = itemID;
+- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+  _dragItemID = item.identifier;
 }
 
 - (void)dragSessionDidEnd {
@@ -1095,6 +1090,16 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
                          });
   const GURL& URL = webState->GetVisibleURL();
   return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
+}
+
+// Returns a drag item for the given `itemID`.
+- (UIDragItem*)dragItemForItemWithID:(web::WebStateID)itemID {
+  web::WebState* webState = GetWebState(
+      self.webStateList, WebStateSearchCriteria{
+                             .identifier = itemID,
+                             .pinned_state = PinnedState::kNonPinned,
+                         });
+  return CreateTabDragItem(webState);
 }
 
 #pragma mark - TabGridPageMutator
