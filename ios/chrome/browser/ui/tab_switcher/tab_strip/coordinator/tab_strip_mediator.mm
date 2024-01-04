@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/coordinator/tab_strip_mediator.h"
 
 #import "components/favicon/ios/web_favicon_driver.h"
+#import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -53,6 +54,10 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   // FaviconObserver for each all webstates.
   std::unique_ptr<WebStateListFaviconDriverObserver>
       _webStateListFaviconObserver;
+
+  // ItemID of the dragged tab. Used to check if the dropped tab is from the
+  // same Chrome window.
+  web::WebStateID _dragItemID;
 }
 
 // The consumer for this object.
@@ -292,6 +297,47 @@ NSArray<TabSwitcherItem*>* CreateItems(WebStateList* web_state_list) {
   TabSwitcherItem* item =
       [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
   [self.consumer reloadItem:item];
+}
+
+#pragma mark - TabCollectionDragDropHandler
+
+- (UIDragItem*)dragItemForItem:(TabSwitcherItem*)item {
+  web::WebState* webState =
+      GetWebState(self.webStateList, WebStateSearchCriteria{
+                                         .identifier = item.identifier,
+                                     });
+  return CreateTabDragItem(webState);
+}
+
+- (void)dragWillBeginForItem:(TabSwitcherItem*)item {
+  _dragItemID = item.identifier;
+}
+
+- (void)dragSessionDidEnd {
+  _dragItemID = web::WebStateID();
+}
+
+- (UIDropOperation)dropOperationForDropSession:(id<UIDropSession>)session {
+  // TODO(crbug.com/1515507): Implement this.
+  return UIDropOperationMove;
+}
+
+- (void)dropItem:(UIDragItem*)dragItem
+               toIndex:(NSUInteger)destinationIndex
+    fromSameCollection:(BOOL)fromSameCollection {
+  // TODO(crbug.com/1515507): Implement this.
+}
+
+- (void)dropItemFromProvider:(NSItemProvider*)itemProvider
+                     toIndex:(NSUInteger)destinationIndex
+          placeholderContext:
+              (id<UICollectionViewDropPlaceholderContext>)placeholderContext {
+  // TODO(crbug.com/1515507): Implement this.
+}
+
+- (NSArray<UIDragItem*>*)allSelectedDragItems {
+  NOTREACHED_NORETURN() << "You should not be able to drag and drop multiple "
+                           "items. There is no selection mode in tab strip.";
 }
 
 @end

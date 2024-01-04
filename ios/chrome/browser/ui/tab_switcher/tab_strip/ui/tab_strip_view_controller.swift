@@ -25,8 +25,16 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
   // The New tab button.
   private let newTabButton: TabStripNewTabButton = TabStripNewTabButton(frame: .zero)
 
-  weak var mutator: TabStripMutator?
-  weak var delegate: TabStripViewControllerDelegate?
+  // Lastest dragged item. This property is set when the item
+  // is long pressed which does not always result in a drag action.
+  private var draggedItem: TabSwitcherItem?
+
+  // Handles model updates.
+  public weak var mutator: TabStripMutator?
+  // Tab strip  delegate.
+  public weak var delegate: TabStripViewControllerDelegate?
+  // Handles drag and drop interactions.
+  public weak var dragDropHandler: TabCollectionDragDropHandler?
 
   init() {
     layout = TabStripLayout()
@@ -34,6 +42,8 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
     super.init(nibName: nil, bundle: nil)
 
     collectionView.delegate = self
+    collectionView.dragDelegate = self
+    collectionView.dropDelegate = self
     collectionView.showsHorizontalScrollIndicator = false
 
     createRegistrations()
@@ -299,6 +309,81 @@ extension TabStripViewController: UICollectionViewDelegateFlowLayout {
     sizeForItemAt indexPath: IndexPath
   ) -> CGSize {
     return layout.calculcateCellSize(indexPath: indexPath)
+  }
+
+}
+
+extension TabStripViewController: UICollectionViewDragDelegate, UICollectionViewDropDelegate {
+  // MARK: - UICollectionViewDragDelegate
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    dragSessionWillBegin session: UIDragSession
+  ) {
+    dragDropHandler?.dragWillBegin(for: draggedItem)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    dragSessionDidEnd session: UIDragSession
+  ) {
+    dragDropHandler?.dragSessionDidEnd()
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    dragPreviewParametersForItemAt indexPath: IndexPath
+  ) -> UIDragPreviewParameters? {
+    guard let draggedCell = (collectionView.cellForItem(at: indexPath) as? TabStripCell) else {
+      return nil
+    }
+    return draggedCell.dragPreviewParameters
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    itemsForBeginning session: UIDragSession,
+    at indexPath: IndexPath
+  ) -> [UIDragItem] {
+    guard let item = diffableDataSource?.itemIdentifier(for: indexPath),
+      let dragItem = dragDropHandler?.dragItem(for: item),
+      let draggedCell = (collectionView.cellForItem(at: indexPath) as? TabStripCell)
+    else {
+      return []
+    }
+    draggedItem = item
+    return [dragItem]
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    itemsForAddingTo session: UIDragSession,
+    at indexPath: IndexPath,
+    point: CGPoint
+  ) -> [UIDragItem] {
+    // Prevent more items from getting added to the drag session.
+    return []
+  }
+
+  // MARK: - UICollectionViewDropDelegate
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    dropSessionDidUpdate session: UIDropSession,
+    withDestinationIndexPath destinationIndexPath: IndexPath?
+  ) -> UICollectionViewDropProposal {
+    guard let dropOperation: UIDropOperation = dragDropHandler?.dropOperation(for: session) else {
+      return UICollectionViewDropProposal(operation: .cancel)
+    }
+    return UICollectionViewDropProposal(
+      operation: dropOperation, intent: .insertAtDestinationIndexPath)
+  }
+
+  func collectionView(
+    _ collectionView: UICollectionView,
+    performDropWith coordinator: UICollectionViewDropCoordinator
+  ) {
+    // TODO(crbug.com/1515507): Implement this.
   }
 
 }

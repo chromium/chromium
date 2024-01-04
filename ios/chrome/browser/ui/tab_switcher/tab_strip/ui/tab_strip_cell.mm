@@ -148,6 +148,15 @@ UIImage* DefaultFavicon() {
   }
 }
 
+- (UIDragPreviewParameters*)dragPreviewParameters {
+  UIBezierPath* visiblePath =
+      [UIBezierPath bezierPathWithRoundedRect:self.bounds
+                                 cornerRadius:kCornerSize];
+  UIDragPreviewParameters* params = [[UIDragPreviewParameters alloc] init];
+  params.visiblePath = visiblePath;
+  return params;
+}
+
 #pragma mark - Setters
 
 - (void)setLoading:(BOOL)loading {

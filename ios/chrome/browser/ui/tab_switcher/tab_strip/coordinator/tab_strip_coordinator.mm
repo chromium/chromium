@@ -54,6 +54,7 @@
   self.mediator.browserState = browserState;
 
   self.tabStripViewController.mutator = self.mediator;
+  self.tabStripViewController.dragDropHandler = self.mediator;
 }
 
 - (void)stop {

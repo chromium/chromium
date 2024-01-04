@@ -28,6 +28,9 @@
 // Whether the cell separator is hidden.
 @property(nonatomic, assign) BOOL separatorHidden;
 
+// Preview parameters of the cell when dragged.
+@property(nonatomic, readonly) UIDragPreviewParameters* dragPreviewParameters;
+
 // Sets the title of the cell.
 - (void)setTitle:(NSString*)title;
 // Sets the favicon for the page. Passing nil sets the default image.
