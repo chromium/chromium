@@ -36,7 +36,6 @@ struct CredentialUIEntry;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Stores the most recently updated credential.
-// TODO(crbug.com/1359392): Remove this.
 - (void)setMostRecentlyUpdatedPasswordDetails:
     (const password_manager::CredentialUIEntry&)credential;
 

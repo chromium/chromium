@@ -211,10 +211,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // Number of insecure passwords.
 @property(assign) NSInteger insecurePasswordsCount;
 
-// Stores the most recently created or updated Affiliated Group.
-@property(nonatomic, assign) std::optional<password_manager::AffiliatedGroup>
-    mostRecentlyUpdatedAffiliatedGroup;
-
 // Stores the item which has form attribute's username and site equivalent to
 // that of `mostRecentlyUpdatedCred`.
 @property(nonatomic, weak) TableViewItem* mostRecentlyUpdatedItem;
