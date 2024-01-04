@@ -40,7 +40,7 @@ import StateType = chrome.automation.StateType;
  * A |ChromeVoxEditableTextBase| that implements text editing feedback
  * for automation tree text fields using anchor and focus selection.
  */
-export class AutomationRichEditableText extends AutomationEditableText {
+export class RichEditableText extends AutomationEditableText {
   private startLine_?: EditableLine;
   private endLine_?: EditableLine;
   private line_?: EditableLine;

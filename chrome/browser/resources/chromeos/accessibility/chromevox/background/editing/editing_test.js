@@ -1907,7 +1907,7 @@ AX_TEST_F(
       state = {editable: true};
       handler = new TextEditHandler(input);
       assertEquals(
-          'AutomationRichEditableText', handler.editableText_.constructor.name,
+          'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for textarea html tag.');
 
       // A rich editable via state.
@@ -1916,7 +1916,7 @@ AX_TEST_F(
       state = {editable: true, richlyEditable: true};
       handler = new TextEditHandler(input);
       assertEquals(
-          'AutomationRichEditableText', handler.editableText_.constructor.name,
+          'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for richly editable state.');
 
       // A rich editable via contenteditable. (aka <div contenteditable>).
@@ -1925,7 +1925,7 @@ AX_TEST_F(
       state = {editable: true};
       handler = new TextEditHandler(input);
       assertEquals(
-          'AutomationRichEditableText', handler.editableText_.constructor.name,
+          'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for content editable.');
 
       // A rich editable via contenteditable. (aka <div
@@ -1935,7 +1935,7 @@ AX_TEST_F(
       state = {editable: true};
       handler = new TextEditHandler(input);
       assertEquals(
-          'AutomationRichEditableText', handler.editableText_.constructor.name,
+          'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for content editable true.');
 
       // Note that it is not possible to have <div
@@ -2216,8 +2216,7 @@ AX_TEST_F('ChromeVoxEditingTest', 'TablesWithEmptyCells', async function() {
       .expectSpeech('A', 'selected')
 
       // Non-breaking spaces (\u00a0) get preprocessed later by PrimaryTts
-      // to ' '. This comes as part of speak line output in
-      // AutomationRichEditableText.
+      // to ' '. This comes as part of speak line output in RichEditableText.
       .call(doCmd('nativeNextCharacter'))
       .call(() => textField.setSelection(1, 1))
       .expectSpeech('\u00a0', 'row 1 column 1')
