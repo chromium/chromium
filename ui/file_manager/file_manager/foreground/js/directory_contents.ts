@@ -315,7 +315,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     return new Promise<UniversalEntry[]>((resolve, reject) => {
       startInterval(`Search.${metricVariant}.Latency`);
       const collectedEntries: UniversalEntry[] = [];
-      let workLeft: number = 1;
+      let workLeft = 1;
       readEntriesRecursively(
           folder,
           // More entries found callback.
@@ -944,7 +944,7 @@ export class FileFilter extends EventTarget {
         if (entry.fullPath) {
           const components = entry.fullPath.split('/');
           if (components[1] &&
-              DEFAULT_ANDROID_FOLDERS.indexOf(components[1]) == -1) {
+              DEFAULT_ANDROID_FOLDERS.indexOf(components[1]) === -1) {
             return false;
           }
         }

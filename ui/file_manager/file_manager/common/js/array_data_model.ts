@@ -160,7 +160,7 @@ export class ArrayDataModel<T = any> extends
    */
   slice(from?: number, to?: number): T[] {
     const arr = this.array_;
-    return this.indexes_.slice(from, to).map(function(index) {
+    return this.indexes_.slice(from, to).map((index) => {
       return arr[index]!;
     });
   }
@@ -222,7 +222,7 @@ export class ArrayDataModel<T = any> extends
     const sortPermutation =
         this.doSort_(this.sortStatus.field, this.sortStatus.direction);
     if (sortPermutation) {
-      const splicePermutation = deletePermutation.map(function(element) {
+      const splicePermutation = deletePermutation.map((element) => {
         return element !== -1 ? sortPermutation[element]! : -1;
       });
       this.dispatchPermutedEvent_(splicePermutation);
@@ -370,7 +370,7 @@ export class ArrayDataModel<T = any> extends
     for (let i = 0; i < this.length; i++) {
       positions[this.indexes_[i]!] = i;
     }
-    const sorted = this.indexes_.every(function(element, index, array) {
+    const sorted = this.indexes_.every((element, index, array) => {
       return index === 0 || compareFunction(element, array[index - 1]!) >= 0;
     });
     if (!sorted) {

@@ -5,7 +5,7 @@
 import {boolAttrSetter, crInjectTypeAndInit, jsSetter} from '../../../common/js/cr_ui.js';
 
 /** The next id suffix to use when giving each item an unique id. */
-let nextUniqueIdSuffix: number = 0;
+let nextUniqueIdSuffix = 0;
 
 /** Creates a new list item element. */
 export function createListItem(): ListItem {

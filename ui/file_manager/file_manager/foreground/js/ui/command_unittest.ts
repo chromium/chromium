@@ -17,7 +17,7 @@ export function setUp() {
 
 export function testCommandDefaultPrevented() {
   let calls = 0;
-  document.addEventListener('canExecute', function(event) {
+  document.addEventListener('canExecute', (event) => {
     const e = event as CanExecuteEvent;
     ++calls;
     assertFalse(e.defaultPrevented);

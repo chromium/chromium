@@ -175,7 +175,7 @@ export class MenuItem extends HTMLElement {
 
     let shortcutText = '';
 
-    ['CTRL', 'ALT', 'SHIFT', 'META'].forEach(function(mod) {
+    ['CTRL', 'ALT', 'SHIFT', 'META'].forEach((mod) => {
       if (mods[mod]) {
         shortcutText += loadTimeData.getString('SHORTCUT_' + mod) + '+';
       }
@@ -349,7 +349,7 @@ function swallowDoubleClick(e: MouseEvent) {
   // The following 'click' event (if e.type === 'mouseup') mustn't be taken
   // into account (it mustn't stop tracking clicks). Start event listening
   // after zero timeout.
-  setTimeout(function() {
+  setTimeout(() => {
     doc.addEventListener('click', onclick, true);
     doc.addEventListener('dblclick', swallow, true);
   });
