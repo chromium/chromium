@@ -21,6 +21,7 @@ class SurfaceTexture;
 }  // namespace gl
 
 namespace gpu {
+class ClientSharedImage;
 struct MailboxHolder;
 struct SyncToken;
 }  // namespace gpu
@@ -76,21 +77,24 @@ class MailboxToSurfaceBridge {
       const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) = 0;
 
-  // Creates a shared image bound to |buffer_handle|. Returns a mailbox holder
-  // that references the shared image with a sync token representing a point
-  // after the creation. Caller must call DestroySharedImage to free the shared
-  // image. Backing keeps reference to the |buffer_handle|.
-  virtual gpu::MailboxHolder CreateSharedImage(
+  // Creates a shared image bound to |buffer_handle|. Returns the shared image
+  // and populates |sync_token|.
+  // Caller must call DestroySharedImage to free the shared image. Backing keeps
+  // reference to the |buffer_handle|.
+  virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBufferHandle buffer_handle,
       gfx::BufferFormat buffer_format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
-      uint32_t usage) = 0;
+      uint32_t usage,
+      gpu::SyncToken& sync_token) = 0;
 
-  // Destroys a shared image created by CreateSharedImage. The mailbox_holder's
-  // sync_token must have been updated to a sync token after the last use of the
+  // Destroys a shared image created by CreateSharedImage. The sync_token
+  // argument must have been updated to a sync token after the last use of the
   // shared image.
-  virtual void DestroySharedImage(const gpu::MailboxHolder& mailbox_holder) = 0;
+  virtual void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
 };
 
 class MailboxToSurfaceBridgeFactory {

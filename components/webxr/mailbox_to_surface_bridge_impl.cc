@@ -341,40 +341,41 @@ void MailboxToSurfaceBridgeImpl::CreateGpuFence(
   gl_->DestroyGpuFenceCHROMIUM(id);
 }
 
-gpu::MailboxHolder MailboxToSurfaceBridgeImpl::CreateSharedImage(
+scoped_refptr<gpu::ClientSharedImage>
+MailboxToSurfaceBridgeImpl::CreateSharedImage(
     gfx::GpuMemoryBufferHandle buffer_handle,
     gfx::BufferFormat buffer_format,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
-    uint32_t usage) {
+    uint32_t usage,
+    gpu::SyncToken& sync_token) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
 
   auto* sii = context_provider_->SharedImageInterface();
   DCHECK(sii);
 
-  gpu::MailboxHolder mailbox_holder;
   CHECK_EQ(buffer_format, gfx::BufferFormat::RGBA_8888);
   auto client_shared_image = sii->CreateSharedImage(
       viz::SinglePlaneFormat::kRGBA_8888, size, color_space,
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
       "WebXrMailboxToSurfaceBridge", std::move(buffer_handle));
   CHECK(client_shared_image);
-  mailbox_holder.mailbox = client_shared_image->mailbox();
-  mailbox_holder.sync_token = sii->GenVerifiedSyncToken();
+  sync_token = sii->GenVerifiedSyncToken();
   DCHECK(!gpu::NativeBufferNeedsPlatformSpecificTextureTarget(buffer_format));
-  mailbox_holder.texture_target = GL_TEXTURE_2D;
-  return mailbox_holder;
+  return client_shared_image;
 }
 
 void MailboxToSurfaceBridgeImpl::DestroySharedImage(
-    const gpu::MailboxHolder& mailbox_holder) {
+    const gpu::SyncToken& sync_token,
+    scoped_refptr<gpu::ClientSharedImage> shared_image) {
   TRACE_EVENT0("gpu", __FUNCTION__);
   DCHECK(IsConnected());
+  DCHECK(shared_image);
 
   auto* sii = context_provider_->SharedImageInterface();
   DCHECK(sii);
-  sii->DestroySharedImage(mailbox_holder.sync_token, mailbox_holder.mailbox);
+  sii->DestroySharedImage(sync_token, std::move(shared_image));
 }
 
 void MailboxToSurfaceBridgeImpl::DestroyContext() {

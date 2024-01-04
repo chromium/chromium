@@ -1332,8 +1332,7 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
 
   // The previous sync token has been consumed by the renderer process, if we
   // want to use this buffer again, we need to wait on this token.
-  webxr_->GetAnimatingFrame()->shared_buffer->mailbox_holder.sync_token =
-      sync_token;
+  webxr_->GetAnimatingFrame()->shared_buffer->sync_token = sync_token;
 
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.

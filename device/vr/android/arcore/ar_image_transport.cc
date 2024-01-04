@@ -51,17 +51,16 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
     // Ensure that the following GPU command buffer actions are sequenced after
     // the shared buffer operations. The shared image interface uses a separate
     // command buffer stream.
-    DCHECK(camera_image_shared_buffer->mailbox_holder.sync_token.HasData());
-    WaitSyncToken(camera_image_shared_buffer->mailbox_holder.sync_token);
+    DCHECK(camera_image_shared_buffer->sync_token.HasData());
+    WaitSyncToken(camera_image_shared_buffer->sync_token);
     DVLOG(3) << __func__
              << ": "
-                "camera_image_shared_buffer->mailbox_holder.sync_"
+                "camera_image_shared_buffer->sync_"
                 "token="
-             << camera_image_shared_buffer->mailbox_holder.sync_token
-                    .ToDebugString();
+             << camera_image_shared_buffer->sync_token.ToDebugString();
   }
   // Sanity checks for the camera image buffer.
-  DCHECK(!camera_image_shared_buffer->mailbox_holder.mailbox.IsZero());
+  DCHECK(camera_image_shared_buffer->shared_image);
   DCHECK(camera_image_shared_buffer->local_eglimage.is_valid());
   DCHECK_EQ(camera_image_shared_buffer->size, frame_size);
 
@@ -92,12 +91,10 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
   std::unique_ptr<gfx::GpuFence> gpu_fence = gl_fence->GetGpuFence();
   mailbox_bridge_->WaitForClientGpuFence(*gpu_fence);
 
-  mailbox_bridge_->GenSyncToken(
-      &camera_image_shared_buffer->mailbox_holder.sync_token);
-  DVLOG(3)
-      << __func__ << ": camera_image_shared_buffer->mailbox_holder.sync_token="
-      << camera_image_shared_buffer->mailbox_holder.sync_token.ToDebugString();
-  return camera_image_shared_buffer->mailbox_holder;
+  mailbox_bridge_->GenSyncToken(&camera_image_shared_buffer->sync_token);
+  DVLOG(3) << __func__ << ": camera_image_shared_buffer->sync_token="
+           << camera_image_shared_buffer->sync_token.ToDebugString();
+  return camera_image_shared_buffer->mailbox_holder();
 }
 
 void ArImageTransport::CopyCameraImageToFramebuffer(

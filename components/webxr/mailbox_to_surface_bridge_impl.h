@@ -70,13 +70,17 @@ class MailboxToSurfaceBridgeImpl : public device::MailboxToSurfaceBridge {
                       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                           callback) override;
 
-  gpu::MailboxHolder CreateSharedImage(gfx::GpuMemoryBufferHandle buffer_handle,
-                                       gfx::BufferFormat buffer_format,
-                                       const gfx::Size& size,
-                                       const gfx::ColorSpace& color_space,
-                                       uint32_t usage) override;
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      gfx::BufferFormat buffer_format,
+      const gfx::Size& size,
+      const gfx::ColorSpace& color_space,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override;
 
-  void DestroySharedImage(const gpu::MailboxHolder& mailbox_holder) override;
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override;
 
  private:
   void BindContextProviderToCurrentThread();
