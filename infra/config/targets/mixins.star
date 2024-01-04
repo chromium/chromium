@@ -1629,12 +1629,12 @@ targets.mixin(
     name = "xcode_15_beta",
     args = [
         "--xcode-build-version",
-        "15c65",
+        "15c5500c",
     ],
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
-                name = "xcode_ios_15c65",
+                name = "xcode_ios_15c5500c",
                 path = "Xcode.app",
             ),
         ],
