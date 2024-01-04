@@ -100,11 +100,6 @@ class FormCache {
   bool ShowPredictions(const FormDataPredictions& form,
                        bool attach_predictions_to_dom);
 
-  // Stores the FieldRendererId of the fields that are eligible for manual
-  // filling in a set.
-  void SetFieldsEligibleForManualFilling(
-      const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
-
  private:
   friend class FormCacheTestApi;
 
@@ -142,9 +137,6 @@ class FormCache {
   // The cached initial values for checkable <input> elements. Entries are
   // keyed by the unique_renderer_form_control_id of the WebInputElements.
   std::map<FieldRendererId, bool> initial_checked_state_;
-
-  // Fields that are eligible to show manual filling on form interaction.
-  base::flat_set<FieldRendererId> fields_eligible_for_manual_filling_;
 };
 
 }  // namespace autofill

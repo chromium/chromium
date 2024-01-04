@@ -1072,14 +1072,6 @@ void AutofillAgent::EnableHeavyFormDataScraping() {
   is_heavy_form_data_scraping_enabled_ = true;
 }
 
-void AutofillAgent::SetFieldsEligibleForManualFilling(
-    const std::vector<FieldRendererId>& fields) {
-  if (!form_cache_) {
-    return;
-  }
-  form_cache_->SetFieldsEligibleForManualFilling(fields);
-}
-
 void AutofillAgent::GetPotentialLastFourCombinationsForStandaloneCvc(
     base::OnceCallback<void(const std::vector<std::string>&)>
         potential_matches) {

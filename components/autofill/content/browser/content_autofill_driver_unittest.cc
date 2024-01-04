@@ -280,9 +280,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void SetQueryPasswordSuggestion(bool query) override {}
 
-  void SetFieldsEligibleForManualFilling(
-      const std::vector<FieldRendererId>& fields) override {}
-
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 
   base::OnceClosure quit_closure_;

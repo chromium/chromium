@@ -79,8 +79,6 @@ class AutofillDriverIOS : public AutofillDriver,
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override;
-  void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override;
   void TriggerFormExtractionInDriverFrame() override;
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)

@@ -339,11 +339,6 @@ class AutofillDriverRouter {
       const std::vector<FormDataPredictions>& type_predictions,
       void (*callback)(AutofillDriver* target,
                        const std::vector<FormDataPredictions>& predictions));
-  void SendFieldsEligibleForManualFillingToRenderer(
-      AutofillDriver* source,
-      const std::vector<FieldGlobalId>& fields,
-      void (*callback)(AutofillDriver* target,
-                       const std::vector<FieldRendererId>& fields));
 
   // Event called by the browser, passed to the browser:
   void OnContextMenuShownInField(

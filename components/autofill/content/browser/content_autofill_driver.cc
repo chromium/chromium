@@ -351,17 +351,6 @@ void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
       });
 }
 
-void ContentAutofillDriver::SendFieldsEligibleForManualFillingToRenderer(
-    const std::vector<FieldGlobalId>& fields) {
-  router().SendFieldsEligibleForManualFillingToRenderer(
-      this, fields,
-      [](autofill::AutofillDriver* target,
-         const std::vector<FieldRendererId>& fields) {
-        cast(target)->GetAutofillAgent()->SetFieldsEligibleForManualFilling(
-            fields);
-      });
-}
-
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field,
     const std::u16string& value) {

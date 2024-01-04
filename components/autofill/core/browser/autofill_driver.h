@@ -206,11 +206,6 @@ class AutofillDriver {
 
   virtual net::IsolationInfo IsolationInfo() = 0;
 
-  // Tells the renderer about the form fields that are eligible for triggering
-  // manual filling on form interaction.
-  virtual void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) = 0;
-
   // Query's the DOM for four digit combinations that could potentially be of a
   // card number.
   virtual void GetFourDigitCombinationsFromDOM(

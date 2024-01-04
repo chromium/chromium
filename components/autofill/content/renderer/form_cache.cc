@@ -471,12 +471,6 @@ bool FormCache::ShowPredictions(const FormDataPredictions& form,
   return true;
 }
 
-void FormCache::SetFieldsEligibleForManualFilling(
-    const std::vector<FieldRendererId>& fields_eligible_for_manual_filling) {
-  fields_eligible_for_manual_filling_ = base::flat_set<FieldRendererId>(
-      std::move(fields_eligible_for_manual_filling));
-}
-
 void FormCache::SaveInitialValues(
     const std::vector<WebFormControlElement>& control_elements) {
   for (const WebFormControlElement& element : control_elements) {

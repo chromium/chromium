@@ -144,8 +144,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   void SetFocusRequiresScroll(bool require) override;
   void SetQueryPasswordSuggestion(bool required) override;
   void EnableHeavyFormDataScraping() override;
-  void SetFieldsEligibleForManualFilling(
-      const std::vector<FieldRendererId>& fields) override;
   void GetPotentialLastFourCombinationsForStandaloneCvc(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;

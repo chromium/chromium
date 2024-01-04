@@ -85,8 +85,6 @@ class TestAutofillDriverTemplate : public T {
       mojom::AutofillSuggestionAvailability suggestion_availability) override {}
   void PopupHidden() override {}
   net::IsolationInfo IsolationInfo() override { return isolation_info_; }
-  void SendFieldsEligibleForManualFillingToRenderer(
-      const std::vector<FieldGlobalId>& fields) override {}
   void TriggerFormExtractionInDriverFrame() override {}
   void TriggerFormExtractionInAllFrames(
       base::OnceCallback<void(bool)> form_extraction_finished_callback)

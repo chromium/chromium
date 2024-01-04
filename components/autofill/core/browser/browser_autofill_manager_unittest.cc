@@ -692,10 +692,6 @@ class MockAutofillDriver : public TestAutofillDriver {
       SendAutofillTypePredictionsToRenderer,
       (const std::vector<vector_experimental_raw_ptr<FormStructure>>& forms),
       (override));
-  MOCK_METHOD(void,
-              SendFieldsEligibleForManualFillingToRenderer,
-              (const std::vector<FieldGlobalId>& fields),
-              (override));
 };
 
 }  // namespace
@@ -1495,29 +1491,6 @@ TEST_F(BrowserAutofillManagerTest,
 
   // Setup expectations.
   EXPECT_CALL(*autofill_driver_, SendAutofillTypePredictionsToRenderer(_))
-      .Times(2);
-  FormsSeen({form1, form2});
-}
-
-// Test that when forms are seen, the renderer is sent the fields that are
-// eligible for manual filling.
-TEST_F(BrowserAutofillManagerTest,
-       OnFormsSeen_SendFieldsEligibleForManualFillingToRenderer) {
-  // Set up a queryable form.
-  FormData form1 = CreateTestCreditCardFormData(true, false);
-
-  // Set up a non-queryable form.
-  FormData form2;
-  form2.host_frame = test::MakeLocalFrameToken();
-  form2.unique_renderer_id = test::MakeFormRendererId();
-  form2.name = u"NonQueryable";
-  form2.url = form1.url;
-  form2.action = GURL("https://myform.com/submit.html");
-  form2.fields = {
-      CreateTestFormField("Querty", "qwerty", "", FormControlType::kInputText)};
-
-  // Set up expectations.
-  EXPECT_CALL(*autofill_driver_, SendFieldsEligibleForManualFillingToRenderer)
       .Times(2);
   FormsSeen({form1, form2});
 }

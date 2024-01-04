@@ -541,28 +541,6 @@ void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
   }
 }
 
-void AutofillDriverRouter::SendFieldsEligibleForManualFillingToRenderer(
-    AutofillDriver* source,
-    const std::vector<FieldGlobalId>& fields,
-    void (*callback)(AutofillDriver* target,
-                     const std::vector<FieldRendererId>& fields)) {
-  // Splits FieldGlobalIds by their frames and reduce them to the
-  // FieldRendererIds.
-  std::map<LocalFrameToken, std::vector<FieldRendererId>> fields_by_frame;
-  for (FieldGlobalId field : fields) {
-    fields_by_frame[field.frame_token].push_back(field.renderer_id);
-  }
-
-  // Send the FieldRendererIds to the individual frames.
-  for (const auto& p : fields_by_frame) {
-    LocalFrameToken frame = p.first;
-    const std::vector<FieldRendererId>& frame_fields = p.second;
-    if (auto* target = DriverOfFrame(frame)) {
-      callback(target, frame_fields);
-    }
-  }
-}
-
 void AutofillDriverRouter::RendererShouldAcceptDataListSuggestion(
     AutofillDriver* source,
     const FieldGlobalId& field,
