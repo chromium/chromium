@@ -531,6 +531,11 @@ extern const char kMagicStackDescription[];
 extern const char kMetrickitNonCrashReportName[];
 extern const char kMetrickitNonCrashReportDescription[];
 
+// Title and description for the flag to migrate syncing users to the signed-in
+// non-syncing state.
+extern const char kMigrateSyncingUserToSignedInName[];
+extern const char kMigrateSyncingUserToSignedInDescription[];
+
 // Title and description for the flag to enable Mixed Content auto-upgrading.
 extern const char kMixedContentAutoupgradeName[];
 extern const char kMixedContentAutoupgradeDescription[];
@@ -884,6 +889,11 @@ extern const char kTabPickupThresholdDescription[];
 // Title and description for the flag to enable tab resumption.
 extern const char kTabResumptionName[];
 extern const char kTabResumptionDescription[];
+
+// Title and description for the flag to undo the migration of syncing users to
+// the signed-in non-syncing state.
+extern const char kUndoMigrationOfSyncingUserToSignedInName[];
+extern const char kUndoMigrationOfSyncingUserToSignedInDescription[];
 
 // Title and description for the flag to enable using the
 // loadSimulatedRequest:responseHTMLString: API for displaying error pages in
