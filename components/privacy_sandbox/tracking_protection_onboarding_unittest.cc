@@ -815,6 +815,65 @@ TEST_F(TrackingProtectionSentimentTrackinWithSilentOnboarding,
           kControlImmediate,
       1);
 }
+class TrackingProtectionOnboardingStartupSentimentSurvey
+    : public TrackingProtectionOnboardingTest,
+      public testing::WithParamInterface<std::pair<
+          TrackingProtectionOnboarding::SentimentSurveyGroup,
+          TrackingProtectionOnboarding::SentimentSurveyGroupMetrics>> {
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_P(TrackingProtectionOnboardingStartupSentimentSurvey,
+       OnboardingStartupSentimentSurveyHistograms) {
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "SentimentSurveyGroup",
+      TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::kNotSet, 1);
+  tracking_protection_onboarding()->MaybeMarkEligible();
+  tracking_protection_onboarding()->OnboardingNoticeShown();
+  tracking_protection_onboarding()->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+
+  TrackingProtectionOnboarding::SentimentSurveyGroup register_group =
+      std::get<0>(GetParam());
+  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics metric_group =
+      std::get<1>(GetParam());
+
+  tracking_protection_onboarding()->RegisterSentimentSurveyGroup(
+      register_group);
+
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  histogram_tester_.ExpectBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "SentimentSurveyGroup",
+      metric_group, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TrackingProtectionOnboardingStartupSentimentSurvey,
+    TrackingProtectionOnboardingStartupSentimentSurvey,
+    testing::Values(
+        std::pair(
+            TrackingProtectionOnboarding::SentimentSurveyGroup::kControlDelayed,
+            TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                kControlDelayed),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kControlImmediate,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kControlImmediate),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kTreatmentDelayed,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kTreatmentDelayed),
+        std::pair(TrackingProtectionOnboarding::SentimentSurveyGroup::
+                      kTreatmentImmediate,
+                  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+                      kTreatmentImmediate)));
 
 class TrackingProtectionOffboardingTest
     : public TrackingProtectionOnboardingTest {
@@ -1816,6 +1875,29 @@ TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
       "PrivacySandbox.TrackingProtection.SilentOnboardingStartup."
       "EligibleToOnboardedDuration",
       eligible_to_onboarded_duration, 1);
+}
+
+TEST_F(TrackingProtectionOnboardingStartupStateTest,
+       OnboardingStartupAckedSinceHistogram) {
+  // Setup
+  tracking_protection_onboarding_service_->MaybeMarkEligible();
+  tracking_protection_onboarding_service_->OnboardingNoticeShown();
+  tracking_protection_onboarding_service_->OnboardingNoticeActionTaken(
+      TrackingProtectionOnboarding::NoticeAction::kGotIt);
+  auto delay = base::Seconds(15);
+  task_env_.FastForwardBy(delay);
+
+  // Action
+  tracking_protection_onboarding_service_.reset();
+  tracking_protection_onboarding_service_ =
+      std::make_unique<TrackingProtectionOnboarding>(
+          prefs(), version_info::Channel::UNKNOWN);
+
+  // Verification
+  histogram_tester_.ExpectTimeBucketCount(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "AckedSince",
+      delay, 1);
 }
 
 }  // namespace

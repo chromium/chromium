@@ -218,6 +218,41 @@ void RecordOnboardedHistogramsOnStartup(PrefService* pref_service) {
           TrackingProtectionOnboarding::OnboardingStartupState::kAckedOther);
       break;
   }
+  if (pref_service->HasPrefPath(
+          prefs::kTrackingProtectionOnboardingAckedSince)) {
+    auto acked_since =
+        base::Time::Now() -
+        pref_service->GetTime(prefs::kTrackingProtectionOnboardingAckedSince);
+    CreateTimingHistogramOnboardingStartup(
+        "PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince",
+        acked_since);
+  }
+}
+
+TrackingProtectionOnboarding::SentimentSurveyGroupMetrics
+ToSentimentSurveyGroupMetrics(
+    tracking_protection::TrackingProtectionSentimentSurveyGroup
+        internal_group) {
+  switch (internal_group) {
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::kNotSet:
+      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::kNotSet;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kControlDelayed:
+      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlDelayed;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kControlImmediate:
+      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kControlImmediate;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kTreatmentDelayed:
+      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentDelayed;
+    case tracking_protection::TrackingProtectionSentimentSurveyGroup::
+        kTreatmentImmediate:
+      return TrackingProtectionOnboarding::SentimentSurveyGroupMetrics::
+          kTreatmentImmediate;
+  }
 }
 
 void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
@@ -244,6 +279,16 @@ void RecordHistogramsOnboardingOnStartup(PrefService* pref_service) {
       RecordOnboardedHistogramsOnStartup(pref_service);
       break;
   }
+  TrackingProtectionOnboarding::SentimentSurveyGroupMetrics group =
+      ToSentimentSurveyGroupMetrics(
+          static_cast<
+              tracking_protection::TrackingProtectionSentimentSurveyGroup>(
+              pref_service->GetInteger(
+                  prefs::kTrackingProtectionSentimentSurveyGroup)));
+  base::UmaHistogramEnumeration(
+      "PrivacySandbox.TrackingProtection.OnboardingStartup."
+      "SentimentSurveyGroup",
+      group);
 }
 
 void RecordHistogramsSilentOnboardingOnStartup(PrefService* pref_service) {

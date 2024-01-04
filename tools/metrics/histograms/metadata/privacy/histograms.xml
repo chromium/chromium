@@ -1226,6 +1226,17 @@ reviewer.
 </histogram>
 
 <histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.AckedSince"
+    units="ms" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the time the user acknowledges the notice. This is emitted once on
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram
     name="PrivacySandbox.TrackingProtection.OnboardingStartup.EligibleToOnboardedDuration"
     units="ms" expires_after="2024-09-30">
   <owner>jacobstanley@google.com</owner>
@@ -1233,6 +1244,17 @@ reviewer.
   <summary>
     Records the duration it takes while being eligible up till onboarding to
     3PCD. This occurs once per profile during the startup of onboarding.
+  </summary>
+</histogram>
+
+<histogram
+    name="PrivacySandbox.TrackingProtection.OnboardingStartup.SentimentSurveyGroup"
+    enum="SentimentSurveyGroupMetrics" expires_after="2024-09-30">
+  <owner>jacobstanley@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records the user's sentiment survey group. This occurs once per profile
+    during the browser startup.
   </summary>
 </histogram>
 

@@ -44752,6 +44752,7 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="kTreatmentImmediate"/>
   <int value="2" label="kControlDelayed"/>
   <int value="3" label="kTreatmentDelayed"/>
+  <int value="4" label="kNotSet"/>
 </enum>
 
 <enum name="ServiceRequestResultType">

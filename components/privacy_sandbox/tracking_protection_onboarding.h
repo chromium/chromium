@@ -63,7 +63,8 @@ class TrackingProtectionOnboarding : public KeyedService {
     kTreatmentImmediate = 1,
     kControlDelayed = 2,
     kTreatmentDelayed = 3,
-    kMaxValue = kTreatmentDelayed,
+    kNotSet = 4,
+    kMaxValue = kNotSet,
   };
 
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
