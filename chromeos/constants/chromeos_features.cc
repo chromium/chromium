@@ -149,6 +149,9 @@ BASE_FEATURE(kKioskHeartbeatsViaERP,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Controls enabling / disabling the mahi feature.
+BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -293,6 +296,10 @@ bool IsJellyrollEnabled() {
   // Only enable Jellyroll if Jelly is also enabled as this is how tests expect
   // this to behave.
   return IsJellyEnabled() && base::FeatureList::IsEnabled(kJellyroll);
+}
+
+bool IsMahiEnabled() {
+  return base::FeatureList::IsEnabled(kMahi);
 }
 
 bool IsOrcaEnabled() {
