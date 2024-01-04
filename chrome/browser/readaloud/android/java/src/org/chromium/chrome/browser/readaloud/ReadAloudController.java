@@ -56,7 +56,7 @@ import java.util.Map;
 
 /**
  * The main entrypoint component for Read Aloud feature. It's responsible for checking its
- * availability and triggering playback. Only instantiate after native is initialized.
+ * availability and triggering playback.
  */
 public class ReadAloudController
         implements Player.Observer,
@@ -223,13 +223,8 @@ public class ReadAloudController
                     Log.d(TAG, "onSuccess called for %s", url);
                     ReadAloudMetrics.recordIsPageReadable(isReadable);
                     ReadAloudMetrics.recordIsPageReadabilitySuccessful(true);
-
                     // isPlaybackEnabled() should only be checked if isReadable == true.
                     isReadable = isReadable && ReadAloudFeatures.isPlaybackEnabled();
-                    if (isReadable) {
-                        ReadAloudFeatures.activateKnownReadableTrial();
-                    }
-
                     mReadabilityMap.put(url, isReadable);
                     mTimepointsSupportedMap.put(url, timepointsSupported);
                     mPendingRequests.remove(url);
@@ -261,8 +256,6 @@ public class ReadAloudController
             BottomSheetController bottomSheetController,
             BrowserControlsSizer browserControlsSizer,
             LayoutManager layoutManager) {
-        ReadAloudFeatures.init();
-
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         new OneShotCallback<Profile>(mProfileSupplier, this::onProfileAvailable);
@@ -521,7 +514,6 @@ public class ReadAloudController
         ApplicationStatus.unregisterApplicationStateListener(this);
         resetCurrentPlayback();
         mStateToRestoreOnBringingToForeground = null;
-        ReadAloudFeatures.shutdown();
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {

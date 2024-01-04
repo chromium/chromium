@@ -78,14 +78,6 @@ android_library("features_java") {
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
-  ]
-  srcjar_deps = [ ":features_jni_headers" ]
-}
-
-generate_jni("features_jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudFeatures.java",
   ]
 }
 
@@ -175,7 +167,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
   ]
   deps = [
-    ":features_java",
     ":hooks_java",
     ":java",
     ":java_resources",
@@ -314,7 +305,7 @@ robolectric_library("player_junit_java") {
   ]
 }
 
-static_library("native") {
+static_library("prefs") {
   sources = [
     "//chrome/browser/readaloud/android/prefs.cc",
     "//chrome/browser/readaloud/android/prefs.h",
@@ -327,6 +318,4 @@ static_library("native") {
     "//components/pref_registry",
     "//components/prefs",
   ]
-
-  public_deps = [ ":features_jni_headers" ]
 }
