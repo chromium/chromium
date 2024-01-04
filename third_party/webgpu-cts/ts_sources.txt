@@ -146,6 +146,7 @@ src/unittests/test_query.spec.ts
 src/unittests/texture_ok.spec.ts
 src/webgpu/examples.spec.ts
 src/webgpu/listing.ts
+src/webgpu/multisample_info.ts
 src/webgpu/api/operation/labels.spec.ts
 src/webgpu/api/operation/onSubmittedWorkDone.spec.ts
 src/webgpu/api/operation/reflection.spec.ts
@@ -348,8 +349,9 @@ src/webgpu/compat/api/validation/render_pipeline/shader_module.spec.ts
 src/webgpu/compat/api/validation/render_pipeline/vertex_state.spec.ts
 src/webgpu/compat/api/validation/texture/createTexture.spec.ts
 src/webgpu/compat/api/validation/texture/cubeArray.spec.ts
-src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/idl_test.ts
+src/webgpu/idl/constructable.spec.ts
+src/webgpu/idl/exposed.html.ts
 src/webgpu/idl/constants/flags.spec.ts
 src/webgpu/shader/types.ts
 src/webgpu/shader/values.ts
@@ -647,6 +649,7 @@ src/webgpu/shader/execution/memory_model/barrier.spec.ts
 src/webgpu/shader/execution/memory_model/coherence.spec.ts
 src/webgpu/shader/execution/memory_model/weak.spec.ts
 src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
+src/webgpu/shader/execution/shader_io/fragment_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/execution/statement/increment_decrement.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
