@@ -30,7 +30,7 @@ enum class StatusCode {
   AUTH_FAILURE = 1,
   // The operation failed.
   FAILED = 2,
-  // Something is terribly wrong and we shohuldn't retry the requests until
+  // Something is terribly wrong and we shouldn't retry the requests until
   // next startup.
   FAILED_NON_RETRIABLE = 3,
 };

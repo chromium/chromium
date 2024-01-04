@@ -240,7 +240,7 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
     }
   }
 
-  void AddCorrectSubscriptionResponce(
+  void AddCorrectSubscriptionResponse(
       const std::string& private_topic = std::string(),
       const std::string& token = kFakeInstanceIdToken,
       int http_responce_code = net::HTTP_OK) {
@@ -255,7 +255,7 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
         serialized_response, CreateStatusForTest(net::OK, serialized_response));
   }
 
-  void AddCorrectUnSubscriptionResponceForTopic(const std::string& topic) {
+  void AddCorrectUnSubscriptionResponseForTopic(const std::string& topic) {
     url_loader_factory()->AddResponse(
         FullUnSubscriptionUrlForTopic(topic),
         CreateHeadersForTest(net::HTTP_OK), std::string() /* response_body */,
@@ -317,7 +317,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldUpdateSubscribedTopics) {
   ASSERT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
                   .empty());
 
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
 
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       topics, kFakeInstanceIdToken);
@@ -361,7 +361,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRepeatRequestsOnFailure) {
                   .empty());
 
   // The first subscription attempt will fail.
-  AddCorrectSubscriptionResponce(
+  AddCorrectSubscriptionResponse(
       /*private_topic=*/std::string(), kFakeInstanceIdToken,
       net::HTTP_INTERNAL_SERVER_ERROR);
   // Since this is a generic failure, not an auth error, the existing access
@@ -385,7 +385,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRepeatRequestsOnFailure) {
       per_user_topic_subscription_manager->HaveAllRequestsFinishedForTest());
 
   // The second attempt will succeed.
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
 
   // Repeating subscriptions shouldn't bypass backoff.
   // This should have resulted in a request for an access token. Return one.
@@ -495,7 +495,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   // that subscriptions finished.
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "valid_access_token", base::Time::Max());
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
   WaitForSubscriptionRequestsFinished(kInvalidationTopicsCount);
   EXPECT_FALSE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
                    .empty());
@@ -522,7 +522,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
                   .empty());
 
   // The first subscription attempt will fail with an "unauthorized" error.
-  AddCorrectSubscriptionResponce(
+  AddCorrectSubscriptionResponse(
       /*private_topic=*/std::string(), kFakeInstanceIdToken,
       net::HTTP_UNAUTHORIZED);
   // This error should result in invalidating the access token.
@@ -548,7 +548,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
 
   // A new access token should have been requested. Serving one will trigger
   // another subscription attempt; let this one succeed.
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
   EXPECT_CALL(identity_observer, OnAccessTokenRemovedFromCache(_, _)).Times(0);
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "valid_access_token", base::Time::Max());
@@ -579,7 +579,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
                   .empty());
 
   // The first subscription attempt will fail with an "unauthorized" error.
-  AddCorrectSubscriptionResponce(
+  AddCorrectSubscriptionResponse(
       /*private_topic=*/std::string(), kFakeInstanceIdToken,
       net::HTTP_UNAUTHORIZED);
   // This error should result in invalidating the access token.
@@ -633,7 +633,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   ASSERT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
                   .empty());
 
-  AddCorrectSubscriptionResponce(
+  AddCorrectSubscriptionResponse(
       /*private_topic=*/std::string(), kFakeInstanceIdToken,
       net::HTTP_FORBIDDEN);
 
@@ -651,7 +651,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
        ShouldDisableTopicsAndDeleteFromPrefs) {
   auto topics = GetSequenceOfTopics(kInvalidationTopicsCount);
 
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
 
   auto per_user_topic_subscription_manager = BuildRegistrationManager();
   EXPECT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
@@ -668,7 +668,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   auto enabled_topics =
       GetSequenceOfTopicsStartingAt(3, kInvalidationTopicsCount - 3);
   for (const auto& topic : disabled_topics)
-    AddCorrectUnSubscriptionResponceForTopic(topic.first);
+    AddCorrectUnSubscriptionResponseForTopic(topic.first);
 
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       enabled_topics, kFakeInstanceIdToken);
@@ -700,7 +700,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   EXPECT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
                   .empty());
 
-  AddCorrectSubscriptionResponce("old-token-topic");
+  AddCorrectSubscriptionResponse("old-token-topic");
 
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       topics, kFakeInstanceIdToken);
@@ -719,7 +719,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
                                        .FindString(kProjectId));
 
   std::string token = "new-fake-token";
-  AddCorrectSubscriptionResponce("new-token-topic", token);
+  AddCorrectSubscriptionResponse("new-token-topic", token);
 
   per_user_topic_subscription_manager->UpdateSubscribedTopics(topics, token);
 
@@ -741,7 +741,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
        ShouldDeleteTopicsFromPrefsWhenRequestFails) {
   auto topics = GetSequenceOfTopics(kInvalidationTopicsCount);
 
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
 
   auto per_user_topic_subscription_manager = BuildRegistrationManager();
   EXPECT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
@@ -788,7 +788,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
        ShouldChangeStatusToDisabledWhenTopicsRegistrationFailed) {
   auto topics = GetSequenceOfTopics(kInvalidationTopicsCount);
 
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
 
   auto per_user_topic_subscription_manager = BuildRegistrationManager();
   ASSERT_TRUE(per_user_topic_subscription_manager->GetSubscribedTopicsForTest()
@@ -819,7 +819,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
   WaitForState(SubscriptionChannelState::SUBSCRIPTION_FAILURE);
 
   // Configure correct response and retry.
-  AddCorrectSubscriptionResponce();
+  AddCorrectSubscriptionResponse();
   per_user_topic_subscription_manager->UpdateSubscribedTopics(
       topics, kFakeInstanceIdToken);
   WaitForState(SubscriptionChannelState::ENABLED);
@@ -842,7 +842,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRecordTokenStateHistogram) {
   {
     base::HistogramTester histograms;
 
-    AddCorrectSubscriptionResponce(/*private_topic=*/"", "original_token");
+    AddCorrectSubscriptionResponse(/*private_topic=*/"", "original_token");
     per_user_topic_subscription_manager->UpdateSubscribedTopics(
         topics, "original_token");
     WaitForSubscriptionRequestsFinished(kInvalidationTopicsCount);
@@ -881,7 +881,7 @@ TEST_F(PerUserTopicSubscriptionManagerTest, ShouldRecordTokenStateHistogram) {
   {
     base::HistogramTester histograms;
 
-    AddCorrectSubscriptionResponce(/*private_topic=*/"", "different_token");
+    AddCorrectSubscriptionResponse(/*private_topic=*/"", "different_token");
     per_user_topic_subscription_manager->UpdateSubscribedTopics(
         topics, "different_token");
     WaitForSubscriptionRequestsFinished(kInvalidationTopicsCount);
