@@ -23,6 +23,11 @@ build_webui("build") {
     "cr_toast/cr_toast_manager.ts",
   ]
 
+  non_web_component_files = [
+    "cr_container_shadow_mixin.ts",
+    "i18n_mixin.ts",
+  ]
+
   icons_html_files = [ "icons.html" ]
 
   css_files = [

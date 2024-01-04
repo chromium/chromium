@@ -7,7 +7,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import './scanning_fonts.css.js';
 import './strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './multi_page_scan.html.js';
