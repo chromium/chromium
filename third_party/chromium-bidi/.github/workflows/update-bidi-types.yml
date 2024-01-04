@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out spec repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: ${{ github.event.inputs.repository || 'w3c/webdriver-bidi' }}
           ref: ${{ github.event.inputs.source_ref || 'main' }}
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out mapper repository
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Set up Python
         uses: actions/setup-python@0a5c61591373683505ea898e09a3ea4f39ef2b9c # v5.0.0
         with:
@@ -62,7 +62,7 @@ jobs:
       - name: Install and build npm dependencies
         run: npm ci
       - name: Download WebDriverBidi CDDL
-        uses: actions/download-artifact@e9ef242655d12993efdcda9058dee2db83a2cb9b # v3.0.2
+        uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: all-cddl
       - name: Generate TypeScript types

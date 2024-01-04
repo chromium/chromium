@@ -15,7 +15,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Checkout `browser-automation-bot/update-browser-version` if exits
         run: |
           (git ls-remote --exit-code --heads origin refs/heads/browser-automation-bot/update-browser-version &&

@@ -18,7 +18,7 @@ jobs:
     if: contains(github.event.label.name, 'puppeteer')
     steps:
       - name: Checkout Chromium-BiDi
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           path: 'bidi'
       - name: Set up Node.js
@@ -39,7 +39,7 @@ jobs:
         run: npm link
 
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           repository: 'puppeteer/puppeteer'
           path: 'puppeteer'

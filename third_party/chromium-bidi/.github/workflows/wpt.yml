@@ -53,7 +53,7 @@ jobs:
       pages: write
       id-token: write
     steps:
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: chromedriver-headless-artifacts
       - name: Prepare Pages
@@ -80,22 +80,22 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
       - name: Clean up WPT metadata
         run: rm -rf wpt-metadata/*
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: chromedriver-headless-wpt-metadata
           path: wpt-metadata/chromedriver/headless
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: chromedriver-headful-wpt-metadata
           path: wpt-metadata/chromedriver/headful
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: mapper-headless-wpt-metadata
           path: wpt-metadata/mapper/headless
-      - uses: actions/download-artifact@9bc31d5ccc31df68ecc42ccf4149144866c47d8a # v3.0.2
+      - uses: actions/download-artifact@f44cd7b40bfd40b6aa1cc1b9b5b7bf03d3c67110 # v4.1.0
         with:
           name: mapper-headful-wpt-metadata
           path: wpt-metadata/mapper/headful
@@ -116,7 +116,7 @@ jobs:
         head: [headful, headless]
     steps:
       - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v3.5.3
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           submodules: true
       - name: Set up Node.js
