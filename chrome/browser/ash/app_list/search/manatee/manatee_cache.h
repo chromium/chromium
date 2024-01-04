@@ -28,16 +28,19 @@ class ManateeCache {
   ManateeCache(const ManateeCache&) = delete;
   ManateeCache& operator=(const ManateeCache&) = delete;
 
-  using OnResultsCallback = base::OnceCallback<void(std::vector<double>&)>;
+  using EmbeddingsList = std::vector<std::vector<double>>;
+  using OnResultsCallback = base::OnceCallback<void(EmbeddingsList&)>;
 
   // Registers a callback to be run whenever the results are updated.
   void RegisterCallback(OnResultsCallback callback);
 
   std::string GetRequestBody(std::string message);
 
-  void UrlLoader(std::string message);
+  std::string VectorToString(std::vector<std::string> messages);
 
-  std::vector<double> GetResponse();
+  void UrlLoader(std::vector<std::string> messages);
+
+  EmbeddingsList GetResponse();
 
  private:
   void OnJsonReceived(const std::unique_ptr<std::string> json_response);
@@ -46,7 +49,7 @@ class ManateeCache {
 
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader();
 
-  std::vector<double> response_;
+  EmbeddingsList response_;
 
   // Callback to run when results are updated.
   OnResultsCallback results_callback_;

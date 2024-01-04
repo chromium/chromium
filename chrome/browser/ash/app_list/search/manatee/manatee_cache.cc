@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_list/search/manatee/manatee_cache.h"
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -57,7 +58,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
       })");
 
-std::optional<std::vector<double>> GetList(const base::Value* value) {
+std::optional<ManateeCache::EmbeddingsList> GetList(const base::Value* value) {
   if (!value->is_dict()) {
     return std::nullopt;
   }
@@ -67,11 +68,16 @@ std::optional<std::vector<double>> GetList(const base::Value* value) {
     return std::nullopt;
   }
 
-  std::vector<double> embedding;
-  for (const auto& embedding_val : *field) {
-    embedding.push_back(embedding_val.GetDouble());
+  ManateeCache::EmbeddingsList embeddings;
+  for (const auto& embedding_list : *field) {
+    std::vector<double> embedding_vec;
+    for (const auto& embedding_val : embedding_list.GetList()) {
+      embedding_vec.push_back(embedding_val.GetDouble());
+    }
+    embeddings.push_back(embedding_vec);
   }
-  return embedding;
+
+  return embeddings;
 }
 
 }  // namespace
@@ -89,12 +95,25 @@ void ManateeCache::RegisterCallback(ManateeCache::OnResultsCallback callback) {
 
 std::string ManateeCache::GetRequestBody(std::string message) {
   static constexpr char kRequestBody[] = R"({
-        "text": "$1"
+        "text": $1
       })";
   return base::ReplaceStringPlaceholders(kRequestBody, {message}, nullptr);
 }
 
-void ManateeCache::UrlLoader(std::string message) {
+std::string ManateeCache::VectorToString(std::vector<std::string> messages) {
+  std::string result = "[";
+
+  for (size_t i = 0; i < messages.size(); ++i) {
+    result += "\"" + messages[i] + "\"";
+    if (i != messages.size() - 1) {
+      result += ", ";
+    }
+  }
+  result += "]";
+  return result;
+}
+
+void ManateeCache::UrlLoader(std::vector<std::string> messages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Make a new request. This destroys any existing |url_loader_| which will
   // cancel that request if it is in-progress.
@@ -102,7 +121,7 @@ void ManateeCache::UrlLoader(std::string message) {
   url_loader_ = MakeRequestLoader();
   url_loader_->SetRetryOptions(5, network::SimpleURLLoader::RETRY_ON_5XX);
 
-  url_loader_->AttachStringForUpload(GetRequestBody(message),
+  url_loader_->AttachStringForUpload(GetRequestBody(VectorToString(messages)),
                                      "application/json");
   // Perform the request.
   url_loader_->DownloadToString(
@@ -136,15 +155,16 @@ void ManateeCache::OnJsonParsed(
     return;
   }
 
-  std::optional<std::vector<double>> embedding = GetList(&*result).value();
-  if (embedding.has_value()) {
-    std::move(results_callback_).Run(embedding.value());
+  std::optional<ManateeCache::EmbeddingsList> embeddings =
+      GetList(&*result).value();
+  if (embeddings.has_value()) {
+    std::move(results_callback_).Run(embeddings.value());
     results_callback_.Reset();
-    response_ = std::move(embedding.value());
+    response_ = std::move(embeddings.value());
   }
 }
 
-std::vector<double> ManateeCache::GetResponse() {
+ManateeCache::EmbeddingsList ManateeCache::GetResponse() {
   return response_;
 }
 

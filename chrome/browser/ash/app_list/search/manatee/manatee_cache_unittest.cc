@@ -39,9 +39,11 @@ class ManateeCacheTest : public testing::Test {
   ManateeCacheTest() = default;
   ~ManateeCacheTest() override = default;
 
-  void OnResponseCallback(std::vector<double>& reply) { reply_ = reply; }
+  void OnResponseCallback(ManateeCache::EmbeddingsList& reply) {
+    reply_ = reply;
+  }
 
-  std::vector<double>& GrabReply() { return reply_; }
+  ManateeCache::EmbeddingsList& GrabReply() { return reply_; }
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -69,11 +71,10 @@ class ManateeCacheTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<signin::IdentityTestEnvironment, DisableDanglingPtrDetection>
-      identity_test_env_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  std::vector<double> reply_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  ManateeCache::EmbeddingsList reply_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
@@ -84,15 +85,15 @@ class ManateeCacheTest : public testing::Test {
   base::WeakPtrFactory<ManateeCacheTest> weak_factory_{this};
 };
 
-TEST_F(ManateeCacheTest, URLLoader) {
+TEST_F(ManateeCacheTest, URLLoaderSingleInputString) {
   std::unique_ptr<ManateeCache> manateeCache =
       std::make_unique<ManateeCache>(profile_, shared_url_loader_factory_);
-  std::vector<double> response = {0.1, 0.2, 0.3};
+  ManateeCache::EmbeddingsList expected = {{0.1, 0.2, 0.3}};
   identity_test_env_->MakePrimaryAccountAvailable(kEmail,
                                                   signin::ConsentLevel::kSync);
   constexpr char kValidJsonResponse[] = R"(
       {
-        "embedding": [0.1, 0.2, 0.3]
+        "embedding": [[0.1, 0.2, 0.3]]
       })";
   url_loader_factory_.AddResponse(kRequestUrl, kValidJsonResponse,
                                   net::HTTP_OK);
@@ -100,16 +101,39 @@ TEST_F(ManateeCacheTest, URLLoader) {
   manateeCache->RegisterCallback(base::BindOnce(
       &ManateeCacheTest::OnResponseCallback, weak_factory_.GetWeakPtr()));
 
-  manateeCache->UrlLoader("Hello World!");
+  manateeCache->UrlLoader({"Hello World!"});
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(ManateeCacheTest::GrabReply(), response);
+  EXPECT_EQ(ManateeCacheTest::GrabReply(), expected);
 }
 
-TEST_F(ManateeCacheTest, GetRequestBody) {
+TEST_F(ManateeCacheTest, URLLoaderMultiInputString) {
   std::unique_ptr<ManateeCache> manateeCache =
       std::make_unique<ManateeCache>(profile_, shared_url_loader_factory_);
-  std::string expected = "{\n        \"text\": \"Hello World!\"\n      }";
-  std::string response = manateeCache->GetRequestBody("Hello World!");
+  ManateeCache::EmbeddingsList expected = {{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}};
+  identity_test_env_->MakePrimaryAccountAvailable(kEmail,
+                                                  signin::ConsentLevel::kSync);
+  constexpr char kValidJsonResponse[] = R"(
+      {
+        "embedding": [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
+      })";
+  url_loader_factory_.AddResponse(kRequestUrl, kValidJsonResponse,
+                                  net::HTTP_OK);
+
+  manateeCache->RegisterCallback(base::BindOnce(
+      &ManateeCacheTest::OnResponseCallback, weak_factory_.GetWeakPtr()));
+
+  manateeCache->UrlLoader({"Hello World!", "Hello"});
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(ManateeCacheTest::GrabReply(), expected);
+}
+
+TEST_F(ManateeCacheTest, StringFormatting) {
+  std::unique_ptr<ManateeCache> manateeCache =
+      std::make_unique<ManateeCache>(profile_, shared_url_loader_factory_);
+  std::string expected =
+      "{\n        \"text\": [\"Hello World!\", \"Hi.\"]\n      }";
+  std::string response = manateeCache->GetRequestBody(
+      manateeCache->VectorToString({"Hello World!", "Hi."}));
   EXPECT_EQ(response, expected);
 }
 
