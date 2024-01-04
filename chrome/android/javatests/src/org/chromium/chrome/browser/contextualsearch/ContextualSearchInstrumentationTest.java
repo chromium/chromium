@@ -13,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -22,14 +20,13 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests the Contextual Search Manager using instrumentation tests. */
 // NOTE: Disable online detection so we we'll default to online on test bots with no network.
-@RunWith(ParameterizedRunner.class)
-@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=" + ChromeFeatureList.CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION
@@ -57,8 +54,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testNonResolveGesture(@EnabledFeature int enabledFeature) throws Exception {
+    public void testNonResolveGesture() throws Exception {
         simulateNonResolveSearch(SEARCH_NODE);
         assertPeekingPanelNonResolve();
         closePanel();
@@ -70,8 +66,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testResolveGesture(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveGesture() throws Exception {
         simulateResolveSearch(SEARCH_NODE);
         assertPeekingPanelResolve();
         closePanel();
@@ -83,9 +78,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testPrivacyNeutralPeekExpandMaximize(@EnabledFeature int enabledFeature)
-            throws Exception {
+    public void testPrivacyNeutralPeekExpandMaximize() throws Exception {
         mPolicy.overrideAllowSendingPageUrlForTesting(true);
         mPolicy.overrideDecidedStateForTesting(false);
         longPressNode(SEARCH_NODE);
@@ -111,8 +104,7 @@ public class ContextualSearchInstrumentationTest extends ContextualSearchInstrum
     @SmallTest
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testNonResolveCaption(@EnabledFeature int enabledFeature) throws Exception {
+    public void testNonResolveCaption() throws Exception {
         // Simulate a non-resolve search and make sure a Caption is shown if appropriate.
         simulateNonResolveSearch(SEARCH_NODE);
         Assert.assertTrue(mPanel.getSearchBarControl().getCaptionVisible());

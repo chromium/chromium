@@ -21,10 +21,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 
-import androidx.annotation.IntDef;
 import androidx.test.platform.app.InstrumentationRegistry;
-
-import com.google.common.collect.ImmutableMap;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -35,11 +32,7 @@ import org.junit.Rule;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -56,7 +49,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.C
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeResolveSearch;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFakeServer.FakeSlowResolveSearch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -78,9 +70,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.touch_selection.SelectionEventType;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.util.Arrays;
 import java.util.concurrent.TimeoutException;
 
 /** This is a base class for various Contextual Search instrumentation tests. */
@@ -308,16 +297,6 @@ public class ContextualSearchInstrumentationBase {
 
     // --------------------------------------------------------------------------------------------
 
-    /** Parameter provider for enabling/disabling triggering-related Features. */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet().value(EnabledFeature.RELATED_SEARCHES).name("rsearches"));
-        }
-    }
-
     /**
      * The DOM node for the word "search" on the test page, which causes a plain search response
      * with the Search Term "Search" from the Fake server.
@@ -349,30 +328,6 @@ public class ContextualSearchInstrumentationBase {
     protected static final String EXTERNAL_APP_URL =
             "intent://test/#Intent;scheme=externalappscheme;end";
 
-    // --------------------------------------------------------------------------------------------
-    // Feature maps that we use for parameterized tests.
-    // NOTE: We want to test all Features under development both on and off, regardless of whether
-    // they are enabled in fieldtrial_testing_config.json, to catch regressions during rollout.
-    // --------------------------------------------------------------------------------------------
-
-    /** This represents the current fully-launched configuration, with no other Features. */
-    protected static final ImmutableMap<String, Boolean> ENABLE_NONE =
-            ImmutableMap.of(
-                    // Test setup for base feature
-                    ChromeFeatureList.RELATED_SEARCHES, false);
-
-    /** This is the Related Searches Feature in the MVP configuration. */
-    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES =
-            ImmutableMap.of(
-                    // Test setup for a user that triggers Related Searches
-                    ChromeFeatureList.RELATED_SEARCHES, true);
-
-    // --------------------------------------------------------------------------------------------
-    // Feature maps that we use for individual tests.
-    // --------------------------------------------------------------------------------------------
-    protected static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_BAR =
-            ENABLE_RELATED_SEARCHES;
-
     protected ContextualSearchManager mManager;
     protected ContextualSearchPolicy mPolicy;
     protected ContextualSearchPanel mPanel;
@@ -394,21 +349,6 @@ public class ContextualSearchInstrumentationBase {
 
     // State for an individual test.
     private FakeSlowResolveSearch mLatestSlowResolveSearch;
-
-    @IntDef({EnabledFeature.NONE, EnabledFeature.RELATED_SEARCHES})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface EnabledFeature {
-        int NONE = 0;
-        int RELATED_SEARCHES = 1;
-    }
-
-    // Tracks whether a long-press triggering experiment is active.
-    private @EnabledFeature int mEnabledFeature;
-
-    @ParameterAnnotations.UseMethodParameterBefore(FeatureParamProvider.class)
-    public void setFeatureParameterForTest(@EnabledFeature int enabledFeature) {
-        mEnabledFeature = enabledFeature;
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -482,23 +422,8 @@ public class ContextualSearchInstrumentationBase {
         // Set the test Features map for all tests regardless of whether they are parameterized.
         // Non-parameterized tests typically override this setting by calling setTestFeatures
         // again.
-        ImmutableMap<String, Boolean> whichFeature = null;
-        switch (mEnabledFeature) {
-            case EnabledFeature.NONE:
-                whichFeature = ENABLE_NONE;
-                break;
-            case EnabledFeature.RELATED_SEARCHES:
-                whichFeature = ENABLE_RELATED_SEARCHES;
-                break;
-        }
-        Assert.assertNotNull(
-                "Did you change test Features without setting the correct Map?", whichFeature);
-        FeatureList.setTestFeatures(whichFeature);
         // If Related Searches is enabled we need to also set that it's OK to send page content.
-        // TODO(donnd): Find a better way to discern if we need to establish sendingUrlOK is needed.
-        if (mEnabledFeature == EnabledFeature.RELATED_SEARCHES) {
-            mPolicy.overrideAllowSendingPageUrlForTesting(true);
-        }
+        mPolicy.overrideAllowSendingPageUrlForTesting(true);
 
         MockitoAnnotations.openMocks(this);
     }
@@ -1389,18 +1314,6 @@ public class ContextualSearchInstrumentationBase {
     protected void expandPanelAndAssert() throws TimeoutException {
         expandPanel();
         waitForPanelToExpand();
-    }
-
-    /**
-     * Simple sequence useful for checking if a Search Request is prefetched. Resets the fake server
-     * and clicks near to cause a search, then closes the panel, which takes us back to the starting
-     * state except that the fake server knows if a prefetch occurred.
-     */
-    protected void clickToTriggerPrefetch() throws Exception {
-        mFakeServer.reset();
-        simulateResolveSearch("search");
-        closePanel();
-        waitForPanelToCloseAndSelectionEmpty();
     }
 
     /** Force the Panel to peek. */
