@@ -1845,7 +1845,7 @@
     },
     {
       name: "FontMatchingCTMigration",
-      status: "stable",
+      status: "test",
     },
     {
       name: "FontPaletteAnimation",
