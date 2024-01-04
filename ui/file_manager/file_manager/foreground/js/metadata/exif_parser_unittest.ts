@@ -123,7 +123,7 @@ class ByteWriter {
    */
   writeString(str: string) {
     this.validateWrite(str.length);
-    for (let i = 0; i != str.length; i++) {
+    for (let i = 0; i !== str.length; i++) {
       this.view_.setUint8(this.pos_++, str.charCodeAt(i));
     }
   }

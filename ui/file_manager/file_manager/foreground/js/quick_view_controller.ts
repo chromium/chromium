@@ -420,7 +420,7 @@ export class QuickViewController {
 
     const params =
         await this.getQuickViewParameters_(entry, items, tasks, canDelete);
-    if (this.quickViewModel_.getSelectedEntry() != entry) {
+    if (this.quickViewModel_.getSelectedEntry() !== entry) {
       return;  // Bail: there's no point drawing a stale selection.
     }
 
@@ -485,12 +485,12 @@ export class QuickViewController {
         const result =
             await this.loadThumbnailFromDrive_(thumbnailUrl, modificationTime);
         if (result.status === LoadImageResponseStatus.SUCCESS) {
-          if (params.type == 'video') {
+          if (params.type === 'video') {
             params.videoPoster = {
               data: result.data,
               dataType: 'url',
             };
-          } else if (params.type == 'image') {
+          } else if (params.type === 'image') {
             params.sourceContent = {
               data: result.data,
               dataType: 'url',
@@ -653,7 +653,7 @@ export class QuickViewController {
   private async loadRawFileThumbnailFromImageLoader_(entry: FileEntry):
       Promise<LoadImageResponse> {
     return new Promise((resolve, reject) => {
-      entry.file(function requestFileThumbnail(file) {
+      entry.file((file) => {
         const request = LoadImageRequest.createForUrl(entry.toURL());
         request.maxWidth = THUMBNAIL_MAX_WIDTH;
         request.maxHeight = THUMBNAIL_MAX_HEIGHT;

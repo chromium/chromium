@@ -135,7 +135,7 @@ export class UnmountCommand extends FilesCommand {
       } catch (error) {
         console.warn('Cannot unmount (redacted):', error);
         console.debug(`Cannot unmount '${volume.volumeId}':`, error);
-        if (error != VolumeError.PATH_NOT_MOUNTED) {
+        if (error !== VolumeError.PATH_NOT_MOUNTED) {
           errorCallback(volume.volumeType);
         }
       }
@@ -224,7 +224,7 @@ export class FormatCommand extends FilesCommand {
 
     // |root| is null for unrecognized volumes. Enable format command for such
     // volumes.
-    const isUnrecognizedVolume = (root == null);
+    const isUnrecognizedVolume = (root === null);
     // See the comment in execute() for why doing this.
     if (!root) {
       root = directoryModel.getCurrentDirEntry();
@@ -527,10 +527,10 @@ export class ToggleHiddenAndroidFoldersCommand extends FilesCommand {
         !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
             VolumeType.ANDROID_FILES);
     const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    const isInMyFiles = currentRootType == RootType.MY_FILES ||
-        currentRootType == RootType.DOWNLOADS ||
-        currentRootType == RootType.CROSTINI ||
-        currentRootType == RootType.ANDROID_FILES;
+    const isInMyFiles = currentRootType === RootType.MY_FILES ||
+        currentRootType === RootType.DOWNLOADS ||
+        currentRootType === RootType.CROSTINI ||
+        currentRootType === RootType.ANDROID_FILES;
     event.canExecute = hasAndroidFilesVolumeInfo && isInMyFiles;
     event.command.setHidden(!event.canExecute);
     event.command.checked = fileManager.fileFilter.isAllAndroidFoldersVisible();
@@ -2085,7 +2085,7 @@ export class GuestOsShareCommand extends FilesCommand {
     };
     // Show a confirmation dialog if we are sharing the root of a volume.
     // Non-Drive volume roots are always '/'.
-    if (entry.fullPath == '/') {
+    if (entry.fullPath === '/') {
       fileManager.ui.confirmDialog.showHtml(
           str(`SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`),
           strf(
@@ -2094,9 +2094,9 @@ export class GuestOsShareCommand extends FilesCommand {
           share, () => {});
     } else if (
         info.isRootEntry &&
-        (info.rootType == RootType.DRIVE ||
-         info.rootType == RootType.COMPUTERS_GRAND_ROOT ||
-         info.rootType == RootType.SHARED_DRIVES_GRAND_ROOT)) {
+        (info.rootType === RootType.DRIVE ||
+         info.rootType === RootType.COMPUTERS_GRAND_ROOT ||
+         info.rootType === RootType.SHARED_DRIVES_GRAND_ROOT)) {
       // Only show the dialog for My Drive, Shared Drives Grand Root and
       // Computers Grand Root.  Do not show for roots of a single Shared
       // Drive or Computer.
@@ -2560,12 +2560,12 @@ export class VolumeStorageCommand extends FilesCommand {
     }
 
     // Can execute only for local file systems.
-    if (currentVolumeInfo.volumeType == VolumeType.MY_FILES ||
-        currentVolumeInfo.volumeType == VolumeType.DOWNLOADS ||
-        currentVolumeInfo.volumeType == VolumeType.CROSTINI ||
-        currentVolumeInfo.volumeType == VolumeType.GUEST_OS ||
-        currentVolumeInfo.volumeType == VolumeType.ANDROID_FILES ||
-        currentVolumeInfo.volumeType == VolumeType.DOCUMENTS_PROVIDER) {
+    if (currentVolumeInfo.volumeType === VolumeType.MY_FILES ||
+        currentVolumeInfo.volumeType === VolumeType.DOWNLOADS ||
+        currentVolumeInfo.volumeType === VolumeType.CROSTINI ||
+        currentVolumeInfo.volumeType === VolumeType.GUEST_OS ||
+        currentVolumeInfo.volumeType === VolumeType.ANDROID_FILES ||
+        currentVolumeInfo.volumeType === VolumeType.DOCUMENTS_PROVIDER) {
       event.canExecute = true;
     }
   }

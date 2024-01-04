@@ -305,7 +305,7 @@ export function isRootEntry(
  * @return True if the event was triggered by the selection menu button.
  */
 export function isFromSelectionMenu(event: Event) {
-  return (event.target as HTMLElement).id == 'selection-menu-button';
+  return (event.target as HTMLElement).id === 'selection-menu-button';
 }
 
 /**
@@ -361,7 +361,7 @@ export function shouldShowMenuItemsForEntry(
 export function hasCapability(
     fileManager: CommandHandlerDeps, entries: Array<Entry|FilesAppEntry>,
     capability: MetadataKey) {
-  if (entries.length == 0) {
+  if (entries.length === 0) {
     return false;
   }
 

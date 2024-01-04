@@ -231,19 +231,19 @@ export class ToolbarController {
     this.updateRefreshCommand_();
 
     // Update the label "x files selected." on the header.
-    let text: string = '';
+    let text = '';
     if (selection.totalCount === 0) {
       text = '';
     } else if (selection.totalCount === 1) {
-      if (selection.directoryCount == 0) {
+      if (selection.directoryCount === 0) {
         text = str('ONE_FILE_SELECTED');
-      } else if (selection.fileCount == 0) {
+      } else if (selection.fileCount === 0) {
         text = str('ONE_DIRECTORY_SELECTED');
       }
     } else {
-      if (selection.directoryCount == 0) {
+      if (selection.directoryCount === 0) {
         text = strf('MANY_FILES_SELECTED', selection.fileCount);
-      } else if (selection.fileCount == 0) {
+      } else if (selection.fileCount === 0) {
         text = strf('MANY_DIRECTORIES_SELECTED', selection.directoryCount);
       } else {
         text = strf('MANY_ENTRIES_SELECTED', selection.totalCount);
@@ -269,7 +269,7 @@ export class ToolbarController {
     }
 
     // Update visibility of the restore-from-trash button.
-    this.restoreFromTrashButton_.hidden = (selection.totalCount == 0) ||
+    this.restoreFromTrashButton_.hidden = (selection.totalCount === 0) ||
         this.directoryModel_.getCurrentRootType() !== RootType.TRASH;
 
     this.togglePinnedCommand_.canExecuteChange(this.listContainer_.currentList);
@@ -284,7 +284,7 @@ export class ToolbarController {
       const bodyClassList =
           this.filesSelectedLabel_.ownerDocument.body.classList;
       bodyClassList.toggle('selecting', selection.totalCount > 0);
-      if (bodyClassList.contains('check-select') !=
+      if (bodyClassList.contains('check-select') !==
           (this.directoryModel_.getFileListSelection() as
            FileListSelectionModel)
               .getCheckSelectMode()) {
