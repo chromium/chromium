@@ -270,7 +270,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTestDefaultDisabled,
     &kTestDefaultEnabled,
     &kThumbnailPlaceholder,
-    &kTrustedWebActivityPostMessage,
     &kStartSurfaceAndroid,
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
@@ -835,10 +834,6 @@ BASE_FEATURE(kTestDefaultEnabled,
 
 BASE_FEATURE(kThumbnailPlaceholder,
              "ThumbnailPlaceholder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrustedWebActivityPostMessage,
-             "TrustedWebActivityPostMessage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This feature updates the triggering logic for the default search engine

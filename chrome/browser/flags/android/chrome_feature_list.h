@@ -152,7 +152,6 @@ BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kThumbnailPlaceholder);
 BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
-BASE_DECLARE_FEATURE(kTrustedWebActivityPostMessage);
 BASE_DECLARE_FEATURE(kStartSurfaceAndroid);
 BASE_DECLARE_FEATURE(kStartSurfaceOnTablet);
 BASE_DECLARE_FEATURE(kStartSurfaceReturnTime);
