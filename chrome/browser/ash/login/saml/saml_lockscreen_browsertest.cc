@@ -5,6 +5,7 @@
 #include <array>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -744,8 +745,11 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
+  const GaiaUrls& gaia_urls = *GaiaUrls::GetInstance();
   fake_gaia_mixin()->fake_gaia()->SetFixedResponse(
-      GaiaUrls::GetInstance()->embedded_setup_chromeos_url(),
+      features::IsGaiaReauthEndpointEnabled()
+          ? gaia_urls.embedded_reauth_chromeos_url()
+          : gaia_urls.embedded_setup_chromeos_url(),
       net::HTTP_NOT_FOUND);
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.

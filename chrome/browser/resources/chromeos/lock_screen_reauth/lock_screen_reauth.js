@@ -77,7 +77,7 @@ class LockReauth extends LockReauthBase {
        */
       isVerifyUser_: {
         type: Boolean,
-        value: true,
+        value: false,
       },
 
       /**
@@ -133,14 +133,6 @@ class LockReauth extends LockReauthBase {
        * Whether the user's password has changed.
        */
       isPasswordChanged_: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Whether to show Saml Notice Message.
-       */
-      showSamlNoticeMessage_: {
         type: Boolean,
         value: false,
       },
@@ -223,7 +215,6 @@ class LockReauth extends LockReauthBase {
     this.isConfirmPassword_ = false;
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
-    this.showSamlNoticeMessage_ = false;
     this.authDomain_ = '';
   }
 
@@ -273,7 +264,9 @@ class LockReauth extends LockReauthBase {
     this.email_ = data.email;
     this.isDefaultSsoProvider = data.doSamlRedirect;
     this.isSaml_ = this.isDefaultSsoProvider;
-    if (!data['doSamlRedirect']) {
+    if (data['doSamlRedirect']) {
+      this.isVerifyUser_ = true;
+    } else {
       this.doGaiaRedirect_();
     }
     chrome.send('authenticatorLoaded');
@@ -388,7 +381,6 @@ class LockReauth extends LockReauthBase {
      * Thus have to be AFTER resetState_.
      */
     this.isSigninFrameDisplayed_ = true;
-    this.showSamlNoticeMessage_ = true;
   }
 
   /** @private */

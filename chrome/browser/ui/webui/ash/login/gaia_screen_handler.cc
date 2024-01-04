@@ -1731,8 +1731,13 @@ GaiaScreenHandler::GaiaScreenMode GaiaScreenHandler::GetGaiaScreenMode(
       em::LoginAuthenticationBehaviorProto::SAML_INTERSTITIAL) {
     if (email.empty()) {
       return GaiaScreenHandler::GAIA_SCREEN_MODE_SAML_REDIRECT;
+    } else if (features::IsGaiaReauthEndpointEnabled()) {
+      // Email is not empty, i.e. this is an existing user going through reauth.
+      // This means they should use Gaia reauth endpoint regardless of
+      // LoginAuthenticationBehavior policy and this should be reflected in
+      // their screen mode.
+      return GaiaScreenHandler::GAIA_SCREEN_MODE_DEFAULT;
     }
-
     user_manager::KnownUser known_user(g_browser_process->local_state());
     // If there's a populated email, we must check first that this user is using
     // SAML in order to decide whether to show the interstitial page.

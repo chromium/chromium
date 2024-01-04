@@ -1577,8 +1577,11 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SamlReauthWithSamlRedirect) {
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
 
-  // Verify that samlredirect Gaia path is used by the Gaia screen.
-  EXPECT_EQ(GaiaPath(), WizardContext::GaiaPath::kSamlRedirect);
+  // Since this is a reauth of existing user, we expect them to use reauth
+  // endpoint regardless of LoginAuthenticationBehavior policy.
+  EXPECT_EQ(GaiaPath(), features::IsGaiaReauthEndpointEnabled()
+                            ? WizardContext::GaiaPath::kReauth
+                            : WizardContext::GaiaPath::kSamlRedirect);
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, PRE_PRE_TransferCookiesAffiliated) {

@@ -342,8 +342,6 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
                                            ->gaia_config.gaia_path;
   if (GaiaScreenHandler::GetGaiaScreenMode(account_id.GetUserEmail()) ==
       GaiaScreenHandler::GaiaScreenMode::GAIA_SCREEN_MODE_SAML_REDIRECT) {
-    // TODO(b/309131477): use reauth path in "SAML redirect" mode if this is a
-    // reauthentication of a known user.
     gaia_path = WizardContext::GaiaPath::kSamlRedirect;
   } else if (ShouldUseReauthEndpoint(account_id, is_recovery_configured)) {
     gaia_path = WizardContext::GaiaPath::kReauth;

@@ -49,6 +49,10 @@ namespace ash {
 namespace {
 
 bool ShouldDoSamlRedirect(const std::string& email) {
+  if (features::IsGaiaReauthEndpointEnabled()) {
+    return false;
+  }
+
   if (email.empty()) {
     return false;
   }
@@ -225,10 +229,16 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
   const std::string default_gaia_path =
       gaia_urls.embedded_setup_chromeos_url().path().substr(1);
   params.Set("fallbackGaiaPath", default_gaia_path);
-  params.Set("gaiaPath",
-             do_saml_redirect
-                 ? gaia_urls.saml_redirect_chromeos_url().path().substr(1)
-                 : default_gaia_path);
+  if (do_saml_redirect) {
+    params.Set("gaiaPath",
+               gaia_urls.saml_redirect_chromeos_url().path().substr(1));
+  } else if (features::IsGaiaReauthEndpointEnabled() &&
+             !context.email.empty()) {
+    params.Set("gaiaPath",
+               gaia_urls.embedded_reauth_chromeos_url().path().substr(1));
+  } else {
+    params.Set("gaiaPath", default_gaia_path);
+  }
 
   if (force_saml_redirect_for_testing_) {
     params.Set("enterpriseEnrollmentDomain", kIdpTestingDomain);
