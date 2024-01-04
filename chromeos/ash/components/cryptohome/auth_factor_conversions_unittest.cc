@@ -43,5 +43,72 @@ TEST_F(AuthFactorConversionsTest, FactorTypeProtoToChrome) {
   }
 }
 
+// Makes sure that `SerializeAuthFactor` and `DeserializeAuthFactor` convert
+// factor-specific metadata correctly.
+TEST_F(AuthFactorConversionsTest, MetadataConversion) {
+  constexpr char kHashInfoSalt[] = "fake_salt";
+
+  // Test password metadata conversion.
+  const AuthFactor password(
+      AuthFactorRef(AuthFactorType::kPassword, KeyLabel("password")),
+      AuthFactorCommonMetadata(),
+      PasswordMetadata::Create(SystemSalt(kHashInfoSalt)));
+  user_data_auth::AuthFactor password_proto;
+  SerializeAuthFactor(password, &password_proto);
+  ASSERT_TRUE(password_proto.has_password_metadata());
+  ASSERT_TRUE(password_proto.password_metadata().has_hash_info());
+  user_data_auth::KnowledgeFactorHashInfo password_hash_info_proto =
+      password_proto.password_metadata().hash_info();
+  EXPECT_EQ(password_hash_info_proto.algorithm(),
+            KnowledgeFactorHashAlgorithm::HASH_TYPE_SHA256_TOP_HALF);
+  EXPECT_EQ(password_hash_info_proto.salt(), kHashInfoSalt);
+  const AuthFactor reconstructed_password =
+      DeserializeAuthFactor(password_proto,
+                            /*fallback_type=*/AuthFactorType::kPassword);
+  const std::optional<KnowledgeFactorHashInfo>& password_hash_info =
+      reconstructed_password.GetPasswordMetadata().hash_info();
+  ASSERT_TRUE(password_hash_info.has_value());
+  EXPECT_EQ(password_hash_info->algorithm,
+            KnowledgeFactorHashAlgorithmWrapper::kSha256TopHalf);
+  EXPECT_EQ(password_hash_info->salt, kHashInfoSalt);
+
+  // Test password metadata conversion without salt.
+  const AuthFactor online_password(
+      AuthFactorRef(AuthFactorType::kPassword, KeyLabel("online-password")),
+      AuthFactorCommonMetadata(), PasswordMetadata::CreateWithoutSalt());
+  user_data_auth::AuthFactor online_password_proto;
+  SerializeAuthFactor(online_password, &online_password_proto);
+  ASSERT_TRUE(online_password_proto.has_password_metadata());
+  EXPECT_FALSE(online_password_proto.password_metadata().has_hash_info());
+  const AuthFactor reconstructed_online_password =
+      DeserializeAuthFactor(online_password_proto,
+                            /*fallback_type=*/AuthFactorType::kPassword);
+  EXPECT_EQ(reconstructed_online_password.GetPasswordMetadata().hash_info(),
+            std::nullopt);
+
+  // Test PIN metadata conversion.
+  const AuthFactor pin(AuthFactorRef(AuthFactorType::kPin, KeyLabel("pin")),
+                       AuthFactorCommonMetadata(),
+                       PinMetadata::Create(PinSalt(kHashInfoSalt)));
+  user_data_auth::AuthFactor pin_proto;
+  SerializeAuthFactor(pin, &pin_proto);
+  ASSERT_TRUE(pin_proto.has_pin_metadata());
+  ASSERT_TRUE(pin_proto.pin_metadata().has_hash_info());
+  user_data_auth::KnowledgeFactorHashInfo pin_hash_info_proto =
+      pin_proto.pin_metadata().hash_info();
+  EXPECT_EQ(pin_hash_info_proto.algorithm(),
+            KnowledgeFactorHashAlgorithm::HASH_TYPE_PBKDF2_AES256_1234);
+  EXPECT_EQ(pin_hash_info_proto.salt(), kHashInfoSalt);
+  const AuthFactor reconstructed_pin =
+      DeserializeAuthFactor(pin_proto,
+                            /*fallback_type=*/AuthFactorType::kPin);
+  const std::optional<KnowledgeFactorHashInfo>& pin_hash_info =
+      reconstructed_pin.GetPinMetadata().hash_info();
+  ASSERT_TRUE(pin_hash_info.has_value());
+  EXPECT_EQ(pin_hash_info->algorithm,
+            KnowledgeFactorHashAlgorithmWrapper::kPbkdf2Aes2561234);
+  EXPECT_EQ(pin_hash_info->salt, kHashInfoSalt);
+}
+
 }  // namespace
 }  // namespace cryptohome

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_H_
 
+#include <optional>
 #include <string>
 
 #include "base/component_export.h"
@@ -124,6 +125,17 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PinStatus {
   bool auth_locked;
 };
 
+// Common types used in factor-specific metadata:
+
+// The hash information of an auth factor that is used to generate the actual
+// secret. This can be used to generate the recoverable key store for the auth
+// factor.
+struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
+    KnowledgeFactorHashInfo {
+  KnowledgeFactorHashAlgorithmWrapper algorithm;
+  std::string salt;
+};
+
 // Factor-specific metadata:
 
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) SmartCardMetadata {
@@ -133,6 +145,54 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) SmartCardMetadata {
 struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME)
     CryptohomeRecoveryMetadata {
   std::string mediator_pub_key;
+};
+
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PasswordMetadata {
+ public:
+  // Used for online passwords where we don't want to include the hash
+  // information.
+  static PasswordMetadata CreateWithoutSalt();
+  static PasswordMetadata Create(SystemSalt salt);
+
+  PasswordMetadata(PasswordMetadata&&) noexcept;
+  PasswordMetadata& operator=(PasswordMetadata&&) noexcept;
+
+  PasswordMetadata(const PasswordMetadata&);
+  PasswordMetadata& operator=(const PasswordMetadata&);
+
+  ~PasswordMetadata();
+
+  const std::optional<KnowledgeFactorHashInfo>& hash_info() const {
+    return hash_info_;
+  }
+
+ private:
+  PasswordMetadata(std::optional<KnowledgeFactorHashInfo> hash_info);
+
+  std::optional<KnowledgeFactorHashInfo> hash_info_;
+};
+
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) PinMetadata {
+ public:
+  static PinMetadata CreateWithoutSalt();
+  static PinMetadata Create(PinSalt salt);
+
+  PinMetadata(PinMetadata&&) noexcept;
+  PinMetadata& operator=(PinMetadata&&) noexcept;
+
+  PinMetadata(const PinMetadata&);
+  PinMetadata& operator=(const PinMetadata&);
+
+  ~PinMetadata();
+
+  const std::optional<KnowledgeFactorHashInfo>& hash_info() const {
+    return hash_info_;
+  }
+
+ private:
+  PinMetadata(std::optional<KnowledgeFactorHashInfo> hash_info);
+
+  std::optional<KnowledgeFactorHashInfo> hash_info_;
 };
 
 // AuthFactor definition.
@@ -149,6 +209,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
              CryptohomeRecoveryMetadata recovery_metadata);
   AuthFactor(AuthFactorRef ref,
              AuthFactorCommonMetadata metadata,
+             PasswordMetadata password_metadata);
+  AuthFactor(AuthFactorRef ref,
+             AuthFactorCommonMetadata metadata,
+             PinMetadata pin_metadata);
+  AuthFactor(AuthFactorRef ref,
+             AuthFactorCommonMetadata metadata,
+             PinMetadata pin_metadata,
              PinStatus status);
 
   AuthFactor(AuthFactor&&) noexcept;
@@ -168,13 +235,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactor {
   const PinStatus& GetPinStatus() const;
   const SmartCardMetadata& GetSmartCardMetadata() const;
   const CryptohomeRecoveryMetadata& GetCryptohomeRecoveryMetadata() const;
+  const PasswordMetadata& GetPasswordMetadata() const;
+  const PinMetadata& GetPinMetadata() const;
 
  private:
   AuthFactorRef ref_;
   AuthFactorCommonMetadata common_metadata_;
-  absl::variant<absl::monostate, PinStatus> factor_status_;
-  absl::variant<absl::monostate, SmartCardMetadata, CryptohomeRecoveryMetadata>
+  absl::variant<absl::monostate,
+                SmartCardMetadata,
+                CryptohomeRecoveryMetadata,
+                PasswordMetadata,
+                PinMetadata>
       factor_metadata_;
+  absl::variant<absl::monostate, PinStatus> factor_status_;
 };
 
 }  // namespace cryptohome

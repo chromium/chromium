@@ -31,6 +31,15 @@ using RawPassword = base::StrongAlias<class RawPasswordTag, std::string>;
 using ComponentVersion =
     base::StrongAlias<class ComponentVersionTag, std::string>;
 
+// The salt we use for passwords.
+using SystemSalt = base::StrongAlias<class SystemSaltTag, std::string>;
+
+// Type that maps to the cryptohome::KnowledgeFactorHashAlgorithm proto enum.
+enum class KnowledgeFactorHashAlgorithmWrapper {
+  kSha256TopHalf,
+  kPbkdf2Aes2561234,
+};
+
 }  // namespace cryptohome
 
 #endif  // CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_COMMON_TYPES_H_
