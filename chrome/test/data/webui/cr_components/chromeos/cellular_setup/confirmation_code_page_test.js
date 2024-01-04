@@ -33,7 +33,8 @@ suite('CrComponentsConfirmationCodePageTest', function() {
         'forward-navigation-requested', () => {
           eventFired = true;
         });
-    const input = confirmationCodePage.$$('#confirmationCode');
+    const input =
+        confirmationCodePage.shadowRoot.querySelector('#confirmationCode');
     input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
 
     await flushAsync();

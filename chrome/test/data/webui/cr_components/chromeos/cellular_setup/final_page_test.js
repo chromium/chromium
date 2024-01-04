@@ -20,7 +20,7 @@ suite('CrComponentsFinalPageTest', function() {
   });
 
   test('Base test', function() {
-    const basePage = finalPage.$$('base-page');
+    const basePage = finalPage.shadowRoot.querySelector('base-page');
     assertTrue(!!basePage);
   });
 });

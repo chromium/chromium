@@ -13,64 +13,79 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {assert} from '//resources/ash/common/assert.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CellularMetadata} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './provisioning_page.html.js';
 import {postDeviceDataToWebview} from './webview_post_util.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'provisioning-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ProvisioningPageElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class ProvisioningPageElement extends ProvisioningPageElementBase {
+  static get is() {
+    return 'provisioning-page';
+  }
 
-  properties: {
-    /** @type {!CellularSetupDelegate} */
-    delegate: Object,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Whether error state should be shown.
-     * @type {boolean}
-     */
-    showError: {
-      type: Boolean,
-      value: false,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /** @type {!CellularSetupDelegate} */
+      delegate: Object,
 
-    /**
-     * Metadata used to open carrier provisioning portal. Expected to start as
-     * null, then change to a valid object.
-     * @type {?CellularMetadata}
-     */
-    cellularMetadata: {
-      type: Object,
-      value: null,
-      observer: 'onCellularMetadataChanged_',
-    },
+      /**
+       * Whether error state should be shown.
+       * @type {boolean}
+       */
+      showError: {
+        type: Boolean,
+        value: false,
+        notify: true,
+      },
 
-    /**
-     * Whether the carrier portal has completed being loaded.
-     * @private {boolean}
-     */
-    hasCarrierPortalLoaded_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Metadata used to open carrier provisioning portal. Expected to start as
+       * null, then change to a valid object.
+       * @type {?CellularMetadata}
+       */
+      cellularMetadata: {
+        type: Object,
+        value: null,
+        observer: 'onCellularMetadataChanged_',
+      },
 
-    /**
-     * The last carrier name provided via |cellularMetadata|.
-     * @private {string}
-     */
-    carrierName_: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * Whether the carrier portal has completed being loaded.
+       * @private {boolean}
+       */
+      hasCarrierPortalLoaded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The last carrier name provided via |cellularMetadata|.
+       * @private {string}
+       */
+      carrierName_: {
+        type: String,
+        value: '',
+      },
+
+    };
+  }
 
   /**
    * @return {?string}
@@ -87,7 +102,7 @@ Polymer({
       return this.i18n('provisioningPageActiveTitle');
     }
     return this.i18n('provisioningPageLoadingTitle', this.carrierName_);
-  },
+  }
 
   /**
    * @return {?string}
@@ -98,7 +113,7 @@ Polymer({
       return this.i18n('provisioningPageErrorMessage', this.carrierName_);
     }
     return null;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -106,7 +121,7 @@ Polymer({
    */
   shouldShowSpinner_() {
     return !this.showError && !this.hasCarrierPortalLoaded_;
-  },
+  }
 
   /**
    * @return {boolean}
@@ -114,15 +129,15 @@ Polymer({
    */
   shouldShowPortal_() {
     return !this.showError && this.hasCarrierPortalLoaded_;
-  },
+  }
 
   /**
    * @return {?WebView}
    * @private
    */
   getPortalWebview() {
-    return /** @type {?WebView} */ (this.$$('webview'));
-  },
+    return /** @type {?WebView} */ (this.shadowRoot.querySelector('webview'));
+  }
 
   /** @private */
   onCellularMetadataChanged_() {
@@ -136,7 +151,7 @@ Polymer({
     // If |cellularMetadata| is now null, the page should be reset so that a new
     // attempt can begin.
     this.resetPage_();
-  },
+  }
 
   /** @private */
   loadPortal_() {
@@ -165,7 +180,7 @@ Polymer({
 
     // Otherwise, use a normal GET request by specifying the "src".
     portalWebview.src = this.cellularMetadata.paymentUrl.url;
-  },
+  }
 
   /** @private */
   resetPage_() {
@@ -176,12 +191,12 @@ Polymer({
     if (portalWebview) {
       portalWebview.remove();
     }
-  },
+  }
 
   /** @private */
   onPortalLoadAbort_(event) {
     this.showError = true;
-  },
+  }
 
   /** @private */
   onPortalLoadStop_() {
@@ -190,13 +205,14 @@ Polymer({
     }
 
     this.hasCarrierPortalLoaded_ = true;
-    this.fire('carrier-portal-loaded');
+    this.dispatchEvent(new CustomEvent(
+        'carrier-portal-loaded', {bubbles: true, composed: true}));
 
     // When the portal loads, it expects to receive a message from this frame
     // alerting it that loading has completed successfully.
     this.getPortalWebview().contentWindow.postMessage(
         {msg: 'loadedInWebview'}, this.cellularMetadata.paymentUrl.url);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -223,8 +239,12 @@ Polymer({
     // The <webview> provided an update on the status of the activation attempt.
     if (messageType === 'reportTransactionStatusMsg') {
       const success = status === 'ok';
-      this.fire('on-carrier-portal-result', success);
+      this.dispatchEvent(new CustomEvent(
+          'on-carrier-portal-result',
+          {bubbles: true, composed: true, detail: success}));
       return;
     }
-  },
-});
+  }
+}
+
+customElements.define(ProvisioningPageElement.is, ProvisioningPageElement);

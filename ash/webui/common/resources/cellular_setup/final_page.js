@@ -9,34 +9,48 @@
  */
 import './base_page.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {getTemplate} from './final_page.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'final-page',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const FinalPageElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+export class FinalPageElement extends FinalPageElementBase {
+  static get is() {
+    return 'final-page';
+  }
 
-  properties: {
-    /** @type {!CellularSetupDelegate} */
-    delegate: Object,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Whether error state should be shown.
-     * @type {boolean}
-     */
-    showError: Boolean,
+  static get properties() {
+    return {
+      /** @type {!CellularSetupDelegate} */
+      delegate: Object,
 
-    /** @type {string} */
-    message: String,
+      /**
+       * Whether error state should be shown.
+       * @type {boolean}
+       */
+      showError: Boolean,
 
-    /** @type {string} */
-    errorMessage: String,
-  },
+      /** @type {string} */
+      message: String,
+
+      /** @type {string} */
+      errorMessage: String,
+
+    };
+  }
 
   /**
    * @param {boolean} showError
@@ -49,7 +63,7 @@ Polymer({
                          this.i18n('finalPageTitle');
     }
     return null;
-  },
+  }
 
   /**
    * @param {boolean} showError
@@ -58,7 +72,7 @@ Polymer({
    */
   getMessage_(showError) {
     return showError ? this.errorMessage : this.message;
-  },
+  }
 
   /**
    * @param {boolean} showError
@@ -67,7 +81,7 @@ Polymer({
    */
   getPageBodyClass_(showError) {
     return showError ? 'error' : '';
-  },
+  }
 
   /**
    * @param {boolean} showError
@@ -77,5 +91,7 @@ Polymer({
   getJellyIllustrationName_(showError) {
     return showError ? 'cellular-setup-illo:error' :
                        'cellular-setup-illo:final-page-success';
-  },
-});
+  }
+}
+
+customElements.define(FinalPageElement.is, FinalPageElement);

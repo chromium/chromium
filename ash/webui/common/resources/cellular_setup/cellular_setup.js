@@ -10,102 +10,123 @@ import './button_bar.js';
 import './psim_flow_ui.js';
 import './esim_flow_ui.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cellular_setup.html.js';
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonBarState, CellularSetupPageName} from './cellular_types.js';
+import {EsimFlowUiElement} from './esim_flow_ui.js';
+import {PsimFlowUiElement} from './psim_flow_ui.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'cellular-setup',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const CellularSetupElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class CellularSetupElement extends CellularSetupElementBase {
+  static get is() {
+    return 'cellular-setup';
+  }
 
-  properties: {
-    /** @type {!CellularSetupDelegate} */
-    delegate: Object,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Banner used in pSIM flow to show carrier network name. No banner
-     * shown if the string is empty.
-     */
-    flowPsimBanner: {
-      type: String,
-      notify: true,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /** @type {!CellularSetupDelegate} */
+      delegate: Object,
 
-    /**
-     * Header for the flow, shown below the title. No header shown if the string
-     * is empty.
-     */
-    flowHeader: {
-      type: String,
-      notify: true,
-      value: '',
-    },
+      /**
+       * Banner used in pSIM flow to show carrier network name. No banner
+       * shown if the string is empty.
+       */
+      flowPsimBanner: {
+        type: String,
+        notify: true,
+        value: '',
+      },
 
-    /**
-     * Name of the currently displayed sub-page.
-     * @private {!CellularSetupPageName|null}
-     */
-    currentPageName: String,
+      /**
+       * Header for the flow, shown below the title. No header shown if the
+       * string is empty.
+       */
+      flowHeader: {
+        type: String,
+        notify: true,
+        value: '',
+      },
 
-    /**
-     * Current user selected setup flow page name.
-     * @private {!CellularSetupPageName|null}
-     */
-    selectedFlow_: {
-      type: String,
-      value: null,
-    },
+      /**
+       * Name of the currently displayed sub-page.
+       * @private {!CellularSetupPageName|null}
+       */
+      currentPageName: String,
 
-    /**
-     * Button bar button state.
-     * @private {!ButtonBarState}
-     */
-    buttonState_: {
-      type: Object,
-      notify: true,
-    },
+      /**
+       * Current user selected setup flow page name.
+       * @private {!CellularSetupPageName|null}
+       */
+      selectedFlow_: {
+        type: String,
+        value: null,
+      },
 
-    /**
-     * DOM Element corresponding to the visible page.
-     *
-     * @private {!PsimFlowUiElement|!EsimFlowUiElement}
-     */
-    currentPage_: {
-      type: Object,
-      observer: 'onPageChange_',
-    },
+      /**
+       * Button bar button state.
+       * @private {!ButtonBarState}
+       */
+      buttonState_: {
+        type: Object,
+        notify: true,
+      },
 
-    /**
-     * Text for the button_bar's 'Forward' button.
-     * @private {string}
-     */
-    forwardButtonLabel_: {
-      type: String,
-    },
-  },
+      /**
+       * DOM Element corresponding to the visible page.
+       *
+       * @private {!PsimFlowUiElement|!EsimFlowUiElement}
+       */
+      currentPage_: {
+        type: Object,
+        observer: 'onPageChange_',
+      },
 
-  listeners: {
-    'backward-nav-requested': 'onBackwardNavRequested_',
-    'retry-requested': 'onRetryRequested_',
-    'forward-nav-requested': 'onForwardNavRequested_',
-    'cancel-requested': 'onCancelRequested_',
-    'focus-default-button': 'onFocusDefaultButton_',
-  },
+      /**
+       * Text for the button_bar's 'Forward' button.
+       * @private {string}
+       */
+      forwardButtonLabel_: {
+        type: String,
+      },
 
+    };
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     // By default eSIM flow is selected.
     if (!this.currentPageName) {
       this.currentPageName = CellularSetupPageName.ESIM_FLOW_UI;
     }
-  },
+  }
+
+  /** override */
+  ready() {
+    super.ready();
+
+    this.addEventListener(
+        'backward-nav-requested', this.onBackwardNavRequested_);
+    this.addEventListener('retry-requested', this.onRetryRequested_);
+    this.addEventListener('forward-nav-requested', this.onForwardNavRequested_);
+    this.addEventListener('cancel-requested', this.onCancelRequested_);
+    this.addEventListener('focus-default-button', this.onFocusDefaultButton_);
+  }
 
   /** @private */
   onPageChange_() {
@@ -113,31 +134,34 @@ Polymer({
       this.flowPsimBanner = '';
       this.currentPage_.initSubflow();
     }
-  },
+  }
 
   /** @private */
   onBackwardNavRequested_() {
     this.currentPage_.navigateBackward();
-  },
+  }
 
   onCancelRequested_() {
-    this.fire('exit-cellular-setup');
-  },
+    this.dispatchEvent(new CustomEvent('exit-cellular-setup', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /** @private */
   onRetryRequested_() {
     // TODO(crbug.com/1093185): Add try again logic.
-  },
+  }
 
   /** @private */
   onForwardNavRequested_() {
     this.currentPage_.navigateForward();
-  },
+  }
 
   /** @private */
   onFocusDefaultButton_() {
     this.$.buttonBar.focusDefaultButton();
-  },
+  }
 
   /**
    * @param {string} currentPage
@@ -145,7 +169,7 @@ Polymer({
    */
   shouldShowPsimFlow_(currentPage) {
     return currentPage === CellularSetupPageName.PSIM_FLOW_UI;
-  },
+  }
 
   /**
    * @param {string} currentPage
@@ -153,5 +177,7 @@ Polymer({
    */
   shouldShowEsimFlow_(currentPage) {
     return currentPage === CellularSetupPageName.ESIM_FLOW_UI;
-  },
-});
+  }
+}
+
+customElements.define(CellularSetupElement.is, CellularSetupElement);

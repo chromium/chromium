@@ -12,63 +12,78 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './base_page.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {ESimProfileProperties, ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 
 import {getTemplate} from './confirmation_code_page_legacy.html.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'confirmation-code-page-legacy',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ConfirmationCodePageLegacyElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [I18nBehavior],
+/** @polymer */
+class ConfirmationCodePageLegacyElement extends
+    ConfirmationCodePageLegacyElementBase {
+  static get is() {
+    return 'confirmation-code-page-legacy';
+  }
 
-  properties: {
-    /**
-     * @type {?ESimProfileRemote}
-     */
-    profile: {
-      type: Object,
-      observer: 'onProfileChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    confirmationCode: {
-      type: String,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * @type {?ESimProfileRemote}
+       */
+      profile: {
+        type: Object,
+        observer: 'onProfileChanged_',
+      },
 
-    showError: {
-      type: Boolean,
-    },
+      confirmationCode: {
+        type: String,
+        notify: true,
+      },
 
-    /**
-     * Indicates the UI is busy with an operation and cannot be interacted with.
-     */
-    showBusy: {
-      type: Boolean,
-      value: false,
-    },
+      showError: Boolean,
 
-    /**
-     * @type {?ESimProfileProperties}
-     * @private
-     */
-    profileProperties_: {
-      type: Object,
-      value: null,
-    },
+      /**
+       * Indicates the UI is busy with an operation and cannot be interacted
+       * with.
+       */
+      showBusy: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * @type {boolean}
-     * @private
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      /**
+       * @type {?ESimProfileProperties}
+       * @private
+       */
+      profileProperties_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * @type {boolean}
+       * @private
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
 
   /** @private */
   onProfileChanged_() {
@@ -79,7 +94,7 @@ Polymer({
     this.profile.getProperties().then(response => {
       this.profileProperties_ = response.properties;
     });
-  },
+  }
 
   /**
    * @param {KeyboardEvent} e
@@ -87,10 +102,13 @@ Polymer({
    */
   onKeyDown_(e) {
     if (e.key === 'Enter') {
-      this.fire('forward-navigation-requested');
+      this.dispatchEvent(new CustomEvent('forward-navigation-requested', {
+        bubbles: true,
+        composed: true,
+      }));
     }
     e.stopPropagation();
-  },
+  }
 
   /**
    * @return {boolean}
@@ -98,7 +116,7 @@ Polymer({
    */
   shouldShowProfileDetails_() {
     return !!this.profile;
-  },
+  }
 
   /**
    * @return {string}
@@ -109,7 +127,7 @@ Polymer({
       return '';
     }
     return mojoString16ToString(this.profileProperties_.name);
-  },
+  }
 
   /**
    * @return {string}
@@ -119,5 +137,8 @@ Polymer({
     return this.isDarkModeActive_ ?
         'chrome://resources/ash/common/cellular_setup/default_esim_profile_dark.svg' :
         'chrome://resources/ash/common/cellular_setup/default_esim_profile.svg';
-  },
-});
+  }
+}
+
+customElements.define(
+    ConfirmationCodePageLegacyElement.is, ConfirmationCodePageLegacyElement);

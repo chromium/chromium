@@ -10,43 +10,54 @@ import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {focusWithoutInk} from '//resources/ash/common/focus_without_ink_js.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './button_bar.html.js';
 import {Button, ButtonBarState, ButtonState, CellularSetupPageName} from './cellular_types.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'button-bar',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const ButtonBarElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
-  behaviors: [
-    I18nBehavior,
-  ],
+/** @polymer */
+export class ButtonBarElement extends ButtonBarElementBase {
+  static get is() {
+    return 'button-bar';
+  }
 
-  properties: {
-    /**
-     * Sets the states of all buttons
-     * @type {!ButtonBarState}
-     */
-    buttonState: {
-      type: Object,
-      value: {},
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * @type {!Button}
-     */
-    Button: {
-      type: Object,
-      value: Button,
-    },
+  static get properties() {
+    return {
+      /**
+       * Sets the states of all buttons
+       * @type {!ButtonBarState}
+       */
+      buttonState: {
+        type: Object,
+        value: {},
+      },
 
-    forwardButtonLabel: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * @type {!Button}
+       */
+      Button: {
+        type: Object,
+        value: Button,
+      },
+
+      forwardButtonLabel: {
+        type: String,
+        value: '',
+      },
+    };
+  }
 
   /**
    * @param {!Button} buttonName
@@ -56,7 +67,7 @@ Polymer({
   isButtonHidden_(buttonName) {
     const state = this.getButtonBarState_(buttonName);
     return state === ButtonState.HIDDEN;
-  },
+  }
 
   /**
    * @param {!Button} buttonName
@@ -66,7 +77,7 @@ Polymer({
   isButtonDisabled_(buttonName) {
     const state = this.getButtonBarState_(buttonName);
     return state === ButtonState.DISABLED;
-  },
+  }
 
   focusDefaultButton() {
     const buttons = this.shadowRoot.querySelectorAll('cr-button');
@@ -78,22 +89,31 @@ Polymer({
         return;
       }
     }
-  },
+  }
 
   /** @private */
   onBackwardButtonClicked_() {
-    this.fire('backward-nav-requested');
-  },
+    this.dispatchEvent(new CustomEvent('backward-nav-requested', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /** @private */
   onCancelButtonClicked_() {
-    this.fire('cancel-requested');
-  },
+    this.dispatchEvent(new CustomEvent('cancel-requested', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /** @private */
   onForwardButtonClicked_() {
-    this.fire('forward-nav-requested');
-  },
+    this.dispatchEvent(new CustomEvent('forward-nav-requested', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
   /**
    * @param {!Button} button
@@ -113,5 +133,7 @@ Polymer({
         assertNotReached();
         return ButtonState.ENABLED;
     }
-  },
-});
+  }
+}
+
+customElements.define(ButtonBarElement.is, ButtonBarElement);

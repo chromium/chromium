@@ -7,15 +7,18 @@ import './provisioning_page.js';
 import './final_page.js';
 import '//resources/polymer/v3_0/iron-pages/iron-pages.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ActivationDelegateInterface, ActivationDelegateReceiver, ActivationResult, CarrierPortalHandlerRemote, CarrierPortalStatus, CellularMetadata, CellularSetup_StartActivation_ResponseParams, CellularSetupRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js';
 
 import {CellularSetupDelegate} from './cellular_setup_delegate.js';
 import {ButtonState} from './cellular_types.js';
+import {FinalPageElement} from './final_page.js';
 import {getCellularSetupRemote} from './mojo_interface_provider.js';
+import {ProvisioningPageElement} from './provisioning_page.js';
 import {getTemplate} from './psim_flow_ui.html.js';
+import {SetupLoadingPageElement} from './setup_loading_page.js';
 import {SubflowBehavior} from './subflow_behavior.js';
 
 /** @enum {string} */
@@ -106,152 +109,161 @@ export const FAILED_PSIM_SETUP_DURATION_METRIC_NAME =
  * contains navigation buttons and sub-pages corresponding to each step of the
  * flow.
  */
-Polymer({
-  _template: getTemplate(),
-  is: 'psim-flow-ui',
 
-  behaviors: [
-    I18nBehavior,
-    SubflowBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const PsimFlowUiElementBase =
+    mixinBehaviors([I18nBehavior, SubflowBehavior], PolymerElement);
 
-  properties: {
-    /** @type {!CellularSetupDelegate} */
-    delegate: Object,
+/** @polymer */
+export class PsimFlowUiElement extends PsimFlowUiElementBase {
+  static get is() {
+    return 'psim-flow-ui';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /** @type {!CellularSetupDelegate} */
+      delegate: Object,
+
+      /**
+       * Carrier name; used in dialog title to show the current carrier
+       * name being setup
+       * @type {string}
+       */
+      nameOfCarrierPendingSetup: {
+        type: String,
+        notify: true,
+        computed: 'getCarrierText(' +
+            'selectedPSimPageName_, cellularMetadata_.*)',
+      },
+
+      forwardButtonLabel: {
+        type: String,
+        notify: true,
+      },
+
+      /**
+       * @type {!PSimUIState}
+       * @private
+       */
+      state_: {
+        type: String,
+        value: PSimUIState.IDLE,
+        observer: 'handlePSimUIStateChange_',
+      },
+
+      /**
+       * Element name of the current selected sub-page.
+       * @type {!PSimPageName}
+       * @private
+       */
+      selectedPSimPageName_: {
+        type: String,
+        value: PSimPageName.SIM_DETECT,
+        notify: true,
+      },
+
+      /**
+       * DOM Element for the current selected sub-page.
+       * @private {!SetupLoadingPageElement|!ProvisioningPageElement|
+       *           !FinalPageElement}
+       */
+      selectedPage_: Object,
+
+      /**
+       * Whether error state should be shown for the current page.
+       * @private {boolean}
+       */
+      showError_: {type: Boolean, value: false},
+
+      /**
+       * Cellular metadata received via the onActivationStarted() callback. If
+       * that callback has not occurred, this field is null.
+       * @private {?CellularMetadata}
+       */
+      cellularMetadata_: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * The current number of tries to detect the SIM.
+       * @private {number}
+       */
+      startActivationAttempts_: {
+        type: Number,
+        value: 0,
+      },
+
+    };
+  }
+
+  /** @override */
+  constructor() {
+    super();
 
     /**
-     * Carrier name; used in dialog title to show the current carrier
-     * name being setup
-     * @type {string}
+     * Provides an interface to the CellularSetup Mojo service.
+     * @private {?CellularSetupRemote}
      */
-    nameOfCarrierPendingSetup: {
-      type: String,
-      notify: true,
-      computed: 'getCarrierText(' +
-          'selectedPSimPageName_, cellularMetadata_.*)',
-    },
-
-    forwardButtonLabel: {
-      type: String,
-      notify: true,
-    },
+    this.cellularSetupRemote_ = getCellularSetupRemote();
 
     /**
-     * @type {!PSimUIState}
-     * @private
+     * Delegate responsible for routing activation started/finished events.
+     * @private {?ActivationDelegateReceiver}
      */
-    state_: {
-      type: String,
-      value: PSimUIState.IDLE,
-    },
+    this.activationDelegateReceiver_ = null;
 
     /**
-     * Element name of the current selected sub-page.
-     * @type {!PSimPageName}
-     * @private
+     * The timeout ID corresponding to a timeout for the current state. If no
+     * timeout is active, this value is null.
+     * @private {?number}
      */
-    selectedPSimPageName_: {
-      type: String,
-      value: PSimPageName.SIM_DETECT,
-      notify: true,
-    },
+    this.currentTimeoutId_ = null;
 
     /**
-     * DOM Element for the current selected sub-page.
-     * @private {!SetupLoadingPageElement|!ProvisioningPageElement|
-     *           !FinalPageElement}
+     * Handler used to communicate state updates back to the CellularSetup
+     * service.
+     * @private {?CarrierPortalHandlerRemote}
      */
-    selectedPage_: Object,
+    this.carrierPortalHandler_ = null;
 
     /**
-     * Whether error state should be shown for the current page.
+     * Whether there was a carrier portal error.
      * @private {boolean}
      */
-    showError_: {type: Boolean, value: false},
+    this.didCarrierPortalResultFail_ = false;
 
     /**
-     * Cellular metadata received via the onActivationStarted() callback. If
-     * that callback has not occurred, this field is null.
-     * @private {?CellularMetadata}
+     * The function used to initiate a timer. Can be overwritten in tests.
+     * @private {function(Function, number)}
      */
-    cellularMetadata_: {
-      type: Object,
-      value: null,
-    },
+    this.setTimeoutFunction_ = setTimeout.bind(window);
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
 
     /**
-     * The current number of tries to detect the SIM.
-     * @private {number}
+     * The time at which the PSim flow is attached.
+     * @private {?Date}
      */
-    startActivationAttempts_: {
-      type: Number,
-      value: 0,
-    },
-  },
-
-  observers: [
-    'updateShowError_(state_)',
-    'updateSelectedPage_(state_)',
-    'handlePSimUIStateChange_(state_)',
-    'updateButtonBarState_(state_)',
-  ],
-
-  /**
-   * Provides an interface to the CellularSetup Mojo service.
-   * @private {?CellularSetupRemote}
-   */
-  cellularSetupRemote_: null,
-
-  /**
-   * Delegate responsible for routing activation started/finished events.
-   * @private {?ActivationDelegateReceiver}
-   */
-  activationDelegateReceiver_: null,
-
-  /**
-   * The timeout ID corresponding to a timeout for the current state. If no
-   * timeout is active, this value is null.
-   * @private {?number}
-   */
-  currentTimeoutId_: null,
-
-  /**
-   * Handler used to communicate state updates back to the CellularSetup
-   * service.
-   * @private {?CarrierPortalHandlerRemote}
-   */
-  carrierPortalHandler_: null,
-
-  /**
-   * Whether there was a carrier portal error.
-   * @private {boolean}
-   */
-  didCarrierPortalResultFail_: false,
-
-  /**
-   * The function used to initiate a timer. Can be overwritten in tests.
-   * @private {function(Function, number)}
-   */
-  setTimeoutFunction_: setTimeout.bind(window),
-
-  /**
-   * The time at which the PSim flow is attached.
-   * @private {?Date}
-   */
-  timeOnAttached_: null,
-
-  /** @override */
-  created() {
-    this.cellularSetupRemote_ = getCellularSetupRemote();
-  },
-
-  /** @override */
-  attached() {
     this.timeOnAttached_ = new Date();
-  },
+  }
 
   /** @override */
-  detached() {
+  disconnectedCallback() {
+    super.disconnectedCallback();
+
     let resultCode = null;
     switch (this.state_) {
       case PSimUIState.IDLE:
@@ -303,7 +315,7 @@ Polymer({
 
     chrome.metricsPrivate.recordLongTime(
         FAILED_PSIM_SETUP_DURATION_METRIC_NAME, elapsedTimeMs);
-  },
+  }
 
   /**
    * Overrides ActivationDelegateInterface.
@@ -314,14 +326,15 @@ Polymer({
     this.clearTimer_();
     this.cellularMetadata_ = metadata;
     this.state_ = PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
-  },
+  }
 
   initSubflow() {
     this.state_ = PSimUIState.STARTING_ACTIVATION;
     this.startActivationAttempts_ = 0;
     this.updateButtonBarState_();
-    this.fire('focus-default-button');
-  },
+    this.dispatchEvent(new CustomEvent(
+        'focus-default-button', {bubbles: true, composed: true}));
+  }
 
   navigateForward() {
     switch (this.state_) {
@@ -335,7 +348,8 @@ Polymer({
       case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
       case PSimUIState.FINAL_TIMEOUT_START_ACTIVATION:
       case PSimUIState.ALREADY_ACTIVATED:
-        this.fire('exit-cellular-setup');
+        this.dispatchEvent(new CustomEvent(
+            'exit-cellular-setup', {bubbles: true, composed: true}));
         break;
       case PSimUIState.TIMEOUT_START_ACTIVATION:
         this.state_ = PSimUIState.STARTING_ACTIVATION;
@@ -344,7 +358,7 @@ Polymer({
         assertNotReached();
         break;
     }
-  },
+  }
 
   /**
    * Sets the function used to initiate a timer.
@@ -353,7 +367,7 @@ Polymer({
    */
   setTimerFunctionForTest(timerFunction) {
     this.setTimeoutFunction_ = timerFunction;
-  },
+  }
 
   /** @private */
   updateButtonBarState_() {
@@ -411,7 +425,7 @@ Polymer({
         assertNotReached();
     }
     this.set('buttonState', buttonState);
-  },
+  }
 
   /**
    * Overrides ActivationDelegateInterface.
@@ -434,7 +448,7 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /** @private */
   getCarrierText() {
@@ -443,7 +457,7 @@ Polymer({
       return this.cellularMetadata_.carrier;
     }
     return '';
-  },
+  }
 
   /** @private */
   updateShowError_() {
@@ -457,7 +471,7 @@ Polymer({
         this.showError_ = false;
         return;
     }
-  },
+  }
 
   /** @private */
   updateSelectedPage_() {
@@ -484,10 +498,13 @@ Polymer({
       default:
         assertNotReached();
     }
-  },
+  }
 
   /** @private */
   handlePSimUIStateChange_() {
+    this.updateShowError_();
+    this.updateSelectedPage_();
+
     // Since the state has changed, the previous state did not time out, so
     // clear any active timeout.
     this.clearTimer_();
@@ -501,9 +518,10 @@ Polymer({
 
     if (this.state_ === PSimUIState.STARTING_ACTIVATION) {
       this.startActivation_();
-      return;
     }
-  },
+
+    this.updateButtonBarState_();
+  }
 
   /** @private */
   onTimeout_() {
@@ -529,7 +547,7 @@ Polymer({
         // Only the above states are expected to time out.
         assertNotReached();
     }
-  },
+  }
 
   /** @private */
   startActivation_() {
@@ -550,7 +568,7 @@ Polymer({
             (params) => {
               this.carrierPortalHandler_ = params.observer;
             });
-  },
+  }
 
   /** @private */
   closeActivationConnection_() {
@@ -559,7 +577,7 @@ Polymer({
     this.activationDelegateReceiver_ = null;
     this.carrierPortalHandler_ = null;
     this.cellularMetadata_ = null;
-  },
+  }
 
   /** @private */
   clearTimer_() {
@@ -567,14 +585,14 @@ Polymer({
       clearTimeout(this.currentTimeoutId_);
     }
     this.currentTimeoutId_ = null;
-  },
+  }
 
   /** @private */
   onCarrierPortalLoaded_() {
     this.state_ = PSimUIState.WAITING_FOR_USER_PAYMENT;
     this.carrierPortalHandler_.onCarrierPortalStatusChange(
         CarrierPortalStatus.kPortalLoadedWithoutPaidUser);
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} event
@@ -585,7 +603,7 @@ Polymer({
     this.didCarrierPortalResultFail_ = !success;
     this.state_ = success ? PSimUIState.ACTIVATION_SUCCESS :
                             PSimUIState.ACTIVATION_FAILURE;
-  },
+  }
 
   /** @return {string} */
   getLoadingMessage_() {
@@ -595,13 +613,13 @@ Polymer({
       return this.i18n('simDetectPageFinalErrorMessage');
     }
     return this.i18n('establishNetworkConnectionMessage');
-  },
+  }
 
   /** @return {boolean} */
   isSimDetectError_() {
     return this.state_ === PSimUIState.TIMEOUT_START_ACTIVATION ||
         this.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION;
-  },
+  }
 
   /** @return {string} */
   getLoadingTitle_() {
@@ -609,5 +627,7 @@ Polymer({
       return this.i18n('simDetectPageErrorTitle');
     }
     return '';
-  },
-});
+  }
+}
+
+customElements.define(PsimFlowUiElement.is, PsimFlowUiElement);
