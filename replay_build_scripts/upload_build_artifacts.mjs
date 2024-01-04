@@ -237,7 +237,7 @@ async function main(options) {
   const downloadUris = uploadArchives(buildArchives);
 
   uploadToAllBuckets(symbolsArchiveFile, `symbols/${symbolsArchiveFile}`);
-  fs.unlinkSync(symbolsArchiveFile);
+  downloadUris.push(`s3://${S3Bucket}/symbols/${symbolsArchiveFile}`);
 
   for (const buildArchive of buildArchives) {
     log(`BuildUploaded https://static.replay.io/downloads/${buildArchive}`);
@@ -249,12 +249,20 @@ async function main(options) {
       downloadUris,
       platform,
       buildId,
-      buildArm ? "arm64" : "x86_64"
+      buildArm ? "arm64" : "x86_64",
+      symbolsArchiveFile
     );
   }
+  fs.unlinkSync(symbolsArchiveFile);
 }
 
-function buildkiteStuff(downloadUris, platform, buildId, arch) {
+function buildkiteStuff(
+  downloadUris,
+  platform,
+  buildId,
+  arch,
+  symbolsArchiveFile
+) {
   const markdownDownloadList = downloadUris
     .map((uri) =>
       uri.replace("s3://recordreplay-website", "https://static.replay.io")
@@ -290,6 +298,10 @@ function buildkiteStuff(downloadUris, platform, buildId, arch) {
   fs.writeFileSync(
     path.join(BUILDKITE_ARTIFACT_DIRECTORY, BUILDKITE_BUILD_ID_ARTIFACT),
     buildId
+  );
+  fs.cpSync(
+    symbolsArchiveFile,
+    path.join(BUILDKITE_ARTIFACT_DIRECTORY, symbolsArchiveFile)
   );
 
   log(
@@ -381,7 +393,7 @@ async function buildChromiumSymbols(options) {
     pdbs
   );
 
-  log(`ChromiumSymbols Done`);
+  log(`ChromiumSymbols Done (${archiveFile})})`);
   return { buildId, symbolsArchiveFile: archiveFile };
 }
 
