@@ -136,7 +136,7 @@ public class NewTabPageUma {
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused. This maps directly to
-    // the ContentSuggestionsDisplayStatus enum defined in tools/metrics/enums.xml.
+    // the ContentSuggestionsDisplayStatus enum defined in tools/metrics/histograms/enums.xml.
     @IntDef({
         ContentSuggestionsDisplayStatus.VISIBLE,
         ContentSuggestionsDisplayStatus.COLLAPSED,

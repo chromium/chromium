@@ -143,7 +143,7 @@ constexpr int kNumCastChannelFlags = 8;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// Keep in sync with CastChannelFlag enum in tools/metrics/enums.xml.
+// Keep in sync with CastChannelFlag enum in tools/metrics/histograms/enums.xml.
 enum class CastChannelFlag : uint16_t {
   kFlagsNone = 0,
   kSha1DigestAlgorithm = 1,
