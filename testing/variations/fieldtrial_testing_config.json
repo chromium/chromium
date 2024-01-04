@@ -4590,18 +4590,26 @@
                 {
                     "name": "Treatment_PreStable_20231002",
                     "params": {
+                        "SkipTpcdMitigationsForAdsHeuristics": "true",
+                        "SkipTpcdMitigationsForAdsMetadata": "true",
+                        "SkipTpcdMitigationsForAdsSupport": "true",
                         "decision_delay_time": "1s",
                         "disable_3p_cookies": "true",
                         "disable_ads_apis": "false",
                         "enable_otr_profiles": "false",
+                        "enable_silent_onboarding": "false",
                         "label": "prestable_treatment_1",
+                        "need_onboarding_for_label": "true",
+                        "need_onboarding_for_synthetic_trial": "true",
                         "use_profile_filtering": "false",
-                        "version": "1"
+                        "version": "2"
                     },
                     "enable_features": [
                         "AttributionDebugReportingCookieDeprecationTesting",
                         "CookieDeprecationFacilitatedTesting",
-                        "FledgeFacilitatedTestingSignalsHeaders"
+                        "FledgeFacilitatedTestingSignalsHeaders",
+                        "SkipTpcdMitigationsForAds",
+                        "TPCDAdHeuristicSubframeRequestTagging"
                     ]
                 }
             ]
