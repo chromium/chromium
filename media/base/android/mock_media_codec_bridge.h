@@ -30,24 +30,24 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   void ProduceOneOutput(IsEos eos = kNotEos);
 
   MOCK_METHOD0(Stop, void());
-  MOCK_METHOD0(Flush, MediaCodecStatus());
-  MOCK_METHOD1(GetOutputSize, MediaCodecStatus(gfx::Size* size));
-  MOCK_METHOD1(GetOutputSamplingRate, MediaCodecStatus(int* sampling_rate));
-  MOCK_METHOD1(GetOutputChannelCount, MediaCodecStatus(int* channel_count));
+  MOCK_METHOD0(Flush, MediaCodecResult());
+  MOCK_METHOD1(GetOutputSize, MediaCodecResult(gfx::Size* size));
+  MOCK_METHOD1(GetOutputSamplingRate, MediaCodecResult(int* sampling_rate));
+  MOCK_METHOD1(GetOutputChannelCount, MediaCodecResult(int* channel_count));
   MOCK_METHOD1(GetOutputColorSpace,
-               MediaCodecStatus(gfx::ColorSpace* color_space));
+               MediaCodecResult(gfx::ColorSpace* color_space));
   MOCK_METHOD3(GetInputFormat,
-               MediaCodecStatus(int* stride,
+               MediaCodecResult(int* stride,
                                 int* slice_height,
                                 gfx::Size* encoded_size));
   MOCK_METHOD4(QueueInputBuffer,
-               MediaCodecStatus(int index,
+               MediaCodecResult(int index,
                                 const uint8_t* data,
                                 size_t data_size,
                                 base::TimeDelta presentation_time));
   MOCK_METHOD9(
       QueueSecureInputBuffer,
-      MediaCodecStatus(int index,
+      MediaCodecResult(int index,
                        const uint8_t* data,
                        size_t data_size,
                        const std::string& key_id,
@@ -58,9 +58,9 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                        base::TimeDelta presentation_time));
   MOCK_METHOD1(QueueEOS, void(int input_buffer_index));
   MOCK_METHOD2(DequeueInputBuffer,
-               MediaCodecStatus(base::TimeDelta timeout, int* index));
+               MediaCodecResult(base::TimeDelta timeout, int* index));
   MOCK_METHOD7(DequeueOutputBuffer,
-               MediaCodecStatus(base::TimeDelta timeout,
+               MediaCodecResult(base::TimeDelta timeout,
                                 int* index,
                                 size_t* offset,
                                 size_t* size,
@@ -69,12 +69,12 @@ class MockMediaCodecBridge : public MediaCodecBridge,
                                 bool* key_frame));
   MOCK_METHOD2(ReleaseOutputBuffer, void(int index, bool render));
   MOCK_METHOD3(GetInputBuffer,
-               MediaCodecStatus(int input_buffer_index,
+               MediaCodecResult(int input_buffer_index,
                                 uint8_t** data,
                                 size_t* capacity));
   MOCK_METHOD4(
       CopyFromOutputBuffer,
-      MediaCodecStatus(int index, size_t offset, void* dst, size_t num));
+      MediaCodecResult(int index, size_t offset, void* dst, size_t num));
   MOCK_METHOD0(GetName, std::string());
   MOCK_METHOD1(SetSurface,
                bool(const base::android::JavaRef<jobject>& surface));

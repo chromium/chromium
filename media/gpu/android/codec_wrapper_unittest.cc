@@ -46,11 +46,11 @@ class CodecWrapperTest : public testing::Test {
         base::SequencedTaskRunner::GetCurrentDefault(), kInitialCodedSize,
         kCodedSizeAlignment);
     ON_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-        .WillByDefault(Return(MEDIA_CODEC_OK));
+        .WillByDefault(Return(OkStatus()));
     ON_CALL(*codec_, DequeueInputBuffer(_, _))
-        .WillByDefault(DoAll(SetArgPointee<1>(12), Return(MEDIA_CODEC_OK)));
+        .WillByDefault(DoAll(SetArgPointee<1>(12), Return(OkStatus())));
     ON_CALL(*codec_, QueueInputBuffer(_, _, _, _))
-        .WillByDefault(Return(MEDIA_CODEC_OK));
+        .WillByDefault(Return(OkStatus()));
 
     uint8_t data = 0;
     fake_decoder_buffer_ = DecoderBuffer::CopyFrom(&data, 1);
@@ -90,7 +90,7 @@ TEST_F(CodecWrapperTest, TakeCodecReturnsTheCodecFirstAndNullLater) {
 
 TEST_F(CodecWrapperTest, NoCodecOutputBufferReturnedIfDequeueFails) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_ERROR));
+      .WillOnce(Return(MediaCodecResult::Codes::kError));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer, nullptr);
 }
@@ -136,7 +136,7 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersAfterFlushAreValid) {
 TEST_F(CodecWrapperTest, CodecOutputBufferReleaseUsesCorrectIndex) {
   // The second arg is the buffer index pointer.
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(DoAll(SetArgPointee<1>(42), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<1>(42), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   EXPECT_CALL(*codec_, ReleaseOutputBuffer(42, true));
   codec_buffer->ReleaseToSurface();
@@ -190,48 +190,46 @@ TEST_F(CodecWrapperTest, CodecOutputBufferReleaseDoesNotInvalidateLaterOnes) {
 
 TEST_F(CodecWrapperTest, FormatChangedStatusIsSwallowed) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
   std::unique_ptr<CodecOutputBuffer> codec_buffer;
   auto status = wrapper_->DequeueOutputBuffer(nullptr, nullptr, &codec_buffer);
-  ASSERT_EQ(status, CodecWrapper::DequeueStatus::kTryAgainLater);
+  ASSERT_EQ(status, CodecWrapper::DequeueStatus::Codes::kTryAgainLater);
 }
 
 TEST_F(CodecWrapperTest, BuffersChangedStatusIsSwallowed) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_TRY_AGAIN_LATER));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputBuffersChanged))
+      .WillOnce(Return(MediaCodecResult::Codes::kTryAgainLater));
   std::unique_ptr<CodecOutputBuffer> codec_buffer;
   auto status = wrapper_->DequeueOutputBuffer(nullptr, nullptr, &codec_buffer);
-  ASSERT_EQ(status, CodecWrapper::DequeueStatus::kTryAgainLater);
+  ASSERT_EQ(status, CodecWrapper::DequeueStatus::Codes::kTryAgainLater);
 }
 
 TEST_F(CodecWrapperTest, MultipleFormatChangedStatusesIsAnError) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillRepeatedly(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED));
+      .WillRepeatedly(Return(MediaCodecResult::Codes::kOutputFormatChanged));
   std::unique_ptr<CodecOutputBuffer> codec_buffer;
   auto status = wrapper_->DequeueOutputBuffer(nullptr, nullptr, &codec_buffer);
-  ASSERT_EQ(status, CodecWrapper::DequeueStatus::kError);
+  ASSERT_EQ(status, CodecWrapper::DequeueStatus::Codes::kError);
 }
 
 TEST_F(CodecWrapperTest, CodecOutputBuffersHaveTheCorrectSize) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   EXPECT_CALL(*codec_, GetOutputSize(_))
-      .WillOnce(
-          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
 }
 
 TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSize) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   EXPECT_CALL(*codec_, GetOutputSize(_))
-      .WillOnce(
-          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
   EXPECT_TRUE(codec_buffer->CanGuessCodedSize());
@@ -247,11 +245,10 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeNoAlignment) {
       absl::nullopt);
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   EXPECT_CALL(*codec_, GetOutputSize(_))
-      .WillOnce(
-          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
   EXPECT_FALSE(codec_buffer->CanGuessCodedSize());
@@ -266,11 +263,10 @@ TEST_F(CodecWrapperTest, CodecOutputBuffersGuessCodedSizeWeirdAlignment) {
       gfx::Size(128, 1));
 
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   EXPECT_CALL(*codec_, GetOutputSize(_))
-      .WillOnce(
-          DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size(42, 42)), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), gfx::Size(42, 42));
   EXPECT_TRUE(codec_buffer->CanGuessCodedSize());
@@ -334,15 +330,15 @@ TEST_F(CodecWrapperTest, DequeuingEosTransitionsToDrainedState) {
 }
 
 TEST_F(CodecWrapperTest, RejectedInputBuffersAreReused) {
-  // If we get a MEDIA_CODEC_NO_KEY status, the next time we try to queue a
-  // buffer the previous input buffer should be reused.
+  // If we get a MediaCodecResult::Codes::kNoKey status, the next time we try to
+  // queue a buffer the previous input buffer should be reused.
   EXPECT_CALL(*codec_, DequeueInputBuffer(_, _))
-      .WillOnce(DoAll(SetArgPointee<1>(666), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<1>(666), Return(OkStatus())));
   EXPECT_CALL(*codec_, QueueInputBuffer(666, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_NO_KEY))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kNoKey))
+      .WillOnce(Return(OkStatus()));
   auto status = wrapper_->QueueInputBuffer(*fake_decoder_buffer_);
-  ASSERT_EQ(status, CodecWrapper::QueueStatus::kNoKey);
+  ASSERT_EQ(status, CodecWrapper::QueueStatus::Codes::kNoKey);
   wrapper_->QueueInputBuffer(*fake_decoder_buffer_);
 }
 
@@ -434,11 +430,11 @@ TEST_F(CodecWrapperTest, RenderCallbackIsNotCalledIfNotRendered) {
 TEST_F(CodecWrapperTest, CodecWrapperGetsColorSpaceFromCodec) {
   // CodecWrapper should provide the color space that's reported by the bridge.
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   gfx::ColorSpace color_space{gfx::ColorSpace::CreateHDR10()};
   EXPECT_CALL(*codec_, GetOutputColorSpace(_))
-      .WillOnce(DoAll(SetArgPointee<0>(color_space), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(color_space), Return(OkStatus())));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->color_space(), color_space);
 }
@@ -448,25 +444,25 @@ TEST_F(CodecWrapperTest, CodecWrapperDefaultsToSRGB) {
   // default to sRGB for sanity.
   // CodecWrapper should provide the color space that's reported by the bridge.
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
   EXPECT_CALL(*codec_, GetOutputColorSpace(_))
-      .WillOnce(Return(MEDIA_CODEC_ERROR));
+      .WillOnce(Return(MediaCodecResult::Codes::kError));
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->color_space(), gfx::ColorSpace::CreateSRGB());
 }
 
 TEST_F(CodecWrapperTest, CodecOutputsIgnoreZeroSize) {
   EXPECT_CALL(*codec_, DequeueOutputBuffer(_, _, _, _, _, _, _))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK))
-      .WillOnce(Return(MEDIA_CODEC_OUTPUT_FORMAT_CHANGED))
-      .WillOnce(Return(MEDIA_CODEC_OK));
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()))
+      .WillOnce(Return(MediaCodecResult::Codes::kOutputFormatChanged))
+      .WillOnce(Return(OkStatus()));
 
   constexpr gfx::Size kNewSize(1280, 720);
   EXPECT_CALL(*codec_, GetOutputSize(_))
-      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size()), Return(MEDIA_CODEC_OK)))
-      .WillOnce(DoAll(SetArgPointee<0>(kNewSize), Return(MEDIA_CODEC_OK)));
+      .WillOnce(DoAll(SetArgPointee<0>(gfx::Size()), Return(OkStatus())))
+      .WillOnce(DoAll(SetArgPointee<0>(kNewSize), Return(OkStatus())));
 
   auto codec_buffer = DequeueCodecOutputBuffer();
   ASSERT_EQ(codec_buffer->size(), kInitialCodedSize);
