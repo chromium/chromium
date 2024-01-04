@@ -136,6 +136,21 @@ void UrlMatcherWithBypass::AddMaskedDomainListRules(
                       !HasSubdomainCoverage(domain));
 }
 
+void UrlMatcherWithBypass::AddRulesWithoutBypass(
+    const std::vector<std::string>& domains,
+    const std::string& partition_key) {
+  net::SchemeHostPortMatcher matcher;
+  for (auto domain : domains) {
+    CHECK(PartitionMapKey(domain) == partition_key);
+    AddRulesToMatcher(&matcher, domain, !HasSubdomainCoverage(domain));
+  }
+
+  if (!matcher.rules().empty()) {
+    match_list_with_bypass_map_[partition_key].emplace_back(
+        std::make_pair(std::move(matcher), net::SchemeHostPortMatcher()));
+  }
+}
+
 void UrlMatcherWithBypass::Clear() {
   match_list_with_bypass_map_.clear();
 }
