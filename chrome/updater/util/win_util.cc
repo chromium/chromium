@@ -44,6 +44,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
@@ -59,6 +60,7 @@
 #include "base/win/startup_information.h"
 #include "base/win/win_util.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -203,6 +205,18 @@ bool CompareOSVersionsInternal(const OSVERSIONINFOEX& os,
   // https://msdn.microsoft.com/ms725492.
   OSVERSIONINFOEX os_in = os;
   return ::VerifyVersionInfo(&os_in, type_mask, cond_mask);
+}
+
+std::optional<int> DaynumFromDWORD(DWORD value) {
+  const int daynum = static_cast<int>(value);
+
+  // When daynum is positive, it is the number of days since January 1, 2007.
+  // It's reasonable to only accept value between 3000 (maps to Mar 20, 2015)
+  // and 50000 (maps to Nov 24, 2143).
+  // -1 is special value for first install.
+  return daynum == -1 || (daynum >= 3000 && daynum <= 50000)
+             ? std::make_optional(daynum)
+             : std::nullopt;
 }
 
 }  // namespace
@@ -1136,6 +1150,95 @@ std::wstring GetTextForSystemError(int error) {
   return chars_written > 0
              ? system_allocated_buffer
              : base::ASCIIToWide(base::StringPrintf("%#x", error));
+}
+
+bool MigrateLegacyUpdaters(
+    UpdaterScope scope,
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  for (base::win::RegistryKeyIterator it(root, CLIENTS_KEY, KEY_WOW64_32KEY);
+       it.Valid(); ++it) {
+    const std::wstring app_id = it.Name();
+
+    // Skip importing legacy updater.
+    if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdateAppID)) {
+      continue;
+    }
+
+    base::win::RegKey key;
+    if (key.Open(root, GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ)) !=
+        ERROR_SUCCESS) {
+      continue;
+    }
+
+    RegistrationRequest registration;
+    registration.app_id = base::SysWideToUTF8(app_id);
+    std::wstring pv;
+    if (key.ReadValue(kRegValuePV, &pv) != ERROR_SUCCESS) {
+      continue;
+    }
+
+    registration.version = base::Version(base::SysWideToUTF8(pv));
+    if (!registration.version.IsValid()) {
+      continue;
+    }
+
+    base::win::RegKey client_state_key;
+    if (client_state_key.Open(root, GetAppClientStateKey(app_id).c_str(),
+                              Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+      std::wstring brand_code;
+      if (client_state_key.ReadValue(kRegValueBrandCode, &brand_code) ==
+          ERROR_SUCCESS) {
+        registration.brand_code = base::SysWideToUTF8(brand_code);
+      }
+
+      std::wstring ap;
+      if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
+        registration.ap = base::SysWideToUTF8(ap);
+      }
+
+      DWORD date_last_activity = 0;
+      if (client_state_key.ReadValueDW(kRegValueDateOfLastActivity,
+                                       &date_last_activity) == ERROR_SUCCESS) {
+        registration.dla = DaynumFromDWORD(date_last_activity);
+      }
+
+      DWORD date_last_rollcall = 0;
+      if (client_state_key.ReadValueDW(kRegValueDateOfLastRollcall,
+                                       &date_last_rollcall) == ERROR_SUCCESS) {
+        registration.dlrc = DaynumFromDWORD(date_last_rollcall);
+      }
+
+      base::win::RegKey cohort_key;
+      if (cohort_key.Open(root, GetAppCohortKey(app_id).c_str(),
+                          Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+        std::wstring cohort;
+        if (cohort_key.ReadValue(nullptr, &cohort) == ERROR_SUCCESS) {
+          registration.cohort = base::SysWideToUTF8(cohort);
+
+          std::wstring cohort_name;
+          if (cohort_key.ReadValue(kRegValueCohortName, &cohort_name) ==
+              ERROR_SUCCESS) {
+            registration.cohort_name = base::SysWideToUTF8(cohort_name);
+          }
+
+          std::wstring cohort_hint;
+          if (cohort_key.ReadValue(kRegValueCohortHint, &cohort_hint) ==
+              ERROR_SUCCESS) {
+            registration.cohort_hint = base::SysWideToUTF8(cohort_hint);
+          }
+          VLOG(2) << "Cohort values: " << registration.cohort << ", "
+                  << registration.cohort_name << ", "
+                  << registration.cohort_hint;
+        }
+      }
+    }
+
+    register_callback.Run(registration);
+  }
+
+  return true;
 }
 
 }  // namespace updater

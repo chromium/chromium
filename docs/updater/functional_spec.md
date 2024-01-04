@@ -348,7 +348,9 @@ installs small versions of those programs that implement a subset of their APIs.
 
 The updater also imports the properties and state of the apps that have been
 registered with Omaha and Keystone, so they show up as registered with the
-updater.
+updater. This import is repeated periodically, so long as the updater is
+installed, but these properties do not override any existing properties the
+updater already tracks for each app.
 
 #### Keystone Shims
 The updater installs a Keystone-like application that contains these shims:

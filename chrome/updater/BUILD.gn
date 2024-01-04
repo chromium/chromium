@@ -101,6 +101,8 @@ if (is_win || is_mac || is_linux) {
       "device_management/dm_response_validator.h",
       "device_management/dm_storage.cc",
       "device_management/dm_storage.h",
+      "find_unregistered_apps_task.cc",
+      "find_unregistered_apps_task.h",
       "installer.cc",
       "installer.h",
       "ipc/update_service_internal_proxy.cc",
@@ -195,8 +197,6 @@ if (is_win || is_mac || is_linux) {
         "lock_mac.mm",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
-        "mac/setup/keystone.h",
-        "mac/setup/keystone.mm",
         "mac/setup/setup.mm",
         "mac/setup/wake_task.h",
         "mac/setup/wake_task.mm",
@@ -614,9 +614,13 @@ if (is_win || is_mac || is_linux) {
         "ipc/ipc_names_mac.mm",
         "ipc/update_service_dialer_mac.cc",
         "mac/privileged_helper/service_protocol.h",
+        "mac/setup/keystone.h",
+        "mac/setup/keystone.mm",
         "util/mac_util.h",
         "util/mac_util.mm",
       ]
+
+      deps += [ ":ks_ticket" ]
 
       frameworks = [ "Foundation.framework" ]
     }

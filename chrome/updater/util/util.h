@@ -54,7 +54,7 @@ namespace tagging {
 struct TagArgs;
 }
 
-enum class UpdaterScope;
+struct RegistrationRequest;
 
 // Returns the versioned install directory under which the program stores its
 // executables. For example, on macOS this function may return
@@ -215,6 +215,12 @@ void InitializeThreadPool(const char* name);
 // owned by non-root accounts, or avoiding the installation of a user level
 // updater as root.
 bool WrongUser(UpdaterScope scope);
+
+// Imports metadata from legacy updaters.
+bool MigrateLegacyUpdaters(
+    UpdaterScope scope,
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback);
 
 // Delete everything other than `except` under `except.DirName()`.
 [[nodiscard]] bool DeleteExcept(const std::optional<base::FilePath>& except);

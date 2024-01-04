@@ -17,8 +17,6 @@
 
 namespace updater {
 
-struct RegistrationRequest;
-
 // Returns S_OK if user install, or if the COM caller is admin. Error otherwise.
 HRESULT IsCOMCallerAllowed();
 
@@ -59,9 +57,6 @@ class AppServerWin : public AppServer {
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
   bool SwapInNewVersion() override;
-  bool MigrateLegacyUpdaters(
-      base::RepeatingCallback<void(const RegistrationRequest&)>
-          register_callback) override;
   void RepairUpdater(UpdaterScope scope, bool is_internal) override;
   void UninstallSelf() override;
   bool ShutdownIfIdleAfterTask() override;

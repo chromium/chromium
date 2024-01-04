@@ -25,7 +25,6 @@ enum class Error;
 
 namespace updater {
 class Configurator;
-class PersistedData;
 
 class RemoveUninstalledAppsTask
     : public base::RefCountedThreadSafe<RemoveUninstalledAppsTask> {
@@ -43,7 +42,6 @@ class RemoveUninstalledAppsTask
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<Configurator> config_;
-  scoped_refptr<PersistedData> persisted_data_;
   scoped_refptr<update_client::UpdateClient> update_client_;
   UpdaterScope scope_;
 };

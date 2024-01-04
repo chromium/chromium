@@ -34,13 +34,6 @@ class AppServerLinux : public AppServerPosix {
 
 }  // namespace
 
-bool AppServerPosix::MigrateLegacyUpdaters(
-    base::RepeatingCallback<void(const RegistrationRequest&)>
-        register_callback) {
-  // There is not a legacy update client for Linux.
-  return true;
-}
-
 void AppServerPosix::RepairUpdater(UpdaterScope scope, bool is_internal) {
   // No repairs to do on Linux.
 }

@@ -24,6 +24,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/mac/setup/keystone.h"
+#include "chrome/updater/registration_data.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -306,6 +308,14 @@ std::optional<std::string> ReadValueFromPlist(const base::FilePath& path,
     return std::nullopt;
   }
   return base::SysCFStringRefToUTF8(value);
+}
+
+bool MigrateLegacyUpdaters(
+    UpdaterScope scope,
+    base::RepeatingCallback<void(const RegistrationRequest&)>
+        register_callback) {
+  return MigrateKeystoneApps(GetKeystoneFolderPath(scope).value(),
+                             register_callback);
 }
 
 }  // namespace updater
