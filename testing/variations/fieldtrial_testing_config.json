@@ -1778,31 +1778,6 @@
             ]
         }
     ],
-    "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_All_AddressLine_1_And_2",
-                    "params": {
-                        "AutofillHeuristicPrecedenceOverAutocompleteScope": "address_line_1_and_2",
-                        "AutofillServerPrecedenceOverAutocompleteScope": "address_line_1_and_2"
-                    },
-                    "enable_features": [
-                        "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillSuggestServerCardInsteadOfLocalCard": [
         {
             "platforms": [

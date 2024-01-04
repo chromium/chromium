@@ -371,7 +371,7 @@ const base::FeatureParam<bool> kAutofillConvergeToLonger{
 
 BASE_FEATURE(kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
              "AutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<PrecedenceOverAutocompleteScope>::Option
     kPrecedenceOverAutocompleteScope[] = {
@@ -392,7 +392,7 @@ const base::FeatureParam<PrecedenceOverAutocompleteScope>
     kAutofillServerPrecedenceScopeOverAutocomplete{
         &kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete,
         "AutofillServerPrecedenceOverAutocompleteScope",
-        PrecedenceOverAutocompleteScope::kNone,
+        PrecedenceOverAutocompleteScope::kAddressLine1And2,
         &kPrecedenceOverAutocompleteScope};
 
 // When enabled, HTML autocomplete values that do not map to any known type, but
