@@ -3416,7 +3416,8 @@ AXObject* AXObjectCacheImpl::TreeUpdateObjectIfRelevant(
       return nullptr;
     }
   }
-  CHECK(!ax_object->IsMissingParent());
+  DUMP_WILL_BE_CHECK(!ax_object->IsMissingParent())
+      << ax_object->ToString(true, true);
 
   // Update cached attributes for all changed nodes before serialization,
   // because updating ignored/included can cause tree structure changes, and
