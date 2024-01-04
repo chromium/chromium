@@ -382,7 +382,6 @@ constexpr LogSeverity LOG_INFO = LOGGING_INFO;
 constexpr LogSeverity LOG_WARNING = LOGGING_WARNING;
 constexpr LogSeverity LOG_ERROR = LOGGING_ERROR;
 constexpr LogSeverity LOG_FATAL = LOGGING_FATAL;
-constexpr LogSeverity LOG_DFATAL = LOGGING_DFATAL;
 
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
