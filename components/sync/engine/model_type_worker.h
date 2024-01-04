@@ -413,7 +413,7 @@ class GetLocalChangesRequest
     : public base::RefCountedThreadSafe<GetLocalChangesRequest>,
       public CancelationSignal::Observer {
  public:
-  explicit GetLocalChangesRequest(CancelationSignal* cancelation_signal);
+  GetLocalChangesRequest();
 
   GetLocalChangesRequest(const GetLocalChangesRequest&) = delete;
   GetLocalChangesRequest& operator=(const GetLocalChangesRequest&) = delete;
@@ -423,16 +423,12 @@ class GetLocalChangesRequest
 
   // Blocks current thread until either SetResponse is called or
   // cancelation_signal_ is signaled.
-  void WaitForResponseOrCancelation();
+  void WaitForResponseOrCancelation(CancelationSignal* cancelation_signal);
 
   // SetResponse takes ownership of |local_changes| and unblocks
   // WaitForResponseOrCancelation call. It is called by model type through
   // callback passed to GetLocalChanges.
   void SetResponse(CommitRequestDataList&& local_changes);
-
-  // Checks if WaitForResponseOrCancelation was canceled through
-  // CancelationSignal. When returns true calling ExtractResponse is unsafe.
-  bool WasCancelled();
 
   // Returns response set by SetResponse().
   CommitRequestDataList&& ExtractResponse();
@@ -441,7 +437,6 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  raw_ptr<CancelationSignal, AcrossTasksDanglingUntriaged> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };
