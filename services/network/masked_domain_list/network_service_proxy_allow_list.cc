@@ -141,18 +141,8 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
     }
 
     for (const auto& [partition, domains] : owned_domains_by_partition) {
-      switch (proxy_bypass_policy_) {
-        case network::mojom::IpProtectionProxyBypassPolicy::kNone: {
-          url_matcher_with_bypass_.AddRulesWithoutBypass(domains, partition);
-          break;
-        }
-        case network::mojom::IpProtectionProxyBypassPolicy::
-            kFirstPartyToTopLevelFrame: {
-          url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
-                                                            owner);
-          break;
-        }
-      }
+      url_matcher_with_bypass_.AddMaskedDomainListRules(domains, partition,
+                                                        owner);
     }
   }
   base::UmaHistogramMemoryKB(
