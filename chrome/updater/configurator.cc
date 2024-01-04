@@ -231,4 +231,8 @@ std::optional<base::FilePath> Configurator::GetCrxCachePath() const {
   return updater::GetCrxDiffCacheDirectory(GetUpdaterScope());
 }
 
+bool Configurator::IsConnectionMetered() const {
+  return false;
+}
+
 }  // namespace updater

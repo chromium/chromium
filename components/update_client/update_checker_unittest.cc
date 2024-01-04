@@ -74,7 +74,8 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   std::unique_ptr<Component> MakeComponent(const std::string& brand) const;
   std::unique_ptr<Component> MakeComponent(
       const std::string& brand,
-      const std::string& install_data_index) const;
+      const std::string& install_data_index,
+      bool allow_updates_on_metered_connection) const;
   absl::optional<base::Value::Dict> ParseRequest(int request_number);
   base::Value GetFirstAppAsValue(const base::Value::Dict& request);
   base::Value::Dict GetFirstAppAsDict(const base::Value::Dict& request);
@@ -157,8 +158,9 @@ void UpdateCheckerTest::RunThreads() {
 }
 
 void UpdateCheckerTest::Quit() {
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
@@ -189,12 +191,13 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent() const {
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& brand) const {
-  return MakeComponent(brand, {});
+  return MakeComponent(brand, {}, true);
 }
 
 std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
     const std::string& brand,
-    const std::string& install_data_index) const {
+    const std::string& install_data_index,
+    bool allow_updates_on_metered_connection) const {
   CrxComponent crx_component;
   crx_component.app_id = "jebgalgnebhfojomionfpkfelancnnkf";
   crx_component.brand = brand;
@@ -204,6 +207,8 @@ std::unique_ptr<Component> UpdateCheckerTest::MakeComponent(
   crx_component.installer = nullptr;
   crx_component.version = base::Version("0.9");
   crx_component.fingerprint = "fp1";
+  crx_component.allow_updates_on_metered_connection =
+      allow_updates_on_metered_connection;
 
   auto component = std::make_unique<Component>(*update_context_, kUpdateItemId);
   component->state_ = std::make_unique<Component::StateNew>(component.get());
@@ -258,7 +263,7 @@ TEST_P(UpdateCheckerTest, UpdateCheckSuccess) {
   update_checker_ = UpdateChecker::Create(config_, metadata_.get());
 
   update_context_->components[kUpdateItemId] =
-      MakeComponent("TEST", "foobar_install_data_index");
+      MakeComponent("TEST", "foobar_install_data_index", true);
 
   auto& component = update_context_->components[kUpdateItemId];
   component->crx_component_->installer_attributes["ap"] = "some_ap";
@@ -747,14 +752,14 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
   ASSERT_EQ(3, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-    {
+  {
     absl::optional<base::Value::Dict> root = ParseRequest(0);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
     EXPECT_EQ(10, app.GetDict().FindIntByDottedPath("ping.a").value());
     EXPECT_EQ(-2, app.GetDict().FindIntByDottedPath("ping.r").value());
-    }
-    {
+  }
+  {
     absl::optional<base::Value::Dict> root = ParseRequest(1);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
@@ -762,15 +767,15 @@ TEST_P(UpdateCheckerTest, UpdateCheckLastActive) {
     EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.rd")->GetInt());
     EXPECT_TRUE(
         app.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
-    }
-    {
+  }
+  {
     absl::optional<base::Value::Dict> root = ParseRequest(2);
     ASSERT_TRUE(root);
     const base::Value app = GetFirstAppAsValue(root.value());
     EXPECT_EQ(3383, app.GetDict().FindByDottedPath("ping.rd")->GetInt());
     EXPECT_TRUE(
         app.GetDict().FindByDottedPath("ping.ping_freshness")->is_string());
-    }
+  }
 }
 
 TEST_P(UpdateCheckerTest, UpdateCheckInstallSource) {
@@ -1049,6 +1054,72 @@ TEST_P(UpdateCheckerTest, UpdateCheckUpdateDisabled) {
     //  * the component updates are disabled.
     // Expects the update check to include the "updatedisabled" attribute.
     crx_component->updates_enabled = false;
+    component->set_crx_component(*crx_component);
+    auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
+        config_->test_url_loader_factory());
+    EXPECT_TRUE(post_interceptor->ExpectRequest(
+        std::make_unique<PartialMatch>("updatecheck"),
+        GetTestFilePath("updatecheck_reply_1.json")));
+    update_checker_->CheckForUpdates(
+        update_context_, {},
+        base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
+                       base::Unretained(this)));
+    RunThreads();
+    const auto& request = post_interceptor->GetRequestBody(0);
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value app_as_val = GetFirstAppAsValue(root->GetDict());
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_TRUE(app_as_val.GetDict()
+                    .FindBoolByDottedPath("updatecheck.updatedisabled")
+                    .value());
+  }
+}
+
+TEST_P(UpdateCheckerTest, UpdateDisabledByMeteredConnection) {
+  update_checker_ = UpdateChecker::Create(config_, metadata_.get());
+
+  update_context_->components[kUpdateItemId] =
+      MakeComponent("TEST", "foobar_install_data_index", false);
+
+  auto& component = update_context_->components[kUpdateItemId];
+  auto crx_component = component->crx_component();
+
+  // Ignore this test parameter to keep the test simple.
+  update_context_->is_foreground = false;
+  {
+    // Tests the scenario where:
+    //  * the component updates are enabled on a non-metered connection.
+    // Expects the the update check to not include the "updatedisabled"
+    // attribute.
+    config_->SetIsNetworkConnectionMetered(false);
+    auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
+        config_->test_url_loader_factory());
+    EXPECT_TRUE(post_interceptor->ExpectRequest(
+        std::make_unique<PartialMatch>("updatecheck"),
+        GetTestFilePath("updatecheck_reply_1.json")));
+    update_checker_->CheckForUpdates(
+        update_context_, {},
+        base::BindOnce(&UpdateCheckerTest::UpdateCheckComplete,
+                       base::Unretained(this)));
+    RunThreads();
+    const auto& request = post_interceptor->GetRequestBody(0);
+    const auto root = base::JSONReader::Read(request);
+    ASSERT_TRUE(root);
+    const base::Value::Dict app = GetFirstAppAsDict(root->GetDict());
+    EXPECT_EQ(kUpdateItemId, CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("0.9", CHECK_DEREF(app.FindString("version")));
+    EXPECT_EQ(true, app.FindBool("enabled"));
+    EXPECT_TRUE(app.FindDict("updatecheck")->empty());
+  }
+  {
+    // Tests the scenario where:
+    //  * updates are disabled due to a metered network connection.
+    // Expects the update check to include the "updatedisabled" attribute.
+    config_->SetIsNetworkConnectionMetered(true);
     component->set_crx_component(*crx_component);
     auto post_interceptor = std::make_unique<URLLoaderPostInterceptor>(
         config_->test_url_loader_factory());

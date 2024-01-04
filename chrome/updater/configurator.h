@@ -80,6 +80,7 @@ class Configurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
   scoped_refptr<PersistedData> GetUpdaterPersistedData() const;
   virtual GURL CrashUploadURL() const;

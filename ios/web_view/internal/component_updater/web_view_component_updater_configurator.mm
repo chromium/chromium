@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/web_view/internal/component_updater/web_view_component_updater_configurator.h"
-#import "base/time/time.h"
 
 #import <stdint.h>
 
@@ -15,6 +14,7 @@
 #import "base/containers/flat_map.h"
 #import "base/files/file_path.h"
 #import "base/path_service.h"
+#import "base/time/time.h"
 #import "base/version.h"
 #import "components/component_updater/component_updater_command_line_config_policy.h"
 #import "components/component_updater/configurator_impl.h"
@@ -75,6 +75,7 @@ class WebViewConfigurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<WebViewConfigurator>;
@@ -238,6 +239,10 @@ std::optional<base::FilePath> WebViewConfigurator::GetCrxCachePath() const {
     return std::nullopt;
   }
   return path.Append(FILE_PATH_LITERAL("ios_webview_crx_cache"));
+}
+
+bool WebViewConfigurator::IsConnectionMetered() const {
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace

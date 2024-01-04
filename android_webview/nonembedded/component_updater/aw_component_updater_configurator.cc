@@ -5,10 +5,10 @@
 #include "android_webview/nonembedded/component_updater/aw_component_updater_configurator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "android_webview/nonembedded/net/network_impl.h"
 #include "base/android/path_utils.h"
 #include "base/files/file_path.h"
@@ -208,6 +208,10 @@ std::optional<base::FilePath> AwComponentUpdaterConfigurator::GetCrxCachePath()
              ? std::optional<base::FilePath>(
                    path.AppendASCII(("webview_crx_cache")))
              : std::nullopt;
+}
+
+bool AwComponentUpdaterConfigurator::IsConnectionMetered() const {
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace android_webview

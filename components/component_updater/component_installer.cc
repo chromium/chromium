@@ -57,6 +57,10 @@ bool ComponentInstallerPolicy::AllowCachedCopies() const {
   return true;
 }
 
+bool ComponentInstallerPolicy::AllowUpdatesOnMeteredConnections() const {
+  return true;
+}
+
 ComponentInstaller::RegistrationInfo::RegistrationInfo()
     : version(kNullVersion) {}
 
@@ -529,7 +533,8 @@ void ComponentInstaller::FinishRegistration(
                installer_policy_->GetInstallerAttributes(), action_handler_,
                this, installer_policy_->RequiresNetworkEncryption(),
                installer_policy_->SupportsGroupPolicyEnabledComponentUpdates(),
-               installer_policy_->AllowCachedCopies()))) {
+               installer_policy_->AllowCachedCopies(),
+               installer_policy_->AllowUpdatesOnMeteredConnections()))) {
     VLOG(0) << "Component registration failed for "
             << installer_policy_->GetName();
     if (!callback.is_null()) {

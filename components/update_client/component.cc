@@ -921,7 +921,9 @@ void Component::StateCanUpdate::DoHandle() {
   component.is_update_available_ = true;
   component.NotifyObservers(Events::COMPONENT_UPDATE_FOUND);
 
-  if (!component.crx_component()->updates_enabled) {
+  if (!component.crx_component()->updates_enabled ||
+      (!component.crx_component()->allow_updates_on_metered_connection &&
+       component.config()->IsConnectionMetered())) {
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::UPDATE_DISABLED);
     component.extra_code1_ = 0;

@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -63,7 +64,8 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
               test_shared_loader_factory_,
               base::BindRepeating([](const GURL& url) { return false; }))),
       updater_state_provider_(base::BindRepeating(
-          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })) {
+          [](bool /*is_machine*/) { return UpdaterStateAttributes(); })),
+      is_network_connection_metered_(false) {
   std::ignore = crx_cache_root_temp_dir_.CreateUniqueTempDir();
 }
 
@@ -86,15 +88,17 @@ base::TimeDelta TestConfigurator::UpdateDelay() const {
 }
 
 std::vector<GURL> TestConfigurator::UpdateUrl() const {
-  if (!update_check_urls_.empty())
+  if (!update_check_urls_.empty()) {
     return update_check_urls_;
+  }
 
   return MakeDefaultUrls();
 }
 
 std::vector<GURL> TestConfigurator::PingUrl() const {
-  if (!ping_url_.is_empty())
+  if (!ping_url_.is_empty()) {
     return std::vector<GURL>(1, ping_url_);
+  }
 
   return UpdateUrl();
 }
@@ -192,6 +196,10 @@ absl::optional<base::FilePath> TestConfigurator::GetCrxCachePath() const {
       crx_cache_root_temp_dir_.GetPath().AppendASCII("crx_cache"));
 }
 
+bool TestConfigurator::IsConnectionMetered() const {
+  return is_network_connection_metered_;
+}
+
 void TestConfigurator::SetOnDemandTime(base::TimeDelta time) {
   ondemand_time_ = time;
 }
@@ -229,6 +237,11 @@ void TestConfigurator::SetCrxDownloaderFactory(
 void TestConfigurator::SetIsMachineExternallyManaged(
     absl::optional<bool> is_machine_externally_managed) {
   is_machine_externally_managed_ = is_machine_externally_managed;
+}
+
+void TestConfigurator::SetIsNetworkConnectionMetered(
+    bool is_network_connection_metered) {
+  is_network_connection_metered_ = is_network_connection_metered;
 }
 
 void TestConfigurator::SetUpdaterStateProvider(

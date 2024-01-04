@@ -99,6 +99,8 @@ class ConfiguratorImpl {
 
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const;
 
+  bool IsConnectionMetered() const;
+
  private:
   base::flat_map<std::string, std::string> extra_info_;
   const bool background_downloads_enabled_;

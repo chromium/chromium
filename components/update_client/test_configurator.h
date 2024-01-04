@@ -105,6 +105,7 @@ class TestConfigurator : public Configurator {
   absl::optional<bool> IsMachineExternallyManaged() const override;
   UpdaterStateProvider GetUpdaterStateProvider() const override;
   absl::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
   void SetOnDemandTime(base::TimeDelta seconds);
   void SetInitialDelay(base::TimeDelta seconds);
@@ -117,6 +118,7 @@ class TestConfigurator : public Configurator {
       scoped_refptr<CrxDownloaderFactory> crx_downloader_factory);
   void SetIsMachineExternallyManaged(
       absl::optional<bool> is_machine_externally_managed);
+  void SetIsNetworkConnectionMetered(bool is_network_connection_metered);
   void SetUpdaterStateProvider(UpdaterStateProvider update_state_provider);
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
@@ -146,6 +148,7 @@ class TestConfigurator : public Configurator {
   scoped_refptr<CrxDownloaderFactory> crx_downloader_factory_;
   UpdaterStateProvider updater_state_provider_;
   absl::optional<bool> is_machine_externally_managed_;
+  bool is_network_connection_metered_;
   base::ScopedTempDir crx_cache_root_temp_dir_;
 };
 

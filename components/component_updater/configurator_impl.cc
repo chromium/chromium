@@ -23,6 +23,7 @@
 #include "components/update_client/protocol_handler.h"
 #include "components/update_client/utils.h"
 #include "components/version_info/version_info.h"
+#include "net/base/network_change_notifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -51,8 +52,9 @@ ConfiguratorImpl::ConfiguratorImpl(
 ConfiguratorImpl::~ConfiguratorImpl() = default;
 
 base::TimeDelta ConfiguratorImpl::InitialDelay() const {
-  if (!initial_delay_.is_zero())
+  if (!initial_delay_.is_zero()) {
     return initial_delay_;
+  }
   return fast_update_ ? base::Seconds(10) : base::Minutes(1);
 }
 
@@ -69,13 +71,15 @@ base::TimeDelta ConfiguratorImpl::UpdateDelay() const {
 }
 
 std::vector<GURL> ConfiguratorImpl::UpdateUrl() const {
-  if (url_source_override_.is_valid())
+  if (url_source_override_.is_valid()) {
     return {GURL(url_source_override_)};
+  }
 
   std::vector<GURL> urls{GURL(kUpdaterJSONDefaultUrl),
                          GURL(kUpdaterJSONFallbackUrl)};
-  if (require_encryption_)
+  if (require_encryption_) {
     update_client::RemoveUnsecureUrls(&urls);
+  }
 
   return urls;
 }
@@ -149,6 +153,11 @@ absl::optional<bool> ConfiguratorImpl::IsMachineExternallyManaged() const {
 #else
   return absl::nullopt;
 #endif
+}
+
+bool ConfiguratorImpl::IsConnectionMetered() const {
+  return net::NetworkChangeNotifier::GetConnectionCost() ==
+         net::NetworkChangeNotifier::CONNECTION_COST_METERED;
 }
 
 }  // namespace component_updater

@@ -183,10 +183,11 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
     sent_ids.push_back(app_id);
 
     std::string install_source;
-    if (!crx_component->install_source.empty())
+    if (!crx_component->install_source.empty()) {
       install_source = crx_component->install_source;
-    else if (component->is_foreground())
+    } else if (component->is_foreground()) {
       install_source = "ondemand";
+    }
 
     apps.push_back(MakeProtocolApp(
         app_id, crx_component->version, crx_component->ap, crx_component->brand,
@@ -195,16 +196,20 @@ void UpdateCheckerImpl::CheckForUpdatesHelper(
         crx_component->installer_attributes, metadata_->GetCohort(app_id),
         metadata_->GetCohortHint(app_id), metadata_->GetCohortName(app_id),
         crx_component->channel, crx_component->disabled_reasons,
-        MakeProtocolUpdateCheck(!crx_component->updates_enabled,
-                                crx_component->target_version_prefix,
-                                crx_component->rollback_allowed,
-                                crx_component->same_version_update_allowed),
+        MakeProtocolUpdateCheck(
+            !crx_component->updates_enabled ||
+                (!crx_component->allow_updates_on_metered_connection &&
+                 config_->IsConnectionMetered()),
+            crx_component->target_version_prefix,
+            crx_component->rollback_allowed,
+            crx_component->same_version_update_allowed),
         [](const std::string& install_data_index)
             -> std::vector<protocol_request::Data> {
-          if (install_data_index.empty())
+          if (install_data_index.empty()) {
             return {};
-          else
+          } else {
             return {{"install", install_data_index, ""}};
+          }
         }(crx_component->install_data_index),
         MakeProtocolPing(app_id, metadata_,
                          active_ids.find(app_id) != active_ids.end()),
@@ -286,14 +291,17 @@ void UpdateCheckerImpl::UpdateCheckSucceeded(
   const int daynum = results.daystart_elapsed_days;
   for (const auto& result : results.list) {
     auto entry = result.cohort_attrs.find(ProtocolParser::Result::kCohort);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohort(result.extension_id, entry->second);
+    }
     entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortName);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohortName(result.extension_id, entry->second);
+    }
     entry = result.cohort_attrs.find(ProtocolParser::Result::kCohortHint);
-    if (entry != result.cohort_attrs.end())
+    if (entry != result.cohort_attrs.end()) {
       metadata_->SetCohortHint(result.extension_id, entry->second);
+    }
   }
 
   base::OnceClosure reply =

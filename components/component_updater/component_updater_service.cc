@@ -80,7 +80,8 @@ ComponentRegistration::ComponentRegistration(
     scoped_refptr<update_client::CrxInstaller> installer,
     bool requires_network_encryption,
     bool supports_group_policy_enable_component_updates,
-    bool allow_cached_copies)
+    bool allow_cached_copies,
+    bool allow_updates_on_metered_connection)
     : app_id(app_id),
       name(name),
       public_key_hash(public_key_hash),
@@ -92,7 +93,9 @@ ComponentRegistration::ComponentRegistration(
       requires_network_encryption(requires_network_encryption),
       supports_group_policy_enable_component_updates(
           supports_group_policy_enable_component_updates),
-      allow_cached_copies(allow_cached_copies) {}
+      allow_cached_copies(allow_cached_copies),
+      allow_updates_on_metered_connection(allow_updates_on_metered_connection) {
+}
 ComponentRegistration::ComponentRegistration(
     const ComponentRegistration& other) = default;
 ComponentRegistration& ComponentRegistration::operator=(
@@ -285,6 +288,8 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
   crx.installer_attributes = component.installer_attributes;
   crx.requires_network_encryption = component.requires_network_encryption;
   crx.allow_cached_copies = component.allow_cached_copies;
+  crx.allow_updates_on_metered_connection =
+      component.allow_updates_on_metered_connection;
 
   crx.brand = brand_;
   crx.crx_format_requirement =

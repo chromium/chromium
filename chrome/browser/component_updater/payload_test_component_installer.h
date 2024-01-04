@@ -33,6 +33,7 @@ class PayloadTestComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
   bool AllowCachedCopies() const override;
+  bool AllowUpdatesOnMeteredConnections() const override;
 };
 
 void RegisterPayloadTestComponent(ComponentUpdateService* cus);

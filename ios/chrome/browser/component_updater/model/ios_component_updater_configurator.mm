@@ -13,6 +13,7 @@
 
 #import "base/containers/flat_map.h"
 #import "base/files/file_path.h"
+#import "base/memory/scoped_refptr.h"
 #import "base/path_service.h"
 #import "base/version.h"
 #import "components/component_updater/component_updater_command_line_config_policy.h"
@@ -72,6 +73,7 @@ class IOSConfigurator : public update_client::Configurator {
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   std::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<IOSConfigurator>;
@@ -233,6 +235,10 @@ std::optional<base::FilePath> IOSConfigurator::GetCrxCachePath() const {
     return std::nullopt;
   }
   return path.Append(FILE_PATH_LITERAL("ios_crx_cache"));
+}
+
+bool IOSConfigurator::IsConnectionMetered() const {
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace

@@ -94,7 +94,8 @@ struct ComponentRegistration {
       scoped_refptr<update_client::CrxInstaller> installer,
       bool requires_network_encryption,
       bool supports_group_policy_enable_component_updates,
-      bool allow_cached_copies);
+      bool allow_cached_copies,
+      bool allow_updates_on_metered_connection);
   ComponentRegistration(const ComponentRegistration& other);
   ComponentRegistration& operator=(const ComponentRegistration& other);
   ComponentRegistration(ComponentRegistration&& other);
@@ -112,6 +113,7 @@ struct ComponentRegistration {
   bool requires_network_encryption;
   bool supports_group_policy_enable_component_updates;
   bool allow_cached_copies;
+  bool allow_updates_on_metered_connection;
 };
 
 // The component update service is in charge of installing or upgrading select

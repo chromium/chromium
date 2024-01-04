@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
@@ -201,14 +202,16 @@ base::TimeDelta ChromeUpdateClientConfig::UpdateDelay() const {
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::UpdateUrl() const {
-  if (url_override_.has_value())
+  if (url_override_.has_value()) {
     return {*url_override_};
+  }
   return impl_.UpdateUrl();
 }
 
 std::vector<GURL> ChromeUpdateClientConfig::PingUrl() const {
-  if (url_override_.has_value())
+  if (url_override_.has_value()) {
     return {*url_override_};
+  }
   return impl_.PingUrl();
 }
 
@@ -297,8 +300,9 @@ bool ChromeUpdateClientConfig::EnabledBackgroundDownloader() const {
 }
 
 bool ChromeUpdateClientConfig::EnabledCupSigning() const {
-  if (url_override_.has_value())
+  if (url_override_.has_value()) {
     return false;
+  }
   return impl_.EnabledCupSigning();
 }
 
@@ -354,6 +358,10 @@ absl::optional<base::FilePath> ChromeUpdateClientConfig::GetCrxCachePath()
   return result ? absl::optional<base::FilePath>(
                       path.AppendASCII("extensions_crx_cache"))
                 : absl::nullopt;
+}
+
+bool ChromeUpdateClientConfig::IsConnectionMetered() const {
+  return impl_.IsConnectionMetered();
 }
 
 }  // namespace extensions

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
@@ -88,6 +89,7 @@ class ChromeConfigurator : public update_client::Configurator {
   absl::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
   absl::optional<base::FilePath> GetCrxCachePath() const override;
+  bool IsConnectionMetered() const override;
 
  private:
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
@@ -280,6 +282,10 @@ ChromeConfigurator::GetBackgroundDownloaderCache() const {
   return result ? absl::optional<base::FilePath>(
                       path.AppendASCII("download_cache"))
                 : absl::nullopt;
+}
+
+bool ChromeConfigurator::IsConnectionMetered() const {
+  return configurator_impl_.IsConnectionMetered();
 }
 
 }  // namespace
