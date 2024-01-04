@@ -273,15 +273,23 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
     return {PolicyDecision::Cancel(), kNoAppLaunchRequest};
   }
 
+  // Disallow launching Chrome from within Chrome, as there are no good use
+  // cases for this but allowing it opens the door to abuse.
+  bool is_chrome_launch_attempt = HasChromeAppScheme(request_url);
+  UMA_HISTOGRAM_BOOLEAN("IOS.AppLauncher.AppURLHasChromeLaunchScheme",
+                        is_chrome_launch_attempt);
+  if (is_chrome_launch_attempt) {
+    return {PolicyDecision::Cancel(), kNoAppLaunchRequest};
+  }
+
   ExternalURLRequestStatus request_status =
       ExternalURLRequestStatus::kMainFrameRequestAllowed;
   // TODO(crbug.com/852489): Check if the source frame should also be
   // considered.
   if (!request_info.target_frame_is_main) {
     request_status = ExternalURLRequestStatus::kSubFrameRequestAllowed;
-    // Don't allow navigations from iframe to apps if there is no user gesture
-    // or the URL scheme is for Chrome app.
-    if (!request_info.has_user_gesture || HasChromeAppScheme(request_url)) {
+    // Don't allow navigations from iframe to apps if there is no user gesture.
+    if (!request_info.has_user_gesture) {
       request_status = ExternalURLRequestStatus::kSubFrameRequestBlocked;
     }
   }
