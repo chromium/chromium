@@ -27,11 +27,20 @@ ASH_EXPORT std::optional<base::Time> GetLastTimeNudgeWasShown(
 // Returns the number of times the nudge has been shown.
 ASH_EXPORT uint64_t GetNudgeShownCount(PrefService* prefs);
 
+// Returns whether the user associated with the given `prefs` is eligible to see
+// the nudge. If eligibility has not been determined, returns `std::nullopt`.
+// Note that this does not account for rate limiting.
+ASH_EXPORT std::optional<bool> GetUserEligibility(PrefService* prefs);
+
 // Marks that the nudge has been shown. Updates both the count and timestamp.
 ASH_EXPORT void MarkNudgeShown(PrefService* prefs);
 
 // Registers the Holding Space wallpaper nudge prefs to the given `registry`.
 ASH_EXPORT void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+// Sets whether user should be considered eligible to see the nudge to
+// `eligible`. Returns `true` if successfully set, `false` otherwise.
+ASH_EXPORT bool SetUserEligibility(PrefService* prefs, bool eligible);
 
 }  // namespace ash::holding_space_wallpaper_nudge_prefs
 
