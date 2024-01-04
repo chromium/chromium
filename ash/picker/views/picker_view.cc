@@ -119,6 +119,14 @@ std::unique_ptr<views::NonClientFrameView> PickerView::CreateNonClientFrameView(
   return frame;
 }
 
+void PickerView::AddedToWidget() {
+  session_metrics_.StartRecording(*GetWidget());
+}
+
+void PickerView::RemovedFromWidget() {
+  session_metrics_.StopRecording();
+}
+
 void PickerView::StartSearch(const std::u16string& query) {
   if (query == u"") {
     contents_view_->SetActivePage(zero_state_view_);

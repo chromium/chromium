@@ -55,6 +55,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
   void PaintChildren(const views::PaintInfo& paint_info) override;
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
       views::Widget* widget) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
 
   PickerSearchFieldView& search_field_view_for_testing() {
     return *search_field_view_;

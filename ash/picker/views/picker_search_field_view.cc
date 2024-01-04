@@ -8,11 +8,13 @@
 
 #include "ash/style/typography.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -48,6 +50,8 @@ void PickerSearchFieldView::RemovedFromWidget() {
 void PickerSearchFieldView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
+  session_metrics_->MarkContentsChanged();
+
   search_callback_.Run(new_contents);
 }
 
