@@ -567,7 +567,7 @@ crbug.com/887000 [ Mac13-arm64 ] scrollbars/hidden-scrollbars-invisible.html [ F
 crbug.com/882975 [ Win10.20h2 ] virtual/threaded/fast/events/pinch/gesture-pinch-zoom-prevent-in-handler.html [ Failure Pass ]
 crbug.com/882975 [ Win10.20h2 ] virtual/threaded/fast/events/pinch/scroll-visual-viewport-send-boundary-events.html [ Failure Pass ]
 
-crbug.com/898394 virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Failure Timeout ]
+crbug.com/898394 [ Debug ] virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Failure Timeout ]
 
 crbug.com/1046784 http/tests/devtools/elements/styles-3/styles-disable-then-delete.js [ Crash Failure Pass Timeout ]
 
@@ -2638,7 +2638,6 @@ crbug.com/626703 external/wpt/css/css-nesting/has-nesting.html [ Failure ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-nearly-transparent.html [ Timeout ]
 crbug.com/626703 [ Release Win11-arm64 ] external/wpt/png/apng/fcTL-blend-source-transparent.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-background.html [ Timeout ]
-crbug.com/626703 external/wpt/png/apng/fcTL-dispose-before-region-background.html [ Timeout ]
 crbug.com/626703 external/wpt/png/apng/fcTL-dispose-in-region-background.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-backgrounds/background-image-007.html [ Failure ]
@@ -2684,7 +2683,7 @@ crbug.com/626703 external/wpt/css/css-text/hyphens/i18n/hyphens-i18n-auto-006.ht
 crbug.com/626703 external/wpt/css/css-color/light-dark-currentcolor.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/light-dark-inheritance.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mathml/presentation-markup/operators/non-spacing-accent-1.xhtml [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/IndexedDB/reading-autoincrement-indexes.any.html [ Timeout ]
+crbug.com/626703 [ Mac13 Release ] external/wpt/IndexedDB/reading-autoincrement-indexes.any.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-text/tab-size/tab-size-integer-005.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-003.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/text-wrap-balance-float-004.html [ Failure ]
@@ -3013,7 +3012,6 @@ crbug.com/626703 [ Mac12 ] virtual/pending-beacon/external/wpt/pending-beacon/pe
 crbug.com/626703 [ Mac10.15 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_beacon-sendonhidden.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
-crbug.com/626703 [ Win10.20h2 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/active-lock.html [ Timeout ]
 crbug.com/626703 external/wpt/webaudio/the-audio-api/the-audiocontext-interface/audiocontext-suspend-resume-close.html [ Timeout ]
 crbug.com/626703 external/wpt/screen-orientation/non-fully-active.html [ Timeout ]
@@ -3792,7 +3790,7 @@ skbug.com/7641 external/wpt/css/css-paint-api/paint2d-paths.https.html [ Failure
 
 # Sheriff failures 2018-01-25
 # Flaking on Linux Tests, WebKit Linux (also ASAN, Leak)
-crbug.com/805794 [ Linux ] virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Failure Pass ]
+crbug.com/805794 [ Debug Linux ] virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Failure Pass ]
 
 # Sheriff failures 2018-02-05
 crbug.com/809152 netinfo/estimate-multiple-frames.html [ Failure Pass ]
@@ -5034,7 +5032,6 @@ crbug.com/1269535 http/tests/misc/resource-timing-sizes-multipart.html [ Failure
 crbug.com/1270355 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
 
 # Sheriff 2021-11-19
-crbug.com/1186771 [ Mac10.15 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
 crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 
 # Sheriff 2021-11-22
@@ -6800,7 +6797,6 @@ crbug.com/1510005 [ Linux ] virtual/scalefactor200/external/wpt/css/filter-effec
 
 # TODO(crbug.com/1511492): Re-enable these tests.
 crbug.com/1511492 [ Linux ] external/wpt/event-timing/first-input-interactionid-tap.html [ Crash Failure Pass Timeout ]
-crbug.com/1511492 [ Linux ] external/wpt/event-timing/interactionid-tap.html [ Crash Failure Pass Timeout ]
 crbug.com/1511492 [ Debug Linux ] external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Crash Failure Pass Timeout ]
 
 # TODO(crbug.com/1496375): Re-enable these tests.
