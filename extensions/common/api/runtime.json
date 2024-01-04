@@ -686,7 +686,6 @@
       },
       {
         "name": "onUserScriptConnect",
-        "nodoc": true,
         "type": "function",
         "nocompile": true,
         "options": { "unmanaged": true },
@@ -742,7 +741,6 @@
       },
       {
         "name": "onUserScriptMessage",
-        "nodoc": true,
         "type": "function",
         "nocompile": true,
         "options": { "unmanaged": true },
