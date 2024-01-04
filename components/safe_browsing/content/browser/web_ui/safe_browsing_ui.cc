@@ -1530,6 +1530,10 @@ base::Value::Dict SerializeDownloadWarningAction(
         DOWNLOAD_PROMPT:
       surface = "DOWNLOAD_PROMPT";
       break;
+    case ClientSafeBrowsingReportRequest::DownloadWarningAction::
+        DOWNLOAD_NOTIFICATION:
+      surface = "DOWNLOAD_NOTIFICATION";
+      break;
   }
   action_dict.Set("surface", surface);
   std::string action;

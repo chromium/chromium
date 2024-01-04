@@ -12,6 +12,7 @@
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/download/offline_item_utils.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -212,6 +213,13 @@ class DownloadStatusUpdater::Delegate
       offline_items_collection::ContentId content_id =
           OfflineItemUtils::GetContentIdForDownload(item);
       showed_bubble = bubble_controller->OpenMostSpecificDialog(content_id);
+
+      if (item->IsDangerous() && !item->IsDone() && showed_bubble) {
+        DownloadItemWarningData::AddWarningActionEvent(
+            item,
+            DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION,
+            DownloadItemWarningData::WarningAction::OPEN_SUBPAGE);
+      }
     }
     if (!showed_bubble) {
       // Fall back to showing chrome://downloads.
@@ -242,6 +250,12 @@ void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
   if (auto* remote = GetRemote()) {
     remote->Update(ConvertToMojoDownloadStatus(download));
+    if (download->IsDangerous()) {
+      DownloadItemWarningData::AddWarningActionEvent(
+          download,
+          DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION,
+          DownloadItemWarningData::WarningAction::SHOWN);
+    }
   }
 }
 

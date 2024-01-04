@@ -422,8 +422,6 @@ bool DownloadToolbarButtonView::OpenMostSpecificDialog(
 
   // Open the more specific security subpage if it has one.
   if (row && row->info().has_subpage()) {
-    // TODO(b:279794441): Add warning action event for this warning being shown
-    // from a notification.
     OpenSecurityDialog(content_id);
   }
   return row != nullptr;

@@ -198,6 +198,10 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
       action.set_surface(ClientSafeBrowsingReportRequest::
                              DownloadWarningAction::DOWNLOAD_PROMPT);
       break;
+    case DownloadItemWarningData::WarningSurface::DOWNLOAD_NOTIFICATION:
+      action.set_surface(ClientSafeBrowsingReportRequest::
+                             DownloadWarningAction::DOWNLOAD_NOTIFICATION);
+      break;
   }
   switch (event.action) {
     case DownloadItemWarningData::WarningAction::PROCEED:

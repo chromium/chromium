@@ -92,6 +92,23 @@ TEST_F(DownloadItemWarningDataTest, GetEvents) {
       /*expected_latency=*/30000, /*expected_is_terminal_action=*/true));
 }
 
+TEST_F(DownloadItemWarningDataTest, GetEvents_Notification) {
+  FastForwardAndAddEvent(base::Seconds(0),
+                         WarningSurface::DOWNLOAD_NOTIFICATION,
+                         WarningAction::SHOWN);
+  FastForwardAndAddEvent(base::Seconds(5),
+                         WarningSurface::DOWNLOAD_NOTIFICATION,
+                         WarningAction::OPEN_SUBPAGE);
+
+  std::vector<WarningActionEvent> events = GetEvents();
+
+  ASSERT_EQ(1u, events.size());
+  EXPECT_TRUE(VerifyEventValue(events[0], WarningSurface::DOWNLOAD_NOTIFICATION,
+                               WarningAction::OPEN_SUBPAGE,
+                               /*expected_latency=*/5000,
+                               /*expected_is_terminal_action=*/false));
+}
+
 TEST_F(DownloadItemWarningDataTest, GetEvents_WarningShownNotLogged) {
   FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_SUBPAGE,
                          WarningAction::PROCEED);
@@ -108,17 +125,20 @@ TEST_F(DownloadItemWarningDataTest, GetEvents_MultipleWarningShownLogged) {
                          WarningAction::SHOWN);
   FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_MAINPAGE,
                          WarningAction::SHOWN);
+  FastForwardAndAddEvent(base::Seconds(5),
+                         WarningSurface::DOWNLOAD_NOTIFICATION,
+                         WarningAction::SHOWN);
   FastForwardAndAddEvent(base::Seconds(5), WarningSurface::BUBBLE_SUBPAGE,
                          WarningAction::DISCARD);
 
   std::vector<WarningActionEvent> events = GetEvents();
 
   ASSERT_EQ(1u, events.size());
-  // The expected latency should be 10000 instead of 5000 because the latency
+  // The expected latency should be 15000 instead of 5000 because the latency
   // should be anchored to the first shown event.
   EXPECT_TRUE(VerifyEventValue(events[0], WarningSurface::BUBBLE_SUBPAGE,
                                WarningAction::DISCARD,
-                               /*expected_latency=*/10000,
+                               /*expected_latency=*/15000,
                                /*expected_is_terminal_action=*/true));
 }
 
