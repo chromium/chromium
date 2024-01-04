@@ -656,10 +656,6 @@ bool AutofillProfile::operator==(const AutofillProfile& profile) const {
   return guid() == profile.guid() && EqualsSansGuid(profile);
 }
 
-bool AutofillProfile::operator!=(const AutofillProfile& profile) const {
-  return !operator==(profile);
-}
-
 bool AutofillProfile::IsSubsetOf(const AutofillProfileComparator& comparator,
                                  const AutofillProfile& profile) const {
   FieldTypeSet supported_types;
