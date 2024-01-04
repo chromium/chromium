@@ -166,8 +166,18 @@ void FocusModeCountdownView::UpdateUI() {
 
   progress_bar_->SetValue(time_elapsed / session_duration);
 
-  extend_session_duration_button_->SetEnabled(
-      session_duration < focus_mode_util::kMaximumDuration);
+  const bool session_extendable =
+      session_duration < focus_mode_util::kMaximumDuration;
+  // Clear the focus if we are disabling the extend button and it has focus.
+  if (extend_session_duration_button_->HasFocus() && !session_extendable) {
+    // Release focus so that disabling `extend_session_duration_button_` below
+    // does not shift focus into the next available view automatically.
+    auto* focus_manager = GetFocusManager();
+    focus_manager->ClearFocus();
+    focus_manager->SetStoredFocusView(nullptr);
+  }
+
+  extend_session_duration_button_->SetEnabled(session_extendable);
 }
 
 BEGIN_METADATA(FocusModeCountdownView)
