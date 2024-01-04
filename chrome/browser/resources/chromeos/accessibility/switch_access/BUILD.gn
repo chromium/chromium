@@ -21,6 +21,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 ts_modules = [
   "commands.ts",
   "focus_ring_manager.ts",
+  "history.ts",
   "navigator_interfaces.ts",
   "point_scan_manager.ts",
   "settings_manager.ts",
@@ -75,7 +76,6 @@ run_jsbundler("copied_files") {
     "auto_scan_manager.js",
     "background.html",
     "cache.js",
-    "history.js",
     "icons/back.svg",
     "icons/copy.svg",
     "icons/cut.svg",

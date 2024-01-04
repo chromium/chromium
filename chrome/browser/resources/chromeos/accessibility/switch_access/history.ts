@@ -8,23 +8,20 @@ import {DesktopNode} from './nodes/desktop_node.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
 import {SwitchAccessPredicate} from './switch_access_predicate.js';
 
-const AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 
 /** This class is a structure to store previous state for restoration. */
 export class FocusData {
-  /**
-   * @param {!SARootNode} group
-   * @param {!SAChildNode} focus Must be a child of |group|.
-   */
-  constructor(group, focus) {
-    /** @type {!SARootNode} */
+  group: SARootNode;
+  focus: SAChildNode;
+
+  /** |focus| Must be a child of |group|. */
+  constructor(group: SARootNode, focus: SAChildNode) {
     this.group = group;
-    /** @type {!SAChildNode} */
     this.focus = focus;
   }
 
-  /** @return {boolean} */
-  isValid() {
+  isValid(): boolean {
     if (this.group.isValidGroup()) {
       // Ensure it is still valid. Some nodes may have been added
       // or removed since this was last used.
@@ -36,19 +33,15 @@ export class FocusData {
 
 /** This class handles saving and retrieving FocusData. */
 export class FocusHistory {
-  constructor() {
-    /** @private {!Array<!FocusData>} */
-    this.dataStack_ = [];
-  }
+  private dataStack: FocusData[] = [];
 
   /**
    * Creates the restore data to get from the desktop node to the specified
    * automation node.
    * Erases the current history and replaces with the new data.
-   * @param {!AutomationNode} node
-   * @return {boolean} Whether the history was rebuilt from the given node.
+   * @return Whether the history was rebuilt from the given node.
    */
-  buildFromAutomationNode(node) {
+  buildFromAutomationNode(node: AutomationNode): boolean {
     if (!node.parent) {
       // No ancestors, cannot create stack.
       return false;
@@ -61,7 +54,7 @@ export class FocusHistory {
       node = node.parent;
     }
 
-    let group = DesktopNode.build(ancestorStack.pop());
+    let group: SARootNode = DesktopNode.build(ancestorStack.pop());
     const firstAncestor = ancestorStack[ancestorStack.length - 1];
     if (!SwitchAccessPredicate.isInterestingSubtree(firstAncestor, cache)) {
       // If the topmost ancestor (other than the desktop) is entirely
@@ -69,7 +62,7 @@ export class FocusHistory {
       return false;
     }
 
-    const newDataStack = [];
+    const newDataStack: FocusData[] = [];
     while (ancestorStack.length > 0) {
       const candidate = ancestorStack.pop();
       if (!SwitchAccessPredicate.isInteresting(candidate, group, cache)) {
@@ -91,16 +84,13 @@ export class FocusHistory {
     if (newDataStack.length === 0) {
       return false;
     }
-    this.dataStack_ = newDataStack;
+    this.dataStack = newDataStack;
     return true;
   }
 
-  /**
-   * @param {!function(!FocusData): boolean} predicate
-   * @return {boolean}
-   */
-  containsDataMatchingPredicate(predicate) {
-    for (const data of this.dataStack_) {
+  containsDataMatchingPredicate(
+    predicate: (data: FocusData) => boolean): boolean {
+    for (const data of this.dataStack) {
       if (predicate(data)) {
         return true;
       }
@@ -111,17 +101,15 @@ export class FocusHistory {
   /**
    * Returns the most proximal restore data, but does not remove it from the
    * history.
-   * @return {?FocusData}
    */
-  peek() {
-    return this.dataStack_[this.dataStack_.length - 1] || null;
+  peek(): FocusData | null {
+    return this.dataStack[this.dataStack.length - 1] || null;
   }
 
-  /** @return {!FocusData} */
-  retrieve() {
-    let data = this.dataStack_.pop();
+  retrieve(): FocusData {
+    let data = this.dataStack.pop();
     while (data && !data.isValid()) {
-      data = this.dataStack_.pop();
+      data = this.dataStack.pop();
     }
 
     if (data) {
@@ -133,13 +121,12 @@ export class FocusHistory {
     return new FocusData(desktop, desktop.firstChild);
   }
 
-  /** @param {!FocusData} data */
-  save(data) {
-    this.dataStack_.push(data);
+  save(data: FocusData): void {
+    this.dataStack.push(data);
   }
 
   /** Support for this type being used in for..of loops. */
-  [Symbol.iterator]() {
-    return this.dataStack_[Symbol.iterator]();
+  [Symbol.iterator](): IterableIterator<FocusData> {
+    return this.dataStack[Symbol.iterator]();
   }
 }
