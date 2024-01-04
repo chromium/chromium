@@ -128,6 +128,7 @@ class TestUrlCheckerClient {
           slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
           performed_check) {
     if (slow_check_notifier) {

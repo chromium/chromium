@@ -59,9 +59,8 @@ void AsyncCheckTracker::TransferUrlChecker(
 
 void AsyncCheckTracker::PendingCheckerCompleted(
     UrlCheckerOnSB::OnCompleteCheckResult result) {
-  // TODO(crbug.com/1501194): Add a field in result to check
-  // if load_post_commit_error_page is false.
-  if (!result.proceed) {
+  if (result.has_post_commit_interstitial_skipped) {
+    CHECK(!result.proceed);
     show_interstitial_after_finish_navigation_ = true;
   }
 }

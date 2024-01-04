@@ -146,7 +146,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   if (!web_contents) {
     // Tab is gone.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -156,7 +157,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_SAFE_BROWSING);
     // Tab is being prerendered.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -182,7 +184,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     CHECK(is_inactive);
 
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              false /*showed_interstitial*/);
+                              false /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -204,7 +207,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
     // is controlling the error code, perhaps this should be renamed to better
     // indicate its purpose.
     resource.DispatchCallback(FROM_HERE, false /*proceed*/,
-                              true /*showed_interstitial*/);
+                              true /*showed_interstitial*/,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -213,7 +217,8 @@ void SafeBrowsingUIManager::StartDisplayingBlockingPage(
   // cancelled instead.
   if (delegate_->IsHostingExtension(web_contents)) {
     resource.DispatchCallback(FROM_HERE, false /* proceed */,
-                              false /* showed_interstitial */);
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 

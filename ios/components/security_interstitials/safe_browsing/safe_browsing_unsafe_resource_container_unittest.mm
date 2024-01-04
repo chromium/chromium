@@ -32,7 +32,7 @@ class SafeBrowsingUnsafeResourceContainerTest : public PlatformTest {
     resource.navigation_url = resource.url;
     resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
     resource.callback =
-        base::BindRepeating([](bool proceed, bool showed_interstitial) {});
+        base::BindRepeating([](UnsafeResource::UrlCheckResult result) {});
     resource.request_destination =
         is_main_frame ? network::mojom::RequestDestination::kDocument
                       : network::mojom::RequestDestination::kIframe;

@@ -27,16 +27,27 @@ namespace security_interstitials {
 // Structure that passes parameters between the IO and UI thread when
 // interacting with the safe browsing blocking page.
 struct UnsafeResource {
-  // Passed booleans indicating whether or not it is OK to proceed with
-  // loading an URL and whether or not an interstitial was shown as a result of
-  // the URL load, |showed_interstitial| should only be set to true if the
-  // interstitial was shown as a direct result of the navigation to the URL.
-  // (e.g. it should be set to true if the interstitial will be shown from a
-  // navigation throttle triggered by this navigation, but to false if it will
-  // be shown using LoadPostCommitErrorPage).
-  using UrlCheckCallback =
-      base::RepeatingCallback<void(bool /*proceed*/,
-                                   bool /*showed_interstitial*/)>;
+  // Helper structure returned through UrlCheckCallback.
+  struct UrlCheckResult {
+    UrlCheckResult(bool proceed,
+                   bool showed_interstitial,
+                   bool has_post_commit_interstitial_skipped);
+    // Indicates whether or not it is OK to proceed with loading an URL.
+    bool proceed;
+    // Should only be set to true if the interstitial was shown as a direct
+    // result of the navigation to the URL. (e.g. it should be set to true if
+    // the interstitial will be shown from a navigation throttle triggered by
+    // this navigation, but to false if it will be shown using
+    // LoadPostCommitErrorPage). Only used to control the error code returned in
+    // BrowserUrlLoaderThrottle.
+    bool showed_interstitial;
+    // Should only be set to true if LoadPostCommitErrorPage should be called
+    // but skipped because the main page load is pending. Only consumed by
+    // AsyncCheckTracker.
+    bool has_post_commit_interstitial_skipped;
+  };
+
+  using UrlCheckCallback = base::RepeatingCallback<void(UrlCheckResult)>;
 
   // TODO(crbug.com/1073315): These are content/ specific ids that need to be
   // plumbed through this struct.
@@ -65,7 +76,8 @@ struct UnsafeResource {
   // Checks if |callback| is not null and posts it to |callback_sequence|.
   void DispatchCallback(const base::Location& from_here,
                         bool proceed,
-                        bool showed_interstitial) const;
+                        bool showed_interstitial,
+                        bool has_post_commit_interstitial_skipped) const;
 
   GURL url;
   GURL original_url;
