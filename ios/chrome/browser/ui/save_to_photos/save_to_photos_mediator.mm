@@ -69,6 +69,15 @@ NSString* const kGooglePhotosRecentlyAddedURLString =
 
 NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
+@interface SaveToPhotosMediator ()
+
+// Identity used to perform an upload. Should be set when the user selects an
+// identity, right before starting to upload. If the upload fails, should be
+// reset to nil.
+@property(nonatomic, strong) id<SystemIdentity> identity;
+
+@end
+
 @implementation SaveToPhotosMediator {
   PhotosService* _photosService;
   PrefService* _prefService;
@@ -76,7 +85,6 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   signin::IdentityManager* _identityManager;
   NSString* _imageName;
   NSData* _imageData;
-  id<SystemIdentity> _identity;
   BOOL _userTappedSuccessSnackbarButton;
   base::TimeTicks _uploadStart;
   BOOL _showingAccountPicker;
@@ -313,6 +321,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 - (void)photosServiceFinishedUploadWithResult:
     (PhotosService::UploadResult)result {
   if (!result.successful) {
+    // `_identity` is used to determine whether an upload is ongoing or was
+    // successful. If the upload failed, `_identity` should be reset.
+    id<SystemIdentity> failureIdentity = _identity;
+    _identity = nil;
     base::UmaHistogramTimes(kSaveToPhotosUploadFailureLatencyHistogram,
                             base::TimeTicks::Now() - _uploadStart);
     // TODO(crbug.com/1513891): Emit the failure type as-is once the service is
@@ -328,6 +340,7 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     __weak __typeof(self) weakSelf = self;
     [self.delegate stopValidationSpinnerForAccountPicker];
     [self showTryAgainOrCancelAlertWithTryAgainBlock:^{
+      weakSelf.identity = failureIdentity;
       [weakSelf.delegate startValidationSpinnerForAccountPicker];
       [weakSelf tryUploadImage];
     }];
