@@ -534,6 +534,10 @@ bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
 void Combobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
   DCHECK_EQ(model_, model);
 
+  if (IsMenuRunning()) {
+    menu_runner_.reset();
+  }
+
   // If the selection is no longer valid (or the model is empty), restore the
   // default index.
   if (selected_index_ >= model_->GetItemCount() ||
