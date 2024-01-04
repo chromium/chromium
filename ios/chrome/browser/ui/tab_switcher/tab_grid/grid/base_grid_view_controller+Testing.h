@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller.h"
 
 @class TabSwitcherItem;
@@ -14,7 +15,7 @@
 // Testing category to expose private properties used for tests only.
 @interface BaseGridViewController (Testing)
 
-@property(nonatomic, readonly) NSMutableArray<TabSwitcherItem*>* items;
+@property(nonatomic, readonly) GridDiffableDataSource* diffableDataSource;
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 @property(nonatomic, readonly) UICollectionView* collectionView;
 
