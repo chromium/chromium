@@ -8914,21 +8914,6 @@
             ]
         }
     ],
-    "IOSInsecureFormSubmissionInterstitial": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "InsecureFormSubmissionInterstitial"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
@@ -9636,6 +9621,21 @@
                     "enable_features": [
                         "AltClickAndSixPackCustomization",
                         "InputDeviceSettingsSplit"
+                    ]
+                }
+            ]
+        }
+    ],
+    "InsecureFormSubmissionInterstitial": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InsecureFormSubmissionInterstitial"
                     ]
                 }
             ]
