@@ -304327,7 +304327,7 @@
      ],
      "parsing": {
       "animation-computed-expected.txt": [
-       "43f348e095b4bb93aef7907c35449fc67e32ffaf",
+       "501753e83a234d56654c857a2b9c43864a28acf2",
        []
       ],
       "animation-delay-end-computed.tentative-expected.txt": [
@@ -307419,10 +307419,6 @@
      },
      "revert-layer-015-ref.html": [
       "661016619c0c46c113dedc57aa890f62b35e137c",
-      []
-     ],
-     "scope-nesting-expected.txt": [
-      "790cc187f52296cde5b97777e95c11a8ed084fde",
       []
      ],
      "scope-visited-ref.html": [
@@ -439925,7 +439921,7 @@
       ]
      ],
      "computed-style-animation-parsing.html": [
-      "15a1665be5ee13c66c434f6da48af42ac622baff",
+      "db51106fa8d83c73cfb57e0515e90340a6fb3f6f",
       [
        null,
        {}
@@ -440042,7 +440038,7 @@
        ]
       ],
       "animation-computed.html": [
-       "f8d34b889ba19dfc7d9fd4d644da499b979d4166",
+       "2a70585aadcd148889a9d27ddd97be01968e951f",
        [
         null,
         {}
@@ -442517,7 +442513,7 @@
       ]
      ],
      "scope-nesting.html": [
-      "4a21629d116f3281bd6a90ade69e37f3346d1b08",
+      "d299ba30370516a526ff96c971c9d459589f5514",
       [
        null,
        {}
