@@ -131,12 +131,12 @@ void NetworkServiceProxyAllowList::UseMaskedDomainList(
   for (auto owner : mdl.resource_owners()) {
     // Group domains by partition first so that only one set of the owner's
     // bypass rules are created per partition.
-    std::map<std::string, std::set<std::string>> owned_domains_by_partition;
+    std::map<std::string, std::vector<std::string>> owned_domains_by_partition;
     for (auto resource : owner.owned_resources()) {
       if (is_eligible(resource)) {
         const std::string partition =
             UrlMatcherWithBypass::PartitionMapKey(resource.domain());
-        owned_domains_by_partition[partition].insert(resource.domain());
+        owned_domains_by_partition[partition].emplace_back(resource.domain());
       }
     }
 
