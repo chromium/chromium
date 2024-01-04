@@ -50,6 +50,12 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="IPH shown, then install via BottomSheet (API)"/>
 </enum>
 
+<enum name="SegmentationResult">
+  <int value="0" label="Invalid"/>
+  <int value="1" label="Don't show"/>
+  <int value="2" label="Show install prompt"/>
+</enum>
+
 <enum name="WebApkGooglePlayInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Install delegate unavailable"/>

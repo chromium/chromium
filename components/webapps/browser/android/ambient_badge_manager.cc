@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/messages/android/messages_feature.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
@@ -31,6 +32,18 @@ namespace webapps {
 namespace {
 
 constexpr base::TimeDelta kSuppressedForFirsVisitPeriod = base::Days(30);
+
+constexpr char kSegmentationResultHistogramName[] =
+    "WebApk.InstallPrompt.SegmentationResult";
+
+// This enum is used to back UMA histograms, Entries should not be renumbered
+// and numeric values should never be reused.
+enum class SegmentationResult {
+  kInvalid = 0,
+  kDontShow = 1,
+  kShowInstallPrompt = 2,
+  kMaxValue = kShowInstallPrompt,
+};
 
 InstallableParams ParamsToPerformWorkerCheck() {
   InstallableParams params;
@@ -224,15 +237,25 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart() {
 void AmbientBadgeManager::OnGotClassificationResult(
     const segmentation_platform::ClassificationResult& result) {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
+                              SegmentationResult::kInvalid,
+                              SegmentationResult::kMaxValue);
+
     // If the classification is not ready yet, fallback to the legacy logic.
     MaybeShowAmbientBadgeLegacy();
     return;
   }
 
-  if (!result.ordered_labels.empty() &&
-      result.ordered_labels[0] ==
-          MLInstallabilityPromoter::kShowInstallPromptLabel) {
-      ShowAmbientBadge();
+  bool show = !result.ordered_labels.empty() &&
+              result.ordered_labels[0] ==
+                  MLInstallabilityPromoter::kShowInstallPromptLabel;
+
+  UMA_HISTOGRAM_ENUMERATION(kSegmentationResultHistogramName,
+                            show ? SegmentationResult::kShowInstallPrompt
+                                 : SegmentationResult::kDontShow,
+                            SegmentationResult::kMaxValue);
+  if (show) {
+    ShowAmbientBadge();
   }
 }
 

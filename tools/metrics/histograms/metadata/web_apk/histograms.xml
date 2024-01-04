@@ -157,6 +157,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApk.InstallPrompt.SegmentationResult"
+    enum="SegmentationResult" expires_after="2024-12-01">
+  <owner>eirage@chromium.org</owner>
+  <owner>src/chrome/android/webapk/OWNERS</owner>
+  <summary>
+    When Segmentation Platform returns the install prompt classification result,
+    record an enum for whether the result is invalid, show the prompt, or don't
+    show.
+  </summary>
+</histogram>
+
 <histogram name="WebApk.Launch.NetworkError" enum="NetErrorCodes"
     expires_after="2024-06-01">
   <owner>hartmanng@chromium.org</owner>
