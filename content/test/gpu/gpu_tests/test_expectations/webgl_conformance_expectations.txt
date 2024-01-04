@@ -524,11 +524,14 @@ crbug.com/1230781 [ mac amd-0x67ef angle-opengl ] conformance/canvas/to-data-url
 
 crbug.com/1435021 [ amd-0x67ef angle-metal mac no-clang-coverage release graphite-disabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ Failure ]
 
+## SkiaGraphite ##
+
 crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/draw-webgl-to-canvas-test.html [ RetryOnFailure ]
 crbug.com/1513193 [ mac amd angle-metal graphite-enabled ] conformance/canvas/to-data-url-test.html [ RetryOnFailure ]
+crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
+crbug.com/1511051 [ mac angle-metal graphite-enabled amd ] conformance/textures/misc/texture-active-bind-2.html [ Failure ]
 
 ## Mac Intel ##
-
 
 ## Mac Retina NVidia failures / flakes ##
 
@@ -719,11 +722,6 @@ crbug.com/1446435 [ chromeos lacros-chrome chromeos-board-jacuzzi passthrough ] 
 crbug.com/1185344 [ angle-opengles linux display-server-wayland intel ] WebglExtension_EXT_shader_texture_lod [ Failure ]
 
 crbug.com/angleproject/5038 [ linux intel display-server-wayland ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
-
-###########################
-# SkiaGraphite failures #
-###########################
-crbug.com/1491023 [ mac angle-metal graphite-enabled amd ] conformance/canvas/draw-static-webgl-to-multiple-canvas-test.html [ Failure ]
 
 ###############################
 # New failures in WebGL rolls #
