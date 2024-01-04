@@ -1065,6 +1065,8 @@ void FakeShillManagerClient::SetupDefaultEnvironment() {
       services->AddService(kCellularServicePath, "cellular1_guid",
                            "cellular1" /* name */, shill::kTypeCellular, state,
                            add_to_visible);
+      services->SetServiceProperty(kCellularServicePath, shill::kIccidProperty,
+                                   base::Value("cellular1"));
       base::Value technology_value(cellular_technology_);
       SetInitialDeviceProperty("/device/cellular1",
                                shill::kTechnologyFamilyProperty,
