@@ -217,6 +217,9 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
   private onShareFlowDone_() {
     this.showShareFlow_ = false;
+    setTimeout(() => {
+      this.$.shareButton.focus();
+    }, 0);
   }
 
   private extendAuthValidity_() {
