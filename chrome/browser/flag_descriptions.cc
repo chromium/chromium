@@ -1333,11 +1333,6 @@ const char kEnablePerfettoSystemTracingDescription[] =
     "When enabled, Chrome will attempt to connect to the system tracing "
     "service";
 
-const char kEnableWebUsbOnExtensionServiceWorkerName[] =
-    "Enable WebUSB on extension service workers";
-const char kEnableWebUsbOnExtensionServiceWorkerDescription[] =
-    "When enabled, WebUSB API is available on extension service workers.";
-
 const char kEnableWindowsGamingInputDataFetcherName[] =
     "Enable Windows.Gaming.Input";
 const char kEnableWindowsGamingInputDataFetcherDescription[] =
@@ -4658,11 +4653,6 @@ const char kReadAnythingLocalSidePanelName[] =
     "Reading Mode with Local Side Panel";
 const char kReadAnythingLocalSidePanelDescription[] =
     "Keep the Reading Mode side panel separate and local to each tab.";
-
-const char kEnableWebHidOnExtensionServiceWorkerName[] =
-    "Enable WebHID on extension service workers";
-const char kEnableWebHidOnExtensionServiceWorkerDescription[] =
-    "When enabled, WebHID API is available on extension service workers.";
 
 const char kGlobalMediaControlsCastStartStopName[] =
     "Global media controls control Cast start/stop";

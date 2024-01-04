@@ -3731,21 +3731,11 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-web-hid-on-extension-service-worker",
-    "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-web-payments-experimental-features",
     "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
     // This flag is used by early adoption partners to test new Web Payments
     // features in each release.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-web-usb-on-extension-service-worker",
-    "owners": [ "deviceapi-team@google.com" ],
-    "expiry_milestone": 120
   },
   {
     "name": "enable-webassembly-baseline",

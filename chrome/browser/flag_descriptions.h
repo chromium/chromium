@@ -671,9 +671,6 @@ extern const char kEnableGpuServiceLoggingDescription[];
 extern const char kEnableNetworkLoggingToFileName[];
 extern const char kEnableNetworkLoggingToFileDescription[];
 
-extern const char kEnableWebUsbOnExtensionServiceWorkerName[];
-extern const char kEnableWebUsbOnExtensionServiceWorkerDescription[];
-
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
@@ -2694,9 +2691,6 @@ extern const char kReadAnythingOmniboxIconDescription[];
 
 extern const char kReadAnythingLocalSidePanelName[];
 extern const char kReadAnythingLocalSidePanelDescription[];
-
-extern const char kEnableWebHidOnExtensionServiceWorkerName[];
-extern const char kEnableWebHidOnExtensionServiceWorkerDescription[];
 
 extern const char kGlobalMediaControlsCastStartStopName[];
 extern const char kGlobalMediaControlsCastStartStopDescription[];

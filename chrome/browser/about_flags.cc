@@ -9582,14 +9582,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kRequestDesktopSiteZoom)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-web-hid-on-extension-service-worker",
-     flag_descriptions::kEnableWebHidOnExtensionServiceWorkerName,
-     flag_descriptions::kEnableWebHidOnExtensionServiceWorkerDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kEnableWebHidOnExtensionServiceWorker)},
-#endif
-
     {"autofill-enable-remade-downstream-metrics",
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsName,
      flag_descriptions::kAutofillEnableRemadeDownstreamMetricsDescription,
@@ -9765,11 +9757,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUseDMSAAForTilesAndroidGLDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(::features::kUseDMSAAForTilesAndroidGL)},
 #endif
-    {"enable-web-usb-on-extension-service-worker",
-     flag_descriptions::kEnableWebUsbOnExtensionServiceWorkerName,
-     flag_descriptions::kEnableWebUsbOnExtensionServiceWorkerDescription,
-     kOsAndroid | kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kEnableWebUsbOnExtensionServiceWorker)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-holding-space-predictability",
