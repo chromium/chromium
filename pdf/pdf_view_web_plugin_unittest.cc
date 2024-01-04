@@ -60,6 +60,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_associated_url_loader.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -214,6 +215,8 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
           });
       return associated_loader;
     });
+    ON_CALL(*this, GetIsolate)
+        .WillByDefault(Return(blink::MainThreadIsolate()));
     ON_CALL(*this, GetEmbedderOriginString)
         .WillByDefault(
             Return("chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/"));
@@ -238,6 +241,8 @@ class FakePdfViewWebPluginClient : public PdfViewWebPlugin::Client {
               (blink::WebPluginContainer*),
               (override));
   MOCK_METHOD(blink::WebPluginContainer*, PluginContainer, (), (override));
+
+  MOCK_METHOD(v8::Isolate*, GetIsolate, (), (override));
 
   MOCK_METHOD(net::SiteForCookies, SiteForCookies, (), (const override));
 

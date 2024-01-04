@@ -41,6 +41,7 @@ class PdfViewWebPluginClient : public chrome_pdf::PdfViewWebPlugin::Client {
   base::WeakPtr<chrome_pdf::PdfViewWebPlugin::Client> GetWeakPtr() override;
   void SetPluginContainer(blink::WebPluginContainer* container) override;
   blink::WebPluginContainer* PluginContainer() override;
+  v8::Isolate* GetIsolate() override;
   net::SiteForCookies SiteForCookies() const override;
   blink::WebURL CompleteURL(const blink::WebString& partial_url) const override;
   void PostMessage(base::Value::Dict message) override;
