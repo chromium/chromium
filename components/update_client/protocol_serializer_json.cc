@@ -26,8 +26,9 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("dedup", "cr");
   request_node.Set("acceptformat", "crx3,puff");
   if (!request.additional_attributes.empty()) {
-    for (const auto& attr : request.additional_attributes)
+    for (const auto& attr : request.additional_attributes) {
       request_node.Set(attr.first, attr.second);
+    }
   }
   request_node.Set("sessionid", request.session_id);
   request_node.Set("requestid", request.request_id);
@@ -38,17 +39,22 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node.Set("arch", request.arch);
   request_node.Set("nacl_arch", request.nacl_arch);
 #if BUILDFLAG(IS_WIN)
-  if (request.is_wow64)
+  if (request.is_wow64) {
     request_node.Set("wow64", request.is_wow64);
+  }
 #endif  // BUILDFLAG(IS_WIN)
-  if (!request.updaterchannel.empty())
+  if (!request.updaterchannel.empty()) {
     request_node.Set("updaterchannel", request.updaterchannel);
-  if (!request.prodchannel.empty())
+  }
+  if (!request.prodchannel.empty()) {
     request_node.Set("prodchannel", request.prodchannel);
-  if (!request.dlpref.empty())
+  }
+  if (!request.dlpref.empty()) {
     request_node.Set("dlpref", request.dlpref);
-  if (request.domain_joined)
+  }
+  if (request.domain_joined) {
     request_node.Set("domainjoined", *request.domain_joined);
+  }
 
   // HW platform information.
   base::Value::Dict hw_node;
@@ -66,10 +72,12 @@ std::string ProtocolSerializerJSON::Serialize(
   base::Value::Dict os_node;
   os_node.Set("platform", request.os.platform);
   os_node.Set("arch", request.os.arch);
-  if (!request.os.version.empty())
+  if (!request.os.version.empty()) {
     os_node.Set("version", request.os.version);
-  if (!request.os.service_pack.empty())
+  }
+  if (!request.os.service_pack.empty()) {
     os_node.Set("sp", request.os.service_pack);
+  }
   request_node.Set("os", std::move(os_node));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -81,12 +89,15 @@ std::string ProtocolSerializerJSON::Serialize(
     updater_node.Set("autoupdatecheckenabled",
                      updater.autoupdate_check_enabled);
     updater_node.Set("updatepolicy", updater.update_policy);
-    if (!updater.version.empty())
+    if (!updater.version.empty()) {
       updater_node.Set("version", updater.version);
-    if (updater.last_checked)
+    }
+    if (updater.last_checked) {
       updater_node.Set("lastchecked", *updater.last_checked);
-    if (updater.last_started)
+    }
+    if (updater.last_started) {
       updater_node.Set("laststarted", *updater.last_started);
+    }
     request_node.Set("updater", std::move(updater_node));
   }
 #endif
@@ -96,30 +107,41 @@ std::string ProtocolSerializerJSON::Serialize(
     base::Value::Dict app_node;
     app_node.Set("appid", app.app_id);
     app_node.Set("version", app.version);
-    if (!app.ap.empty())
+    if (!app.ap.empty()) {
       app_node.Set("ap", app.ap);
-    if (!app.brand_code.empty())
+    }
+    if (!app.brand_code.empty()) {
       app_node.Set("brand", app.brand_code);
-    if (!app.lang.empty())
+    }
+    if (!app.lang.empty()) {
       app_node.Set("lang", app.lang);
-    if (app.install_date != kDateUnknown)
+    }
+    if (app.install_date != kDateUnknown) {
       app_node.Set("installdate", app.install_date);
-    if (!app.install_source.empty())
+    }
+    if (!app.install_source.empty()) {
       app_node.Set("installsource", app.install_source);
-    if (!app.install_location.empty())
+    }
+    if (!app.install_location.empty()) {
       app_node.Set("installedby", app.install_location);
+    }
     // TODO(crbug/1120685): Test that this is never sent to the server if the
     // machine is not enterprise managed.
-    if (!app.release_channel.empty())
+    if (!app.release_channel.empty()) {
       app_node.Set("release_channel", app.release_channel);
-    if (!app.cohort.empty())
+    }
+    if (!app.cohort.empty()) {
       app_node.Set("cohort", app.cohort);
-    if (!app.cohort_name.empty())
+    }
+    if (!app.cohort_name.empty()) {
       app_node.Set("cohortname", app.cohort_name);
-    if (!app.cohort_hint.empty())
+    }
+    if (!app.cohort_hint.empty()) {
       app_node.Set("cohorthint", app.cohort_hint);
-    if (app.enabled)
+    }
+    if (app.enabled) {
       app_node.Set("enabled", *app.enabled);
+    }
 
     if (app.disabled_reasons && !app.disabled_reasons->empty()) {
       base::Value::List disabled_nodes;
@@ -131,17 +153,21 @@ std::string ProtocolSerializerJSON::Serialize(
       app_node.Set("disabled", std::move(disabled_nodes));
     }
 
-    for (const auto& attr : app.installer_attributes)
+    for (const auto& attr : app.installer_attributes) {
       app_node.Set(attr.first, attr.second);
+    }
 
     if (app.update_check) {
       base::Value::Dict update_check_node;
-      if (app.update_check->is_update_disabled)
+      if (app.update_check->is_update_disabled) {
         update_check_node.Set("updatedisabled", true);
-      if (app.update_check->rollback_allowed)
+      }
+      if (app.update_check->rollback_allowed) {
         update_check_node.Set("rollback_allowed", true);
-      if (app.update_check->same_version_update_allowed)
+      }
+      if (app.update_check->same_version_update_allowed) {
         update_check_node.Set("sameversionupdate", true);
+      }
       if (!app.update_check->target_version_prefix.empty()) {
         update_check_node.Set("targetversionprefix",
                               app.update_check->target_version_prefix);
@@ -155,23 +181,26 @@ std::string ProtocolSerializerJSON::Serialize(
         base::Value::Dict data_node;
 
         data_node.Set("name", data.name);
-        if (data.name == "install")
+        if (data.name == "install") {
           data_node.Set("index", data.install_data_index);
-        else if (data.name == "untrusted")
+        } else if (data.name == "untrusted") {
           data_node.Set("#text", data.untrusted_data);
+        }
 
         data_nodes.Append(std::move(data_node));
       }
 
-      if (!data_nodes.empty())
+      if (!data_nodes.empty()) {
         app_node.Set("data", std::move(data_nodes));
+      }
     }
 
     if (app.ping) {
       const auto& ping = *app.ping;
       base::Value::Dict ping_node;
-      if (!ping.ping_freshness.empty())
+      if (!ping.ping_freshness.empty()) {
         ping_node.Set("ping_freshness", ping.ping_freshness);
+      }
 
       // Output "ad" or "a" only if the this app has been seen 'active'.
       if (ping.date_last_active) {
@@ -181,10 +210,11 @@ std::string ProtocolSerializerJSON::Serialize(
       }
 
       // Output "rd" if valid or "r" as a last resort roll call metric.
-      if (ping.date_last_roll_call)
+      if (ping.date_last_roll_call) {
         ping_node.Set("rd", *ping.date_last_roll_call);
-      else
+      } else {
         ping_node.Set("r", ping.days_since_last_roll_call);
+      }
       app_node.Set("ping", std::move(ping_node));
     }
 
@@ -210,8 +240,9 @@ std::string ProtocolSerializerJSON::Serialize(
     app_nodes.Append(std::move(app_node));
   }
 
-  if (!app_nodes.empty())
+  if (!app_nodes.empty()) {
     request_node.Set("app", std::move(app_nodes));
+  }
 
   root_node.Set("request", std::move(request_node));
 

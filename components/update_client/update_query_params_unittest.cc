@@ -43,8 +43,9 @@ void TestParams(UpdateQueryParams::ProdId prod_id, bool extra_params) {
   EXPECT_TRUE(Contains(
       params,
       StringPrintf("prod=%s", UpdateQueryParams::GetProdIdString(prod_id))));
-  if (extra_params)
+  if (extra_params) {
     EXPECT_TRUE(Contains(params, "cat=dog"));
+  }
 }
 
 void TestProdVersion() {

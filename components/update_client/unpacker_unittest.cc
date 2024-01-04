@@ -45,27 +45,26 @@ TEST_F(UnpackerTest, UnpackFullCrx) {
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))
           ->Create(),
       crx_file::VerifierFormat::CRX3,
-      base::BindLambdaForTesting(
-          [&](const Unpacker::Result& result) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(result.error, UnpackerError::kNone);
-            EXPECT_EQ(result.extended_error, 0);
+      base::BindLambdaForTesting([&](const Unpacker::Result& result) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(result.error, UnpackerError::kNone);
+        EXPECT_EQ(result.extended_error, 0);
 
-            base::FilePath unpack_path = result.unpack_path;
-            EXPECT_TRUE(base::DirectoryExists(unpack_path));
-            EXPECT_EQ(result.public_key, jebg_public_key);
+        base::FilePath unpack_path = result.unpack_path;
+        EXPECT_TRUE(base::DirectoryExists(unpack_path));
+        EXPECT_EQ(result.public_key, jebg_public_key);
 
-            int64_t file_size = 0;
-            EXPECT_TRUE(base::GetFileSize(
-                unpack_path.AppendASCII("component1.dll"), &file_size));
-            EXPECT_EQ(file_size, 1024);
-            EXPECT_TRUE(base::GetFileSize(
-                unpack_path.AppendASCII("manifest.json"), &file_size));
-            EXPECT_EQ(file_size, 169);
+        int64_t file_size = 0;
+        EXPECT_TRUE(base::GetFileSize(unpack_path.AppendASCII("component1.dll"),
+                                      &file_size));
+        EXPECT_EQ(file_size, 1024);
+        EXPECT_TRUE(base::GetFileSize(unpack_path.AppendASCII("manifest.json"),
+                                      &file_size));
+        EXPECT_EQ(file_size, 169);
 
-            EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
-            loop.Quit();
-          }));
+        EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -76,17 +75,16 @@ TEST_F(UnpackerTest, UnpackFileNotFound) {
       std::vector<uint8_t>(std::begin(jebg_hash), std::end(jebg_hash)),
       GetTestFilePath("file_not_found.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
-      base::BindLambdaForTesting(
-          [&](const Unpacker::Result& result) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
-            EXPECT_EQ(result.extended_error,
-                      static_cast<int>(
-                          crx_file::VerifierResult::ERROR_FILE_NOT_READABLE));
-            EXPECT_TRUE(result.unpack_path.empty());
-            EXPECT_TRUE(result.public_key.empty());
-            loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const Unpacker::Result& result) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
+        EXPECT_EQ(result.extended_error,
+                  static_cast<int>(
+                      crx_file::VerifierResult::ERROR_FILE_NOT_READABLE));
+        EXPECT_TRUE(result.unpack_path.empty());
+        EXPECT_TRUE(result.public_key.empty());
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -98,18 +96,16 @@ TEST_F(UnpackerTest, UnpackFileHashMismatch) {
       std::vector<uint8_t>(std::begin(abag_hash), std::end(abag_hash)),
       GetTestFilePath("jebgalgnebhfojomionfpkfelancnnkf.crx"), nullptr,
       crx_file::VerifierFormat::CRX3,
-      base::BindLambdaForTesting(
-          [&](const Unpacker::Result& result) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
-            EXPECT_EQ(
-                result.extended_error,
-                static_cast<int>(
-                    crx_file::VerifierResult::ERROR_REQUIRED_PROOF_MISSING));
-            EXPECT_TRUE(result.unpack_path.empty());
-            EXPECT_TRUE(result.public_key.empty());
-            loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const Unpacker::Result& result) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(result.error, UnpackerError::kInvalidFile);
+        EXPECT_EQ(result.extended_error,
+                  static_cast<int>(
+                      crx_file::VerifierResult::ERROR_REQUIRED_PROOF_MISSING));
+        EXPECT_TRUE(result.unpack_path.empty());
+        EXPECT_TRUE(result.public_key.empty());
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -123,21 +119,20 @@ TEST_F(UnpackerTest, UnpackWithVerifiedContents) {
           base::BindRepeating(&unzip::LaunchInProcessUnzipper))
           ->Create(),
       crx_file::VerifierFormat::CRX3,
-      base::BindLambdaForTesting(
-          [&](const Unpacker::Result& result) {
-            DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
-            EXPECT_EQ(result.error, UnpackerError::kNone);
-            base::FilePath unpack_path = result.unpack_path;
-            EXPECT_FALSE(unpack_path.empty());
-            EXPECT_TRUE(base::DirectoryExists(unpack_path));
-            int64_t file_size = 0;
-            EXPECT_TRUE(base::GetFileSize(
-                unpack_path.AppendASCII("_metadata/verified_contents.json"),
-                &file_size));
-            EXPECT_EQ(file_size, 1538);
-            EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
-            loop.Quit();
-          }));
+      base::BindLambdaForTesting([&](const Unpacker::Result& result) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_EQ(result.error, UnpackerError::kNone);
+        base::FilePath unpack_path = result.unpack_path;
+        EXPECT_FALSE(unpack_path.empty());
+        EXPECT_TRUE(base::DirectoryExists(unpack_path));
+        int64_t file_size = 0;
+        EXPECT_TRUE(base::GetFileSize(
+            unpack_path.AppendASCII("_metadata/verified_contents.json"),
+            &file_size));
+        EXPECT_EQ(file_size, 1538);
+        EXPECT_TRUE(base::DeletePathRecursively(unpack_path));
+        loop.Quit();
+      }));
   loop.Run();
 }
 

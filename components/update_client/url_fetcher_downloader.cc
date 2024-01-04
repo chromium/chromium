@@ -112,8 +112,9 @@ void UrlFetcherDownloader::OnNetworkFetcherComplete(int net_error,
 
   Result result;
   result.error = error;
-  if (!error)
+  if (!error) {
     result.response = file_path_;
+  }
 
   DownloadMetrics download_metrics;
   download_metrics.url = url();

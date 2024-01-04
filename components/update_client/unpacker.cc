@@ -40,32 +40,27 @@ namespace update_client {
 
 Unpacker::Result::Result() = default;
 
-Unpacker::Unpacker(
-    const base::FilePath& path,
-    std::unique_ptr<Unzipper> unzipper,
-    base::OnceCallback<void(const Result& result)> callback)
+Unpacker::Unpacker(const base::FilePath& path,
+                   std::unique_ptr<Unzipper> unzipper,
+                   base::OnceCallback<void(const Result& result)> callback)
     : path_(path),
       unzipper_(std::move(unzipper)),
       callback_(std::move(callback)) {}
 
 Unpacker::~Unpacker() = default;
 
-void Unpacker::Unpack(
-    const std::vector<uint8_t>& pk_hash,
-    const base::FilePath& path,
-    std::unique_ptr<Unzipper> unzipper,
-    crx_file::VerifierFormat crx_format,
-    base::OnceCallback<void(const Result& result)> callback) {
+void Unpacker::Unpack(const std::vector<uint8_t>& pk_hash,
+                      const base::FilePath& path,
+                      std::unique_ptr<Unzipper> unzipper,
+                      crx_file::VerifierFormat crx_format,
+                      base::OnceCallback<void(const Result& result)> callback) {
   base::WrapRefCounted(
-      new Unpacker(
-          path,
-          std::move(unzipper),
-          std::move(callback)))->Verify(pk_hash, crx_format);
+      new Unpacker(path, std::move(unzipper), std::move(callback)))
+      ->Verify(pk_hash, crx_format);
 }
 
-void Unpacker::Verify(
-      const std::vector<uint8_t>& pk_hash,
-      crx_file::VerifierFormat crx_format) {
+void Unpacker::Verify(const std::vector<uint8_t>& pk_hash,
+                      crx_file::VerifierFormat crx_format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Verifying component: " << path_.value();
   if (path_.empty()) {
@@ -90,17 +85,15 @@ void Unpacker::Verify(
 void Unpacker::BeginUnzipping() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!base::CreateNewTempDirectory(
-          FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"),
-          &unpack_path_)) {
+          FILE_PATH_LITERAL("chrome_Unpacker_BeginUnzipping"), &unpack_path_)) {
     VLOG(1) << "Unable to create temporary directory for unpacking.";
     EndUnpacking(UnpackerError::kUnzipPathError,
                  ::logging::GetLastSystemErrorCode());
     return;
   }
   VLOG(1) << "Unpacking in: " << unpack_path_.value();
-  unzipper_->Unzip(
-      path_, unpack_path_,
-      base::BindOnce(&Unpacker::EndUnzipping, this));
+  unzipper_->Unzip(path_, unpack_path_,
+                   base::BindOnce(&Unpacker::EndUnzipping, this));
 }
 
 void Unpacker::EndUnzipping(bool result) {
@@ -158,8 +151,9 @@ void Unpacker::StoreVerifiedContentsInExtensionDir(
 
 void Unpacker::EndUnpacking(UnpackerError error, int extended_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (error != UnpackerError::kNone && !unpack_path_.empty())
+  if (error != UnpackerError::kNone && !unpack_path_.empty()) {
     base::DeletePathRecursively(unpack_path_);
+  }
 
   Result result;
   result.error = error;

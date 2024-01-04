@@ -69,8 +69,9 @@ base::flat_map<std::string, std::string> FilterInstallerAttributes(
     const InstallerAttributes& installer_attributes) {
   base::flat_map<std::string, std::string> sanitized_attrs;
   for (const auto& attr : installer_attributes) {
-    if (IsValidInstallerAttribute(attr))
+    if (IsValidInstallerAttribute(attr)) {
       sanitized_attrs.insert(attr);
+    }
   }
   return sanitized_attrs;
 }
@@ -133,8 +134,9 @@ protocol_request::Request MakeProtocolRequest(
   request.additional_attributes = additional_attributes;
 
 #if BUILDFLAG(IS_WIN)
-  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
+  if (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64()) {
     request.is_wow64 = true;
+  }
 #endif
 
   // HW platform information.
@@ -157,11 +159,13 @@ protocol_request::Request MakeProtocolRequest(
   if (!updater_state_attributes.empty()) {
     request.updater = absl::make_optional<protocol_request::Updater>();
     auto it = updater_state_attributes.find("name");
-    if (it != updater_state_attributes.end())
+    if (it != updater_state_attributes.end()) {
       request.updater->name = it->second;
+    }
     it = updater_state_attributes.find("version");
-    if (it != updater_state_attributes.end())
+    if (it != updater_state_attributes.end()) {
       request.updater->version = it->second;
+    }
     it = updater_state_attributes.find("ismachine");
     if (it != updater_state_attributes.end()) {
       CHECK(it->second == "0" || it->second == "1");
@@ -175,20 +179,23 @@ protocol_request::Request MakeProtocolRequest(
     it = updater_state_attributes.find("laststarted");
     if (it != updater_state_attributes.end()) {
       int last_started = 0;
-      if (base::StringToInt(it->second, &last_started))
+      if (base::StringToInt(it->second, &last_started)) {
         request.updater->last_started = last_started;
+      }
     }
     it = updater_state_attributes.find("lastchecked");
     if (it != updater_state_attributes.end()) {
       int last_checked = 0;
-      if (base::StringToInt(it->second, &last_checked))
+      if (base::StringToInt(it->second, &last_checked)) {
         request.updater->last_checked = last_checked;
+      }
     }
     it = updater_state_attributes.find("updatepolicy");
     if (it != updater_state_attributes.end()) {
       int update_policy = 0;
-      if (base::StringToInt(it->second, &update_policy))
+      if (base::StringToInt(it->second, &update_policy)) {
         request.updater->update_policy = update_policy;
+      }
     }
   }
 

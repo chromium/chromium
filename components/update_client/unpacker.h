@@ -46,8 +46,7 @@ class Unzipper;
 // Note: During unzip step we also check for verified_contents.json in the
 // header of crx file and unpack it to metadata_ folder if it doesn't already
 // contain verified_contents file.
-class Unpacker
-    : public base::RefCountedThreadSafe<Unpacker> {
+class Unpacker : public base::RefCountedThreadSafe<Unpacker> {
  public:
   // Contains the result of the unpacking.
   struct Result {
@@ -83,20 +82,17 @@ class Unpacker
   // `pk_hash` is the expected public developer key's SHA256 hash. If empty,
   // the unpacker accepts any developer key. `path` is the current location
   // of the CRX.
-  Unpacker(
-      const base::FilePath& path,
-      std::unique_ptr<Unzipper> unzipper,
-      base::OnceCallback<void(const Result& result)> callback);
+  Unpacker(const base::FilePath& path,
+           std::unique_ptr<Unzipper> unzipper,
+           base::OnceCallback<void(const Result& result)> callback);
 
   virtual ~Unpacker();
 
   // The first step of unpacking is to verify the file. Triggers
   // `BeginUnzipping` if successful. Triggers `EndUnpacking` if an early error
   // is encountered.
-  void Verify(
-      const std::vector<uint8_t>& pk_hash,
-      crx_file::VerifierFormat crx_format
-  );
+  void Verify(const std::vector<uint8_t>& pk_hash,
+              crx_file::VerifierFormat crx_format);
 
   // The next step of unpacking is to unzip. Triggers `EndUnzipping` if
   // successful. Triggers `EndUnpacking` if an early error is encountered.
