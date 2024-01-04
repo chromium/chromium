@@ -102,6 +102,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
         ui::kColorSysStateFocusRing};
     mixer[kColorRealboxResultsBackgroundHovered] = {
         kColorOmniboxResultsBackgroundHovered};
+    mixer[kColorRealboxResultsButtonHover] = {
+        kColorOmniboxResultsButtonInkDropRowHovered};
     mixer[kColorRealboxResultsDimSelected] = {
         kColorOmniboxResultsTextDimmedSelected};
     mixer[kColorRealboxResultsFocusIndicator] = {

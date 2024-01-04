@@ -383,6 +383,7 @@
   E_CPONLY(kColorRealboxResultsActionChipFocusOutline) \
   E_CPONLY(kColorRealboxResultsBackground) \
   E_CPONLY(kColorRealboxResultsBackgroundHovered) \
+  E_CPONLY(kColorRealboxResultsButtonHover) \
   E_CPONLY(kColorRealboxResultsDimSelected) \
   E_CPONLY(kColorRealboxResultsFocusIndicator) \
   E_CPONLY(kColorRealboxResultsForeground) \
