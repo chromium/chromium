@@ -64,7 +64,7 @@ export class Msgs {
    *
    * @param root The root node where the translation should be performed.
    */
-  static addTranslatedMessagesToDom(root: Element): void {
+  static addTranslatedMessagesToDom(root: Element|Document): void {
     const elts = root.querySelectorAll('.i18n');
     for (let i = 0; i < elts.length; i++) {
       const msgid = elts[i].getAttribute('msgid');

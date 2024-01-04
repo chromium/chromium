@@ -7,47 +7,26 @@
  * panel.
  */
 
-export class PanelCaptions {
-  constructor() {
-    /** @private {!BrailleCaptions} */
-    this.braille_ = new BrailleCaptions();
-  }
-
-  static init() {
-    if (PanelCaptions.instance) {
-      throw new Error('Cannot create two PanelCaptions instances');
-    }
-    PanelCaptions.instance = new PanelCaptions();
-  }
-
-  static get braille() {
-    return PanelCaptions.instance.braille_;
-  }
-}
-
 class BrailleCaptions {
-  /** @param {!Element} cell */
-  static addBorders(cell) {
+  addBorders(cell: Element): void {
     if (cell.tagName === 'TD') {
       cell.className = 'highlighted-cell';
       const companionIDs = cell.getAttribute('data-companionIDs');
-      companionIDs.split(' ').forEach(
-          companionID => $(companionID).className = 'highlighted-cell');
+      companionIDs!.split(' ').forEach(
+          companionID => $(companionID)!.className = 'highlighted-cell');
     }
   }
 
-  /** @param {!Element} cell */
-  static removeBorders(cell) {
+  removeBorders(cell: Element): void {
     if (cell.tagName === 'TD') {
       cell.className = 'unhighlighted-cell';
       const companionIDs = cell.getAttribute('data-companionIDs');
-      companionIDs.split(' ').forEach(
-          companionID => $(companionID).className = 'unhighlighted-cell');
+      companionIDs!.split(' ').forEach(
+          companionID => $(companionID)!.className = 'unhighlighted-cell');
     }
   }
 
-  /** @param {!Element} cell */
-  static routeCursor(cell) {
+  routeCursor(cell: Element): void {
     if (cell.tagName === 'TD') {
       const displayPosition = parseInt(cell.id.split('-')[0], 10);
       if (Number.isNaN(displayPosition)) {
@@ -62,7 +41,17 @@ class BrailleCaptions {
   }
 }
 
-/** @type {!PanelCaptions} */
-PanelCaptions.instance;
+function $(id: string): HTMLElement | null {
+  return document.getElementById(id);
+}
 
-const $ = id => document.getElementById(id);
+export namespace PanelCaptions {
+  export let braille: BrailleCaptions;
+
+  export function init(): void {
+    if (braille) {
+      throw new Error('Cannot create two PanelCaptions instances');
+    }
+    braille = new BrailleCaptions();
+  }
+}

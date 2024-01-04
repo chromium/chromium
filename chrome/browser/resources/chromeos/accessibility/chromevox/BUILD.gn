@@ -29,6 +29,8 @@ ts_modules = [
   "background/input/background_keyboard_handler.ts",
   "background/logging/log_manager.ts",
   "common/msgs.ts",
+  "panel/panel.ts",
+  "panel/panel_captions.ts",
 ]
 
 # These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
@@ -155,8 +157,6 @@ chromevox_es6_modules = [
   "log_page/log_loader.js",
   "panel/i_search_ui.js",
   "panel/menu_manager.js",
-  "panel/panel.js",
-  "panel/panel_captions.js",
   "panel/panel_interface.js",
   "panel/panel_menu.js",
   "panel/panel_menu_item.js",
@@ -194,21 +194,23 @@ ts_library("ts_build") {
   out_dir = tsc_out_dir
 
   definitions = [
-    "../definitions/tts.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
-    "../definitions/automation.d.ts",
-    "../definitions/extensions.d.ts",
-    "../definitions/goog_i18n.d.ts",
-    "../definitions/runtime.d.ts",
-    "../definitions/i18n.d.ts",
-    "../definitions/tabs.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/windows.d.ts",
     "../definitions/accessibility_private_mv2.d.ts",
-    "../definitions/settings_private_mv2.d.ts",
-    "../definitions/storage_mv2.d.ts",
+    "../definitions/automation.d.ts",
+    "../definitions/chromeos_info_private.d.ts",
     "../definitions/clipboard_mv2.d.ts",
     "../definitions/extension_types.d.ts",
-    "//tools/typescript/definitions/windows.d.ts",
+    "../definitions/extensions.d.ts",
+    "../definitions/goog_i18n.d.ts",
+    "../definitions/i18n.d.ts",
+    "../definitions/login_state.d.ts",
+    "../definitions/runtime.d.ts",
+    "../definitions/settings_private_mv2.d.ts",
+    "../definitions/storage_mv2.d.ts",
+    "../definitions/tabs.d.ts",
+    "../definitions/tts.d.ts",
   ]
 
   in_files = []

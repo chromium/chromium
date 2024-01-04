@@ -8,20 +8,15 @@
 import {BrowserUtil} from '../../common/browser_util.js';
 import {constants} from '../../common/constants.js';
 import {LocalStorage} from '../../common/local_storage.js';
-import {StringUtil} from '../../common/string_util.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {Command} from '../common/command.js';
-import {CommandStore} from '../common/command_store.js';
-import {EventSourceType} from '../common/event_source_type.js';
-import {GestureCommandData} from '../common/gesture_command_data.js';
 import {LocaleOutputHelper} from '../common/locale_output_helper.js';
 import {Msgs} from '../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';
-import {ALL_PANEL_MENU_NODE_DATA} from '../common/panel_menu_data.js';
+import { PanelNodeMenuItemData } from '../common/panel_menu_data.js';
 import {SettingsManager} from '../common/settings_manager.js';
-import {QueueMode} from '../common/tts_types.js';
 
 import {ISearchUI} from './i_search_ui.js';
 import {MenuManager} from './menu_manager.js';
@@ -29,87 +24,71 @@ import {PanelCaptions} from './panel_captions.js';
 import {PanelInterface} from './panel_interface.js';
 import {PanelMode, PanelModeInfo} from './panel_mode.js';
 
-const $ = (id) => document.getElementById(id);
+const $ = (id: string): HTMLElement | null => document.getElementById(id);
+
+type AsyncCallback = () => Promise<void>;
+type SessionState = chrome.loginState.SessionState;
 
 /** Class to manage the panel. */
-export class Panel extends PanelInterface {
-  /**
-   * @private
-   */
-  constructor() {
-    super();
-    /** @private {!PanelMode} */
-    this.mode_ = PanelMode.COLLAPSED;
+export class Panel implements PanelInterface {
+  private menuManager_ = new MenuManager();
+  private mode_: PanelMode = PanelMode.COLLAPSED;
+  private originalStickyState_ = false;
+  private pendingCallback_: AsyncCallback | null = null;
+  private sessionState_ = '';
+  private tutorial_: Object | null = null;
 
-    /** @private {!MenuManager} */
-    this.menuManager_ = new MenuManager();
+  private brailleContainer_ = $('braille-container');
+  private brailleTableElement_ = $('braille-table') as HTMLTableElement;
+  private brailleTableElement2_ = $('braille-table2') as HTMLTableElement;
+  private searchContainer_ = $('search-container');
+  private searchInput_: HTMLElement = $('search')!;
+  private speechContainer_ = $('speech-container');
+  private speechElement_ = $('speech');
+  private tutorialReadyForTesting_ = false;
 
-    /** @private {boolean} */
-    this.originalStickyState_ = false;
+  getMenuManagerForTesting(): MenuManager {
+    return this.menuManager_;
+  }
 
-    /** @private {Window} */
-    this.ownerWindow_ = window;
-
-    /** @private {?(function(): !Promise)} */
-    this.pendingCallback_ = null;
-
-    /** @private {string} */
-    this.sessionState_ = '';
-
-    /** @private {Object} */
-    this.tutorial_ = null;
-
-    /** @private {Element} */
-    this.brailleContainer_ = $('braille-container');
-    /** @private {Element} */
-    this.brailleTableElement_ = $('braille-table');
-    /** @private {Element} */
-    this.brailleTableElement2_ = $('braille-table2');
-    /** @private {Element} */
-    this.searchContainer_ = $('search-container');
-    /** @private {!Element} */
-    this.searchInput_ = /** @type {!Element} */ ($('search'));
-    /** @private {Element} */
-    this.speechContainer_ = $('speech-container');
-    /** @private {Element} */
-    this.speechElement_ = $('speech');
-
-    /** @private {boolean} */
-    this.tutorialReadyForTesting_ = false;
-
+  private constructor() {
     this.initListeners_();
   }
 
-  /** @private */
-  initListeners_() {
-    chrome.loginState.getSessionState(state => this.updateSessionState_(state));
+  private initListeners_(): void {
+    chrome.loginState.getSessionState(
+        (state: SessionState) => this.updateSessionState_(state));
     chrome.loginState.onSessionStateChanged.addListener(
-        state => this.updateSessionState_(state));
-    $('braille-pan-left')
+        (state: SessionState) => this.updateSessionState_(state));
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    $('braille-pan-left')!
         .addEventListener('click', () => this.onPanLeft_(), false);
-    $('braille-pan-right')
+    $('braille-pan-right')!
         .addEventListener('click', () => this.onPanRight_(), false);
-    $('menus_button')
+    $('menus_button')!
         .addEventListener(
-            'mousedown', event => this.menuManager_.onOpenMenus(event), false);
-    $('options').addEventListener('click', () => this.onOptions_(), false);
-    $('close').addEventListener('click', () => this.onClose(), false);
+            'mousedown',
+            (event: MouseEvent) => this.menuManager_.onOpenMenus(event), false);
+    $('options')!.addEventListener('click', () => this.onOptions_(), false);
+    $('close')!.addEventListener('click', () => this.onClose(), false);
 
     document.addEventListener(
-        'keydown', event => this.onKeyDown_(event), false);
+        'keydown', (event: KeyboardEvent) => this.onKeyDown_(event), false);
     document.addEventListener(
-        'mouseup', event => this.onMouseUp_(event), false);
+        'mouseup', (event: MouseEvent) => this.onMouseUp_(event), false);
     window.addEventListener(
-        'storage', event => this.onStorageChanged_(event), false);
+        'storage', (event: StorageEvent) => this.onStorageChanged_(event),
+        false);
     window.addEventListener(
-        'message', message => this.onMessage_(message), false);
+        'message', (message: MessageEvent) => this.onMessage_(message), false);
     window.addEventListener('blur', event => this.onBlur_(event), false);
     window.addEventListener('hashchange', () => this.onHashChange_(), false);
 
     BridgeHelper.registerHandler(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ADD_MENU_ITEM,
-        itemData => this.menuManager_.addNodeMenuItem(itemData));
+        (itemData: PanelNodeMenuItemData) => this.menuManager_.addNodeMenuItem(
+            itemData));
     BridgeHelper.registerHandler(
         BridgeConstants.Panel.TARGET,
         BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
@@ -118,7 +97,7 @@ export class Panel extends PanelInterface {
   }
 
   /** Initialize the panel. */
-  static async init() {
+  static async init(): Promise<void> {
     if (Panel.instance) {
       throw new Error('Cannot call Panel.init() more than once');
     }
@@ -139,63 +118,60 @@ export class Panel extends PanelInterface {
     }
   }
 
-  /** @override */
-  setPendingCallback(callback) {
+  setPendingCallback(callback: AsyncCallback | null): void {
     this.pendingCallback_ = callback;
   }
 
-  /** @override */
-  get mode() {
+  get mode(): PanelMode {
     return this.mode_;
   }
 
-  /** @override */
-  get sessionState() {
+  get sessionState(): string {
     return this.sessionState_;
   }
 
   /** Adds BackgroundBridge to the global object so that tests can mock it. */
-  static exportBackgroundBridgeForTesting() {
-    window.BackgroundBridge = BackgroundBridge;
+  static exportBackgroundBridgeForTesting(): void {
+    // @ts-ignore: Exports for testing.
+    window['BackgroundBridge'] = BackgroundBridge;
   }
 
   /**
    * Update the display based on prefs.
-   * @private
+   * TODO(b/314203187): Not nulls asserted, check that this is correct.
    */
-  updateFromPrefs_() {
+  private updateFromPrefs_(): void {
     if (this.mode_ === PanelMode.SEARCH) {
-      this.speechContainer_.hidden = true;
-      this.brailleContainer_.hidden = true;
-      this.searchContainer_.hidden = false;
+      this.speechContainer_!.hidden = true;
+      this.brailleContainer_!.hidden = true;
+      this.searchContainer_!.hidden = false;
       return;
     }
 
-    this.speechContainer_.hidden = false;
-    this.brailleContainer_.hidden = false;
-    this.searchContainer_.hidden = true;
+    this.speechContainer_!.hidden = false;
+    this.brailleContainer_!.hidden = false;
+    this.searchContainer_!.hidden = true;
 
     if (LocalStorage.get('brailleCaptions')) {
-      this.speechContainer_.style.visibility = 'hidden';
-      this.brailleContainer_.style.visibility = 'visible';
+      this.speechContainer_!.style.visibility = 'hidden';
+      this.brailleContainer_!.style.visibility = 'visible';
     } else {
-      this.speechContainer_.style.visibility = 'visible';
-      this.brailleContainer_.style.visibility = 'hidden';
+      this.speechContainer_!.style.visibility = 'visible';
+      this.brailleContainer_!.style.visibility = 'hidden';
     }
   }
 
   /**
    * Execute a command to update the panel.
-   * @param {PanelCommand} command The command to execute.
-   * @private
+   * TODO(b/314203187): Not nulls asserted, check that this is correct.
    */
-  exec_(command) {
+  private exec_(command: PanelCommand): void {
     /**
      * Escape text so it can be safely added to HTML.
-     * @param {*} str Text to be added to HTML, will be cast to string.
-     * @return {string} The escaped string.
+     * @param str Text to be added to HTML, will be cast to string.
+     * @return The escaped string.
      */
-    function escapeForHtml(str) {
+    function escapeForHtml(str: string): string {
       return String(str)
           .replace(/&/g, '&amp;')
           .replace(/</g, '&lt;')
@@ -207,23 +183,25 @@ export class Panel extends PanelInterface {
 
     switch (command.type) {
       case PanelCommandType.CLEAR_SPEECH:
-        this.speechElement_.innerHTML = '';
+        this.speechElement_!.innerHTML = '';
         break;
       case PanelCommandType.ADD_NORMAL_SPEECH:
-        if (this.speechElement_.innerHTML !== '') {
-          this.speechElement_.innerHTML += '&nbsp;&nbsp;';
+        if (this.speechElement_!.innerHTML !== '') {
+          this.speechElement_!.innerHTML += '&nbsp;&nbsp;';
         }
-        this.speechElement_.innerHTML +=
-            '<span class="usertext">' + escapeForHtml(command.data) + '</span>';
+        this.speechElement_!.innerHTML +=
+            '<span class="usertext">' +
+            escapeForHtml(command.data as string) + '</span>';
         break;
       case PanelCommandType.ADD_ANNOTATION_SPEECH:
-        if (this.speechElement_.innerHTML !== '') {
-          this.speechElement_.innerHTML += '&nbsp;&nbsp;';
+        if (this.speechElement_!.innerHTML !== '') {
+          this.speechElement_!.innerHTML += '&nbsp;&nbsp;';
         }
-        this.speechElement_.innerHTML += escapeForHtml(command.data);
+        this.speechElement_!.innerHTML += escapeForHtml(command.data as string);
         break;
       case PanelCommandType.UPDATE_BRAILLE:
-        this.onUpdateBraille_(command.data);
+        this.onUpdateBraille_(
+            command.data as {groups: string[][], cols: number, rows: number});
         break;
       case PanelCommandType.OPEN_MENUS:
         this.menuManager_.onOpenMenus(undefined, String(command.data));
@@ -239,10 +217,14 @@ export class Panel extends PanelInterface {
         break;
       case PanelCommandType.CLOSE_CHROMEVOX:
         this.onClose();
+        break;
       case PanelCommandType.ENABLE_TEST_HOOKS:
-        window.MenuManager = MenuManager;
-        window.Msgs = Msgs;
-        window.Panel = Panel;
+        // @ts-ignore: Exports for testing.
+        window['MenuManager'] = MenuManager;
+        // @ts-ignore: Exports for testing.
+        window['Msgs'] = Msgs;
+        // @ts-ignore: Exports for testing.
+        window['Panel'] = Panel;
         break;
     }
   }
@@ -250,15 +232,15 @@ export class Panel extends PanelInterface {
   /**
    * Sets the mode, which determines the size of the panel and what objects
    *     are shown or hidden.
-   * @param {PanelMode} mode The new mode.
+   * TODO(b/314203187): Not nulls asserted, check that this is correct.
    */
-  setMode(mode) {
+  setMode(mode: PanelMode): void {
     if (this.mode_ === mode) {
       return;
     }
 
     // Change the title of ChromeVox menu based on menu's state.
-    $('menus_title')
+    $('menus_title')!
         .setAttribute(
             'msgid',
             mode === PanelMode.FULLSCREEN_MENUS ? 'menus_collapse_title' :
@@ -271,12 +253,12 @@ export class Panel extends PanelInterface {
 
     // Fully qualify the path here because this function might be called with a
     // window object belonging to the background page.
-    this.ownerWindow_.location =
-        chrome.extension.getURL('chromevox/panel/panel.html') +
-        PanelModeInfo[this.mode_].location;
+    window.location.assign(
+      chrome.extension.getURL('chromevox/panel/panel.html') +
+          PanelModeInfo[this.mode_].location);
 
-    $('main').hidden = (this.mode_ === PanelMode.FULLSCREEN_TUTORIAL);
-    $('menus_background').hidden = (this.mode_ !== PanelMode.FULLSCREEN_MENUS);
+    $('main')!.hidden = (this.mode_ === PanelMode.FULLSCREEN_TUTORIAL);
+    $('menus_background')!.hidden = (this.mode_ !== PanelMode.FULLSCREEN_MENUS);
     // Interactive tutorial elements may not have been loaded yet.
     const iTutorialContainer = $('chromevox-tutorial-container');
     if (iTutorialContainer) {
@@ -289,17 +271,14 @@ export class Panel extends PanelInterface {
     // Change the orientation of the triangle next to the menus button to
     // indicate whether the menu is open or closed.
     if (mode === PanelMode.FULLSCREEN_MENUS) {
-      $('triangle').style.transform = 'rotate(180deg)';
+      $('triangle')!.style.transform = 'rotate(180deg)';
     } else if (mode === PanelMode.COLLAPSED) {
-      $('triangle').style.transform = '';
+      $('triangle')!.style.transform = '';
     }
   }
 
-  /**
-   * Open incremental search.
-   * @private
-   */
-  async onSearch_() {
+  /** Open incremental search. */
+  private async onSearch_(): Promise<void> {
     this.setMode(PanelMode.SEARCH);
     this.menuManager_.clearMenus();
     this.pendingCallback_ = null;
@@ -309,19 +288,23 @@ export class Panel extends PanelInterface {
 
   /**
    * Updates the content shown on the virtual braille display.
-   * @param {*=} data The data sent through the PanelCommand.
-   * @private
+   * @param data The data sent through the PanelCommand.
+   * TODO(b/314203187): Not nulls asserted, check that this is correct.
    */
-  onUpdateBraille_(data) {
+  private onUpdateBraille_(
+      data: {groups: string[][], cols: number, rows: number}): void {
     const {groups, cols, rows} = data;
     const sideBySide = SettingsManager.get('brailleSideBySide');
 
-    this.brailleContainer_.addEventListener(
-        'mouseover', event => PanelCaptions.braille.addBorders(event.target));
-    this.brailleContainer_.addEventListener(
-        'mouseout', event => PanelCaptions.braille.removeBorders(event.target));
-    this.brailleContainer_.addEventListener(
-        'click', event => PanelCaptions.braille.routeCursor(event.target));
+    this.brailleContainer_!.addEventListener(
+        'mouseover', event => PanelCaptions.braille.addBorders(
+            event.target as Element));
+    this.brailleContainer_!.addEventListener(
+        'mouseout', event => PanelCaptions.braille.removeBorders(
+            event.target as Element));
+    this.brailleContainer_!.addEventListener(
+        'click', event => PanelCaptions.braille.routeCursor(
+            event.target as Element));
 
     // Clear the tables.
     let rowCount = this.brailleTableElement_.rows.length;
@@ -357,13 +340,13 @@ export class Panel extends PanelInterface {
         }
       }
 
-      const topCell = row1.insertCell(-1);
+      const topCell = row1!.insertCell(-1);
       topCell.innerHTML = groups[i][0];
       topCell.id = i + '-textCell';
       topCell.setAttribute('data-companionIDs', i + '-brailleCell');
       topCell.className = 'unhighlighted-cell';
 
-      let bottomCell = row2.insertCell(-1);
+      let bottomCell = row2!.insertCell(-1);
       bottomCell.id = i + '-brailleCell';
       bottomCell.setAttribute('data-companionIDs', i + '-textCell');
       bottomCell.className = 'unhighlighted-cell';
@@ -414,28 +397,23 @@ export class Panel extends PanelInterface {
     }
   }
 
-  /**
-   * Sets the index of the current active menu to be 0.
-   * @private
-   */
-  scrollToTop_() {
-    this.menuManager_.activeMenu.scrollToTop();
+  /** Sets the index of the current active menu to be 0. */
+  private scrollToTop_(): void {
+    // TODO(b/314203187): Not nulls asserted, check that this is correct.
+    this.menuManager_.activeMenu!.scrollToTop();
   }
 
-  /**
-   * Sets the index of the current active menu to be the last index.
-   * @private
-   */
-  scrollToBottom_() {
-    this.menuManager_.activeMenu.scrollToBottom();
+  /** Sets the index of the current active menu to be the last index. */
+  private scrollToBottom_(): void {
+    // TODO(b/314203187): Not nulls asserted, check that this is correct.
+    this.menuManager_.activeMenu!.scrollToBottom();
   }
 
   /**
    * Advance the index of the current active menu item by |delta|.
-   * @param {number} delta The number to add to the active menu item index.
-   * @private
+   * @param delta The number to add to the active menu item index.
    */
-  advanceItemBy_(delta) {
+  private advanceItemBy_(delta: number): void {
     if (this.menuManager_.activeMenu) {
       this.menuManager_.activeMenu.advanceItemBy(delta);
     }
@@ -446,15 +424,13 @@ export class Panel extends PanelInterface {
    * than on the menus button, close the menus and return focus to the page,
    * and if the mouse was released over a menu item, execute that item's
    * callback.
-   * @param {Event} event The mouse event.
-   * @private
    */
-  onMouseUp_(event) {
+  private onMouseUp_(event: Event): void {
     if (!this.menuManager_.activeMenu) {
       return;
     }
 
-    let target = event.target;
+    let target = event.target as HTMLElement | null;
     while (target && !target.classList.contains('menu-item')) {
       // Allow the user to click and release on the menu button and leave
       // the menu button.
@@ -475,10 +451,8 @@ export class Panel extends PanelInterface {
   /**
    * Called when a key is pressed. Handle arrow keys to navigate the menus,
    * Esc to close, and Enter/Space to activate an item.
-   * @param {Event} event The key event.
-   * @private
    */
-  onKeyDown_(event) {
+  private onKeyDown_(event: KeyboardEvent): void {
     if (event.key === 'Escape' &&
         this.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
       this.setMode(PanelMode.COLLAPSED);
@@ -502,10 +476,14 @@ export class Panel extends PanelInterface {
       switch (event.key) {
         case 'ArrowLeft':
         case 'ArrowRight':
-          if (event.target.value) {
-            const cursorIndex = event.target.selectionStart +
+          if (event.target.hasOwnProperty('value')) {
+            const target = event.target as unknown as {
+              value: string,
+              selectionStart: number,
+            };
+            const cursorIndex = target.selectionStart +
                 (event.key === 'ArrowRight' ? 1 : -1);
-            const queryLength = event.target.value.length;
+            const queryLength = target.value.length;
             if (cursorIndex >= 0 && cursorIndex <= queryLength) {
               return;
             }
@@ -546,7 +524,8 @@ export class Panel extends PanelInterface {
         break;
       case 'Enter':
       case ' ':
-        this.pendingCallback_ = this.menuManager_.getCallbackForCurrentItem();
+        this.pendingCallback_ =
+            this.menuManager_.getCallbackForCurrentItem() as AsyncCallback;
         this.closeMenusAndRestoreFocus();
         break;
       default:
@@ -560,23 +539,21 @@ export class Panel extends PanelInterface {
 
   /**
    * Open the ChromeVox Options.
-   * @private
+   * TODO: Remove this once settings migration is complete.
    */
-  onOptions_() {
+  private onOptions_(): void {
     chrome.accessibilityPrivate.openSettingsSubpage('textToSpeech/chromeVox');
     this.setMode(PanelMode.COLLAPSED);
   }
 
-  /** @override */
-  onClose() {
+  onClose(): void {
     // Change the url fragment to 'close', which signals the native code
     // to exit ChromeVox.
-    this.ownerWindow_.location =
-        chrome.extension.getURL('chromevox/panel/panel.html') + '#close';
+    window.location.assign(
+        chrome.extension.getURL('chromevox/panel/panel.html') + '#close');
   }
 
-  /** @override */
-  async closeMenusAndRestoreFocus() {
+  async closeMenusAndRestoreFocus(): Promise<void> {
     const pendingCallback = this.pendingCallback_;
     this.pendingCallback_ = null;
 
@@ -600,17 +577,14 @@ export class Panel extends PanelInterface {
     BackgroundBridge.PanelBackground.clearSavedNode();
   }
 
-  /**
-   * Open the tutorial.
-   * @private
-   */
-  onTutorial_() {
-    chrome.chromeosInfoPrivate.isTabletModeEnabled(enabled => {
+  /** Open the tutorial. */
+  private onTutorial_(): void {
+    chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled: boolean) => {
       // Use tablet mode to decide the medium for the tutorial.
       const medium = enabled ? constants.InteractionMedium.TOUCH :
                                constants.InteractionMedium.KEYBOARD;
       if (!$('chromevox-tutorial')) {
-        let curriculum = null;
+        let curriculum: string | null = null;
         if (this.sessionState_ ===
             chrome.loginState.SessionState.IN_OOBE_SCREEN) {
           // We currently support two mediums: keyboard and touch, which is why
@@ -623,20 +597,20 @@ export class Panel extends PanelInterface {
       }
 
       this.setMode(PanelMode.FULLSCREEN_TUTORIAL);
-      if (this.tutorial_ && this.tutorial_.show) {
-        this.tutorial_.medium = medium;
-        this.tutorial_.show();
+      const tutorial = this.tutorial_ as {
+        show: VoidFunction,
+        medium: constants.InteractionMedium,
+      };
+      if (tutorial && tutorial.show) {
+        tutorial.medium = medium;
+        tutorial.show();
       }
     });
   }
 
-  /**
-   * Creates a <chromevox-tutorial> element and adds it to the dom.
-   * @param {(string|null)} curriculum
-   * @param {constants.InteractionMedium} medium
-   * @private
-   */
-  createITutorial_(curriculum, medium) {
+  /** Creates a <chromevox-tutorial> element and adds it to the dom. */
+  private createITutorial_(
+      curriculum: string | null, medium: constants.InteractionMedium): void {
     const tutorialScript = document.createElement('script');
     tutorialScript.src =
         '../../common/tutorial/components/chromevox_tutorial.js';
@@ -647,55 +621,62 @@ export class Panel extends PanelInterface {
     const tutorialContainer = document.createElement('div');
     tutorialContainer.setAttribute('id', 'chromevox-tutorial-container');
     tutorialContainer.hidden = true;
-    const tutorialElement = document.createElement('chromevox-tutorial');
-    tutorialElement.setAttribute('id', 'chromevox-tutorial');
+    const element = document.createElement('chromevox-tutorial');
+    element.setAttribute('id', 'chromevox-tutorial');
+    const tutorialElement = element as unknown as {
+      curriculum: string,
+      medium: constants.InteractionMedium,
+    };
     if (curriculum) {
       tutorialElement.curriculum = curriculum;
     }
     tutorialElement.medium = medium;
-    tutorialContainer.appendChild(tutorialElement);
+    tutorialContainer.appendChild(element);
     document.body.appendChild(tutorialContainer);
     this.tutorial_ = tutorialElement;
 
     // Add listeners. These are custom events fired from custom components.
     const backgroundPage = chrome.extension.getBackgroundPage();
 
-    $('chromevox-tutorial').addEventListener('closetutorial', async evt => {
+    const elementInPage = $('chromevox-tutorial');
+    if (!elementInPage) {
+      throw new Error('Tutorial element was not added to the DOM');
+    }
+
+    elementInPage.addEventListener('closetutorial', async _evt => {
       // Ensure ForcedActionPath is destroyed before closing tutorial.
       await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
     });
-    $('chromevox-tutorial')
-        .addEventListener('startinteractivemode', async evt => {
-          const actions = evt.detail.actions;
-          await BackgroundBridge.ForcedActionPath.create(actions);
+    elementInPage.addEventListener('startinteractivemode', async evt => {
+      const actions = (evt as CustomEvent).detail.actions;
+      await BackgroundBridge.ForcedActionPath.create(actions);
+      await BackgroundBridge.ForcedActionPath.destroy();
+      const tutorial = this.tutorial_ as {showNextLesson: VoidFunction};
+      if (this.tutorial_ && tutorial.showNextLesson) {
+        tutorial.showNextLesson();
+      }
+    });
+    elementInPage
+        .addEventListener('stopinteractivemode', async _evt => {
           await BackgroundBridge.ForcedActionPath.destroy();
-          if (this.tutorial_ && this.tutorial_.showNextLesson) {
-            this.tutorial_.showNextLesson();
-          }
         });
-    $('chromevox-tutorial')
-        .addEventListener('stopinteractivemode', async evt => {
-          await BackgroundBridge.ForcedActionPath.destroy();
-        });
-    $('chromevox-tutorial').addEventListener('requestfullydescribe', evt => {
+    elementInPage.addEventListener('requestfullydescribe', _evt => {
       BackgroundBridge.CommandHandler.onCommand(Command.FULLY_DESCRIBE);
     });
-    $('chromevox-tutorial').addEventListener('requestearcon', evt => {
-      evt = /** @type {{detail: {earconId: string}}} */ (evt);
-      const earconId = evt.detail.earconId;
+    elementInPage.addEventListener('requestearcon', evt => {
+      const earconId = (evt as CustomEvent).detail.earconId;
       backgroundPage['ChromeVox']['earcons']['playEarcon'](earconId);
     });
-    $('chromevox-tutorial').addEventListener('cancelearcon', evt => {
-      evt = /** @type {{detail: {earconId: string}}} */ (evt);
-      const earconId = evt.detail.earconId;
+    elementInPage.addEventListener('cancelearcon', evt => {
+      const earconId = (evt as CustomEvent).detail.earconId;
       backgroundPage['ChromeVox']['earcons']['cancelEarcon'](earconId);
     });
-    $('chromevox-tutorial').addEventListener('readyfortesting', () => {
-      this.tutorialReadyForTesting_ = true;
+    elementInPage.addEventListener('readyfortesting', () => {
+      this.tutorialReadyForTesting_ ||= true;
     });
-    $('chromevox-tutorial').addEventListener('openUrl', async evt => {
-      const url = evt.detail.url;
+    elementInPage.addEventListener('openUrl', async evt => {
+      const url = (evt as CustomEvent).detail.url;
       // Ensure ForcedActionPath is destroyed before closing tutorial.
       await BackgroundBridge.ForcedActionPath.destroy();
       this.onCloseTutorial_();
@@ -703,34 +684,30 @@ export class Panel extends PanelInterface {
     });
   }
 
-  /**
-   * Close the tutorial.
-   * @private
-   */
-  onCloseTutorial_() {
+  /** Close the tutorial. */
+  private onCloseTutorial_(): void {
     this.setMode(PanelMode.COLLAPSED);
   }
 
-  /** @private */
-  onCurrentRangeChanged_() {
+  private onCurrentRangeChanged_(): void {
     if (this.mode_ === PanelMode.FULLSCREEN_TUTORIAL) {
-      if (this.tutorial_ && this.tutorial_.restartNudges) {
-        this.tutorial_.restartNudges();
+      const tutorial = this.tutorial_ as {restartNudges: VoidFunction};
+      if (this.tutorial_ && tutorial.restartNudges) {
+      tutorial.restartNudges();
       }
     }
   }
 
-  /** @private */
-  onBlur_(event) {
-    if (event.target !== window || document.activeElement === document.body) {
+  private onBlur_(event: FocusEvent): void {
+    const target = event.target as EventTarget | typeof window | null;
+    if (target !== window || document.activeElement === document.body) {
       return;
     }
 
     this.closeMenusAndRestoreFocus();
   }
 
-  /** @private */
-  async onHashChange_() {
+  private async onHashChange_(): Promise<void> {
     // Save the sticky state when a user first focuses the panel.
     if (location.hash === '#fullscreen' || location.hash === '#focus') {
       this.originalStickyState_ =
@@ -745,37 +722,34 @@ export class Panel extends PanelInterface {
     }
   }
 
-  /** @private */
-  onMessage_(message) {
-    const command = JSON.parse(message.data);
-    this.exec_(/** @type {PanelCommand} */ (command));
+  private onMessage_(message: MessageEvent): void {
+    const command = JSON.parse(message.data) as PanelCommand;
+    this.exec_(command);
   }
 
-  /** @private */
-  async onPanLeft_() {
+  private async onPanLeft_(): Promise<void> {
     await BackgroundBridge.Braille.panLeft();
   }
 
-  /** @private */
-  async onPanRight_() {
+  private async onPanRight_(): Promise<void> {
     await BackgroundBridge.Braille.panRight();
   }
 
-  /** @private */
-  onStorageChanged_(event) {
+  private onStorageChanged_(event: StorageEvent): void {
     if (event.key === 'brailleCaptions') {
       this.updateFromPrefs_();
     }
   }
 
-  /** @private */
-  updateSessionState_(sessionState) {
+  private updateSessionState_(sessionState: string): void {
     this.sessionState_ = sessionState;
-    $('options').disabled = sessionState !== 'IN_SESSION';
+    const options = $('options') as unknown as {disabled: boolean};
+    options.disabled = sessionState !== 'IN_SESSION';
   }
 }
 
-window.addEventListener('load', async () => await Panel.init(), false);
+export namespace Panel {
+  export let instance: Panel | undefined;
+}
 
-/** @type {Panel} */
-Panel.instance;
+window.addEventListener('load', async () => await Panel.init(), false);
