@@ -21182,6 +21182,24 @@
             ]
         }
     ],
+    "WebRTC-ReceiveBufferSize": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "size_bytes:1048576,_1"
+                }
+            ]
+        }
+    ],
     "WebRTC-SendBufferSizeBytes": [
         {
             "platforms": [
