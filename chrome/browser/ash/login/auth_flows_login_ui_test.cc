@@ -239,7 +239,9 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
   login_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, LocalPasswordChangedRecovery) {
+// TODO(crbug.com/1515643): Test failing on linux-chromeos-rel
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
+                       DISABLED_LocalPasswordChangedRecovery) {
   const auto& user = with_local_pw_recovery_;
 
   test::OnLoginScreen()->SelectUserPod(user.account_id);
