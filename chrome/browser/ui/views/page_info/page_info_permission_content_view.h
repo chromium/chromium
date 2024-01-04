@@ -10,7 +10,7 @@
 #include "ui/views/view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-#include "chrome/browser/ui/views/media_preview/media_coordinator.h"
+#include "chrome/browser/ui/views/media_preview/active_devices_media_coordinator.h"
 #endif
 
 class ChromePageInfoUiDelegate;
@@ -38,7 +38,8 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
  public:
   PageInfoPermissionContentView(PageInfo* presenter,
                                 ChromePageInfoUiDelegate* ui_delegate,
-                                ContentSettingsType type);
+                                ContentSettingsType type,
+                                content::WebContents* web_contents);
   ~PageInfoPermissionContentView() override;
 
   // PageInfoUI implementations.
@@ -60,6 +61,7 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   ContentSettingsType type_;
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_ = nullptr;
   PageInfo::PermissionInfo permission_;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   raw_ptr<NonAccessibleImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
@@ -68,7 +70,8 @@ class PageInfoPermissionContentView : public views::View, public PageInfoUI {
   raw_ptr<views::Checkbox> remember_setting_ = nullptr;
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-  std::optional<MediaCoordinator> media_preview_coordinator_;
+  std::optional<ActiveDevicesMediaCoordinator>
+      active_devices_media_preview_coordinator_;
 #endif
 };
 

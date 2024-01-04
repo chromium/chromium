@@ -34,7 +34,7 @@ MediaView& CameraViewController::GetLiveFeedContainer() {
 
 void CameraViewController::UpdateVideoSourceInfos(
     std::vector<VideoSourceInfo> video_source_infos) {
-  bool has_devices = !video_source_infos.empty();
+  auto video_source_info_count = video_source_infos.size();
   combobox_model_->UpdateDeviceList(std::move(video_source_infos));
-  base_controller_->AdjustComboboxEnabledState(has_devices);
+  base_controller_->OnDeviceListChanged(video_source_info_count);
 }

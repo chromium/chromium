@@ -69,10 +69,11 @@ MediaViewControllerBase::~MediaViewControllerBase() {
   device_selector_combobox_->SetCallback({});
 }
 
-void MediaViewControllerBase::AdjustComboboxEnabledState(bool has_devices) {
+void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
+  bool has_devices = device_count > 0;
   live_feed_container_->SetVisible(has_devices);
   no_device_connected_label_->SetVisible(!has_devices);
-  device_selector_combobox_->SetEnabled(has_devices);
+  device_selector_combobox_->SetEnabled(device_count > 1);
   if (has_devices) {
     OnComboboxSelection();
   }

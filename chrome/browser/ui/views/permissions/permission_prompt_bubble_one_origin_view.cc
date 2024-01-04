@@ -252,6 +252,7 @@ void PermissionPromptBubbleOneOriginView::MaybeAddMediaPreview(
   }
 
   media_preview_coordinator_.emplace(view_type.value(), *this, index,
-                                     /*is_subsection=*/false);
+                                     /*is_subsection=*/false,
+                                     MediaCoordinator::EligibleDevices{});
 #endif
 }

@@ -24,7 +24,9 @@ struct AudioDeviceDescription;
 // Maintains the lifetime of its views.
 class MicCoordinator {
  public:
-  MicCoordinator(views::View& parent_view, bool needs_borders);
+  MicCoordinator(views::View& parent_view,
+                 bool needs_borders,
+                 const std::vector<std::string>& eligible_mic_ids);
   MicCoordinator(const MicCoordinator&) = delete;
   MicCoordinator& operator=(const MicCoordinator&) = delete;
   ~MicCoordinator();
@@ -53,6 +55,7 @@ class MicCoordinator {
   views::ViewTracker mic_view_tracker_;
   MicSelectorComboboxModel combobox_model_;
   std::string active_device_id_;
+  base::flat_set<std::string> eligible_mic_ids_;
   std::optional<MicViewController> mic_view_controller_;
   std::optional<AudioStreamCoordinator> audio_stream_coordinator_;
 };

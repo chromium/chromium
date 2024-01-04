@@ -65,15 +65,20 @@ class MicCoordinatorTest : public TestWithBrowserView {
     fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
         replied_with_device_descriptions_future_.GetCallback());
 
-    parent_view_ = std::make_unique<views::View>();
-    coordinator_ = std::make_unique<MicCoordinator>(*parent_view_,
-                                                    /*needs_borders=*/true);
+    parent_view_.emplace();
+    InitializeCoordinator({});
     ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
   }
 
   void TearDown() override {
     coordinator_.reset();
     TestWithBrowserView::TearDown();
+  }
+
+  void InitializeCoordinator(std::vector<std::string> eligible_mic_ids) {
+    coordinator_.emplace(*parent_view_,
+                         /*needs_borders=*/true,
+                         /*eligible_mic_ids=*/eligible_mic_ids);
   }
 
   const MicSelectorComboboxModel& GetComboboxModel() const {
@@ -90,6 +95,22 @@ class MicCoordinatorTest : public TestWithBrowserView {
         l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_MICS_FOUND_COMBOBOX));
   }
 
+  bool AddFakeInputDevice(const media::AudioDeviceDescription& descriptor) {
+    replied_with_device_descriptions_future_.Clear();
+    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
+        replied_with_device_descriptions_future_.GetCallback());
+    fake_audio_service_.AddFakeInputDevice(descriptor);
+    return replied_with_device_descriptions_future_.WaitAndClear();
+  }
+
+  bool RemoveFakeInputDevice(const std::string& device_id) {
+    replied_with_device_descriptions_future_.Clear();
+    fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
+        replied_with_device_descriptions_future_.GetCallback());
+    fake_audio_service_.RemoveFakeInputDevice(device_id);
+    return replied_with_device_descriptions_future_.WaitAndClear();
+  }
+
   base::SystemMonitor monitor_;
   media_effects::FakeAudioService fake_audio_service_;
   std::optional<base::AutoReset<audio::mojom::AudioService*>>
@@ -99,8 +120,8 @@ class MicCoordinatorTest : public TestWithBrowserView {
   base::test::TestFuture<void> on_bind_stream_factory_future_;
   base::test::TestFuture<void> replied_with_device_descriptions_future_;
 
-  std::unique_ptr<views::View> parent_view_;
-  std::unique_ptr<MicCoordinator> coordinator_;
+  std::optional<views::View> parent_view_;
+  std::optional<MicCoordinator> coordinator_;
 };
 
 TEST_F(MicCoordinatorTest, RelevantAudioInputDeviceInfoExtraction) {
@@ -109,46 +130,64 @@ TEST_F(MicCoordinatorTest, RelevantAudioInputDeviceInfoExtraction) {
   // Add first mic, and connect to it.
   // Mic connection is done automatically to the device at combobox's default
   // index (i.e. 0).
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
   EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
 
   // Add second mic and connection to the first is not affected.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2});
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
   EXPECT_THAT(GetComboboxModel(),
               HasItems(std::vector{kDeviceName, kDeviceName2}));
 
   // Remove first mic, and connect to the second one.
-  fake_audio_service_.RemoveFakeInputDevice(kDeviceId);
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
   EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
 
   // Re-add first mic and connect to it.
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
   EXPECT_THAT(GetComboboxModel(),
               HasItems(std::vector{kDeviceName, kDeviceName2}));
 
   // Remove second mic, and connection to the first is not affected.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.RemoveFakeInputDevice(kDeviceId2);
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId2));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
   EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
 
   // Remove first mic.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.RemoveFakeInputDevice(kDeviceId);
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
+  VerifyEmptyCombobox();
+}
+
+TEST_F(MicCoordinatorTest,
+       RelevantAudioInputDeviceInfoExtraction_ConstrainedToEligibleDevices) {
+  InitializeCoordinator({kDeviceId2});
+  VerifyEmptyCombobox();
+
+  // Add first mic. It won't be added to the combobox because it's not in the
+  // eligible list.
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
+  EXPECT_FALSE(on_input_stream_id_future_.IsReady());
+  VerifyEmptyCombobox();
+
+  // Add second mic and connect to it since it's in the eligible list.
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
+  ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
+  EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId2);
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+
+  // Remove first mic, nothing changes since it wasn't in the combobox.
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
+  EXPECT_FALSE(on_input_stream_id_future_.IsReady());
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+
+  // Remove second mic.
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId2));
   VerifyEmptyCombobox();
 }
 
@@ -156,15 +195,12 @@ TEST_F(MicCoordinatorTest, ConnectToDifferentDevice) {
   VerifyEmptyCombobox();
 
   // Add first mic, and connect to it.
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
 
   // Add second mic and connection to the first is not affected.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2});
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName2, kDeviceId2, kGroupId2}));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
 
   //  Connect to the second mic.
@@ -177,7 +213,7 @@ TEST_F(MicCoordinatorTest, TryConnectToSameDevice) {
   VerifyEmptyCombobox();
 
   // Add mic, and connect to it.
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
 
@@ -188,14 +224,11 @@ TEST_F(MicCoordinatorTest, TryConnectToSameDevice) {
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
 
   // Remove mic.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.RemoveFakeInputDevice(kDeviceId);
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(RemoveFakeInputDevice(kDeviceId));
   VerifyEmptyCombobox();
 
   // Add mic, and connect to it again.
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
 }
@@ -204,7 +237,7 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
   VerifyEmptyCombobox();
 
   // Add mic, and connect to it.
-  fake_audio_service_.AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId});
+  ASSERT_TRUE(AddFakeInputDevice({kDeviceName, kDeviceId, kGroupId}));
   ASSERT_TRUE(on_bind_stream_factory_future_.WaitAndClear());
   EXPECT_EQ(on_input_stream_id_future_.Take(), kDeviceId);
   EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
@@ -213,11 +246,9 @@ TEST_F(MicCoordinatorTest, DefaultMicHandling) {
 
   // Add the same mic again with the default id.
   // One mic is expected to exist in the model with secondary text as default.
-  fake_audio_service_.SetOnRepliedWithInputDeviceDescriptionsCallback(
-      replied_with_device_descriptions_future_.GetCallback());
-  fake_audio_service_.AddFakeInputDevice(
-      {kDeviceName, media::AudioDeviceDescription::kDefaultDeviceId, kGroupId});
-  ASSERT_TRUE(replied_with_device_descriptions_future_.WaitAndClear());
+  ASSERT_TRUE(AddFakeInputDevice(
+      {kDeviceName, media::AudioDeviceDescription::kDefaultDeviceId,
+       kGroupId}));
   EXPECT_FALSE(on_input_stream_id_future_.IsReady());
   EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
   EXPECT_EQ(GetComboboxModel().GetDropDownSecondaryTextAt(/*index=*/0),

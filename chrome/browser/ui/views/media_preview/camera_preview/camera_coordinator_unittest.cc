@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/run_loop.h"
@@ -14,6 +15,7 @@
 #include "base/system/system_monitor.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_effects/test/fake_video_capture_service.h"
@@ -32,6 +34,22 @@ constexpr char kDeviceName[] = "device_name";
 constexpr char kDeviceId2[] = "device_id_2";
 constexpr char kDeviceName2[] = "device_name_2";
 
+MATCHER_P(HasItems, items, "") {
+  if (arg.GetItemCount() != items.size()) {
+    *result_listener << "item count is " << arg.GetItemCount();
+    return false;
+  }
+
+  for (size_t i = 0; i < items.size(); ++i) {
+    if (base::UTF8ToUTF16(items[i]) != arg.GetItemAt(i)) {
+      *result_listener << "item at index " << i << " is " << arg.GetItemAt(i);
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 class CameraCoordinatorTest : public TestWithBrowserView {
@@ -41,10 +59,9 @@ class CameraCoordinatorTest : public TestWithBrowserView {
     content::OverrideVideoCaptureServiceForTesting(
         &fake_video_capture_service_);
     fake_video_capture_service_.SetOnGetVideoSourceCallback(
-        mock_video_source_callback_.Get());
-    parent_view_ = std::make_unique<views::View>();
-    coordinator_ = std::make_unique<CameraCoordinator>(*parent_view_,
-                                                       /*needs_borders=*/true);
+        on_get_video_source_future_.GetRepeatingCallback());
+    parent_view_.emplace();
+    InitializeCoordinator(/*eligible_camera_ids=*/{});
   }
 
   void TearDown() override {
@@ -53,6 +70,12 @@ class CameraCoordinatorTest : public TestWithBrowserView {
     parent_view_.reset();
     content::OverrideVideoCaptureServiceForTesting(nullptr);
     TestWithBrowserView::TearDown();
+  }
+
+  void InitializeCoordinator(std::vector<std::string> eligible_camera_ids) {
+    coordinator_.emplace(*parent_view_,
+                         /*needs_borders=*/true,
+                         /*eligible_camera_ids=*/eligible_camera_ids);
   }
 
   const CameraSelectorComboboxModel& GetComboboxModel() const {
@@ -69,82 +92,93 @@ class CameraCoordinatorTest : public TestWithBrowserView {
         l10n_util::GetStringUTF16(IDS_MEDIA_PREVIEW_NO_CAMERAS_FOUND_COMBOBOX));
   }
 
+  bool AddFakeCamera(const media::VideoCaptureDeviceDescriptor& descriptor) {
+    replied_with_source_infos_future_.Clear();
+    fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
+        replied_with_source_infos_future_.GetCallback());
+    fake_video_capture_service_.AddFakeCamera(descriptor);
+    return replied_with_source_infos_future_.WaitAndClear();
+  }
+
+  bool RemoveFakeCamera(const std::string& device_id) {
+    replied_with_source_infos_future_.Clear();
+    fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
+        replied_with_source_infos_future_.GetCallback());
+    fake_video_capture_service_.RemoveFakeCamera(device_id);
+    return replied_with_source_infos_future_.WaitAndClear();
+  }
+
   base::SystemMonitor monitor_;
-  std::unique_ptr<views::View> parent_view_;
-  std::unique_ptr<CameraCoordinator> coordinator_;
+  std::optional<views::View> parent_view_;
+  std::optional<CameraCoordinator> coordinator_;
   media_effects::FakeVideoCaptureService fake_video_capture_service_;
-  base::MockCallback<
-      media_effects::FakeVideoSourceProvider::GetVideoSourceCallback>
-      mock_video_source_callback_;
+  base::test::TestFuture<void> replied_with_source_infos_future_;
+  base::test::TestFuture<
+      const std::string&,
+      mojo::PendingReceiver<video_capture::mojom::VideoSource>>
+      on_get_video_source_future_;
 };
 
 TEST_F(CameraCoordinatorTest, RelevantVideoCaptureDeviceInfoExtraction) {
   VerifyEmptyCombobox();
 
   // Add first camera, and connect to it.
-  // Camera connection is done automatically to the device at combobox's default
+  // camera connection is done automatically to the device at combobox's default
   // index (i.e. 0).
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  fake_video_capture_service_.AddFakeCamera({kDeviceName, kDeviceId});
-  run_loop.Run();
-  EXPECT_EQ(GetComboboxModel().GetItemCount(), size_t(1));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0),
-            base::UTF8ToUTF16({kDeviceName}));
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
 
   // Add second camera and connection to the first is not affected.
-  base::RunLoop run_loop2;
-  EXPECT_CALL(mock_video_source_callback_, Run).Times(0);
-  fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-      run_loop2.QuitClosure());
-  fake_video_capture_service_.AddFakeCamera({kDeviceName2, kDeviceId2});
-  run_loop2.Run();
-  EXPECT_EQ(GetComboboxModel().GetItemCount(), size_t(2));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0),
-            base::UTF8ToUTF16({kDeviceName}));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/1),
-            base::UTF8ToUTF16({kDeviceName2}));
+  ASSERT_TRUE(AddFakeCamera({kDeviceName2, kDeviceId2}));
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
+  EXPECT_THAT(GetComboboxModel(),
+              HasItems(std::vector{kDeviceName, kDeviceName2}));
 
   // Remove first camera, and connect to the second one.
-  base::RunLoop run_loop3;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId2, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop3.QuitClosure()));
-  fake_video_capture_service_.RemoveFakeCamera(kDeviceId);
-  run_loop3.Run();
-  EXPECT_EQ(GetComboboxModel().GetItemCount(), size_t(1));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0),
-            base::UTF8ToUTF16({kDeviceName2}));
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId2);
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
 
   // Re-add first camera and connect to it.
-  base::RunLoop run_loop4;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop4.QuitClosure()));
-  fake_video_capture_service_.AddFakeCamera({kDeviceName, kDeviceId});
-  run_loop4.Run();
-  EXPECT_EQ(GetComboboxModel().GetItemCount(), size_t(2));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0),
-            base::UTF8ToUTF16({kDeviceName}));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/1),
-            base::UTF8ToUTF16({kDeviceName2}));
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
+  EXPECT_THAT(GetComboboxModel(),
+              HasItems(std::vector{kDeviceName, kDeviceName2}));
 
   // Remove second camera, and connection to the first is not affected.
-  base::RunLoop run_loop5;
-  EXPECT_CALL(mock_video_source_callback_, Run).Times(0);
-  fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-      run_loop5.QuitClosure());
-  fake_video_capture_service_.RemoveFakeCamera(kDeviceId2);
-  run_loop5.Run();
-  EXPECT_EQ(GetComboboxModel().GetItemCount(), size_t(1));
-  EXPECT_EQ(GetComboboxModel().GetItemAt(/*index=*/0),
-            base::UTF8ToUTF16({kDeviceName}));
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId2));
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName}));
 
   // Remove first camera.
-  base::RunLoop run_loop6;
-  fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-      run_loop6.QuitClosure());
-  fake_video_capture_service_.RemoveFakeCamera(kDeviceId);
-  run_loop6.Run();
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId));
+  VerifyEmptyCombobox();
+}
+
+TEST_F(CameraCoordinatorTest,
+       RelevantVideoCaptureDeviceInfoExtraction_ConstrainedToEligibleDevices) {
+  InitializeCoordinator({kDeviceId2});
+  VerifyEmptyCombobox();
+
+  // Add first camera. It won't be added to the combobox because it's not in the
+  // eligible list.
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
+  VerifyEmptyCombobox();
+
+  // Add second camera and connect to it since it's in the eligible list.
+  ASSERT_TRUE(AddFakeCamera({kDeviceName2, kDeviceId2}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId2);
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+
+  // Remove first camera, nothing changes since it wasn't in the combobox.
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId));
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
+  EXPECT_THAT(GetComboboxModel(), HasItems(std::vector{kDeviceName2}));
+
+  // Remove second camera.
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId2));
   VerifyEmptyCombobox();
 }
 
@@ -152,56 +186,35 @@ TEST_F(CameraCoordinatorTest, ConnectToDifferentDevice) {
   VerifyEmptyCombobox();
 
   // Add first camera, and connect to it.
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  fake_video_capture_service_.AddFakeCamera({kDeviceName, kDeviceId});
-  run_loop.Run();
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
 
   // Add second camera and connection to the first is not affected.
-  base::RunLoop run_loop2;
-  EXPECT_CALL(mock_video_source_callback_, Run).Times(0);
-  fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-      run_loop2.QuitClosure());
-  fake_video_capture_service_.AddFakeCamera({kDeviceName2, kDeviceId2});
-  run_loop2.Run();
+  ASSERT_TRUE(AddFakeCamera({kDeviceName2, kDeviceId2}));
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
 
   //  Connect to the second camera.
-  base::RunLoop run_loop3;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId2, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop3.QuitClosure()));
   coordinator_->OnVideoSourceChanged(/*selected_index=*/1);
-  run_loop3.Run();
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId2);
 }
 
 TEST_F(CameraCoordinatorTest, TryConnectToSameDevice) {
   VerifyEmptyCombobox();
 
   // Add camera, and connect to it.
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
-  fake_video_capture_service_.AddFakeCamera({kDeviceName, kDeviceId});
-  run_loop.Run();
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
 
   //  Try connect to the camera.
   // Nothing is expected because we are already connected.
-  EXPECT_CALL(mock_video_source_callback_, Run).Times(0);
   coordinator_->OnVideoSourceChanged(/*selected_index=*/0);
-  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(on_get_video_source_future_.IsReady());
 
   // Remove camera.
-  base::RunLoop run_loop2;
-  fake_video_capture_service_.SetOnRepliedWithSourceInfosCallback(
-      run_loop2.QuitClosure());
-  fake_video_capture_service_.RemoveFakeCamera(kDeviceId);
-  run_loop2.Run();
+  ASSERT_TRUE(RemoveFakeCamera(kDeviceId));
   VerifyEmptyCombobox();
 
   // Add camera, and connect to it again.
-  base::RunLoop run_loop3;
-  EXPECT_CALL(mock_video_source_callback_, Run(kDeviceId, _))
-      .WillOnce(base::test::RunOnceClosure(run_loop3.QuitClosure()));
-  fake_video_capture_service_.AddFakeCamera({kDeviceName, kDeviceId});
-  run_loop3.Run();
+  ASSERT_TRUE(AddFakeCamera({kDeviceName, kDeviceId}));
+  EXPECT_EQ(std::get<0>(on_get_video_source_future_.Take()), kDeviceId);
 }

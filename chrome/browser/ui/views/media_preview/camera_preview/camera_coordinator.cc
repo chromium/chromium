@@ -13,11 +13,14 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source.mojom.h"
 
-CameraCoordinator::CameraCoordinator(views::View& parent_view,
-                                     bool needs_borders)
+CameraCoordinator::CameraCoordinator(
+    views::View& parent_view,
+    bool needs_borders,
+    const std::vector<std::string>& eligible_camera_ids)
     : camera_mediator_(
           base::BindRepeating(&CameraCoordinator::OnVideoSourceInfosReceived,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      eligible_camera_ids_(eligible_camera_ids) {
   auto* camera_view = parent_view.AddChildView(std::make_unique<MediaView>());
   camera_view_tracker_.SetView(camera_view);
   // Safe to use base::Unretained() because `this` owns / outlives
@@ -50,8 +53,12 @@ void CameraCoordinator::OnVideoSourceInfosReceived(
   }
 
   std::vector<VideoSourceInfo> relevant_device_infos;
-  relevant_device_infos.reserve(device_infos.size());
   for (const auto& device_info : device_infos) {
+    if (!eligible_camera_ids_.empty() &&
+        !eligible_camera_ids_.contains(device_info.descriptor.device_id)) {
+      continue;
+    }
+
     relevant_device_infos.emplace_back(device_info);
   }
 

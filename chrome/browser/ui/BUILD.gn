@@ -4736,6 +4736,8 @@ static_library("ui") {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
+      "views/media_preview/active_devices_media_coordinator.cc",
+      "views/media_preview/active_devices_media_coordinator.h",
       "views/media_preview/camera_preview/camera_coordinator.cc",
       "views/media_preview/camera_preview/camera_coordinator.h",
       "views/media_preview/camera_preview/camera_mediator.cc",
