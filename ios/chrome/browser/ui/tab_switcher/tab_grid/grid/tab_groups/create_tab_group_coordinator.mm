@@ -5,9 +5,12 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_coordinator.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 
 @implementation CreateTabGroupCoordinator {
   // Mediator for tab groups creation.
@@ -26,7 +29,10 @@
 }
 
 - (void)start {
-  _viewController = [[CreateTabGroupViewController alloc] init];
+  id<TabGroupsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  _viewController =
+      [[CreateTabGroupViewController alloc] initWithHandler:handler];
   _mediator = [[CreateTabGroupMediator alloc] init];
 
   // TODO(crbug.com/1501837): Add the create tab group animation.

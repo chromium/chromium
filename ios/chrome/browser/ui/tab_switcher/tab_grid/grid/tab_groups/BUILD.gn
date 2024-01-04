@@ -46,6 +46,7 @@ source_set("tab_groups_ui") {
     ":tab_groups_constant",
     "//base",
     "//base:i18n",
+    "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",

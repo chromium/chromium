@@ -7,8 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol TabGroupsCommands;
+
 // View controller that display the tab group creation view.
 @interface CreateTabGroupViewController : UIViewController
+
+// Initiates a CreateTabGroupViewController with `handler` to handle user
+// action.
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler;
 
 @end
 

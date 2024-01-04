@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/create_tab_group_view_controller.h"
 
 #import "base/check.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_groups_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -21,18 +23,27 @@ constexpr CGFloat kHorizontalMargin = 32;
 constexpr CGFloat kdotAndFieldContainerMargin = 44;
 constexpr CGFloat kDotTitleSeparationMargin = 12;
 constexpr CGFloat kTitleBackgroundCornerRadius = 17;
+constexpr CGFloat kButtonsHeight = 50;
+constexpr CGFloat kButtonsMargin = 8;
 }
 
 @implementation CreateTabGroupViewController {
   // Text input to name the group.
   UITextField* _tabGroupTextField;
+  // Handler to handle user's actions.
+  __weak id<TabGroupsCommands> _tabGroupsHandler;
 }
 
-- (instancetype)init {
+- (instancetype)initWithHandler:(id<TabGroupsCommands>)handler {
   CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
-  return [super init];
+  self = [super init];
+  if (self) {
+    CHECK(handler);
+    _tabGroupsHandler = handler;
+  }
+  return self;
 }
 
 #pragma mark - UIViewController
@@ -55,7 +66,9 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
   }
 
   UIView* dotAndFieldContainer = [self configuredDotAndFieldContainer];
+  UIButton* cancelButton = [self configuredCancelButton];
   [self.view addSubview:dotAndFieldContainer];
+  [self.view addSubview:cancelButton];
 
   [NSLayoutConstraint activateConstraints:@[
     [dotAndFieldContainer.leadingAnchor
@@ -65,6 +78,17 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
                        constant:kdotAndFieldContainerMargin],
     [dotAndFieldContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
+                       constant:-kHorizontalMargin],
+    [cancelButton.bottomAnchor
+        constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor
+                       constant:-kButtonsMargin],
+    [cancelButton.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [cancelButton.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kHorizontalMargin],
+    [cancelButton.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kHorizontalMargin],
   ]];
@@ -152,6 +176,44 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
                        constant:kTitleVerticalMargin],
   ]];
   return titleBackground;
+}
+
+// Returns the cancel button.
+- (UIButton*)configuredCancelButton {
+  UIButton* cancelButton = [[UIButton alloc] init];
+  cancelButton.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.titleAlignment =
+      UIButtonConfigurationTitleAlignmentCenter;
+  NSDictionary* attributes = @{
+    NSFontAttributeName :
+        [UIFont preferredFontForTextStyle:UIFontTextStyleBody],
+    NSForegroundColorAttributeName : [UIColor colorNamed:kSolidWhiteColor]
+  };
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(IDS_CANCEL)
+              attributes:attributes];
+  buttonConfiguration.attributedTitle = attributedString;
+
+  cancelButton.configuration = buttonConfiguration;
+
+  [cancelButton addTarget:self
+                   action:@selector(cancelButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [cancelButton.heightAnchor constraintEqualToConstant:kButtonsHeight],
+  ]];
+
+  return cancelButton;
+}
+
+// Hides the current view without doing anything else.
+- (void)cancelButtonTapped {
+  [_tabGroupsHandler hideTabGroupCreation];
 }
 
 @end
