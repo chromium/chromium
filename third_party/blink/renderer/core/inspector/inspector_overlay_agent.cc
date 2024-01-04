@@ -490,6 +490,10 @@ protocol::Response InspectorOverlayAgent::enable() {
   return protocol::Response::Success();
 }
 
+bool InspectorOverlayAgent::HasAXContext(Node* node) {
+  return document_to_ax_context_.Contains(&node->GetDocument());
+}
+
 void InspectorOverlayAgent::EnsureAXContext(Node* node) {
   EnsureAXContext(node->GetDocument());
 }

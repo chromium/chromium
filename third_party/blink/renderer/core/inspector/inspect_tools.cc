@@ -179,7 +179,7 @@ void SearchingForNodeTool::Draw(float scale) {
                              !omit_tooltip_ && highlight_config_->show_info &&
                              node->GetLayoutObject() &&
                              node->GetDocument().GetFrame();
-  overlay_->EnsureAXContext(node);
+  DCHECK(overlay_->HasAXContext(node));
   InspectorHighlight highlight(node, *highlight_config_, contrast_info_,
                                append_element_info, false,
                                content_visibility_state_);
@@ -251,6 +251,7 @@ bool SearchingForNodeTool::HandleMouseMove(const WebMouseEvent& event) {
   // Store values for the highlight.
   bool hovered_node_changed = node != hovered_node_;
   hovered_node_ = node;
+  overlay_->EnsureAXContext(node);
   event_target_node_ = (event.GetModifiers() & WebInputEvent::kShiftKey)
                            ? HoveredNodeForEvent(frame, event, false)
                            : nullptr;
@@ -361,6 +362,7 @@ NodeHighlightTool::NodeHighlightTool(
   if (auto* flexbox = DynamicTo<LayoutFlexibleBox>(node->GetLayoutObject())) {
     flexbox->SetNeedsLayoutForDevtools();
   }
+  overlay_->EnsureAXContext(node);
 }
 
 String NodeHighlightTool::GetOverlayName() {
@@ -406,8 +408,7 @@ void NodeHighlightTool::DrawMatchingSelector() {
   ContainerNode* query_base = node_->ContainingShadowRoot();
   if (!query_base)
     query_base = node_->ownerDocument();
-
-  overlay_->EnsureAXContext(query_base);
+  DCHECK(overlay_->HasAXContext(query_base));
 
   StaticElementList* elements = query_base->QuerySelectorAll(
       AtomicString(selector_list_), exception_state);
@@ -438,7 +439,7 @@ std::unique_ptr<protocol::DictionaryValue>
 NodeHighlightTool::GetNodeInspectorHighlightAsJson(
     bool append_element_info,
     bool append_distance_info) const {
-  overlay_->EnsureAXContext(node_.Get());
+  DCHECK(overlay_->HasAXContext(node_.Get()));
   InspectorHighlight highlight(node_.Get(), *highlight_config_, contrast_info_,
                                append_element_info, append_distance_info,
                                content_visibility_state_);
@@ -717,6 +718,7 @@ bool NearbyDistanceTool::HandleMouseMove(const WebMouseEvent& event) {
 
   // Store values for the highlight.
   hovered_node_ = node;
+  overlay_->EnsureAXContext(node);
   return true;
 }
 
@@ -728,7 +730,7 @@ void NearbyDistanceTool::Draw(float scale) {
   Node* node = hovered_node_.Get();
   if (!node)
     return;
-  overlay_->EnsureAXContext(node);
+  DCHECK(overlay_->HasAXContext(node));
   auto content_visibility_state = DetermineSelfContentVisibilityState(node);
   InspectorHighlight highlight(
       node, InspectorHighlight::DefaultConfig(),

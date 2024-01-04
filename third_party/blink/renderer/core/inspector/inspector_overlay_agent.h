@@ -267,6 +267,7 @@ class CORE_EXPORT InspectorOverlayAgent final
   void Dispose() override;
 
   void Inspect(Node*);
+  bool HasAXContext(Node*);
   void EnsureAXContext(Node*);
   void EnsureAXContext(Document&);
   void DispatchBufferedTouchEvents();
