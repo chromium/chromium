@@ -13501,21 +13501,6 @@
             ]
         }
     ],
-    "PrefetchNewLimits": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20231128",
-                    "enable_features": [
-                        "PrefetchNewLimits"
-                    ]
-                }
-            ]
-        }
-    ],
     "PreinstalledWebAppWindowExperiment": [
         {
             "platforms": [

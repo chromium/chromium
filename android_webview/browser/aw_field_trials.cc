@@ -113,10 +113,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable scrollbar-width on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kScrollbarWidth);
 
-  // Disable the new prefetch limits policy on WebView (it is enabled by
-  // default on Android, but we need a slower ramp up on WebView).
-  aw_feature_overrides.DisableFeature(::features::kPrefetchNewLimits);
-
   // Disable Populating the VisitedLinkDatabase on WebView.
   aw_feature_overrides.DisableFeature(history::kPopulateVisitedLinkDatabase);
 
