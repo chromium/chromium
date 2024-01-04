@@ -1038,16 +1038,14 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
 bool GetOnDeviceModelRetractUnsafeContent() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kOptimizationGuideOnDeviceModel, "on_device_retract_unsafe_content",
-          false};
+          &kTextSafetyClassifier, "on_device_retract_unsafe_content", false};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 
 bool GetOnDeviceModelMustUseSafetyModel() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{
-          &kOptimizationGuideOnDeviceModel, "on_device_must_use_safety_model",
-          false};
+          &kTextSafetyClassifier, "on_device_must_use_safety_model", false};
   return kOnDeviceModelShouldRetractUnsafeContent.Get();
 }
 

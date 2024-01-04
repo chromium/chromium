@@ -255,8 +255,9 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
          {features::kOptimizationGuideOnDeviceModel,
           {{"on_device_model_min_tokens_for_context", "10"},
            {"on_device_model_max_tokens_for_context", "22"},
-           {"on_device_model_context_token_chunk_size", "4"},
-           {"on_device_must_use_safety_model", "false"}}}},
+           {"on_device_model_context_token_chunk_size", "4"}}},
+         {features::kTextSafetyClassifier,
+          {{"on_device_must_use_safety_model", "false"}}}},
         {});
     prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
@@ -669,7 +670,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
+      features::kTextSafetyClassifier,
       {{"on_device_must_use_safety_model", "true"}});
 
   // No safety model received yet.
@@ -1271,7 +1272,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
   Initialize();
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      features::kOptimizationGuideOnDeviceModel,
+      features::kTextSafetyClassifier,
       {{"on_device_retract_unsafe_content", "true"}});
   g_on_complete_response_type =
       on_device_model::mojom::ResponseStatus::kRetracted;
