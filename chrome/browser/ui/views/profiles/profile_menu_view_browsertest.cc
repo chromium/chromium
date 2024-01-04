@@ -373,9 +373,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
                                    public InProcessBrowserTest {
  public:
-  ProfileMenuViewSignoutTest() {
-    feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
-  }
+  ProfileMenuViewSignoutTest() = default;
 
   CoreAccountId account_id() const { return account_id_; }
 
@@ -396,7 +394,15 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
     return profile_ ? profile_.get() : browser()->profile();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  GURL GetExpectedLogoutURL(bool uno_enabled) const {
+    if (uno_enabled) {
+      return GaiaUrls::GetInstance()->LogOutURLWithContinueURL(GURL());
+    } else {
+      return GaiaUrls::GetInstance()->service_logout_url();
+    }
+  }
+#else
   void UseSecondaryProfile() {
     // Signout not allowed in the main profile.
     profile_ = CreateAdditionalProfile();
@@ -423,7 +429,6 @@ class ProfileMenuViewSignoutTest : public ProfileMenuViewTestBase,
  private:
   CoreAccountId account_id_;
   raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -437,8 +442,32 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, Signout) {
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Wrapper class to add parametrized feature tests.
+// Param of the ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature:
+// -- bool uno_enabled;
+class ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature
+    : public ProfileMenuViewSignoutTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature() {
+    if (uno_enabled()) {
+      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+    } else {
+      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+    }
+  }
+
+  bool uno_enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Checks that signout opens a new logout tab.
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
+IN_PROC_BROWSER_TEST_P(
+    ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature,
+    OpenLogoutTab) {
   // Start from a page that is not the NTP.
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
@@ -455,13 +484,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
   EXPECT_EQ(2, tab_strip->count());
   EXPECT_EQ(1, tab_strip->active_index());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(GaiaUrls::GetInstance()->service_logout_url(),
-            logout_page->GetURL());
+  EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL(uno_enabled()));
 }
 
 // Checks that the NTP is navigated to the logout URL, instead of creating
 // another tab.
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
+IN_PROC_BROWSER_TEST_P(
+    ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature,
+    SignoutFromNTP) {
   // Start from the NTP.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
@@ -475,43 +505,41 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, SignoutFromNTP) {
   ASSERT_TRUE(Signout());
   EXPECT_EQ(1, tab_strip->count());
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(GaiaUrls::GetInstance()->service_logout_url(),
-            logout_page->GetURL());
+  EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL(uno_enabled()));
 }
 
-class ProfileMenuViewSignoutTestUno : public ProfileMenuViewSignoutTest {
- public:
-  ProfileMenuViewSignoutTestUno() {
-    feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTestUno, LogoutUrlWithUnoEnabled) {
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  ASSERT_TRUE(Signout());
-  content::WebContents* logout_page = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(GURL("https://accounts.google.com/Logout?continue=https://"
-                 "accounts.google.com"),
-            logout_page->GetURL());
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfileMenuViewSignoutTestWithExplicitBrowserSigninFeature,
+    testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) {
+      return info.param ? "UnoEnabled" : "UnoDisabled";
+    });
 
 // Signout test that handles logout requests. The parameter indicates whether
 // an error page is generated for the logout request.
+// Params of the ProfileMenuViewSignoutTestWithNetwork:
+// -- bool uno_enabled;
+// -- bool has_network_error;
 class ProfileMenuViewSignoutTestWithNetwork
     : public ProfileMenuViewSignoutTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   ProfileMenuViewSignoutTestWithNetwork()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     https_server_.RegisterRequestHandler(base::BindRepeating(
         &ProfileMenuViewSignoutTestWithNetwork::HandleSignoutURL,
         has_network_error()));
+
+    if (uno_enabled()) {
+      feature_list_.InitAndEnableFeature(switches::kUnoDesktop);
+    } else {
+      feature_list_.InitAndDisableFeature(switches::kUnoDesktop);
+    }
   }
 
-  // Simple wrapper around GetParam(), with a better name.
-  bool has_network_error() const { return GetParam(); }
+  bool uno_enabled() const { return std::get<0>(GetParam()); }
+  bool has_network_error() const { return std::get<1>(GetParam()); }
 
   // Handles logout requests, either with success or an error page.
   static std::unique_ptr<net::test_server::HttpResponse> HandleSignoutURL(
@@ -538,6 +566,16 @@ class ProfileMenuViewSignoutTestWithNetwork
                ->GetPageType() == content::PAGE_TYPE_ERROR;
   }
 
+  static std::string GenerateTestSuffix(
+      const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+    std::string suffix;
+    suffix.append("Uno");
+    suffix.append(std::get<0>(info.param) ? "Enabled" : "Disabled");
+    suffix.append("AndNetwork");
+    suffix.append(std::get<1>(info.param) ? "Off" : "On");
+    return suffix;
+  }
+
   // InProcessBrowserTest:
   void SetUp() override {
     ASSERT_TRUE(https_server_.InitializeAndListen());
@@ -557,6 +595,7 @@ class ProfileMenuViewSignoutTestWithNetwork
 
  private:
   net::EmbeddedTestServer https_server_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the local signout is performed (tokens are deleted) only if the
@@ -567,8 +606,7 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
   ASSERT_TRUE(Signout());
   TabStripModel* tab_strip = browser()->tab_strip_model();
   content::WebContents* logout_page = tab_strip->GetActiveWebContents();
-  EXPECT_EQ(GaiaUrls::GetInstance()->service_logout_url(),
-            logout_page->GetURL());
+  EXPECT_EQ(logout_page->GetURL(), GetExpectedLogoutURL(uno_enabled()));
 
   // Wait until navigation is finished.
   content::TestNavigationObserver navigation_observer(logout_page);
@@ -583,9 +621,11 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuViewSignoutTestWithNetwork, Signout) {
             !has_network_error());
 }
 
-INSTANTIATE_TEST_SUITE_P(NetworkOnOrOff,
-                         ProfileMenuViewSignoutTestWithNetwork,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ProfileMenuViewSignoutTestWithNetwork,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    &ProfileMenuViewSignoutTestWithNetwork::GenerateTestSuffix);
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Test suite that sets up a primary sync account in an error state and
