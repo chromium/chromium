@@ -91,4 +91,7 @@ try_.builder(
     contact_team_email = "chrome-browser-infra-team@google.com",
     execution_timeout = 36 * time.hour,  # We expect it can take a while.
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
+    tryjob = try_.job(
+        custom_cq_run_modes = [try_.MEGA_CQ_DRY_RUN_NAME, try_.MEGA_CQ_FULL_RUN_NAME],
+    ),
 )

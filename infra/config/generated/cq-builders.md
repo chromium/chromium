@@ -671,3 +671,11 @@ as required builders.
 * [win_chromium_compile_siso_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/win_chromium_compile_siso_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win_chromium_compile_siso_dbg_ng""))
   * Experiment percentage: 10.0
 
+
+## Mega CQ builders
+These builders run when the "Mega" CQ mode is triggered. This mode runs all the
+builders required in the standard CQ, plus a large amount of optional builders.
+
+### chromium
+* [mega-cq-launcher](https://ci.chromium.org/p/chromium/builders/try/mega-cq-launcher) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mega-cq-launcher""))
+

@@ -121,7 +121,8 @@ def tryjob(
         equivalent_builder = None,
         equivalent_builder_percentage = None,
         equivalent_builder_whitelist = None,
-        omit_from_luci_cv = False):
+        omit_from_luci_cv = False,
+        custom_cq_run_modes = None):
     """Specifies the details of a tryjob verifier.
 
     See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md#luci.cq_tryjob_verifier
@@ -145,6 +146,8 @@ def tryjob(
       omit_from_luci_cv: A bool indicating whether the tryjob will be
         added to luci verifier. This is useful for the equivalent_builder which
         can't be added twice.
+      custom_cq_run_modes: List of cq.run_mode names that will trigger this
+        tryjob. Uses cq.MODE_DRY_RUN, cq.MODE_FULL_RUN if not specified.
 
     Returns:
       A struct that can be passed to the `tryjob` argument of `try_.builder` to
@@ -165,6 +168,7 @@ def tryjob(
         add_default_filters = add_default_filters,
         location_filters = location_filters,
         cancel_stale = cancel_stale,
+        custom_cq_run_modes = custom_cq_run_modes,
         equivalent_builder = equivalent_builder,
         equivalent_builder_percentage = equivalent_builder_percentage,
         equivalent_builder_whitelist = equivalent_builder_whitelist,
@@ -339,7 +343,7 @@ def try_builder(
                 cancel_stale = tryjob.cancel_stale,
                 # These are the default if includable_only is False, but we list
                 # them here so we can add additional modes in a later generator.
-                mode_allowlist = [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
+                mode_allowlist = tryjob.custom_cq_run_modes or [cq.MODE_DRY_RUN, cq.MODE_FULL_RUN],
                 equivalent_builder = tryjob.equivalent_builder,
                 equivalent_builder_percentage = tryjob.equivalent_builder_percentage,
                 equivalent_builder_whitelist = tryjob.equivalent_builder_whitelist,
@@ -487,6 +491,8 @@ try_ = struct(
     DEFAULT_EXECUTION_TIMEOUT = 4 * time.hour,
     DEFAULT_POOL = "luci.chromium.try",
     DEFAULT_SERVICE_ACCOUNT = "chromium-try-builder@chops-service-accounts.iam.gserviceaccount.com",
+    MEGA_CQ_DRY_RUN_NAME = "CQ_MODE_MEGA_DRY_RUN",
+    MEGA_CQ_FULL_RUN_NAME = "CQ_MODE_MEGA_FULL_RUN",
     gpu = struct(
         optional_tests_builder = _gpu_optional_tests_builder,
         SERVICE_ACCOUNT = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
