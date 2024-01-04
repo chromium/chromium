@@ -42,7 +42,9 @@ DownloadBubbleContentsView::DownloadBubbleContentsView(
     bool primary_view_is_partial_view,
     std::unique_ptr<DownloadBubbleContentsViewInfo> info,
     views::BubbleDialogDelegate* bubble_delegate)
-    : info_(std::move(info)), bubble_controller_(bubble_controller) {
+    : info_(std::move(info)),
+      bubble_controller_(bubble_controller),
+      bubble_delegate_(bubble_delegate) {
   SetProperty(views::kElementIdentifierKey, kToolbarDownloadBubbleElementId);
   CHECK(!info_->row_list_view_info().rows().empty());
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -91,6 +93,9 @@ DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
   CHECK(!id || *id != ContentId());
   security_view_->SetVisible(false);
   security_view_->Reset();
+  // Reset fixed width, which could be previously set by the security
+  // view.
+  bubble_delegate_->set_fixed_width(0);
   page_ = Page::kPrimary;
   primary_view_->SetVisible(true);
   if (!id) {

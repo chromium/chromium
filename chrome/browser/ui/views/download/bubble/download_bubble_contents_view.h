@@ -117,6 +117,11 @@ class DownloadBubbleContentsView : public views::View,
 
   base::WeakPtr<DownloadBubbleUIController> bubble_controller_;
 
+  // TODO(crbug.com/1346369): The delegate should outlive the views.
+  // Currently, the delegate is deleted in OnNativeWidetDestroyed(),
+  // invalidating this pointer before this view is destroyed.
+  raw_ptr<views::BubbleDialogDelegate, DanglingUntriaged> bubble_delegate_;
+
   // May be a DownloadBubblePartialView or a DownloadDialogView (main view).
   raw_ptr<DownloadBubblePrimaryView> primary_view_ = nullptr;
   // The security view is hidden by default but may be switched to.
