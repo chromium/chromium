@@ -33,9 +33,8 @@ class CookieSettings;
 class CookieControlsObserver;
 
 // Handles the tab specific state for cookie controls.
-class CookieControlsController
-    : content_settings::CookieSettings::Observer,
-      public base::SupportsWeakPtr<CookieControlsController> {
+class CookieControlsController final
+    : content_settings::CookieSettings::Observer {
  public:
   CookieControlsController(
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -76,6 +75,10 @@ class CookieControlsController
 
   void AddObserver(CookieControlsObserver* obs);
   void RemoveObserver(CookieControlsObserver* obs);
+
+  base::WeakPtr<CookieControlsController> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   struct Status {
@@ -215,6 +218,8 @@ class CookieControlsController
       CookieControlsStatus::kUninitialized;
 
   base::ObserverList<CookieControlsObserver> observers_;
+
+  base::WeakPtrFactory<CookieControlsController> weak_ptr_factory_{this};
 };
 
 }  // namespace content_settings
