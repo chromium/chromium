@@ -181,35 +181,15 @@ HRESULT CreateLocalServer(GUID clsid,
 void ExpectUpdateRegKeyClean(UpdaterScope scope) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
 
-  if (!RegKeyExists(root, UPDATER_KEY)) {
-    return;
-  }
-
-  for (base::win::RegistryValueIterator updater_value_iter(root, UPDATER_KEY,
-                                                           KEY_WOW64_32KEY);
-       updater_value_iter.Valid(); ++updater_value_iter) {
-    EXPECT_TRUE(
-        base::Contains(kRegValuesLastInstaller, updater_value_iter.Name()))
-        << updater_value_iter.Name();
-  }
-
-  base::win::RegistryKeyIterator updater_key_iter(root, UPDATER_KEY,
-                                                  KEY_WOW64_32KEY);
   if (IsSystemInstall(scope)) {
-    // App activity bits are written to HKCU only.
-    EXPECT_EQ(updater_key_iter.SubkeyCount(), 0u);
+    EXPECT_EQ(RegKeyExists(root, CLIENT_STATE_KEY), false);
     return;
   }
 
-  if (updater_key_iter.SubkeyCount() == 0) {
+  // `ClientState` may exist with lastrun values for user installs.
+  if (!RegKeyExists(root, CLIENT_STATE_KEY)) {
     return;
   }
-
-  // `ClientState` is the only allowed sub-key of `UPDATER_KEY` for user
-  // installs.
-  EXPECT_EQ(updater_key_iter.SubkeyCount(), 1u);
-  EXPECT_STREQ(updater_key_iter.Name(), L"ClientState");
-
   EXPECT_THAT(base::win::RegKey(root, CLIENT_STATE_KEY, Wow6432(KEY_READ))
                   .GetValueCount(),
               base::test::ValueIs(0u));
@@ -297,7 +277,7 @@ void CheckInstallation(UpdaterScope scope,
           EXPECT_FALSE(RegKeyExists(HKEY_LOCAL_MACHINE, key));
         }
       }
-      EXPECT_FALSE(RegKeyExists(root, CLIENTS_KEY));
+      EXPECT_FALSE(RegKeyExists(root, CLIENT_STATE_KEY));
       ExpectUpdateRegKeyClean(scope);
 
       if (!IsSystemInstall(scope)) {

@@ -1448,8 +1448,9 @@ itself immediately. The updater also uninstalls itself if it has started
 24 times but never had a product (besides itself) registered for updates.
 
 The updater uninstaller removes all updater files, registry keys, RPC hooks,
-scheduled tasks, and so forth from the file system, except that it leaves a
-small log file in its data directory.
+scheduled tasks, and so forth from the system, except that:
+*   it leaves a small log file in its data directory.
+*   it leaves the Clients registry key in Windows registry.
 
 ## Associated Tools
 
