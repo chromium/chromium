@@ -2323,6 +2323,25 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
+  'context_lost_passthrough_tests': {
+    'modifications': {
+      'win-arm64-rel': {
+        'args': [
+          # These devices have issues running these tests in parallel.
+          '--jobs=1',
+        ],
+      },
+    },
+    'replacements': {
+      'win-arm64-rel': {
+        'args': {
+          # Magic substitution happens after regular replacement, so remove it
+          # now since we are manually applying the number of jobs above.
+          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
+        },
+      },
+    },
+  },
   'context_lost_validating_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.

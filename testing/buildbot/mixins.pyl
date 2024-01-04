@@ -1267,6 +1267,7 @@
         'cpu': None,
         'os': 'Windows-11',
         'pool': 'chrome.tests.arm64',
+        'zone': 'us-sfo',
       },
       'expiration': 64800,
       'hard_timeout': 43200,

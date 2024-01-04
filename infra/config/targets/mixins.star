@@ -1608,6 +1608,9 @@ targets.mixin(
             "cpu": None,
             "os": "Windows-11",
             "pool": "chrome.tests.arm64",
+            # Currently used to limit testing to the homogenous fleet. Can be
+            # removed once the older experimental devices are decommissioned.
+            "zone": "us-sfo",
         },
         # The resources are limited in the pool.
         # The slowest test is expected to run >9 hours.

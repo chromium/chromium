@@ -6651,6 +6651,8 @@
         ],
       },
       'win-arm64-rel': {
+        'browser_config': 'release',
+        'os_type': 'win',
         'additional_compile_targets': [
           'chrome',
           'chromedriver_group',
@@ -6662,6 +6664,7 @@
         'test_suites': {
           'gtest_tests': 'chromium_win10_gtests',
           'isolated_scripts': 'chromium_win_rel_isolated_scripts',
+          'gpu_telemetry_tests': 'gpu_common_win_telemetry_tests',
         },
       },
       'win-chrome-reclient': {

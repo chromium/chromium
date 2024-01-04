@@ -196,7 +196,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -215,7 +216,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -234,7 +236,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -254,7 +257,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -273,7 +277,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -292,7 +297,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -311,7 +317,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -330,7 +337,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -349,7 +357,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -368,7 +377,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -387,7 +397,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -406,7 +417,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -429,7 +441,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -452,7 +465,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -471,7 +485,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -490,7 +505,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -509,7 +525,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -528,7 +545,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -547,7 +565,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -566,7 +585,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -585,7 +605,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -604,7 +625,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -623,7 +645,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -643,7 +666,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -662,7 +686,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -694,7 +719,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -726,7 +752,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -745,7 +772,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -764,7 +792,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -783,7 +812,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -802,7 +832,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -821,7 +852,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -840,7 +872,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -859,7 +892,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -878,7 +912,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -898,7 +933,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -917,7 +953,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -936,7 +973,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -955,7 +993,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -974,7 +1013,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -993,7 +1033,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1012,7 +1053,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1031,7 +1073,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1050,7 +1093,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1069,7 +1113,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1088,7 +1133,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1107,7 +1153,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1126,7 +1173,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1145,7 +1193,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1164,7 +1213,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1184,7 +1234,8 @@
             "cpu": null,
             "integrity": "high",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1207,7 +1258,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1227,7 +1279,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1246,7 +1299,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1266,7 +1320,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1285,7 +1340,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1304,7 +1360,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1323,7 +1380,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1342,7 +1400,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1361,7 +1420,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1380,7 +1440,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1399,7 +1460,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1418,7 +1480,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1437,7 +1500,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1456,7 +1520,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1475,7 +1540,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1506,7 +1572,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1537,7 +1604,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1556,7 +1624,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1576,7 +1645,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1595,7 +1665,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1615,7 +1686,8 @@
             "cpu": null,
             "integrity": "high",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1634,7 +1706,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1653,7 +1726,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1672,7 +1746,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1692,7 +1767,8 @@
             "cpu": null,
             "integrity": "high",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1711,7 +1787,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1730,7 +1807,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1749,7 +1827,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1768,7 +1847,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1787,7 +1867,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1806,7 +1887,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1826,7 +1908,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1845,7 +1928,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1864,7 +1948,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1886,7 +1971,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1905,7 +1991,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1924,7 +2011,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1943,7 +2031,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1970,7 +2059,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -1989,7 +2079,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2008,7 +2099,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2027,7 +2119,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2046,7 +2139,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2065,7 +2159,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2084,7 +2179,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2103,7 +2199,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2122,7 +2219,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2141,7 +2239,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2165,7 +2264,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2196,7 +2296,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2228,7 +2329,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2254,7 +2356,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2279,7 +2382,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2298,7 +2402,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2323,7 +2428,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2346,7 +2452,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2354,6 +2461,86 @@
         },
         "test": "content_shell_crash_test",
         "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
+      },
+      {
+        "args": [
+          "context_lost",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
+          "--jobs=1"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "context_lost_passthrough_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "expected_color",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "expected_color_pixel_passthrough_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "isolate_profile_data": true,
@@ -2369,7 +2556,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2377,6 +2565,41 @@
         },
         "test": "flatbuffers_unittests",
         "test_id_prefix": "ninja://third_party/flatbuffers:flatbuffers_unittests/"
+      },
+      {
+        "args": [
+          "gpu_process",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "gpu_process_launch_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "isolate_profile_data": true,
@@ -2391,7 +2614,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2399,6 +2623,80 @@
         },
         "test": "grit_python_unittests",
         "test_id_prefix": "ninja://tools/grit:grit_python_unittests/"
+      },
+      {
+        "args": [
+          "hardware_accelerated_feature",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "hardware_accelerated_feature_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
+      },
+      {
+        "args": [
+          "info_collection",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--expected-vendor-id",
+          "0",
+          "--expected-device-id",
+          "0"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "info_collection_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "isolate_profile_data": true,
@@ -2411,7 +2709,8 @@
             "cpu": null,
             "integrity": "high",
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2433,7 +2732,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2441,6 +2741,51 @@
         },
         "test": "mojo_python_unittests",
         "test_id_prefix": "ninja://mojo/public/tools:mojo_python_unittests/"
+      },
+      {
+        "args": [
+          "pixel",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
+          "--jobs=4",
+          "--git-revision=${got_revision}"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "pixel_skia_gold_passthrough_test",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "experiment_percentage": 0,
@@ -2453,7 +2798,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2461,6 +2807,42 @@
         },
         "test": "polymer_tools_python_unittests",
         "test_id_prefix": "ninja://tools/polymer:polymer_tools_python_unittests/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=passthrough --use-gl=angle",
+          "--enforce-browser-version",
+          "--dont-restore-color-profile-after-test"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_passthrough_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "args": [
@@ -2481,7 +2863,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2503,7 +2886,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2529,7 +2913,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2557,7 +2942,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2567,6 +2953,42 @@
         },
         "test": "telemetry_unittests",
         "test_id_prefix": "ninja://chrome/test:telemetry_unittests/"
+      },
+      {
+        "args": [
+          "trace_test",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--enforce-browser-version",
+          "--jobs=4"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "trace_test",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
       {
         "args": [
@@ -2584,7 +3006,8 @@
           "dimensions": {
             "cpu": null,
             "os": "Windows-11",
-            "pool": "chrome.tests.arm64"
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
           },
           "expiration": 64800,
           "hard_timeout": 43200,
@@ -2592,6 +3015,44 @@
         },
         "test": "views_perftests",
         "test_id_prefix": "ninja://ui/views:views_perftests/"
+      },
+      {
+        "args": [
+          "webgl1_conformance",
+          "--show-stdout",
+          "--browser=release",
+          "--passthrough",
+          "-v",
+          "--stable-jobs",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-gl=angle --use-angle=d3d11 --use-cmd-decoder=passthrough --force_high_performance_gpu",
+          "--enforce-browser-version",
+          "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl1_conformance_win_runtimes.json",
+          "--jobs=4"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "webgl_conformance_d3d11_passthrough_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cpu": null,
+            "os": "Windows-11",
+            "pool": "chrome.tests.arm64",
+            "zone": "us-sfo"
+          },
+          "expiration": 64800,
+          "hard_timeout": 43200,
+          "idempotent": false,
+          "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
+        },
+        "test": "telemetry_gpu_integration_test",
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }
     ]
   },
