@@ -177,7 +177,7 @@
                 "type": "array",
                 "items": {"type": "string"},
                 "optional": true,
-                "description": "Restricts the item to apply only to documents or frames whose URL matches one of the given patterns. For details on pattern formats, see <a href='match_patterns'>Match Patterns</a>."
+                "description": "Restricts the item to apply only to documents or frames whose URL matches one of the given patterns. For details on pattern formats, see <a href='/docs/extensions/develop/concepts/match-patterns'>Match Patterns</a>."
               },
               "targetUrlPatterns": {
                 "type": "array",
