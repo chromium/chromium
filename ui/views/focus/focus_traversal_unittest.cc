@@ -165,12 +165,11 @@ class BorderView : public NativeViewHost {
 
     if (details.child == this && details.is_add) {
       if (!widget_) {
-        auto widget = std::make_unique<Widget>();
-        widget_ = widget.get();
+        widget_ = std::make_unique<Widget>();
         Widget::InitParams params(Widget::InitParams::TYPE_CONTROL);
+        params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
         params.parent = details.parent->GetWidget()->GetNativeView();
         widget_->Init(std::move(params));
-        widget.release();  // Widget now owned by widget hierarchy.
         widget_->SetFocusTraversableParentView(this);
         widget_->SetContentsView(std::move(child_));
       }
@@ -185,7 +184,7 @@ class BorderView : public NativeViewHost {
 
  private:
   std::unique_ptr<View> child_;
-  raw_ptr<Widget, AcrossTasksDanglingUntriaged> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
 };
 
 BEGIN_METADATA(BorderView)
