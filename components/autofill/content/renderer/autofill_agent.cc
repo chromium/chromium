@@ -712,10 +712,20 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element.GetAutofillState();
-    bool filled_some_fields =
-        !form_util::ApplyFormAction(fields, last_queried_element, action_type,
-                                    action_persistence, field_data_manager())
-             .empty();
+    std::vector<FieldRef> filled_fields =
+        form_util::ApplyFormAction(fields, last_queried_element, action_type,
+                                   action_persistence, field_data_manager());
+
+    // Notify Password Manager of filled fields.
+    for (const auto& field : filled_fields) {
+      WebInputElement input_element =
+          field.GetField().DynamicTo<WebInputElement>();
+      if (!input_element.IsNull()) {
+        password_autofill_agent_->UpdatePasswordStateForTextChange(
+            input_element);
+      }
+    }
+    bool filled_some_fields = !filled_fields.empty();
 
     if (!last_queried_element.Form().IsNull()) {
       UpdateLastInteractedForm(last_queried_element.Form());
