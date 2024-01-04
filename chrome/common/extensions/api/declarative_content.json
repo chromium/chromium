@@ -83,7 +83,7 @@
       },
       {
         "id": "ShowPageAction",
-        "description": "Declarative event action that shows the extension's $(ref:pageAction page action) while the corresponding conditions are met. This action can be used without <a href=\"/docs/extensions/develop/concepts/declare-permissions#host-permissions\">host permissions</a>, but the extension must have a page action. If the extension has the <a href=\"/docs/extensions/develop/concepts/activeTab\">activeTab</a> permission, clicking the page action grants access to the active tab.",
+        "description": "A declarative event action that sets the extension's $(ref:pageAction page action) to an enabled state while the corresponding conditions are met. This action can be used without <a href=\"/docs/extensions/develop/concepts/declare-permissions#host-permissions\">host permissions</a>, but the extension must have a page action. If the extension has the <a href=\"/docs/extensions/develop/concepts/activeTab\">activeTab</a> permission, clicking the page action grants access to the active tab.<p>On pages where the conditions are not met the extension's toolbar action will be grey-scale, and clicking it will open the context menu, instead of triggering the action.</p>",
         "deprecated": "Please use $(ref:declarativeContent.ShowAction).",
         "type": "object",
         "properties": {
@@ -95,7 +95,7 @@
       },
       {
         "id": "ShowAction",
-        "description": "Declarative event action that shows the extension's toolbar action ($(ref:pageAction page action) or $(ref:browserAction browser action)) while the corresponding conditions are met. This action can be used without <a href=\"/docs/extensions/develop/concepts/declare-permissions#host-permissions\">host permissions</a>. If the extension has the <a href=\"activeTab.html\">activeTab</a> permission, clicking the page action grants access to the active tab.",
+        "description": "A declarative event action that sets the extension's toolbar $(ref:action action) to an enabled state while the corresponding conditions are met. This action can be used without <a href=\"/docs/extensions/develop/concepts/declare-permissions#host-permissions\">host permissions</a>. If the extension has the <a href=\"/docs/extensions/develop/concepts/activeTab\">activeTab</a> permission, clicking the page action grants access to the active tab.<p>On pages where the conditions are not met the extension's toolbar action will be grey-scale, and clicking it will open the context menu, instead of triggering the action.</p>",
         "type": "object",
         "properties": {
           "instanceType": {
