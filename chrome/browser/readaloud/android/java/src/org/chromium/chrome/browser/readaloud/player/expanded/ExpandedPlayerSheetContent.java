@@ -209,7 +209,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     public void showOptionsMenu() {
         // set bit saying we're waiting for another sheet
-        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, true);
+        mModel.set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         mBottomSheetController.hideContent(this, /* animate= */ false);
         mBottomSheetController.requestShowContent(mOptionsMenu, /* animate= */ true);
     }
@@ -229,7 +229,7 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     public void showSpeedMenu() {
         // set bit saying we're waiting for another sheet
-        mModel.set(PlayerProperties.OPTION_SHEET_PENDING, true);
+        mModel.set(PlayerProperties.SHOW_MINI_PLAYER_ON_DISMISS, false);
         mBottomSheetController.hideContent(this, /* animate= */ false);
         mBottomSheetController.requestShowContent(mSpeedMenu, /* animate= */ true);
     }
