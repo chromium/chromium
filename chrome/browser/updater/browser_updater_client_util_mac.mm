@@ -197,6 +197,26 @@ void InstallUpdaterAndRegisterBrowser(base::OnceClosure complete) {
           std::move(complete)));
 }
 
+// Marks the browser as active, and schedules a call 1 hour later to mark the
+// browser as active again.
+void SetActive() {
+  base::FilePath actives_dir =
+      base::GetHomeDir()
+          .AppendASCII("Library")
+          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
+          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING "SoftwareUpdate"))
+          .AppendASCII("Actives");
+  if (!CreateDirectory(actives_dir)) {
+    return;
+  }
+  base::WriteFile(actives_dir.Append(base::apple::BaseBundleID()), "");
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&SetActive), base::Hours(1));
+}
+
 }  // namespace
 
 std::string CurrentlyInstalledVersion() {
@@ -215,8 +235,15 @@ updater::UpdaterScope GetUpdaterScope() {
 }
 
 void EnsureUpdater(base::OnceClosure prompt, base::OnceClosure complete) {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                             base::BindOnce(&SetActive));
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&GetUpdaterScope),
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetUpdaterScope),
       base::BindOnce(
           [](base::OnceClosure prompt, base::OnceClosure complete,
              updater::UpdaterScope scope) {
