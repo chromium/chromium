@@ -36,6 +36,7 @@ class SidePanel : public views::AccessiblePaneView,
   ~SidePanel() override;
 
   void SetPanelWidth(int width);
+  gfx::RoundedCornersF background_radii() const { return background_radii_; }
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
   void SetHorizontalAlignment(HorizontalAlignment alignment);
   HorizontalAlignment GetHorizontalAlignment();

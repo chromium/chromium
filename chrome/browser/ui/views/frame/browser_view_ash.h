@@ -9,6 +9,10 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 class Browser;
 
 // BrowserViewAsh provides the ClientView for Chrome browser windows on Chrome
@@ -27,6 +31,10 @@ class BrowserViewAsh : public BrowserView {
 
   // views::ClientView:
   void UpdateWindowRoundedCorners() override;
+
+ private:
+  gfx::RoundedCornersF contents_webview_radii_;
+  gfx::RoundedCornersF devtools_webview_radii_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_VIEW_ASH_H_

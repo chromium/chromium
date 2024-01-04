@@ -47,6 +47,7 @@ class SadTabView : public SadTab, public views::View {
 
   ~SadTabView() override;
 
+  gfx::RoundedCornersF GetBackgroundRadii() const;
   void SetBackgroundRadii(const gfx::RoundedCornersF& radii);
 
   // Overridden from SadTab:

@@ -52,6 +52,10 @@ void ContentsWebView::SetBackgroundVisible(bool background_visible) {
 }
 
 void ContentsWebView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
+  if (background_radii_ == radii) {
+    return;
+  }
+
   background_radii_ = radii;
   if (GetWidget()) {
     UpdateBackgroundColor();

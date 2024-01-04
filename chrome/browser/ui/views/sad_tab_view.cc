@@ -604,6 +604,11 @@ void SadTabView::ReinstallInWebView() {
   AttachToWebView();
 }
 
+gfx::RoundedCornersF SadTabView::GetBackgroundRadii() const {
+  CHECK(layer());
+  return layer()->rounded_corner_radii();
+}
+
 void SadTabView::SetBackgroundRadii(const gfx::RoundedCornersF& radii) {
   // Since SadTabView paints onto its own layer and it is leaf layer, we can
   // round the background by applying rounded corners to the layer without
