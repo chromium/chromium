@@ -1615,7 +1615,10 @@ chromium-metrics-reviews@google.com.
   <component>Services&gt;Sync</component>
   <summary>
     The outcome of the decision whether the Sync-to-Signin migration should run
-    or not (and why). Recorded on profile creation/startup, only on iOS.
+    or not (and why). Recorded on profile creation/startup, only on iOS. Note
+    that the number of samples in the &quot;Migrate&quot; bucket can be compared
+    to the total count of &quot;Sync.SyncToSigninMigrationOutcome&quot; to
+    verify that all migrations that were started also finished.
   </summary>
 </histogram>
 
@@ -1636,6 +1639,20 @@ chromium-metrics-reviews@google.com.
       variants="SyncModelTypeForSyncToSigninMigration"/>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigrationOutcome" enum="BooleanSuccess"
+    expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The outcome of the overall Sync-to-Signin migration, recorded when the
+    migration finishes. Note that the total count of this histogram can be
+    compared to the number of samples in the &quot;Migrate&quot; bucket of
+    &quot;Sync.SyncToSigninMigrationDecision&quot; to verify that all migrations
+    that were started also finished.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigrationOutcome.BookmarksFileMove"
     enum="PlatformFileError" expires_after="2024-05-01">
   <owner>treib@chromium.org</owner>
@@ -1644,7 +1661,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The outcome of moving the bookmarks JSON file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
-    migration ran and decided migrate passwords (see
+    migration ran and decided to migrate bookmarks (see
     Sync.SyncToSigninMigrationDecision.Migration.BOOKMARK).
   </summary>
 </histogram>
@@ -1657,7 +1674,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The outcome of moving the passwords DB file from the local to the account
     location, during the Sync-to-Signin migration. Recorded only if the overall
-    migration ran and decided migrate passwords (see
+    migration ran and decided to migrate passwords (see
     Sync.SyncToSigninMigrationDecision.Migration.PASSWORD).
   </summary>
 </histogram>

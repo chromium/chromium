@@ -317,6 +317,8 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // Data-type-specific migrations.
   // ==============================
 
+  bool migration_successful = true;
+
   // Move passwords DB file, if password sync is enabled.
   if (passwords_decision == SyncToSigninMigrationDataTypeDecision::kMigrate) {
     base::FilePath from_path =
@@ -328,6 +330,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     base::UmaHistogramExactLinear(
         "Sync.SyncToSigninMigrationOutcome.PasswordsFileMove", -error,
         -base::File::FILE_ERROR_MAX);
+
+    migration_successful =
+        migration_successful && (error == base::File::Error::FILE_OK);
   }
 
 #if BUILDFLAG(IS_IOS)
@@ -342,6 +347,9 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
     base::UmaHistogramExactLinear(
         "Sync.SyncToSigninMigrationOutcome.BookmarksFileMove", -error,
         -base::File::FILE_ERROR_MAX);
+
+    migration_successful =
+        migration_successful && (error == base::File::Error::FILE_OK);
   }
 #else
   // TODO(crbug.com/1503647): On platforms other than iOS, the on-disk layout of
@@ -359,7 +367,17 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
         syncer::prefs::internal::kMigrateReadingListFromLocalToAccount, true);
     syncer::RecordSyncToSigninMigrationReadingListStep(
         syncer::ReadingListMigrationStep::kMigrationRequested);
+
+    // Note: Triggering this migration cannot fail, so no need to update
+    // `migration_successful` here. The actual outcome will be recorded in other
+    // histograms.
   }
+
+  // Finally, record the overall outcome, i.e. whether all individual data type
+  // migrations were successful. The total count of this histogram also serves
+  // as the number of migrations that were completed.
+  base::UmaHistogramBoolean("Sync.SyncToSigninMigrationOutcome",
+                            migration_successful);
 }
 
 }  // namespace browser_sync
