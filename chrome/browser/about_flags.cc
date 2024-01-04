@@ -4962,6 +4962,9 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_VR)
+    {"webxr-hand-input", flag_descriptions::kWebXrHandInputName,
+     flag_descriptions::kWebXrHandInputDescription, kOsAll,
+     FEATURE_VALUE_TYPE(device::features::kWebXrHandInput)},
     {"webxr-incubations", flag_descriptions::kWebXrIncubationsName,
      flag_descriptions::kWebXrIncubationsDescription, kOsAll,
      FEATURE_VALUE_TYPE(device::features::kWebXrIncubations)},

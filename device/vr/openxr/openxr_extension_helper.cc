@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_hand_tracker.h"
+#include "device/vr/openxr/openxr_hand_tracker_meta.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/openxr/openxr_stage_bounds_provider_basic.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -179,7 +180,8 @@ bool OpenXrExtensionHelper::IsFeatureSupported(
       // enabled that we can use to generate that.
       return IsExtensionSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME) &&
              (IsExtensionSupported(XR_EXT_HAND_INTERACTION_EXTENSION_NAME) ||
-              IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME));
+              IsExtensionSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME) ||
+              IsExtensionSupported(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME));
     case device::mojom::XRSessionFeature::HIT_TEST:
       return IsExtensionSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
     case device::mojom::XRSessionFeature::SECONDARY_VIEWS:
@@ -217,6 +219,11 @@ std::unique_ptr<OpenXrHandTracker> OpenXrExtensionHelper::CreateHandTracker(
                                                       handedness);
   }
 #endif
+
+  if (ext_hand_tracking_supported &&
+      IsExtensionSupported(XR_FB_HAND_TRACKING_AIM_EXTENSION_NAME)) {
+    return std::make_unique<OpenXrHandTrackerMeta>(*this, session, handedness);
+  }
 
   if (ext_hand_tracking_supported) {
     return std::make_unique<OpenXrHandTracker>(*this, session, handedness);

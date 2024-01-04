@@ -2117,6 +2117,9 @@ extern const char kWebXrRuntimeChoiceNone[];
 extern const char kWebXrRuntimeChoiceCardboard[];
 extern const char kWebXrRuntimeChoiceOpenXR[];
 
+extern const char kWebXrHandInputName[];
+extern const char kWebXrHandInputDescription[];
+
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 

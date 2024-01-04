@@ -25595,6 +25595,7 @@ from previous Chrome versions.
   <int value="-2120571448" label="TheoraVideoCodec:disabled"/>
   <int value="-2120124160" label="FirmwareUpdateJelly:disabled"/>
   <int value="-2120118296" label="ChromeManagementPageAndroid:enabled"/>
+  <int value="-2120052328" label="WebXRHandInput:disabled"/>
   <int value="-2119958901" label="WebXRAnchors:disabled"/>
   <int value="-2119827860" label="ash-disable-maximize-mode-window-backdrop"/>
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
@@ -33779,6 +33780,7 @@ from previous Chrome versions.
   <int value="1713230497" label="ColorCorrectRendering:disabled"/>
   <int value="1713419708" label="ProjectorV2:disabled"/>
   <int value="1713509078" label="NewBaseUrlInheritanceBehavior:enabled"/>
+  <int value="1713822664" label="WebXRHandInput:enabled"/>
   <int value="1714016217" label="EnableHeuristicPalmDetectionFilter:enabled"/>
   <int value="1714520147" label="MBIMode:disabled"/>
   <int value="1714751652" label="CaptivePortalErrorPage:disabled"/>

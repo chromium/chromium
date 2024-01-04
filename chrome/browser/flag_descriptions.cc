@@ -7642,6 +7642,9 @@ const char kPaintPreviewDemoDescription[] =
 #endif  // ENABLE_PAINT_PREVIEW && BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_VR)
+const char kWebXrHandInputName[] = "WebXR Hand Input";
+const char kWebXrHandInputDescription[] =
+    "Enables access to articulated hand tracking sensor input in WebXR.";
 const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "

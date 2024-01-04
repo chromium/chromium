@@ -124,6 +124,10 @@ GetOpenXrInputProfilesMap() {
           // XR_ANDROID_hand_gestures
           {OpenXrInteractionProfileType::kAndroidHandGestures,
            {{"", {"generic-hand-select", "generic-button"}}}},
+
+          // XR_FB_hand_tracking_aim
+          {OpenXrInteractionProfileType::kMetaHandAim,
+           {{"", {"generic-hand-select", "generic-button"}}}},
       });
   return *kInputProfilesMap;
 }
