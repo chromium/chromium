@@ -18,15 +18,24 @@ WebIdentityRequester::WebIdentityRequester(ExecutionContext* context,
                                            MediationRequirement requirement)
     : execution_context_(context), requirement_(requirement) {}
 
+WebIdentityRequester::ResolverAndProviders::ResolverAndProviders(
+    ScriptPromiseResolver* resolver,
+    Vector<KURL> providers)
+    : resolver_(resolver), providers_(std::move(providers)) {}
+
+void WebIdentityRequester::ResolverAndProviders::Trace(Visitor* v) const {
+  v->Trace(resolver_);
+}
+
 void WebIdentityRequester::OnRequestToken(
     mojom::blink::RequestTokenStatus status,
     const absl::optional<KURL>& selected_idp_config_url,
     const WTF::String& token,
     mojom::blink::TokenErrorPtr error,
     bool is_auto_selected) {
-  for (const auto& provider_resolver_pair : provider_to_resolver_) {
-    KURL provider = provider_resolver_pair.key;
-    ScriptPromiseResolver* resolver = provider_resolver_pair.value;
+  for (const auto& resolver_and_providers : resolvers_and_providers_) {
+    ScriptPromiseResolver* resolver = resolver_and_providers->resolver_;
+    const Vector<KURL>& providers = resolver_and_providers->providers_;
 
     switch (status) {
       case mojom::blink::RequestTokenStatus::kErrorTooManyRequests: {
@@ -53,7 +62,7 @@ void WebIdentityRequester::OnRequestToken(
       }
       case mojom::blink::RequestTokenStatus::kSuccess: {
         DCHECK(selected_idp_config_url);
-        if (provider != selected_idp_config_url) {
+        if (!providers.Contains(selected_idp_config_url)) {
           if (!RuntimeEnabledFeatures::FedCmErrorEnabled() || !error) {
             resolver->Reject(MakeGarbageCollected<DOMException>(
                 DOMExceptionCode::kNetworkError, "Error retrieving a token."));
@@ -72,7 +81,7 @@ void WebIdentityRequester::OnRequestToken(
         NOTREACHED();
     }
   }
-  provider_to_resolver_.clear();
+  resolvers_and_providers_.clear();
   scoped_abort_states_.clear();
   is_requesting_token_ = false;
 }
@@ -102,26 +111,29 @@ void WebIdentityRequester::AppendGetCall(
   }
 
   Vector<mojom::blink::IdentityProviderPtr> idp_ptrs;
+  Vector<KURL> idp_urls;
   for (const auto& provider : providers) {
     mojom::blink::IdentityProviderRequestOptionsPtr options =
         blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
-    if (provider_to_resolver_.Contains(KURL(options->config->config_url))) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotAllowedError,
-          "More than one navigator.credentials.get calls to the same "
-          "provider."));
-      return;
+    for (const auto& resolver_and_providers : resolvers_and_providers_) {
+      if (resolver_and_providers->providers_.Contains(
+              options->config->config_url)) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            "More than one navigator.credentials.get calls to the same "
+            "provider."));
+        return;
+      }
     }
+    idp_urls.push_back(options->config->config_url);
     mojom::blink::IdentityProviderPtr idp =
         mojom::blink::IdentityProvider::NewFederated(std::move(options));
     idp_ptrs.push_back(std::move(idp));
   }
 
-  for (const auto& idp_ptr : idp_ptrs) {
-    provider_to_resolver_.insert(
-        KURL(idp_ptr->get_federated()->config->config_url),
-        WrapPersistent(resolver));
-  }
+  resolvers_and_providers_.emplace_back(
+      MakeGarbageCollected<ResolverAndProviders>(resolver,
+                                                 std::move(idp_urls)));
 
   mojom::blink::IdentityProviderGetParametersPtr get_params =
       mojom::blink::IdentityProviderGetParameters::New(std::move(idp_ptrs),
@@ -225,7 +237,7 @@ void WebIdentityRequester::AbortRequest(ScriptState* script_state) {
 void WebIdentityRequester::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
   visitor->Trace(window_onload_event_listener_);
-  visitor->Trace(provider_to_resolver_);
+  visitor->Trace(resolvers_and_providers_);
 }
 
 }  // namespace blink
