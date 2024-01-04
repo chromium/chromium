@@ -54,6 +54,10 @@ class ASH_EXPORT FocusModeTaskView : public views::BoxLayoutView {
   class TaskTextfield;
   class TaskTextfieldController;
 
+  // Called when the active state of `textfield_` changes to update the focus
+  // ring and update the style.
+  void PaintFocusRingAndUpdateStyle();
+
   // Called when `radio_button_` is pressed to mark a task as completed.
   void OnCompleteTask();
 
