@@ -228,7 +228,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Group (1b): browser -> renderer events, routed (see comment above).
   // autofill::AutofillDriver:
-  std::set<FieldGlobalId> ApplyFormAction(
+  base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& data,

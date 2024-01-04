@@ -408,7 +408,7 @@ void AutofillDriverRouter::JavaScriptChangedAutofilledValue(
 // The reason is that browser forms may be outdated and hence refer to frames
 // that do not exist anymore.
 
-std::set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
+base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
     AutofillDriver* source,
     mojom::ActionType action_type,
     mojom::ActionPersistence action_persistence,

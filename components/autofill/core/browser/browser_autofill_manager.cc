@@ -2519,7 +2519,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
         return std::make_pair(field->global_id(),
                               field->Type().GetStorableType());
       });
-  std::set<FieldGlobalId> safe_fields =
+  base::flat_set<FieldGlobalId> safe_fields =
       driver().ApplyFormAction(mojom::ActionType::kFill, action_persistence,
                                result, field.origin, field_types);
   client().DidFillOrPreviewForm(action_persistence,
@@ -2585,9 +2585,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       // whether the user filled the form using a masked card suggestion.
       credit_card_form_event_logger_->OnDidFillSuggestion(
           credit_card_, *form_structure, *autofill_trigger_field,
-          newly_filled_field_ids,
-          base::MakeFlatSet<FieldGlobalId>(std::move(safe_fields)),
-          signin_state_for_metrics_, trigger_details.trigger_source);
+          newly_filled_field_ids, safe_fields, signin_state_for_metrics_,
+          trigger_details.trigger_source);
     } else {
       // An address form was filled.
       CHECK(absl::holds_alternative<const AutofillProfile*>(

@@ -538,6 +538,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
   // See the function's documentation in the header for details on the security
   // policy |IsSafeToFill|.
   RendererForms result;
+  result.safe_fields.reserve(browser_form.fields.size());
   for (const FormFieldData& browser_field : browser_form.fields) {
     FormGlobalId form_id = browser_field.renderer_form_id();
 

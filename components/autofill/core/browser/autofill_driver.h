@@ -153,8 +153,11 @@ class AutofillDriver {
   // `triggered_origin` is the origin of the field that triggered the filling
   // operation currently being filled or undone.
   //
+  // Returns the FieldGlobalIds that were safe to modify according to Autofill's
+  // security policy. This is a subset of the FieldGlobalIds of `form.fields`.
+  //
   // This method is a no-op if the renderer is not currently available.
-  virtual std::set<FieldGlobalId> ApplyFormAction(
+  virtual base::flat_set<FieldGlobalId> ApplyFormAction(
       mojom::ActionType action_type,
       mojom::ActionPersistence action_persistence,
       const FormData& form,
