@@ -25,8 +25,6 @@ namespace app_list {
 // objects, and this data is stored in the form of (2). (2) is then later used
 // to create (3) - the benefits of this are that (2) is more lightweight than
 // (3), and can provide encapsulation of processing tasks.
-//
-// To be used in the productivity launcher, and not in the old launcher.
 class KeyboardShortcutData {
  public:
   explicit KeyboardShortcutData(const ash::KeyboardShortcutItem& item);

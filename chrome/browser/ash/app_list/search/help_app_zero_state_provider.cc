@@ -135,8 +135,7 @@ void HelpAppZeroStateProvider::StartZeroState() {
   SearchProvider::Results search_results;
 
   if (ash::ReleaseNotesStorage(profile_).ShouldShowSuggestionChip()) {
-    // With productivity launcher enabled, release notes are shown in continue
-    // section.
+    // Release notes are shown in the Continue section.
     auto* color_provider = ash::ColorProvider::Get();
     // NOTE: Color provider may not be set in unit tests.
     SkColor icon_color =
