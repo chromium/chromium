@@ -73,11 +73,6 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
   }
 }
 
-- (void)viewDidDisappear:(BOOL)animated {
-  [self.delegate familyPickerWasDismissed:self];
-  [super viewDidDisappear:animated];
-}
-
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView

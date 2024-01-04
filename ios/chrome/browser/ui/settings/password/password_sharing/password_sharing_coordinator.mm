@@ -286,7 +286,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   password_manager::CredentialUIEntry credential =
       self.mediator.selectedCredential;
   self.sharingStatusCoordinator = [[SharingStatusCoordinator alloc]
-      initWithBaseViewController:self.navigationController
+      initWithBaseViewController:self.baseViewController
                          browser:self.browser
                       recipients:self.mediator.selectedRecipients
                          website:base::SysUTF8ToNSString(
