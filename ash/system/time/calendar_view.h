@@ -211,13 +211,20 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   void SetMonthViews();
 
   // Returns the current month first row position.
-  int PositionOfCurrentMonth() const;
+  int GetPositionOfCurrentMonth() const;
 
   // Returns the today's row position.
-  int PositionOfToday() const;
+  int GetPositionOfToday() const;
 
   // Returns the selected date's row position.
-  int PositionOfSelectedDate() const;
+  int GetPositionOfSelectedDate() const;
+
+  // Returns the calculated height of a single visible row.
+  int GetSingleVisibleRowHeight() const;
+
+  // Returns the height under todays row. This is needed for scrolling to show
+  // more future dates.
+  int GetHeightUnderTodaysRow() const;
 
   // Adds a month label.
   views::View* AddLabelWithId(LabelType type, bool add_at_front = false);
@@ -388,9 +395,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // Used for clipping the calendar scroll view height to the different states
   // that the calendar view can be in.
   void ClipScrollViewHeight(ScrollViewState state_to_change_to);
-
-  // Returns the calculated height of a single visible row.
-  int GetSingleVisibleRowHeight();
 
   // Fades in or out the `up_next_view_`.
   void FadeInUpNextView();

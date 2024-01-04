@@ -1460,8 +1460,9 @@ class CalendarViewAnimationTest : public AshTestBase {
         calendar_test_utils::kAnimationSettleDownDuration);
     calendar_view_->content_view_->RemoveAllChildViews();
     calendar_view_->SetMonthViews();
-    scroll_view()->ScrollToPosition(scroll_view()->vertical_scroll_bar(),
-                                    calendar_view_->PositionOfCurrentMonth());
+    scroll_view()->ScrollToPosition(
+        scroll_view()->vertical_scroll_bar(),
+        calendar_view_->GetPositionOfCurrentMonth());
   }
 
   // The position of the `next_month_`.
@@ -1471,6 +1472,11 @@ class CalendarViewAnimationTest : public AshTestBase {
            current_label()->GetPreferredSize().height() +
            calendar_view_->current_month_->GetPreferredSize().height() +
            next_label()->GetPreferredSize().height();
+  }
+
+  // The position of `current_month_`.
+  int CurrentMonthPosition() {
+    return calendar_view_->GetPositionOfCurrentMonth();
   }
 
   void ScrollUpOneMonth() {
@@ -3271,4 +3277,60 @@ TEST_F(CalendarViewAnimationWithJellyEnabledTest,
   EXPECT_EQ(initial_scroll_position, scroll_view()->GetVisibleRect().y());
 }
 
+// Tests that the scroll view scrolls up when there are not at least 2 weeks
+// visible below todays view without the up-next view.
+TEST_F(CalendarViewAnimationWithJellyEnabledTest,
+       ShouldScrollToShowMoreFutureDates_WithoutUpNextView) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date towards the end of the month so that it has less than two rows
+  // underneath.
+  ASSERT_TRUE(base::Time::FromString("30 Nov 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+  SetTodayFromTime(date);
+  CreateCalendarView();
+
+  const auto* controller = calendar_view()->calendar_view_controller();
+  const int space_under_todays_row =
+      scroll_view()->GetVisibleRect().bottom() -
+      (CurrentMonthPosition() + controller->GetTodayRowBottomHeight());
+
+  // After the view is settled, there should be at least 2 rows under today's
+  // row.
+  EXPECT_GE(space_under_todays_row, 2 * controller->row_height());
+}
+
+// Tests that the scroll view scrolls up when there are not at least 2 weeks
+// visible below todays view with the up-next view.
+TEST_F(CalendarViewAnimationWithJellyEnabledTest,
+       ShouldScrollToShowMoreFutureDates_WithUpNextView) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  base::Time date;
+  // Pick a date towards the end of the month so that it has less than two rows
+  // underneath.
+  ASSERT_TRUE(base::Time::FromString("30 Nov 2023 10:00 GMT", &date));
+  task_environment()->AdvanceClock(date - base::Time::Now());
+  SetTodayFromTime(date);
+  CreateCalendarView();
+
+  // Fetch an event that starts in 6 mins and up next will show.
+  MockEventsFetched(calendar_utils::GetStartOfMonthUTC(date),
+                    CreateUpcomingEvents(date + base::Minutes(6)));
+  EXPECT_TRUE(calendar_view()->up_next_view());
+
+  ui::LayerAnimationStoppedWaiter animation_waiter;
+  animation_waiter.Wait(current_month()->layer());
+  animation_waiter.Wait(calendar_view()->up_next_view()->layer());
+
+  const auto* controller = calendar_view()->calendar_view_controller();
+  const int space_under_todays_row =
+      scroll_view()->GetVisibleRect().bottom() -
+      (CurrentMonthPosition() + controller->GetTodayRowBottomHeight());
+
+  // After the view is settled, there should be at least 2 rows under today's
+  // row.
+  EXPECT_GE(space_under_todays_row, 2 * controller->row_height());
+}
 }  // namespace ash

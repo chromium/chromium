@@ -110,6 +110,27 @@ TEST_P(CalendarViewPixelTest, Basics) {
       /*revision_number=*/9, GetCalendarView()));
 }
 
+// Tests that the scroll view scrolls up when there are not at least 2 weeks
+// visible below todays view (without up-next view).
+TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
+  // Sets time override.
+  base::Time date;
+
+  // Sets today's date to be a later day in a month so that it will scroll up to
+  // show at least two more rows of the current month.
+  ASSERT_TRUE(base::Time::FromString("30 Jun 2023 10:00 GMT", &date));
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewPixelTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  OpenCalendarView();
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "calendar_view_more_future_dates",
+      /*revision_number=*/0, GetCalendarView()));
+}
+
 TEST_P(CalendarViewPixelTest, EventList) {
   // Sets time override.
   base::Time date;
