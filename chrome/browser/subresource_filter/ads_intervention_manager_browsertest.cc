@@ -24,9 +24,6 @@ namespace {
 
 const char kAdsInterventionRecordedHistogram[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
-const char kTimeSinceAdsInterventionTriggeredHistogram[] =
-    "SubresourceFilter.PageLoad."
-    "TimeSinceLastActiveAdsIntervention";
 
 }  // namespace
 
@@ -69,8 +66,6 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUIShown, 0);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
-  histogram_tester.ExpectTotalCount(kTimeSinceAdsInterventionTriggeredHistogram,
-                                    0);
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -91,8 +86,6 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
       kAdsInterventionRecordedHistogram,
       static_cast<int>(mojom::AdsViolation::kMobileAdDensityByHeightAbove30),
       1);
-  histogram_tester.ExpectBucketCount(
-      kTimeSinceAdsInterventionTriggeredHistogram, 0, 1);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -115,9 +108,6 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithEnforcement,
       kAdsInterventionRecordedHistogram,
       static_cast<int>(mojom::AdsViolation::kMobileAdDensityByHeightAbove30),
       1);
-  histogram_tester.ExpectBucketCount(
-      kTimeSinceAdsInterventionTriggeredHistogram,
-      subresource_filter::kAdsInterventionDuration.Get().InHours(), 1);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(2u, entries.size());
@@ -157,8 +147,6 @@ IN_PROC_BROWSER_TEST_F(
       kSubresourceFilterActionsHistogram,
       subresource_filter::SubresourceFilterAction::kUIShown, 0);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
-  histogram_tester.ExpectTotalCount(kTimeSinceAdsInterventionTriggeredHistogram,
-                                    0);
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -179,8 +167,6 @@ IN_PROC_BROWSER_TEST_F(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(mojom::AdsViolation::kMobileAdDensityByHeightAbove30),
       1);
-  histogram_tester.ExpectBucketCount(
-      kTimeSinceAdsInterventionTriggeredHistogram, 0, 1);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -212,9 +198,6 @@ IN_PROC_BROWSER_TEST_F(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(mojom::AdsViolation::kMobileAdDensityByHeightAbove30),
       1);
-  histogram_tester.ExpectBucketCount(
-      kTimeSinceAdsInterventionTriggeredHistogram,
-      subresource_filter::kAdsInterventionDuration.Get().InHours(), 1);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);
   EXPECT_EQ(2u, entries.size());
@@ -292,9 +275,6 @@ IN_PROC_BROWSER_TEST_F(AdsInterventionManagerTestWithoutEnforcement,
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,
       static_cast<int>(mojom::AdsViolation::kMobileAdDensityByHeightAbove30),
-      1);
-  histogram_tester.ExpectBucketCount(
-      kTimeSinceAdsInterventionTriggeredHistogram, kRenavigationDelay.InHours(),
       1);
   entries = ukm_recorder.GetEntriesByName(
       ukm::builders::AdsIntervention_LastIntervention::kEntryName);

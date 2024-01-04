@@ -28,9 +28,6 @@ const char kLastAdsViolationKey[] = "LastAdsViolation";
 const char kAdsInterventionRecordedHistogramName[] =
     "SubresourceFilter.PageLoad.AdsInterventionTriggered";
 
-const char kTimeSinceAdsInterventionTriggeredHistogramName[] =
-    "SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention";
-
 AdsInterventionStatus GetAdsInterventionStatus(bool activation_status,
                                                bool intervention_active) {
   if (!intervention_active)
@@ -132,9 +129,6 @@ bool AdsInterventionManager::ShouldActivate(
         last_intervention->duration_since <
         AdsInterventionManager::GetInterventionDuration(
             last_intervention->ads_violation);
-    UMA_HISTOGRAM_COUNTS_1000(kTimeSinceAdsInterventionTriggeredHistogramName,
-                              last_intervention->duration_since.InHours());
-
     auto* ukm_recorder = ukm::UkmRecorder::Get();
     ukm::builders::AdsIntervention_LastIntervention builder(
         ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),

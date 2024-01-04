@@ -402,19 +402,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention"
-    units="hours" expires_after="M90">
-  <owner>yaoxia@google.com</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records the time since the last ads intervention when loading a page that
-    has previously triggered an ads intervention. This is limited by the maximum
-    expiry time of intervention data, 7 days. Recorded at the time page
-    activation is computed during page load when a previous intervention was
-    previously recorded and has not expired from the intervention data.
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.RulesetVerificationStatus"
     enum="RulesetVerificationStatus" expires_after="M77">
   <owner>yaoxia@chromium.org</owner>
