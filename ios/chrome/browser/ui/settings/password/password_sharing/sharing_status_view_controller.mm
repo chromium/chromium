@@ -179,6 +179,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
+  // Make sure that the title is focused when the view appears.
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.titleLabel);
   [self.imagesSlidingOutAnimation startAnimation];
 }
 
