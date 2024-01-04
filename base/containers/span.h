@@ -183,6 +183,8 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   and treat borrowed ranges correctly.
 //
 // Additions beyond the C++ standard draft
+// - as_chars() function.
+// - as_writable_chars() function.
 // - as_byte_span() function.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
@@ -521,6 +523,20 @@ template <typename T, size_t X>
 auto as_writable_bytes(span<T, X> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   return span<uint8_t, N>(reinterpret_cast<uint8_t*>(s.data()), s.size_bytes());
+}
+
+template <typename T, size_t X>
+auto as_chars(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<const char, N>(reinterpret_cast<const char*>(s.data()),
+                             s.size_bytes());
+}
+
+template <typename T, size_t X>
+  requires(!std::is_const_v<T>)
+auto as_writable_chars(span<T, X> s) noexcept {
+  constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
+  return span<char, N>(reinterpret_cast<char*>(s.data()), s.size_bytes());
 }
 
 // Type-deducing helpers for constructing a span.
