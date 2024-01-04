@@ -445,6 +445,11 @@
     "expiry_milestone": 129
   },
   {
+    "name": "assistant-iph",
+    "owners": ["wutao@chromium.com", "assistive-eng@google.com"],
+    "expiry_milestone": 126
+  },
+  {
     "name": "asynchronous-scanner-discovery",
     "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
     "expiry_milestone": 123

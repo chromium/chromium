@@ -5536,6 +5536,10 @@ const char kAsynchronousScannerDiscoveryDescription[] =
     "Use the newer asynchronous document scanner discovery API for the Scan "
     "app and extension APIs.";
 
+const char kAssistantIphName[] = "Assistant IPH";
+const char kAssistantIphDescription[] =
+    "Enables showing Assistant IPH on ChromeOS.";
+
 const char kAudioA2DPAdvancedCodecsName[] = "BT A2DP advanced codecs support";
 const char kAudioA2DPAdvancedCodecsDescription[] =
     "Enable BT A2DP advanced codecs support";

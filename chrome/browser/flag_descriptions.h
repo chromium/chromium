@@ -3192,6 +3192,9 @@ extern const char kAshEnableUnifiedDesktopDescription[];
 extern const char kAsynchronousScannerDiscoveryName[];
 extern const char kAsynchronousScannerDiscoveryDescription[];
 
+extern const char kAssistantIphName[];
+extern const char kAssistantIphDescription[];
+
 extern const char kAudioA2DPAdvancedCodecsName[];
 extern const char kAudioA2DPAdvancedCodecsDescription[];
 

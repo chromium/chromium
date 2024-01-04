@@ -27944,6 +27944,7 @@ from previous Chrome versions.
   <int value="-1052415111" label="malware-interstitial-v2"/>
   <int value="-1052219252" label="disable-captive-portal-bypass-proxy"/>
   <int value="-1052115254" label="TextfieldFocusOnTapUp:disabled"/>
+  <int value="-1051602723" label="IPH_LauncherSearchHelpUi:enabled"/>
   <int value="-1051509976" label="ServiceWorkerOnUI:disabled"/>
   <int value="-1050121997"
       label="EnableServiceWorkersForChromeUntrusted:enabled"/>
@@ -30846,6 +30847,7 @@ from previous Chrome versions.
   <int value="318704417" label="LensStandalone:enabled"/>
   <int value="319683583" label="ContentSuggestionsDebugLog:enabled"/>
   <int value="320121752" label="DelegateOverscrollSwipes:disabled"/>
+  <int value="321023965" label="IPH_LauncherSearchHelpUi:disabled"/>
   <int value="321366101" label="WebXRARDOMOverlay:enabled"/>
   <int value="321616293" label="DrawWebEdgeToEdge:disabled"/>
   <int value="322118950" label="SyncPollImmediatelyOnEveryStartup:disabled"/>

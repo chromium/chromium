@@ -2950,6 +2950,7 @@ constexpr char kClipboardHistoryUrlTitlesInternalName[] =
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
 constexpr char kSeaPenInternalName[] = "sea-pen";
+constexpr char kAssistantIphInternalName[] = "assistant-iph";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const FeatureEntry::FeatureParam kLargeFaviconFromGoogle96[] = {
@@ -10909,6 +10910,12 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableIbanAndroidBottomSheet)},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kAssistantIphInternalName, flag_descriptions::kAssistantIphName,
+     flag_descriptions::kAssistantIphDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(feature_engagement::kIPHLauncherSearchHelpUiFeature)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -11172,6 +11179,15 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Only show sea-pen flag if channel is one of Beta/Dev/Canary/Unknown.
   if (!strcmp(kSeaPenInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
+  }
+
+  // Only show Assistant Launcher search IPH flag if channel is one of
+  // Beta/Dev/Canary/Unknown.
+  if (!strcmp(kAssistantIphInternalName, entry.internal_name)) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
