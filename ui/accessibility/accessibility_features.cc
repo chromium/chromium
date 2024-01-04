@@ -307,7 +307,9 @@ BASE_FEATURE(kReadAnythingLocalSidePanel,
              "ReadAnythingLocalSidePanel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsReadAnythingLocalSidePanelEnabled() {
-  return base::FeatureList::IsEnabled(::features::kReadAnythingLocalSidePanel);
+  return base::FeatureList::IsEnabled(
+             ::features::kReadAnythingLocalSidePanel) &&
+         base::FeatureList::IsEnabled(::features::kReadAnythingWebUIToolbar);
 }
 
 BASE_FEATURE(kReadAnythingOmniboxIcon,
