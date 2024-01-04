@@ -8,6 +8,7 @@
 #include <iterator>
 #include <limits>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -1470,11 +1471,11 @@ leveldb::Status RewriteDB(const leveldb_env::Options& options,
   return leveldb_env::OpenDB(options, name, dbptr);
 }
 
-base::StringPiece MakeStringPiece(const leveldb::Slice& s) {
-  return base::StringPiece(s.data(), s.size());
+std::string_view MakeStringView(const leveldb::Slice& s) {
+  return std::string_view(s.data(), s.size());
 }
 
-leveldb::Slice MakeSlice(const base::StringPiece& s) {
+leveldb::Slice MakeSlice(std::string_view s) {
   return leveldb::Slice(s.begin(), s.size());
 }
 

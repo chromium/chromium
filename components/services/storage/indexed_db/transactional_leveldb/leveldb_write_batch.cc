@@ -20,12 +20,11 @@ LevelDBWriteBatch::LevelDBWriteBatch()
 
 LevelDBWriteBatch::~LevelDBWriteBatch() {}
 
-void LevelDBWriteBatch::Put(const std::string_view& key,
-                            const std::string_view& value) {
+void LevelDBWriteBatch::Put(std::string_view key, std::string_view value) {
   write_batch_->Put(leveldb_env::MakeSlice(key), leveldb_env::MakeSlice(value));
 }
 
-void LevelDBWriteBatch::Remove(const std::string_view& key) {
+void LevelDBWriteBatch::Remove(std::string_view key) {
   write_batch_->Delete(leveldb_env::MakeSlice(key));
 }
 

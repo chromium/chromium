@@ -74,7 +74,7 @@ class LevelDBTestDatabase : public TransactionalLevelDBDatabase {
   }
   ~LevelDBTestDatabase() override = default;
 
-  leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Get(std::string_view key,
                       std::string* value,
                       bool* found) override {
     if (fail_method_ != FailMethod::GET ||
@@ -111,7 +111,7 @@ class LevelDBTestDirectTransaction : public LevelDBDirectTransaction {
   }
   ~LevelDBTestDirectTransaction() override = default;
 
-  leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Get(std::string_view key,
                       std::string* value,
                       bool* found) override {
     if (fail_method_ != FailMethod::GET ||
@@ -142,7 +142,7 @@ class LevelDBTestTransaction : public TransactionalLevelDBTransaction {
     DCHECK_GT(fail_on_call_num, 0);
   }
 
-  leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Get(std::string_view key,
                       std::string* value,
                       bool* found) override {
     if (fail_method_ != FailMethod::GET ||
@@ -193,7 +193,7 @@ class LevelDBTraceTransaction : public TransactionalLevelDBTransaction {
         commit_tracer_(class_name_, "Commit", tx_num),
         get_tracer_(class_name_, "Get", tx_num) {}
 
-  leveldb::Status Get(const base::StringPiece& key,
+  leveldb::Status Get(std::string_view key,
                       std::string* value,
                       bool* found) override {
     get_tracer_.log_call();
@@ -246,7 +246,7 @@ class LevelDBTraceIterator : public TransactionalLevelDBIterator {
     seek_to_last_tracer_.log_call();
     return TransactionalLevelDBIterator::SeekToLast();
   }
-  leveldb::Status Seek(const base::StringPiece& target) override {
+  leveldb::Status Seek(std::string_view target) override {
     seek_tracer_.log_call();
     return TransactionalLevelDBIterator::Seek(target);
   }
@@ -294,7 +294,7 @@ class LevelDBTestIterator : public content::TransactionalLevelDBIterator {
   ~LevelDBTestIterator() override = default;
 
  private:
-  leveldb::Status Seek(const base::StringPiece& target) override {
+  leveldb::Status Seek(std::string_view target) override {
     if (fail_method_ != FailMethod::SEEK ||
         ++current_call_num_ != fail_on_call_num_)
       return TransactionalLevelDBIterator::Seek(target);

@@ -31,24 +31,22 @@ TransactionalLevelDBTransaction::TransactionalLevelDBTransaction(
 
 TransactionalLevelDBTransaction::~TransactionalLevelDBTransaction() = default;
 
-leveldb::Status TransactionalLevelDBTransaction::Put(
-    const std::string_view& key,
-    std::string* value) {
+leveldb::Status TransactionalLevelDBTransaction::Put(std::string_view key,
+                                                     std::string* value) {
   leveldb::Status s = scope_->Put(leveldb_env::MakeSlice(key), *value);
   EvictLoadedIterators();
   return s;
 }
 
-leveldb::Status TransactionalLevelDBTransaction::Remove(
-    const std::string_view& key) {
+leveldb::Status TransactionalLevelDBTransaction::Remove(std::string_view key) {
   leveldb::Status s = scope_->Delete(leveldb_env::MakeSlice(key));
   EvictLoadedIterators();
   return s;
 }
 
 leveldb::Status TransactionalLevelDBTransaction::RemoveRange(
-    const std::string_view& begin,
-    const std::string_view& end,
+    std::string_view begin,
+    std::string_view end,
     LevelDBScopeDeletionMode deletion_mode) {
   // The renderer-side code always issues range deletions even in the case of
   // single key, so handle that case here to avoid doing sub-optimal range
@@ -65,10 +63,9 @@ leveldb::Status TransactionalLevelDBTransaction::RemoveRange(
   return s;
 }
 
-leveldb::Status TransactionalLevelDBTransaction::Get(
-    const std::string_view& key,
-    std::string* value,
-    bool* found) {
+leveldb::Status TransactionalLevelDBTransaction::Get(std::string_view key,
+                                                     std::string* value,
+                                                     bool* found) {
   *found = false;
 #if DCHECK_IS_ON()
   DCHECK(!finished_);
@@ -162,14 +159,14 @@ LevelDBDirectTransaction::LevelDBDirectTransaction(
 
 LevelDBDirectTransaction::~LevelDBDirectTransaction() = default;
 
-leveldb::Status LevelDBDirectTransaction::Put(const std::string_view& key,
+leveldb::Status LevelDBDirectTransaction::Put(std::string_view key,
                                               const std::string* value) {
   DCHECK(!IsFinished());
   write_batch_->Put(key, *value);
   return leveldb::Status::OK();
 }
 
-leveldb::Status LevelDBDirectTransaction::Get(const std::string_view& key,
+leveldb::Status LevelDBDirectTransaction::Get(std::string_view key,
                                               std::string* value,
                                               bool* found) {
   *found = false;
@@ -185,7 +182,7 @@ leveldb::Status LevelDBDirectTransaction::Get(const std::string_view& key,
   return s;
 }
 
-void LevelDBDirectTransaction::Remove(const std::string_view& key) {
+void LevelDBDirectTransaction::Remove(std::string_view key) {
   DCHECK(!IsFinished());
   write_batch_->Remove(key);
 }

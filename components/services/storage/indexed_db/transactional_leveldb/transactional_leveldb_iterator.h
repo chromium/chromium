@@ -44,7 +44,7 @@ class TransactionalLevelDBIterator {
 
   virtual bool IsValid() const;
   virtual leveldb::Status SeekToLast();
-  virtual leveldb::Status Seek(const std::string_view& target);
+  virtual leveldb::Status Seek(std::string_view target);
   virtual leveldb::Status Next();
   virtual leveldb::Status Prev();
   // The returned std::string_view can be invalidated when
