@@ -133,6 +133,8 @@ std::unique_ptr<test::TestConditionWaiter> RecoveryErrorPageWaiter();
 void RecoveryErrorExpectFallback();
 void RecoveryErrorFallbackAction();
 
+std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter();
+
 }  // namespace ash::test
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_AUTH_UI_UTILS_H_

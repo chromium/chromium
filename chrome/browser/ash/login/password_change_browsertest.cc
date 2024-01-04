@@ -70,8 +70,6 @@ constexpr char kGaiaID[] = "111111";
 constexpr char kTokenHandle[] = "test_token_handle";
 constexpr char kTestingFileName[] = "testing-file.txt";
 
-const test::UIPath kFirstOnboardingScreen = {"consolidated-consent"};
-
 using AuthOp = FakeUserDataAuthClient::Operation;
 
 bool HasPasswordConfirmationPage() {
@@ -281,8 +279,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeTest, SkipDataRecovery) {
   test::LocalDataLossWarningPageRemoveAction();
 
   // With cryptohome recovery we re-create session and re-run onboarding.
-  OobeWindowVisibilityWaiter(true).Wait();
-  test::OobeJS().CreateVisibilityWaiter(true, kFirstOnboardingScreen)->Wait();
+  test::UserOnboardingWaiter()->Wait();
 
   EXPECT_FALSE(TestingFileExists());
 }

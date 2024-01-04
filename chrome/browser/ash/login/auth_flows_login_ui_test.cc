@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -236,6 +237,25 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
   pw_updated->ConfirmPasswordUpdate();
 
   login_mixin_.WaitForActiveSession();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, LocalPasswordChangedRecovery) {
+  const auto& user = with_local_pw_recovery_;
+
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+  auto gaia = test::AwaitGaiaSigninUI();
+
+  gaia->ReauthConfirmEmail(user.account_id);
+  gaia->TypePassword(test::kNewPassword);
+  gaia->ContinueLogin();
+
+  test::LocalDataLossWarningPageWaiter()->Wait();
+
+  // Click "Proceed anyway".
+  test::LocalDataLossWarningPageRemoveAction();
+
+  // With cryptohome recovery we re-create session and re-run onboarding.
+  test::UserOnboardingWaiter()->Wait();
 }
 
 }  // namespace ash

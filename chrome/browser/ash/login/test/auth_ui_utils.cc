@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::test {
@@ -92,10 +93,14 @@ constexpr UIPath kFactorSetupSuccessDoneButton = {"factor-setup-success",
 constexpr UIPath kFactorSetupSuccessNextButton = {"factor-setup-success",
                                                   "nextButton"};
 
+const UIPath kFirstOnboardingScreen = {"consolidated-consent"};
+
 bool IsOldFlow() {
   return base::FeatureList::IsEnabled(
       ash::features::kCryptohomeRecoveryBeforeFlowSplit);
 }
+
+}  // namespace
 
 class LoginScreenAuthSurface : public FullScreenAuthSurface {
  public:
@@ -139,7 +144,6 @@ class GaiaPageActorImpl : public GaiaPageActor {
   JSChecker gaia_js_;
 };
 
-}  // namespace
 
 FullScreenAuthSurface::FullScreenAuthSurface() = default;
 FullScreenAuthSurface::~FullScreenAuthSurface() = default;
@@ -471,6 +475,12 @@ void RecoveryErrorFallbackAction() {
   CHECK(IsOldFlow());
   test::OobeJS().ClickOnPath(kRecoveryManualRecoveryButton);
   return;
+}
+
+std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter() {
+  return std::make_unique<CompositeWaiter>(
+      std::make_unique<OobeWindowVisibilityWaiter>(true),
+      OobeJS().CreateVisibilityWaiter(true, kFirstOnboardingScreen));
 }
 
 }  // namespace ash::test
