@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_CHIP_BUTTON_H_
-#define ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_CHIP_BUTTON_H_
+#ifndef ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
+#define ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -23,24 +23,24 @@ class PillButton;
 
 // A compact view of an app, displaying its icon, name, a brief description, and
 // an optional call to action.
-class GlanceablesChipButton : public views::Button,
-                              public ui::SimpleMenuModel::Delegate {
+class BirchChipButton : public views::Button,
+                        public ui::SimpleMenuModel::Delegate {
  public:
-  METADATA_HEADER(GlanceablesChipButton);
+  METADATA_HEADER(BirchChipButton);
 
   // The delegate executes the actions when the chip is removed.
   class Delegate {
    public:
-    virtual void RemoveChip(GlanceablesChipButton* chip) = 0;
+    virtual void RemoveChip(BirchChipButton* chip) = 0;
 
    protected:
     virtual ~Delegate() = default;
   };
 
-  GlanceablesChipButton();
-  GlanceablesChipButton(const GlanceablesChipButton&) = delete;
-  GlanceablesChipButton& operator=(const GlanceablesChipButton&) = delete;
-  ~GlanceablesChipButton() override;
+  BirchChipButton();
+  BirchChipButton(const BirchChipButton&) = delete;
+  BirchChipButton& operator=(const BirchChipButton&) = delete;
+  ~BirchChipButton() override;
 
   // Chip configuration methods.
   void SetIconImage(const ui::ImageModel& icon_image);
@@ -76,11 +76,11 @@ class GlanceablesChipButton : public views::Button,
   std::unique_ptr<RemovalChipMenuController> removal_chip_menu_controller_;
 };
 
-BEGIN_VIEW_BUILDER(/*no export*/, GlanceablesChipButton, views::Button)
+BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
 VIEW_BUILDER_PROPERTY(const ui::ImageModel&, IconImage)
 VIEW_BUILDER_PROPERTY(const std::u16string&, TitleText)
 VIEW_BUILDER_PROPERTY(const std::u16string&, SubtitleText)
-VIEW_BUILDER_PROPERTY(GlanceablesChipButton::Delegate*, Delegate)
+VIEW_BUILDER_PROPERTY(BirchChipButton::Delegate*, Delegate)
 VIEW_BUILDER_METHOD(SetActionButton,
                     const std::u16string&,
                     views::Button::PressedCallback)
@@ -88,6 +88,6 @@ END_VIEW_BUILDER
 
 }  // namespace ash
 
-DEFINE_VIEW_BUILDER(/*no export*/, ash::GlanceablesChipButton)
+DEFINE_VIEW_BUILDER(/*no export*/, ash::BirchChipButton)
 
-#endif  // ASH_WM_OVERVIEW_GLANCEABLES_GLANCEABLES_CHIP_BUTTON_H_
+#endif  // ASH_WM_OVERVIEW_BIRCH_BIRCH_CHIP_BUTTON_H_

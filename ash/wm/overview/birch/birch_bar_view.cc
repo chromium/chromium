@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/glanceables/glanceables_bar_view.h"
+#include "ash/wm/overview/birch/birch_bar_view.h"
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -39,15 +39,14 @@ std::unique_ptr<views::Widget> g_widget_for_testing;
 }  // namespace
 
 //------------------------------------------------------------------------------
-// GlanceablesBarView::GlanceablesChipsContainer
-// The chips container with glanceables chips and hiding chips button.
-class GlanceablesBarView::GlanceablesChipsContainer
-    : public views::BoxLayoutView {
-  METADATA_HEADER(GlanceablesChipsContainer, views::BoxLayoutView)
+// BirchBarView::BirchChipsContainer
+// The chips container with birch chips and hiding chips button.
+class BirchBarView::BirchChipsContainer : public views::BoxLayoutView {
+  METADATA_HEADER(BirchChipsContainer, views::BoxLayoutView)
 
  public:
-  explicit GlanceablesChipsContainer(GlanceablesBarView* glanceable_bar)
-      : glanceable_bar_(glanceable_bar) {
+  explicit BirchChipsContainer(BirchBarView* birch_bar)
+      : birch_bar_(birch_bar) {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
     SetOrientation(views::BoxLayout::Orientation::kHorizontal);
@@ -55,21 +54,20 @@ class GlanceablesBarView::GlanceablesChipsContainer
     SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
     SetBetweenChildSpacing(kChipSpacing);
     hide_chips_button_ = AddChildView(std::make_unique<IconButton>(
-        base::BindRepeating(&GlanceablesBarView::OnShowHideChipsButtonPressed,
-                            base::Unretained(glanceable_bar_), /*show=*/false),
+        base::BindRepeating(&BirchBarView::OnShowHideChipsButtonPressed,
+                            base::Unretained(birch_bar_), /*show=*/false),
         IconButton::Type::kMedium, &kChevronDownIcon, u"Hide", false, false));
     hide_chips_button_->SetProperty(views::kMarginsKey, kHideButtonMargin);
     hide_chips_button_->SetEnableBlurredBackgroundShield(true);
   }
 
-  GlanceablesChipsContainer(const GlanceablesChipsContainer&) = delete;
-  GlanceablesChipsContainer& operator=(const GlanceablesChipsContainer&) =
-      delete;
-  ~GlanceablesChipsContainer() override = default;
+  BirchChipsContainer(const BirchChipsContainer&) = delete;
+  BirchChipsContainer& operator=(const BirchChipsContainer&) = delete;
+  ~BirchChipsContainer() override = default;
 
-  void AddChip(std::unique_ptr<GlanceablesChipButton> chip) {
+  void AddChip(std::unique_ptr<BirchChipButton> chip) {
     if (static_cast<int>(chips_.size()) == kMaxChipsNum) {
-      NOTREACHED() << "The number of glanceable chips reaches the limit of 4";
+      NOTREACHED() << "The number of birch chips reaches the limit of 4";
       return;
     }
     const size_t child_num = children().size();
@@ -78,7 +76,7 @@ class GlanceablesBarView::GlanceablesChipsContainer
     chips_.push_back(AddChildViewAt(std::move(chip), child_num - 1));
   }
 
-  void RemoveChip(GlanceablesChipButton* chip) {
+  void RemoveChip(BirchChipButton* chip) {
     auto iter = base::ranges::find(chips_, chip);
     if (iter != chips_.end()) {
       RemoveChildViewT(chip);
@@ -88,21 +86,18 @@ class GlanceablesBarView::GlanceablesChipsContainer
   }
 
  private:
-  raw_ptr<GlanceablesBarView> glanceable_bar_;
-  std::vector<raw_ptr<GlanceablesChipButton>> chips_;
+  raw_ptr<BirchBarView> birch_bar_;
+  std::vector<raw_ptr<BirchChipButton>> chips_;
   raw_ptr<IconButton> hide_chips_button_;
 };
 
-BEGIN_METADATA(GlanceablesBarView,
-               GlanceablesChipsContainer,
-               views::BoxLayoutView)
+BEGIN_METADATA(BirchBarView, BirchChipsContainer, views::BoxLayoutView)
 END_METADATA
 
 //------------------------------------------------------------------------------
-// GlanceablesBarView
-GlanceablesBarView::GlanceablesBarView() {
-  chips_container_ =
-      AddChildView(std::make_unique<GlanceablesChipsContainer>(this));
+// BirchBarView
+BirchBarView::BirchBarView() {
+  chips_container_ = AddChildView(std::make_unique<BirchChipsContainer>(this));
 
   show_chips_button_container_ = AddChildView(std::make_unique<views::View>());
   show_chips_button_container_->SetPaintToLayer();
@@ -111,7 +106,7 @@ GlanceablesBarView::GlanceablesBarView() {
 
   auto* show_chips_button =
       show_chips_button_container_->AddChildView(std::make_unique<IconButton>(
-          base::BindRepeating(&GlanceablesBarView::OnShowHideChipsButtonPressed,
+          base::BindRepeating(&BirchBarView::OnShowHideChipsButtonPressed,
                               base::Unretained(this), /*show=*/true),
           IconButton::Type::kMedium, &kChevronUpIcon, u"Show", false, false));
   show_chips_button->SetEnableBlurredBackgroundShield(true);
@@ -119,10 +114,10 @@ GlanceablesBarView::GlanceablesBarView() {
   chips_container_->SetVisible(false);
 }
 
-GlanceablesBarView::~GlanceablesBarView() = default;
+BirchBarView::~BirchBarView() = default;
 
-void GlanceablesBarView::ShowWidgetForTesting(
-    std::unique_ptr<GlanceablesBarView> bar_view) {
+void BirchBarView::ShowWidgetForTesting(
+    std::unique_ptr<BirchBarView> bar_view) {
   views::Widget::InitParams params;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.layer_type = ui::LAYER_NOT_DRAWN;
@@ -145,7 +140,7 @@ void GlanceablesBarView::ShowWidgetForTesting(
   g_widget_for_testing->Show();
 }
 
-void GlanceablesBarView::HideWidgetForTesting() {
+void BirchBarView::HideWidgetForTesting() {
   if (g_widget_for_testing) {
     g_widget_for_testing->CloseWithReason(
         views::Widget::ClosedReason::kUnspecified);
@@ -153,14 +148,14 @@ void GlanceablesBarView::HideWidgetForTesting() {
   }
 }
 
-void GlanceablesBarView::AddChip(
+void BirchBarView::AddChip(
     const ui::ImageModel& icon,
     const std::u16string& title,
     const std::u16string& sub_title,
     views::Button::PressedCallback callback,
     std::optional<std::u16string> button_title,
     std::optional<views::Button::PressedCallback> button_callback) {
-  auto chip = views::Builder<GlanceablesChipButton>()
+  auto chip = views::Builder<BirchChipButton>()
                   .SetIconImage(icon)
                   .SetTitleText(title)
                   .SetSubtitleText(sub_title)
@@ -174,7 +169,7 @@ void GlanceablesBarView::AddChip(
   chips_container_->AddChip(std::move(chip));
 }
 
-gfx::Size GlanceablesBarView::CalculatePreferredSize() const {
+gfx::Size BirchBarView::CalculatePreferredSize() const {
   gfx::Size preferred_size;
   for (views::View* content : children()) {
     preferred_size.SetToMax(content->GetPreferredSize());
@@ -182,11 +177,11 @@ gfx::Size GlanceablesBarView::CalculatePreferredSize() const {
   return gfx::Size(preferred_size.width(), kBarHeight);
 }
 
-int GlanceablesBarView::GetHeightForWidth(int width) const {
+int BirchBarView::GetHeightForWidth(int width) const {
   return kBarHeight;
 }
 
-void GlanceablesBarView::Layout() {
+void BirchBarView::Layout() {
   // Centralize the chips container/show button.
   const gfx::Point center_point = GetContentsBounds().CenterPoint();
   for (views::View* content : children()) {
@@ -196,11 +191,11 @@ void GlanceablesBarView::Layout() {
   }
 }
 
-void GlanceablesBarView::RemoveChip(GlanceablesChipButton* chip) {
+void BirchBarView::RemoveChip(BirchChipButton* chip) {
   chips_container_->RemoveChip(chip);
 }
 
-void GlanceablesBarView::OnAnimationsEnded(bool show) {
+void BirchBarView::OnAnimationsEnded(bool show) {
   // Update contents visibility and opacity on animation completed or aborted.
   animation_in_progress_ = false;
   if (show) {
@@ -210,7 +205,7 @@ void GlanceablesBarView::OnAnimationsEnded(bool show) {
   }
 }
 
-void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
+void BirchBarView::OnShowHideChipsButtonPressed(bool show) {
   if (animation_in_progress_) {
     return;
   }
@@ -235,7 +230,7 @@ void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
 
   // Setup animations.
   auto animation_complete_callback = base::BindRepeating(
-      &GlanceablesBarView::OnAnimationsEnded, base::Unretained(this), show);
+      &BirchBarView::OnAnimationsEnded, base::Unretained(this), show);
   views::AnimationBuilder animation_builder;
   animation_builder.OnEnded(base::OnceClosure(animation_complete_callback))
       .OnAborted(base::OnceClosure(animation_complete_callback))
@@ -248,7 +243,7 @@ void GlanceablesBarView::OnShowHideChipsButtonPressed(bool show) {
                     show ? gfx::Transform() : vertical_shift);
 }
 
-BEGIN_METADATA(GlanceablesBarView)
+BEGIN_METADATA(BirchBarView)
 END_METADATA
 
 }  // namespace ash

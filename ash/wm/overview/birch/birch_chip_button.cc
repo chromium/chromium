@@ -1,8 +1,8 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/wm/overview/glanceables/glanceables_chip_button.h"
+#include "ash/wm/overview/birch/birch_chip_button.h"
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
@@ -57,9 +57,9 @@ constexpr int kRemoveIconSize = 20;
 }  // namespace
 
 //------------------------------------------------------------------------------
-// GlanceablesChipButton::RemovalChipMenuController:
+// BirchChipButton::RemovalChipMenuController:
 // The removal chip panel which contains one option to remove the chip.
-class GlanceablesChipButton::RemovalChipMenuController
+class BirchChipButton::RemovalChipMenuController
     : public views::ContextMenuController {
  public:
   explicit RemovalChipMenuController(ui::SimpleMenuModel::Delegate* delegate)
@@ -97,8 +97,8 @@ class GlanceablesChipButton::RemovalChipMenuController
 };
 
 //------------------------------------------------------------------------------
-// GlanceablesChipButton:
-GlanceablesChipButton::GlanceablesChipButton()
+// BirchChipButton:
+BirchChipButton::BirchChipButton()
     : removal_chip_menu_controller_(
           std::make_unique<RemovalChipMenuController>(this)) {
   auto box_layout = std::make_unique<views::BoxLayout>(
@@ -123,7 +123,7 @@ GlanceablesChipButton::GlanceablesChipButton()
           kBackgroundColorId, kRoundedCornerRadius))
       .SetPreferredSize(kChipSize)
       // TODO(zxdan): verbalize all the contents in following changes.
-      .SetAccessibleName(u"Glanceables Chip")
+      .SetAccessibleName(u"Birch Chip")
       .AddChildren(
           // Icon.
           views::Builder<views::ImageView>().CopyAddressTo(&icon_).SetProperty(
@@ -162,35 +162,34 @@ GlanceablesChipButton::GlanceablesChipButton()
   StyleUtil::SetUpFocusRingForView(this);
 }
 
-GlanceablesChipButton::~GlanceablesChipButton() = default;
+BirchChipButton::~BirchChipButton() = default;
 
-void GlanceablesChipButton::SetIconImage(const ui::ImageModel& icon_image) {
+void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
   icon_->SetImage(icon_image);
 }
 
-void GlanceablesChipButton::SetTitleText(const std::u16string& title) {
+void BirchChipButton::SetTitleText(const std::u16string& title) {
   title_->SetText(title);
 }
 
-void GlanceablesChipButton::SetSubtitleText(const std::u16string& subtitle) {
+void BirchChipButton::SetSubtitleText(const std::u16string& subtitle) {
   subtitle_->SetText(subtitle);
 }
 
-void GlanceablesChipButton::SetActionButton(
-    const std::u16string& label,
-    views::Button::PressedCallback action) {
+void BirchChipButton::SetActionButton(const std::u16string& label,
+                                      views::Button::PressedCallback action) {
   CHECK(!action_button_);
   box_layout_->set_inside_border_insets(kBorderInsetsWithActionButton);
   action_button_ = AddChildView(std::make_unique<PillButton>(
       std::move(action), label, PillButton::Type::kPrimaryWithoutIcon));
 }
 
-void GlanceablesChipButton::SetDelegate(Delegate* delegate) {
+void BirchChipButton::SetDelegate(Delegate* delegate) {
   CHECK(!delegate_);
   delegate_ = delegate;
 }
 
-void GlanceablesChipButton::OnGestureEvent(ui::GestureEvent* event) {
+void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
   if (event->type() == ui::ET_GESTURE_LONG_PRESS) {
     // Show removal chip panel.
     gfx::Point screen_location(event->location());
@@ -200,18 +199,18 @@ void GlanceablesChipButton::OnGestureEvent(ui::GestureEvent* event) {
   }
 }
 
-void GlanceablesChipButton::ExecuteCommand(int command_id, int event_flags) {
+void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
   // Remove the chip when the option is selected in the removal panel.
   OnRemoveComponentPressed();
 }
 
-void GlanceablesChipButton::OnRemoveComponentPressed() {
+void BirchChipButton::OnRemoveComponentPressed() {
   if (delegate_) {
     delegate_->RemoveChip(this);
   }
 }
 
-BEGIN_METADATA(GlanceablesChipButton, views::Button)
+BEGIN_METADATA(BirchChipButton, views::Button)
 END_METADATA
 
 }  // namespace ash
