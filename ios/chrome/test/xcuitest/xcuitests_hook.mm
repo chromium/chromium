@@ -25,7 +25,7 @@ bool DisableDiscoverFeed() {
   return true;
 }
 
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
   return true;
 }
 

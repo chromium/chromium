@@ -43,9 +43,11 @@ bool DisableContentSuggestions();
 // without it.
 bool DisableDiscoverFeed();
 
-// Returns true if the first_run path should be disabled to allow other tests to
-// run unimpeded.
-bool DisableFirstRun();
+// Returns true if the first run UI, which would interfere with many tests,
+// should by default be skipped. Note that even in a target where this function
+// returns `false`, that's just a default, and individual tests may still enable
+// the first run UI.
+bool DisableDefaultFirstRun();
 
 // Returns true if the geolocation should be disabled to avoid the user location
 // prompt displaying for the omnibox.

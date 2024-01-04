@@ -40,7 +40,7 @@ bool DisableDiscoverFeed() {
       switches::kEnableDiscoverFeed);
 }
 
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
   return true;
 }
 

@@ -94,8 +94,9 @@ bool ShouldPresentFirstRunExperience() {
   if (experimental_flags::AlwaysDisplayFirstRun())
     return true;
 
-  if (tests_hook::DisableFirstRun())
+  if (tests_hook::DisableDefaultFirstRun()) {
     return false;
+  }
 
   if (kFirstRunSentinelCreated)
     return false;

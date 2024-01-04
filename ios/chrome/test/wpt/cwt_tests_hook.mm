@@ -24,7 +24,7 @@ bool DisableContentSuggestions() {
 bool DisableDiscoverFeed() {
   return true;
 }
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
   return true;
 }
 bool DisableGeolocation() {

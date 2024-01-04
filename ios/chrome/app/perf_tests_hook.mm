@@ -30,7 +30,7 @@ bool DisableDiscoverFeed() {
   return [[NSProcessInfo.processInfo.environment
       objectForKey:@"DISABLE_DISCOVER_FEED"] boolValue];
 }
-bool DisableFirstRun() {
+bool DisableDefaultFirstRun() {
   // Always disable FRE for perf tests.
   return true;
 }
