@@ -392,10 +392,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - Public Methods
 
-- (void)prepareForAppearance {
-  [[self gridViewControllerForPage:self.activePage] prepareForAppearance];
-}
-
 - (void)contentWillAppearAnimated:(BOOL)animated {
   [self resetIdlePageStatus];
   self.viewVisible = YES;
@@ -431,9 +427,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (self.remoteTabsViewController) {
     [self setInsetForRemoteTabs];
   }
-
-  // Let the active grid view know the initial appearance is done.
-  [[self gridViewControllerForPage:self.activePage] contentDidAppear];
 }
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
@@ -457,8 +450,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   self.viewVisible = NO;
 
-  [self.incognitoTabsViewController contentWillDisappear];
-  [self.regularTabsViewController contentWillDisappear];
   [self.pinnedTabsViewController contentWillDisappear];
   self.remoteTabsViewController.preventUpdates = YES;
 

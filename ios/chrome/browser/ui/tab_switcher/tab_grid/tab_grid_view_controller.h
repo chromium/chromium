@@ -179,11 +179,6 @@ enum class TabGridPageConfiguration {
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
-// Tells the receiver to prepare for its appearance by pre-requesting any
-// resources it needs from data sources. This should be called before any
-// transitions are triggered.
-- (void)prepareForAppearance;
-
 // Notifies the ViewController that its content is being displayed or hidden.
 - (void)contentWillAppearAnimated:(BOOL)animated;
 - (void)contentDidAppear;

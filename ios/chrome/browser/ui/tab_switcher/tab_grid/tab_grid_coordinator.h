@@ -55,9 +55,6 @@ class Browser;
 // whether or not child coordinators exist.
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion;
 
-// Perform any initial setup required for the appearance of the TabGrid.
-- (void)prepareToShowTabGrid;
-
 // Displays the TabGrid.
 - (void)showTabGrid;
 

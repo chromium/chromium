@@ -161,8 +161,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // Tracks when the grid view is scrolling. Create a new instance to start
   // timing and reset to stop and log the associated time histogram.
   std::optional<ScopedScrollingTimeLogger> _scopedScrollingTimeLogger;
-  // Items which prefetched snapshot.
-  NSMutableArray<TabSwitcherItem*>* _itemsForPrefetch;
 }
 
 - (instancetype)init {
@@ -275,7 +273,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  [self contentWillDisappear];
   [super viewWillDisappear:animated];
 }
 
@@ -520,23 +517,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   return [TabGridTransitionItem itemWithView:cell originalFrame:frameInWindow];
 }
 
-- (void)prepareForAppearance {
-  // TODO(crbug.com/1513894): The prefetching is very likely no longer
-  // necessary. Remove it around M125 if it is still fine.
-  for (TabSwitcherItem* item in _itemsForPrefetch) {
-    [item clearPrefetchedSnapshot];
-  }
-  _itemsForPrefetch = [NSMutableArray array];
-  for (NSIndexPath* index in [self.collectionView indexPathsForVisibleItems]) {
-    GridItemIdentifier* itemIdentifier =
-        [self.diffableDataSource itemIdentifierForIndexPath:index];
-    if (itemIdentifier.type == GridItemType::Tab) {
-      [_itemsForPrefetch addObject:itemIdentifier.tabSwitcherItem];
-      [itemIdentifier.tabSwitcherItem prefetchSnapshot];
-    }
-  }
-}
-
 - (void)contentWillAppearAnimated:(BOOL)animated {
   if (IsTabGridCompositionalLayoutEnabled()) {
     ObjCCastStrict<GridLayout>(self.gridLayout).animatesItemUpdates = YES;
@@ -556,16 +536,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                  didChangeItemCount:[self numberOfTabs]];
   [self removeEmptyStateAnimated:NO];
   self.lastInsertedItemID = web::WebStateID();
-}
-
-- (void)contentDidAppear {
-  for (TabSwitcherItem* item in _itemsForPrefetch) {
-    [item clearPrefetchedSnapshot];
-  }
-  _itemsForPrefetch = nil;
-}
-
-- (void)contentWillDisappear {
 }
 
 - (void)prepareForDismissal {

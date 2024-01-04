@@ -378,14 +378,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   return self.bvcContainer == nil && !self.firstPresentation;
 }
 
-- (void)prepareToShowTabGrid {
-  // No-op if the BVC isn't being presented.
-  if (!self.bvcContainer)
-    return;
-  [base::apple::ObjCCast<TabGridViewController>(self.baseViewController)
-      prepareForAppearance];
-}
-
 - (void)showTabGrid {
   BOOL animated = !self.animationsDisabledForTesting;
 

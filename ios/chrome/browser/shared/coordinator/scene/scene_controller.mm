@@ -1489,7 +1489,6 @@ void InjectNTP(Browser* browser) {
     SnapshotTabHelper::FromWebState(currentWebState)
         ->UpdateSnapshotWithCallback(nil);
   }
-  [self.mainCoordinator prepareToShowTabGrid];
 }
 
 - (void)displayRegularTabSwitcherInGridLayout {
