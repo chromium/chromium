@@ -17,11 +17,9 @@ void RunUnsafeResourceCallback(const UnsafeResource& resource,
                                bool showed_interstitial) {
   DCHECK(resource.callback_sequence);
   DCHECK(!resource.callback.is_null());
-  UnsafeResource::UrlCheckResult result(
-      proceed, showed_interstitial,
-      /*has_post_commit_interstitial_skipped=*/false);
   resource.callback_sequence->PostTask(
-      FROM_HERE, base::BindOnce(resource.callback, result));
+      FROM_HERE,
+      base::BindOnce(resource.callback, proceed, showed_interstitial));
 }
 
 BaseSafeBrowsingErrorUI::SBInterstitialReason

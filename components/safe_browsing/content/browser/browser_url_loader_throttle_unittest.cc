@@ -239,7 +239,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
           /*proceed=*/callback_info.should_proceed,
           /*show_interstitial=*/
           callback_info.should_show_interstitial,
-          /*has_post_commit_interstitial_skipped=*/false,
           callback_info.performed_check);
     }
   }
@@ -252,7 +251,6 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
              /*proceed=*/callback_infos_[index].should_proceed,
              /*show_interstitial=*/
              callback_infos_[index].should_show_interstitial,
-             /*has_post_commit_interstitial_skipped=*/false,
              callback_infos_[index].performed_check);
   }
 

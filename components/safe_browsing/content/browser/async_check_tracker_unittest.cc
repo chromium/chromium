@@ -68,8 +68,7 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     tracker_->DidFinishNavigation(&handle);
   }
 
-  void CallPendingCheckerCompleted(bool proceed,
-                                   bool has_post_commit_interstitial_skipped) {
+  void CallPendingCheckerCompleted(bool proceed) {
     if (!proceed) {
       // This mocks how BaseUIManager caches unsafe resource if
       // load_post_commit_error_page is false.
@@ -80,7 +79,6 @@ class AsyncCheckTrackerTest : public content::RenderViewHostTestHarness {
     }
     UrlCheckerOnSB::OnCompleteCheckResult result(
         proceed, /*showed_interstitial=*/true,
-        has_post_commit_interstitial_skipped,
         SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck);
     tracker_->PendingCheckerCompleted(result);
   }
@@ -98,31 +96,20 @@ TEST_F(AsyncCheckTrackerTest,
 
 TEST_F(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_PendingCheckProceed) {
-  CallPendingCheckerCompleted(/*proceed=*/true,
-                              /*has_post_commit_interstitial_skipped=*/false);
-  CallDidFinishNavigation(/*has_committed=*/true);
-  EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
-}
-
-TEST_F(AsyncCheckTrackerTest,
-       DisplayBlockingPageNotCalled_PostCommitInterstitialNotSkipped) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/false);
+  CallPendingCheckerCompleted(/*proceed=*/true);
   CallDidFinishNavigation(/*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
 TEST_F(AsyncCheckTrackerTest,
        DisplayBlockingPageNotCalled_NavigationNotCommitted) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+  CallPendingCheckerCompleted(/*proceed=*/false);
   CallDidFinishNavigation(/*has_committed=*/false);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 0);
 }
 
 TEST_F(AsyncCheckTrackerTest, DisplayBlockingPageCalled) {
-  CallPendingCheckerCompleted(/*proceed=*/false,
-                              /*has_post_commit_interstitial_skipped=*/true);
+  CallPendingCheckerCompleted(/*proceed=*/false);
   CallDidFinishNavigation(/*has_committed=*/true);
   EXPECT_EQ(ui_manager_->DisplayBlockingPageCalledTimes(), 1);
   UnsafeResource resource = ui_manager_->GetDisplayedResource();

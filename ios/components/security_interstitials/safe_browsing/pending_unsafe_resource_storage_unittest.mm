@@ -36,7 +36,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
     return SafeBrowsingUrlAllowList::FromWebState(&web_state_);
   }
 
-  void ResourceCallback(UnsafeResource::UrlCheckResult result) {
+  void ResourceCallback(bool proceed, bool showed_interstitial) {
     resource_callback_executed_ = true;
   }
 
@@ -60,10 +60,7 @@ TEST_F(PendingUnsafeResourceStorageTest, PendingResourceValue) {
 TEST_F(PendingUnsafeResourceStorageTest, NoOpCallback) {
   const UnsafeResource* resource = storage_.resource();
   ASSERT_TRUE(resource);
-  UnsafeResource::UrlCheckResult result(
-      /*proceed=*/false, /*showed_interstitial=*/false,
-      /*has_post_commit_interstitial_skipped=*/false);
-  resource->callback.Run(result);
+  resource->callback.Run(/*proceed=*/false, /*showed_interstitial=*/false);
   EXPECT_FALSE(resource_callback_executed_);
 }
 

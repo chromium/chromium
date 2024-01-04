@@ -150,7 +150,6 @@ class SafeBrowsingQueryManager
             slow_check_notifier,
         bool proceed,
         bool showed_interstitial,
-        bool has_post_commit_interstitial_skipped,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check);
 
@@ -161,7 +160,6 @@ class SafeBrowsingQueryManager
         safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
         bool proceed,
         bool showed_interstitial,
-        bool has_post_commit_interstitial_skipped,
         safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
             performed_check);
 
