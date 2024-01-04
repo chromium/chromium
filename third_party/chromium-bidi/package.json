@@ -33,7 +33,7 @@
   },
   "wireit": {
     "bidi-types": {
-      "command": "tools/generate-bidi-types.sh",
+      "command": "tools/generate-bidi-types.mjs",
       "output": [
         "src/protocol/webdriver-bidi.ts"
       ]
@@ -158,10 +158,10 @@
       ]
     },
     "wpt-all": {
-      "command": "tools/runWPTAll.sh",
+      "command": "tools/run-wpt-all.mjs",
       "files": [
         "tools/run-wpt.mjs",
-        "tools/runWPTAll.sh",
+        "tools/run-wpt-all.mjs",
         "wpt/tools/webdriver/**/*.py",
         "wpt/webdriver/tests/**/*.py",
         "wpt-metadata/**/*.ini"

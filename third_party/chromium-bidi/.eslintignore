@@ -9,6 +9,6 @@ lib
 logs/
 node_modules/
 wptreport*.json
-wpt/
+./wpt/
 /src/protocol/webdriver-bidi.ts
 /src/protocol-parser/webdriver-bidi.ts

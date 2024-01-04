@@ -58,7 +58,7 @@ if (CHANNEL === 'local') {
 
 // DEBUG = (empty string) is allowed.
 const DEBUG = process.env.DEBUG ?? 'bidi:*';
-const DEBUG_COLORS = process.env.DEBUG_COLORS || 'yes';
+const DEBUG_COLORS = process.env.DEBUG_COLORS || 'false';
 const DEBUG_DEPTH = process.env.DEBUG_DEPTH || '10';
 const LOG_DIR = process.env.LOG_DIR || 'logs';
 const LOG_FILE =

@@ -47,12 +47,7 @@ module.exports = {
       typescript: true,
     },
   },
-  plugins: [
-    '@typescript-eslint',
-    'import',
-    'mocha',
-    "promise",
-  ],
+  plugins: ['@typescript-eslint', 'import', 'mocha', 'promise'],
   extends: [
     // keep-sorted start
     'eslint:recommended',
@@ -72,12 +67,18 @@ module.exports = {
     // keep-sorted start block=yes sticky_comments=yes
     '@typescript-eslint/array-type': 'warn',
     '@typescript-eslint/consistent-generic-constructors': 'warn',
-    '@typescript-eslint/consistent-type-imports': ['warn', {fixStyle: 'inline-type-imports'}],
-    '@typescript-eslint/explicit-member-accessibility': ['warn', {accessibility: 'no-public'}],
+    '@typescript-eslint/consistent-type-imports': [
+      'warn',
+      {fixStyle: 'inline-type-imports'},
+    ],
+    '@typescript-eslint/explicit-member-accessibility': [
+      'warn',
+      {accessibility: 'no-public'},
+    ],
     '@typescript-eslint/no-empty-function': 'warn',
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extraneous-class': 'warn',
-    '@typescript-eslint/no-import-type-side-effects': "error",
+    '@typescript-eslint/no-import-type-side-effects': 'error',
     '@typescript-eslint/no-misused-promises': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
@@ -102,11 +103,12 @@ module.exports = {
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
     'import/order': [
-      'error', {
+      'error',
+      {
         'newlines-between': 'always',
         alphabetize: {
           order: 'asc',
-          caseInsensitive: true
+          caseInsensitive: true,
         },
       },
     ],
