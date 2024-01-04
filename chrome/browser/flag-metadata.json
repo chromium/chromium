@@ -8003,7 +8003,7 @@
   {
     "name": "use-load-simulated-request-for-error-page-navigation",
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "use_messages_staging_url",
