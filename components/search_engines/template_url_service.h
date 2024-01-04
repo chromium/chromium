@@ -121,8 +121,16 @@ class TemplateURLService : public WebDataServiceConsumer,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 
-  // The following is for testing.
-  TemplateURLService(const Initializer* initializers, const int count);
+  // For testing only.
+  // DEPRECATED, prefer the constructor that takes a `PrefService`.
+  // TODO(crbug.com/1499181): Remove once all usage is cleaned up.
+  TemplateURLService(const Initializer* initializers, const size_t count);
+
+  // For testing only. `initializers` will be used to simulate having loaded
+  // some template URL data.
+  explicit TemplateURLService(
+      PrefService* prefs,
+      base::span<const TemplateURLService::Initializer> initializers = {});
 
   TemplateURLService(const TemplateURLService&) = delete;
   TemplateURLService& operator=(const TemplateURLService&) = delete;
@@ -624,7 +632,11 @@ class TemplateURLService : public WebDataServiceConsumer,
   // the keywords table has been fully loaded.
   class PreLoadingProviders;
 
-  void Init(const Initializer* initializers, int num_initializers);
+  void Init();
+
+  // Simulate a loaded `TemplateURLService`.
+  void ApplyInitializersForTesting(
+      base::span<const TemplateURLService::Initializer> initializers);
 
   // Removes |template_url| from various internal maps
   // (|keyword_to_turl_|, |guid_to_turl_|, |provider_map_|).

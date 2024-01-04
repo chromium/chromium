@@ -391,7 +391,7 @@ TemplateURLService::TemplateURLService(
       dsp_change_callback_(dsp_change_callback),
       pre_loading_providers_(std::make_unique<PreLoadingProviders>()),
       default_search_manager_(
-          prefs_,
+          prefs,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
                               base::Unretained(this))
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -401,14 +401,33 @@ TemplateURLService::TemplateURLService(
           ),
       enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs)) {
   DCHECK(search_terms_data_);
-  Init(nullptr, 0);
+  Init();
+}
+
+TemplateURLService::TemplateURLService(
+    PrefService* prefs,
+    base::span<const TemplateURLService::Initializer> initializers)
+    : TemplateURLService(
+          prefs,
+          /*search_terms_data=*/std::make_unique<SearchTermsData>(),
+          /*web_data_service=*/nullptr,
+          /*client=*/nullptr,
+          /*dsp_change_callback=*/base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+              ,
+          /*for_lacros_main_profile=*/false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+      ) {
+  // This constructor is not intended to be used outside of tests.
+  CHECK_IS_TEST();
+  ApplyInitializersForTesting(initializers);  // IN-TEST
 }
 
 TemplateURLService::TemplateURLService(const Initializer* initializers,
-                                       const int count)
+                                       const size_t count)
     : pre_loading_providers_(std::make_unique<PreLoadingProviders>()),
       default_search_manager_(
-          prefs_,
+          /*pref_service=*/nullptr,
           base::BindRepeating(&TemplateURLService::ApplyDefaultSearchChange,
                               base::Unretained(this))
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -416,8 +435,11 @@ TemplateURLService::TemplateURLService(const Initializer* initializers,
           false
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
           ),
-      enterprise_site_search_manager_(GetEnterpriseSiteSearchManager(prefs_)) {
-  Init(initializers, count);
+      enterprise_site_search_manager_(
+          GetEnterpriseSiteSearchManager(/*prefs=*/nullptr)) {
+  CHECK_IS_TEST();
+  Init();
+  ApplyInitializersForTesting(base::make_span(initializers, count));  // IN-TEST
 }
 
 TemplateURLService::~TemplateURLService() {
@@ -1813,8 +1835,7 @@ SyncDataMap TemplateURLService::CreateGUIDToSyncDataMap(
   return data_map;
 }
 
-void TemplateURLService::Init(const Initializer* initializers,
-                              int num_initializers) {
+void TemplateURLService::Init() {
   if (client_)
     client_->SetOwner(this);
 
@@ -1843,31 +1864,39 @@ void TemplateURLService::Init(const Initializer* initializers,
   Scoper scoper(this);
 
   ApplyDefaultSearchChange(dse, source);
+}
 
-  if (num_initializers > 0) {
-    // This path is only hit by test code and is used to simulate a loaded
-    // TemplateURLService.
-    ChangeToLoadedState();
+void TemplateURLService::ApplyInitializersForTesting(
+    base::span<const TemplateURLService::Initializer> initializers) {
+  // This path is only hit by test code and is used to simulate a loaded
+  // TemplateURLService.
+  CHECK_IS_TEST();
 
-    // Add specific initializers, if any.
-    for (int i(0); i < num_initializers; ++i) {
-      DCHECK(initializers[i].keyword);
-      DCHECK(initializers[i].url);
-      DCHECK(initializers[i].content);
+  if (initializers.empty()) {
+    return;
+  }
 
-      // TemplateURLService ends up owning the TemplateURL, don't try and free
-      // it.
-      TemplateURLData data;
-      data.SetShortName(base::UTF8ToUTF16(initializers[i].content));
-      data.SetKeyword(base::UTF8ToUTF16(initializers[i].keyword));
-      data.SetURL(initializers[i].url);
-      // Set all to active by default for testing purposes.
-      data.is_active = TemplateURLData::ActiveStatus::kTrue;
-      Add(std::make_unique<TemplateURL>(data));
+  ChangeToLoadedState();
 
-      // Set the first provided identifier to be the default.
-      if (i == 0)
-        default_search_manager_.SetUserSelectedDefaultSearchEngine(data);
+  // Add specific initializers, if any.
+  for (size_t i = 0; i < initializers.size(); ++i) {
+    CHECK(initializers[i].keyword);
+    CHECK(initializers[i].url);
+    CHECK(initializers[i].content);
+
+    // TemplateURLService ends up owning the TemplateURL, don't try and free
+    // it.
+    TemplateURLData data;
+    data.SetShortName(base::UTF8ToUTF16(initializers[i].content));
+    data.SetKeyword(base::UTF8ToUTF16(initializers[i].keyword));
+    data.SetURL(initializers[i].url);
+    // Set all to active by default for testing purposes.
+    data.is_active = TemplateURLData::ActiveStatus::kTrue;
+    Add(std::make_unique<TemplateURL>(data));
+
+    // Set the first provided identifier to be the default.
+    if (i == 0) {
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(data);
     }
   }
 }

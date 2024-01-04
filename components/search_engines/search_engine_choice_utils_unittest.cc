@@ -43,15 +43,18 @@ namespace search_engines {
 
 class SearchEngineChoiceUtilsTest : public ::testing::Test {
  public:
-  SearchEngineChoiceUtilsTest()
-      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {
+  SearchEngineChoiceUtilsTest() {
     feature_list_.InitAndEnableFeature(switches::kSearchEngineChoice);
     TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
+    DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
 
     // Override the country checks to simulate being in Belgium.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, "BE");
+
+    template_url_service_ =
+        std::make_unique<TemplateURLService>(&pref_service_);
 
     InitMockPolicyService();
     CheckPoliciesInitialState();
@@ -93,7 +96,9 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   policy::PolicyMap& policy_map() { return policy_map_; }
   PrefService* pref_service() { return &pref_service_; }
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
-  TemplateURLService& template_url_service() { return template_url_service_; }
+  TemplateURLService& template_url_service() {
+    return CHECK_DEREF(template_url_service_.get());
+  }
   base::HistogramTester histogram_tester_;
 
  private:
@@ -123,7 +128,7 @@ class SearchEngineChoiceUtilsTest : public ::testing::Test {
   policy::PolicyMap policy_map_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::test::ScopedFeatureList feature_list_;
-  TemplateURLService template_url_service_;
+  std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
 // Test that the choice screen doesn't get displayed if the profile is not
