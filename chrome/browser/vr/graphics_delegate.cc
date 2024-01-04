@@ -64,10 +64,6 @@ float GraphicsDelegate::GetZNear() {
   return kZNear;
 }
 
-float GraphicsDelegate::GetZFar() {
-  return kZFar;
-}
-
 void GraphicsDelegate::SetXrViews(
     const std::vector<device::mojom::XRViewPtr>& views) {
   // Store the first left and right views.
@@ -145,43 +141,6 @@ RenderInfo GraphicsDelegate::GetOptimizedRenderInfoForFovs(
   // TODO(billorr): consider optimizing overlays to save texture size.
   // For now, we use a full-size texture when we could get by with less.
   return info;
-}
-
-void GraphicsDelegate::PrepareBufferForWebXr() {
-  // Desktop doesn't render WebXR through the browser renderer.
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kWebXr;
-}
-
-void GraphicsDelegate::PrepareBufferForWebXrOverlayElements() {
-  // No-op.  We reuse the same buffer for overlays and other content, which is
-  // initialized in PreRender.
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kWebXrOverlayElements;
-}
-
-void GraphicsDelegate::PrepareBufferForBrowserUi() {
-  ClearBufferToBlack();
-  DCHECK(prepared_drawing_buffer_ == DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kBrowserUi;
-}
-
-void GraphicsDelegate::OnFinishedDrawingBuffer() {
-  DCHECK(prepared_drawing_buffer_ != DrawingBufferMode::kNone);
-  prepared_drawing_buffer_ = DrawingBufferMode::kNone;
-}
-
-void GraphicsDelegate::GetWebXrDrawParams(int* texture_id,
-                                          Transform* uv_transform) {
-  // Reporting a texture_id of 0 will skip texture copies.
-  *texture_id = 0;
-}
-
-bool GraphicsDelegate::RunInSkiaContext(base::OnceClosure callback) {
-  // TODO(billorr): Support multiple contexts in a share group.  For now just
-  // share one context.
-  std::move(callback).Run();
-  return true;
 }
 
 gfx::Size GraphicsDelegate::GetTextureSize() {

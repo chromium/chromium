@@ -87,7 +87,6 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   void UpdateUi(const RenderInfo& render_info,
                 base::TimeTicks currrent_time,
                 FrameType frame_type);
-  void DrawWebXr();
   void DrawWebXrOverlay(const RenderInfo& render_info);
   void DrawBrowserUi(const RenderInfo& render_info);
   void ReportElementVisibilityStatusForTesting(

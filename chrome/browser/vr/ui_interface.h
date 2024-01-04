@@ -55,8 +55,6 @@ class UiInterface {
   virtual bool SceneHasDirtyTextures() const = 0;
   virtual void UpdateSceneTextures() = 0;
   virtual void Draw(const RenderInfo& render_info) = 0;
-  virtual void DrawWebXr(int texture_data_handle,
-                         const float (&uv_transform)[16]) = 0;
   virtual void DrawWebVrOverlayForeground(const RenderInfo&) = 0;
   virtual bool HasWebXrOverlayElementsToDraw() = 0;
   virtual void HandleMenuButtonEvents(InputEventList* input_event_list) = 0;

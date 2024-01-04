@@ -39,22 +39,10 @@ class VR_EXPORT GraphicsDelegate {
   gfx::RectF GetRight();
   gfx::RectF GetLeft();
 
-  // TODO(https://crbug.com/1493735): Make non-virtual once GVR is removed.
-  virtual FovRectangles GetRecommendedFovs();
-  virtual RenderInfo GetRenderInfo(FrameType frame_type,
-                                   const gfx::Transform& head_pose);
-  virtual RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs);
-
-  // TODO(https://crbug.com/1493735): Consider removing these methods once GVR
-  // is removed.
-  virtual void InitializeBuffers() {}
-  virtual void PrepareBufferForWebXr();
-  virtual void PrepareBufferForWebXrOverlayElements();
-  virtual void PrepareBufferForBrowserUi();
-  virtual void OnFinishedDrawingBuffer();
-  virtual void GetWebXrDrawParams(int* texture_id, Transform* uv_transform);
-  // This method returns true when succeeded.
-  virtual bool RunInSkiaContext(base::OnceClosure callback);
+  FovRectangles GetRecommendedFovs();
+  RenderInfo GetRenderInfo(FrameType frame_type,
+                           const gfx::Transform& head_pose);
+  RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles& fovs);
 
   virtual bool PreRender() = 0;
   virtual void PostRender() = 0;
@@ -67,27 +55,13 @@ class VR_EXPORT GraphicsDelegate {
  protected:
   gfx::Size GetTextureSize();
 
-  // TODO(https://crbug.com/1493735): Make pure virtual once GVR is removed.
-  virtual void ClearBufferToBlack() {}
-
-  // TODO(https://crbug.com/1493735): Remove once GVR is removed.
-  float GetZFar();
+  virtual void ClearBufferToBlack() = 0;
 
  private:
   device::mojom::XRViewPtr left_;
   device::mojom::XRViewPtr right_;
 
   RenderInfo cached_info_ = {};
-
-  enum class DrawingBufferMode {
-    kWebXr,
-    kWebXrOverlayElements,
-    kContentQuad,
-    kBrowserUi,
-    kNone,
-  };
-
-  DrawingBufferMode prepared_drawing_buffer_ = DrawingBufferMode::kNone;
 };
 
 }  // namespace vr

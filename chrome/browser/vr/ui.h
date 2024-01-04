@@ -78,8 +78,6 @@ class VR_UI_EXPORT Ui : public UiInterface,
   bool SceneHasDirtyTextures() const override;
   void UpdateSceneTextures() override;
   void Draw(const RenderInfo& render_info) override;
-  void DrawWebXr(int texture_data_handle,
-                 const float (&uv_transform)[16]) override;
   void DrawWebVrOverlayForeground(const RenderInfo& render_info) override;
   bool HasWebXrOverlayElementsToDraw() override;
   void HandleMenuButtonEvents(InputEventList* input_event_list) override;

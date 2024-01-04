@@ -231,13 +231,6 @@ void Ui::Draw(const vr::RenderInfo& info) {
   ui_renderer_->Draw(info);
 }
 
-void Ui::DrawWebXr(int texture_data_handle, const float (&uv_transform)[16]) {
-  if (!texture_data_handle)
-    return;
-  ui_element_renderer_->DrawTextureCopy(texture_data_handle, uv_transform, 0,
-                                        0);
-}
-
 void Ui::DrawWebVrOverlayForeground(const vr::RenderInfo& info) {
   ui_renderer_->DrawWebVrOverlayForeground(info);
 }

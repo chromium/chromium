@@ -40,7 +40,6 @@ class MockUi : public UiInterface {
   MOCK_CONST_METHOD0(SceneHasDirtyTextures, bool());
   MOCK_METHOD0(UpdateSceneTextures, void());
   MOCK_METHOD1(Draw, void(const RenderInfo&));
-  MOCK_METHOD2(DrawWebXr, void(int, const float (&)[16]));
   MOCK_METHOD1(DrawWebVrOverlayForeground, void(const RenderInfo&));
   MOCK_METHOD0(HasWebXrOverlayElementsToDraw, bool());
   MOCK_METHOD1(HandleMenuButtonEvents, void(InputEventList*));
@@ -79,29 +78,6 @@ class MockGraphicsDelegate : public GraphicsDelegate {
 
   // GraphicsDelegate
   void OnResume() {}
-  FovRectangles GetRecommendedFovs() override { return {}; }
-  RenderInfo GetRenderInfo(FrameType, const gfx::Transform&) override {
-    return {};
-  }
-  RenderInfo GetOptimizedRenderInfoForFovs(const FovRectangles&) override {
-    return {};
-  }
-  void InitializeBuffers() override {}
-  void PrepareBufferForWebXr() override { UseBuffer(); }
-  void PrepareBufferForWebXrOverlayElements() override { UseBuffer(); }
-  void PrepareBufferForBrowserUi() override { UseBuffer(); }
-  void OnFinishedDrawingBuffer() override {
-    CHECK(using_buffer_);
-    using_buffer_ = false;
-  }
-  void GetWebXrDrawParams(int*, Transform*) override {}
-  bool RunInSkiaContext(base::OnceClosure callback) override {
-    std::move(callback).Run();
-    return true;
-  }
-
-  // TODO(https://crbug.com/1493735): Provide implementations during refactor
-  // as needed.
   bool PreRender() override { return true; }
   void PostRender() override {}
   mojo::PlatformHandle GetTexture() override { NOTREACHED_NORETURN(); }
@@ -109,6 +85,7 @@ class MockGraphicsDelegate : public GraphicsDelegate {
   void ResetMemoryBuffer() override {}
   bool BindContext() override { return true; }
   void ClearContext() override {}
+  void ClearBufferToBlack() override {}
 
  private:
   void UseBuffer() {
@@ -137,6 +114,31 @@ class MockInputDelegate : public InputDelegate {
   void OnPause() override {}
 };
 
+std::vector<device::mojom::XRViewPtr> GetDefaultViews() {
+  int x_offset = 0;
+  static int width = 128;
+  static int height = 128;
+
+  auto left = device::mojom::XRView::New();
+  left->eye = device::mojom::XREye::kLeft;
+  left->viewport = gfx::Rect(x_offset, 0, width, height);
+  left->field_of_view =
+      device::mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
+  x_offset += width;
+
+  auto right = device::mojom::XRView::New();
+  right->eye = device::mojom::XREye::kRight;
+  right->viewport = gfx::Rect(x_offset, 0, width, height);
+  right->field_of_view =
+      device::mojom::VRFieldOfView::New(45.0f, 45.0f, 45.0f, 45.0f);
+
+  std::vector<device::mojom::XRViewPtr> views;
+  views.push_back(std::move(left));
+  views.push_back(std::move(right));
+
+  return views;
+}
+
 class BrowserRendererTest : public testing::Test {
  public:
   struct BuildParams {
@@ -156,6 +158,7 @@ class BrowserRendererTest : public testing::Test {
     ui_ = build_params_.ui.get();
     scheduler_delegate_ = build_params_.scheduler_delegate.get();
     graphics_delegate_ = build_params_.graphics_delegate.get();
+    graphics_delegate_->SetXrViews(GetDefaultViews());
     input_delegate_ = build_params_.input_delegate.get();
   }
 
@@ -194,7 +197,6 @@ TEST_F(BrowserRendererTest, DrawWebXrFrameNoOverlay) {
 
   EXPECT_CALL(*ui_, OnBeginFrame(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, Draw(_)).Times(0);
-  EXPECT_CALL(*ui_, DrawWebXr(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, DrawWebVrOverlayForeground(_)).Times(0);
   EXPECT_CALL(*scheduler_delegate_, SubmitDrawnFrame(kWebXrFrame, _))
       .Times(1)
@@ -220,7 +222,6 @@ TEST_F(BrowserRendererTest, DrawWebXrFrameWithOverlay) {
 
   EXPECT_CALL(*ui_, OnBeginFrame(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, Draw(_)).Times(0);
-  EXPECT_CALL(*ui_, DrawWebXr(_, _)).Times(1).InSequence(s);
   EXPECT_CALL(*ui_, DrawWebVrOverlayForeground(_)).Times(1).InSequence(s);
   EXPECT_CALL(*scheduler_delegate_, SubmitDrawnFrame(kWebXrFrame, _))
       .Times(1)

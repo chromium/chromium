@@ -57,9 +57,7 @@ void BrowserRenderer::Draw(FrameType frame_type,
       graphics_delegate_->GetRenderInfo(frame_type, head_pose);
   UpdateUi(render_info, current_time, frame_type);
 
-  graphics_delegate_->InitializeBuffers();
   if (frame_type == kWebXrFrame) {
-    DrawWebXr();
     if (ui_->HasWebXrOverlayElementsToDraw()) {
       DrawWebXrOverlay(render_info);
     }
@@ -75,17 +73,6 @@ void BrowserRenderer::Draw(FrameType frame_type,
   scheduler_delegate_->SubmitDrawnFrame(frame_type, head_pose);
 }
 
-void BrowserRenderer::DrawWebXr() {
-  TRACE_EVENT0("gpu", __func__);
-  graphics_delegate_->PrepareBufferForWebXr();
-
-  int texture_id;
-  GraphicsDelegate::Transform uv_transform;
-  graphics_delegate_->GetWebXrDrawParams(&texture_id, &uv_transform);
-  ui_->DrawWebXr(texture_id, uv_transform);
-  graphics_delegate_->OnFinishedDrawingBuffer();
-}
-
 void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
   TRACE_EVENT0("gpu", __func__);
   // Calculate optimized viewport and corresponding render info.
@@ -97,16 +84,12 @@ void BrowserRenderer::DrawWebXrOverlay(const RenderInfo& render_info) {
   const auto& webxr_overlay_render_info =
       graphics_delegate_->GetOptimizedRenderInfoForFovs(fovs);
 
-  graphics_delegate_->PrepareBufferForWebXrOverlayElements();
   ui_->DrawWebVrOverlayForeground(webxr_overlay_render_info);
-  graphics_delegate_->OnFinishedDrawingBuffer();
 }
 
 void BrowserRenderer::DrawBrowserUi(const RenderInfo& render_info) {
   TRACE_EVENT0("gpu", __func__);
-  graphics_delegate_->PrepareBufferForBrowserUi();
   ui_->Draw(render_info);
-  graphics_delegate_->OnFinishedDrawingBuffer();
 }
 
 void BrowserRenderer::OnPause() {
@@ -170,11 +153,7 @@ void BrowserRenderer::UpdateUi(const RenderInfo& render_info,
   ui_->OnBeginFrame(current_time, render_info.head_pose);
 
   if (ui_->SceneHasDirtyTextures()) {
-    if (!graphics_delegate_->RunInSkiaContext(base::BindOnce(
-            &UiInterface::UpdateSceneTextures, base::Unretained(ui_.get())))) {
-      browser_->ForceExitVr();
-      return;
-    }
+    ui_->UpdateSceneTextures();
   }
   ReportElementVisibilityStatusForTesting(timing_start);
 
