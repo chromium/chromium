@@ -6,6 +6,7 @@ import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/le
 
 interface NetworkPropertyListMojoElement extends LegacyElementMixin,
                                                  HTMLElement {
+  disabled: boolean;
   fields: string[];
 }
 

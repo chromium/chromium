@@ -4,17 +4,33 @@
 
 import 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 
-import {InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/internet_detail_dialog.js';
+import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
+import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
+import {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
+import {NetworkIpConfigElement} from 'chrome://resources/ash/common/network/network_ip_config.js';
+import {NetworkNameserversElement} from 'chrome://resources/ash/common/network/network_nameservers.js';
+import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/network/network_property_list_mojo.js';
+import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
+import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrosNetworkConfigRemote, InhibitReason, MAX_NUM_CUSTOM_APNS} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-/** @implements {InternetDetailDialogBrowserProxy} */
-export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy {
+import {FakeNetworkConfig} from './fake_network_config_mojom.js';
+
+export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy
+    implements InternetDetailDialogBrowserProxy {
   constructor() {
     super([
       'getDialogArguments',
@@ -23,29 +39,26 @@ export class TestInternetDetailDialogBrowserProxy extends TestBrowserProxy {
     ]);
   }
 
-  /** @override */
   getDialogArguments() {
     return JSON.stringify({guid: 'guid'});
   }
 
-  /** @override */
   closeDialog() {}
 
-  /** @override */
   showPortalSignin() {}
 }
 
 suite('internet-detail-dialog', () => {
   const guid = 'guid';
-  const test_iccid = '11111111111111111';
-  let internetDetailDialog = null;
+  const testIccid = '11111111111111111';
+  let internetDetailDialog: InternetDetailDialogElement;
 
-  /** @type {?CrosNetworkConfigRemote} */
-  let mojoApi_;
+  let mojoApi: FakeNetworkConfig;
 
   suiteSetup(function() {
-    mojoApi_ = new FakeNetworkConfig();
-    MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
+    mojoApi = new FakeNetworkConfig();
+    MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
+        mojoApi);
   });
 
   function flushAsync() {
@@ -54,19 +67,22 @@ suite('internet-detail-dialog', () => {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  function getManagedProperties(type, opt_source) {
-    const result = OncMojo.getDefaultManagedProperties(type, guid, name);
-    if (opt_source) {
-      result.source = opt_source;
+  function getManagedProperties(
+      type: NetworkType, name?: string, source?: OncSource) {
+    const result =
+        OncMojo.getDefaultManagedProperties(type, guid, name ? name : '');
+    if (source) {
+      result.source = source;
     }
     return result;
   }
 
   setup(async () => {
-    PolymerTest.clearBody();
+    assert(window.trustedTypes);
+    document.body.innerHTML = window.trustedTypes.emptyHTML;
     InternetDetailDialogBrowserProxyImpl.setInstance(
         new TestInternetDetailDialogBrowserProxy());
-    mojoApi_.resetForTest();
+    mojoApi.resetForTest();
   });
 
   teardown(function() {
@@ -89,66 +105,112 @@ suite('internet-detail-dialog', () => {
   }
 
   async function setupCellularNetwork(
-      isPrimary, isInhibited, connectedApn, customApnList, errorState,
-      portalState) {
-    await mojoApi_.setNetworkTypeEnabledState(NetworkType.kCellular, true);
+      isPrimary: boolean, isInhibited: boolean, connectedApn?: ApnProperties,
+      customApnList?: ApnProperties[], errorState?: string,
+      portalState?: PortalState) {
+    await mojoApi.setNetworkTypeEnabledState(NetworkType.kCellular, true);
 
-    const cellularNetwork =
-        getManagedProperties(NetworkType.kCellular, OncSource.kDevice);
-    cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+    const cellularNetwork = getManagedProperties(
+        NetworkType.kCellular, /*name=*/ undefined, OncSource.kDevice);
+    if (cellularNetwork.typeProperties.cellular) {
+      cellularNetwork.typeProperties.cellular.iccid = testIccid;
+      // Required for networkChooseMobile to be rendered.
+      cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
+      cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
+      cellularNetwork.typeProperties.cellular.customApnList = customApnList;
+    }
     // Required for connectDisconnectButton to be rendered.
     cellularNetwork.connectionState = isPrimary ?
         ConnectionStateType.kConnected :
         ConnectionStateType.kNotConnected;
-    // Required for networkChooseMobile to be rendered.
-    cellularNetwork.typeProperties.cellular.supportNetworkScan = true;
-    cellularNetwork.typeProperties.cellular.connectedApn = connectedApn;
-    cellularNetwork.typeProperties.cellular.customApnList = customApnList;
     cellularNetwork.errorState = errorState;
-    cellularNetwork.portalState = portalState;
+    if (portalState) {
+      cellularNetwork.portalState = portalState;
+    }
 
-    mojoApi_.setManagedPropertiesForTest(cellularNetwork);
-    mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason:
-          (isInhibited ? InhibitReason.kInstallingProfile :
-                         InhibitReason.kNotInhibited),
-      simInfos: [{
-        iccid: test_iccid,
-        isPrimary: isPrimary,
-      }],
+    mojoApi.setManagedPropertiesForTest(cellularNetwork);
+    setDeviceState(
+        NetworkType.kCellular, DeviceStateType.kEnabled,
+        (isInhibited ? InhibitReason.kInstallingProfile :
+                       InhibitReason.kNotInhibited),
+        [{
+          iccid: testIccid,
+          isPrimary: isPrimary,
+          slotId: 1,
+          eid: 'eid',
+        }]);
+  }
+
+  function setDeviceState(
+      type: NetworkType, deviceState: DeviceStateType,
+      inhibitReason?: InhibitReason, simInfos?: SIMInfo[],
+      macAddress?: string) {
+    mojoApi.setDeviceStateForTest({
+      type: type,
+      deviceState: deviceState,
+      inhibitReason: inhibitReason ? inhibitReason :
+                                     InhibitReason.kNotInhibited,
+      simInfos: simInfos ? simInfos : undefined,
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: undefined,
+      macAddress: macAddress,
+      scanning: false,
+      simLockStatus: undefined,
+      simAbsent: false,
+      managedNetworkAvailable: false,
+      serial: undefined,
+      isCarrierLocked: false,
     });
   }
 
-  function getElement(selector) {
-    const element = internetDetailDialog.$$(selector);
-    assertTrue(!!element);
+  function createApn(accessPointName: string, name?: string) {
+    return {
+      accessPointName: accessPointName,
+      id: undefined,
+      authentication: ApnAuthenticationType.kAutomatic,
+      language: undefined,
+      localizedName: undefined,
+      name: name,
+      password: undefined,
+      username: undefined,
+      attach: undefined,
+      state: ApnState.kEnabled,
+      ipType: ApnIpType.kAutomatic,
+      apnTypes: [ApnType.kDefault],
+    };
+  }
+
+  function getElement<T extends HTMLElement = HTMLElement>(selector: string):
+      T {
+    const element = internetDetailDialog.shadowRoot!.querySelector<T>(selector);
+    assert(element);
     return element;
   }
 
   suite('captive portal ui updates', () => {
-    function getButton(buttonId) {
+    function getButton(buttonId: string): CrButtonElement {
       const button =
-          internetDetailDialog.shadowRoot.querySelector(`#${buttonId}`);
+          internetDetailDialog.shadowRoot!.querySelector<CrButtonElement>(
+              `#${buttonId}`);
       assertTrue(!!button);
       return button;
     }
 
     test('WiFi in a portal portalState', function() {
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
       wifiNetwork.source = OncSource.kUser;
       wifiNetwork.connectable = true;
       wifiNetwork.connectionState = ConnectionStateType.kPortal;
       wifiNetwork.portalState = PortalState.kPortal;
 
-      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
       init();
       return flushAsync().then(() => {
-        const networkStateText =
-            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        const networkStateText = getElement('#networkState');
         assertTrue(networkStateText.hasAttribute('warning'));
+        assert(networkStateText.textContent);
         assertEquals(
             networkStateText.textContent.trim(),
             internetDetailDialog.i18n('networkListItemSignIn'));
@@ -160,19 +222,19 @@ suite('internet-detail-dialog', () => {
     });
 
     test('WiFi in a no internet portalState', function() {
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
       wifiNetwork.source = OncSource.kUser;
       wifiNetwork.connectable = true;
       wifiNetwork.connectionState = ConnectionStateType.kPortal;
       wifiNetwork.portalState = PortalState.kNoInternet;
 
-      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
       init();
       return flushAsync().then(() => {
-        const networkStateText =
-            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        const networkStateText = getElement('#networkState');
         assertTrue(networkStateText.hasAttribute('warning'));
+        assert(networkStateText.textContent);
         assertEquals(
             networkStateText.textContent.trim(),
             internetDetailDialog.i18n(
@@ -185,19 +247,19 @@ suite('internet-detail-dialog', () => {
     });
 
     test('WiFi in a proxy-auth portalState', function() {
-      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
       const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
       wifiNetwork.source = OncSource.kUser;
       wifiNetwork.connectable = true;
       wifiNetwork.connectionState = ConnectionStateType.kPortal;
       wifiNetwork.portalState = PortalState.kProxyAuthRequired;
 
-      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+      mojoApi.setManagedPropertiesForTest(wifiNetwork);
       init();
       return flushAsync().then(() => {
-        const networkStateText =
-            internetDetailDialog.shadowRoot.querySelector(`#networkState`);
+        const networkStateText = getElement('#networkState');
         assertTrue(networkStateText.hasAttribute('warning'));
+        assert(networkStateText.textContent);
         assertEquals(
             networkStateText.textContent.trim(),
             internetDetailDialog.i18n('networkListItemSignIn'));
@@ -213,25 +275,26 @@ suite('internet-detail-dialog', () => {
     await setupCellularNetwork(/*isPrimary=*/ false, /*isInhibited=*/ false);
 
     await init();
-    assertFalse(internetDetailDialog.showConfigurableSections_);
+    assertFalse(
+        !!internetDetailDialog.shadowRoot!.querySelector<HTMLElement>('.hr'));
 
-    const managedProperties = internetDetailDialog.managedProperties_;
-    assertTrue(internetDetailDialog.showCellularSim_(managedProperties));
-    assertFalse(!!internetDetailDialog.$$('network-siminfo'));
+    assertFalse(!!internetDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+        'network-siminfo'));
 
     // The 'Forget' and 'ConnectDisconnect' buttons should still be showing.
-    assertTrue(!!internetDetailDialog.$$('cr-button'));
+    assertTrue(!!internetDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+        'cr-button'));
   });
 
   test('Network on active sim, show configurations', async () => {
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
 
     await init();
-    assertTrue(internetDetailDialog.showConfigurableSections_);
+    assertTrue(
+        !!internetDetailDialog.shadowRoot!.querySelector<HTMLElement>('.hr'));
 
-    const managedProperties = internetDetailDialog.managedProperties_;
-    assertTrue(internetDetailDialog.showCellularSim_(managedProperties));
-    assertTrue(!!internetDetailDialog.$$('network-siminfo'));
+    assertTrue(!!internetDetailDialog.shadowRoot!.querySelector<HTMLElement>(
+        'network-siminfo'));
   });
 
   test('Dialog disabled when inhibited', async () => {
@@ -239,14 +302,19 @@ suite('internet-detail-dialog', () => {
     await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
     await init();
 
-    const connectDisconnectButton = getElement('#connectDisconnect');
-    const networkSimInfo = getElement('network-siminfo');
-    const networkChooseMobile = getElement('network-choose-mobile');
-    const networkApnlist = getElement('network-apnlist');
-    const networkProxy = getElement('network-proxy');
-    const networkIpConfig = getElement('network-ip-config');
-    const networkNameservers = getElement('network-nameservers');
-    const infoFields = getElement('network-property-list-mojo');
+    const connectDisconnectButton =
+        getElement<CrButtonElement>('#connectDisconnect');
+    const networkSimInfo = getElement<NetworkSiminfoElement>('network-siminfo');
+    const networkChooseMobile =
+        getElement<NetworkChooseMobileElement>('network-choose-mobile');
+    const networkApnlist = getElement<NetworkApnListElement>('network-apnlist');
+    const networkProxy = getElement<NetworkProxyElement>('network-proxy');
+    const networkIpConfig =
+        getElement<NetworkIpConfigElement>('network-ip-config');
+    const networkNameservers =
+        getElement<NetworkNameserversElement>('network-nameservers');
+    const infoFields = getElement<NetworkPropertyListMojoElement>(
+        'network-property-list-mojo');
 
     assertFalse(connectDisconnectButton.disabled);
     assertFalse(networkSimInfo.disabled);
@@ -258,15 +326,17 @@ suite('internet-detail-dialog', () => {
     assertFalse(infoFields.disabled);
 
     // Mock device being inhibited.
-    mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kInstallingProfile,
-      simInfos: [{
-        iccid: test_iccid,
-        isPrimary: true,
-      }],
-    });
+    setDeviceState(
+        NetworkType.kCellular,
+        DeviceStateType.kEnabled,
+        InhibitReason.kInstallingProfile,
+        [{
+          iccid: testIccid,
+          isPrimary: true,
+          slotId: 1,
+          eid: 'eid',
+        }],
+    );
     await flushAsync();
 
     assertTrue(connectDisconnectButton.disabled);
@@ -279,15 +349,17 @@ suite('internet-detail-dialog', () => {
     assertTrue(infoFields.disabled);
 
     // Uninhibit.
-    mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kCellular,
-      deviceState: DeviceStateType.kEnabled,
-      inhibitReason: InhibitReason.kNotInhibited,
-      simInfos: [{
-        iccid: test_iccid,
-        isPrimary: true,
-      }],
-    });
+    setDeviceState(
+        NetworkType.kCellular,
+        DeviceStateType.kEnabled,
+        InhibitReason.kNotInhibited,
+        [{
+          iccid: testIccid,
+          isPrimary: true,
+          slotId: 1,
+          eid: 'eid',
+        }],
+    );
     await flushAsync();
 
     assertFalse(connectDisconnectButton.disabled);
@@ -315,45 +387,43 @@ suite('internet-detail-dialog', () => {
 
       await init();
       const legacyApnElement =
-          internetDetailDialog.shadowRoot.querySelector('network-apnlist');
+          internetDetailDialog.shadowRoot!.querySelector('network-apnlist');
       const apnSection =
-          internetDetailDialog.shadowRoot.querySelector('cr-expand-button');
+          internetDetailDialog.shadowRoot!.querySelector('cr-expand-button');
 
       if (isApnRevampEnabled) {
         assertFalse(!!legacyApnElement);
         assertTrue(!!apnSection);
         assertEquals(
             internetDetailDialog.i18n('internetApnPageTitle'),
-            internetDetailDialog.shadowRoot.querySelector('#apnRowTitle')
-                .textContent);
-        const getApnSectionSublabel = () =>
-            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
-                .textContent.trim();
+            getElement('#apnRowTitle').textContent);
+        const apnRowSublabel = getElement('#apnRowSublabel');
+        const getApnSectionSublabel = () => {
+          assert(apnRowSublabel.textContent);
+          return apnRowSublabel.textContent.trim();
+        };
+
         assertFalse(!!getApnSectionSublabel());
-        const getApnList = () =>
-            internetDetailDialog.shadowRoot.querySelector('apn-list');
-        assertTrue(!!getApnList());
+        const getApnList = () => getElement<ApnList>('apn-list');
         assertTrue(getApnList().shouldOmitLinks);
         assertEquals(errorState, getApnList().errorState);
         assertEquals(PortalState.kNoInternet, getApnList().portalState);
         const isApnListShowing = () =>
-            internetDetailDialog.shadowRoot.querySelector('iron-collapse')
-                .opened;
+            getElement<IronCollapseElement>('iron-collapse').opened;
+
         assertFalse(isApnListShowing());
 
         // Add a connected APN.
         const accessPointName = 'access point name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: accessPointName});
+            createApn(accessPointName));
 
         // Force a refresh.
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
         assertEquals(accessPointName, getApnSectionSublabel());
-        assertFalse(
-            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
-                .hasAttribute('warning'));
+        assertFalse(apnRowSublabel.hasAttribute('warning'));
         assertFalse(isApnListShowing());
 
         // Update the APN's name property and add a restricted connectivity
@@ -361,7 +431,7 @@ suite('internet-detail-dialog', () => {
         const name = 'name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: accessPointName, name: name},
+            createApn(accessPointName, name),
             /* customApnList= */ undefined, /* errorState= */ undefined,
             PortalState.kNoInternet);
 
@@ -369,9 +439,7 @@ suite('internet-detail-dialog', () => {
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
         assertEquals(name, getApnSectionSublabel());
-        assertTrue(
-            internetDetailDialog.shadowRoot.querySelector('#apnRowSublabel')
-                .hasAttribute('warning'));
+        assertTrue(apnRowSublabel.hasAttribute('warning'));
         assertFalse(isApnListShowing());
 
         // Expand the section, the sublabel should no longer show.
@@ -401,16 +469,15 @@ suite('internet-detail-dialog', () => {
         });
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: 'access point name'}, []);
+            createApn(/*accessPointName=*/ 'access point name'), []);
         await init();
-        internetDetailDialog.shadowRoot.querySelector('cr-expand-button')
-            .click();
+        getElement('cr-expand-button').click();
 
         const getApnButton = () =>
-            internetDetailDialog.shadowRoot.querySelector(
-                '#createCustomApnButton');
+            getElement<CrButtonElement>('#createCustomApnButton');
+
         const getApnTooltip = () =>
-            internetDetailDialog.shadowRoot.querySelector('#apnTooltip');
+            internetDetailDialog.shadowRoot!.querySelector('#apnTooltip');
 
         assertTrue(!!getApnButton());
         assertFalse(!!getApnTooltip());
@@ -419,23 +486,21 @@ suite('internet-detail-dialog', () => {
         // We're setting the list of APNs to the max number
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: 'access point name'},
-            Array.apply(null, {length: MAX_NUM_CUSTOM_APNS}).map(_ => {
-              return {
-                accessPointName: 'apn',
-              };
-            }));
+            createApn(/*accessPointName=*/ 'access point name'),
+            Array(MAX_NUM_CUSTOM_APNS)
+                .fill(createApn(/*accessPointName=*/ 'apn')));
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
-        assertTrue(!!getApnTooltip());
         assertTrue(getApnButton().disabled);
-        assertTrue(getApnTooltip().innerHTML.includes(
+        const apnTooltip = getApnTooltip();
+        assert(apnTooltip);
+        assertTrue(apnTooltip.innerHTML.includes(
             internetDetailDialog.i18n('customApnLimitReached')));
 
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            {accessPointName: 'access point name'}, []);
+            createApn(/*accessPointName=*/ 'access point name'), []);
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
@@ -444,8 +509,8 @@ suite('internet-detail-dialog', () => {
 
         getApnButton().click();
         await flushAsync();
-        assertTrue(!!internetDetailDialog.shadowRoot.querySelector('apn-list')
-                         .shadowRoot.querySelector('apn-detail-dialog'));
+        assertTrue(!!getElement('apn-list')
+                         .shadowRoot!.querySelector('apn-detail-dialog'));
       });
 
   [false, true].forEach(isJellyEnabled => {
@@ -474,8 +539,7 @@ suite('internet-detail-dialog', () => {
       apnRevamp: true,
     });
     await init();
-    const getErrorToast = () =>
-        internetDetailDialog.shadowRoot.querySelector('#errorToast');
+    const getErrorToast = () => getElement<CrToastElement>('#errorToast');
     assertFalse(getErrorToast().open);
 
     const message = 'Toast message';
@@ -483,10 +547,7 @@ suite('internet-detail-dialog', () => {
     internetDetailDialog.dispatchEvent(event);
     await flushAsync();
     assertTrue(getErrorToast().open);
-    assertEquals(
-        internetDetailDialog.shadowRoot.querySelector('#errorToastMessage')
-            .innerHTML,
-        message);
+    assertEquals(getElement('#errorToastMessage').innerHTML, message);
   });
 
   test(
@@ -497,7 +558,7 @@ suite('internet-detail-dialog', () => {
         });
         await init();
         const getErrorToast = () =>
-            internetDetailDialog.shadowRoot.querySelector('#errorToast');
+            internetDetailDialog.shadowRoot!.querySelector('#errorToast');
         assertFalse(!!getErrorToast());
 
         const message = 'Toast message';
@@ -508,18 +569,17 @@ suite('internet-detail-dialog', () => {
       });
 
   test('MacAddress not shown when invalid', async function() {
-    mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+    mojoApi.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
     const wifiNetwork = getManagedProperties(NetworkType.kWiFi, 'wifi_user');
     wifiNetwork.source = OncSource.kUser;
     wifiNetwork.connectable = true;
     wifiNetwork.connectionState = ConnectionStateType.kConnected;
 
-    mojoApi_.setManagedPropertiesForTest(wifiNetwork);
-    mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kWiFi,
-      deviceState: DeviceStateType.kEnabled,
-      macAddress: '01:10:10:10:10:10',
-    });
+    mojoApi.setManagedPropertiesForTest(wifiNetwork);
+    setDeviceState(
+        NetworkType.kWiFi, DeviceStateType.kEnabled,
+        /*inhibitReason=*/ undefined, /*simInfos=*/ undefined,
+        /*macAddress=*/ '01:10:10:10:10:10');
     await flushAsync();
 
     init();
@@ -529,11 +589,10 @@ suite('internet-detail-dialog', () => {
     assertTrue(!!macAddress);
     assertFalse(macAddress.hidden);
 
-    mojoApi_.setDeviceStateForTest({
-      type: NetworkType.kWiFi,
-      deviceState: DeviceStateType.kEnabled,
-      macAddress: '00:00:00:00:00:00',
-    });
+    setDeviceState(
+        NetworkType.kWiFi, DeviceStateType.kEnabled,
+        /*inhibitReason=*/ undefined, /*simInfos=*/ undefined,
+        /*macAddress=*/ '00:00:00:00:00:00');
     await flushAsync();
 
     macAddress = getElement('#macAddress');

@@ -7,6 +7,7 @@ import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggl
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
 
 interface NetworkSiminfoElement extends LegacyElementMixin, HTMLElement {
+  disabled: boolean;
   getUnlockButton(): CrButtonElement|null;
   getSimLockToggle(): CrToggleElement|null;
 }
