@@ -21056,6 +21056,47 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "device_os": "MMB29Q",
+            "device_os_type": "userdebug",
+            "device_type": "bullhead",
+            "os": "Android"
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -22015,6 +22056,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_33_google_apis_x64",
+              "path": ".android_emulator/android_33_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_33_google_apis_x64"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -22407,6 +22503,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_34_google_apis_x64",
+              "path": ".android_emulator/android_34_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_34_google_apis_x64"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -22736,6 +22887,7 @@
       "cronet_package",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
+      "cronet_smoketests_apk",
       "cronet_smoketests_missing_native_library_instrumentation_apk",
       "cronet_smoketests_platform_only_instrumentation_apk",
       "cronet_test_instrumentation_apk",
@@ -22790,6 +22942,7 @@
       "cronet_package",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
+      "cronet_smoketests_apk",
       "cronet_smoketests_missing_native_library_instrumentation_apk",
       "cronet_smoketests_platform_only_instrumentation_apk",
       "cronet_test_instrumentation_apk",
@@ -22876,6 +23029,61 @@
         },
         "test": "cronet_sample_test_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sample_test_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/android_29_google_apis_x86.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_29_google_apis_x86",
+              "path": ".android_emulator/android_29_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_29_google_apis_x86"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
       },
       {
         "args": [
@@ -23281,6 +23489,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_30_google_apis_x86",
+              "path": ".android_emulator/android_30_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_30_google_apis_x86"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/android_30_google_apis_x86.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -23661,6 +23924,61 @@
         },
         "test": "cronet_sample_test_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sample_test_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android22.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android22",
+              "path": ".android_emulator/generic_android22"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android22"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
       },
       {
         "args": [
@@ -24066,6 +24384,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android23",
+              "path": ".android_emulator/generic_android23"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android23"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -24458,6 +24831,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android24",
+              "path": ".android_emulator/generic_android24"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android24"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -24838,6 +25266,61 @@
         },
         "test": "cronet_sample_test_apk",
         "test_id_prefix": "ninja://components/cronet/android:cronet_sample_test_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "generic_android26",
+              "path": ".android_emulator/generic_android26"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "generic_android26"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
       },
       {
         "args": [
@@ -25243,6 +25726,61 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cronet_smoketests_apk"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "cronet_smoketests_apk",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "4",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_28_google_apis_x86"
+            }
+          },
+          "output_links": [
+            {
+              "link": [
+                "https://luci-logdog.appspot.com/v/?s",
+                "=android%2Fswarming%2Flogcats%2F",
+                "${TASK_ID}%2F%2B%2Funified_logcats"
+              ],
+              "name": "shard #${SHARD_INDEX} logcats"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cronet_smoketests_apk",
+        "test_id_prefix": "ninja://components/cronet/android:cronet_smoketests_apk/"
+      },
+      {
+        "args": [
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cronet_smoketests_missing_native_library_instrumentation_apk"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
@@ -25573,6 +26111,7 @@
       "cronet_package",
       "cronet_perf_test_apk",
       "cronet_sample_test_apk",
+      "cronet_smoketests_apk",
       "cronet_smoketests_missing_native_library_instrumentation_apk",
       "cronet_smoketests_platform_only_instrumentation_apk",
       "cronet_test_instrumentation_apk",

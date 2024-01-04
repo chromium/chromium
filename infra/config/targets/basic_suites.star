@@ -1656,31 +1656,7 @@ targets.legacy_basic_suite(
     name = "cronet_gtests",
     tests = {
         "cronet_sample_test_apk": targets.legacy_test_config(),
-        "cronet_smoketests_missing_native_library_instrumentation_apk": targets.legacy_test_config(),
-        "cronet_smoketests_platform_only_instrumentation_apk": targets.legacy_test_config(),
-        "cronet_test_instrumentation_apk": targets.legacy_test_config(
-            mixins = [
-                "emulator-enable-network",
-            ],
-        ),
-        "cronet_tests_android": targets.legacy_test_config(),
-        "cronet_unittests_android": targets.legacy_test_config(),
-        "net_unittests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-    },
-)
-
-# TODO(b/314092564): Merge with cronet_gtests test suite
-# after this test-suite has run on CI for a week and proved its
-# stability.
-targets.legacy_basic_suite(
-    name = "cronet_gtests_and_proguarded_smoketest",
-    tests = {
-        "cronet_sample_test_apk": targets.legacy_test_config(),
-        "cronet_smoketests_apk": targets.legacy_test_config(),  # This is the only new addition to this test-suite.
+        "cronet_smoketests_apk": targets.legacy_test_config(),
         "cronet_smoketests_missing_native_library_instrumentation_apk": targets.legacy_test_config(),
         "cronet_smoketests_platform_only_instrumentation_apk": targets.legacy_test_config(),
         "cronet_test_instrumentation_apk": targets.legacy_test_config(
