@@ -754,6 +754,21 @@ const flags_ui::FeatureEntry::FeatureVariation
          std::size(kParcelTrackingTestDataOutForDelivery), nullptr},
 };
 
+const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAfterFRE[] = {
+    {kIOSDockingPromoExperimentType, "0"}};
+const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedAtAppLaunch[] = {
+    {kIOSDockingPromoExperimentType, "1"}};
+const FeatureEntry::FeatureParam kIOSDockingPromoDisplayedDuringFRE[] = {
+    {kIOSDockingPromoExperimentType, "2"}};
+
+const FeatureEntry::FeatureVariation kIOSDockingPromoVariations[] = {
+    {"Display promo after FRE", kIOSDockingPromoDisplayedAfterFRE,
+     std::size(kIOSDockingPromoDisplayedAfterFRE), nullptr},
+    {"Display promo at app launch", kIOSDockingPromoDisplayedAtAppLaunch,
+     std::size(kIOSDockingPromoDisplayedAtAppLaunch), nullptr},
+    {"Display promo during FRE", kIOSDockingPromoDisplayedDuringFRE,
+     std::size(kIOSDockingPromoDisplayedDuringFRE), nullptr}};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1301,6 +1316,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(password_manager::features::
                             kIOSPasswordSettingsBulkUploadLocalPasswords)},
+    {"ios-docking-promo", flag_descriptions::kIOSDockingPromoName,
+     flag_descriptions::kIOSDockingPromoDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kIOSDockingPromo,
+                                    kIOSDockingPromoVariations,
+                                    "IOSDockingPromo")},
     {"omnibox-grouping-framework-zps",
      flag_descriptions::kOmniboxGroupingFrameworkForZPSName,
      flag_descriptions::kOmniboxGroupingFrameworkForZPSDescription,

@@ -49,6 +49,25 @@ BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
 // Feature flag to log metrics for the edit menu.
 BASE_DECLARE_FEATURE(kIOSBrowserEditMenuMetrics);
 
+// Docking Promo experiment variations.
+extern const char kIOSDockingPromoExperimentType[];
+
+// Feature flag to enable the Docking Promo.
+BASE_DECLARE_FEATURE(kIOSDockingPromo);
+
+// Param values for the Docking Promo display trigger experimental arms.
+enum class DockingPromoDisplayTriggerArm {
+  kAfterFRE = 0,
+  kAppLaunch = 1,
+  kDuringFRE = 2,
+};
+
+// Helper function to check if kIOSDockingPromo is enabled.
+bool IsDockingPromoEnabled();
+
+// Returns the experiment type for the Docking Promo feature.
+DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled();
+
 // Feature flag to enable the non-modal DB promo cooldown refactor separating
 // the cooldown periods for full screen and non-modal promos, as well as
 // Finchable cooldown period for non-modal promos.

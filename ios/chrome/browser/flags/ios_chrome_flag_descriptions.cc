@@ -488,6 +488,11 @@ const char kIOSBrowserEditMenuMetricsName[] = "Browser edit menu metrics";
 const char kIOSBrowserEditMenuMetricsDescription[] =
     "Collect metrics for edit menu usage.";
 
+const char kIOSDockingPromoName[] = "Docking Promo";
+const char kIOSDockingPromoDescription[] =
+    "When enabled, the user will be presented an animated, instructional "
+    "promo showing how to move Chrome to their native iOS dock.";
+
 const char kIOSEditMenuPartialTranslateName[] =
     "Enable partial translate in edit menu";
 const char kIOSEditMenuPartialTranslateDescription[] =

@@ -419,6 +419,10 @@ extern const char kInProductHelpDemoModeDescription[];
 extern const char kIOSBrowserEditMenuMetricsName[];
 extern const char kIOSBrowserEditMenuMetricsDescription[];
 
+// Title and description for the flag to enable the Docking Promo.
+extern const char kIOSDockingPromoName[];
+extern const char kIOSDockingPromoDescription[];
+
 // Title and description for the flag to enable partial translate.
 extern const char kIOSEditMenuPartialTranslateName[];
 extern const char kIOSEditMenuPartialTranslateDescription[];

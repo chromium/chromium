@@ -4846,6 +4846,11 @@
     "expiry_milestone": 122
   },
   {
+    "name": "ios-docking-promo",
+    "owners": ["bwwilliams@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "ios-edit-menu-hide-search-web",
     "owners": [ "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 130

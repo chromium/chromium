@@ -82,6 +82,12 @@ BASE_FEATURE(kIOSBrowserEditMenuMetrics,
              "IOSBrowserEditMenuMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kIOSDockingPromoExperimentType[] = "IOSDockingPromoExperimentType";
+
+BASE_FEATURE(kIOSDockingPromo,
+             "IOSDockingPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
              "NonModalDefaultBrowserPromoCooldownRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -467,6 +473,17 @@ const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
     "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
 const char kIOSHideFeedWithSearchChoiceTargeted[] =
     "IOSHideFeedWithSearchChoiceTargeted";
+
+bool IsDockingPromoEnabled() {
+  return base::FeatureList::IsEnabled(kIOSDockingPromo);
+}
+
+DockingPromoDisplayTriggerArm DockingPromoExperimentTypeEnabled() {
+  return static_cast<DockingPromoDisplayTriggerArm>(
+      base::GetFieldTrialParamByFeatureAsInt(
+          kIOSDockingPromo, kIOSDockingPromoExperimentType,
+          /*default_value=*/(int)DockingPromoDisplayTriggerArm::kAfterFRE));
+}
 
 bool IsWebChannelsEnabled() {
   std::string launched_countries[5] = {"AU", "GB", "NZ", "US", "ZA"};
