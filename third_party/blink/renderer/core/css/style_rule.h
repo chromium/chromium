@@ -424,6 +424,7 @@ class CORE_EXPORT StyleRuleScope : public StyleRuleGroup {
                       String,
                       CSSNestingType,
                       StyleRule* parent_rule_for_nesting,
+                      bool is_within_scope,
                       StyleSheetContents* style_sheet);
 
  private:

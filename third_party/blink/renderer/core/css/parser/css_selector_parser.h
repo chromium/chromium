@@ -61,6 +61,7 @@ class CORE_EXPORT CSSSelectorParser {
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
+      bool is_within_scope,
       bool semicolon_aborts_nested_selector,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
@@ -69,6 +70,7 @@ class CORE_EXPORT CSSSelectorParser {
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
+      bool is_within_scope,
       bool semicolon_aborts_nested_selector,
       StyleSheetContents*,
       CSSParserObserver*,
@@ -99,12 +101,14 @@ class CORE_EXPORT CSSSelectorParser {
       const CSSParserContext*,
       CSSNestingType,
       const StyleRule* parent_rule_for_nesting,
+      bool is_within_scope,
       StyleSheetContents*,
       HeapVector<CSSSelector>&);
 
  private:
   CSSSelectorParser(const CSSParserContext*,
                     const StyleRule* parent_rule_for_nesting,
+                    bool is_within_scope,
                     bool semicolon_aborts_nested_selector,
                     StyleSheetContents*,
                     HeapVector<CSSSelector>&);
@@ -214,6 +218,9 @@ class CORE_EXPORT CSSSelectorParser {
   // The parent rule pointed to by the nesting selector (&).
   // https://drafts.csswg.org/css-nesting-1/#nest-selector
   const StyleRule* parent_rule_for_nesting_;
+  // True if we're parsing a selector within an @scope rule.
+  // https://drafts.csswg.org/selectors-4/#scoped-selector
+  const bool is_within_scope_;
   // See AbortsNestedSelectorParsing.
   bool semicolon_aborts_nested_selector_ = false;
   const StyleSheetContents* style_sheet_;

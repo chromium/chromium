@@ -99,7 +99,8 @@ CSSSelectorList* ParseSelectorList(const String&);
 // (for kNesting), or the :scope pseudo-class (for kScope).
 CSSSelectorList* ParseSelectorList(const String&,
                                    CSSNestingType,
-                                   const StyleRule* parent_rule_for_nesting);
+                                   const StyleRule* parent_rule_for_nesting,
+                                   bool is_within_scope);
 
 }  // namespace css_test_helpers
 }  // namespace blink

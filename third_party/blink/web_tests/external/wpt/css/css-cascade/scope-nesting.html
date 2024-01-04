@@ -419,3 +419,127 @@ test((t) => {
   assert_equals(getComputedStyle(c).zIndex, '3');
 }, 'Nested :scope inside an :is');
 </script>
+
+<template id=test_nested_scope_pseudo>
+  <div>
+    <style>
+      @scope (.b) {
+        .a:not(:scope) {
+          & :scope {
+            z-index: 1;
+          }
+        }
+      }
+    </style>
+    <div class="b">
+    </div>
+    <div class="a">
+      <div class="b">
+      </div>
+    </div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_nested_scope_pseudo.content.cloneNode(true));
+
+  let b_outside = document.querySelector('.b');
+  let b_inside = document.querySelector('.a .b');
+  assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
+  assert_equals(getComputedStyle(b_inside).zIndex, '1');
+}, ':scope within nested and scoped rule');
+</script>
+
+<template id=test_nested_scope_pseudo_implied>
+  <div>
+    <style>
+      @scope (.b) {
+        .a:not(:scope) {
+          :scope { /* & implied */
+            z-index: 1;
+          }
+        }
+      }
+    </style>
+    <div class="b">
+    </div>
+    <div class="a">
+      <div class="b">
+      </div>
+    </div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_nested_scope_pseudo_implied.content.cloneNode(true));
+
+  let b_outside = document.querySelector('.b');
+  let b_inside = document.querySelector('.a .b');
+  assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
+  assert_equals(getComputedStyle(b_inside).zIndex, '1');
+}, ':scope within nested and scoped rule (implied &)');
+</script>
+
+<template id=test_nested_scope_pseudo_relative>
+  <div>
+    <style>
+      @scope (.b) {
+        .a:not(:scope) {
+          > :scope { /* & implied */
+            z-index: 1;
+          }
+        }
+      }
+    </style>
+    <div class="b">
+    </div>
+    <div class="a">
+      <div class="b">
+      </div>
+    </div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_nested_scope_pseudo_relative.content.cloneNode(true));
+
+  let b_outside = document.querySelector('.b');
+  let b_inside = document.querySelector('.a .b');
+  assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
+  assert_equals(getComputedStyle(b_inside).zIndex, '1');
+}, ':scope within nested and scoped rule (relative)');
+</script>
+
+<template id=test_scoped_nested_group_rule>
+  <div>
+    <style>
+      @scope (.a) {
+        .b:not(:scope) {
+          @media (width) {
+            z-index: 1;
+          }
+        }
+      }
+    </style>
+    <div class="b">
+    </div>
+    <div class="a">
+      <div class="b">
+      </div>
+    </div>
+</div>
+</template>
+<script>
+test((t) => {
+  t.add_cleanup(() => main.replaceChildren());
+  main.append(test_scoped_nested_group_rule.content.cloneNode(true));
+
+  let b_outside = document.querySelector('.b');
+  let b_inside = document.querySelector('.a .b');
+  assert_equals(getComputedStyle(b_outside).zIndex, 'auto');
+  assert_equals(getComputedStyle(b_inside).zIndex, '1');
+}, 'Scoped nested group rule');
+</script>
