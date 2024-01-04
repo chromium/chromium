@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -762,6 +763,9 @@ int32_t PointerEventFactory::GetBlinkDeviceId(
   if (result.is_new_entry) {
     result.stored_value->value = current_device_id_++;
   }
+  TRACE_EVENT_INSTANT1("event", "PointerEventFactory::GetBlinkDeviceId",
+                       TRACE_EVENT_SCOPE_THREAD, "id",
+                       result.stored_value->value);
   return result.stored_value->value;
 }
 
