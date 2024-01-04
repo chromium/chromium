@@ -530,6 +530,14 @@ public class MediaDrmBridge {
             mOrigin = origin;
             mOriginSet = true;
             return true;
+        } catch (MediaDrm.MediaDrmStateException e) {
+            Log.e(TAG, "Failed to set security origin %s", origin, e);
+            Log.e(TAG, "getDiagnosticInfo:", e.getDiagnosticInfo());
+
+            // displayMetrics() is only available for P or greater.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                displayMetrics();
+            }
         } catch (java.lang.IllegalArgumentException e) {
             Log.e(TAG, "Failed to set security origin %s", origin, e);
         } catch (java.lang.IllegalStateException e) {
