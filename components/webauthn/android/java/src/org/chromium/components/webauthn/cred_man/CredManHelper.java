@@ -34,7 +34,7 @@ import org.chromium.components.webauthn.Fido2CredentialRequest.ConditionalUiStat
 import org.chromium.components.webauthn.Fido2CredentialRequestJni;
 import org.chromium.components.webauthn.GetAssertionResponseCallback;
 import org.chromium.components.webauthn.MakeCredentialResponseCallback;
-import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManCreateRequestEnum;
 import org.chromium.components.webauthn.cred_man.CredManMetricsHelper.CredManGetRequestEnum;
@@ -75,7 +75,7 @@ public class CredManHelper {
     private Runnable mNoCredentialsFallback;
 
     public interface BridgeProvider {
-        WebAuthnBrowserBridge getBridge();
+        WebauthnBrowserBridge getBridge();
     }
 
     public CredManHelper(BridgeProvider bridgeProvider, boolean playServicesAvailable) {

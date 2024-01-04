@@ -74,7 +74,7 @@ import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.FidoIntentSender;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
-import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.content.browser.ClientDataJsonImpl;
@@ -319,7 +319,7 @@ public class Fido2CredentialRequestTest {
                 long nativeInternalAuthenticator, byte[][] matchingCredentials) {}
     }
 
-    private static class MockBrowserBridge extends WebAuthnBrowserBridge {
+    private static class MockBrowserBridge extends WebauthnBrowserBridge {
         public enum CallbackInvocationType {
             IMMEDIATE_GET_ASSERTION,
             IMMEDIATE_HYBRID,

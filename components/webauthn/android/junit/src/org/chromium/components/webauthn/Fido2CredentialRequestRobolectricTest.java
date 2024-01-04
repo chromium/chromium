@@ -70,7 +70,7 @@ public class Fido2CredentialRequestRobolectricTest {
     @Mock private RenderFrameHost mFrameHost;
     @Mock GURLUtils.Natives mGURLUtilsJniMock;
     @Mock Activity mActivity;
-    @Mock WebAuthnBrowserBridge mBrowserBridgeMock;
+    @Mock WebauthnBrowserBridge mBrowserBridgeMock;
     @Mock CredManHelper mCredManHelperMock;
     @Mock Barrier mBarrierMock;
 

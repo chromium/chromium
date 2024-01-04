@@ -84,7 +84,7 @@ public class Fido2CredentialRequest
     private RenderFrameHost mFrameHost;
     private boolean mAppIdExtensionUsed;
     private boolean mEchoCredProps;
-    private WebAuthnBrowserBridge mBrowserBridge;
+    private WebauthnBrowserBridge mBrowserBridge;
     private boolean mAttestationAcceptable;
     private boolean mIsCrossOrigin;
     // mIsHybridRequest is true if this request comes from a hybrid (i.e. cross-device) flow rather
@@ -616,7 +616,7 @@ public class Fido2CredentialRequest
         mIsHybridRequest = isHybridRequest;
     }
 
-    public void overrideBrowserBridgeForTesting(WebAuthnBrowserBridge bridge) {
+    public void overrideBrowserBridgeForTesting(WebauthnBrowserBridge bridge) {
         mBrowserBridge = bridge;
     }
 
@@ -679,7 +679,7 @@ public class Fido2CredentialRequest
         }
 
         if (mBrowserBridge == null) {
-            mBrowserBridge = new WebAuthnBrowserBridge();
+            mBrowserBridge = new WebauthnBrowserBridge();
         }
 
         Runnable hybridCallback = null;
@@ -1120,9 +1120,9 @@ public class Fido2CredentialRequest
     }
 
     @Override
-    public WebAuthnBrowserBridge getBridge() {
+    public WebauthnBrowserBridge getBridge() {
         if (mBrowserBridge == null) {
-            mBrowserBridge = new WebAuthnBrowserBridge();
+            mBrowserBridge = new WebauthnBrowserBridge();
         }
         return mBrowserBridge;
     }
