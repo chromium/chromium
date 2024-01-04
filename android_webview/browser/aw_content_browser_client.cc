@@ -41,7 +41,6 @@
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_paths.h"
 #include "android_webview/common/aw_switches.h"
-#include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/common/url_constants.h"
 #include "base/android/build_info.h"
 #include "base/android/locale_utils.h"
@@ -145,50 +144,6 @@ bool g_created_network_context_params = false;
 
 // On apps targeting API level O or later, check cleartext is enforced.
 bool g_check_cleartext_permitted = false;
-
-// TODO(sgurun) move this to its own file.
-// This class handles android_webview.mojom.RenderMessageFilter Mojo interface's
-// methods on IO thread.
-class AwContentsMessageFilter
-    : public content::BrowserMessageFilter,
-      public content::BrowserAssociatedInterface<mojom::RenderMessageFilter> {
- public:
-  explicit AwContentsMessageFilter(int process_id);
-
-  AwContentsMessageFilter(const AwContentsMessageFilter&) = delete;
-  AwContentsMessageFilter& operator=(const AwContentsMessageFilter&) = delete;
-
-  // BrowserMessageFilter methods.
-  bool OnMessageReceived(const IPC::Message& message) override;
-
-  // mojom::RenderMessageFilter overrides:
-  void SubFrameCreated(
-      const blink::LocalFrameToken& parent_frame_token,
-      const blink::LocalFrameToken& child_frame_token) override;
-
- private:
-  ~AwContentsMessageFilter() override;
-
-  int process_id_;
-};
-
-AwContentsMessageFilter::AwContentsMessageFilter(int process_id)
-    : content::BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
-      process_id_(process_id) {}
-
-AwContentsMessageFilter::~AwContentsMessageFilter() = default;
-
-bool AwContentsMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-void AwContentsMessageFilter::SubFrameCreated(
-    const blink::LocalFrameToken& parent_frame_token,
-    const blink::LocalFrameToken& child_frame_token) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  AwContentsIoThreadClient::SubFrameCreated(process_id_, parent_frame_token,
-                                            child_frame_token);
-}
 
 }  // anonymous namespace
 
@@ -315,8 +270,6 @@ void AwContentBrowserClient::RenderProcessWillLaunch(
   // AwSettings.mAllowContentUrlAccess).
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
       host->GetID(), url::kContentScheme);
-
-  host->AddFilter(new AwContentsMessageFilter(host->GetID()));
 }
 
 bool AwContentBrowserClient::IsExplicitNavigation(

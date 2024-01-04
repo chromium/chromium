@@ -255,8 +255,8 @@ void AwContentRendererClient::GetInterface(
 
 mojom::RenderMessageFilter* AwContentRendererClient::GetRenderMessageFilter() {
   if (!render_message_filter_) {
-    RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
-        &render_message_filter_);
+    browser_interface_broker_->GetInterface(
+        render_message_filter_.BindNewPipeAndPassReceiver());
   }
   return render_message_filter_.get();
 }

@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 
@@ -87,7 +87,7 @@ class AwContentRendererClient : public content::ContentRendererClient,
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;
 
-  mojo::AssociatedRemote<mojom::RenderMessageFilter> render_message_filter_;
+  mojo::Remote<mojom::RenderMessageFilter> render_message_filter_;
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
   std::unique_ptr<SpellCheck> spellcheck_;
