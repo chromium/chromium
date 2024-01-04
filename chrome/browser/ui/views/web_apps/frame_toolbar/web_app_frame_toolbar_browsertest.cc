@@ -1753,6 +1753,21 @@ class WebAppFrameToolbarBrowserTest_AdditionalWindowingControls
     }
   }
 
+  void CheckCanResize(bool browser_view_can_resize_expected,
+                      std::optional<bool> web_api_can_resize_expected) {
+    EXPECT_EQ(helper()->browser_view()->CanResize(),
+              browser_view_can_resize_expected);
+    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
+              web_api_can_resize_expected);
+
+#if defined(USE_AURA)
+    EXPECT_EQ(helper()->browser_view()->GetNativeWindow()->GetProperty(
+                  aura::client::kResizeBehaviorKey) &
+                  aura::client::kResizeBehaviorCanResize,
+              browser_view_can_resize_expected);
+#endif
+  }
+
   GURL second_page_url() { return second_page_url_; }
 
  private:
@@ -1768,21 +1783,6 @@ IN_PROC_BROWSER_TEST_F(
   helper()->GrantWindowManagementPermission();
 
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
-
-  auto CheckCanResize = [&](bool browser_view_can_resize_expected,
-                            std::optional<bool> web_api_can_resize_expected) {
-    EXPECT_EQ(helper()->browser_view()->CanResize(),
-              browser_view_can_resize_expected);
-    EXPECT_EQ(helper()->browser_view()->GetCanResizeFromWebAPI(),
-              web_api_can_resize_expected);
-
-#if defined(USE_AURA)
-    EXPECT_EQ(helper()->browser_view()->GetNativeWindow()->GetProperty(
-                  aura::client::kResizeBehaviorKey) &
-                  aura::client::kResizeBehaviorCanResize,
-              browser_view_can_resize_expected);
-#endif
-  };
 
   // This will be the default value.
   helper()->browser_view()->SetCanResize(true);
@@ -1838,7 +1838,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Sets the resizability false for the main page.
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  EXPECT_FALSE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  CheckCanResize(false, false);
 
   // Navigates to the second page of the app.
   ASSERT_TRUE(
@@ -1848,7 +1848,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Sets the resizability true for the second page.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
-  EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  CheckCanResize(true, true);
 
   // Returns back to the main page.
   web_contents->GetController().GoBack();
@@ -1881,7 +1881,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Sets the resizability true for the app.
   SetResizableAndWait(web_contents, /*resizable=*/true, /*expected=*/true);
-  EXPECT_TRUE(helper()->browser_view()->GetCanResizeFromWebAPI().value());
+  CheckCanResize(true, true);
 
   // Another URL where resizability is not set resets the web API overridden
   // resizability.
@@ -1926,8 +1926,7 @@ IN_PROC_BROWSER_TEST_F(
       browser_view->frame()->client_view()->size();
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  EXPECT_FALSE(browser_view->GetCanResizeFromWebAPI().value());
-  EXPECT_FALSE(browser_view->CanResize());
+  CheckCanResize(false, false);
 
   // window.resizeTo API no longer takes action.
   EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(1000,1000);"));
@@ -1962,8 +1961,7 @@ IN_PROC_BROWSER_TEST_F(
   int initial_pos_y = EvalJs(web_contents, "window.screenY").ExtractInt();
 
   SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
-  EXPECT_FALSE(browser_view->GetCanResizeFromWebAPI().value());
-  EXPECT_FALSE(browser_view->CanResize());
+  CheckCanResize(false, false);
 
   // window.moveBy API still takes action.
   EXPECT_TRUE(ExecJs(web_contents, "window.moveBy(10,10);"));
