@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -64,6 +63,14 @@
 #include "url/scheme_host_port.h"
 
 namespace net {
+
+namespace features {
+
+BASE_FEATURE(kQuicMigrationIgnoreDisconnectSignalDuringProbing,
+             "kQuicMigrationIgnoreDisconnectSignalDuringProbing",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace features
 
 namespace {
 
@@ -2482,6 +2489,14 @@ void QuicChromiumClientSession::OnNetworkDisconnectedV2(
   if (GetCurrentNetwork() != disconnected_network) {
     DVLOG(1) << "Client's current default network is not affected by the "
              << "disconnected one.";
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kQuicMigrationIgnoreDisconnectSignalDuringProbing) &&
+      current_migration_cause_ == ON_NETWORK_MADE_DEFAULT) {
+    DVLOG(1) << "Ignoring a network disconnection signal because a "
+                "connection migration is happening on the default network.";
     return;
   }
 

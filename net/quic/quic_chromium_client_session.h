@@ -19,6 +19,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/observer_list.h"
@@ -1117,6 +1118,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
 
   base::WeakPtrFactory<QuicChromiumClientSession> weak_factory_{this};
 };
+
+namespace features {
+
+// When enabled, network disconnect signals don't trigger immediate migration
+// when there is an ongoing migration with probing.
+NET_EXPORT BASE_DECLARE_FEATURE(
+    kQuicMigrationIgnoreDisconnectSignalDuringProbing);
+
+}  // namespace features
 
 }  // namespace net
 
