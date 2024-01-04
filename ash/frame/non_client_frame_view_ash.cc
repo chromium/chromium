@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -175,8 +176,6 @@ NonClientFrameViewAsh::NonClientFrameViewAsh(views::Widget* frame)
 
   header_view_->set_context_menu_controller(
       frame_context_menu_controller_.get());
-
-  UpdateWindowRoundedCorners();
 }
 
 NonClientFrameViewAsh::~NonClientFrameViewAsh() = default;
@@ -302,6 +301,24 @@ void NonClientFrameViewAsh::OnWindowPropertyChanged(aura::Window* window,
 
 void NonClientFrameViewAsh::OnWindowDestroying(aura::Window* window) {
   window_observation_.Reset();
+}
+
+void NonClientFrameViewAsh::UpdateWindowRoundedCorners() {
+  if (!GetWidget()) {
+    return;
+  }
+
+  if (frame_enabled_) {
+    const int corner_radius =
+        chromeos::GetFrameCornerRadius(GetWidget()->GetNativeWindow());
+    header_view_->SetHeaderCornerRadius(corner_radius);
+  }
+
+  if (!chromeos::features::IsRoundedWindowsEnabled()) {
+    return;
+  }
+
+  GetWidget()->client_view()->UpdateWindowRoundedCorners();
 }
 
 base::RepeatingCallback<void()>
