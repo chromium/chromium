@@ -98,6 +98,9 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
       << "Getting campaign before campaigns finish loading";
   const auto match_start = base::TimeTicks::Now();
   auto* match_result = matcher_.GetCampaignBySlot(slot);
+  if (match_result) {
+    RecordGetCampaignBySlot(slot);
+  }
   RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
   return match_result;
 }

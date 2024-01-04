@@ -7069,6 +7069,11 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="Dismissed"/>
 </enum>
 
+<enum name="CampaignSlot">
+  <int value="0" label="Demo Mode App"/>
+  <int value="1" label="Demo Mode Free Play Apps"/>
+</enum>
+
 <enum name="CanaryCheckLookupResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failure"/>

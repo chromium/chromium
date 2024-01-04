@@ -3655,17 +3655,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Growth.CampaignsComponent.MatchDuration" units="ms"
-    expires_after="2024-10-17">
-  <owner>llin@google.com</owner>
-  <owner>cros-growth@google.com</owner>
-  <summary>
-    The amount of time in ms that the Campaigns Manager takes to match a
-    campaign based on the targeting criteria. Recorded when fetching a campaign
-    for a particular slot completed.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Growth.CampaignsComponent.ParseDuration" units="ms"
     expires_after="2024-10-17">
   <owner>llin@google.com</owner>
@@ -3684,6 +3673,27 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks unexpected error while loading and matching campaigns, recorded each
     time an unexpected error occurs.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.GetCampaignBySlot"
+    enum="CampaignSlot" expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    Tracks the slot of the fetched campaign, recorded each time a campaign is
+    fetched.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Growth.CampaignsManager.MatchDuration" units="ms"
+    expires_after="2024-10-17">
+  <owner>llin@google.com</owner>
+  <owner>cros-growth@google.com</owner>
+  <summary>
+    The amount of time in ms that the Campaigns Manager takes to match a
+    campaign based on the targeting criteria. Recorded when fetching a campaign
+    for a particular slot completed.
   </summary>
 </histogram>
 

@@ -17,7 +17,15 @@ class Time;
 
 namespace growth {
 
-enum class Slot { kDemoModeApp = 0 };
+// Entries should not be renumbered and numeric values should never be reused
+// as it is used for logging metrics as well. Please keep in sync with
+// "CampaignSlot" in src/tools/metrics/histograms/enums.xml.
+enum class Slot {
+  kDemoModeApp = 0,
+  kDemoModeFreePlayApps = 1,
+
+  kMaxValue = kDemoModeFreePlayApps
+};
 
 // Dictionary of supported targetings. For example:
 // {

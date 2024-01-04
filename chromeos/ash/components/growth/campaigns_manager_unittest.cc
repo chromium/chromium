@@ -90,6 +90,9 @@ inline constexpr char kCampaignsComponentReadDurationHistogram[] =
 inline constexpr char kCampaignMatchDurationHistogram[] =
     "Ash.Growth.CampaignsManager.MatchDuration";
 
+inline constexpr char kGetCampaignBySlotHistogramName[] =
+    "Ash.Growth.CampaignsManager.GetCampaignBySlot";
+
 // testing::InvokeArgument<N> does not work with base::OnceCallback. Use this
 // gmock action template to invoke base::OnceCallback. `k` is the k-th argument
 // and `T` is the callback's type.
@@ -276,6 +279,10 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
   histogram_tester.ExpectTotalCount(kCampaignsComponentReadDurationHistogram,
                                     1);
   histogram_tester.ExpectTotalCount(kCampaignMatchDurationHistogram, 1);
+
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
@@ -317,6 +324,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
 // user prefs are not available.
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
+  base::HistogramTester histogram_tester;
+
   LoadComponentAndVerifyLoadComplete(
       base::StringPrintf(kValidCampaignsFileTemplate, kValidDemoModeTargeting));
 
@@ -329,6 +338,9 @@ TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotInDemoMode) {
       /*country=*/"US");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  histogram_tester.ExpectUniqueSample(kGetCampaignBySlotHistogramName,
+                                      Slot::kDemoModeApp,
+                                      /*expected_bucket_count=*/0);
 }
 
 TEST_F(CampaignsManagerTest, GetDemoModeCampaignNotGamingDevice) {
