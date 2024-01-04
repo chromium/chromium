@@ -10,36 +10,22 @@ import {ErrorType, Mode} from './switch_access_constants.js';
  * Class to handle auto-scan behavior.
  */
 export class AutoScanManager {
-  /** @private */
-  constructor() {
-    /** @private {number|undefined} */
-    this.intervalID_;
+  private intervalID_?: number;
+  private isEnabled_ = false;
+  /** Whether the current node is within the virtual keyboard. */
+  private inKeyboard_ = false;
+  /** Auto-scan interval for the on-screen keyboard in milliseconds. */
+  private keyboardScanTime_ = NOT_INITIALIZED;
+  /** Length of the auto-scan interval for most contexts, in milliseconds. */
+  private primaryScanTime_ = NOT_INITIALIZED;
 
-    /** @private {boolean} */
-    this.isEnabled_ = false;
+  static instance?: AutoScanManager;
 
-    /**
-     * Whether the current node is within the virtual keyboard.
-     * @private {boolean}
-     */
-    this.inKeyboard_ = false;
-
-    /**
-     * Length of auto-scan interval for the on-screen keyboard in milliseconds.
-     * @private {number}
-     */
-    this.keyboardScanTime_ = NOT_INITIALIZED;
-
-    /**
-     * Length of the auto-scan interval for most contexts, in milliseconds.
-     * @private {number}
-     */
-    this.primaryScanTime_ = NOT_INITIALIZED;
-  }
+  private constructor() {}
 
   // ============== Static Methods ================
 
-  static init() {
+  static init(): void {
     if (AutoScanManager.instance) {
       throw SwitchAccess.error(
           ErrorType.DUPLICATE_INITIALIZATION,
@@ -48,10 +34,8 @@ export class AutoScanManager {
     AutoScanManager.instance = new AutoScanManager();
   }
 
-  /**
-   * Restart auto-scan under the current settings if it is currently running.
-   */
-  static restartIfRunning() {
+  /** Restart auto-scan under current settings if it is currently running. */
+  static restartIfRunning(): void {
     if (AutoScanManager.instance?.isRunning_()) {
       AutoScanManager.instance.stop_();
       AutoScanManager.instance.start_();
@@ -61,35 +45,29 @@ export class AutoScanManager {
   /**
    * Stop auto-scan if it is currently running. Then, if |enabled| is true,
    * turn on auto-scan. Otherwise leave it off.
-   *
-   * @param {boolean} enabled
    */
-  static setEnabled(enabled) {
-    if (AutoScanManager.instance.isRunning_()) {
-      AutoScanManager.instance.stop_();
+  static setEnabled(enabled: boolean): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    if (AutoScanManager.instance!.isRunning_()) {
+      AutoScanManager.instance!.stop_();
     }
-    AutoScanManager.instance.isEnabled_ = enabled;
+    AutoScanManager.instance!.isEnabled_ = enabled;
     if (enabled) {
-      AutoScanManager.instance.start_();
+      AutoScanManager.instance!.start_();
     }
   }
 
-  /**
-   * Sets whether the keyboard scan time is used.
-   * @param {boolean} inKeyboard
-   */
-  static setInKeyboard(inKeyboard) {
-    AutoScanManager.instance.inKeyboard_ = inKeyboard;
+  /** Sets whether the keyboard scan time is used. */
+  static setInKeyboard(inKeyboard: boolean): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    AutoScanManager.instance!.inKeyboard_ = inKeyboard;
   }
 
-  /**
-   * Update this.keyboardScanTime_ to |scanTime|.
-   *
-   * @param {number} scanTime Auto-scan interval time in milliseconds.
-   */
-  static setKeyboardScanTime(scanTime) {
-    AutoScanManager.instance.keyboardScanTime_ = scanTime;
-    if (AutoScanManager.instance.inKeyboard_) {
+  /** Update this.keyboardScanTime_ to |scanTime|, in milliseconds. */
+  static setKeyboardScanTime(scanTime: number): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    AutoScanManager.instance!.keyboardScanTime_ = scanTime;
+    if (AutoScanManager.instance!.inKeyboard_) {
       AutoScanManager.restartIfRunning();
     }
   }
@@ -97,21 +75,18 @@ export class AutoScanManager {
   /**
    * Update this.primaryScanTime_ to |scanTime|. Then, if auto-scan is currently
    * running, restart it.
-   * @param {number} scanTime Auto-scan interval time in milliseconds.
+   * @param scanTime Auto-scan interval time in milliseconds.
    */
-  static setPrimaryScanTime(scanTime) {
-    AutoScanManager.instance.primaryScanTime_ = scanTime;
+  static setPrimaryScanTime(scanTime: number): void {
+    // TODO(b/314203187): Not null asserted, check that this is correct.
+    AutoScanManager.instance!.primaryScanTime_ = scanTime;
     AutoScanManager.restartIfRunning();
   }
 
   // ============== Private Methods ================
 
-  /**
-   * Return true if auto-scan is currently running. Otherwise return false.
-   * @return {boolean}
-   * @private
-   */
-  isRunning_() {
+  /** Return true if auto-scan is currently running. Otherwise return false. */
+  private isRunning_(): boolean {
     return this.isEnabled_;
   }
 
@@ -121,10 +96,8 @@ export class AutoScanManager {
    * this.keyboardScanTime_ is used as the interval if the user is
    * navigating in the virtual keyboard, and this.primaryScanTime_ is used
    * otherwise. Does not do anything if AutoScanManager is already scanning.
-   *
-   * @private
    */
-  start_() {
+  private start_(): void {
     if (this.primaryScanTime_ === NOT_INITIALIZED || this.intervalID_ ||
         SwitchAccess.mode === Mode.POINT_SCAN) {
       return;
@@ -139,30 +112,21 @@ export class AutoScanManager {
 
     this.intervalID_ = setInterval(() => {
       if (SwitchAccess.mode === Mode.POINT_SCAN) {
-        AutoScanManager.instance.stop_();
+        this.stop_();
         return;
       }
       Navigator.byItem.moveForward();
     }, currentScanTime);
   }
 
-  /**
-   * Stop the window from moving to the next node at a fixed interval.
-   * @private
-   */
-  stop_() {
+  /** Stop the window from moving to the next node at a fixed interval. */
+  private stop_(): void {
     clearInterval(this.intervalID_);
     this.intervalID_ = undefined;
   }
 }
 
-/** @type {AutoScanManager} */
-AutoScanManager.instance;
-
 // Private to module.
 
-/**
- * Sentinel value that indicates an uninitialized scan time.
- * @const {number}
- */
+/** Sentinel value that indicates an uninitialized scan time. */
 const NOT_INITIALIZED = -1;

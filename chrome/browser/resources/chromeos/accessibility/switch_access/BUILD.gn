@@ -19,6 +19,7 @@ tsc_out_dir = "$target_gen_dir/tsc"
 
 # TS files to compile.
 ts_modules = [
+  "auto_scan_manager.ts",
   "commands.ts",
   "focus_ring_manager.ts",
   "history.ts",
@@ -73,7 +74,6 @@ run_jsbundler("copied_files") {
   ]
   sources = [
     "action_manager.js",
-    "auto_scan_manager.js",
     "background.html",
     "cache.js",
     "icons/back.svg",
