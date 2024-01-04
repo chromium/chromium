@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -44,6 +45,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/common/color_parser.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/error_utils.h"
@@ -722,6 +724,37 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
 
   // Set the highlights to cover all of these rects.
   AccessibilityManager::Get()->SetHighlights(rects, color);
+
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateSetSelectToSpeakFocusFunction::Run() {
+  std::optional<accessibility_private::SetSelectToSpeakFocus::Params> params(
+      accessibility_private::SetSelectToSpeakFocus::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  if (features::IsAccessibilityMagnifierFollowsStsEnabled() &&
+      ash::AccessibilityController::Get()->fullscreen_magnifier().enabled()) {
+    // Ship this event to AccessibilityCommon for fullscreen magnifier.
+    auto bounds =
+        std::make_unique<extensions::api::accessibility_private::ScreenRect>();
+    bounds->left = params->bounds.left;
+    bounds->top = params->bounds.top;
+    bounds->width = params->bounds.width;
+    bounds->height = params->bounds.height;
+    auto event_args = extensions::api::accessibility_private::
+        OnSelectToSpeakFocusChanged::Create(params->bounds);
+    auto event = std::make_unique<extensions::Event>(
+        extensions::events::
+            ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED,
+        extensions::api::accessibility_private::OnSelectToSpeakFocusChanged::
+            kEventName,
+        std::move(event_args));
+    extensions::EventRouter::Get(AccessibilityManager::Get()->profile())
+        ->DispatchEventWithLazyListener(
+            extension_misc::kAccessibilityCommonExtensionId, std::move(event));
+  }
 
   return RespondNow(NoArguments());
 }

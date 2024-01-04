@@ -7567,6 +7567,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFaceGaze)},
 
+    {"enable-accessibility-magnifier-follows-sts",
+     flag_descriptions::kAccessibilityMagnifierFollowsStsName,
+     flag_descriptions::kAccessibilityMagnifierFollowsStsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsSts)},
+
     {"enable-pip-double-tap-to-resize",
      flag_descriptions::kPipDoubleTapToResizeName,
      flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,

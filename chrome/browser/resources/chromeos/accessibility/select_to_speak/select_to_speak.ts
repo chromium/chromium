@@ -1213,11 +1213,6 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
           this.onNodeGroupSpeakingCompleted_();
           break;
         case chrome.tts.EventType.WORD:
-          // The Closure compiler doesn't realize that we did a !nodeGroup
-          // earlier so we check again here.
-          if (!nodeGroup) {
-            break;
-          }
           this.onTtsWordEvent_(event, nodeGroup);
           break;
         default:

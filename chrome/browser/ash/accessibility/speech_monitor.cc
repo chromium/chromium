@@ -10,6 +10,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_controller.h"
+#include "content/public/browser/tts_utterance.h"
 
 namespace ash {
 namespace test {
@@ -113,10 +114,40 @@ void SpeechMonitor::Speak(int utterance_id,
   content::TtsController::GetInstance()->OnTtsEvent(
       utterance_id, content::TTS_EVENT_START, 0,
       static_cast<int>(utterance.size()), std::string());
+
+  utterance_ = utterance;
+  utterance_id_ = utterance_id;
+  on_speak_finished_ = std::move(on_speak_finished);
+  if (!send_word_events_and_wait_to_finish_) {
+    // finish immediately.
+    FinishSpeech();
+    return;
+  }
+
+  std::size_t space = utterance.find(" ");
+  while (space != std::string::npos) {
+    // Send word events. This supports some Select-to-Speak tests.
+    std::size_t next_space = utterance.find(" ", space + 1);
+    int length =
+        (next_space == std::string::npos ? utterance.size() : next_space) -
+        space;
+    content::TtsController::GetInstance()->OnTtsEvent(
+        utterance_id, content::TTS_EVENT_WORD, space, length, std::string());
+    base::RunLoop().RunUntilIdle();
+    space = next_space;
+  }
+}
+
+void SpeechMonitor::FinishSpeech() {
+  CHECK(utterance_id_ != -1)
+      << "Cannot FinishSpeech as Speak has not yet been called.";
   content::TtsController::GetInstance()->OnTtsEvent(
-      utterance_id, content::TTS_EVENT_END, static_cast<int>(utterance.size()),
-      0, std::string());
-  std::move(on_speak_finished).Run(true);
+      utterance_id_, content::TTS_EVENT_END,
+      static_cast<int>(utterance_.size()), 0, std::string());
+  std::move(on_speak_finished_).Run(true);
+  utterance_ = "";
+  utterance_id_ = -1;
+  on_speak_finished_.Reset();
 
   time_of_last_utterance_ = std::chrono::steady_clock::now();
 }

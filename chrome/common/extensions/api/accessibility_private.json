@@ -518,6 +518,18 @@
         ]
       },
       {
+        "name": "setSelectToSpeakFocus",
+        "type": "function",
+        "description": "Informs the system where Select to Speak's reading focus is in screen coordinates. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged to be fired within the AccessibilityCommon component extension.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "Bounds of currently spoken word (if available) or node (if the spoken node is not a text node)."
+          }
+        ]
+      },
+      {
         "name": "setKeyboardListener",
         "type": "function",
         "description": "Sets the calling extension as a listener of all keyboard events optionally allowing the calling extension to capture/swallow the key event via DOM apis. Returns false via callback when unable to set the listener.",
@@ -1035,6 +1047,18 @@
         "type": "function",
         "description": "Fired when the Select to Speak context menu is clicked from outside the context of the Select to Speak extension.",
         "parameters": []
+      },
+      {
+        "name": "onSelectToSpeakFocusChanged",
+        "type": "function",
+        "description": "Fired when the Select to Speak reading focus changes.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "Select to Speak's focus bounds in global screen coordinates."
+          }
+        ]
       },
       {
         "name": "onSelectToSpeakStateChangeRequested",

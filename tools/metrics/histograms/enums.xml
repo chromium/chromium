@@ -26512,6 +26512,7 @@ from previous Chrome versions.
   <int value="-1713564656" label="ProtectSyncCredentialOnReauth:enabled"/>
   <int value="-1712124814" label="NoWakeUpsForCanceledTasks:disabled"/>
   <int value="-1711751318" label="enable-data-reduction-proxy-lo-fi-preview"/>
+  <int value="-1710901763" label="AccessibilityMagnifierFollowsSts:disabled"/>
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
@@ -29047,6 +29048,7 @@ from previous Chrome versions.
   <int value="-531810064" label="saveas-menu-label"/>
   <int value="-531792555" label="UseModernMediaControls:disabled"/>
   <int value="-531651776" label="NewRemotePlaybackPipeline:enabled"/>
+  <int value="-531633181" label="AccessibilityMagnifierFollowsSts:enabled"/>
   <int value="-531379517" label="MediaSessionNotification:disabled"/>
   <int value="-530799497" label="MacCoreLocationImplementation:enabled"/>
   <int value="-530480158" label="EnableSuggestedFiles:enabled"/>

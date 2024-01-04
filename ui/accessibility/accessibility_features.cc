@@ -221,6 +221,14 @@ bool IsAccessibilityExtraLargeCursorEnabled() {
       ::features::kAccessibilityExtraLargeCursor);
 }
 
+BASE_FEATURE(kAccessibilityMagnifierFollowsSts,
+             "AccessibilityMagnifierFollowsSts",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMagnifierFollowsStsEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityMagnifierFollowsSts);
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

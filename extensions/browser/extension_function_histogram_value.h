@@ -1921,6 +1921,7 @@ enum HistogramValue {
   DOCUMENTSCAN_READSCANDATA = 1859,
   DOCUMENTSCAN_SETOPTIONS = 1860,
   DOCUMENTSCAN_GETOPTIONGROUPS = 1861,
+  ACCESSIBILITY_PRIVATE_SETSELECTTOSPEAKFOCUS = 1862,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

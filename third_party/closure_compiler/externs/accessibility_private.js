@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -470,6 +470,16 @@ chrome.accessibilityPrivate.setFocusRings = function(focusRings, atType) {};
 chrome.accessibilityPrivate.setHighlights = function(rects, color) {};
 
 /**
+ * Informs the system where Select to Speak's reading focus is in screen
+ * coordinates. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged
+ * to be fired within the AccessibilityCommon component extension.
+ * @param {!chrome.accessibilityPrivate.ScreenRect} bounds Bounds of currently
+ *     spoken word (if available) or node (if the spoken node is not a text
+ *     node).
+ */
+chrome.accessibilityPrivate.setSelectToSpeakFocus = function(bounds) {};
+
+/**
  * Sets the calling extension as a listener of all keyboard events optionally
  * allowing the calling extension to capture/swallow the key event via DOM apis.
  * Returns false via callback when unable to set the listener.
@@ -746,6 +756,12 @@ chrome.accessibilityPrivate.onTwoFingerTouchStop;
  * @type {!ChromeEvent}
  */
 chrome.accessibilityPrivate.onSelectToSpeakContextMenuClicked;
+
+/**
+ * Fired when the Select to Speak reading focus changes.
+ * @type {!ChromeEvent}
+ */
+chrome.accessibilityPrivate.onSelectToSpeakFocusChanged;
 
 /**
  * Fired when Chrome OS wants to change the Select-to-Speak state, between

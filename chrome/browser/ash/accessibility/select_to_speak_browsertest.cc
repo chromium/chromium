@@ -22,10 +22,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
+#include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/accessibility/magnifier_animation_waiter.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
@@ -39,8 +42,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/browser/process_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -230,6 +235,17 @@ class SelectToSpeakTestWithVoiceSwitching : public SelectToSpeakTest {
     prefs->SetBoolean(prefs::kAccessibilitySelectToSpeakVoiceSwitching, true);
     SelectToSpeakTest::SetUpOnMainThread();
   }
+};
+
+class SelectToSpeakTestWithMagnifierFollowing : public SelectToSpeakTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMagnifierFollowsSts);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SpeakStatusTray) {
@@ -581,7 +597,7 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, FocusRingMovesWithMouse) {
 }
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
-                       SelectToSpeakPansFullscreenMagnifier) {
+                       SelectToSpeakSelectionPansFullscreenMagnifier) {
   FullscreenMagnifierController* fullscreen_magnifier_controller =
       Shell::Get()->fullscreen_magnifier_controller();
   fullscreen_magnifier_controller->SetEnabled(true);
@@ -621,10 +637,132 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
   gfx::Point const final_window_position =
       fullscreen_magnifier_controller->GetWindowPosition();
 
-  // Expect Magnifier window to move with mouse drag.
+  // Expect Magnifier window to move with mouse drag during STS selection.
   EXPECT_GT(final_window_position.x(), initial_window_position.x());
   EXPECT_GT(final_window_position.y(), initial_window_position.y());
 }
+
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithMagnifierFollowing,
+                       FullscreenMagnifierFollowsTextBounds) {
+  sm_.send_word_events_and_wait_to_finish(true);
+  Profile* profile = AccessibilityManager::Get()->profile();
+  // Turn off navigation controls as focus on these buttons changes magnifier
+  // bounds, and then there's a delay before focus can move to the highlighted
+  // area. In real life, focus would then update to the spoken text a short time
+  // after navigation controls, but speech monitor speaks everything instantly
+  // so we cannot test that.
+  profile->GetPrefs()->SetBoolean(
+      prefs::kAccessibilitySelectToSpeakNavigationControls, false);
+
+  std::string text = "Read me first!";
+  std::string second_text = "Read me last!";
+  LoadURLAndSelectToSpeak(
+      base::StringPrintf("data:text/html;charset=utf-8,<p>Not me!</p>"
+                         "<p>Skip me!</p><p>%s</p><p>Nor me!</p><p>%s</p>",
+                         text.c_str(), second_text.c_str()));
+  SelectNodeWithText(text);
+
+  // Set magnifier scale to something quite so that the initial bounds of the
+  // text are not within the magnifier bounds.
+  profile->GetPrefs()->SetDouble(prefs::kAccessibilityScreenMagnifierScale,
+                                 8.0);
+
+  // Wait for Fullscreen magnifier to initialize.
+  extensions::ExtensionHostTestHelper host_helper(
+      profile, extension_misc::kAccessibilityCommonExtensionId);
+  profile->GetPrefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled,
+                                  true);
+
+  FullscreenMagnifierController* fullscreen_magnifier_controller =
+      Shell::Get()->fullscreen_magnifier_controller();
+  MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
+  waiter.Wait();
+
+  host_helper.WaitForHostCompletedFirstLoad();
+  FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(profile);
+
+  gfx::Rect initial_viewport =
+      fullscreen_magnifier_controller->GetViewportRect();
+
+  AccessibilityFocusRingControllerImpl* controller =
+      Shell::Get()->accessibility_focus_ring_controller();
+  EXPECT_FALSE(controller->highlight_layer_for_testing());
+  PrepareToWaitForHighlightAdded();
+  // Activate select to speak on the selection (which is outside the magnifier
+  // bounds) using search+s.
+  generator_->PressKey(ui::VKEY_LWIN, /*flags=*/0);
+  generator_->PressKey(ui::VKEY_S, /*flags=*/0);
+  generator_->ReleaseKey(ui::VKEY_LWIN, /*flags=*/0);
+  generator_->ReleaseKey(ui::VKEY_S, /*flags=*/0);
+
+  // Some highlighting should have occurred. OK to do this after speech as
+  // Select to Speak refreshes the UI intermittently.
+  WaitForHighlightAdded();
+
+  // Check the highlight exists.
+  AccessibilityHighlightLayer* highlight_layer =
+      controller->highlight_layer_for_testing();
+  ASSERT_TRUE(highlight_layer);
+  EXPECT_EQ(1u, highlight_layer->rects_for_test().size());
+  gfx::Rect highlight_bounds = highlight_layer->rects_for_test()[0];
+  EXPECT_FALSE(initial_viewport.Intersects(highlight_bounds));
+
+  // Magnifier should now move to the highlighted area.
+  while (!fullscreen_magnifier_controller->GetViewportRect().Intersects(
+      highlight_bounds)) {
+    waiter.Wait();
+  }
+  gfx::Rect final_viewport = fullscreen_magnifier_controller->GetViewportRect();
+  EXPECT_FALSE(initial_viewport.Intersects(final_viewport));
+  EXPECT_TRUE(final_viewport.Intersects(highlight_bounds));
+
+  // Finish speech and make sure the right thing was actually read.
+  sm_.FinishSpeech();
+  sm_.ExpectSpeechPattern("*Read me first!*");
+  sm_.Replay();
+
+  SelectNodeWithText(second_text);
+  PrepareToWaitForHighlightAdded();
+  generator_->PressKey(ui::VKEY_LWIN, /*flags=*/0);
+  generator_->PressKey(ui::VKEY_S, /*flags=*/0);
+  generator_->ReleaseKey(ui::VKEY_LWIN, /*flags=*/0);
+  generator_->ReleaseKey(ui::VKEY_S, /*flags=*/0);
+
+  WaitForHighlightAdded();
+
+  // Highlight should have updated.
+  // First it will be cleared when the previous utterance is completed.
+  // Then make sure it's no longer in the magnifier's viewport.
+  while (!highlight_layer->rects_for_test().size() ||
+         final_viewport.Intersects(highlight_layer->rects_for_test()[0])) {
+    PrepareToWaitForHighlightAdded();
+    WaitForHighlightAdded();
+  }
+  highlight_bounds = highlight_layer->rects_for_test()[0];
+  EXPECT_FALSE(final_viewport.Intersects(highlight_bounds));
+
+  // Magnifier should update enough to cover the new highlighted text.
+  while (!fullscreen_magnifier_controller->GetViewportRect().Intersects(
+      highlight_bounds)) {
+    waiter.Wait();
+  }
+  gfx::Rect second_final_viewport =
+      fullscreen_magnifier_controller->GetViewportRect();
+  EXPECT_TRUE(second_final_viewport.Intersects(highlight_bounds));
+
+  // Finish speech and make sure the right thing was actually read.
+  sm_.FinishSpeech();
+  sm_.ExpectSpeechPattern("*Read me last!*");
+  sm_.Replay();
+
+  // Reset state.
+  sm_.send_word_events_and_wait_to_finish(false);
+  profile->GetPrefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled,
+                                  false);
+}
+
+// TODO(b/259363112): Add a test that Select to Speak follows focus for nodes
+// with no inline text boxes.
 
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, ContinuesReadingDuringResize) {
   ActivateSelectToSpeakInWindowBounds(

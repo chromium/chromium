@@ -287,7 +287,7 @@ export class UiManager {
   private updateHighlight_(
       node: AutomationNode,
       // TODO(b/314204374): Convert null to undefined.
-      currentWord: {start: number, end: number}|null): void {
+      currentWord: {start: number, end: number}|null, paused: boolean): void {
     if (!currentWord) {
       chrome.accessibilityPrivate.setHighlights(
           [], this.prefsManager_.highlightColor());
@@ -305,6 +305,13 @@ export class UiManager {
           const highlights = bounds ? [bounds] : [];
           chrome.accessibilityPrivate.setHighlights(
               highlights, this.prefsManager_.highlightColor());
+          if (!paused) {
+            // If speech is ongoing, update the bounds. (If it was paused,
+            // reading focus hasn't actually changed, so there's no need for
+            // this notification).
+            chrome.accessibilityPrivate.setSelectToSpeakFocus(
+                bounds ? bounds : node.location);
+          }
         });
   }
 
@@ -343,7 +350,7 @@ export class UiManager {
     } else {
       focusRingRect = node.location;
     }
-    this.updateHighlight_(node, currentWord);
+    this.updateHighlight_(node, currentWord, paused);
     if (focusRingRect) {
       this.setFocusRings_(
           [focusRingRect], true /* draw background */, showPanel);

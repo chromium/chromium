@@ -179,6 +179,10 @@ AX_BASE_EXPORT bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExtraLargeCursor);
 AX_BASE_EXPORT bool IsAccessibilityExtraLargeCursorEnabled();
 
+// Whether the screen magnifier can follow the Select to Speak focus.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
+AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

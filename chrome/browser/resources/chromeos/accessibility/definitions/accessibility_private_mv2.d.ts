@@ -341,6 +341,8 @@ declare global {
       export function setKeyboardListener(enabled: boolean, capture: boolean):
           void;
 
+      export function setSelectToSpeakFocus(bounds: ScreenRect): void;
+
       export function darkenScreen(darken: boolean): void;
 
       export function forwardKeyEventsToSwitchAccess(shouldForward: boolean):
@@ -436,6 +438,9 @@ declare global {
       export const onTwoFingerTouchStop: ChromeEvent<() => void>;
 
       export const onSelectToSpeakContextMenuClicked: ChromeEvent<() => void>;
+
+      export const onSelectToSpeakFocusChanged:
+          ChromeEvent<(bounds: ScreenRect) => void>;
 
       export const onSelectToSpeakStateChangeRequested: ChromeEvent<() => void>;
 

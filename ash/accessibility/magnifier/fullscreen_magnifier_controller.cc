@@ -224,6 +224,8 @@ void FullscreenMagnifierController::HandleMoveMagnifierToRect(
   if (GetViewportRect().Contains(node_bounds_in_root))
     return;
 
+  // Hide the cursor since this can cause jumps.
+  Shell::Get()->cursor_manager()->HideCursor();
   MoveMagnifierWindowFollowRect(node_bounds_in_root);
 }
 

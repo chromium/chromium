@@ -647,6 +647,9 @@ extern const char kAccessibilityExtraLargeCursorDescription[];
 extern const char kAccessibilityFaceGazeName[];
 extern const char kAccessibilityFaceGazeDescription[];
 
+extern const char kAccessibilityMagnifierFollowsStsName[];
+extern const char kAccessibilityMagnifierFollowsStsDescription[];
+
 extern const char kAccessibilitySelectToSpeakPrefsMigrationName[];
 extern const char kAccessibilitySelectToSpeakPrefsMigrationDescription[];
 

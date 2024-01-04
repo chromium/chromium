@@ -31,6 +31,25 @@ gfx::Rect GetViewPort() {
 
 }  // namespace
 
+// static
+void FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(Profile* profile) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string script = base::StringPrintf(R"JS(
+      (async function() {
+        globalThis.accessibilityCommon.setFeatureLoadCallbackForTest(
+            'magnifier', () => {
+              globalThis.accessibilityCommon.magnifier_.setIsInitializingForTest(
+                  false);
+              chrome.test.sendScriptResult('ready');
+            });
+      })();
+    )JS");
+  base::Value result =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          profile, extension_misc::kAccessibilityCommonExtensionId, script);
+  ASSERT_EQ("ready", result);
+}
+
 FullscreenMagnifierTestHelper::FullscreenMagnifierTestHelper(
     gfx::Point center_position_on_load)
     : center_position_on_load_(center_position_on_load) {
@@ -88,24 +107,6 @@ void FullscreenMagnifierTestHelper::WaitForMagnifierBoundsChangedTo(
   while (GetViewPort().CenterPoint() != center_point) {
     WaitForMagnifierBoundsChanged();
   }
-}
-
-void FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(Profile* profile) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  std::string script = base::StringPrintf(R"JS(
-      (async function() {
-        globalThis.accessibilityCommon.setFeatureLoadCallbackForTest(
-            'magnifier', () => {
-              globalThis.accessibilityCommon.magnifier_.setIsInitializingForTest(
-                  false);
-              chrome.test.sendScriptResult('ready');
-            });
-      })();
-    )JS");
-  base::Value result =
-      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-          profile, extension_misc::kAccessibilityCommonExtensionId, script);
-  ASSERT_EQ("ready", result);
 }
 
 void FullscreenMagnifierTestHelper::OnMagnifierBoundsChanged() {

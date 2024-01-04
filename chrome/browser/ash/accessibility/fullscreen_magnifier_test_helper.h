@@ -16,6 +16,8 @@ namespace ash {
 // Helper class for fullscreen magnifier tests.
 class FullscreenMagnifierTestHelper {
  public:
+  static void WaitForMagnifierJSReady(Profile* profile);
+
   // Set `center_position_on_load` to a non-zero point to load the magnifier
   // centered at a certain viewport each time LoadMagnifier is called.
   FullscreenMagnifierTestHelper(
@@ -36,7 +38,6 @@ class FullscreenMagnifierTestHelper {
 
  private:
   void WaitForMagnifierBoundsChangedTo(gfx::Point center_point);
-  void WaitForMagnifierJSReady(Profile* profile);
   void OnMagnifierBoundsChanged();
 
   gfx::Point center_position_on_load_;

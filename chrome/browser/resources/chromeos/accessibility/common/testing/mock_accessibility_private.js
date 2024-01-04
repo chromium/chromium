@@ -138,6 +138,9 @@ class MockAccessibilityPrivate {
     /** @private {?string} */
     this.highlightColor_ = null;
 
+    /** @private {!chrome.accessibilityPrivate.ScreenRect} */
+    this.selectToSpeakFocus_ = null;
+
     /** @private {function<boolean>} */
     this.dictationToggleListener_ = null;
 
@@ -193,6 +196,11 @@ class MockAccessibilityPrivate {
     };
 
     this.onMagnifierBoundsChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
+    this.onSelectToSpeakFocusChanged = {
       addListener: listener => {},
       removeListener: listener => {},
     };
@@ -297,6 +305,14 @@ class MockAccessibilityPrivate {
     this.selectToSpeakPanelState_ = {show, anchor, isPaused, speed};
   }
 
+  /**
+   * Sets the Select to Speak reading focus.
+   * @param {!chrome.accessibilityPrivate.ScreenRect} bounds
+   */
+  setSelectToSpeakFocus(bounds) {
+    this.selectToSpeakFocus_ = bounds;
+  }
+
   /** Called in order to toggle Dictation listening. */
   toggleDictation() {
     this.dictationActivated_ = !this.dictationActivated_;
@@ -390,6 +406,10 @@ class MockAccessibilityPrivate {
     return this.highlightRects_;
   }
 
+  clearHighlightRects() {
+    this.highlightRects_ = [];
+  }
+
   /**
    * Gets the color of the last highlight created.
    * @return {?string}
@@ -403,6 +423,17 @@ class MockAccessibilityPrivate {
    */
   getSelectToSpeakPanelState() {
     return this.selectToSpeakPanelState_;
+  }
+
+  /**
+   * @return {?chrome.AccessibilityPrivate.ScreenRect}
+   */
+  getSelectToSpeakFocus() {
+    return this.selectToSpeakFocus_;
+  }
+
+  clearSelectToSpeakFocus() {
+    this.selectToSpeakFocus_ = null;
   }
 
   /**
