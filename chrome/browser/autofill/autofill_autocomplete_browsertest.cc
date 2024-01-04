@@ -6,6 +6,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
@@ -22,6 +23,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/suggestions_context.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -73,14 +75,12 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
     // causing this test to fail.
     base::RunLoop().RunUntilIdle();
     // Make sure to close any showing popups prior to tearing down the UI.
-    content::WebContents* web_contents =
-        active_browser_->tab_strip_model()->GetActiveWebContents();
-    active_browser_ = nullptr;
-    ContentAutofillDriverFactory::FromWebContents(web_contents)
-        ->DriverForFrame(web_contents->GetPrimaryMainFrame())
+    ContentAutofillDriverFactory::FromWebContents(web_contents())
+        ->DriverForFrame(web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
         .HideAutofillPopup(PopupHidingReason::kTabGone);
+    active_browser_ = nullptr;
     test::ReenableSystemServices();
   }
 
@@ -95,7 +95,8 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   void NavigateToFile(const char* filename,
                       const WindowOpenDisposition& disposition =
                           WindowOpenDisposition::NEW_FOREGROUND_TAB) {
-    GURL url = GetURL(filename);
+    GURL url =
+        embedded_test_server()->GetURL(base::StrCat({"/autofill/", filename}));
     NavigateParams params(active_browser_, url, ui::PAGE_TRANSITION_LINK);
     params.disposition = disposition;
     ui_test_utils::NavigateToURL(&params);
@@ -126,32 +127,27 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 
     if (!should_skip_save) {
       // Wait for data to have been saved in the DB.
-      WaitForDBTasks();
+      WaitForPendingDBTasks(*GetWebDataService());
     }
   }
 
-  void ReinitializeAutocompleteHistoryManager() {
-    autocomplete_history_manager()->Init(GetWebDataService(), pref_service(),
-                                         current_profile()->IsOffTheRecord());
+  // The retention policy clean-up is run once per major version during
+  // initialization. This function triggers it by reinitializing the
+  // `autocomplete_history_manager()` and waiting for the cleanup to complete.
+  void TriggerRetentionPolicyCleanup() {
+    pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
+                               CHROME_VERSION_MAJOR - 1);
+    autocomplete_history_manager()->Init(
+        WebDataServiceFactory::GetAutofillWebDataForProfile(
+            current_profile(), ServiceAccessType::EXPLICIT_ACCESS),
+        pref_service(), current_profile()->IsOffTheRecord());
+    WaitForPendingDBTasks(*GetWebDataService());
   }
 
   void set_active_browser(Browser* browser) { active_browser_ = browser; }
 
   AutocompleteHistoryManager* autocomplete_history_manager() {
     return AutocompleteHistoryManagerFactory::GetForProfile(current_profile());
-  }
-
-  // Enqueues a RunLoop::QuitClosure using the DB task runner, which executes
-  // given tasks sequentially. Then block current execution until the closure
-  // has been called.
-  void WaitForDBTasks() {
-    base::RunLoop run_loop;
-
-    // The quit closure will only be called after all already-queued DB tasks
-    // have finished running.
-    GetWebDataService()->GetDBTaskRunner()->PostTask(FROM_HERE,
-                                                     run_loop.QuitClosure());
-    run_loop.Run();
   }
 
   AutofillManager& manager() {
@@ -175,23 +171,19 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
         manager().client(), callback.Get(), SuggestionsContext()));
 
     // Make sure the DB task gets executed.
-    WaitForDBTasks();
+    WaitForPendingDBTasks(*GetWebDataService());
 
     return suggestions;
-  }
-
- private:
-  GURL GetURL(const std::string& filename) {
-    return embedded_test_server()->GetURL("/autofill/" + filename);
-  }
-
-  content::WebContents* web_contents() {
-    return active_browser_->tab_strip_model()->GetActiveWebContents();
   }
 
   scoped_refptr<AutofillWebDataService> GetWebDataService() {
     return WebDataServiceFactory::GetAutofillWebDataForProfile(
         current_profile(), ServiceAccessType::EXPLICIT_ACCESS);
+  }
+
+ private:
+  content::WebContents* web_contents() {
+    return active_browser_->tab_strip_model()->GetActiveWebContents();
   }
 
   Profile* current_profile() { return active_browser_->profile(); }
@@ -272,13 +264,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 
   // Advance time to expire the entry.
   test_clock.Advance(2 * kAutocompleteRetentionPolicyPeriod);
-  pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                             CHROME_VERSION_MAJOR - 1);
 
-  // Trigger the retention policy cleanup (by reinitializing the
-  // AutocompleteHistoryManager), and wait for the cleanup to complete.
-  ReinitializeAutocompleteHistoryManager();
-  WaitForDBTasks();
+  TriggerRetentionPolicyCleanup();
 
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, ""),
               IsEmpty());
@@ -301,13 +288,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 
   // Advance time by less than `kAutocompleteRetentionPolicyPeriod`.
   test_clock.Advance(kAutocompleteRetentionPolicyPeriod - base::Days(2));
-  pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
-                             CHROME_VERSION_MAJOR - 1);
 
-  // Trigger the retention policy cleanup (by reinitializing the
-  // AutocompleteHistoryManager), and wait for the cleanup to complete.
-  ReinitializeAutocompleteHistoryManager();
-  WaitForDBTasks();
+  TriggerRetentionPolicyCleanup();
 
   // Verify that the entry is still there.
   EXPECT_THAT(GetAutocompleteSuggestions(kDefaultAutocompleteInputId, prefix),

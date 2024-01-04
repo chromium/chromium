@@ -25,4 +25,11 @@ void PersonalDataProfileTaskWaiter::Wait() && {
   run_loop_.Run();
 }
 
+void WaitForPendingDBTasks(AutofillWebDataService& webdata_service) {
+  base::RunLoop run_loop;
+  webdata_service.GetDBTaskRunner()->PostTask(FROM_HERE,
+                                              run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace autofill

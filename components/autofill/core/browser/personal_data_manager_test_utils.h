@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill {
@@ -56,6 +57,20 @@ class PersonalDataProfileTaskWaiter {
   base::ScopedObservation<PersonalDataManager, PersonalDataLoadedObserverMock>
       scoped_observation_{&mock_observer_};
 };
+
+// Operations on the PDM like "adding a profile" asynchronously update the
+// database. In such cases, it generally suffices to wait for the operation to
+// complete using `PersonalDataProfileTaskWaiter` above.
+// But in cases where it is unclear if a profile was added, for example during
+// a form submission in browser tests, this doesn't work; if no profile was
+// added, the `PersonalDataProfileTaskWaiter` would wait forever.
+// In this case, `WaitForPendingDBTasks()` can help: It queues a task to the
+// WebDataService's SequencedTaskRunner and returns once it has executed,
+// implying that all the prior tasks have finished. In the case of form
+// submission, if no profile was added, it will thus return immediately.
+// If possible, prefer `PersonalDataProfileTaskWaiter`, since it is more
+// explicit which event is waited for.
+void WaitForPendingDBTasks(AutofillWebDataService& webdata_service);
 
 }  // namespace autofill
 
