@@ -23,6 +23,11 @@
 
 namespace sql {
 
+// static
+int64_t Statement::TimeToSqlValue(base::Time time) {
+  return time.ToDeltaSinceWindowsEpoch().InMicroseconds();
+}
+
 // This empty constructor initializes our reference with an empty one so that
 // we don't have to null-check the ref_ to see if the statement is valid: we
 // only have to check the ref's validity bit.
@@ -251,7 +256,7 @@ void Statement::BindTime(int param_index, base::Time val) {
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  int64_t int_value = TimeToSqlValue(val);
   int sqlite_result_code =
       sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
   DCHECK_EQ(sqlite_result_code, SQLITE_OK);

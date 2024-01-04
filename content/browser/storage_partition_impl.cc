@@ -2887,14 +2887,13 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) && cdm_storage_manager) {
-    // If no storage key specified, then delete the CdmStorage.db.
-    if (storage_key_origin_empty) {
-      cdm_storage_manager->DeleteDatabase();
-    } else {
-      // TODO(crbug.com/1454512): Investigate and add logic to handle
-      // filter_builder and storage_key_policy_matcher.
-      cdm_storage_manager->DeleteDataForStorageKey(storage_key,
+    if (!storage_key_origin_empty) {
+      cdm_storage_manager->DeleteDataForStorageKey(storage_key, begin, end,
                                                    base::DoNothing());
+
+    } else {
+      cdm_storage_manager->DeleteDataForTimeFrame(begin, end,
+                                                  base::DoNothing());
     }
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

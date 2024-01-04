@@ -56,6 +56,10 @@ enum class ColumnType {
 // in the connection object using set_error_delegate().
 class COMPONENT_EXPORT(SQL) Statement {
  public:
+  // Utility function that returns what //sql code encodes the 'time' value as
+  // in a database when using BindTime
+  static int64_t TimeToSqlValue(base::Time time);
+
   // Creates an uninitialized statement. The statement will be invalid until
   // you initialize it via Assign.
   Statement();

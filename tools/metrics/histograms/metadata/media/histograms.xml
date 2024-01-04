@@ -2317,6 +2317,18 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent to load a library CDM.</summary>
 </histogram>
 
+<histogram name="Media.EME.CdmStorageDatabase.IncompatibleDatabaseDetected"
+    enum="Boolean" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records when the CdmStorageDatabase for a profile is incompatible.
+    This UMA is recorded on every OpenDatabase call that detects the database
+    with a version number of one, which means that it is operating under a
+    schema that does not include file_size and last_modified.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.CdmStorageDatabase.WriteFileForBigData"
     enum="Boolean" expires_after="2024-06-16">
   <owner>vpasupathy@chromium.org</owner>
@@ -2334,6 +2346,30 @@ chromium-metrics-reviews@google.com.
   <summary>
     SQLite specific errors reported while using the Cdm Storage Database.
     Recorded on any error from a database operation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForFileSize"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when altering the Cdm
+    Storage Database to add the column file_size. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageDatabaseSQLiteError.AlterDatabaseForLastModified"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when altering the Cdm
+    Storage Database to add the column last_modified. This UMA is recorded on
+    every error for this operation.
   </summary>
 </histogram>
 
@@ -2365,6 +2401,61 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA records SQLite specific errors that occur when deleting multiple
     files for a single storage key in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteForTimeFrame"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when deleting multiple
+    files for a specified time frame in the Cdm Storage Database. This UMA is
+    recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.DeleteIfEmptyDatabase"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the count of
+    entries in the Cdm Storage Database. This UMA is recorded on every error for
+    this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForFile"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of a file in the Cdm Storage Database. This UMA is recorded on every
+    error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForStorageKey"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of files for a single storage key and time frame in the Cdm Storage
+    Database. This UMA is recorded on every error for this operation.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.CdmStorageDatabaseSQLiteError.GetSizeForTimeFrame"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA records SQLite specific errors that occur when getting the sum()
+    size of files for a time frame in the Cdm Storage Database. This UMA is
     recorded on every error for this operation.
   </summary>
 </histogram>
@@ -2441,20 +2532,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.EME.CdmStorageManager.DeleteDatabaseError.{ProfileType}"
-    enum="BooleanError" expires_after="2024-04-11">
-  <owner>vpasupathy@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    This UMA logs overall error rates from the DeleteDatabase function. Recorded
-    after every call of DeleteDatabase on {ProfileType} profile.
-  </summary>
-  <token key="ProfileType">
-    <variant name="Incognito"/>
-    <variant name="NonIncognito"/>
-  </token>
-</histogram>
-
 <histogram name="Media.EME.CdmStorageManager.DeleteFileError.{ProfileType}"
     enum="BooleanError" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2493,6 +2570,53 @@ chromium-metrics-reviews@google.com.
   <summary>
     This UMA logs overall error rates from the DeleteForStorageKey function.
     Recorded after every call of DeleteForStorageKey on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForStorageKeyError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForStorageKey function.
+    Recorded after every call of DeleteForStorageKey on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForTimeFrameError.{ProfileType}"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForTimeFrame function.
+    Recorded after every call of DeleteForTimeFrame on {ProfileType} profile.
+  </summary>
+  <token key="ProfileType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Media.EME.CdmStorageManager.DeleteForTimeFrameError.{ProfileType}.Migration"
+    enum="BooleanError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This UMA logs overall error rates from the DeleteForTimeFrame function.
+    Recorded after every call of DeleteForTimeFrame on {ProfileType} profile
+    when 'kCdmStorageDatabaseMigration' is enabled.
   </summary>
   <token key="ProfileType">
     <variant name="Incognito"/>

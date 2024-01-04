@@ -28,7 +28,8 @@ enum class CdmStorageOpenError {
   kDatabaseRazeError = 3,  // The database was in an invalid state and failed
                            // to be razed.
   kSQLExecutionError = 4,  // Error executing the SQL statement.
-  kMaxValue = kSQLExecutionError
+  kAlterTableError = 5,    // Error altering cdm_storage table.
+  kMaxValue = kAlterTableError
 };
 
 // The file name of the database storing cdm storage data.

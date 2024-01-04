@@ -14,6 +14,7 @@
 #include "content/common/content_export.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
+#include "sql/meta_table.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -40,17 +41,37 @@ class CONTENT_EXPORT CdmStorageDatabase {
                  const std::string& file_name,
                  const std::vector<uint8_t>& data);
 
+  uint64_t GetSizeForFile(const blink::StorageKey& storage_key,
+                          const media::CdmType& cdm_type,
+                          const std::string& file_name);
+
+  uint64_t GetSizeForStorageKey(const blink::StorageKey& storage_key,
+                                const base::Time begin,
+                                const base::Time end);
+
+  uint64_t GetSizeForTimeFrame(const base::Time begin, const base::Time end);
+
   bool DeleteFile(const blink::StorageKey& storage_key,
                   const media::CdmType& cdm_type,
                   const std::string& file_name);
 
-  bool DeleteDataForStorageKey(const blink::StorageKey& storage_key);
+  bool DeleteDataForStorageKey(const blink::StorageKey& storage_key,
+                               const base::Time begin,
+                               const base::Time end);
+
+  bool DeleteDataForTimeFrame(const base::Time begin, const base::Time end);
 
   bool ClearDatabase();
+
+  // On a delete operation, check if database is empty. If empty, then clear the
+  // database.
+  bool DeleteIfEmptyDatabase(bool last_operation_success);
 
  private:
   // Opens and sets up a database if one is not already set up.
   CdmStorageOpenError OpenDatabase(bool is_retry = false);
+
+  bool UpgradeDatabaseSchema(sql::MetaTable* meta_table);
 
   void OnDatabaseError(int error, sql::Statement* stmt);
 
