@@ -109,7 +109,7 @@ void SharingBrowserTest::SetUpDevices(
   syncer::DeviceInfoTracker* original_device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
           ->GetDeviceInfoTracker();
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> original_devices =
+  std::vector<const syncer::DeviceInfo*> original_devices =
       original_device_info_tracker->GetAllDeviceInfo();
   ASSERT_EQ(2u, original_devices.size());
 

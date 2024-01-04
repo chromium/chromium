@@ -58,8 +58,8 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   std::vector<std::unique_ptr<syncer::DeviceInfo>> RenameAndDeduplicateDevices(
       std::vector<std::unique_ptr<syncer::DeviceInfo>> devices) const;
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> FilterDeviceCandidates(
-      std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+  std::vector<const syncer::DeviceInfo*> FilterDeviceCandidates(
+      std::vector<const syncer::DeviceInfo*> devices,
       sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const;
 
   raw_ptr<syncer::SyncService> sync_service_;

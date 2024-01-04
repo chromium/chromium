@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfSyncTest,
                       ->GetDeviceInfoTracker())
                   .Wait());
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
+  std::vector<const syncer::DeviceInfo*> device_infos =
       DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
           ->GetDeviceInfoTracker()
           ->GetAllDeviceInfo();
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSendTabToSelfWithTransportModeSyncTest,
                       ->GetDeviceInfoTracker())
                   .Wait());
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos =
+  std::vector<const syncer::DeviceInfo*> device_infos =
       DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(1))
           ->GetDeviceInfoTracker()
           ->GetAllDeviceInfo();

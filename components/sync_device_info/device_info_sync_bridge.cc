@@ -578,7 +578,7 @@ bool DeviceInfoSyncBridge::IsSyncing() const {
   return change_processor()->IsTrackingMetadata() && !all_data_.empty();
 }
 
-std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
+const DeviceInfo* DeviceInfoSyncBridge::GetDeviceInfo(
     const std::string& client_id) const {
   const ClientIdToDeviceInfo::const_iterator iter = all_data_.find(client_id);
   if (iter == all_data_.end()) {
@@ -587,17 +587,16 @@ std::unique_ptr<DeviceInfo> DeviceInfoSyncBridge::GetDeviceInfo(
   if (!IsChromeClient(iter->second.specifics())) {
     return nullptr;
   }
-  return iter->second.device_info().Clone();
+  return &iter->second.device_info();
 }
 
-std::vector<std::unique_ptr<DeviceInfo>>
-DeviceInfoSyncBridge::GetAllDeviceInfo() const {
+std::vector<const DeviceInfo*> DeviceInfoSyncBridge::GetAllDeviceInfo() const {
   TRACE_EVENT1("sync", "DeviceInfoSyncBridge::GetAllDeviceInfo", "size",
                all_data_.size());
-  std::vector<std::unique_ptr<DeviceInfo>> list;
+  std::vector<const DeviceInfo*> list;
   for (const auto& [cache_guid, device_info_and_specifics] : all_data_) {
     if (IsChromeClient(device_info_and_specifics.specifics())) {
-      list.push_back(device_info_and_specifics.device_info().Clone());
+      list.push_back(&device_info_and_specifics.device_info());
     }
   }
   return list;

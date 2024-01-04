@@ -89,9 +89,8 @@ void GetDeviceNameAndType(const syncer::DeviceInfoTracker* tracker,
   DCHECK(tracker);
   DCHECK(tracker->IsSyncing());
 
-  std::unique_ptr<syncer::DeviceInfo> device_info =
-      tracker->GetDeviceInfo(client_id);
-  if (device_info.get()) {
+  const syncer::DeviceInfo* device_info = tracker->GetDeviceInfo(client_id);
+  if (device_info) {
     *name = device_info->client_name();
     switch (device_info->form_factor()) {
       case syncer::DeviceInfo::FormFactor::kPhone:

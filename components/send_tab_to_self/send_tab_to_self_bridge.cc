@@ -616,13 +616,13 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
     return;
   }
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> all_devices =
+  std::vector<const syncer::DeviceInfo*> all_devices =
       device_info_tracker_->GetAllDeviceInfo();
 
   // Sort the DeviceInfo vector so the most recently modified devices are first.
   std::stable_sort(all_devices.begin(), all_devices.end(),
-                   [](const std::unique_ptr<syncer::DeviceInfo>& device1,
-                      const std::unique_ptr<syncer::DeviceInfo>& device2) {
+                   [](const syncer::DeviceInfo* device1,
+                      const syncer::DeviceInfo* device2) {
                      return device1->last_updated_timestamp() >
                             device2->last_updated_timestamp();
                    });
@@ -630,7 +630,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
   target_device_info_sorted_list_.clear();
   std::set<std::string> unique_device_names;
   std::unordered_map<std::string, int> short_names_counter;
-  for (const auto& device : all_devices) {
+  for (const syncer::DeviceInfo* device : all_devices) {
     // If the current device is considered expired for our purposes, stop here
     // since the next devices in the vector are at least as expired than this
     // one.
@@ -651,7 +651,7 @@ void SendTabToSelfBridge::ComputeTargetDeviceInfoSortedList() {
       continue;
     }
 
-    SharingDeviceNames device_names = GetSharingDeviceNames(device.get());
+    SharingDeviceNames device_names = GetSharingDeviceNames(device);
 
     // Don't include this device if it has the same name as the local device.
     if (device_names.full_name == local_device_name_) {

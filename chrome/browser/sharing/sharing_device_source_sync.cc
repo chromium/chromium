@@ -43,6 +43,18 @@ bool IsStale(const syncer::DeviceInfo& device) {
       base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
 }
+
+// TODO(b/316374607): Avoid deep copies once signatures adhere to raw pointers
+// instead of returning ownership of copies.
+std::vector<std::unique_ptr<syncer::DeviceInfo>> CloneDevices(
+    const std::vector<const syncer::DeviceInfo*> devices) {
+  std::vector<std::unique_ptr<syncer::DeviceInfo>> result;
+  for (const syncer::DeviceInfo* device : devices) {
+    result.push_back(device->Clone());
+  }
+  return result;
+}
+
 }  // namespace
 
 SharingDeviceSourceSync::SharingDeviceSourceSync(
@@ -81,14 +93,15 @@ std::unique_ptr<syncer::DeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
   if (!IsSyncEnabledForSharing(sync_service_))
     return nullptr;
 
-  std::unique_ptr<syncer::DeviceInfo> device_info =
+  const syncer::DeviceInfo* device_info =
       device_info_tracker_->GetDeviceInfo(guid);
   if (!device_info)
     return nullptr;
 
-  device_info->set_client_name(
-      send_tab_to_self::GetSharingDeviceNames(device_info.get()).full_name);
-  return device_info;
+  std::unique_ptr<syncer::DeviceInfo> device_info_copy = device_info->Clone();
+  device_info_copy->set_client_name(
+      send_tab_to_self::GetSharingDeviceNames(device_info).full_name);
+  return device_info_copy;
 }
 
 std::vector<std::unique_ptr<syncer::DeviceInfo>>
@@ -97,8 +110,8 @@ SharingDeviceSourceSync::GetDeviceCandidates(
   if (!IsSyncEnabledForSharing(sync_service_) || !IsReady())
     return {};
 
-  return RenameAndDeduplicateDevices(FilterDeviceCandidates(
-      device_info_tracker_->GetAllDeviceInfo(), required_feature));
+  return RenameAndDeduplicateDevices(CloneDevices(FilterDeviceCandidates(
+      device_info_tracker_->GetAllDeviceInfo(), required_feature)));
 }
 
 bool SharingDeviceSourceSync::IsReady() {
@@ -137,9 +150,9 @@ void SharingDeviceSourceSync::OnLocalDeviceInfoProviderReady() {
   MaybeRunReadyCallbacks();
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<const syncer::DeviceInfo*>
 SharingDeviceSourceSync::FilterDeviceCandidates(
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<const syncer::DeviceInfo*> devices,
     sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const {
   std::set<SharingSpecificFields::EnabledFeatures> accepted_features{
       required_feature};
@@ -154,10 +167,12 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
   bool can_send_via_sender_id = CanSendViaSenderID(sync_service_);
 
   base::EraseIf(devices, [accepted_features, can_send_via_vapid,
-                          can_send_via_sender_id](const auto& device) {
+                          can_send_via_sender_id](
+                             const syncer::DeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
-    if (IsStale(*device.get()))
+    if (IsStale(*device)) {
       return true;
+    }
 
     // Checks if device has SharingInfo.
     if (!device->sharing_info())

@@ -88,9 +88,8 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
 
   // DeviceInfoTracker implementation.
   bool IsSyncing() const override;
-  std::unique_ptr<DeviceInfo> GetDeviceInfo(
-      const std::string& client_id) const override;
-  std::vector<std::unique_ptr<DeviceInfo>> GetAllDeviceInfo() const override;
+  const DeviceInfo* GetDeviceInfo(const std::string& client_id) const override;
+  std::vector<const DeviceInfo*> GetAllDeviceInfo() const override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   std::map<DeviceInfo::FormFactor, int> CountActiveDevicesByType()

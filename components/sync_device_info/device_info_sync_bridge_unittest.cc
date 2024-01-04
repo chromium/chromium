@@ -874,8 +874,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesInMemory) {
       bridge()->CreateMetadataChangeList(), EntityAddList({specifics}));
 
   EXPECT_FALSE(error_on_add);
-  std::unique_ptr<DeviceInfo> info =
-      bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
   EXPECT_EQ(2, change_count());
@@ -911,8 +910,7 @@ TEST_F(DeviceInfoSyncBridgeTest, ApplyIncrementalSyncChangesStore) {
                                 /*entities=*/IsEmpty())));
   RestartBridge();
 
-  std::unique_ptr<DeviceInfo> info =
-      bridge()->GetDeviceInfo(specifics.cache_guid());
+  const DeviceInfo* info = bridge()->GetDeviceInfo(specifics.cache_guid());
   ASSERT_TRUE(info);
   EXPECT_THAT(*info, ModelEqualsSpecifics(specifics));
 }
