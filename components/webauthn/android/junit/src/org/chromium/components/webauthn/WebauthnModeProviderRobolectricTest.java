@@ -28,7 +28,7 @@ public class WebauthnModeProviderRobolectricTest {
     @Test
     @SmallTest
     public void testGetCredManRequestDecorator_whenModeApp_thenAppDecorator() {
-        mProvider.setWebAuthnMode(WebauthnMode.APP);
+        mProvider.setWebauthnMode(WebauthnMode.APP);
 
         assertThat(mProvider.getCredManRequestDecorator())
                 .isInstanceOf(AppCredManRequestDecorator.class);
@@ -37,7 +37,7 @@ public class WebauthnModeProviderRobolectricTest {
     @Test
     @SmallTest
     public void testGetCredManRequestDecorator_whenModeBrowser_thenBrowserDecorator() {
-        mProvider.setWebAuthnMode(WebauthnMode.BROWSER);
+        mProvider.setWebauthnMode(WebauthnMode.BROWSER);
 
         assertThat(mProvider.getCredManRequestDecorator())
                 .isInstanceOf(BrowserCredManRequestDecorator.class);
@@ -46,7 +46,7 @@ public class WebauthnModeProviderRobolectricTest {
     @Test
     @SmallTest
     public void testGetCredManRequestDecorator_whenModeChrome_thenChromeDecorator() {
-        mProvider.setWebAuthnMode(WebauthnMode.CHROME);
+        mProvider.setWebauthnMode(WebauthnMode.CHROME);
 
         assertThat(mProvider.getCredManRequestDecorator())
                 .isInstanceOf(GpmCredManRequestDecorator.class);

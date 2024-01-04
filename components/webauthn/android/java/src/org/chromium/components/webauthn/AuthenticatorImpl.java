@@ -111,7 +111,7 @@ public final class AuthenticatorImpl implements Authenticator {
         mGmsCorePackageVersion = PackageUtils.getPackageVersion(GMSCORE_PACKAGE_NAME);
         // TODO(crbug.com/1511193): Switch to other modes for different usages.
         WebauthnModeProvider.getInstance()
-                .setWebAuthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
     }
 
     public static void overrideFido2CredentialRequestForTesting(Fido2CredentialRequest request) {

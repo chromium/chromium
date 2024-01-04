@@ -31,16 +31,16 @@ public class WebauthnModeProvider {
         } else if (mMode == WebauthnMode.CHROME) {
             return GpmCredManRequestDecorator.getInstance();
         } else {
-            assert false : "WebAuthnMode not set! Please set using WebAuthnModeProvider.setMode()";
+            assert false : "WebauthnMode not set! Please set using WebauthnModeProvider.setMode()";
         }
         return null;
     }
 
-    public @WebauthnMode int getWebAuthnMode() {
+    public @WebauthnMode int getWebauthnMode() {
         return mMode;
     }
 
-    public void setWebAuthnMode(@WebauthnMode int mode) {
+    public void setWebauthnMode(@WebauthnMode int mode) {
         mMode = mode;
     }
 

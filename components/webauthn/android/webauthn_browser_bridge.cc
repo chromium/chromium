@@ -29,20 +29,20 @@ device::DiscoverableCredentialMetadata ConvertJavaCredentialDetailsToMetadata(
   device::DiscoverableCredentialMetadata credential;
   base::android::JavaByteArrayToByteVector(
       env,
-      Java_WebAuthnBrowserBridge_getWebAuthnCredentialDetailsCredentialId(
+      Java_WebAuthnBrowserBridge_getWebauthnCredentialDetailsCredentialId(
           env, j_credential),
       &credential.cred_id);
   base::android::JavaByteArrayToByteVector(
       env,
-      Java_WebAuthnBrowserBridge_getWebAuthnCredentialDetailsUserId(
+      Java_WebAuthnBrowserBridge_getWebauthnCredentialDetailsUserId(
           env, j_credential),
       &credential.user.id);
   credential.user.name = ConvertJavaStringToUTF8(
-      env, Java_WebAuthnBrowserBridge_getWebAuthnCredentialDetailsUserName(
+      env, Java_WebAuthnBrowserBridge_getWebauthnCredentialDetailsUserName(
                env, j_credential));
   credential.user.display_name = ConvertJavaStringToUTF8(
       env,
-      Java_WebAuthnBrowserBridge_getWebAuthnCredentialDetailsUserDisplayName(
+      Java_WebAuthnBrowserBridge_getWebauthnCredentialDetailsUserDisplayName(
           env, j_credential));
   return credential;
 }

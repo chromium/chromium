@@ -32,29 +32,30 @@ import java.util.List;
 
 /**
  * Fido2ApiCall handles making Binder calls to Play Services' FIDO API.
- * <p>
- * There are two FIDO APIs, one for browsers that can assert any RP ID, and one for apps where the
- * RP ID is checked against assetlinks.json from the site. This class can handle both. API calls are
- * made directly, rather than using the Play Services SDK, to save code size and to allow new
+ *
+ * <p>There are two FIDO APIs, one for browsers that can assert any RP ID, and one for apps where
+ * the RP ID is checked against assetlinks.json from the site. This class can handle both. API calls
+ * are made directly, rather than using the Play Services SDK, to save code size and to allow new
  * features to be used more easily.
- * <p>
- * API calls consist of two Binder calls each. Binder calls are synchronous and the first delivers
- * arguments to Play Services plus a Binder object to receive the result. The second Binder call is
- * from Play Services back to Chromium where the result is returned. If the call requires Play
- * Services to collect user interaction then that result will be a {@link PendingIntent} which needs
- * to be started in order to actually run the operation. The real result is then delivered to
+ *
+ * <p>API calls consist of two Binder calls each. Binder calls are synchronous and the first
+ * delivers arguments to Play Services plus a Binder object to receive the result. The second Binder
+ * call is from Play Services back to Chromium where the result is returned. If the call requires
+ * Play Services to collect user interaction then that result will be a {@link PendingIntent} which
+ * needs to be started in order to actually run the operation. The real result is then delivered to
  * Chromium via {@link Activity.onActivityResult}. This class does not handle that part of the
  * operation, only the initial Binder calls.
- * <p>
- * Calls are started by constructing an instance of this class and calling {@link start} to get a
+ *
+ * <p>Calls are started by constructing an instance of this class and calling {@link start} to get a
  * {@link Parcel} that arguments can be written to. The first argument is always the Binder object
  * that receives the result, for example an instance of {@link BooleanResult} or {@link
  * PendingIntentResult}. Following that are the inputs to the call.
- * <p>
- * Once the arguments are prepared, call {@link run} to perform the first Binder call. That returns
- * a {@link Task} that will resolve with the result when it's ready.
- * <p>
- * Here's an example:
+ *
+ * <p>Once the arguments are prepared, call {@link run} to perform the first Binder call. That
+ * returns a {@link Task} that will resolve with the result when it's ready.
+ *
+ * <p>Here's an example:
+ *
  * <pre>
  * Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
  * Parcel args = call.start();
@@ -154,7 +155,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
      * @param methodId one of the METHOD_* constants.
      * @param transactionId one of the TRANSACTION_* constants.
      * @param args a {@link Parcel}, created by {@link start}, that the callback and arguments have
-     *         been written to.
+     *     been written to.
      * @param callback the callback {@link Binder} that was added to args.
      */
     public <Result> Task<Result> run(
@@ -248,12 +249,12 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         }
     }
 
-    public static final class WebAuthnCredentialDetailsListResult extends Binder
-            implements Callback<List<WebAuthnCredentialDetails>> {
-        private TaskCompletionSource<List<WebAuthnCredentialDetails>> mCompletionSource;
+    public static final class WebauthnCredentialDetailsListResult extends Binder
+            implements Callback<List<WebauthnCredentialDetails>> {
+        private TaskCompletionSource<List<WebauthnCredentialDetails>> mCompletionSource;
 
         @Override
-        public void setCompletionSource(TaskCompletionSource<List<WebAuthnCredentialDetails>> cs) {
+        public void setCompletionSource(TaskCompletionSource<List<WebauthnCredentialDetails>> cs) {
             mCompletionSource = cs;
         }
 
@@ -262,7 +263,6 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
             data.enforceInterface("com.google.android.gms.fido.fido2.api.ICredentialListCallback");
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
-                    List<WebAuthnCredentialDetails> credentials;
                     try {
                         mCompletionSource.setResult(Fido2Api.parseCredentialList(data));
                     } catch (IllegalArgumentException e) {

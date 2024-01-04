@@ -22,8 +22,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
- * Provides helper methods to wrap Fido2ApiCall invocations.
- * This class is useful to override GMS Core API interactions from Fido2CredentialRequest in tests.
+ * Provides helper methods to wrap Fido2ApiCall invocations. This class is useful to override GMS
+ * Core API interactions from Fido2CredentialRequest in tests.
  */
 public class Fido2ApiCallHelper {
     private static Fido2ApiCallHelper sInstance;
@@ -32,7 +32,9 @@ public class Fido2ApiCallHelper {
         sInstance = instance;
     }
 
-    /** @return The Fido2ApiCallHelper for use during the lifetime of the browser process. */
+    /**
+     * @return The Fido2ApiCallHelper for use during the lifetime of the browser process.
+     */
     public static Fido2ApiCallHelper getInstance() {
         if (sInstance == null) {
             sInstance = new Fido2ApiCallHelper();
@@ -47,16 +49,16 @@ public class Fido2ApiCallHelper {
 
     public void invokeFido2GetCredentials(
             String relyingPartyId,
-            OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
+            OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
             OnFailureListener failureCallback) {
         Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
         Parcel args = call.start();
-        Fido2ApiCall.WebAuthnCredentialDetailsListResult result =
-                new Fido2ApiCall.WebAuthnCredentialDetailsListResult();
+        Fido2ApiCall.WebauthnCredentialDetailsListResult result =
+                new Fido2ApiCall.WebauthnCredentialDetailsListResult();
         args.writeStrongBinder(result);
         args.writeString(relyingPartyId);
 
-        Task<List<WebAuthnCredentialDetails>> task =
+        Task<List<WebauthnCredentialDetails>> task =
                 call.run(
                         Fido2ApiCall.METHOD_BROWSER_GETCREDENTIALS,
                         Fido2ApiCall.TRANSACTION_GETCREDENTIALS,

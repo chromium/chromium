@@ -479,7 +479,7 @@ public class Fido2CredentialRequest
                             (credentials) ->
                                     mBarrier.onFido2ApiSuccessful(
                                             () ->
-                                                    onWebAuthnCredentialDetailsListReceived(
+                                                    onWebauthnCredentialDetailsListReceived(
                                                             options,
                                                             callerOriginString,
                                                             finalClientDataHash,
@@ -594,12 +594,12 @@ public class Fido2CredentialRequest
     }
 
     private void onGetMatchingCredentialIdsListReceived(
-            List<WebAuthnCredentialDetails> retrievedCredentials,
+            List<WebauthnCredentialDetails> retrievedCredentials,
             byte[][] allowCredentialIds,
             boolean requireThirdPartyPayment,
             GetMatchingCredentialIdsResponseCallback callback) {
         List<byte[]> matchingCredentialIds = new ArrayList<>();
-        for (WebAuthnCredentialDetails credential : retrievedCredentials) {
+        for (WebauthnCredentialDetails credential : retrievedCredentials) {
             if (requireThirdPartyPayment && !credential.mIsPayment) continue;
 
             for (byte[] allowedId : allowCredentialIds) {
@@ -628,11 +628,11 @@ public class Fido2CredentialRequest
         mBarrier = barrier;
     }
 
-    private void onWebAuthnCredentialDetailsListReceived(
+    private void onWebauthnCredentialDetailsListReceived(
             PublicKeyCredentialRequestOptions options,
             String callerOriginString,
             byte[] clientDataHash,
-            List<WebAuthnCredentialDetails> credentials) {
+            List<WebauthnCredentialDetails> credentials) {
         assert mConditionalUiState == ConditionalUiState.WAITING_FOR_CREDENTIAL_LIST
                 || mConditionalUiState == ConditionalUiState.CANCEL_PENDING;
 
@@ -648,8 +648,8 @@ public class Fido2CredentialRequest
             return;
         }
 
-        List<WebAuthnCredentialDetails> discoverableCredentials = new ArrayList<>();
-        for (WebAuthnCredentialDetails credential : credentials) {
+        List<WebauthnCredentialDetails> discoverableCredentials = new ArrayList<>();
+        for (WebauthnCredentialDetails credential : credentials) {
             if (!credential.mIsDiscoverable) continue;
 
             if (!hasAllowCredentials) {
@@ -759,7 +759,7 @@ public class Fido2CredentialRequest
             PublicKeyCredentialRequestOptions options,
             Origin callerOrigin,
             byte[] maybeClientDataHash,
-            List<WebAuthnCredentialDetails> retrievedCredentials) {
+            List<WebauthnCredentialDetails> retrievedCredentials) {
         assert options.allowCredentials != null;
         assert options.allowCredentials.length > 0;
         assert !options.isConditional;
@@ -767,7 +767,7 @@ public class Fido2CredentialRequest
         Barrier.Mode mode = getBarrierMode();
         assert mode == Barrier.Mode.ONLY_CRED_MAN || mode == Barrier.Mode.BOTH;
 
-        for (WebAuthnCredentialDetails credential : retrievedCredentials) {
+        for (WebauthnCredentialDetails credential : retrievedCredentials) {
             // In ONLY_CRED_MAN mode, all discoverable credentials are handled by CredMan. It is not
             // required to check for discoverable credentials.
             if (mode == Barrier.Mode.ONLY_CRED_MAN && credential.mIsDiscoverable) {

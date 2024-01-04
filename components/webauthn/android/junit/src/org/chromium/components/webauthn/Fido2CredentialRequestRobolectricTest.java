@@ -105,7 +105,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
         WebauthnModeProvider.getInstance()
-                .setWebAuthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
         mRequest = new Fido2CredentialRequest(/* intentSender= */ null);
 
         Fido2ApiTestHelper.mockFido2CredentialRequestJni(mMocker);
@@ -453,7 +453,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
+        mFido2ApiCallHelper.mCredentials.add(createWebauthnCredential());
 
         final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
         mRequest.handleGetAssertionRequest(
@@ -619,7 +619,7 @@ public class Fido2CredentialRequestRobolectricTest {
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
 
         mFido2ApiCallHelper.mCredentials = new ArrayList<>();
-        mFido2ApiCallHelper.mCredentials.add(createWebAuthnCredential());
+        mFido2ApiCallHelper.mCredentials.add(createWebauthnCredential());
 
         mRequest.handleGetAssertionRequest(
                 mActivity,
@@ -869,14 +869,14 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.ABORT_ERROR);
     }
 
-    private WebAuthnCredentialDetails createWebAuthnCredential() {
+    private WebauthnCredentialDetails createWebauthnCredential() {
         PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
         descriptor.type = 0;
         descriptor.id = new byte[] {1, 2, 3, 4};
         descriptor.transports = new int[] {0};
         mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
 
-        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+        WebauthnCredentialDetails details = new WebauthnCredentialDetails();
         details.mCredentialId = descriptor.id;
         return details;
     }
@@ -884,7 +884,7 @@ public class Fido2CredentialRequestRobolectricTest {
     static class FakeFido2ApiCallHelper extends Fido2ApiCallHelper {
         public boolean mMakeCredentialCalled;
         public boolean mGetAssertionCalled;
-        public List<WebAuthnCredentialDetails> mCredentials;
+        public List<WebauthnCredentialDetails> mCredentials;
         public Exception mCredentialsError;
         public byte[] mClientDataHash;
 
@@ -896,14 +896,14 @@ public class Fido2CredentialRequestRobolectricTest {
         @Override
         public void invokeFido2GetCredentials(
                 String relyingPartyId,
-                OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
+                OnSuccessListener<List<WebauthnCredentialDetails>> successCallback,
                 OnFailureListener failureCallback) {
             if (mCredentialsError != null) {
                 failureCallback.onFailure(mCredentialsError);
                 return;
             }
 
-            List<WebAuthnCredentialDetails> credentials;
+            List<WebauthnCredentialDetails> credentials;
             if (mCredentials == null) {
                 credentials = new ArrayList();
             } else {

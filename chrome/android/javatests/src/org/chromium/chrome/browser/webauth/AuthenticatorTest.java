@@ -89,7 +89,7 @@ public class AuthenticatorTest {
         mUpdateWaiter = new AuthenticatorUpdateWaiter();
         TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
         WebauthnModeProvider.getInstance()
-                .setWebAuthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
+                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
         mMockCredentialRequest = new MockFido2CredentialRequest();
         AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mMockCredentialRequest);
     }

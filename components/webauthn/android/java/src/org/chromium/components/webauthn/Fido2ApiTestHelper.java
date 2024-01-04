@@ -104,15 +104,17 @@ public class Fido2ApiTestHelper {
      * This byte array was produced by
      * com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse with test data,
      * i.e.:
-     * AuthenticatorAttestationResponse response =
-     *         new AuthenticatorAttestationResponse.Builder()
-     *                 .setAttestationObject(TEST_ATTESTATION_OBJECT)
-     *                 .setClientDataJSON(TEST_CLIENT_DATA_JSON)
-     *                 .setKeyHandle(TEST_KEY_HANDLE)
-     *                 .build().serializeToBytes();
      *
-     * NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by prepending
-     * an object header and tag with value four so that it's compatible with
+     * <pre>{@code
+     * AuthenticatorAttestationResponse response = new AuthenticatorAttestationResponse.Builder()
+     *      .setAttestationObject(TEST_ATTESTATION_OBJECT)
+     *      .setClientDataJSON(TEST_CLIENT_DATA_JSON)
+     *      .setKeyHandle(TEST_KEY_HANDLE)
+     *      .build().serializeToBytes();
+     * }</pre>
+     *
+     * <p>NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by
+     * prepending an object header and tag with value four so that it's compatible with
      * FIDO2_KEY_CREDENTIAL_EXTRA.
      */
     private static final byte[] TEST_AUTHENTICATOR_ATTESTATION_RESPONSE =
@@ -139,7 +141,7 @@ public class Fido2ApiTestHelper {
     /**
      * This byte array was captured from a device and resulted from creating a passkey.
      *
-     * It contains fields such as the list of transports, which is useful for testing. See
+     * <p>It contains fields such as the list of transports, which is useful for testing. See
      * CONVERT_TO_JAVA tag, above, about creating it.
      */
     private static final byte[] TEST_AUTHENTICATOR_PASSKEY_ATTESTATION_RESPONSE =
@@ -184,15 +186,18 @@ public class Fido2ApiTestHelper {
      * This byte array was produced by
      * com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse with test data,
      * i.e.:
-     * AuthenticatorAssertionResponse.Builder()
-     *         .setAuthenticatorData(TEST_AUTHENTICATOR_DATA)
-     *         .setSignature(TEST_SIGNATURE)
-     *         .setClientDataJSON(TEST_CLIENT_DATA_JSON)
-     *         .setKeyHandle(TEST_KEY_HANDLE)
-     *         .build().serializeToBytes();
      *
-     * NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by prepending
-     * an object header and tag with value five so that it's compatible with
+     * <pre>{@code
+     * AuthenticatorAssertionResponse.Builder()
+     *      .setAuthenticatorData(TEST_AUTHENTICATOR_DATA)
+     *      .setSignature(TEST_SIGNATURE)
+     *      .setClientDataJSON(TEST_CLIENT_DATA_JSON)
+     *      .setKeyHandle(TEST_KEY_HANDLE)
+     *      .build().serializeToBytes();
+     * }</pre>
+     *
+     * <p>NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by
+     * prepending an object header and tag with value five so that it's compatible with
      * FIDO2_KEY_CREDENTIAL_EXTRA.
      */
     private static final byte[] TEST_AUTHENTICATOR_ASSERTION_RESPONSE =
@@ -206,42 +211,40 @@ public class Fido2ApiTestHelper {
 
     /**
      * This byte array is produced by
-     * com.google.android.gms.fido.fido2.api.common.PublicKeyCredential with test data,
-     * i.e.:
-     * AuthenticatorAssertionResponse response =
-     *         new AuthenticatorAssertionResponse.Builder()
-     *                 .setAuthenticatorData(TEST_AUTHENTICATOR_DATA)
-     *                 .setSignature(TEST_SIGNATURE)
-     *                 .setClientDataJSON(TEST_CLIENT_DATA_JSON)
-     *                 .setKeyHandle(TEST_KEY_HANDLE)
-     *                 .build();
-     * UvmEntry uvmEntry0 =
-     *         new UvmEntry.Builder()
-     *                 .setUserVerificationMethod(TEST_USER_VERIFICATION_METHOD[0])
-     *                 .setKeyProtectionType(TEST_KEY_PROTECTION_TYPE[0])
-     *                 .setMatcherProtectionType(TEST_MATCHER_PROTECTION_TYPE[0])
-     *                 .build();
-     * UvmEntry uvmEntry1 =
-     *         new UvmEntry.Builder()
-     *                 .setUserVerificationMethod(TEST_USER_VERIFICATION_METHOD[1])
-     *                 .setKeyProtectionType(TEST_KEY_PROTECTION_TYPE[1])
-     *                 .setMatcherProtectionType(TEST_MATCHER_PROTECTION_TYPE[1])
-     *                 .build();
-     * UvmEntries uvmEntries =
-     *         new UvmEntries.Builder().addUvmEntry(uvmEntry0).addUvmEntry(uvmEntry1).build();
-     * AuthenticationExtensionsClientOutputs
-     *         authenticationExtensionsClientOutputs =
-     *                 new AuthenticationExtensionsClientOutputs.Builder()
-     *                         .setUserVerificationMethodEntries(uvmEntries)
-     *                         .build();
-     * PublicKeyCredential publicKeyCredential =
-     *         new PublicKeyCredential.Builder()
-     *                 .setResponse(response)
-     *                 .setAuthenticationExtensionsClientOutputs(
-     *                         authenticationExtensionsClientOutputs)
-     *                 .build().serializeToBytes();
+     * com.google.android.gms.fido.fido2.api.common.PublicKeyCredential with test data, i.e.:
      *
-     * NOTE: See NO_BUILDER comment, above.
+     * <pre>{@code
+     * AuthenticatorAssertionResponse response = new AuthenticatorAssertionResponse.Builder()
+     *      .setAuthenticatorData(TEST_AUTHENTICATOR_DATA)
+     *      .setSignature(TEST_SIGNATURE)
+     *      .setClientDataJSON(TEST_CLIENT_DATA_JSON)
+     *      .setKeyHandle(TEST_KEY_HANDLE)
+     *      .build();
+     * UvmEntry uvmEntry0 = new UvmEntry.Builder()
+     *      .setUserVerificationMethod(TEST_USER_VERIFICATION_METHOD[0])
+     *      .setKeyProtectionType(TEST_KEY_PROTECTION_TYPE[0])
+     *      .setMatcherProtectionType(TEST_MATCHER_PROTECTION_TYPE[0])
+     *      .build();
+     * UvmEntry uvmEntry1 = new UvmEntry.Builder()
+     *      .setUserVerificationMethod(TEST_USER_VERIFICATION_METHOD[1])
+     *      .setKeyProtectionType(TEST_KEY_PROTECTION_TYPE[1])
+     *      .setMatcherProtectionType(TEST_MATCHER_PROTECTION_TYPE[1])
+     *      .build();
+     * UvmEntries uvmEntries = new UvmEntries.Builder()
+     *      .addUvmEntry(uvmEntry0)
+     *      .addUvmEntry(uvmEntry1)
+     *      .build();
+     * AuthenticationExtensionsClientOutputs authenticationExtensionsClientOutputs =
+     *      new AuthenticationExtensionsClientOutputs.Builder()
+     *              .setUserVerificationMethodEntries(uvmEntries)
+     *              .build();
+     * PublicKeyCredential publicKeyCredential = new PublicKeyCredential.Builder()
+     *      .setResponse(response)
+     *      .setAuthenticationExtensionsClientOutputs(authenticationExtensionsClientOutputs)
+     *      .build().serializeToBytes();
+     * }</pre>
+     *
+     * <p>NOTE: See NO_BUILDER comment, above.
      */
     private static final byte[] TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_UVM =
             new byte[] {
@@ -297,8 +300,8 @@ public class Fido2ApiTestHelper {
             };
 
     /**
-     * The value of the prf extension response in the sample,
-     * {@link Fido2ApiTestHelper#TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_PRF}.
+     * The value of the prf extension response in the sample, {@link
+     * Fido2ApiTestHelper#TEST_ASSERTION_PUBLIC_KEY_CREDENTIAL_WITH_PRF}.
      */
     private static final byte[] TEST_ASSERTION_PRF_VALUES_BYTES = {
         -49, 63, -92, 1, -28, 95, -13, -108, -64, 100, 81, 6, 53, -105, 125, 108, 37, 7, 73, 14, 36,
@@ -430,6 +433,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
+     *
      * @return Intent containing the response from the Fido2 API.
      */
     public static Intent createSuccessfulMakeCredentialIntent() {
@@ -440,6 +444,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Builds a test intent to be returned by a successful call to makeCredential.
+     *
      * @return Intent containing the response from the Fido2 API.
      */
     public static Intent createSuccessfulPasskeyMakeCredentialIntent() {
@@ -472,6 +477,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Construct default options for a makeCredential request.
+     *
      * @return Options for the Fido2 API.
      * @throws Exception
      */
@@ -514,6 +520,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Verifies that the returned response matches expected values.
+     *
      * @param response The response from the Fido2 API.
      */
     public static void validateMakeCredentialResponse(
@@ -526,6 +533,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Constructs default options for a getAssertion request.
+     *
      * @return Options for the Fido2 API
      * @throws Exception
      */
@@ -553,6 +561,7 @@ public class Fido2ApiTestHelper {
     /**
      * Builds a test intent without uvm extension to be returned by a successful call to
      * makeCredential.
+     *
      * @return Intent containing the response from the Fido2 API.
      */
     public static Intent createSuccessfulGetAssertionIntent() {
@@ -564,6 +573,7 @@ public class Fido2ApiTestHelper {
     /**
      * Builds a test intent with uvm extension to be returned by a successful call to
      * makeCredential.
+     *
      * @return Intent containing the response from the Fido2 API.
      */
     public static Intent createSuccessfulGetAssertionIntentWithUvm() {
@@ -575,6 +585,7 @@ public class Fido2ApiTestHelper {
     /**
      * Builds a test intent with prf extension to be returned by a successful call to
      * makeCredential.
+     *
      * @return Intent containing the response from the Fido2 API.
      */
     public static Intent createSuccessfulGetAssertionIntentWithPrf() {
@@ -585,6 +596,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Verifies the values in the prf extension.
+     *
      * @param prfValues The {@link PrfValues} from Fido2Api's extensions.
      */
     public static void validatePrfResults(PrfValues prfValues) {
@@ -603,6 +615,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Verifies that the returned userVerificationMethod matches expected values.
+     *
      * @param userVerificationMethods The userVerificationMethods from the Fido2 API.
      */
     public static void validateUserVerificationMethods(
@@ -625,6 +638,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Verifies that the returned response matches expected values.
+     *
      * @param response The response from the Fido2 API.
      */
     public static void validateGetAssertionResponse(GetAssertionAuthenticatorResponse response) {
@@ -640,6 +654,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Verifies that the response did not return before timeout.
+     *
      * @param startTimeMs The start time of the operation.
      */
     public static void verifyRespondedBeforeTimeout(long startTimeMs) {
@@ -688,6 +703,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Constructs an intent that returns an error response from the Fido2 API.
+     *
      * @param errorCode Numeric values corresponding to a Fido2 error.
      * @return an Intent containing the error response.
      */
@@ -719,6 +735,7 @@ public class Fido2ApiTestHelper {
 
     /**
      * Mocks ClientDataJson so that it returns the provided result.
+     *
      * @param mocker The JNI mocker
      * @param mockResult The mock value for {@link ClientDataJson#buildClientDataJson} to return.
      */
@@ -741,11 +758,12 @@ public class Fido2ApiTestHelper {
     }
 
     /**
-     * Creates a {@link WebAuthnCredentailDetails} object for testing.
-     * @return a newly created {@link WebAuthnCredentialDetails}.
+     * Creates a {@link WebauthnCredentailDetails} object for testing.
+     *
+     * @return a newly created {@link WebauthnCredentialDetails}.
      */
-    public static WebAuthnCredentialDetails getCredentialDetails() {
-        WebAuthnCredentialDetails credential = new WebAuthnCredentialDetails();
+    public static WebauthnCredentialDetails getCredentialDetails() {
+        WebauthnCredentialDetails credential = new WebauthnCredentialDetails();
         credential.mUserId = "1098237235409872".getBytes(UTF_8);
         credential.mUserName = "avery.a.jones@example.com";
         credential.mUserDisplayName = "Avery A. Jones";

@@ -14,8 +14,8 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import java.util.List;
 
 /**
- * Provides a bridge from the the Android Web Authentication request handlers
- * to the embedding browser.
+ * Provides a bridge from the the Android Web Authentication request handlers to the embedding
+ * browser.
  */
 @JNINamespace("webauthn")
 public class WebAuthnBrowserBridge {
@@ -24,21 +24,21 @@ public class WebAuthnBrowserBridge {
     /**
      * Provides a list of discoverable credentials for user selection. If this is a conditional UI
      * request, then these credentials become available as options for autofill UI on sign-in input
-     * fields. For non-conditional requests, a selection sheet is shown immediately. The callback
-     * is invoked when a user selects one of the credentials from the list.
+     * fields. For non-conditional requests, a selection sheet is shown immediately. The callback is
+     * invoked when a user selects one of the credentials from the list.
      *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param credentialList The list of credentials that can be used as autofill suggestions.
      * @param isConditionalRequest Boolean indicating whether this is a conditional UI request or
      *     not.
      * @param getAssertionCallback The callback to be invoked with the credential ID of a selected
-     *         credential.
+     *     credential.
      * @param hybridCallback The callback to be invoked if a user initiates a cross-device hybrid
      *     sign-in.
      */
     public void onCredentialsDetailsListReceived(
             RenderFrameHost frameHost,
-            List<WebAuthnCredentialDetails> credentialList,
+            List<WebauthnCredentialDetails> credentialList,
             boolean isConditionalRequest,
             Callback<byte[]> getAssertionCallback,
             Runnable hybridCallback) {
@@ -46,8 +46,8 @@ public class WebAuthnBrowserBridge {
         assert getAssertionCallback != null;
         prepareNativeBrowserBridgeIfRequired();
 
-        WebAuthnCredentialDetails[] credentialArray =
-                credentialList.toArray(new WebAuthnCredentialDetails[credentialList.size()]);
+        WebauthnCredentialDetails[] credentialArray =
+                credentialList.toArray(new WebauthnCredentialDetails[credentialList.size()]);
         WebAuthnBrowserBridgeJni.get()
                 .onCredentialsDetailsListReceived(
                         mNativeWebAuthnBrowserBridge,
@@ -65,9 +65,9 @@ public class WebAuthnBrowserBridge {
      *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param hasResults The response from credMan whether there are credentials for the
-     *         GetAssertion request.
+     *     GetAssertion request.
      * @param fullAssertion The CredMan request to trigger UI for credential selection for the
-     *         completed conditional request.
+     *     completed conditional request.
      */
     public void onCredManConditionalRequestPending(
             RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion) {
@@ -134,23 +134,23 @@ public class WebAuthnBrowserBridge {
     }
 
     @CalledByNative
-    private static String getWebAuthnCredentialDetailsUserName(WebAuthnCredentialDetails cred) {
+    private static String getWebauthnCredentialDetailsUserName(WebauthnCredentialDetails cred) {
         return cred.mUserName;
     }
 
     @CalledByNative
-    private static String getWebAuthnCredentialDetailsUserDisplayName(
-            WebAuthnCredentialDetails cred) {
+    private static String getWebauthnCredentialDetailsUserDisplayName(
+            WebauthnCredentialDetails cred) {
         return cred.mUserDisplayName;
     }
 
     @CalledByNative
-    private static byte[] getWebAuthnCredentialDetailsUserId(WebAuthnCredentialDetails cred) {
+    private static byte[] getWebauthnCredentialDetailsUserId(WebauthnCredentialDetails cred) {
         return cred.mUserId;
     }
 
     @CalledByNative
-    private static byte[] getWebAuthnCredentialDetailsCredentialId(WebAuthnCredentialDetails cred) {
+    private static byte[] getWebauthnCredentialDetailsCredentialId(WebauthnCredentialDetails cred) {
         return cred.mCredentialId;
     }
 
@@ -170,7 +170,7 @@ public class WebAuthnBrowserBridge {
         void onCredentialsDetailsListReceived(
                 long nativeWebAuthnBrowserBridge,
                 WebAuthnBrowserBridge caller,
-                WebAuthnCredentialDetails[] credentialList,
+                WebauthnCredentialDetails[] credentialList,
                 RenderFrameHost frameHost,
                 boolean isConditionalRequest,
                 Callback<byte[]> getAssertionCallback,
