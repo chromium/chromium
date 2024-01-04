@@ -1,11 +1,10 @@
 # Consumer User Types
 
 This document gives a brief description of consumer user types that can log in
-to a Chrome OS devices.
+to a ChromeOS devices.
 
 This does not include enterprise user types. For more information about
 enterprise user types, see
-*   [Active Directory integration](../enterprise/active_directory_integration.md),
 *   [kiosk and public sessions](../enterprise/kiosk_public_session.md),
 *   [SAML authentication](../enterprise/saml_authentication.md)
 
