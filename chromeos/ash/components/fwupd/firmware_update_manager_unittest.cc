@@ -21,6 +21,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
@@ -620,7 +621,12 @@ class FirmwareUpdateManagerTest : public testing::Test {
 
   void RequestAllUpdates() { firmware_update_manager_->RequestAllUpdates(); }
 
-  base::test::TaskEnvironment task_environment_;
+  void AdvanceClock(base::TimeDelta time) {
+    task_environment_.AdvanceClock(time);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   raw_ptr<FwupdClient, DanglingUntriaged | ExperimentalAsh> dbus_client_ =
@@ -1229,6 +1235,85 @@ TEST_P(FirmwareUpdateManagerTest_FailedInstall, FailedInstall_WaitingForUser) {
   histogram_tester.ExpectUniqueSample(
       "ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus",
       GetParam().fwupd_status, 1);
+}
+
+TEST_F(FirmwareUpdateManagerTest, FailedInstall_DurationMetrics_MetricLogged) {
+  base::HistogramTester histogram_tester;
+
+  // These steps are necessary for the rest of the test to work correctly.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  // Trigger a request.
+  TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId::kInsertUSBCable,
+      firmware_update::mojom::DeviceRequestKind::kImmediate);
+  // Set status to kWaitingForUser, since that normally happens simultaneously
+  // with device requests.
+  SetStatus(FwupdStatus::kWaitingForUser);
+
+  const std::string metric_name =
+      "ChromeOS.FirmwareUpdateUi.InstallFailedWithDurationAfterRequest."
+      "RequestIdInsertUSBCable";
+
+  // Before the install fails, this metric shouldn't be logged.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
+
+  // Wait 10 seconds.
+  AdvanceClock(base::Seconds(10));
+
+  // Before the install fails, this metric shouldn't be logged.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
+
+  TriggerInstallFailed();
+
+  // Expect that the metric is logged with the correct time.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 1);
+}
+
+TEST_F(FirmwareUpdateManagerTest,
+       FailedInstall_DurationMetrics_MetricNotLogged) {
+  base::HistogramTester histogram_tester;
+
+  // These steps are necessary for the rest of the test to work correctly.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  // Trigger a request.
+  TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId::kInsertUSBCable,
+      firmware_update::mojom::DeviceRequestKind::kImmediate);
+  // Set status to kWaitingForUser, since that normally happens simultaneously
+  // with device requests.
+  SetStatus(FwupdStatus::kWaitingForUser);
+
+  const std::string metric_name =
+      "ChromeOS.FirmwareUpdateUi.FailedRequestDuration.RequestIdInsertUSBCable";
+
+  // Before the install fails, this metric shouldn't be logged.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
+
+  // Wait 10 seconds.
+  AdvanceClock(base::Seconds(10));
+
+  // Before the install fails, this metric shouldn't be logged.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
+
+  // Set status to something other than kWaitingForUser, which indicates that
+  // the user successfully fulfilled the request.
+  SetStatus(FwupdStatus::kDeviceRestart);
+
+  TriggerInstallFailed();
+
+  // Expect that the metric is not logged, because the request was successful,
+  // even though the install failed.
+  histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
 }
 
 }  // namespace ash

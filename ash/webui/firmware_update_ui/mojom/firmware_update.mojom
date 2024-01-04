@@ -64,7 +64,9 @@ enum UpdateState {
 // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-request.h
 // Note: Any changes to this enum must be reflected to the
 // FirmwareUpdateDeviceRequestID enum in
-// tools/metrics/histograms/metadata/chromeos/enums.xml
+// tools/metrics/histograms/metadata/chromeos/enums.xml and the variants type
+// called "FirmwareUpdateUiDeviceRequestId" in
+// tools/metrics/histograms/metadata/chromeos/histograms.xml.
 enum DeviceRequestId {
   // Do not unplug the machine from the AC power
   kDoNotPowerOff,

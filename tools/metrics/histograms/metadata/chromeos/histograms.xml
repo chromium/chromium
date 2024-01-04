@@ -162,6 +162,17 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </variant>
 </variants>
 
+<variants name="FirmwareUpdateUiDeviceRequestId">
+<!-- These variants are the possible values for a DeviceRequestId -->
+
+  <variant name="DoNotPowerOff"/>
+  <variant name="PressUnlock"/>
+  <variant name="RemoveReplug"/>
+  <variant name="RemoveUSBCable"/>
+  <variant name="ReplugInstall"/>
+  <variant name="Unknown"/>
+</variants>
+
 <variants name="InputDeviceSettingsDeviceTypes">
 <!-- The variants are the possible device types used with input device settings. -->
 
@@ -1192,6 +1203,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     Records the duration of time (ms) a given {FeatureName} feature was used.
   </summary>
   <token key="FeatureName" variants="FeaturesLoggingUsageEvents"/>
+</histogram>
+
+<histogram
+    name="ChromeOS.FirmwareUpdateUi.InstallFailedWithDurationAfterRequest.RequestId{DeviceRequestId}"
+    units="ms" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    When a firmware install fails while waiting for user action (i.e. a device
+    request), record the duration of that request. This metric attempts to
+    capture timeouts and other install failures that occur while waiting for a
+    user to fulfill a request of type {DeviceRequestId}.
+  </summary>
+  <token key="DeviceRequestId" variants="FirmwareUpdateUiDeviceRequestId"/>
 </histogram>
 
 <histogram name="ChromeOS.FirmwareUpdateUi.InstallFailedWithStatus"
