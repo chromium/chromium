@@ -19,6 +19,10 @@ namespace media {
 
 class VideoFrame;
 
+// File size limit is 512KB. Licenses saved by the CDM are typically several
+// hundreds of bytes.
+constexpr int64_t kMaxFileSizeBytes = 512 * 1024;
+
 class DecryptedBlockImpl final : public cdm::DecryptedBlock {
  public:
   DecryptedBlockImpl();

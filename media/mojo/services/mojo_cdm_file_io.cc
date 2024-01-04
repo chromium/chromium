@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "media/cdm/cdm_helpers.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace media {
@@ -20,11 +21,6 @@ namespace {
 using ClientStatus = cdm::FileIOClient::Status;
 using FileStatus = media::mojom::CdmFile::Status;
 using StorageStatus = media::mojom::CdmStorage::Status;
-
-// File size limit is 512KB. Licenses saved by the CDM are typically several
-// hundreds of bytes. This value should match what is in CdmFileImpl.
-const int64_t kMaxFileSizeBytes = 512 * 1024;
-
 
 // Constants for UMA reporting of file size (in KB) via
 // UMA_HISTOGRAM_CUSTOM_COUNTS. Note that the histogram is log-scaled (rather
