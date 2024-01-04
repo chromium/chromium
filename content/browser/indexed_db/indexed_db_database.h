@@ -104,8 +104,7 @@ class CONTENT_EXPORT IndexedDBDatabase {
                            bool committed);
 
   void ScheduleOpenConnection(
-      std::unique_ptr<IndexedDBPendingConnection> connection,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
+      std::unique_ptr<IndexedDBPendingConnection> connection);
 
   void ScheduleDeleteDatabase(
       std::unique_ptr<IndexedDBFactoryClient> factory_client,
@@ -321,7 +320,8 @@ class CONTENT_EXPORT IndexedDBDatabase {
 
   std::unique_ptr<IndexedDBConnection> CreateConnection(
       std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
-      scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker);
+      mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+          client_state_checker);
 
   // Ack that one of the connections notified with a "versionchange" event did
   // not promptly close. Therefore a "blocked" event should be fired at the

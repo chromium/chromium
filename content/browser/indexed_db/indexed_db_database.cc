@@ -368,10 +368,8 @@ void IndexedDBDatabase::TransactionFinished(
 }
 
 void IndexedDBDatabase::ScheduleOpenConnection(
-    std::unique_ptr<IndexedDBPendingConnection> connection,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
-  connection_coordinator_.ScheduleOpenConnection(
-      std::move(connection), std::move(client_state_checker));
+    std::unique_ptr<IndexedDBPendingConnection> connection) {
+  connection_coordinator_.ScheduleOpenConnection(std::move(connection));
 }
 
 void IndexedDBDatabase::ScheduleDeleteDatabase(
@@ -1520,7 +1518,8 @@ Status IndexedDBDatabase::OpenInternal() {
 
 std::unique_ptr<IndexedDBConnection> IndexedDBDatabase::CreateConnection(
     std::unique_ptr<IndexedDBDatabaseCallbacks> database_callbacks,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker) {
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker) {
   auto connection = std::make_unique<IndexedDBConnection>(
       *bucket_context_, weak_factory_.GetWeakPtr(),
       base::BindRepeating(&IndexedDBDatabase::VersionChangeIgnored,

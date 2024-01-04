@@ -46,7 +46,6 @@ class SequencedTaskRunner;
 
 namespace content {
 class IndexedDBBucketContextHandle;
-class IndexedDBClientStateCheckerWrapper;
 class IndexedDBContextImpl;
 class TransactionalLevelDBDatabase;
 
@@ -157,9 +156,9 @@ class CONTENT_EXPORT IndexedDBFactory : public blink::mojom::IDBFactory {
     // The `bucket` might be null if `QuotaDatabase::GetDatabase()` fails
     // during the IndexedDB binding.
     absl::optional<storage::BucketInfo> bucket;
-    // This is needed when the checker needs to be copied to another holder,
-    // e.g. `IndexedDBConnection`s that are opened through this dispatcher.
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker;
+
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker_remote;
   };
 
   // `path_base` is the directory that will contain the database directory, the

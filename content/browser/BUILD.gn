@@ -1091,8 +1091,6 @@ source_set("browser") {
     "indexed_db/indexed_db_callback_helpers.h",
     "indexed_db/indexed_db_class_factory.cc",
     "indexed_db/indexed_db_class_factory.h",
-    "indexed_db/indexed_db_client_state_checker_wrapper.cc",
-    "indexed_db/indexed_db_client_state_checker_wrapper.h",
     "indexed_db/indexed_db_compaction_task.cc",
     "indexed_db/indexed_db_compaction_task.h",
     "indexed_db/indexed_db_connection.cc",

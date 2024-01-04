@@ -35,7 +35,8 @@ IndexedDBConnection::IndexedDBConnection(
     base::RepeatingClosure on_version_change_ignored,
     base::OnceCallback<void(IndexedDBConnection*)> on_close,
     std::unique_ptr<IndexedDBDatabaseCallbacks> callbacks,
-    scoped_refptr<IndexedDBClientStateCheckerWrapper> client_state_checker)
+    mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
+        client_state_checker)
     : id_(g_next_indexed_db_connection_id++),
       bucket_context_handle_(bucket_context),
       database_(std::move(database)),
@@ -204,6 +205,13 @@ void IndexedDBConnection::RemoveTransaction(int64_t id) {
 void IndexedDBConnection::DisallowInactiveClient(
     storage::mojom::DisallowInactiveClientReason reason,
     base::OnceCallback<void(bool)> callback) {
+  if (!client_state_checker_.is_bound()) {
+    // If the remote is no longer connected, we expect the client will terminate
+    // the connection soon, so marking `was_active` true here.
+    std::move(callback).Run(/*was_active=*/true);
+    return;
+  }
+
   if (reason ==
       storage::mojom::DisallowInactiveClientReason::kClientEventIsTriggered) {
     // It's only necessary to keep the client active under this scenario.

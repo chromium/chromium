@@ -57,6 +57,14 @@ class NoDocumentIndexedDBClientStateChecker
       DisallowInactiveClientCallback callback) override {
     std::move(callback).Run(/*was_active=*/true);
   }
+  void MakeClone(
+      mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
+          receiver) override {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+ private:
+  mojo::ReceiverSet<storage::mojom::IndexedDBClientStateChecker> receivers_;
 };
 
 // This class should be used when the client has a RenderFrameHost associated so
@@ -125,6 +133,12 @@ class DocumentIndexedDBClientStateChecker final
     }
 
     std::move(callback).Run(was_active);
+  }
+
+  void MakeClone(
+      mojo::PendingReceiver<storage::mojom::IndexedDBClientStateChecker>
+          receiver) override {
+    Bind(std::move(receiver));
   }
 
  private:
