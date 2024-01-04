@@ -891,6 +891,17 @@ const base::FeatureParam<base::TimeDelta> kFledgeDebugReportRestrictedCooldown{
 const base::FeatureParam<base::TimeDelta> kFledgeDebugReportShortCooldown{
     &kFledgeSampleDebugReports, "fledge_debug_report_short_cooldown",
     base::Days(14)};
+const base::FeatureParam<int> kFledgeDebugReportSamplingRandomMax{
+    &kFledgeSampleDebugReports, "fledge_debug_report_sampling_random_max",
+    1000};
+const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax{
+        &kFledgeSampleDebugReports,
+        "fledge_debug_report_sampling_restricted_cooldown_random_max", 10};
+
+BASE_FEATURE(kFledgeDebugReportFilterAfterSampling,
+             "FledgeDebugReportFilterAfterSampling",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kForceDeferScriptIntervention,
              "ForceDeferScriptIntervention",

@@ -74,7 +74,12 @@ CONTENT_EXPORT std::ostream& operator<<(
     std::ostream& out,
     const StorageInterestGroup::KAnonymityData& kanon);
 
-enum DebugReportCooldownType { kShortCooldown, kRestrictedCooldown };
+enum class DebugReportCooldownType {
+  kShortCooldown = 0,
+  kRestrictedCooldown = 1,
+
+  kMaxValue = kRestrictedCooldown,
+};
 
 struct CONTENT_EXPORT DebugReportCooldown {
   base::Time starting_time;
@@ -104,7 +109,7 @@ struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
 // Converts forDebuggingOnly API's cooldown type to its actual cooldown
 // duration.
 CONTENT_EXPORT absl::optional<base::TimeDelta>
-ConvertDebugReportCooldownTypeToDuration(int type);
+ConvertDebugReportCooldownTypeToDuration(DebugReportCooldownType type);
 
 }  // namespace content
 

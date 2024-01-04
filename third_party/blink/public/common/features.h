@@ -477,6 +477,16 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFledgeDebugReportRestrictedCooldown;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kFledgeDebugReportShortCooldown;
+// Gives a 1/(kFledgeDebugReportSamplingRandomMax+1) chance of allowing sending
+// forDebuggingOnly reports.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRandomMax;
+// Gives a 1/(kFledgeDebugReportSamplingRestrictedCooldownRandomMax+1) chance of
+// putting an ad tech in a restricted cooldown period.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax;
+
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeDebugReportFilterAfterSampling);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kForceWebContentsDarkMode);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<ForceDarkInversionMethod>

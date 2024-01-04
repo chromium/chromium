@@ -2847,7 +2847,7 @@ bool DoRecordDebugReportCooldown(sql::Database& db,
   debug_cooldown.BindInt64(1, cooldown_start.ToDeltaSinceWindowsEpoch()
                                   .CeilToMultiple(base::Hours(1))
                                   .InMicroseconds());
-  debug_cooldown.BindInt(2, cooldown_type);
+  debug_cooldown.BindInt(2, static_cast<int>(cooldown_type));
 
   return debug_cooldown.Run();
 }
@@ -3880,10 +3880,10 @@ bool DeleteExpiredDebugReportCooldown(sql::Database& db, base::Time now) {
   delete_cooldown.Reset(true);
   absl::optional<base::TimeDelta> short_duration =
       ConvertDebugReportCooldownTypeToDuration(
-          static_cast<int>(DebugReportCooldownType::kShortCooldown));
+          DebugReportCooldownType::kShortCooldown);
   absl::optional<base::TimeDelta> restricted_duration =
       ConvertDebugReportCooldownTypeToDuration(
-          static_cast<int>(DebugReportCooldownType::kRestrictedCooldown));
+          DebugReportCooldownType::kRestrictedCooldown);
   CHECK(short_duration.has_value());
   CHECK(restricted_duration.has_value());
 

@@ -1184,8 +1184,6 @@ class CONTENT_EXPORT InterestGroupAuction
       std::string ad_slot,
       scoped_refptr<HeaderDirectFromSellerSignals::Result> signals);
 
-  bool IsForDebuggingOnlyInLockoutOrCooldown(const url::Origin& origin);
-
   static data_decoder::DataDecoder* GetDataDecoder(
       base::WeakPtr<InterestGroupAuction> instance);
 
@@ -1306,9 +1304,18 @@ class CONTENT_EXPORT InterestGroupAuction
 
   bool any_bid_made_ = false;
 
-  // Lockout and cooldowns for sending forDebuggingOnly reports.
+  // Lockout and cooldowns for sending forDebuggingOnly reports. It's read from
+  // DB when the auction started.
   absl::optional<DebugReportLockoutAndCooldowns>
       debug_report_lockout_and_cooldowns_;
+
+  // New lockout and cooldowns for sending forDebuggingOnly reports. It's
+  // generated from this auction and updated during collecting debug reports.
+  // Used to decide whether forDebuggingOnly API is in lockout or cooldown
+  // together with `debug_report_lockout_and_cooldowns_`, and to update the DB
+  // after this auction's debug reports are collected.
+  // TODO(b/310944302): Fix handling of simultaneous auctions.
+  DebugReportLockoutAndCooldowns new_debug_report_lockout_and_cooldowns_;
 
   // State of all buyers participating in the auction. Excludes buyers that
   // don't own any interest groups the user belongs to.

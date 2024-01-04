@@ -1044,6 +1044,10 @@ std::string MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout() {
         bid = browserSignals.forDebuggingOnlyInCooldownOrLockout === true ? 10 :
                                                                             11;
       }
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://bidder-debug-loss-reporting.com/');
+      forDebuggingOnly.reportAdAuctionWin(
+          'https://bidder-debug-win-reporting.com/');
       return {bid, render: interestGroup.ads[0].renderURL,
               allowComponentAuction: true};
     }
@@ -1075,6 +1079,10 @@ std::string MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout() {
         score = browserSignals.forDebuggingOnlyInCooldownOrLockout === true ?
             10 : 11;
       }
+      forDebuggingOnly.reportAdAuctionLoss(
+          'https://seller-debug-loss-reporting.com/');
+      forDebuggingOnly.reportAdAuctionWin(
+          'https://seller-debug-win-reporting.com/');
       return {desirability: score, allowComponentAuction: true};
     }
 
@@ -18976,70 +18984,30 @@ INSTANTIATE_TEST_SUITE_P(
 class AuctionRunnerSampleDebugReportsEnabledTest : public AuctionRunnerTest {
  public:
   AuctionRunnerSampleDebugReportsEnabledTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::
-                                  kBiddingAndScoringDebugReportingAPI,
-                              blink::features::kFledgeSampleDebugReports},
-        /*disabled_features=*/{});
+    // Set fledge_debug_report_sampling_random_max and
+    // fledge_debug_report_sampling_restricted_cooldown_random_max to small
+    // numbers so that related tests can repeat less times and finish sooner.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+         {blink::features::kFledgeSampleDebugReports,
+          {{"fledge_debug_report_sampling_random_max", "1"},
+           {"fledge_debug_report_sampling_restricted_cooldown_random_max",
+            "1"}}},
+         {blink::features::kFledgeDebugReportFilterAfterSampling, {}}},
+        {});
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AuctionRunnerSampleDebugReportsEnabledTest, ForDebuggingOnlyReporting) {
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder1Url,
-      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/2,
-                    kBidder1, kBidder1Name,
-                    /*has_signals=*/false, "k1", "a",
-                    /*report_post_auction_signals=*/false,
-                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kBidder2Url,
-      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/2,
-                    kBidder2, kBidder2Name,
-                    /*has_signals=*/false, "l2", "b",
-                    /*report_post_auction_signals=*/false,
-                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
-  auction_worklet::AddJavascriptResponse(
-      &url_loader_factory_, kSellerUrl,
-      MakeAuctionScript(/*report_post_auction_signals=*/false,
-                        GURL("https://adstuff.publisher1.com/auction.js"),
-                        kSellerDebugLossReportBaseUrl,
-                        kSellerDebugWinReportBaseUrl));
-
-  RunStandardAuction(/*request_trusted_bidding_signals=*/false);
-  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
-
-  // Bidder 2 won the auction.
-  EXPECT_EQ(kBidder2Key, result_.winning_group_id);
-  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
-
-  EXPECT_EQ(2u, result_.debug_loss_report_urls.size());
-  // Sellers can get highest scoring other bid, but losing bidders can not.
-  EXPECT_THAT(
-      result_.debug_loss_report_urls,
-      testing::UnorderedElementsAre(kBidder1DebugLossReportUrl,
-                                    "https://seller-debug-loss-reporting.com/1"
-
-                                    ));
-
-  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
-  // Winning bidders can get highest scoring other bid.
-  EXPECT_THAT(result_.debug_win_report_urls,
-              testing::UnorderedElementsAre(
-                  kBidder2DebugWinReportUrl,
-                  "https://seller-debug-win-reporting.com/2"));
-}
-
 TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
        BrowserSignalForDebuggingOnlyInCooldownOrLockout) {
   const struct {
     const std::string bidder_name;
     const GURL seller_url;
-    const std::string bidder_in_cooldown_or_lockout;
-    const std::string seller_in_cooldown_or_lockout;
+    const std::string expected_bidder_in_cooldown_or_lockout;
+    const std::string expected_seller_in_cooldown_or_lockout;
   } kTestCases[] = {
       // Not under lockout. Bidder and seller origins are not under cooldown.
       {kBidder1Name, kSellerUrl, "false", "false"},
@@ -19081,16 +19049,76 @@ TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
                 testing::UnorderedElementsAre(
                     "https://buyer-reporting.com/"
                     "?forDebuggingOnlyInCooldownOrLockout=" +
-                        test_case.bidder_in_cooldown_or_lockout,
+                        test_case.expected_bidder_in_cooldown_or_lockout,
                     "https://seller-reporting.com/"
                     "?forDebuggingOnlyInCooldownOrLockout=" +
-                        test_case.seller_in_cooldown_or_lockout));
+                        test_case.expected_seller_in_cooldown_or_lockout));
   }
 }
 
-// Sellers are under cooldown, and the bidder is not.
 TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
-       ComponentAuctionBrowserSignalForDebuggingOnlyInCooldownOrLockout) {
+       DropDebugReportsIfInLockout) {
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrlDebugReportLockout,
+      MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  RunAuctionAndWait(kSellerUrlDebugReportLockout, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+  // All debug win reports are dropped, due to the browser is under lockout.
+  EXPECT_EQ(0u, result_.debug_win_report_urls.size());
+}
+
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       DropDebugReportsIfInCooldown) {
+  base::test::ScopedFeatureList feature_list;
+  // Give it 100% chance to allow a debug report if not under cooldown or
+  // lockout.
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_debug_report_sampling_random_max", "0"},
+         {"fledge_debug_report_sampling_restricted_cooldown_random_max", "1"}}},
+       {blink::features::kFledgeDebugReportFilterAfterSampling, {}}},
+      {});
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrlDebugReportCooldown,
+      MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(
+      kBidder1, kBidder1Name, kBidder1Url,
+      /*trusted_bidding_signals_url=*/absl::nullopt,
+      /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+
+  RunAuctionAndWait(kSellerUrlDebugReportCooldown, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+  // Only have debug win reports from bidder, since seller is under cooldown.
+  EXPECT_THAT(
+      result_.debug_win_report_urls,
+      testing::UnorderedElementsAre("https://bidder-debug-win-reporting.com/"));
+}
+
+// Sellers are under cooldown, and the bidder is not. Tests both
+// browserSignals.forDebuggingOnlyInCooldownOrLockout, and the sampling
+// algorithm for multi-level auctions.
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       ComponentAuctionSamplingAndDoFilterDebugReports) {
   interest_group_buyers_.emplace();
 
   component_auctions_.emplace_back(
@@ -19105,23 +19133,238 @@ TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
       &url_loader_factory_, kSellerUrlDebugReportCooldown,
       MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
 
+  bool seen_debug_report_sent = false, seen_debug_report_not_sent = false;
+  bool seen_short_cooldown = false, seen_restricted_cooldown = false;
+  while (!seen_debug_report_sent || !seen_debug_report_not_sent ||
+         !seen_short_cooldown || !seen_restricted_cooldown) {
+    std::vector<StorageInterestGroup> bidders;
+    bidders.emplace_back(MakeInterestGroup(
+        kBidder1, kBidder1Name, kBidder1Url,
+        /*trusted_bidding_signals_url=*/absl::nullopt,
+        /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
+    RunAuctionAndWait(kSellerUrlDebugReportCooldown, std::move(bidders));
+    EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
+    EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+
+    // Check that browserSignals.forDebuggingOnlyInCooldownOrLockout are
+    // correct. These are not affected by the new lockout and cooldowns from
+    // this auction.
+    EXPECT_THAT(result_.report_urls,
+                testing::UnorderedElementsAre(
+                    "https://buyer-reporting.com/"
+                    "?forDebuggingOnlyInCooldownOrLockout=false",
+                    "https://seller-reporting.com/"
+                    "?forDebuggingOnlyInCooldownOrLockout=true",
+                    "https://component-seller-reporting.com/"
+                    "?forDebuggingOnlyInCooldownOrLockout=true"));
+
+    // Get lockout and cooldowns from DB, which should have been updated after
+    // auction.
+    base::RunLoop run_loop;
+    DebugReportLockoutAndCooldowns new_debug_report_lockout_and_cooldowns;
+    interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+        base::flat_set<url::Origin>(
+            {kBidder1, url::Origin::Create(kSellerUrlDebugReportCooldown)}),
+        base::BindLambdaForTesting(
+            [&](absl::optional<DebugReportLockoutAndCooldowns>
+                    debug_report_lockout_and_cooldowns) {
+              ASSERT_TRUE(debug_report_lockout_and_cooldowns.has_value());
+              new_debug_report_lockout_and_cooldowns =
+                  std::move(*debug_report_lockout_and_cooldowns);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+
+    // Check that debug reports may be dropped due to sampling.
+    if (result_.debug_win_report_urls.empty()) {
+      seen_debug_report_not_sent = true;
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction."
+          "ForDebuggingOnlyReportAllowedAfterSampling",
+          false, 1);
+    } else {
+      seen_debug_report_sent = true;
+      // Sellers are under cooldown, so no win reports for sellers.
+      EXPECT_THAT(result_.debug_win_report_urls,
+                  testing::UnorderedElementsAre(
+                      "https://bidder-debug-win-reporting.com/"));
+      // We don't know the exact time, so just checking that there's a
+      // last_report_sent_time in DB after auction.
+      EXPECT_TRUE(new_debug_report_lockout_and_cooldowns.last_report_sent_time
+                      .has_value());
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction."
+          "ForDebuggingOnlyReportAllowedAfterSampling",
+          true, 1);
+    }
+
+    // Check cooldown from this run of sampling.
+    ASSERT_TRUE(new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map
+                    .contains(kBidder1));
+    DebugReportCooldownType type = new_debug_report_lockout_and_cooldowns
+                                       .debug_report_cooldown_map[kBidder1]
+                                       .type;
+    if (type == DebugReportCooldownType::kShortCooldown) {
+      seen_short_cooldown = true;
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.ForDebuggingOnlyCooldownType",
+          DebugReportCooldownType::kShortCooldown, 1);
+    } else if (type == DebugReportCooldownType::kRestrictedCooldown) {
+      seen_restricted_cooldown = true;
+      histogram_tester_->ExpectUniqueSample(
+          "Ads.InterestGroup.Auction.ForDebuggingOnlyCooldownType",
+          DebugReportCooldownType::kRestrictedCooldown, 1);
+    }
+  }
+}
+
+// Cooldowns and lockout should be updated during auction, so that if one debug
+// report is sent, other debug reports should all be dropped since the client
+// should be in lockout after that, even though the DB is not updated yet.
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       CooldownOrLockoutShouldBeUpdatedDuringAuction) {
+  base::test::ScopedFeatureList feature_list;
+  // Give it 100% chance to allow a debug report if not under cooldown or
+  // lockout.
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_debug_report_sampling_random_max", "0"},
+         {"fledge_debug_report_sampling_restricted_cooldown_random_max", "1"}}},
+       {blink::features::kFledgeDebugReportFilterAfterSampling, {}}},
+      {});
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    /*report_post_auction_signals=*/false,
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder2Url,
+      MakeBidScript(kSeller, "2", "https://ad2.com/", /*num_ad_components=*/0,
+                    kBidder2, kBidder2Name,
+                    /*has_signals=*/false, "l2", "b",
+                    /*report_post_auction_signals=*/false,
+                    kBidder2DebugLossReportUrl, kBidder2DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/false, kSellerUrl,
+                        kSellerDebugLossReportBaseUrl,
+                        kSellerDebugWinReportBaseUrl));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                                         absl::nullopt, {"k1", "k2"},
+                                         GURL("https://ad1.com")));
+  bidders.emplace_back(MakeInterestGroup(kBidder2, kBidder2Name, kBidder2Url,
+                                         absl::nullopt, {"l1", "l2"},
+                                         GURL("https://ad2.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+
+  // Bidder 2 won the auction.
+  EXPECT_EQ(GURL("https://ad2.com/"), result_.ad_descriptor->url);
+  // The first sampled debug report should be allowed to be sent since the
+  // sampling rate is set to 1/(0+1). All other debug reports should be dropped,
+  // since the browser is under lockout afterwards.
+  EXPECT_EQ(1u, result_.debug_win_report_urls.size() +
+                    result_.debug_loss_report_urls.size());
+}
+
+// Similar to `DropDebugReportsIfInCooldownOrLockout()`, but with flag
+// kFledgeDebugReportFilterAfterSampling disabled.
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       InCooldownOrLockoutWhenDoFilterDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_debug_report_sampling_random_max", "1"},
+         {"fledge_debug_report_sampling_restricted_cooldown_random_max",
+          "1"}}}},
+      /*disabled_features=*/{
+          blink::features::kFledgeDebugReportFilterAfterSampling});
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScriptWithForDebuggingOnlyInCooldownOrLockout());
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrlDebugReportLockout,
+      MakeAuctionScriptWithForDebuggingOnlyInCooldownOrLockout());
+
   std::vector<StorageInterestGroup> bidders;
   bidders.emplace_back(MakeInterestGroup(
-      kBidder1, kBidder1Name, kBidder1Url,
+      kBidder1, kBidderNameDebugReportShortCooldown, kBidder1Url,
       /*trusted_bidding_signals_url=*/absl::nullopt,
       /*trusted_bidding_signals_keys=*/{}, GURL("https://ad1.com")));
-  RunAuctionAndWait(kSellerUrlDebugReportCooldown, std::move(bidders));
-  EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
 
+  RunAuctionAndWait(kSellerUrlDebugReportLockout, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
-  EXPECT_THAT(result_.report_urls,
+  EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
+  // No debug reports are dropped although under lockout or cooldown, when
+  // flag kFledgeDebugReportFilterAfterSampling is disabled.
+  EXPECT_EQ(2u, result_.debug_win_report_urls.size());
+}
+
+TEST_F(AuctionRunnerSampleDebugReportsEnabledTest,
+       SampleDebugReportsDoFilterDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
+       {blink::features::kFledgeSampleDebugReports,
+        {{"fledge_debug_report_sampling_random_max", "0"},
+         {"fledge_debug_report_sampling_restricted_cooldown_random_max",
+          "0"}}}},
+      /*disabled_features=*/{
+          blink::features::kFledgeDebugReportFilterAfterSampling});
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kBidder1Url,
+      MakeBidScript(kSeller, "1", "https://ad1.com/", /*num_ad_components=*/0,
+                    kBidder1, kBidder1Name,
+                    /*has_signals=*/false, "k1", "a",
+                    /*report_post_auction_signals=*/false,
+                    kBidder1DebugLossReportUrl, kBidder1DebugWinReportUrl));
+  auction_worklet::AddJavascriptResponse(
+      &url_loader_factory_, kSellerUrl,
+      MakeAuctionScript(/*report_post_auction_signals=*/false, kSellerUrl,
+                        kSellerDebugLossReportBaseUrl,
+                        kSellerDebugWinReportBaseUrl));
+
+  std::vector<StorageInterestGroup> bidders;
+  bidders.emplace_back(MakeInterestGroup(kBidder1, kBidder1Name, kBidder1Url,
+                                         absl::nullopt, {"k1", "k2"},
+                                         GURL("https://ad1.com")));
+
+  RunAuctionAndWait(kSellerUrl, std::move(bidders));
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_descriptor->url);
+  // No debug reports are dropped, since kFledgeDebugReportFilterAfterSampling
+  // is disabled.
+  EXPECT_THAT(result_.debug_win_report_urls,
               testing::UnorderedElementsAre(
-                  "https://buyer-reporting.com/"
-                  "?forDebuggingOnlyInCooldownOrLockout=false",
-                  "https://seller-reporting.com/"
-                  "?forDebuggingOnlyInCooldownOrLockout=true",
-                  "https://component-seller-reporting.com/"
-                  "?forDebuggingOnlyInCooldownOrLockout=true"));
+                  kBidder1DebugWinReportUrl,
+                  "https://seller-debug-win-reporting.com/1"));
+
+  // Get lockout and cooldowns from DB, which should have been updated after
+  // auction.
+  base::RunLoop run_loop;
+  DebugReportLockoutAndCooldowns new_debug_report_lockout_and_cooldowns;
+  interest_group_manager_->GetDebugReportLockoutAndCooldowns(
+      base::flat_set<url::Origin>(
+          {kBidder1, url::Origin::Create(kSellerUrlDebugReportCooldown)}),
+      base::BindLambdaForTesting(
+          [&](absl::optional<DebugReportLockoutAndCooldowns>
+                  debug_report_lockout_and_cooldowns) {
+            ASSERT_TRUE(debug_report_lockout_and_cooldowns.has_value());
+            new_debug_report_lockout_and_cooldowns =
+                std::move(*debug_report_lockout_and_cooldowns);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  EXPECT_TRUE(
+      new_debug_report_lockout_and_cooldowns.last_report_sent_time.has_value());
 }
 
 // Disable private aggregation API.

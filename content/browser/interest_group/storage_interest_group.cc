@@ -37,7 +37,7 @@ DebugReportLockoutAndCooldowns::DebugReportLockoutAndCooldowns(
 DebugReportLockoutAndCooldowns::~DebugReportLockoutAndCooldowns() = default;
 
 absl::optional<base::TimeDelta> ConvertDebugReportCooldownTypeToDuration(
-    int type) {
+    DebugReportCooldownType type) {
   switch (type) {
     case DebugReportCooldownType::kShortCooldown:
       return blink::features::kFledgeDebugReportShortCooldown.Get();

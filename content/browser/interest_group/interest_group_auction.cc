@@ -12,6 +12,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -446,6 +447,104 @@ void TakePrivateAggregationRequestsForBidState(
   }
 }
 
+// Returns true if `origin` is in cooldown or lockout to send forDebuggingOnly
+// reports.
+bool IsOriginInDebugReportCooldownOrLockout(
+    const url::Origin& origin,
+    const absl::optional<DebugReportLockoutAndCooldowns>&
+        debug_report_lockout_and_cooldowns) {
+  if (!debug_report_lockout_and_cooldowns.has_value()) {
+    return false;
+  }
+  base::Time now = base::Time::Now();
+  if (debug_report_lockout_and_cooldowns->last_report_sent_time.has_value() &&
+      *debug_report_lockout_and_cooldowns->last_report_sent_time +
+              blink::features::kFledgeDebugReportLockout.Get() >=
+          now) {
+    return true;
+  }
+
+  const auto cooldown_it =
+      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.find(
+          origin);
+  if (cooldown_it !=
+      debug_report_lockout_and_cooldowns->debug_report_cooldown_map.end()) {
+    absl::optional<base::TimeDelta> duration =
+        ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
+    if (duration.has_value() &&
+        cooldown_it->second.starting_time + *duration >= now) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Samples forDebuggingOnly reports with a given sampling rate.
+bool SampleDebugReport(
+    const url::Origin& origin,
+    DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns) {
+  bool can_send_debug_report = false;
+  int sampling_random_max =
+      blink::features::kFledgeDebugReportSamplingRandomMax.Get();
+  int restricted_cooldown_random_max =
+      blink::features::kFledgeDebugReportSamplingRestrictedCooldownRandomMax
+          .Get();
+  CHECK_GE(sampling_random_max, 0);
+  CHECK_GE(restricted_cooldown_random_max, 0);
+  base::Time now = base::Time::Now();
+  // Only allow sending debug reports 1/(sampling_max_rand+1) chance. Treat
+  // INT_MAX `sampling_random_max` as 0 chance.
+  int sampling_rand = base::RandInt(0, sampling_random_max);
+  if (sampling_random_max != INT_MAX && sampling_rand == 0) {
+    can_send_debug_report = true;
+    new_debug_report_lockout_and_cooldowns.last_report_sent_time = now;
+  }
+  base::UmaHistogramBoolean(
+      "Ads.InterestGroup.Auction.ForDebuggingOnlyReportAllowedAfterSampling",
+      can_send_debug_report);
+
+  // Give a restricted cooldown in 1/(restricted_cooldown_random_max+1)
+  // chance. Treat INT_MAX `restricted_cooldown_random_max` as 0 chance.
+  int cooldown_rand = base::RandInt(0, restricted_cooldown_random_max);
+  DebugReportCooldownType cooldown_type =
+      restricted_cooldown_random_max == INT_MAX || cooldown_rand != 0
+          ? DebugReportCooldownType::kShortCooldown
+          : DebugReportCooldownType::kRestrictedCooldown;
+  new_debug_report_lockout_and_cooldowns.debug_report_cooldown_map[origin] =
+      DebugReportCooldown(now, cooldown_type);
+  base::UmaHistogramEnumeration(
+      "Ads.InterestGroup.Auction.ForDebuggingOnlyCooldownType", cooldown_type);
+
+  return can_send_debug_report;
+}
+
+// Returns whether to keep the debug report or not. Returns true if flag
+// kFledgeSampleDebugReports is disabled, or sampling allows sending the report,
+// or flag kFledgeDebugReportFilterAfterSampling is disabled.
+bool KeepDebugReport(
+    const url::Origin& origin,
+    absl::optional<DebugReportLockoutAndCooldowns>&
+        debug_report_lockout_and_cooldowns,
+    DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgeSampleDebugReports)) {
+    return true;
+  }
+
+  bool can_send_debug_report = false;
+  if (!IsOriginInDebugReportCooldownOrLockout(
+          origin, debug_report_lockout_and_cooldowns) &&
+      !IsOriginInDebugReportCooldownOrLockout(
+          origin, new_debug_report_lockout_and_cooldowns)) {
+    // SampleDebugReport may modify the lockout and cooldown state.
+    can_send_debug_report =
+        SampleDebugReport(origin, new_debug_report_lockout_and_cooldowns);
+  }
+  return !base::FeatureList::IsEnabled(
+             blink::features::kFledgeDebugReportFilterAfterSampling) ||
+         can_send_debug_report;
+}
+
 // Adds debug reporting URLs for `bid_state` to `debug_win_report_urls` and
 // `debug_loss_report_urls`, if there are any, filling in report URL template
 // parameters as needed. The URLs are moved away from `bid_state`.
@@ -453,44 +552,78 @@ void TakePrivateAggregationRequestsForBidState(
 // `winner` points to the BidState associated with the winning bid, if there
 // is one.
 //
-// `signals` are the PostAuctionSignals from the auction `state` was a part of.
+// `signals` are the PostAuctionSignals from the auction `bid_state` was a part
+// of.
 //
 // `top_level_signals` are the PostAuctionSignals of the top-level auction, if
 // the computation is for a component auction, and nullopt otherwise.
+//
+// `bidder` is the buyer who owns `bid_state`.
+//
+// `seller` is the seller of the auction `bid_state` was a part of.
+//
+// `top_level_seller` should be set for component auctions only.
+//
+// `debug_report_lockout_and_cooldowns` is lockout and cooldowns read from DB
+// when the auction started.
+//
+// `new_debug_report_lockout_and_cooldowns` is lockout and cooldowns generated
+// from this auction.
 void TakeDebugReportUrlsForBidState(
     std::unique_ptr<InterestGroupAuction::BidState>& bid_state,
     const InterestGroupAuction::BidState* winner,
     const InterestGroupAuction::PostAuctionSignals& signals,
     const absl::optional<InterestGroupAuction::PostAuctionSignals>&
         top_level_signals,
+    const url::Origin& bidder,
+    const url::Origin& seller,
+    const absl::optional<url::Origin>& top_level_seller,
+    absl::optional<DebugReportLockoutAndCooldowns>&
+        debug_report_lockout_and_cooldowns,
+    DebugReportLockoutAndCooldowns& new_debug_report_lockout_and_cooldowns,
     std::vector<GURL>& debug_win_report_urls,
     std::vector<GURL>& debug_loss_report_urls) {
+  // TODO(qingxinwu): Give bidder's and seller's debug report the same chance to
+  // be kept after sampling. Bidder's debug report is sampled before seller's,
+  // giving bidder's report a higher chance to be kept (especially when the
+  // sample rate is high), which seems unfair to the seller.
   if (bid_state.get() == winner) {
-    if (winner->bidder_debug_win_report_url.has_value()) {
+    if (winner->bidder_debug_win_report_url.has_value() &&
+        KeepDebugReport(bidder, debug_report_lockout_and_cooldowns,
+                        new_debug_report_lockout_and_cooldowns)) {
       debug_win_report_urls.emplace_back(
           InterestGroupAuction::FillPostAuctionSignals(
               std::move(winner->bidder_debug_win_report_url).value(), signals));
     }
-    if (winner->seller_debug_win_report_url.has_value()) {
+    if (winner->seller_debug_win_report_url.has_value() &&
+        KeepDebugReport(seller, debug_report_lockout_and_cooldowns,
+                        new_debug_report_lockout_and_cooldowns)) {
       debug_win_report_urls.emplace_back(
           InterestGroupAuction::FillPostAuctionSignals(
               std::move(winner->seller_debug_win_report_url).value(), signals,
               top_level_signals));
     }
-    // `top_level_signals` is passed as parameter `signals` for top-level
-    // seller.
     if (winner->top_level_seller_debug_win_report_url.has_value()) {
-      debug_win_report_urls.emplace_back(
-          InterestGroupAuction::FillPostAuctionSignals(
-              std::move(winner->top_level_seller_debug_win_report_url).value(),
-              top_level_signals.value()));
+      CHECK(top_level_seller.has_value());
+      if (KeepDebugReport(*top_level_seller, debug_report_lockout_and_cooldowns,
+                          new_debug_report_lockout_and_cooldowns)) {
+        // `top_level_signals` is passed as parameter `signals` for top-level
+        // seller.
+        debug_win_report_urls.emplace_back(
+            InterestGroupAuction::FillPostAuctionSignals(
+                std::move(winner->top_level_seller_debug_win_report_url)
+                    .value(),
+                top_level_signals.value()));
+      }
     }
     return;
   }
-  if (bid_state->bidder_debug_loss_report_url.has_value()) {
+  if (bid_state->bidder_debug_loss_report_url.has_value() &&
+      KeepDebugReport(bidder, debug_report_lockout_and_cooldowns,
+                      new_debug_report_lockout_and_cooldowns)) {
     // Losing and rejected bidders should not get highest_scoring_other_bid
-    // and made_highest_scoring_other_bid signals. (And also the currency
-    // bit for those).
+    // and made_highest_scoring_other_bid signals. (And also the currency bit
+    // for those).
     debug_loss_report_urls.emplace_back(
         InterestGroupAuction::FillPostAuctionSignals(
             std::move(bid_state->bidder_debug_loss_report_url).value(),
@@ -501,21 +634,28 @@ void TakeDebugReportUrlsForBidState(
                 /*made_highest_scoring_other_bid=*/false),
             /*top_level_signals=*/absl::nullopt, bid_state->reject_reason));
   }
-  // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
-  if (bid_state->seller_debug_loss_report_url.has_value()) {
+  if (bid_state->seller_debug_loss_report_url.has_value() &&
+      KeepDebugReport(seller, debug_report_lockout_and_cooldowns,
+                      new_debug_report_lockout_and_cooldowns)) {
+    // TODO(qingxinwu): Add reject reason to seller debug loss report as well.
     debug_loss_report_urls.emplace_back(
         InterestGroupAuction::FillPostAuctionSignals(
             std::move(bid_state->seller_debug_loss_report_url).value(), signals,
             top_level_signals));
   }
-  // `top_level_signals` is passed as parameter `signals` for top-level
-  // seller.
+
   if (bid_state->top_level_seller_debug_loss_report_url.has_value()) {
-    debug_loss_report_urls.emplace_back(
-        InterestGroupAuction::FillPostAuctionSignals(
-            std::move(bid_state->top_level_seller_debug_loss_report_url)
-                .value(),
-            top_level_signals.value()));
+    CHECK(top_level_seller.has_value());
+    if (KeepDebugReport(*top_level_seller, debug_report_lockout_and_cooldowns,
+                        new_debug_report_lockout_and_cooldowns)) {
+      // `top_level_signals` is passed as parameter `signals` for top-level
+      // seller.
+      debug_loss_report_urls.emplace_back(
+          InterestGroupAuction::FillPostAuctionSignals(
+              std::move(bid_state->top_level_seller_debug_loss_report_url)
+                  .value(),
+              top_level_signals.value()));
+    }
   }
 }
 
@@ -972,6 +1112,7 @@ class InterestGroupAuction::BuyerHelper
     state->pa_timings(PrivateAggregationPhase::kBidder).script_run_time =
         bidding_latency;
     auction_->ReportBiddingLatency(interest_group, bidding_latency);
+
     // This is intentionally recorded here as opposed to in
     // OnGenerateBidCompleteInternal in order to exclude bids that were
     // filtered during reprioritization. It also excludes those bids that
@@ -1059,16 +1200,24 @@ class InterestGroupAuction::BuyerHelper
   //
   // `top_level_signals` are the PostAuctionSignals of the top-level auction, if
   // this is a component auction, and nullopt otherwise.
+  //
+  // `seller` is the seller of the auction `winner` was a part of.
+  //
+  // `top_level_seller` should be set for component auctions only.
   void TakeDebugReportUrls(
       const BidState* winner,
       const PostAuctionSignals& signals,
       const absl::optional<PostAuctionSignals>& top_level_signals,
+      const url::Origin& seller,
+      const absl::optional<url::Origin>& top_level_seller,
       std::vector<GURL>& debug_win_report_urls,
       std::vector<GURL>& debug_loss_report_urls) {
     for (std::unique_ptr<BidState>& bid_state : bid_states_) {
-      TakeDebugReportUrlsForBidState(bid_state, winner, signals,
-                                     top_level_signals, debug_win_report_urls,
-                                     debug_loss_report_urls);
+      TakeDebugReportUrlsForBidState(
+          bid_state, winner, signals, top_level_signals, owner_, seller,
+          top_level_seller, auction_->debug_report_lockout_and_cooldowns_,
+          auction_->new_debug_report_lockout_and_cooldowns_,
+          debug_win_report_urls, debug_loss_report_urls);
     }
   }
 
@@ -2264,19 +2413,14 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
               : base::BindOnce(
                     &InterestGroupAuction::OnComponentSellerWorkletReceived,
                     base::Unretained(this));
-      if (debug_report_lockout_and_cooldowns.has_value()) {
-        component_auction->StartBiddingAndScoringPhase(
-            *debug_report_lockout_and_cooldowns,
-            std::move(component_on_seller_receiver_callback),
-            base::BindOnce(&InterestGroupAuction::OnComponentAuctionComplete,
-                           base::Unretained(this), component_auction));
-      } else {
-        component_auction->StartBiddingAndScoringPhase(
-            /*debug_report_lockout_and_cooldowns=*/absl::nullopt,
-            std::move(component_on_seller_receiver_callback),
-            base::BindOnce(&InterestGroupAuction::OnComponentAuctionComplete,
-                           base::Unretained(this), component_auction));
-      }
+      component_auction->StartBiddingAndScoringPhase(
+          debug_report_lockout_and_cooldowns.has_value()
+              ? absl::optional<DebugReportLockoutAndCooldowns>(
+                    *debug_report_lockout_and_cooldowns)
+              : absl::nullopt,
+          std::move(component_on_seller_receiver_callback),
+          base::BindOnce(&InterestGroupAuction::OnComponentAuctionComplete,
+                         base::Unretained(this), component_auction));
     }
     // If there are no local auctions then we need to request the top-level
     // seller worklet. In the case where there are any local auctions this will
@@ -2288,7 +2432,8 @@ void InterestGroupAuction::StartBiddingAndScoringPhase(
 
   for (const auto& buyer_helper : buyer_helpers_) {
     buyer_helper->SetForDebuggingOnlyInCooldownOrLockout(
-        IsForDebuggingOnlyInLockoutOrCooldown(buyer_helper->owner()));
+        IsOriginInDebugReportCooldownOrLockout(
+            buyer_helper->owner(), debug_report_lockout_and_cooldowns_));
     buyer_helper->StartGeneratingBids();
   }
 
@@ -3071,8 +3216,10 @@ void InterestGroupAuction::
   // For now, we're assuming top-level auctions to be first-price auction only
   // (not second-price auction) and it does not need highest_scoring_other_bid.
   absl::optional<PostAuctionSignals> top_level_signals;
+  absl::optional<url::Origin> top_level_seller;
   if (parent_) {
     top_level_signals.emplace();
+    top_level_seller = parent_->config_->seller;
   }
 
   if (!leader.top_bid) {
@@ -3087,11 +3234,11 @@ void InterestGroupAuction::
       private_aggregation_requests_non_reserved;
 
   for (const auto& buyer_helper : buyer_helpers_) {
-    const url::Origin& owner = buyer_helper->owner();
-    ComputePostAuctionSignals(owner, signals, top_level_signals);
-    buyer_helper->TakeDebugReportUrls(winner, signals, top_level_signals,
-                                      debug_win_report_urls,
-                                      debug_loss_report_urls);
+    ComputePostAuctionSignals(buyer_helper->owner(), signals,
+                              top_level_signals);
+    buyer_helper->TakeDebugReportUrls(
+        winner, signals, top_level_signals, config_->seller, top_level_seller,
+        debug_win_report_urls, debug_loss_report_urls);
 
     buyer_helper->TakePrivateAggregationRequests(
         winner, non_kanon_winner, signals, top_level_signals,
@@ -3107,9 +3254,11 @@ void InterestGroupAuction::
         non_kanon_winner, signals, top_level_signals,
         private_aggregation_requests_reserved,
         private_aggregation_requests_non_reserved);
-    TakeDebugReportUrlsForBidState(bid_state, winner, signals,
-                                   top_level_signals, debug_win_report_urls,
-                                   debug_loss_report_urls);
+    TakeDebugReportUrlsForBidState(
+        bid_state, winner, signals, top_level_signals, owner, config_->seller,
+        top_level_seller, debug_report_lockout_and_cooldowns_,
+        new_debug_report_lockout_and_cooldowns_, debug_win_report_urls,
+        debug_loss_report_urls);
   }
 
   for (auto& [key, requests] : private_aggregation_requests_reserved) {
@@ -3133,6 +3282,18 @@ void InterestGroupAuction::
     component_auction_info.second
         ->TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
             debug_win_report_urls, debug_loss_report_urls);
+  }
+
+  if (new_debug_report_lockout_and_cooldowns_.last_report_sent_time
+          .has_value()) {
+    interest_group_manager_->RecordDebugReportLockout(
+        *new_debug_report_lockout_and_cooldowns_.last_report_sent_time);
+  }
+  for (const auto& [origin, debug_report_cooldown] :
+       new_debug_report_lockout_and_cooldowns_.debug_report_cooldown_map) {
+    interest_group_manager_->RecordDebugReportCooldown(
+        origin, debug_report_cooldown.starting_time,
+        debug_report_cooldown.type);
   }
 }
 
@@ -4052,8 +4213,9 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
               : absl::nullopt,
       bid_raw->interest_group->owner, bid_raw->ad_descriptor.url,
       bid_raw->GetAdComponentUrls(), bid_raw->bid_duration.InMilliseconds(),
-      IsForDebuggingOnlyInLockoutOrCooldown(config_->seller), SellerTimeout(),
-      bid_trace_id, std::move(score_ad_remote));
+      IsOriginInDebugReportCooldownOrLockout(
+          config_->seller, debug_report_lockout_and_cooldowns_),
+      SellerTimeout(), bid_trace_id, std::move(score_ad_remote));
 }
 
 bool InterestGroupAuction::ValidateScoreBidCompleteResult(
@@ -4777,34 +4939,6 @@ void InterestGroupAuction::OnDirectFromSellerSignalHeaderAdSlotResolved(
     OnScoringDependencyDone();
     ScoreQueuedBidsIfReady();
   }
-}
-
-bool InterestGroupAuction::IsForDebuggingOnlyInLockoutOrCooldown(
-    const url::Origin& origin) {
-  if (!debug_report_lockout_and_cooldowns_.has_value()) {
-    return false;
-  }
-  base::Time now = base::Time::Now();
-  if (debug_report_lockout_and_cooldowns_->last_report_sent_time.has_value() &&
-      *debug_report_lockout_and_cooldowns_->last_report_sent_time +
-              blink::features::kFledgeDebugReportLockout.Get() >=
-          now) {
-    return true;
-  }
-
-  const auto cooldown_it =
-      debug_report_lockout_and_cooldowns_->debug_report_cooldown_map.find(
-          origin);
-  if (cooldown_it !=
-      debug_report_lockout_and_cooldowns_->debug_report_cooldown_map.end()) {
-    absl::optional<base::TimeDelta> duration =
-        ConvertDebugReportCooldownTypeToDuration(cooldown_it->second.type);
-    if (duration.has_value() &&
-        cooldown_it->second.starting_time + *duration >= now) {
-      return true;
-    }
-  }
-  return false;
 }
 
 // static
