@@ -52,24 +52,6 @@ class UrlCheckerDelegate
       bool is_main_frame,
       bool has_user_gesture) = 0;
 
-  // Determines whether a specific lookup is eligible for the
-  // SafeBrowsingLookupMechanism experiment. The result is communicated via the
-  // |callback| run on the |callback_task_runner|.
-  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-  virtual void CheckLookupMechanismExperimentEligibility(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
-
-  // Does the work in both |CheckLookupMechanismExperimentEligibility| and
-  // |StartDisplayingBlockingPageHelper|. This is combined into one function to
-  // ensure that the former is run before the latter on the UI thread.
-  // TODO(crbug.com/1410253): Deprecate this once the experiment is complete.
-  virtual void CheckExperimentEligibilityAndStartBlockingPage(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) = 0;
-
   // Starts observing user input events to display a SafeBrowsing interstitial
   // page when an event is received.
   virtual void StartObservingInteractionsForDelayedBlockingPageHelper(

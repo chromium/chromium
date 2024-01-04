@@ -191,8 +191,6 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*last_committed_url=*/GURL(), content::GetUIThreadTaskRunner({}),
       /*url_lookup_service=*/nullptr,
       /*hash_realtime_service_on_ui=*/nullptr,
-      /*mechanism_experimenter=*/nullptr,
-      /*is_mechanism_experiment_allowed=*/false,
       /*hash_realtime_selection=*/
       hash_realtime_utils::HashRealTimeSelection::kNone);
   auto weak_impl = checker_impl->WeakPtr();

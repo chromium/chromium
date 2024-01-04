@@ -52,13 +52,9 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     const GURL& last_committed_url,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection,
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
     const base::RepeatingCallback<content::WebContents*()>& web_contents_getter)
-    : SafeBrowsingLookupMechanism(url,
-                                  threat_types,
-                                  database_manager,
-                                  experiment_cache_selection),
+    : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       request_destination_(request_destination),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
@@ -102,8 +98,6 @@ UrlRealTimeMechanism::StartCheckInternal() {
 void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
     bool did_match_allowlist) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  did_match_allowlist_ = did_match_allowlist;
-
   RecordLocalMatchResult(did_match_allowlist, request_destination_,
                          url_lookup_service_metric_suffix_);
 
@@ -118,7 +112,7 @@ void UrlRealTimeMechanism::OnCheckUrlForHighConfidenceAllowlist(
                        base::SequencedTaskRunner::GetCurrentDefault()));
     // If the URL matches the high-confidence allowlist, still do the hash based
     // checks.
-    PerformHashBasedCheck(url_, /*real_time_request_failed=*/false);
+    PerformHashBasedCheck(url_);
     // NOTE: Calling PerformHashBasedCheck may result in the synchronous
     // destruction of this object, so there is nothing safe to do here but
     // return.
@@ -147,9 +141,8 @@ void UrlRealTimeMechanism::StartLookupOnUIThread(
                             is_lookup_service_found);
   if (!is_lookup_service_found) {
     io_task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&UrlRealTimeMechanism::PerformHashBasedCheck,
-                       weak_ptr_on_io, url, /*real_time_request_failed=*/true));
+        FROM_HERE, base::BindOnce(&UrlRealTimeMechanism::PerformHashBasedCheck,
+                                  weak_ptr_on_io, url));
     return;
   }
 
@@ -190,7 +183,7 @@ void UrlRealTimeMechanism::OnLookupResponse(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_lookup_successful) {
-    PerformHashBasedCheck(url_, /*real_time_request_failed=*/true);
+    PerformHashBasedCheck(url_);
     // NOTE: Calling PerformHashBasedCheck may result in the synchronous
     // destruction of this object, so there is nothing safe to do here but
     // return.
@@ -211,44 +204,37 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
   if (is_cached_response && sb_threat_type == SB_THREAT_TYPE_SAFE) {
     is_cached_safe_url_ = true;
-    PerformHashBasedCheck(url_, /*real_time_request_failed=*/false);
+    PerformHashBasedCheck(url_);
     // NOTE: Calling PerformHashBasedCheck may result in the synchronous
     // destruction of this object, so there is nothing safe to do here but
     // return.
   } else {
     CompleteCheck(std::make_unique<CompleteCheckResult>(
         url_, sb_threat_type, ThreatMetadata(),
-        ThreatSource::URL_REAL_TIME_CHECK, std::move(response),
-        /*matched_high_confidence_allowlist=*/did_match_allowlist_,
-        /*locally_cached_results_threat_type=*/
-        is_cached_response ? sb_threat_type : SBThreatType::SB_THREAT_TYPE_SAFE,
-        /*real_time_request_failed=*/false));
+        ThreatSource::URL_REAL_TIME_CHECK, std::move(response)));
     // NOTE: Calling CompleteCheck results in the synchronous destruction of
     // this object, so there is nothing safe to do here but return.
   }
 }
 
-void UrlRealTimeMechanism::PerformHashBasedCheck(
-    const GURL& url,
-    bool real_time_request_failed) {
+void UrlRealTimeMechanism::PerformHashBasedCheck(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   bool is_safe_synchronously = false;
   if (can_check_db_) {
     hash_database_mechanism_ = std::make_unique<DatabaseManagerMechanism>(
-        url, threat_types_, database_manager_, experiment_cache_selection_,
+        url, threat_types_, database_manager_,
         CheckBrowseUrlType::kHashDatabase);
     is_safe_synchronously =
         hash_database_mechanism_
             ->StartCheck(base::BindOnce(
                 &UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
-                weak_factory_.GetWeakPtr(), real_time_request_failed))
+                weak_factory_.GetWeakPtr()))
             .is_safe_synchronously;
   }
   if (is_safe_synchronously || !can_check_db_) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
-        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt,
-        real_time_request_failed);
+        SB_THREAT_TYPE_SAFE, ThreatMetadata(), /*threat_source=*/absl::nullopt);
     // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
     // synchronous destruction of this object, so there is nothing safe to do
     // here but return.
@@ -256,12 +242,9 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
 }
 
 void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
-    bool real_time_request_failed,
     std::unique_ptr<SafeBrowsingLookupMechanism::CompleteCheckResult> result) {
-  DCHECK(!result->real_time_request_failed);
   OnHashDatabaseCompleteCheckResultInternal(
-      result->threat_type, result->metadata, result->threat_source,
-      real_time_request_failed);
+      result->threat_type, result->metadata, result->threat_source);
   // NOTE: Calling OnHashDatabaseCompleteCheckResultInternal results in the
   // synchronous destruction of this object, so there is nothing safe to do here
   // but return.
@@ -270,21 +253,14 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult(
 void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
-    absl::optional<ThreatSource> threat_source,
-    bool real_time_request_failed) {
+    absl::optional<ThreatSource> threat_source) {
   if (is_cached_safe_url_) {
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.GetCache.FallbackThreatType",
                               threat_type, SB_THREAT_TYPE_MAX + 1);
   }
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type, metadata, threat_source,
-      /*url_real_time_lookup_response=*/nullptr,
-      /*matched_high_confidence_allowlist=*/did_match_allowlist_,
-      /*locally_cached_results_threat_type=*/
-      is_cached_safe_url_
-          ? absl::optional<SBThreatType>(SBThreatType::SB_THREAT_TYPE_SAFE)
-          : absl::nullopt,
-      /*real_time_request_failed=*/real_time_request_failed));
+      /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
 }

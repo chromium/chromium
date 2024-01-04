@@ -15,12 +15,8 @@ DatabaseManagerMechanism::DatabaseManagerMechanism(
     const GURL& url,
     const SBThreatTypeSet& threat_types,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-    MechanismExperimentHashDatabaseCache experiment_cache_selection,
     CheckBrowseUrlType check_type)
-    : SafeBrowsingLookupMechanism(url,
-                                  threat_types,
-                                  database_manager,
-                                  experiment_cache_selection),
+    : SafeBrowsingLookupMechanism(url, threat_types, database_manager),
       check_type_(check_type) {}
 
 DatabaseManagerMechanism::~DatabaseManagerMechanism() {
@@ -34,8 +30,8 @@ DatabaseManagerMechanism::~DatabaseManagerMechanism() {
 SafeBrowsingLookupMechanism::StartCheckResult
 DatabaseManagerMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool is_safe_synchronously = database_manager_->CheckBrowseUrl(
-      url_, threat_types_, this, experiment_cache_selection_, check_type_);
+  bool is_safe_synchronously =
+      database_manager_->CheckBrowseUrl(url_, threat_types_, this, check_type_);
   if (!is_safe_synchronously) {
     is_async_database_manager_check_in_progress_ = true;
   }
@@ -52,10 +48,7 @@ void DatabaseManagerMechanism::OnCheckBrowseUrlResult(
       url, threat_type, metadata,
       /*threat_source=*/
       database_manager_->GetBrowseUrlThreatSource(check_type_),
-      /*url_real_time_lookup_response=*/nullptr,
-      /*matched_high_confidence_allowlist=*/absl::nullopt,
-      /*locally_cached_results_threat_type=*/absl::nullopt,
-      /*real_time_request_failed=*/false));
+      /*url_real_time_lookup_response=*/nullptr));
   // NOTE: Calling CompleteCheck results in the synchronous destruction of this
   // object, so there is nothing safe to do here but return.
 }

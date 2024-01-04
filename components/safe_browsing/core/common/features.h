@@ -99,21 +99,8 @@ BASE_DECLARE_FEATURE(kFriendlierSafeBrowsingSettingsStandardProtection);
 BASE_DECLARE_FEATURE(kHashPrefixRealTimeLookups);
 
 // This parameter controls the relay URL that will forward the lookup requests
-// to the Safe Browsing server. This is similar to the
-// kHashRealTimeOverOhttpRelayUrl parameter, but it applies to the
-// kHashPrefixRealTimeLookups feature.
+// to the Safe Browsing server.
 extern const base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl;
-
-// For hash-prefix real-time lookup requests that are triggered by the lookup
-// mechanism experiment (see kSafeBrowsingLookupMechanismExperiment), enables
-// sending the requests over OHTTP to anonymize the source of the requests.
-BASE_DECLARE_FEATURE(kHashRealTimeOverOhttp);
-
-// This parameter controls the relay URL that will forward the lookup requests
-// to the Safe Browsing server. This is similar to the
-// kHashPrefixRealTimeLookupsRelayUrl parameter, but it applies to the
-// kHashRealTimeOverOhttp feature.
-extern const base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl;
 
 // UX improvements to download warnings on chrome://downloads page.
 BASE_DECLARE_FEATURE(kImprovedDownloadPageWarnings);
@@ -151,20 +138,6 @@ extern const base::FeatureParam<int> kReferrerChainEventMaximumCount;
 // navigation can be committed before real-time Safe Browsing check is
 // completed.
 BASE_DECLARE_FEATURE(kSafeBrowsingAsyncRealTimeCheck);
-
-// Controls whether the lookup mechanism experiment is enabled, which runs all
-// three lookup mechanisms instead of just real-time URL lookups for ESB users.
-// The other two lookup mechanisms are run in the background, and the results
-// of the three are logged for comparison purposes. This experiment is also
-// known as the hash-prefix real-time lookup experiment, since that mechanism is
-// the main comparison anchor.
-BASE_DECLARE_FEATURE(kSafeBrowsingLookupMechanismExperiment);
-// Controls whether the SafeBrowsingLookupMechanismExperiment (AKA HPRT
-// experiment) conditionally logs a Client Safe Browsing Report when the
-// experiment ends for URL-level validation purposes. This is only relevant
-// while the HPRT experiment is running, which is only enabled for ESB users.
-extern const base::FeatureParam<bool>
-    kUrlLevelValidationForHprtExperimentEnabled;
 
 #if BUILDFLAG(IS_ANDROID)
 // Use new GMSCore API for hash database check on browser URLs.

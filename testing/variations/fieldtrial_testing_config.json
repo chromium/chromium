@@ -15317,29 +15317,6 @@
             ]
         }
     ],
-    "SafeBrowsingLookupMechanismExperiment": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithRelay",
-                    "params": {
-                        "SafeBrowsingHashRealTimeOverOhttpRelayUrl": "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"
-                    },
-                    "enable_features": [
-                        "SafeBrowsingHashRealTimeOverOhttp",
-                        "SafeBrowsingLookupMechanismExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingNestedArchives": [
         {
             "platforms": [

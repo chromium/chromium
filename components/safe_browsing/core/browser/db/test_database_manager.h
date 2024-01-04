@@ -36,7 +36,6 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection,
       CheckBrowseUrlType check_type) override;
   AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,

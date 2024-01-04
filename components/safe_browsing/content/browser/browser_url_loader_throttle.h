@@ -31,7 +31,6 @@ namespace safe_browsing {
 
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
-class PingManager;
 class AsyncCheckTracker;
 
 // BrowserURLLoaderThrottle is used in the browser process to query
@@ -75,7 +74,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 
@@ -112,7 +110,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       int frame_tree_node_id,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       base::WeakPtr<AsyncCheckTracker> async_check_tracker);
 

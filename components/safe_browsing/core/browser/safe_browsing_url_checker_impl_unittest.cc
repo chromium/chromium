@@ -58,13 +58,10 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       const GURL& gurl,
       const safe_browsing::SBThreatTypeSet& threat_types,
       Client* client,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection,
       CheckBrowseUrlType check_type) override {
     std::string url = gurl.spec();
     DCHECK(base::Contains(urls_threat_type_, url));
     DCHECK(base::Contains(urls_delayed_callback_, url));
-    EXPECT_TRUE(base::Contains(acceptable_cache_selections_,
-                               experiment_cache_selection));
     EXPECT_EQ(check_type, expected_check_type_);
     if (urls_threat_type_[url] == SB_THREAT_TYPE_SAFE) {
       return true;
@@ -149,12 +146,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_allowlist_metric_variation_[url] = metric_variations;
   }
 
-  void SetAcceptableExperimentCacheSelections(
-      std::set<MechanismExperimentHashDatabaseCache>
-          acceptable_cache_selections) {
-    acceptable_cache_selections_ = acceptable_cache_selections;
-  }
-
   void SetExpectedCheckBrowseUrlType(CheckBrowseUrlType check_type) {
     expected_check_type_ = check_type;
   }
@@ -183,8 +174,6 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   base::flat_map<std::string, bool> urls_allowlist_match_;
   base::flat_map<std::string, std::set<std::string>>
       urls_allowlist_metric_variation_;
-  std::set<MechanismExperimentHashDatabaseCache> acceptable_cache_selections_ =
-      {MechanismExperimentHashDatabaseCache::kNoExperiment};
   CheckBrowseUrlType expected_check_type_ = CheckBrowseUrlType::kHashDatabase;
 
   bool called_cancel_check_ = false;
@@ -226,47 +215,6 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   SafeBrowsingDatabaseManager* GetDatabaseManager() override {
     return database_manager_;
   }
-  // TODO(crbug.com/1410253): delete these 6 methods upon experiment completion.
-  void CheckLookupMechanismExperimentEligibility(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
-    num_check_experiment_eligibility_calls_++;
-    CheckLookupMechanismExperimentEligibilityInternal(
-        resource, std::move(callback), callback_task_runner);
-  }
-  void CheckLookupMechanismExperimentEligibilityInternal(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
-    std::string url = resource.url.spec();
-    DCHECK(base::Contains(expected_experiment_eligibility_, url));
-    callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
-                                  expected_experiment_eligibility_[url]));
-  }
-  int GetNumCheckExperimentEligibilityCalls() {
-    return num_check_experiment_eligibility_calls_;
-  }
-  void CheckExperimentEligibilityAndStartBlockingPage(
-      const security_interstitials::UnsafeResource& resource,
-      base::OnceCallback<void(bool)> callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
-    num_check_experiment_eligibility_and_block_page_calls_++;
-    CheckLookupMechanismExperimentEligibilityInternal(
-        resource, std::move(callback), callback_task_runner);
-    std::string method;
-    net::HttpRequestHeaders headers;
-    StartDisplayingBlockingPageHelper(resource, method, headers, false, false);
-  }
-  int GetNumCheckExperimentEligibilityAndStartBlockingPageCalls() {
-    return num_check_experiment_eligibility_and_block_page_calls_;
-  }
-  void SetLookupMechanismExperimentEligibility(const GURL& url,
-                                               bool eligibility) {
-    DCHECK(!base::Contains(expected_experiment_eligibility_, url.spec()));
-    expected_experiment_eligibility_[url.spec()] = eligibility;
-  }
 
  protected:
   ~MockUrlCheckerDelegate() override = default;
@@ -274,10 +222,6 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
  private:
   raw_ptr<SafeBrowsingDatabaseManager> database_manager_;
   SBThreatTypeSet threat_types_;
-  // TODO(crbug.com/1410253): delete these 3 fields upon experiment completion.
-  base::flat_map<std::string, bool> expected_experiment_eligibility_;
-  int num_check_experiment_eligibility_calls_ = 0;
-  int num_check_experiment_eligibility_and_block_page_calls_ = 0;
 };
 
 class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
@@ -413,11 +357,9 @@ class MockHashRealTimeService : public HashRealTimeService {
  public:
   MockHashRealTimeService()
       : HashRealTimeService(
-            /*url_loader_factory=*/nullptr,
             /*get_network_context=*/base::NullCallback(),
             /*cache_manager=*/nullptr,
             /*ohttp_key_service=*/nullptr,
-            /*get_is_enhanced_protection_enabled=*/base::NullCallback(),
             /*webui_delegate=*/nullptr) {}
   base::WeakPtr<MockHashRealTimeService> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -440,7 +382,6 @@ class MockHashRealTimeService : public HashRealTimeService {
 
   void StartLookup(
       const GURL& gurl,
-      bool is_source_lookup_mechanism_experiment,
       HPRTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner) override {
     std::string url = gurl.spec();
@@ -450,8 +391,7 @@ class MockHashRealTimeService : public HashRealTimeService {
         base::BindOnce(
             std::move(response_callback),
             /*is_lookup_successful=*/!url_details_[url].should_fail_lookup,
-            /*threat_type=*/url_details_[url].threat_type,
-            /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE));
+            /*threat_type=*/url_details_[url].threat_type));
   }
 
  private:
@@ -466,7 +406,6 @@ struct CreateSafeBrowsingUrlCheckerOptionalArgs {
       network::mojom::RequestDestination::kDocument;
   bool can_urt_check_subresource_url = false;
   std::string url_lookup_service_metric_suffix = ".Enterprise";
-  bool is_lookup_mechanism_experiment_enabled = false;
 };
 class SafeBrowsingUrlCheckerTest : public PlatformTest {
  public:
@@ -488,19 +427,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           CreateSafeBrowsingUrlCheckerOptionalArgs()) {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
-    scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-        mechanism_experimenter = nullptr;
-    if (optional_args.is_lookup_mechanism_experiment_enabled) {
-      mechanism_experimenter = base::MakeRefCounted<
-          SafeBrowsingLookupMechanismExperimenter>(
-          /*is_prefetch=*/false, /*ping_manager_on_ui=*/nullptr,
-          /*ui_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault());
-      // Tell the experimenter that WillProcessResponse has been reached so that
-      // once the mechanisms complete, the experiment concludes and all memory
-      // is cleaned up. Otherwise, this will cause memory leaks in the test.
-      mechanism_experimenter->OnWillProcessResponseReached(
-          base::TimeTicks::Now());
-    }
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
         net::HttpRequestHeaders(), /*load_flags=*/0,
         optional_args.request_destination,
@@ -517,8 +443,6 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
         url_real_time_lookup_enabled ? url_lookup_service_->GetWeakPtr()
                                      : nullptr,
         /*hash_realtime_service=*/hash_realtime_service_->GetWeakPtr(),
-        /*mechanism_experimenter=*/mechanism_experimenter,
-        optional_args.is_lookup_mechanism_experiment_enabled,
         hash_real_time_selection);
   }
 
@@ -1280,273 +1204,6 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_CancelCheckOnTimeout) {
                                   /*sample=*/true,
                                   /*expected_bucket_count=*/1);
   }
-}
-
-// Same as CheckUrl_SafeUrl but with the lookup mechanism experiment enabled.
-TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl_LookupMechanismExperiment) {
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/false,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
-
-  GURL url("https://example.test/");
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
-                                         /*delayed_callback=*/false);
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(nullptr, /*proceed=*/true, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck));
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(0);
-
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
-                                       /*sample=*/false,
-                                       /*expected_bucket_count=*/1);
-
-  EXPECT_EQ(url_checker_delegate_->GetNumCheckExperimentEligibilityCalls(), 0);
-  EXPECT_EQ(url_checker_delegate_
-                ->GetNumCheckExperimentEligibilityAndStartBlockingPageCalls(),
-            0);
-  // Make sure the experiment ended with no logged results.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRTExperiment.WarningsResult", 0);
-}
-
-// Same as CheckUrl_UrlRealTimeEnabledAllowlistMatch but with the lookup
-// mechanism experiment enabled.
-TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_UrlRealTimeEnabledAllowlistMatch_LookupMechanismExperiment) {
-  base::HistogramTester histograms;
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/true,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
-
-  GURL url("https://example.test/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
-                                                     {"RT", "HPRT"});
-  // To make sure hash based check is not skipped when the URL is in the
-  // allowlist, set threat type to phishing for hash based check.
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly,
-  };
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
-  url_checker_delegate_->SetLookupMechanismExperimentEligibility(
-      url, /*eligibility=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Note that the callback is not called, because resource fetch is not blocked
-  // while we perform a real-time check.
-  EXPECT_CALL(callback, Run(_, _, _, _)).Times(0);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(url_checker_delegate_->GetNumCheckExperimentEligibilityCalls(), 1);
-  EXPECT_EQ(url_checker_delegate_
-                ->GetNumCheckExperimentEligibilityAndStartBlockingPageCalls(),
-            1);
-  // Make sure the experiment ended and logged results.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRTExperiment.WarningsResult", 1);
-}
-
-// Same as CheckUrl_UrlRealTimeEnabledAllowlistMatch_LookupMechanismExperiment
-// but the check is not eligible for the experiment so it should log no results.
-TEST_F(
-    SafeBrowsingUrlCheckerTest,
-    CheckUrl_UrlRealTimeEnabledAllowlistMatch_LookupMechanismExperimentNoEligibility) {
-  base::HistogramTester histograms;
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/true,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
-
-  GURL url("https://example.test/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true,
-                                                     {"RT", "HPRT"});
-  // To make sure hash based check is not skipped when the URL is in the
-  // allowlist, set threat type to phishing for hash based check.
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kUrlRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashRealTimeOnly,
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly,
-  };
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
-  url_checker_delegate_->SetLookupMechanismExperimentEligibility(
-      url, /*eligibility=*/false);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  // Note that the callback is not called, because resource fetch is not blocked
-  // while we perform a real-time check.
-  EXPECT_CALL(callback, Run(_, _, _, _)).Times(0);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(url_checker_delegate_->GetNumCheckExperimentEligibilityCalls(), 1);
-  EXPECT_EQ(url_checker_delegate_
-                ->GetNumCheckExperimentEligibilityAndStartBlockingPageCalls(),
-            1);
-  // Make sure the experiment did not log results.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRTExperiment.WarningsResult", 0);
-}
-
-// Same as CheckUrl_UrlRealTimeEnabledSafeUrl but with the lookup mechanism
-// experiment enabled.
-TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_UrlRealTimeEnabledSafeUrl_LookupMechanismExperiment) {
-  base::HistogramTester histograms;
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/true,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
-
-  GURL url("https://example.test/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
-                                                     {"RT", "HPRT"});
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
-                                           /*should_complete_lookup=*/true);
-  database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly};
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
-  hash_realtime_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
-                                              /*should_fail_lookup=*/false);
-  url_checker_delegate_->SetLookupMechanismExperimentEligibility(
-      url, /*eligibility=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      callback;
-  EXPECT_CALL(
-      callback,
-      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck));
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(0);
-  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
-
-  task_environment_.RunUntilIdle();
-  histogram_tester_.ExpectUniqueSample("SafeBrowsing.CheckUrl.Timeout",
-                                       /*sample=*/false,
-                                       /*expected_bucket_count=*/1);
-
-  // The false positive metric should not be logged, because the
-  // verdict is not from cache.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.RT.GetCache.FallbackThreatType",
-      /*expected_count=*/0);
-
-  EXPECT_EQ(url_checker_delegate_->GetNumCheckExperimentEligibilityCalls(), 1);
-  EXPECT_EQ(url_checker_delegate_
-                ->GetNumCheckExperimentEligibilityAndStartBlockingPageCalls(),
-            0);
-  // Make sure the experiment ended and logged results.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRTExperiment.WarningsResult", 1);
-}
-
-// Same as CheckUrl_UrlRealTimeEnabledRedirectUrlsSafe but with the lookup
-// mechanism experiment enabled.
-TEST_F(SafeBrowsingUrlCheckerTest,
-       CheckUrl_UrlRealTimeEnabledRedirectUrlsSafe_LookupMechanismExperiment) {
-  base::HistogramTester histograms;
-  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
-      /*url_real_time_lookup_enabled=*/true,
-      /*can_check_safe_browsing_db=*/true,
-      /*hash_real_time_selection=*/
-      hash_realtime_utils::HashRealTimeSelection::kNone,
-      /*optional_args=*/{.is_lookup_mechanism_experiment_enabled = true});
-
-  std::set<MechanismExperimentHashDatabaseCache> cache_selections = {
-      MechanismExperimentHashDatabaseCache::kHashDatabaseOnly};
-  database_manager_->SetAcceptableExperimentCacheSelections(cache_selections);
-
-  GURL origin_url("https://example.test/");
-  // Sanity check only the URL real-time result is used by setting the other
-  // mechanism responses to phishing.
-  database_manager_->SetThreatTypeForUrl(origin_url,
-                                         SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  url_lookup_service_->SetThreatTypeForUrl(origin_url, SB_THREAT_TYPE_SAFE,
-                                           /*should_complete_lookup=*/true);
-  hash_realtime_service_->SetThreatTypeForUrl(origin_url,
-                                              SB_THREAT_TYPE_URL_PHISHING,
-                                              /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistLookupDetailsForUrl(
-      origin_url, /*match=*/false, {"RT", "HPRT"});
-  url_checker_delegate_->SetLookupMechanismExperimentEligibility(
-      origin_url, /*eligibility=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      origin_callback;
-  EXPECT_CALL(
-      origin_callback,
-      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck));
-  safe_browsing_url_checker->CheckUrl(origin_url, "GET", origin_callback.Get());
-
-  GURL redirect_url("https://example.redirect.test/");
-  // Sanity check only the URL real-time result is used by setting the other
-  // mechanism responses to phishing.
-  database_manager_->SetThreatTypeForUrl(redirect_url,
-                                         SB_THREAT_TYPE_URL_PHISHING,
-                                         /*delayed_callback=*/false);
-  url_lookup_service_->SetThreatTypeForUrl(redirect_url, SB_THREAT_TYPE_SAFE,
-                                           /*should_complete_lookup=*/true);
-  hash_realtime_service_->SetThreatTypeForUrl(redirect_url,
-                                              SB_THREAT_TYPE_URL_PHISHING,
-                                              /*should_fail_lookup=*/false);
-  database_manager_->SetAllowlistLookupDetailsForUrl(
-      redirect_url, /*match=*/false, {"RT", "HPRT"});
-  url_checker_delegate_->SetLookupMechanismExperimentEligibility(
-      redirect_url, /*eligibility=*/true);
-
-  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
-      redirect_callback;
-  EXPECT_CALL(
-      redirect_callback,
-      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
-          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck));
-  safe_browsing_url_checker->CheckUrl(redirect_url, "GET",
-                                      redirect_callback.Get());
-
-  EXPECT_CALL(*url_checker_delegate_,
-              StartDisplayingBlockingPageHelper(_, _, _, _, _))
-      .Times(0);
-
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(url_checker_delegate_->GetNumCheckExperimentEligibilityCalls(), 2);
-  EXPECT_EQ(url_checker_delegate_
-                ->GetNumCheckExperimentEligibilityAndStartBlockingPageCalls(),
-            0);
-  // Make sure the experiment ended and logged results.
-  histogram_tester_.ExpectTotalCount(
-      "SafeBrowsing.HPRTExperiment.Redirects.WarningsResult", 1);
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_HashRealTimeService_InvalidUrl) {

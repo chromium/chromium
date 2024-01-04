@@ -26,11 +26,9 @@ class HttpRequestHeaders;
 namespace safe_browsing {
 
 class UrlCheckerDelegate;
-class SafeBrowsingLookupMechanismExperimenter;
 
 class RealTimeUrlLookupServiceBase;
 class HashRealTimeService;
-class PingManager;
 
 // UrlCheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
 // must be called on the IO thread. The results are synced back to the
@@ -89,8 +87,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       std::string url_lookup_service_metric_suffix,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
       base::WeakPtr<HashRealTimeService> hash_realtime_service,
-      base::WeakPtr<PingManager> ping_manager,
-      bool is_mechanism_experiment_allowed,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   ~UrlCheckerOnSB();
@@ -100,8 +96,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
 
   // Checks the specified |url| using |url_checker_|.
   void CheckUrl(const GURL& url, const std::string& method);
-
-  void LogWillProcessResponseTime(base::TimeTicks reached_time);
 
   // Replaces the current |complete_callback_| with the new |callback|.
   void SwapCompleteCallback(OnCompleteCheckCallback callback);
@@ -134,8 +128,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_;
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> url_checker_for_testing_;
   int frame_tree_node_id_;
-  scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-      mechanism_experimenter_;
   base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
   OnCompleteCheckCallback complete_callback_;
   bool url_real_time_lookup_enabled_ = false;
@@ -146,8 +138,6 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   GURL last_committed_url_;
   base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_;
   base::WeakPtr<HashRealTimeService> hash_realtime_service_;
-  base::WeakPtr<PingManager> ping_manager_;
-  bool is_mechanism_experiment_allowed_ = false;
   hash_realtime_utils::HashRealTimeSelection hash_realtime_selection_ =
       hash_realtime_utils::HashRealTimeSelection::kNone;
   base::TimeTicks creation_time_;

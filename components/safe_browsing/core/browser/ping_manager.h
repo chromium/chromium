@@ -89,17 +89,9 @@ class PingManager : public KeyedService {
 
   // Sends a detailed threat report after performing validation, sanitizing
   // contained URLs, and adding extra details to the report. The returned object
-  // provides details on whether the report was successful. Only when
-  // |attach_default_data| is true will default information like the user
-  // population, page load token, and access token be populated on the report if
-  // applicable. That parameter is only needed for the temporary experiment
-  // SafeBrowsingLookupMechanismExperiment, which sends a CSBRR that we don't
-  // need any additional information for other than the experiment-specific
-  // validation information.
-  // TODO(crbug.com/1410253): Deprecate |attach_default_data| parameter.
+  // provides details on whether the report was successful.
   virtual ReportThreatDetailsResult ReportThreatDetails(
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
-      bool attach_default_data = true);
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Launches a survey and attaches ThreatDetails to the survey response.
   virtual void AttachThreatDetailsAndLaunchSurvey(
@@ -112,9 +104,6 @@ class PingManager : public KeyedService {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher);
   void SetHatsDelegateForTesting(
       std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
-
-  // Helper function to return a weak pointer.
-  base::WeakPtr<PingManager> GetWeakPtr();
 
  protected:
   friend class PingManagerTest;

@@ -15,7 +15,6 @@
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_runner.h"
 #include "components/safe_browsing/core/browser/url_realtime_mechanism.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
@@ -128,9 +127,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
-      scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-          mechanism_experimenter,
-      bool is_mechanism_experiment_allowed,
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection);
 
   SafeBrowsingUrlCheckerImpl(const SafeBrowsingUrlCheckerImpl&) = delete;
@@ -230,8 +226,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   bool CanPerformFullURLLookup(const GURL& url);
 
   // This will decide which mechanism to use for a lookup and then perform it.
-  // This may include running a SafeBrowsingLookupMechanism experiment if
-  // eligible.
   KickOffLookupMechanismResult KickOffLookupMechanism(const GURL& url);
 
   SBThreatType CheckWebUIUrls(const GURL& url);
@@ -345,19 +339,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // destroyed once the check completes. This handles running the check and
   // responding back to this class once the check is complete or has timed out.
   std::unique_ptr<SafeBrowsingLookupMechanismRunner> lookup_mechanism_runner_;
-
-  // If eligible, this class will run a SafeBrowsingLookupMechanism experiment
-  // instead of just running a real-time URL check. It will check if the
-  // experiment is eligible and then perform it through this object. This can
-  // only be populated if |is_mechanism_experiment_allowed_| = true, though it
-  // may not be populated even if it is true (if the URL is non-mainframe).
-  scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
-      mechanism_experimenter_;
-
-  // When true, instructs the V4 protocol manager to keep multiple separate
-  // copies of the cache for use by the experiment. See comments defined above
-  // MechanismExperimentHashDatabaseCache for more details.
-  bool is_mechanism_experiment_allowed_ = false;
 
   // What kind of hash-prefix real-time lookup is enabled for this request, if
   // any.

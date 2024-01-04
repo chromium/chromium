@@ -55,7 +55,7 @@ class OhttpKeyServiceTest : public ::testing::Test {
   OhttpKeyServiceTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{kHashPrefixRealTimeLookups},
-        /*disabled_features=*/{kHashRealTimeOverOhttp});
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
@@ -525,40 +525,6 @@ TEST_F(OhttpKeyServiceTest, Shutdown) {
   ohttp_key_service_->GetOhttpKey(response_callback.Get());
   ohttp_key_service_->Shutdown();
   task_environment_.RunUntilIdle();
-}
-
-class OhttpKeyServiceLookupMechanismExperimentTest
-    : public OhttpKeyServiceTest {
- public:
-  OhttpKeyServiceLookupMechanismExperimentTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{kHashRealTimeOverOhttp},
-        /*disabled_features=*/{kHashPrefixRealTimeLookups});
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(OhttpKeyServiceLookupMechanismExperimentTest, AsyncFetch_PrefChanges) {
-  SetupSuccessResponse();
-
-  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
-  task_environment_.RunUntilIdle();
-  auto original_expiration = base::Time::Now() + base::Days(7);
-  // New key should be fetched because the service is enabled when enhanced
-  // protection and the lookup mechanism experiment are both enabled.
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
-
-  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
-  task_environment_.FastForwardBy(base::Days(6));
-  task_environment_.RunUntilIdle();
-
-  // The expiration is not extended because the service is disabled when
-  // standard protection and the experiment are both enabled.
-  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
-            original_expiration);
 }
 
 }  // namespace safe_browsing

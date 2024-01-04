@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/safe_browsing/model/ohttp_key_service_factory.h"
 
-#import "base/feature_list.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
 #import "components/safe_browsing/core/browser/hashprefix_realtime/ohttp_key_service.h"
-#import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
@@ -39,8 +37,7 @@ std::unique_ptr<KeyedService> OhttpKeyServiceFactory::BuildServiceInstanceFor(
   if (!safe_browsing_service) {
     return nullptr;
   }
-  if (!base::FeatureList::IsEnabled(safe_browsing::kHashRealTimeOverOhttp) &&
-      !safe_browsing::hash_realtime_utils::
+  if (!safe_browsing::hash_realtime_utils::
           IsHashRealTimeLookupEligibleInSessionAndLocation(
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   GetApplicationContext()->GetVariationsService()))) {

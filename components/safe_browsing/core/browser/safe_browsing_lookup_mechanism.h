@@ -34,10 +34,7 @@ class SafeBrowsingLookupMechanism {
         SBThreatType threat_type,
         const ThreatMetadata& metadata,
         absl::optional<ThreatSource> threat_source,
-        std::unique_ptr<RTLookupResponse> url_real_time_lookup_response,
-        absl::optional<bool> matched_high_confidence_allowlist,
-        absl::optional<SBThreatType> locally_cached_results_threat_type,
-        bool real_time_request_failed);
+        std::unique_ptr<RTLookupResponse> url_real_time_lookup_response);
     ~CompleteCheckResult();
     GURL url;
     SBThreatType threat_type;
@@ -50,13 +47,6 @@ class SafeBrowsingLookupMechanism {
     // database mechanism fallback completes synchronously, this is unset.
     absl::optional<ThreatSource> threat_source;
     std::unique_ptr<RTLookupResponse> url_real_time_lookup_response;
-
-    // TODO(crbug.com/1410253): Deprecate these once the experiment is complete.
-    // This can be absl::nullopt if the allowlist check is irrelevant to the
-    // mechanism.
-    absl::optional<bool> matched_high_confidence_allowlist;
-    absl::optional<SBThreatType> locally_cached_results_threat_type;
-    bool real_time_request_failed;
   };
   using CompleteCheckResultCallback =
       base::OnceCallback<void(std::unique_ptr<CompleteCheckResult> result)>;
@@ -64,8 +54,7 @@ class SafeBrowsingLookupMechanism {
   SafeBrowsingLookupMechanism(
       const GURL& url,
       const SBThreatTypeSet& threat_types,
-      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      MechanismExperimentHashDatabaseCache experiment_cache_selection);
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager);
   virtual ~SafeBrowsingLookupMechanism();
   SafeBrowsingLookupMechanism(const SafeBrowsingLookupMechanism&) = delete;
   SafeBrowsingLookupMechanism& operator=(const SafeBrowsingLookupMechanism&) =
@@ -92,11 +81,6 @@ class SafeBrowsingLookupMechanism {
   // Used for interactions with the database, such as running a hash-based
   // check or checking the high-confidence allowlist.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
-
-  // Specifies which hash database cache to use if a hash-database lookup ends
-  // up occurring. For more details, see the comments above the definition of
-  // MechanismExperimentHashDatabaseCache.
-  MechanismExperimentHashDatabaseCache experiment_cache_selection_;
 
  private:
   // |StartCheck| has some logic used across mechanisms. |StartCheckInternal| is

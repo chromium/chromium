@@ -115,14 +115,6 @@ constexpr base::FeatureParam<std::string> kHashPrefixRealTimeLookupsRelayUrl{
     /*default_value=*/
     "https://google-ohttp-relay-safebrowsing.fastly-edge.com/"};
 
-BASE_FEATURE(kHashRealTimeOverOhttp,
-             "SafeBrowsingHashRealTimeOverOhttp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<std::string> kHashRealTimeOverOhttpRelayUrl{
-    &kHashRealTimeOverOhttp, "SafeBrowsingHashRealTimeOverOhttpRelayUrl",
-    /*default_value=*/""};
-
 BASE_FEATURE(kImprovedDownloadPageWarnings,
              "ImprovedDownloadPageWarnings",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -175,15 +167,6 @@ constexpr base::FeatureParam<int> kReferrerChainEventMaximumCount{
 BASE_FEATURE(kSafeBrowsingAsyncRealTimeCheck,
              "SafeBrowsingAsyncRealTimeCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSafeBrowsingLookupMechanismExperiment,
-             "SafeBrowsingLookupMechanismExperiment",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const base::FeatureParam<bool> kUrlLevelValidationForHprtExperimentEnabled{
-    &kSafeBrowsingLookupMechanismExperiment,
-    "UrlLevelValidationForHprtExperimentEnabled",
-    /*default_value=*/true};
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck,
@@ -311,14 +294,12 @@ constexpr struct {
     {&kExtensionTelemetryTabsApiSignal, true},
     {&kExtensionTelemetryTabsExecuteScriptSignal, true},
     {&kHashPrefixRealTimeLookups, true},
-    {&kHashRealTimeOverOhttp, true},
     {&kImprovedDownloadPageWarnings, true},
     {&kLogAccountEnhancedProtectionStateInProtegoPings, true},
     {&kMmapSafeBrowsingDatabase, true},
     {&kNestedArchives, true},
     {&kRedInterstitialFacelift, false},
     {&kSafeBrowsingAsyncRealTimeCheck, true},
-    {&kSafeBrowsingLookupMechanismExperiment, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},
     {&kSafeBrowsingSkipSubresources, true},
     {&kSafeBrowsingSkipSubresources2, true},
@@ -357,8 +338,6 @@ base::Value::List GetFeatureStatusList() {
   // Manually add experimental features that we want param values for.
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.Get());
   param_list.Append(kHashPrefixRealTimeLookupsRelayUrl.name);
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.Get());
-  param_list.Append(kHashRealTimeOverOhttpRelayUrl.name);
 
   return param_list;
 }

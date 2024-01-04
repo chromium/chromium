@@ -650,7 +650,6 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       // Since AW currently doesn't support UKM, this feature is not enabled.
       /* rt_lookup_service */ nullptr,
       /* hash_realtime_service */ nullptr,
-      /* ping_manager */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
       // TODO(crbug.com/1501194): pass in async_check_tracker to support async
@@ -713,7 +712,6 @@ AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
       // Since AW currently doesn't support UKM, this feature is not enabled.
       /* rt_lookup_service */ nullptr,
       /* hash_realtime_service */ nullptr,
-      /* ping_manager */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
       // TODO(crbug.com/1501194): pass in async_check_tracker to support async

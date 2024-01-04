@@ -11,9 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_service.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
-#include "components/safe_browsing/core/browser/safe_browsing_lookup_mechanism_experimenter.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -63,8 +61,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
     std::string url_lookup_service_metric_suffix,
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
-    base::WeakPtr<PingManager> ping_manager,
-    bool is_mechanism_experiment_allowed,
     hash_realtime_utils::HashRealTimeSelection hash_realtime_selection)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
@@ -77,8 +73,6 @@ UrlCheckerOnSB::UrlCheckerOnSB(
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
       url_lookup_service_(url_lookup_service),
       hash_realtime_service_(hash_realtime_service),
-      ping_manager_(ping_manager),
-      is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
       hash_realtime_selection_(hash_realtime_selection),
       creation_time_(base::TimeTicks::Now()) {
   content::WebContents* contents = web_contents_getter_.Run();
@@ -91,9 +85,6 @@ UrlCheckerOnSB::~UrlCheckerOnSB() {
   base::UmaHistogramMediumTimes(
       "SafeBrowsing.BrowserThrottle.CheckerOnIOLifetime",
       base::TimeTicks::Now() - creation_time_);
-  if (mechanism_experimenter_) {
-    mechanism_experimenter_->OnBrowserUrlLoaderThrottleCheckerOnSBDestructed();
-  }
 }
 
 void UrlCheckerOnSB::Start(const StartParams& params) {
@@ -104,15 +95,6 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
   scoped_refptr<UrlCheckerDelegate> url_checker_delegate =
       std::move(delegate_getter_).Run();
 
-  if (is_mechanism_experiment_allowed_ &&
-      params.request_destination ==
-          network::mojom::RequestDestination::kDocument) {
-    mechanism_experimenter_ =
-        base::MakeRefCounted<SafeBrowsingLookupMechanismExperimenter>(
-            /*is_prefetch=*/params.load_flags & net::LOAD_PREFETCH,
-            /*ping_manager_on_ui=*/ping_manager_,
-            /*ui_task_runner=*/content::GetUIThreadTaskRunner({}));
-  }
   if (url_checker_for_testing_) {
     url_checker_ = std::move(url_checker_for_testing_);
   } else {
@@ -124,8 +106,7 @@ void UrlCheckerOnSB::Start(const StartParams& params) {
         can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
-        url_lookup_service_, hash_realtime_service_, mechanism_experimenter_,
-        is_mechanism_experiment_allowed_, hash_realtime_selection_);
+        url_lookup_service_, hash_realtime_service_, hash_realtime_selection_);
   }
 
   CheckUrl(params.url, params.method);
@@ -140,12 +121,6 @@ void UrlCheckerOnSB::CheckUrl(const GURL& url, const std::string& method) {
   url_checker_->CheckUrl(url, method,
                          base::BindOnce(&UrlCheckerOnSB::OnCheckUrlResult,
                                         base::Unretained(this)));
-}
-
-void UrlCheckerOnSB::LogWillProcessResponseTime(base::TimeTicks reached_time) {
-  if (mechanism_experimenter_) {
-    mechanism_experimenter_->OnWillProcessResponseReached(reached_time);
-  }
 }
 
 void UrlCheckerOnSB::SwapCompleteCallback(OnCompleteCheckCallback callback) {

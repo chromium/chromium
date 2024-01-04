@@ -157,12 +157,6 @@ void SafeBrowsingDatabaseManager::NotifyDatabaseUpdateFinished() {
   update_complete_callback_list_.Notify();
 }
 
-void SafeBrowsingDatabaseManager::SetLookupMechanismExperimentIsEnabled() {
-  if (v4_get_hash_protocol_manager_) {
-    v4_get_hash_protocol_manager_->SetLookupMechanismExperimentIsEnabled();
-  }
-}
-
 SafeBrowsingDatabaseManager::SafeBrowsingApiCheck::SafeBrowsingApiCheck(
     const GURL& url,
     Client* client)

@@ -44,8 +44,6 @@ class FakeSafeBrowsingUrlCheckerImpl
             web::GetUIThreadTaskRunner({}),
             /*url_lookup_service_on_ui=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
-            /*mechanism_experimenter=*/nullptr,
-            /*is_mechanism_experiment_allowed=*/false,
             safe_browsing::hash_realtime_utils::HashRealTimeSelection::kNone) {}
   ~FakeSafeBrowsingUrlCheckerImpl() override = default;
 
