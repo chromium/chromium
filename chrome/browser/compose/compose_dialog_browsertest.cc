@@ -25,8 +25,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
-using ComposeClientPrefsBrowserTest = InProcessBrowserTest;
-
 namespace compose {
 
 class ComposeSessionBrowserTest : public InteractiveBrowserTest {
@@ -133,78 +131,6 @@ IN_PROC_BROWSER_TEST_F(ComposeSessionBrowserTest,
   client->DidGetUserInteraction(event);
 
   EXPECT_FALSE(client->IsDialogShowing());
-}
-
-// Start ClientPrefsBrowserTest methods.
-IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest,
-                       GetConsentStateFromPrefs) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
-  auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  PrefService* prefs = browser()->profile()->GetPrefs();
-
-  // By default both kPageContentCollectionEnabled and
-  // kPrefHasAcceptedComposeConsent should be false
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kUnset);
-
-  // Consent enabled but not acknowledged from compose
-  prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
-                    true);
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kExternalConsented);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Consent enabled and acknowledged from compose
-  prefs->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kConsented);
-
-  // Consent disabled since being acknowledged from compose
-  prefs->SetBoolean(unified_consent::prefs::kPageContentCollectionEnabled,
-                    false);
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kUnset);
-#endif
-}
-
-IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest, ApproveConsent) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
-  auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  PrefService* prefs = browser()->profile()->GetPrefs();
-
-  // By default both kPageContentCollectionEnabled and
-  // kPrefHasAcceptedComposeConsent should be false
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kUnset);
-
-  client->ApproveConsent();
-  ASSERT_TRUE(
-      prefs->GetBoolean(unified_consent::prefs::kPageContentCollectionEnabled));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kPrefHasAcceptedComposeConsent));
-#endif
-}
-
-IN_PROC_BROWSER_TEST_F(ComposeClientPrefsBrowserTest,
-                       AcknowledgeConsentDisclaimer) {
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(nullptr, ChromeComposeClient::FromWebContents(web_contents));
-  auto* client = ChromeComposeClient::FromWebContents(web_contents);
-  PrefService* prefs = browser()->profile()->GetPrefs();
-
-  // By default both kPageContentCollectionEnabled and
-  // kPrefHasAcceptedComposeConsent should be false
-  EXPECT_EQ(client->GetConsentStateFromPrefs(),
-            compose::mojom::ConsentState::kUnset);
-
-  client->AcknowledgeConsentDisclaimer();
-  ASSERT_FALSE(
-      prefs->GetBoolean(unified_consent::prefs::kPageContentCollectionEnabled));
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  ASSERT_TRUE(prefs->GetBoolean(prefs::kPrefHasAcceptedComposeConsent));
-#endif
 }
 
 }  // namespace compose

@@ -941,6 +941,12 @@ const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
 const char kPrivacySandboxManuallyControlledV2[] =
     "privacy_sandbox.manually_controlled_v2";
 
+// Deprecated 01/2024.
+#if BUILDFLAG(ENABLE_COMPOSE)
+constexpr char kPrefHasAcceptedComposeConsent[] =
+    "compose_has_accepted_consent";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1317,6 +1323,11 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 01/2024.
   registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2, false);
   registry->RegisterBooleanPref(kPrivacySandboxManuallyControlledV2, false);
+
+// Deprecated 01/2024.
+#if BUILDFLAG(ENABLE_COMPOSE)
+  registry->RegisterBooleanPref(kPrefHasAcceptedComposeConsent, false);
+#endif
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2024,7 +2035,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-  registry->RegisterBooleanPref(prefs::kPrefHasAcceptedComposeConsent, false);
+  registry->RegisterBooleanPref(prefs::kPrefHasCompletedComposeFRE, false);
 #endif
 }
 
@@ -2530,6 +2541,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2024.
   profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2);
   profile_prefs->ClearPref(kPrivacySandboxManuallyControlledV2);
+
+  // Added 01/2024.
+#if BUILDFLAG(ENABLE_COMPOSE)
+  profile_prefs->ClearPref(kPrefHasAcceptedComposeConsent);
+#endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

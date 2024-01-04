@@ -5,7 +5,7 @@
 import 'chrome://compose/app.js';
 
 import {ComposeAppElement, ComposeAppState} from 'chrome://compose/app.js';
-import {CloseReason, ComposeState, ComposeStatus, ConsentState, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
+import {CloseReason, ComposeState, ComposeStatus, Length, Tone, UserFeedback} from 'chrome://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome://compose/compose_api_proxy.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -50,10 +50,10 @@ suite('ComposeApp', () => {
     return testProxy.remote.$.flushForTesting();
   }
 
-  async function initializeNewAppWithConsentAndMsbbState(
-      consent: ConsentState, msbb: boolean): Promise<ComposeAppElement> {
+  async function initializeNewAppWithFirstRunAndMsbbState(
+      fre: boolean, msbb: boolean): Promise<ComposeAppElement> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setOpenMetadata({consentState: consent, msbbState: msbb});
+    testProxy.setOpenMetadata({freComplete: fre, msbbState: msbb});
     const newApp = document.createElement('compose-app');
     document.body.appendChild(newApp);
     await flushTasks();
@@ -177,54 +177,43 @@ suite('ComposeApp', () => {
     assertTrue(220 < app.$.body.scrollHeight);
   });
 
-  test('ConsentandMsbbStateDeterminesViewState', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
-    // Check correct visibility for consent view state
-    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.consentDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.consentFooter));
-    assertFalse(isVisible(appWithConsentDialog.$.disclaimerFooter));
-    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
+  test('FirstRunAndMsbbStateDetermineViewState', async () => {
+    // Check correct visibility for FRE view state.
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, false);
+    assertTrue(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.appDialog));
 
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, true);
-    // Check correct visibility for disclaimer view state
-    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentFooter));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.disclaimerFooter));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
-
-    const appWithMSBBDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, false);
-    // Check correct visibility for main app view state
-    assertFalse(isVisible(appWithMSBBDialog.$.appDialog));
-    assertFalse(isVisible(appWithMSBBDialog.$.consentDialog));
+    // Check correct visibility for MSBB view state.
+    const appWithMSBBDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
+    assertFalse(isVisible(appWithMSBBDialog.$.firstRunDialog));
     assertTrue(isVisible(appWithMSBBDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithMSBBDialog.$.appDialog));
 
-    const appWithMainDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, true);
     // Check correct visibility for main app view state
-    assertTrue(isVisible(appWithMainDialog.$.appDialog));
-    assertFalse(isVisible(appWithMainDialog.$.consentDialog));
+    const appWithMainDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, true);
+    assertFalse(isVisible(appWithMainDialog.$.firstRunDialog));
     assertFalse(isVisible(appWithMainDialog.$.freMsbbDialog));
+    assertTrue(isVisible(appWithMainDialog.$.appDialog));
   });
 
-  test('ConsentCloseButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
 
-    appWithConsentDialog.$.closeButtonConsent.click();
-    // Close reason should match that given to the consent close button.
+  test('FirstRunCloseButton', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
+
+    appWithFirstRunDialog.$.firstRunCloseButton.click();
+    // Close reason should match that given to the FRE close button.
     const closeReason = await testProxy.whenCalled('closeUi');
-    assertEquals(CloseReason.kConsentCloseButton, closeReason);
+    assertEquals(CloseReason.kFirstRunCloseButton, closeReason);
   });
 
   test('MSBBCloseButton', async () => {
-    const appWithMsbbDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kConsented, false);
+    const appWithMsbbDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(true, false);
 
     appWithMsbbDialog.$.closeButtonMSBB.click();
     // Close reason should match that given to the consent close button.
@@ -232,60 +221,26 @@ suite('ComposeApp', () => {
     assertEquals(CloseReason.kMSBBCloseButton, closeReason);
   });
 
-  test('ConsentNoThanksButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
+  test('FirstRunLetsGoButtonToMainDialog', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, true);
 
-    appWithConsentDialog.$.consentNoThanksButton.click();
-    // Close reason should match that given to the consent no thanks button.
-    const closeReason = await testProxy.whenCalled('closeUi');
-    assertEquals(CloseReason.kPageContentConsentDeclined, closeReason);
+    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    // View state should change from FRE UI to main app UI.
+    assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertTrue(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
-  test('ConsentYesButton', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, true);
+  test('FirstRunLetsGoButtonToMSBBDialog', async () => {
+    const appWithFirstRunDialog =
+        await initializeNewAppWithFirstRunAndMsbbState(false, false);
 
-    appWithConsentDialog.$.consentYesButton.click();
-    // View state should change from consent UI to main app UI.
-    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.appDialog));
-    assertFalse(isVisible(appWithConsentDialog.$.freMsbbDialog));
-  });
-
-  test('ConsentYesButtonWithoutMSBB', async () => {
-    const appWithConsentDialog = await initializeNewAppWithConsentAndMsbbState(
-        ConsentState.kUnset, false);
-
-    appWithConsentDialog.$.consentYesButton.click();
-    // View state should change from consent UI to MSBB UI.
-    assertFalse(isVisible(appWithConsentDialog.$.consentDialog));
-    assertFalse(isVisible(appWithConsentDialog.$.appDialog));
-    assertTrue(isVisible(appWithConsentDialog.$.freMsbbDialog));
-  });
-
-  test('DisclaimerLetsGoButton', async () => {
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, true);
-
-    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
-    // View state should change from disclaimer UI to MSBB UI.
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
-  });
-
-  test('DisclaimerLetsGoButtonWithoutMSBB', async () => {
-    const appWithDisclaimerDialog =
-        await initializeNewAppWithConsentAndMsbbState(
-            ConsentState.kExternalConsented, false);
-
-    appWithDisclaimerDialog.$.disclaimerLetsGoButton.click();
-    // View state should change from disclaimer UI to main app UI.
-    assertFalse(isVisible(appWithDisclaimerDialog.$.consentDialog));
-    assertFalse(isVisible(appWithDisclaimerDialog.$.appDialog));
-    assertTrue(isVisible(appWithDisclaimerDialog.$.freMsbbDialog));
+    appWithFirstRunDialog.$.firstRunLetsGoButton.click();
+    // View state should change from FRE UI to MSBB UI.
+    assertFalse(isVisible(appWithFirstRunDialog.$.firstRunDialog));
+    assertTrue(isVisible(appWithFirstRunDialog.$.freMsbbDialog));
+    assertFalse(isVisible(appWithFirstRunDialog.$.appDialog));
   });
 
   test('InitializesWithState', async () => {

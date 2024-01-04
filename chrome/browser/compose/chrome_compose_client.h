@@ -67,18 +67,12 @@ class ChromeComposeClient
   // Closes the compose dialog. `reason` describes the user action that
   // triggered the close.
   void CloseUI(compose::mojom::CloseReason reason) override;
-  // Update corresponding prefs and state when consent is given through Compose.
-  void ApproveConsent() override;
-  // Update corresponding prefs and state when consent is acknowledged.
-  void AcknowledgeConsentDisclaimer() override;
+  // Update corresponding prefs and state when FRE is completed.
+  void CompleteFirstRun() override;
 
-  // Update session state when the consent has been given/acknowledged. This
-  // will be used to differentiate sessions involving the consent flow.
-  // TODO(b/312295685): Add metrics for consent dialog related close reasons.
-  void UpdateAllSessionsWithConsentApproved();
-
-  compose::mojom::ConsentState GetConsentStateFromPrefs();
   bool GetMSBBStateFromPrefs();
+
+  void UpdateAllSessionsWithFirstRunComplete();
 
   virtual bool ShouldTriggerContextMenu(content::RenderFrameHost* rfh,
                                         content::ContextMenuParams& params);
@@ -147,10 +141,9 @@ class ChromeComposeClient
                              const autofill::FormFieldData& trigger_field,
                              ComposeCallback callback);
 
-  // Set the exit reason for a session that does not progress past the
-  // consent/disclaimer UI.
-  void SetConsentSessionCloseReason(
-      compose::ComposeConsentSessionCloseReason close_reason);
+  // Set the exit reason for a session that does not progress past the FRE.
+  void SetFirstRunSessionCloseReason(
+      compose::ComposeFirstRunSessionCloseReason close_reason);
 
   // Set the exit reason for a session that does not progress past the
   // MSBB UI.

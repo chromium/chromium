@@ -7,16 +7,15 @@ import {CloseReason, ComposeClientPageHandlerRemote, ComposeDialogCallbackRouter
 /** @interface */
 export interface ComposeApiProxy {
   acceptComposeResult(): Promise<boolean>;
-  acknowledgeConsentDisclaimer(): void;
-  approveConsent(): void;
+  completeFirstRun(): void;
   closeUi(reason: CloseReason): void;
   compose(input: string, edited: boolean): void;
   rewrite(style: StyleModifiers|null): void;
   getRouter(): ComposeDialogCallbackRouter;
   openBugReportingLink(): void;
   openComposeLearnMorePage(): void;
-  openFeedbackSurveyLink(): void;
   openComposeSettings(): void;
+  openFeedbackSurveyLink(): void;
   setUserFeedback(reason: UserFeedback): void;
   requestInitialState(): Promise<OpenMetadata>;
   saveWebuiState(state: string): void;
@@ -53,12 +52,8 @@ export class ComposeApiProxyImpl implements ComposeApiProxy {
         res => res.success);
   }
 
-  acknowledgeConsentDisclaimer(): void {
-    this.composeClientPageHandler.acknowledgeConsentDisclaimer();
-  }
-
-  approveConsent(): void {
-    this.composeClientPageHandler.approveConsent();
+  completeFirstRun(): void {
+    this.composeClientPageHandler.completeFirstRun();
   }
 
   closeUi(reason: CloseReason): void {

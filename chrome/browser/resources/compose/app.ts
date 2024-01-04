@@ -24,7 +24,7 @@ import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
-import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, ConsentState, Length, PartialComposeResponse, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, ComposeDialogCallbackRouter, ComposeResponse, ComposeStatus, ConfigurableParams, Length, PartialComposeResponse, StyleModifiers, Tone, UserFeedback} from './compose.mojom-webui.js';
 import {ComposeApiProxy, ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeTextareaElement} from './textarea.js';
 
@@ -40,18 +40,15 @@ export interface ComposeAppState {
 
 export interface ComposeAppElement {
   $: {
-    consentDialog: HTMLElement,
+    firstRunDialog: HTMLElement,
+    firstRunFooter: HTMLElement,
+    firstRunLetsGoButton: CrButtonElement,
     freMsbbDialog: HTMLElement,
-    consentFooter: HTMLElement,
-    consentNoThanksButton: CrButtonElement,
-    consentYesButton: CrButtonElement,
-    disclaimerFooter: HTMLElement,
-    disclaimerLetsGoButton: CrButtonElement,
     appDialog: HTMLElement,
     body: HTMLElement,
     cancelEditButton: CrButtonElement,
     closeButton: HTMLElement,
-    closeButtonConsent: HTMLElement,
+    firstRunCloseButton: HTMLElement,
     closeButtonMSBB: HTMLElement,
     editTextarea: ComposeTextareaElement,
     errorFooter: HTMLElement,
@@ -137,10 +134,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Boolean,
         value: false,
       },
-      showDisclaimerFooter_: {
-        type: Boolean,
-        value: false,
-      },
       submitted_: {
         type: Boolean,
         value: false,
@@ -204,11 +197,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   enableAnimations: boolean;
   private eventTracker_: EventTracker = new EventTracker();
   private router_: ComposeDialogCallbackRouter = this.apiProxy_.getRouter();
-  private showConsentDialog_: boolean;
+  private showFirstRunDialog_: boolean;
   private showMainAppDialog_: boolean;
   private showMSBBDialog_: boolean;
   private shouldShowMSBBDialog_: boolean;
-  private showDisclaimerFooter_: boolean;
   private editedInput_: string;
   private feedbackState_: CrFeedbackOption;
   private input_: string;
@@ -266,27 +258,20 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private getInitialState_() {
     this.apiProxy_.requestInitialState().then(initialState => {
       this.inputParams_ = initialState.configurableParams;
-      // The dialog can initially be in one of four view states. The consent
-      // view is shown if consent is not currently granted. If consent was
-      // granted but not through Compose use, the disclaimer view is shown.
-      // Otherwise, full consent causes the dialog to show in either the
-      // main app state or the MSBB state if MSBB is not enabled.
-
-      this.showMainAppDialog_ =
-          initialState.consentState === ConsentState.kConsented &&
-          initialState.msbbState;
-      if (!this.showMainAppDialog_) {
-        this.animator_.transitionToConsent();
+      // The dialog can initially be in one of three view states. Completion of
+      // the FRE causes the dialog to show the MSBB state if MSBB is not
+      // enabled, and the main app state otherwise.
+      this.showFirstRunDialog_ = !initialState.freComplete;
+      if (this.showFirstRunDialog_) {
+        this.animator_.transitionToFirstRun();
       }
 
       this.showMSBBDialog_ =
-          initialState.consentState === ConsentState.kConsented &&
-          !initialState.msbbState;
+          initialState.freComplete && !initialState.msbbState;
       this.shouldShowMSBBDialog_ = !initialState.msbbState;
-      this.showConsentDialog_ =
-          initialState.consentState !== ConsentState.kConsented;
-      this.showDisclaimerFooter_ =
-          initialState.consentState === ConsentState.kExternalConsented;
+
+      this.showMainAppDialog_ =
+          initialState.freComplete && initialState.msbbState;
 
       if (initialState.initialInput) {
         this.input_ = initialState.initialInput;
@@ -330,30 +315,17 @@ export class ComposeAppElement extends ComposeAppElementBase {
     return this.partialResponse_?.result.trim();
   }
 
-  private onConsentNoThanksButtonClick_() {
-    this.apiProxy_.closeUi(CloseReason.kPageContentConsentDeclined);
-  }
+  private onfirstRunLetsGoButtonClick_() {
+    this.apiProxy_.completeFirstRun();
 
-  private onConsentYesButtonClick_() {
-    this.apiProxy_.approveConsent();
-    this.animator_.transitionToInput();
     if (this.shouldShowMSBBDialog_) {
       this.showMSBBDialog_ = true;
     } else {
       this.showMainAppDialog_ = true;
+      this.animator_.transitionToInput();
     }
-    this.showConsentDialog_ = false;
-  }
 
-  private onDisclaimerLetsGoButtonClick_() {
-    this.apiProxy_.acknowledgeConsentDisclaimer();
-    this.showDisclaimerFooter_ = false;
-    this.showConsentDialog_ = false;
-    if (this.shouldShowMSBBDialog_) {
-      this.showMSBBDialog_ = true;
-    } else {
-      this.showMainAppDialog_ = true;
-    }
+    this.showFirstRunDialog_ = false;
   }
 
   private onFirstRunBottomTextClick_(e: Event) {
@@ -371,16 +343,16 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onClose_(e: Event) {
     switch ((e.target as HTMLElement).id) {
-      case 'closeButtonConsent': {
-        this.apiProxy_.closeUi(CloseReason.kConsentCloseButton);
-        break;
-      }
-      case 'closeButton': {
-        this.apiProxy_.closeUi(CloseReason.kCloseButton);
+      case 'firstRunCloseButton': {
+        this.apiProxy_.closeUi(CloseReason.kFirstRunCloseButton);
         break;
       }
       case 'closeButtonMSBB': {
         this.apiProxy_.closeUi(CloseReason.kMSBBCloseButton);
+        break;
+      }
+      case 'closeButton': {
+        this.apiProxy_.closeUi(CloseReason.kCloseButton);
         break;
       }
     }
@@ -477,21 +449,9 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onConsentTopTextClick_(e: Event) {
-    e.preventDefault();
-    // The "settings" link is embedded into the string used here as it may need
-    // to be localized as part of the sentence. However, such embedded links do
-    // not function in WebUI. Handle the event by using this parent event
-    // listener to target the link and instruct the browser to open the
-    // corresponding settings page.
-    if ((e.target as HTMLElement).tagName === 'A') {
-      this.apiProxy_.openComposeSettings();
-    }
-  }
-
   private onMsbbSettingsClick_(e: Event) {
     e.preventDefault();
-    // instruct the browser to open the corresponding settings page.
+    // Instruct the browser to open the corresponding settings page.
     this.apiProxy_.openComposeSettings();
   }
 

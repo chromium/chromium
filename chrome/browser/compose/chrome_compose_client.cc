@@ -149,77 +149,57 @@ void ChromeComposeClient::ShowUI() {
 
 void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
-    case compose::mojom::CloseReason::kConsentCloseButton:
-      SetConsentSessionCloseReason(
-          compose::ComposeConsentSessionCloseReason::kCloseButtonPressed);
-      RemoveActiveSession();
-      break;
-    case compose::mojom::CloseReason::kPageContentConsentDeclined:
-      SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
-                                       kPageContentConsentDeclined);
-      RemoveActiveSession();
+    case compose::mojom::CloseReason::kFirstRunCloseButton:
+      SetFirstRunSessionCloseReason(
+          compose::ComposeFirstRunSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kMSBBCloseButton:
       SetMSBBSessionCloseReason(
           compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed);
-      RemoveActiveSession();
       break;
     case compose::mojom::CloseReason::kCloseButton:
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
-      RemoveActiveSession();
       break;
     case compose::mojom::CloseReason::kInsertButton:
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kAcceptedSuggestion);
-      SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
-                                       kPageContentConsentGivenWithInsert);
       SetMSBBSessionCloseReason(
           compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert);
-      RemoveActiveSession();
+      SetFirstRunSessionCloseReason(
+          compose::ComposeFirstRunSessionCloseReason::
+              kFirstRunDisclaimerAcknowledgedWithInsert);
       break;
   }
+
+  RemoveActiveSession();
 
   if (compose_dialog_controller_) {
     compose_dialog_controller_->Close();
   }
 }
 
-void ChromeComposeClient::ApproveConsent() {
-  pref_service_->SetBoolean(
-      unified_consent::prefs::kPageContentCollectionEnabled, true);
-  pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-  UpdateAllSessionsWithConsentApproved();
+void ChromeComposeClient::CompleteFirstRun() {
+  pref_service_->SetBoolean(prefs::kPrefHasCompletedComposeFRE, true);
 
-  // This marks the end of a "consent session" as the dialog moves to the main
-  // UI state. Log relevant metrics for the consent session.
+  // This marks the end of the FRE "session" as the dialog moves to the main UI
+  // state. Mark all existing sessions as having completed the FRE and log
+  // relevant metrics.
+  UpdateAllSessionsWithFirstRunComplete();
   ComposeSession* active_session = GetSessionForActiveComposeField();
   if (active_session) {
-    active_session->SetConsentCloseReason(
-        compose::ComposeConsentSessionCloseReason::
-            kPageContentConsentAcceptedWithoutInsert);
-    active_session->HandleEndOfConsentSession();
+    active_session->SetFirstRunCloseReason(
+        compose::ComposeFirstRunSessionCloseReason::
+            kFirstRunDisclaimerAcknowledgedWithoutInsert);
   }
 }
 
-void ChromeComposeClient::AcknowledgeConsentDisclaimer() {
-  pref_service_->SetBoolean(prefs::kPrefHasAcceptedComposeConsent, true);
-  UpdateAllSessionsWithConsentApproved();
-
-  // This marks the end of a "consent session" as the dialog moves to the main
-  // UI state. Log relevant metrics for the consent session.
-  ComposeSession* active_session = GetSessionForActiveComposeField();
-  if (active_session) {
-    active_session->SetConsentCloseReason(
-        compose::ComposeConsentSessionCloseReason::
-            kPageContentDisclaimerAcknowledgedWithoutInsert);
-    active_session->HandleEndOfConsentSession();
+void ChromeComposeClient::UpdateAllSessionsWithFirstRunComplete() {
+  if (debug_session_) {
+    debug_session_->SetFirstRunCompleted();
   }
-}
-
-void ChromeComposeClient::UpdateAllSessionsWithConsentApproved() {
   for (const auto& session : sessions_) {
-    session.second->set_consent_given_or_acknowledged();
+    session.second->SetFirstRunCompleted();
   }
 }
 
@@ -254,10 +234,10 @@ void ChromeComposeClient::CreateOrUpdateSession(
       // consent state.
       auto it = sessions_.find(active_compose_field_id_.value());
       current_session = it->second.get();
-      if (current_session->get_current_consent_state() !=
-          compose::mojom::ConsentState::kConsented) {
-        SetConsentSessionCloseReason(compose::ComposeConsentSessionCloseReason::
-                                         kNewSessionWithSelectedText);
+      if (!current_session->get_fre_complete()) {
+        SetFirstRunSessionCloseReason(
+            compose::ComposeFirstRunSessionCloseReason::
+                kNewSessionWithSelectedText);
       }
     }
     auto new_session = std::make_unique<ComposeSession>(
@@ -268,13 +248,16 @@ void ChromeComposeClient::CreateOrUpdateSession(
     sessions_.insert_or_assign(active_compose_field_id_.value(),
                                std::move(new_session));
 
+    // Set the FRE state of the new session.
+    auto fre_state =
+        pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE);
+    current_session->set_fre_complete(fre_state);
+
     // Only record the selection length for new sessions.
     auto utf8_chars = base::CountUnicodeCharacters(selected_text);
     compose::LogComposeDialogSelectionLength(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
   }
-
-  current_session->set_current_consent_state(GetConsentStateFromPrefs());
   current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
 
   // If we are resuming then don't send the selected text - we want to keep the
@@ -311,15 +294,15 @@ void ChromeComposeClient::SetMSBBSessionCloseReason(
   }
 }
 
-void ChromeComposeClient::SetConsentSessionCloseReason(
-    compose::ComposeConsentSessionCloseReason close_reason) {
+void ChromeComposeClient::SetFirstRunSessionCloseReason(
+    compose::ComposeFirstRunSessionCloseReason close_reason) {
   if (debug_session_) {
     return;
   }
 
   ComposeSession* active_session = GetSessionForActiveComposeField();
   if (active_session) {
-    active_session->SetConsentCloseReason(close_reason);
+    active_session->SetFirstRunCloseReason(close_reason);
   }
 }
 
@@ -352,24 +335,6 @@ ComposeSession* ChromeComposeClient::GetSessionForActiveComposeField() {
     }
   }
   return nullptr;
-}
-
-compose::mojom::ConsentState ChromeComposeClient::GetConsentStateFromPrefs() {
-  auto consent_state = compose::mojom::ConsentState::kUnset;
-  bool page_content_collection_enabled = pref_service_->GetBoolean(
-      unified_consent::prefs::kPageContentCollectionEnabled);
-  bool consent_acknowledged_through_compose = false;
-  consent_acknowledged_through_compose =
-      pref_service_->GetBoolean(prefs::kPrefHasAcceptedComposeConsent);
-  if (page_content_collection_enabled) {
-    // Page content collection can be enabled from the Compose UI or through
-    // other UIs. If the latter, then a specific disclaimer dialog should be
-    // shown for Compose FRE. This is captured by `consent_state`.
-    consent_state = consent_acknowledged_through_compose
-                        ? compose::mojom::ConsentState::kConsented
-                        : compose::mojom::ConsentState::kExternalConsented;
-  }
-  return consent_state;
 }
 
 bool ChromeComposeClient::GetMSBBStateFromPrefs() {

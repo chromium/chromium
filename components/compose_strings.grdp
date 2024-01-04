@@ -33,24 +33,6 @@
     Let's go
   </message>
 
-  <!-- Consent dialog -->
-  <message name="IDS_COMPOSE_CONSENT_TITLE" desc="The title of the consent dialog." translateable="false">
-    Get contextual writing suggestions for reviews, posts and more
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_MAIN_TOP" desc="The top main text of the consent dialog." translateable="false">
-    Sends open pages, related recent pages, their URLs, and your interactions with those features to Google. This data may be read, processed, and annotated by human reviewers to improve and develop Google products. You can change this anytime in
-    <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>settings<ph name="END_LINK">&lt;/a&gt;</ph>.
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_MAIN_BOTTOM" desc="The bottom main text of the consent dialog." translateable="false">
-    This is an experimental AI writing aid and won't always get it right.
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_NO_BUTTON" desc="The first option for the consent dialog." translateable="false">
-    No thanks
-  </message>
-  <message name="IDS_COMPOSE_CONSENT_YES_BUTTON" desc="The first option for the consent dialog." translateable="false">
-    Yes I'm in
-  </message>
-
   <!-- MSBB consent dialog -->
   <message name="IDS_COMPOSE_FRE_MSBB_TITLE" desc="The title of the MSBB consent dialog." translateable="false">
    Turn on the make searches and browsing better setting to use this feature
@@ -67,11 +49,6 @@
   </if> <!-- not is_macosx -->
   <message name="IDS_COMPOSE_FRE_MSBB_SETTINGS_BUTTON" desc="Open the settings page from the MSBB consent dialog." translateable="false">
     Go to Settings
-  </message>
-
-  <!-- Disclaimer dialog -->
-  <message name="IDS_COMPOSE_DISCLAIMER_BUTTON" desc="The button to acknowledge the disclaimer message." translateable="false">
-    Let's go
   </message>
 
   <!-- Input dialog -->

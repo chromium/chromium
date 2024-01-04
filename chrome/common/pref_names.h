@@ -1877,10 +1877,9 @@ inline constexpr char kManagedPrivateNetworkAccessRestrictionsEnabled[] =
     "managed_private_network_access_restrictions_enabled";
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-// Boolean indicating whether or not Compose consent has been given or
-// acknowledged.
-inline constexpr char kPrefHasAcceptedComposeConsent[] =
-    "compose_has_accepted_consent";
+// Boolean indicating whether or not the Compose FRE has been completed.
+inline constexpr char kPrefHasCompletedComposeFRE[] =
+    "compose_has_completed_fre";
 #endif
 
 // *************** LOCAL STATE ***************

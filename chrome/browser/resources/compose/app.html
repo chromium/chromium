@@ -24,16 +24,11 @@
     padding: var(--padding_) 0;
   }
 
-  #consentHeading {
+  #firstRunHeading {
     display: flex;
     height: 48px;
     align-items: start;
     padding: 0 var(--padding_);
-  }
-
-  #closeButtonConsent {
-    /* Align with main app dialog close button. */
-    margin-block-start: -4px;
   }
 
   #freMsbbHeading {
@@ -43,7 +38,7 @@
     padding: 0 var(--padding_);
   }
 
-  #consentIconContainer {
+  #firstRunIconContainer {
     margin-inline-end: var(--gap-between-sections_);
     min-width: 48px;
     height: 48px;
@@ -58,26 +53,26 @@
   }
 
   @media (prefers-color-scheme: dark) {
-    #consentIconContainer {
+    #firstRunIconContainer {
       background: linear-gradient(
           136deg,  rgb(8, 66, 160) 1.59%, rgb(15, 82, 35) 100%);
       color: rgb(194, 231, 255);
     }
   }
 
-  :host-context([chrome-refresh-2023]) #consentIconContainer {
+  :host-context([chrome-refresh-2023]) #firstRunIconContainer {
     background: linear-gradient(136deg,
         var(--color-sys-gradient-primary) 1.59%,
         var(--color-sys-gradient-tertiary) 100%);
     color: var(--color-compose-dialog-logo);
   }
 
-  #consentHeading iron-icon {
+  #firstRunHeading iron-icon {
     --iron-icon-width: 20px;
     --iron-icon-height: 20px;
   }
 
-  #consentContainer {
+  #firstRunContainer {
     color: var(--cr-secondary-text-color);
     font: inherit;
     font-size: 13px;
@@ -351,41 +346,27 @@
   }
 </style>
 
-<div id="consentDialog" class="dialog" hidden="[[!showConsentDialog_]]">
-  <div id="consentHeading">
-    <div id="consentIconContainer">
+<div id="firstRunDialog" class="dialog" hidden="[[!showFirstRunDialog_]]">
+  <div id="firstRunHeading">
+    <div id="firstRunIconContainer">
       <iron-icon icon="compose:compose"></iron-icon>
     </div>
-    <h1>$i18n{consentTitle}</h1>
-    <cr-icon-button id="closeButtonConsent" iron-icon="cr:close"
+    <h1>$i18n{firstRunTitle}</h1>
+    <cr-icon-button id="firstRunCloseButton" iron-icon="cr:close"
         on-click="onClose_" aria-label="$i18n{close}">
     </cr-icon-button>
   </div>
 
-  <div id="consentContainer">
-    <div id="consentTopText" on-click="onConsentTopTextClick_">
-      $i18nRaw{consentMainTop}
-    </div>
-    <div id="consentBottomText">
-      $i18n{consentMainBottom}
-    </div>
+  <div id="firstRunContainer">
+    <div id="firstRunTopText">$i18n{firstRunMainTop}</div>
+    <div id="firstRunMidText">$i18n{firstRunMainMid}</div>
+    <div id="firstRunBottomText">$i18nRaw{firstRunMainBottom}</div>
   </div>
 
-  <div id="consentFooter" class="footer" hidden="[[showDisclaimerFooter_]]">
-    <cr-button id="consentNoThanksButton" class="tonal-button"
-      on-click="onConsentNoThanksButtonClick_">
-      $i18n{consentNoButton}
-    </cr-button>
-    <cr-button id="consentYesButton" class="action-button"
-      on-click="onConsentYesButtonClick_">
-      $i18n{consentYesButton}
-    </cr-button>
-  </div>
-  <div id="disclaimerFooter" class="footer"
-    hidden="[[!showDisclaimerFooter_]]">
-    <cr-button id="disclaimerLetsGoButton" class="action-button"
-      on-click="onDisclaimerLetsGoButtonClick_">
-      $i18n{disclaimerLetsGoButton}
+  <div id="firstRunFooter" class="footer">
+    <cr-button id="firstRunLetsGoButton" class="action-button"
+      on-click="onfirstRunLetsGoButtonClick_">
+      $i18n{firstRunLetsGoButton}
     </cr-button>
   </div>
 </div>
@@ -398,7 +379,6 @@
       on-click="onClose_">
     </cr-icon-button>
   </div>
-
 
   <div id="freMsbbContainer">
     <div id="freMsbbText">

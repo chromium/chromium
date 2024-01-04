@@ -143,12 +143,12 @@ ComposeSession::ComposeSession(
     : executor_(executor),
       handler_receiver_(this),
       current_msbb_state_(false),
-      msbb_intilially_off_(false),
+      msbb_initially_off_(false),
       msbb_enabled_during_session_(false),
-      consent_close_reason_(
-          compose::ComposeConsentSessionCloseReason::kEndedImplicitly),
       msbb_close_reason_(
           compose::ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly),
+      fre_close_reason_(
+          compose::ComposeFirstRunSessionCloseReason::kEndedImplicitly),
       close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
       final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
@@ -166,38 +166,26 @@ ComposeSession::ComposeSession(
 }
 
 ComposeSession::~ComposeSession() {
-  // Log separate metrics for sessions that only display consent/disclaimer
-  // dialogs.
-  if (current_consent_state_ != compose::mojom::ConsentState::kConsented &&
-      !consent_given_or_acknowledged_) {
-    compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
-    compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
-                                                      dialog_shown_count_);
-    return;
+  if (!fre_complete_ || fre_completed_in_session_) {
+    compose::LogComposeFirstRunSessionCloseReason(fre_close_reason_);
+    compose::LogComposeFirstRunSessionDialogShownCount(fre_close_reason_,
+                                                       fre_dialog_shown_count_);
+    if (!fre_complete_) {
+      return;
+    }
   }
   if (!current_msbb_state_ || msbb_enabled_during_session_) {
     compose::LogComposeMSBBSessionDialogShownCount(msbb_close_reason_,
                                                    msbb_dialog_shown_count_);
     compose::LogComposeMSBBSessionCloseReason(msbb_close_reason_);
     if (!current_msbb_state_) {
-      // Log whether or not the user inserted text after having
-      // accepted/acknowledged consent in the same session.
-      if (consent_given_in_session_) {
-        compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
-      }
       return;
     }
   }
 
-  // Log whether or not the user inserted text after having
-  // accepted/acknowledged consent in the same session.
-  if (consent_given_in_session_) {
-    compose::LogComposeConsentSessionCloseReason(consent_close_reason_);
-  }
-
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
                                 dialog_shown_count_, undo_count_,
-                                update_input_count_, consent_given_in_session_);
+                                update_input_count_);
 
   // If we have a modeling quality log entry, upload it.
 
@@ -446,8 +434,8 @@ void ComposeSession::RequestInitialState(RequestInitialStateCallback callback) {
   auto compose_config = compose::GetComposeConfig();
 
   std::move(callback).Run(compose::mojom::OpenMetadata::New(
-      current_consent_state_, current_msbb_state_, initial_input_,
-      text_selected_, current_state_->Clone(),
+      fre_complete_, current_msbb_state_, initial_input_, text_selected_,
+      current_state_->Clone(),
       compose::mojom::ConfigurableParams::New(compose_config.input_min_words,
                                               compose_config.input_max_words,
                                               compose_config.input_max_chars)));
@@ -589,11 +577,14 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
                                         const bool text_selected) {
+  if (!fre_complete_) {
+    fre_dialog_shown_count_ += 1;
+    return;
+  }
   if (!current_msbb_state_) {
     msbb_dialog_shown_count_ += 1;
     return;
   }
-
   dialog_shown_count_ += 1;
 
   text_selected_ = text_selected;
@@ -607,13 +598,10 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
 
   initial_input_ = text.value();
 
-  if (!IsValidComposePrompt(initial_input_) ||
-      !compose::GetComposeConfig().auto_submit_with_selection ||
-      current_consent_state_ != compose::mojom::ConsentState::kConsented) {
-    return;
+  if (IsValidComposePrompt(initial_input_) &&
+      compose::GetComposeConfig().auto_submit_with_selection) {
+    Compose(initial_input_, false);
   }
-
-  Compose(initial_input_, false);
 }
 
 void ComposeSession::OpenComposeSettings() {
@@ -692,21 +680,22 @@ void ComposeSession::RefreshInnerText() {
           weak_ptr_factory_.GetWeakPtr(), current_inner_text_request_id_));
 }
 
-void ComposeSession::HandleEndOfConsentSession() {
-  compose::LogComposeConsentSessionDialogShownCount(consent_close_reason_,
-                                                    dialog_shown_count_);
+void ComposeSession::SetFirstRunCloseReason(
+    compose::ComposeFirstRunSessionCloseReason close_reason) {
+  fre_close_reason_ = close_reason;
 
-  // If consent was given or the disclaimer was acknowledged, then the Compose
-  // session persists and transitions to the main dialog. Reset the dialog shown
-  // count so that metrics for the main dialog are unaffected by the consent
-  // session.
-  dialog_shown_count_ = 1;
-  consent_given_in_session_ = true;
+  // If the FRE dialog is progressing directly to the main dialog, then capture
+  // this dialog shown in the count.
+  if (close_reason == compose::ComposeFirstRunSessionCloseReason::
+                          kFirstRunDisclaimerAcknowledgedWithoutInsert &&
+      current_msbb_state_) {
+    dialog_shown_count_ = 1;
+  }
 }
 
-void ComposeSession::SetConsentCloseReason(
-    compose::ComposeConsentSessionCloseReason close_reason) {
-  consent_close_reason_ = close_reason;
+void ComposeSession::SetFirstRunCompleted() {
+  fre_completed_in_session_ = true;
+  fre_complete_ = true;
 }
 
 void ComposeSession::SetMSBBCloseReason(
@@ -759,8 +748,8 @@ void ComposeSession::SetQualityLogEntryUponError(
 void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
   current_msbb_state_ = msbb_enabled;
   if (!msbb_enabled) {
-    msbb_intilially_off_ = true;
-  } else if (msbb_intilially_off_) {
+    msbb_initially_off_ = true;
+  } else if (msbb_initially_off_) {
     msbb_enabled_during_session_ = true;
     SetMSBBCloseReason(
         compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
