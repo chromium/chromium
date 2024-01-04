@@ -1625,7 +1625,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
 
     if (!web_identity_requester_) {
       web_identity_requester_ = MakeGarbageCollected<WebIdentityRequester>(
-          WrapPersistent(context), mediation_requirement);
+          context, mediation_requirement);
     }
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state;
@@ -1668,7 +1668,7 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
       // Start recording the duration from when RequestToken is called directly
       // to when RequestToken would be called if invoked through
       // web_identity_requester_.
-      web_identity_requester_->StartDelayTimer(WrapPersistent(resolver));
+      web_identity_requester_->StartDelayTimer(resolver);
 
       return promise;
     }
@@ -1678,9 +1678,8 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
           std::move(scoped_abort_state));
     }
 
-    web_identity_requester_->AppendGetCall(WrapPersistent(resolver),
-                                           options->identity()->providers(),
-                                           rp_context, rp_mode);
+    web_identity_requester_->AppendGetCall(
+        resolver, options->identity()->providers(), rp_context, rp_mode);
 
     return promise;
   }

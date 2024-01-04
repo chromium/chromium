@@ -36,10 +36,10 @@ TEST(WebIdentityRequesterTest, StartDelayTimerBeforeOnload) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(
-          WrapPersistent(context), MediationRequirement::kOptional);
+          context, MediationRequirement::kOptional);
 
   // Start window onload delay timer before the window onload event starts.
-  web_identity_requester->StartDelayTimer(WrapPersistent(resolver));
+  web_identity_requester->StartDelayTimer(resolver);
 
   // Before the window onload event has started, histograms should not have been
   // recorded.
@@ -78,7 +78,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   WebIdentityRequester* web_identity_requester =
       MakeGarbageCollected<WebIdentityRequester>(
-          WrapPersistent(context), MediationRequirement::kOptional);
+          context, MediationRequirement::kOptional);
 
   // Before the delay timer has started, histograms should not have been
   // recorded.
@@ -91,7 +91,7 @@ TEST(WebIdentityRequesterTest, StartDelayTimerAfterOnload) {
   // Start delay timer after the start of the window onload event.
   resolver->DomWindow()->DispatchWindowLoadEvent();
   EXPECT_TRUE(scope.GetDocument().LoadEventFinished());
-  web_identity_requester->StartDelayTimer(WrapPersistent(resolver));
+  web_identity_requester->StartDelayTimer(resolver);
 
   // Since stopping the delay timer is done by posting a task, we wait for all
   // tasks to be processed before checking for histograms.
