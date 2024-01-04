@@ -254,7 +254,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppInstallService.AppInstallResult{AppInstallSurface}"
-    enum="AppInstallResult" expires_after="2024-02-11">
+    enum="AppInstallResult" expires_after="2024-07-03">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -266,7 +266,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.CommandResultCode{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2024-06-20">
+    enum="WebAppInstallResultCode" expires_after="2024-07-03">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -279,7 +279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Apps.AppInstallService.WebAppInstaller.InstallResult{AppInstallSurface}"
-    enum="WebAppInstallResultCode" expires_after="2024-06-20">
+    enum="WebAppInstallResultCode" expires_after="2024-07-03">
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
