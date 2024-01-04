@@ -264012,6 +264012,34 @@
      }
     }
    },
+   "focus": {
+    "focus-large-element-in-overflow-hidden-container.html": [
+     "31d2a8bce9fd75ebd8862480c7a297868abd7c24",
+     [
+      null,
+      [
+       [
+        "/focus/focus-large-element-in-overflow-hidden-container-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "focus-visible-element-in-overflow-hidden-container.html": [
+     "22f5c3349d8c88c456d60fab2adcc0404d4ce05d",
+     [
+      null,
+      [
+       [
+        "/focus/focus-visible-element-in-overflow-hidden-container-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
+   },
    "forced-colors-mode": {
     "backplate": {
      "forced-colors-mode-backplate-01.html": [
@@ -354520,6 +354548,10 @@
      "6fe928f8859785773a1ccf1c5bc6e922817ed991",
      []
     ],
+    "focus-large-element-in-overflow-hidden-container-ref.html": [
+     "856f7940b60aca9f924bfa85b61a55c188428aee",
+     []
+    ],
     "focus-restoration-in-different-site-iframes-expected.txt": [
      "2319f4f09308c180493d2a32393889c51c4937b9",
      []
@@ -354530,6 +354562,10 @@
     ],
     "focus-restoration-in-same-site-iframes-window-expected.txt": [
      "5af202d6f2f624e5fb304605d9e2df2322bec080",
+     []
+    ],
+    "focus-visible-element-in-overflow-hidden-container-ref.html": [
+     "d9c41abb6595ff57b26e019953c8c1da8483e6fe",
      []
     ],
     "hasfocus-different-site-expected.txt": [
