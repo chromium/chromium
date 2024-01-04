@@ -6639,13 +6639,6 @@ crbug.com/1488391 external/wpt/mst-content-hint/RTCRtpSendParameters-degradation
 # Gardener 2023-09-07
 crbug.com/1479983 [ Mac ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Failure Pass Timeout ]
 
-# Gardener 2023-09-14
-crbug.com/1481209 [ Mac ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
-#
-# Gardener 2023-11-23
-crbug.com/1481209 [ Win ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
-crbug.com/1481209 [ Linux ] http/tests/inspector-protocol/target/browser-auto-attach-tab.js [ Failure Pass Timeout ]
-
 # Gardener 2023-09-18
 crbug.com/1482345 fast/events/touch/touch-handler-count.html [ Failure Pass ]
 
