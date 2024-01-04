@@ -22,7 +22,6 @@
 
 namespace ash {
 
-// TODO(crbug.com/1434667): Add coverage by browser tests.
 class TrustedVaultBackendServiceAsh
     : public KeyedService,
       public crosapi::mojom::TrustedVaultBackend,

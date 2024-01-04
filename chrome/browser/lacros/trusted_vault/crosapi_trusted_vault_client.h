@@ -13,7 +13,6 @@
 
 // Implements TrustedVaultClient interface by plumbing calls to Ash-side
 // TrustedVaultClient via Crosapi.
-// TODO(crbug.com/1434667): Add coverage by browser tests.
 class CrosapiTrustedVaultClient
     : public trusted_vault::TrustedVaultClient,
       public crosapi::mojom::TrustedVaultBackendObserver {
