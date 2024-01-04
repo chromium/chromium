@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -54,11 +55,15 @@
 
 namespace IPC {
 
-namespace {
-
 class ChannelAssociatedGroupController;
 
+namespace {
+
 ABSL_CONST_INIT thread_local bool off_sequence_binding_allowed = false;
+
+BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
+             "MojoChannelAssociatedSendUsesRunOrPostTask",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to track some internal Channel state in pursuit of message leaks.
 //
@@ -153,6 +158,8 @@ class ScopedUrgentMessageNotification {
  private:
   raw_ptr<UrgentMessageObserver> observer_;
 };
+
+}  // namespace
 
 class ChannelAssociatedGroupController
     : public mojo::AssociatedGroupController,
@@ -841,30 +848,40 @@ class ChannelAssociatedGroupController
     DCHECK(message->heap_profiler_tag());
     if (task_runner_->BelongsToCurrentThread()) {
       DCHECK(thread_checker_.CalledOnValidThread());
-      if (!connector_ || paused_) {
-        if (!shut_down_) {
-          base::AutoLock lock(outgoing_messages_lock_);
-          outgoing_messages_.emplace_back(std::move(*message));
-        }
-        return true;
-      }
-      return connector_->Accept(message);
-    } else {
-      // We always post tasks to the primary endpoint thread when called from
-      // other threads in order to simulate IPC::ChannelProxy::Send behavior.
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &ChannelAssociatedGroupController::SendMessageOnPrimaryThread,
-              this, std::move(*message)));
-      return true;
+      return SendMessageOnSequence(message);
     }
+
+    // PostTask (or RunOrPostTask) so that `message` is sent after messages from
+    // tasks that are already queued (e.g. by `IPC::ChannelProxy::Send`).
+    auto callback = base::BindOnce(
+        &ChannelAssociatedGroupController::SendMessageOnSequenceViaTask, this,
+        std::move(*message));
+    if (base::FeatureList::IsEnabled(
+            kMojoChannelAssociatedSendUsesRunOrPostTask)) {
+      task_runner_->RunOrPostTask(base::subtle::RunOrPostTaskPassKey(),
+                                  FROM_HERE, std::move(callback));
+    } else {
+      task_runner_->PostTask(FROM_HERE, std::move(callback));
+    }
+
+    return true;
   }
 
-  void SendMessageOnPrimaryThread(mojo::Message message) {
-    DCHECK(thread_checker_.CalledOnValidThread());
-    if (!SendMessage(&message))
+  bool SendMessageOnSequence(mojo::Message* message) {
+    if (!connector_ || paused_) {
+      if (!shut_down_) {
+        base::AutoLock lock(outgoing_messages_lock_);
+        outgoing_messages_.emplace_back(std::move(*message));
+      }
+      return true;
+    }
+    return connector_->Accept(message);
+  }
+
+  void SendMessageOnSequenceViaTask(mojo::Message message) {
+    if (!SendMessageOnSequence(&message)) {
       RaiseError();
+    }
   }
 
   void OnPipeError() {
@@ -1249,6 +1266,8 @@ class ChannelAssociatedGroupController
 
   raw_ptr<UrgentMessageObserver> urgent_message_observer_ = nullptr;
 };
+
+namespace {
 
 bool ControllerMemoryDumpProvider::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,

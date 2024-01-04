@@ -22,14 +22,17 @@ class TimerBase;
 class TimerBasedTickProvider;
 class WebRtcTaskQueue;
 }
-namespace webrtc {
-class ThreadWrapper;
-}  // namespace webrtc
+namespace IPC {
+class ChannelAssociatedGroupController;
+}  // namespace IPC
 namespace media {
 class AlsaPcmOutputStream;
 class AlsaPcmInputStream;
 class FakeAudioWorker;
 }  // namespace media
+namespace webrtc {
+class ThreadWrapper;
+}  // namespace webrtc
 
 namespace base {
 
@@ -71,6 +74,7 @@ class RunOrPostTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   RunOrPostTaskPassKey() {}
 
+  friend class IPC::ChannelAssociatedGroupController;
   friend class RunOrPostTaskPassKeyForTesting;
 };
 
