@@ -11,8 +11,8 @@
 extern const char kIOSChromeNextVersionKey[];
 // The Pref key for the upgrade URL.
 extern const char kIOSChromeUpgradeURLKey[];
-// The user defaults key for up to date status;
-extern NSString* const kIOSChromeUpToDateKey;
+// The Pref key for up to date status.
+extern const char kIOSChromeUpToDateKey[];
 // The user defaults key for the last time the update infobar was shown.
 extern NSString* const kLastInfobarDisplayTimeKey;
 

@@ -456,12 +456,12 @@ class UpgradeInfoBarDismissObserver
   [[UpgradeCenter sharedInstance] hideUpgradeInfoBars];
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   [defaults removeObjectForKey:kLastInfobarDisplayTimeKey];
-  [defaults removeObjectForKey:kIOSChromeUpToDateKey];
   [_clients removeAllObjects];
 
   PrefService* prefService = GetApplicationContext()->GetLocalState();
   prefService->ClearPref(kIOSChromeNextVersionKey);
   prefService->ClearPref(kIOSChromeUpgradeURLKey);
+  prefService->ClearPref(kIOSChromeUpToDateKey);
 }
 
 - (void)setLastDisplayToPast {

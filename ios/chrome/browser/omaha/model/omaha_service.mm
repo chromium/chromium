@@ -266,6 +266,7 @@ class XmlWrapper {
     }
   } else if (!_eventIsParsed && !_updateCheckIsParsed) {
     if ([elementName isEqualToString:@"updatecheck"]) {
+      PrefService* prefService = GetApplicationContext()->GetLocalState();
       _updateCheckIsParsed = YES;
       NSString* status = [attributeDict valueForKey:@"status"];
       _updateInformation = std::make_unique<UpgradeRecommendedDetails>();
@@ -275,12 +276,10 @@ class XmlWrapper {
         _urlIsParsed = YES;
         _manifestIsParsed = YES;
         _updateInformation->is_up_to_date = true;
-        [[NSUserDefaults standardUserDefaults] setBool:true
-                                                forKey:kIOSChromeUpToDateKey];
+        prefService->SetBoolean(kIOSChromeUpToDateKey, true);
       } else if ([status isEqualToString:@"ok"]) {
         _updateInformation->is_up_to_date = false;
-        [[NSUserDefaults standardUserDefaults] setBool:false
-                                                forKey:kIOSChromeUpToDateKey];
+        prefService->SetBoolean(kIOSChromeUpToDateKey, false);
       } else {
         _updateInformation = nullptr;
         _hasError = YES;
@@ -870,5 +869,6 @@ void OmahaService::ClearPersistentStateForTests() {
   [defaults removeObjectForKey:kLastSentTimeKey];
   [defaults removeObjectForKey:kRetryRequestIdKey];
   [defaults removeObjectForKey:kLastServerDateKey];
-  [defaults removeObjectForKey:kIOSChromeUpToDateKey];
+  PrefService* prefService = GetApplicationContext()->GetLocalState();
+  prefService->ClearPref(kIOSChromeUpToDateKey);
 }

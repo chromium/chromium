@@ -41,6 +41,10 @@ source_set("public") {
     "upgrade_utils.mm",
   ]
   frameworks = [ "UIKit.framework" ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
 }
 
 source_set("unit_tests") {
