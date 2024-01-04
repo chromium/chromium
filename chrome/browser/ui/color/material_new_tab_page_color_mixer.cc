@@ -22,6 +22,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       !features::IsChromeWebuiRefresh2023()) {
     return;
   }
+  const bool dark_mode =
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorNewTabPageActiveBackground] = {
@@ -112,10 +114,13 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
         kColorOmniboxResultsButtonIconSelected};
     mixer[kColorRealboxResultsUrl] = {kColorOmniboxResultsUrl};
     mixer[kColorRealboxResultsUrlSelected] = {kColorOmniboxResultsUrlSelected};
+    mixer[kColorRealboxShadow] =
+        ui::SetAlpha(gfx::kGoogleGrey900,
+                     (dark_mode ? /* % opacity */ 0.32 : 0.1) * SK_AlphaOPAQUE);
 
     // This determines weather the realbox expanded state background in dark
     // mode will match the omnibox or not.
-    if (key.color_mode == ui::ColorProviderKey::ColorMode::kDark &&
+    if (dark_mode &&
         !ntp_features::kNtpRealboxCr23ExpandedStateBgMatchesOmnibox.Get()) {
       mixer[kColorRealboxResultsBackground] = {
           kColorToolbarBackgroundSubtleEmphasis};
