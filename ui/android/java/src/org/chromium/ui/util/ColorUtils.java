@@ -234,7 +234,7 @@ public class ColorUtils {
      * Convert the float alpha value into an integer ranging from 0 to 255 to be used in {@link
      * #setAlphaComponent(int, int)}
      */
-    public static @ColorInt int setAlphaComponentWithFloatAlpha(
+    public static @ColorInt int setAlphaComponentWithFloat(
             @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
         return setAlphaComponent(color, (int) (alpha * 255));
     }

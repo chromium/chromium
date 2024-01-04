@@ -353,31 +353,31 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mNewTabButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
 
         int apsBackgroundHoveredTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
-                        (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+                        NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
         int apsBackgroundPressedTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
-                        (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+                        NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
         int apsBackgroundIncognitoHoveredTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+                        NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
         int apsBackgroundIncognitoPressedTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        (int) (NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+                        NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
         // Primary container for default bg color.
         int BackgroundDefaultTint = TabUiThemeProvider.getDefaultNTBContainerColor(context);
 
         // Primary @ 20% for default pressed bg color.
         int BackgroundPressedTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(context),
-                        (int) (NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY * 255));
+                        NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY);
 
         // Surface-2 baseline for incognito bg color.
         int BackgroundIncognitoDefaultTint =

@@ -75,13 +75,11 @@ public class StripLayoutTabTest {
 
         // Normal inactive tab hover color.
         expectedColor =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         ChromeSemanticColorUtils.getTabInactiveHoverColor(mContext),
-                        (int)
-                                (ResourcesCompat.getFloat(
-                                                mContext.getResources(),
-                                                R.dimen.tsr_folio_tab_inactive_hover_alpha)
-                                        * 255));
+                        ResourcesCompat.getFloat(
+                                mContext.getResources(),
+                                R.dimen.tsr_folio_tab_inactive_hover_alpha));
         assertEquals(
                 "Normal hovered inactive folio should be Primary @ 8%.",
                 expectedColor, mNormalTab.getTint(false, true));
@@ -102,13 +100,11 @@ public class StripLayoutTabTest {
 
         // Incognito inactive tab hover color.
         expectedColor =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         mContext.getColor(R.color.baseline_primary_80),
-                        (int)
-                                (ResourcesCompat.getFloat(
-                                                mContext.getResources(),
-                                                R.dimen.tsr_folio_tab_inactive_hover_alpha)
-                                        * 255));
+                        ResourcesCompat.getFloat(
+                                mContext.getResources(),
+                                R.dimen.tsr_folio_tab_inactive_hover_alpha));
         assertEquals(
                 "Incognito hovered inactive folio should be the baseline equivalent of Primary @"
                         + " 8%.",
@@ -161,9 +157,9 @@ public class StripLayoutTabTest {
 
         // Normal.
         expectedColor =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultIconColorAccent1(mContext),
-                        (int) (StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY * 255));
+                        StripLayoutTab.DIVIDER_FOLIO_LIGHT_OPACITY);
         assertEquals(
                 "Light mode divider uses 20% icon color",
                 expectedColor, mNormalTab.getDividerTint());

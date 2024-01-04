@@ -81,7 +81,7 @@ public class TabUiThemeUtil {
         float alpha =
                 ResourcesCompat.getFloat(
                         context.getResources(), R.dimen.tsr_folio_tab_inactive_hover_alpha);
-        return ColorUtils.setAlphaComponent(baseColor, (int) (alpha * 255));
+        return ColorUtils.setAlphaComponentWithFloat(baseColor, alpha);
     }
 
     /** Returns the color for the tab strip startup "ghost" containers. */

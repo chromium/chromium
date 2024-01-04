@@ -346,7 +346,7 @@ public class ToolbarPhone extends ToolbarLayout
                             getResources(),
                             R.dimen.home_surface_search_box_background_colorful_alpha);
             mHomeSurfaceLocationBarBackgroundColor =
-                    ColorUtils.setAlphaComponentWithFloatAlpha(
+                    ColorUtils.setAlphaComponentWithFloat(
                             SemanticColorUtils.getDefaultIconColorAccent1(context),
                             homeSurfaceLocationBarBackgroundColorAlpha);
         } else if (mIsSurfacePolishEnabled) {

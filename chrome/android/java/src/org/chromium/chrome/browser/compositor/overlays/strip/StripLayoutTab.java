@@ -272,25 +272,25 @@ public class StripLayoutTab implements VirtualView {
         mCloseButton.setBackgroundResourceId(R.drawable.tab_close_button_bg);
         @ColorInt
         int apsBackgroundHoveredTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
-                        (int) (CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+                        CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
         @ColorInt
         int apsBackgroundPressedTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         SemanticColorUtils.getDefaultTextColor(context),
-                        (int) (CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+                        CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
         @ColorInt
         int apsBackgroundIncognitoHoveredTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        (int) (CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY * 255));
+                        CLOSE_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY);
         @ColorInt
         int apsBackgroundIncognitoPressedTint =
-                ColorUtils.setAlphaComponent(
+                ColorUtils.setAlphaComponentWithFloat(
                         context.getColor(R.color.tab_strip_button_hover_bg_color),
-                        (int) (CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY * 255));
+                        CLOSE_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY);
 
         // Only set color for hover bg.
         mCloseButton.setBackgroundTint(
@@ -468,9 +468,9 @@ public class StripLayoutTab implements VirtualView {
             // with a specified tint in the CC layer (instead retaining the alpha of the original
             // image). Instead, this is reflected by setting the opacity of the divider itself.
             // See https://crbug.com/1373634.
-            return ColorUtils.setAlphaComponent(
+            return ColorUtils.setAlphaComponentWithFloat(
                     SemanticColorUtils.getDefaultIconColorAccent1(mContext),
-                    (int) (DIVIDER_FOLIO_LIGHT_OPACITY * 255));
+                    DIVIDER_FOLIO_LIGHT_OPACITY);
         }
 
         return SemanticColorUtils.getDividerLineBgColor(mContext);
