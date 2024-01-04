@@ -290,7 +290,7 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
 // element in the carousel.
 BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
              "OmniboxMostVisitedTilesHorizontalRenderGroup",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
@@ -324,7 +324,7 @@ BASE_FEATURE(kOmniboxMatchToolbarAndStatusBarColor,
 // when the user presses the <edit> button on EditUrl suggestion.
 BASE_FEATURE(kSearchReadyOmniboxAllowQueryEdit,
              "SearchReadyOmniboxAllowQueryEdit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, appends Query Tiles to the Omnibox ZPS on New Tab Page.
 BASE_FEATURE(kQueryTilesInZPSOnNTP,

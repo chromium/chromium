@@ -252,6 +252,8 @@ void MostVisitedSitesProviderTest::OnProviderUpdate(
 
 TEST_F(MostVisitedSitesProviderTest, TestMostVisitedCallback) {
   base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      omnibox::kMostVisitedTilesHorizontalRenderGroup);
   auto input = BuildAutocompleteInputForWebOnFocus();
   provider_->Start(input, true);
   EXPECT_EQ(0u, NumMostVisitedMatches());
@@ -351,6 +353,9 @@ TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      omnibox::kMostVisitedTilesHorizontalRenderGroup);
   provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
   EXPECT_EQ(0u, NumMostVisitedMatches());
   // Accept only direct TopSites data.
@@ -384,6 +389,9 @@ TEST_F(MostVisitedSitesProviderTest,
 }
 
 TEST_F(MostVisitedSitesProviderTest, TestDeleteMostVisitedElement) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      omnibox::kMostVisitedTilesHorizontalRenderGroup);
   // Make a copy (intentional - we'll modify this later)
   auto urls = top_sites_->urls();
   provider_->Start(BuildAutocompleteInputForWebOnFocus(), true);
@@ -413,6 +421,10 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteMostVisitedElement) {
 }
 
 TEST_F(MostVisitedSitesProviderTest, NoMatchesWhenLastURLIsDeleted) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      omnibox::kMostVisitedTilesHorizontalRenderGroup);
+
   // Start with just one URL.
   auto& urls = top_sites_->urls();
   urls.clear();
