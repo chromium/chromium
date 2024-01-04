@@ -103,7 +103,7 @@ TEST_F(GameDashboardControllerTest, GameWindowToNonGameWindow) {
 
   // Update the window property where the window is no longer considered to be a
   // game.
-  window->SetProperty(ash::kAppIDKey,
+  window->SetProperty(kAppIDKey,
                       std::string(TestGameDashboardDelegate::kOtherAppId));
 
   VerifyIsGameWindowProperty(window.get(), /*expected_is_game=*/false);

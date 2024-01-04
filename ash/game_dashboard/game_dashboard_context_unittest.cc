@@ -660,8 +660,8 @@ TEST_F(GameDashboardContextTest, GameControlsEditMode) {
 TEST_F(GameDashboardContextTest, CompatModeArcGame) {
   // Create an ARC game window that supports Compat Mode.
   CreateGameWindow(/*is_arc_window=*/true);
-  game_window_->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_ENABLED_TOGGLABLE);
 
   test_api_->OpenTheMainMenu();
 
@@ -673,9 +673,8 @@ TEST_F(GameDashboardContextTest, CompatModeArcGame) {
 TEST_F(GameDashboardContextTest, NonCompatModeArcGame) {
   // Create an ARC game window that doesn't support Compat Mode.
   CreateGameWindow(/*is_arc_window=*/true);
-  game_window_->SetProperty(
-      ash::kArcResizeLockTypeKey,
-      ash::ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_NONTOGGLABLE);
 
   test_api_->OpenTheMainMenu();
 
@@ -690,8 +689,8 @@ TEST_F(GameDashboardContextTest, NonCompatModeArcGame) {
 TEST_F(GameDashboardContextTest, SelectScreenSizeButton) {
   // Create an ARC game window.
   CreateGameWindow(/*is_arc_window=*/true);
-  game_window_->SetProperty(ash::kArcResizeLockTypeKey,
-                            ash::ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
+  game_window_->SetProperty(kArcResizeLockTypeKey,
+                            ArcResizeLockType::RESIZE_DISABLED_TOGGLABLE);
 
   test_api_->OpenTheMainMenu();
 
