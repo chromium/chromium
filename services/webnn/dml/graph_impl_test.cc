@@ -412,6 +412,8 @@ struct Activation {
   mojom::Activation::Tag kind;
   absl::optional<ClampAttributes> clamp_attributes;
   absl::optional<float> elu_alpha;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> linear_alpha;
   absl::optional<float> linear_beta;
@@ -540,6 +542,34 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
                    .dimensions = {1, 2, 1, 3},
                    .values = {-8.999950000374997, 1, 10.999950000374997,
                               -1.2474078892909666, 11, 23.24740788929097}}}
+        .Test();
+  }
+  {
+    // Test batchNormalization with 4-D input with activation = hardsigmoids.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-1, 0, 1, 2, 3, 4}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {0, 3}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 1,
+                               .hard_sigmoid_beta = 3}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {1, 1, 1, 1, 1, 1}}}
         .Test();
   }
   {
@@ -1025,6 +1055,35 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
                    .dimensions = {1, 5, 5, 1},
                    .values = {0,  0, 0, 0,  0,  0,  0,  0, 0,  0,  0,  0, 8,
                               17, 0, 0, 44, 53, 62, 11, 0, 11, 17, 23, 0}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, fusing with hardSigmoid activation.
+  {
+    Conv2dTester<float>{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5},
+                  .values = {0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12,
+                             13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3},
+                   .values = std::vector<float>(9, 1)},
+        .attributes = {.padding = {1, 1, 1, 1},
+                       .bias =
+                           OperandInfo<float>{
+                               .type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {1},
+                               .values = {1}},
+                       .activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 0.01,
+                               .hard_sigmoid_beta = -1}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 5, 5},
+                   .values = {0,    0,    0, 0,    0,    0,    0, 0,    0,
+                              0,    0,    0, 0.09, 0.18, 0,    0, 0.45, 0.54,
+                              0.63, 0.12, 0, 0.12, 0.18, 0.24, 0}}}
         .Test();
   }
   // Test conv2d with NCHW layout, fusing with sigmoid activation.
@@ -3107,6 +3166,8 @@ struct UnaryOperatorTester {
   OperandInfo<T> input;
   absl::optional<float> clamp_min_value;
   absl::optional<float> clamp_max_value;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> elu_alpha;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> linear_alpha;
@@ -3132,6 +3193,10 @@ struct UnaryOperatorTester {
         CHECK(elu_alpha);
         builder.BuildElu(input_operand_id, output_operand_id,
                          elu_alpha.value());
+        break;
+      case mojom::Operation::Tag::kHardSigmoid:
+        builder.BuildHardSigmoid(input_operand_id, output_operand_id,
+                                 hard_sigmoid_alpha, hard_sigmoid_beta);
         break;
       case mojom::Operation::Tag::kLeakyRelu:
         CHECK(leaky_relu_alpha);
@@ -3208,6 +3273,50 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorClamp) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {},
                    .values = {3}}}
+        .Test();
+  }
+}
+
+// Test building and computing a DML graph with single operator hardSigmoid.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorHardSigmoid) {
+  {
+    // Test hardSigmoid with default alpha = 0.2 and beta = 0.5.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-1, -2, 0, 2}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 1},
+                   .values = {0.3, 0.1, 0.5, 0.9}}}
+        .Test();
+  }
+  {
+    // Test hardSigmoid for 4-D tensor input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {-1, -2, 0, 2}},
+        .hard_sigmoid_alpha = 0.1,
+        .hard_sigmoid_beta = 0.2,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 2, 1},
+                   .values = {0.1, 0, 0.2, 0.4}}}
+        .Test();
+  }
+  {
+    // Test sigmoid for 0-D scalar input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kHardSigmoid,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {},
+                  .values = {24}},
+        .hard_sigmoid_alpha = 0.1,
+        .hard_sigmoid_beta = 3,
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {},
+                   .values = {1}}}
         .Test();
   }
 }

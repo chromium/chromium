@@ -530,6 +530,22 @@ struct Gemm {
   bool b_transpose = false;
 };
 
+// Represents an operation which performs a hard sigmoid function on every
+// element in InputTensor, placing the result into the corresponding
+// element of OutputTensor:
+// Output = max(0, min(alpha * input + beta, 1))
+struct HardSigmoid {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+
+  // A float scalar multiplier. The default value is 0.2.
+  float alpha = 0.2;
+  // A float scalar addition. The default value is 0.5.
+  float beta = 0.5;
+};
+
 // Represents an operation of normalizing the input across the feature
 // dimensions for each individual sample in a batch, where the feature
 // dimensions are the input dimensions indexed by `axes`.
@@ -753,6 +769,7 @@ struct Where {
 union Activation {
   Clamp clamp;
   Elu elu;
+  HardSigmoid hard_sigmoid;
   LeakyRelu leaky_relu;
   Linear linear;
   Relu relu;
@@ -776,6 +793,7 @@ union Operation {
   Expand expand;
   Gather gather;
   Gemm gemm;
+  HardSigmoid hard_sigmoid;
   LayerNormalization layer_normalization;
   InstanceNormalization instance_normalization;
   LeakyRelu leaky_relu;

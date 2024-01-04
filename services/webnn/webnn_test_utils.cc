@@ -240,6 +240,23 @@ void GraphInfoBuilder::BuildGather(uint64_t input_operand_id,
       mojom::Operation::NewGather(std::move(gather)));
 }
 
+void GraphInfoBuilder::BuildHardSigmoid(uint64_t input_operand_id,
+                                        uint64_t output_operand_id,
+                                        absl::optional<float> alpha,
+                                        absl::optional<float> beta) {
+  mojom::HardSigmoidPtr hard_sigmoid = mojom::HardSigmoid::New();
+  hard_sigmoid->input_operand_id = input_operand_id;
+  hard_sigmoid->output_operand_id = output_operand_id;
+  if (alpha.has_value()) {
+    hard_sigmoid->alpha = alpha.value();
+  }
+  if (beta.has_value()) {
+    hard_sigmoid->beta = beta.value();
+  }
+  graph_info_->operations.push_back(
+      mojom::Operation::NewHardSigmoid(std::move(hard_sigmoid)));
+}
+
 void GraphInfoBuilder::BuildPrelu(uint64_t input_operand_id,
                                   uint64_t slope_operand_id,
                                   uint64_t output_operand_id) {

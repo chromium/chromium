@@ -303,6 +303,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForArgMinMax(
 
 struct ActivationOperatorDesc {
   absl::variant<DML_ACTIVATION_ELU_OPERATOR_DESC,
+                DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC,
                 DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_LINEAR_OPERATOR_DESC,
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
@@ -315,6 +316,10 @@ struct ActivationOperatorDesc {
     if (absl::holds_alternative<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)) {
       return {DML_OPERATOR_ACTIVATION_ELU,
               &absl::get<DML_ACTIVATION_ELU_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<
+                   DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC>(desc)) {
+      return {DML_OPERATOR_ACTIVATION_HARD_SIGMOID,
+              &absl::get<DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_LEAKY_RELU,
@@ -355,6 +360,11 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kElu:
       return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
                                         .Alpha = activation->get_elu()->alpha}};
+    case mojom::Activation::Tag::kHardSigmoid:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC{
+              .Alpha = activation->get_hard_sigmoid()->alpha,
+              .Beta = activation->get_hard_sigmoid()->beta}};
     case mojom::Activation::Tag::kLeakyRelu:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
@@ -1777,6 +1787,42 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   return base::ok();
 }
 
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForHardSigmoid(
+    const IdToOperandMap& id_to_operand_map,
+    const mojom::HardSigmoidPtr& hard_sigmoid,
+    GraphBuilder& graph_builder,
+    IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, hard_sigmoid->input_operand_id);
+  const auto& input_tensor_desc = input->GetTensorDesc();
+
+  const uint64_t output_id = hard_sigmoid->output_operand_id;
+  auto output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC hard_sigmoid_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .Alpha = hard_sigmoid->alpha,
+      .Beta = hard_sigmoid->beta};
+
+  std::array<const NodeOutput*, 1> inputs = {input};
+  const OperatorNode* hard_sigmoid_node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_ACTIVATION_HARD_SIGMOID, &hard_sigmoid_desc, inputs);
+  if (!hard_sigmoid_node) {
+    return base::unexpected(
+        CreateError(mojom::Error::Code::kUnknownError,
+                    "Failed to create hard sigmoid operator."));
+  }
+
+  const NodeOutput* node_output = graph_builder.CreateNodeOutput(
+      hard_sigmoid_node, std::move(output_tensor_desc));
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
+
+  return base::ok();
+}
+
 template <typename NormalizationPtr>
 base::expected<void, mojom::ErrorPtr>
 CreateOperatorNodeForMeanVarianceNormalization(
@@ -2762,6 +2808,12 @@ void GraphImpl::CreateAndBuild(
         create_operator_result =
             CreateOperatorNodeForGemm(id_to_operand_map, operation->get_gemm(),
                                       graph_builder, id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kHardSigmoid: {
+        create_operator_result = CreateOperatorNodeForHardSigmoid(
+            id_to_operand_map, operation->get_hard_sigmoid(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kInstanceNormalization: {

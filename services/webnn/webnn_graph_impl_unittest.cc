@@ -416,10 +416,83 @@ TEST_F(WebNNGraphImplTest, ClampTest) {
   }
 }
 
+struct HardSigmoidTester {
+  OperandInfo input;
+  absl::optional<float> alpha;
+  absl::optional<float> beta;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildHardSigmoid(input_operand_id, output_operand_id, alpha, beta);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, HardSigmoidTest) {
+  {
+    // Test hardSigmoid operator with default alpha and beta values.
+    HardSigmoidTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {3, 4}},
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {3, 4}},
+                      .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the alpha value is NAN.
+    HardSigmoidTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {2, 3, 4}},
+                      .alpha = NAN,
+                      .beta = 0.5,
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {2, 3, 4}},
+                      .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the beta value is NAN.
+    HardSigmoidTester{.input = {.type = mojom::Operand::DataType::kFloat16,
+                                .dimensions = {2, 3, 4}},
+                      .alpha = 1.0,
+                      .beta = NAN,
+                      .output = {.type = mojom::Operand::DataType::kFloat16,
+                                 .dimensions = {2, 3, 4}},
+                      .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    HardSigmoidTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                                .dimensions = {4, 2}},
+                      .output = {.type = mojom::Operand::DataType::kFloat32,
+                                 .dimensions = {2}},
+                      .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    HardSigmoidTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test();
+  }
+}
+
 struct Activation {
   mojom::Activation::Tag kind;
   absl::optional<ClampTester::ClampAttributes> clamp_attributes;
   absl::optional<float> elu_alpha;
+  absl::optional<float> hard_sigmoid_alpha;
+  absl::optional<float> hard_sigmoid_beta;
   absl::optional<float> leaky_relu_alpha;
   absl::optional<float> linear_alpha;
   absl::optional<float> linear_beta;
@@ -545,6 +618,24 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .attributes = {.activation =
                            Activation{.kind = mojom::Activation::Tag::kElu,
                                       .elu_alpha = 1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test batchNormalization with hard_sigmoid activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 0.2,
+                               .hard_sigmoid_beta = 0.5}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 2, 3, 3}},
         .expected = true}
@@ -1186,6 +1277,24 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .attributes = {.activation =
                            Activation{.kind = mojom::Activation::Tag::kElu,
                                       .elu_alpha = 1.0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with hardSigmoid activation.
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{
+                               .kind = mojom::Activation::Tag::kHardSigmoid,
+                               .hard_sigmoid_alpha = 0.2,
+                               .hard_sigmoid_beta = 0.5}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}

@@ -134,6 +134,15 @@ bool ValidateEluAttributes(const mojom::EluPtr& elu) {
   return true;
 }
 
+bool ValidateHardSigmoidAttributes(const mojom::HardSigmoidPtr& hard_sigmoid) {
+  if (std::isnan(hard_sigmoid->alpha) || std::isnan(hard_sigmoid->beta)) {
+    // The value of alpha and beta should not be NAN.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateLeakyReluAttributes(const mojom::LeakyReluPtr& leaky_relu) {
   if (std::isnan(leaky_relu->alpha)) {
     // The value of alpha should not be NAN.
@@ -167,6 +176,8 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
       return ValidateClampAttributes(activation->get_clamp());
     case mojom::Activation::Tag::kElu:
       return ValidateEluAttributes(activation->get_elu());
+    case mojom::Activation::Tag::kHardSigmoid:
+      return ValidateHardSigmoidAttributes(activation->get_hard_sigmoid());
     case mojom::Activation::Tag::kLeakyRelu:
       return ValidateLeakyReluAttributes(activation->get_leaky_relu());
     case mojom::Activation::Tag::kLinear:
@@ -790,6 +801,19 @@ bool ValidateGemm(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
+bool ValidateHardSigmoid(const IdToOperandMap& id_to_operand_map,
+                         const mojom::HardSigmoidPtr& hard_sigmoid) {
+  if (!ValidateUnaryOperation(id_to_operand_map, hard_sigmoid,
+                              DataTypeConstraint::kFloat)) {
+    return false;
+  }
+  if (!ValidateHardSigmoidAttributes(hard_sigmoid)) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateLayerNormalization(
     const IdToOperandMap& id_to_operand_map,
     const mojom::LayerNormalizationPtr& layer_normalization) {
@@ -1277,6 +1301,9 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateGather(id_to_operand_map, operation->get_gather());
     case mojom::Operation::Tag::kGemm:
       return ValidateGemm(id_to_operand_map, operation->get_gemm());
+    case mojom::Operation::Tag::kHardSigmoid:
+      return ValidateHardSigmoid(id_to_operand_map,
+                                 operation->get_hard_sigmoid());
     case mojom::Operation::Tag::kLayerNormalization:
       return ValidateLayerNormalization(id_to_operand_map,
                                         operation->get_layer_normalization());
