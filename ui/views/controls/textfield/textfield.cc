@@ -499,7 +499,7 @@ void Textfield::SetMinimumWidthInChars(int minimum_width) {
   minimum_width_in_chars_ = minimum_width;
 }
 
-std::u16string Textfield::GetPlaceholderText() const {
+const std::u16string& Textfield::GetPlaceholderText() const {
   return placeholder_text_;
 }
 
