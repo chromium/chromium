@@ -299,7 +299,7 @@ const CGFloat kSnapShotViewBottomOffset = 4;
   self.title = nil;
   self.titleHidden = NO;
   self.icon = nil;
-  [self configureWithGroupTabInfos:nil];
+  [self configureWithGroupTabInfos:nil totalTabsCount:0];
   self.selected = NO;
   self.opacity = 1.0;
   [self hideActivityIndicator];
@@ -360,13 +360,16 @@ const CGFloat kSnapShotViewBottomOffset = 4;
   [self.iconView setHidden:NO];
 }
 
-- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos {
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
+                    totalTabsCount:(NSInteger)totalTabsCount {
+  CHECK_LE((int)groupTabInfos.count, totalTabsCount);
   // Hide all the views when the cell is reconfigured and clear their images.
   self.topLeadingSnapshotView.image = nil;
   self.topTrailingSnapshotView.image = nil;
   self.bottomLeadingSnapshotView.image = nil;
-  self.bottomTrailingSnapshotView.mainSubviewImageAndFavicon.snapshot = nil;
-  self.bottomTrailingSnapshotView.favicons = nil;
+  [self.bottomTrailingSnapshotView configureWithGroupTabInfo:nil];
+  [self.bottomTrailingSnapshotView configureWithFavicons:nil
+                                      remainingTabsCount:0];
   self.topLeadingSnapshotView.hidden = YES;
   self.topTrailingSnapshotView.hidden = YES;
   self.bottomLeadingSnapshotView.hidden = YES;
@@ -386,11 +389,10 @@ const CGFloat kSnapShotViewBottomOffset = 4;
     self.bottomLeadingSnapshotView.hidden = NO;
   }
   if (groupTabInfosLength == 4) {
-    self.bottomTrailingSnapshotView.mainSubviewImageAndFavicon =
-        groupTabInfos[3];
+    [self.bottomTrailingSnapshotView
+        configureWithGroupTabInfo:groupTabInfos[3]];
     self.bottomTrailingSnapshotView.hidden = NO;
-  }
-  if (groupTabInfosLength > 4) {
+  } else if (groupTabInfosLength > 4) {
     NSMutableArray<UIImage*>* favicons = [[NSMutableArray alloc] init];
     NSRange range;
     range.location = 3;
@@ -401,7 +403,12 @@ const CGFloat kSnapShotViewBottomOffset = 4;
         [favicons addObject:snapshotFavicon.favicon];
       }
     }
-    self.bottomTrailingSnapshotView.favicons = favicons;
+    // `remainingTabsCount` is used to display the `bottomTrailingFavicon` view
+    // of `bottomTrailingSnapshotView` the remaning tabs count is equal to the
+    // `totalTabsCount` minus the first 3 tabs of the group and the 4 favicons
+    // views of the bottomTrailing view.
+    [self.bottomTrailingSnapshotView configureWithFavicons:favicons
+                                        remainingTabsCount:totalTabsCount - 7];
     self.bottomTrailingSnapshotView.hidden = NO;
   }
 }

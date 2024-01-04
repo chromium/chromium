@@ -35,8 +35,10 @@
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
 
-// Configures every tab of the group with a given snapshot/favicon pairs.
-- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos;
+// Configures every tab of the group with a given snapshot/favicon pairs and
+// passes the total tabs count to the bottomTrailingView.
+- (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
+                    totalTabsCount:(NSInteger)totalTabsCount;
 
 // Starts the activity indicator animation.
 - (void)showActivityIndicator;

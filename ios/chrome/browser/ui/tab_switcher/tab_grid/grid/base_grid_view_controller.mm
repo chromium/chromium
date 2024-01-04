@@ -1720,9 +1720,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
       // can be updated manually to view the different group tab configurations.
       NSArray<GroupTabInfo*>* groupTabInfos = @[
         snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-        snapshotFavicon, snapshotFavicon
+        snapshotFavicon, snapshotFavicon, snapshotFavicon
       ];
-      [cell configureWithGroupTabInfos:groupTabInfos];
+      [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
     }
   }];
 

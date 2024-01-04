@@ -14,14 +14,19 @@
 // one presenting a favicon or the number of tabs left in the group.
 @interface GroupGridBottomTrailingView : UIView
 
-// The main snapshot view when the number of tabs is equal to 1.
-@property(nonatomic, weak) GroupTabInfo* mainSubviewImageAndFavicon;
-// The favicons to display when the number of tabs exceeds 1.
-@property(nonatomic, strong) NSArray<UIImage*>* favicons;
-
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
+
+// Configures the views with the corresponding favicons and if
+// `remainingTabsCount` is not equal to zero configure the bottom trailing view
+// with it.
+- (void)configureWithFavicons:(NSArray<UIImage*>*)favicons
+           remainingTabsCount:(NSInteger)remainingTabsCount;
+
+// Configures the main view with the corresponding snapshot and favicon, when
+// only one tab is displayed.
+- (void)configureWithGroupTabInfo:(GroupTabInfo*)groupTabInfo;
 
 @end
 
