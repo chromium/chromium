@@ -20,6 +20,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -77,9 +78,9 @@ class PrefRegistrySyncable;
 // is a KeywordWebDataService, deletion is handled by KeywordWebDataService,
 // otherwise TemplateURLService handles deletion.
 
-class TemplateURLService : public WebDataServiceConsumer,
-                           public KeyedService,
-                           public syncer::SyncableService {
+class TemplateURLService final : public WebDataServiceConsumer,
+                                 public KeyedService,
+                                 public syncer::SyncableService {
  public:
   using QueryTerms = std::map<std::string, std::string>;
   using TemplateURLVector = TemplateURL::TemplateURLVector;
@@ -498,6 +499,7 @@ class TemplateURLService : public WebDataServiceConsumer,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::ModelType type) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // Processes a local TemplateURL change for Sync. |turl| is the TemplateURL
   // that has been modified, and |type| is the Sync ChangeType that took place.
@@ -993,6 +995,8 @@ class TemplateURLService : public WebDataServiceConsumer,
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;
 #endif
+
+  base::WeakPtrFactory<TemplateURLService> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_H_

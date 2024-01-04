@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_sync_metrics_helper.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
@@ -73,6 +74,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   bool SyncStarted();
 
@@ -147,6 +149,8 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   const raw_ptr<ArcAppListPrefs, ExperimentalAsh> prefs_;
 
   ArcAppSyncMetricsHelper metrics_helper_;
+
+  base::WeakPtrFactory<ArcPackageSyncableService> weak_ptr_factory_{this};
 };
 
 }  // namespace arc

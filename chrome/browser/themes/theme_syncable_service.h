@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/threading/thread_checker.h"
@@ -25,8 +26,8 @@ namespace sync_pb {
 class ThemeSpecifics;
 }
 
-class ThemeSyncableService : public syncer::SyncableService,
-                             public ThemeServiceObserver {
+class ThemeSyncableService final : public syncer::SyncableService,
+                                   public ThemeServiceObserver {
  public:
   // State of local theme after applying sync changes.
   enum class ThemeSyncState {
@@ -81,6 +82,7 @@ class ThemeSyncableService : public syncer::SyncableService,
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // Client tag and title of the single theme sync_pb::SyncEntity of an account.
   static const char kSyncEntityClientTag[];
@@ -129,6 +131,8 @@ class ThemeSyncableService : public syncer::SyncableService,
   absl::optional<ThemeSyncState> startup_state_;
 
   base::ThreadChecker thread_checker_;
+
+  base::WeakPtrFactory<ThemeSyncableService> weak_ptr_factory_{this};
 
   FRIEND_TEST_ALL_PREFIXES(ThemeSyncableServiceTest, AreThemeSpecificsEqual);
 };

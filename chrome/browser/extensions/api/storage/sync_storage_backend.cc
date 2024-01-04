@@ -236,6 +236,10 @@ absl::optional<syncer::ModelError> SyncStorageBackend::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> SyncStorageBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SyncStorageBackend::StopSyncing(syncer::ModelType type) {
   DCHECK(IsOnBackendSequence());
   DCHECK(type == syncer::EXTENSION_SETTINGS || type == syncer::APP_SETTINGS);

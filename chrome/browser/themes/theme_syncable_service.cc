@@ -209,6 +209,10 @@ absl::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
   return syncer::ModelError(FROM_HERE, "Didn't find valid theme specifics");
 }
 
+base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ThemeSyncableService::ThemeSyncState ThemeSyncableService::MaybeSetTheme(
     const sync_pb::ThemeSpecifics& current_specs,
     const syncer::SyncData& sync_data) {

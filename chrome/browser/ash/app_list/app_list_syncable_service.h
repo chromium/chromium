@@ -305,6 +305,7 @@ class AppListSyncableService : public syncer::SyncableService,
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // KeyedService
   void Shutdown() override;

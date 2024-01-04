@@ -231,6 +231,10 @@ absl::optional<syncer::ModelError> ExtensionSyncService::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> ExtensionSyncService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 ExtensionSyncData ExtensionSyncService::CreateSyncData(
     const Extension& extension) const {
   const std::string& id = extension.id();

@@ -13,11 +13,16 @@ namespace syncer {
 namespace {
 
 // Subclass of DataTypeManagerImpl to support weak pointers.
-class TestDataTypeManagerImpl
-    : public DataTypeManagerImpl,
-      public base::SupportsWeakPtr<TestDataTypeManagerImpl> {
+class TestDataTypeManagerImpl final : public DataTypeManagerImpl {
  public:
   using DataTypeManagerImpl::DataTypeManagerImpl;
+
+  base::WeakPtr<TestDataTypeManagerImpl> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<TestDataTypeManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace

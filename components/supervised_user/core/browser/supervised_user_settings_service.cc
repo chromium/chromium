@@ -469,6 +469,11 @@ SupervisedUserSettingsService::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService>
+SupervisedUserSettingsService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void SupervisedUserSettingsService::OnPrefValueChanged(const std::string& key) {
 }
 

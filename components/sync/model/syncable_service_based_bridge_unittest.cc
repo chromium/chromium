@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -81,6 +82,13 @@ class MockSyncableService : public SyncableService {
                const SyncChangeList& change_list),
               (override));
   MOCK_METHOD(SyncDataList, GetAllSyncData, (ModelType type), (const override));
+
+  base::WeakPtr<SyncableService> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockSyncableService> weak_ptr_factory_{this};
 };
 
 class SyncableServiceBasedBridgeTest : public ::testing::Test {

@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -170,6 +171,7 @@ class SupervisedUserSettingsService : public KeyedService,
   absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
+  base::WeakPtr<SyncableService> AsWeakPtr() override;
 
   // PrefStore::Observer implementation:
   void OnPrefValueChanged(const std::string& key) override;
@@ -220,6 +222,8 @@ class SupervisedUserSettingsService : public KeyedService,
   ShutdownCallbackList shutdown_callback_list_;
 
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
+
+  base::WeakPtrFactory<SupervisedUserSettingsService> weak_ptr_factory_{this};
 };
 
 }  // namespace supervised_user

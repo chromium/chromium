@@ -365,6 +365,10 @@ absl::optional<syncer::ModelError> PrefModelAssociator::ProcessSyncChanges(
   return absl::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> PrefModelAssociator::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PrefModelAssociator::AddSyncedPrefObserver(const std::string& name,
                                                 SyncedPrefObserver* observer) {
   auto& observers = synced_pref_observers_[name];

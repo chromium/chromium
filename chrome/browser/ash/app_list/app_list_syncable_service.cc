@@ -1436,6 +1436,10 @@ std::optional<syncer::ModelError> AppListSyncableService::ProcessSyncChanges(
   return std::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> AppListSyncableService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void AppListSyncableService::Shutdown() {
   app_service_apps_builder_.reset();
   if (ash::features::ArePromiseIconsEnabled()) {

@@ -253,6 +253,10 @@ std::optional<syncer::ModelError> ArcPackageSyncableService::ProcessSyncChanges(
   return std::nullopt;
 }
 
+base::WeakPtr<syncer::SyncableService> ArcPackageSyncableService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 bool ArcPackageSyncableService::SyncStarted() {
   if (sync_processor_.get())
     return true;

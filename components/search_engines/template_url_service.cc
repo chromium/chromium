@@ -1475,6 +1475,10 @@ absl::optional<syncer::ModelError> TemplateURLService::ProcessSyncChanges(
   return sync_processor_->ProcessSyncChanges(from_here, new_changes);
 }
 
+base::WeakPtr<syncer::SyncableService> TemplateURLService::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 absl::optional<syncer::ModelError> TemplateURLService::MergeDataAndStartSyncing(
     syncer::ModelType type,
     const syncer::SyncDataList& initial_sync_data,
