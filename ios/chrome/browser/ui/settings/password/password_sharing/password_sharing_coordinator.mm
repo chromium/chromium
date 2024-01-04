@@ -109,13 +109,10 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
   self.navigationController.navigationBar.prefersLargeTitles = NO;
-
-  UISheetPresentationController* sheetPresentationController =
-      self.navigationController.sheetPresentationController;
-  if (sheetPresentationController) {
-    sheetPresentationController.detents =
-        @[ [UISheetPresentationControllerDetent mediumDetent] ];
-  }
+  self.navigationController.sheetPresentationController.detents = @[
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
+  ];
 
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES

@@ -261,6 +261,24 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testPasswordPickerSwipeToDismissFlow {
+  SignInAndEnableSync();
+  [self saveExamplePasswordsToProfileStoreAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordPickerViewId)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewID)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)testFetchingRecipientsNoFamilyStatus {
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];

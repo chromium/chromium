@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.navigationItem.rightBarButtonItem = nextButton;
   self.navigationItem.rightBarButtonItem.accessibilityIdentifier =
       kPasswordPickerNextButtonId;
+  self.view.accessibilityIdentifier = kPasswordPickerViewId;
 
   [self loadModel];
 }

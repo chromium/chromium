@@ -15,6 +15,7 @@ extern NSString* const kFamilyPickerShareButtonId;
 extern NSString* const kFamilyPickerInfoButtonId;
 
 // The accessibility identifiers of the password picker view.
+extern NSString* const kPasswordPickerViewId;
 extern NSString* const kPasswordPickerCancelButtonId;
 extern NSString* const kPasswordPickerNextButtonId;
 

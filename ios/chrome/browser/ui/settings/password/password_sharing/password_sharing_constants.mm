@@ -10,6 +10,7 @@ NSString* const kFamilyPickerCancelButtonId = @"FamilyPickerCancelButtonId";
 NSString* const kFamilyPickerShareButtonId = @"FamilyPickerShareButtonId";
 NSString* const kFamilyPickerInfoButtonId = @"FamilyPickerInfoButtonId";
 
+NSString* const kPasswordPickerViewId = @"PasswordPickerViewId";
 NSString* const kPasswordPickerCancelButtonId = @"PasswordPickerCancelButtonId";
 NSString* const kPasswordPickerNextButtonId = @"PasswordPickerNextButtonId";
 
