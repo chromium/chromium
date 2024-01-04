@@ -150,27 +150,15 @@ void UserMediaClient::RequestQueue::CancelUserMediaRequest(
     }
   }
 
-  bool did_remove_request = false;
-  if (user_media_processor_->DeleteUserMediaRequest(user_media_request)) {
-    did_remove_request = true;
-  } else {
+  if (!user_media_processor_->DeleteUserMediaRequest(user_media_request)) {
     for (auto it = pending_requests_.begin(); it != pending_requests_.end();
          ++it) {
       if ((*it)->IsUserMedia() &&
           (*it)->user_media_request() == user_media_request) {
         pending_requests_.erase(it);
-        did_remove_request = true;
         break;
       }
     }
-  }
-
-  if (did_remove_request) {
-    // We can't abort the stream generation process.
-    // Instead, erase the request. Once the stream is generated we will stop the
-    // stream if the request does not exist.
-    LogUserMediaRequestWithNoResult(
-        blink::MEDIA_STREAM_REQUEST_EXPLICITLY_CANCELLED);
   }
 }
 

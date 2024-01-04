@@ -1741,24 +1741,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebRTC.UserMediaRequest.NoResultState"
-    enum="MediaStreamRequestState" expires_after="2023-12-24">
-  <owner>andresp@chromium.org</owner>
-  <owner>toprice@chromium.org</owner>
-  <owner>agpalak@chromium.org</owner>
-  <owner>benjaminwagner@google.com</owner>
-  <summary>
-    The state of a UserMediaRequest when it gets destroyed before having a
-    result. Warning: this histogram was expired from M77 to M108(excluded); data
-    may be missing.
-
-    Note: &quot;Explicitly Cancelled&quot; means
-    MediaStreamImpl::cancelUserMediaRequest was called and not necessarily that
-    the user cancelled. Those are likely tracked as UserMediaRequest with a
-    result of permission denied.
-  </summary>
-</histogram>
-
 <histogram name="WebRTC.UserMediaRequest.Result2"
     enum="MediaStreamRequestResult2" expires_after="2024-05-05">
   <owner>toprice@chromium.org</owner>
