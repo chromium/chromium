@@ -2989,6 +2989,107 @@ Called by update_autofill_enums.py.-->
              (Unknown)"/>
 </enum>
 
+<enum name="AutofillFieldType">
+<!-- Generated from components/autofill/core/browser/field_types.h.
+Called by update_autofill_enums.py.-->
+
+  <int value="0" label="NO_SERVER_DATA"/>
+  <int value="1" label="UNKNOWN_TYPE"/>
+  <int value="2" label="EMPTY_TYPE"/>
+  <int value="3" label="NAME_FIRST"/>
+  <int value="4" label="NAME_MIDDLE"/>
+  <int value="5" label="NAME_LAST"/>
+  <int value="6" label="NAME_MIDDLE_INITIAL"/>
+  <int value="7" label="NAME_FULL"/>
+  <int value="8" label="NAME_SUFFIX"/>
+  <int value="9" label="EMAIL_ADDRESS"/>
+  <int value="10" label="PHONE_HOME_NUMBER"/>
+  <int value="11" label="PHONE_HOME_CITY_CODE"/>
+  <int value="12" label="PHONE_HOME_COUNTRY_CODE"/>
+  <int value="13" label="PHONE_HOME_CITY_AND_NUMBER"/>
+  <int value="14" label="PHONE_HOME_WHOLE_NUMBER"/>
+  <int value="30" label="ADDRESS_HOME_LINE1"/>
+  <int value="31" label="ADDRESS_HOME_LINE2"/>
+  <int value="32" label="ADDRESS_HOME_APT_NUM"/>
+  <int value="33" label="ADDRESS_HOME_CITY"/>
+  <int value="34" label="ADDRESS_HOME_STATE"/>
+  <int value="35" label="ADDRESS_HOME_ZIP"/>
+  <int value="36" label="ADDRESS_HOME_COUNTRY"/>
+  <int value="51" label="CREDIT_CARD_NAME_FULL"/>
+  <int value="52" label="CREDIT_CARD_NUMBER"/>
+  <int value="53" label="CREDIT_CARD_EXP_MONTH"/>
+  <int value="54" label="CREDIT_CARD_EXP_2_DIGIT_YEAR"/>
+  <int value="55" label="CREDIT_CARD_EXP_4_DIGIT_YEAR"/>
+  <int value="56" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR"/>
+  <int value="57" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR"/>
+  <int value="58" label="CREDIT_CARD_TYPE"/>
+  <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
+  <int value="60" label="COMPANY_NAME"/>
+  <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
+  <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
+  <int value="74" label="MERCHANT_PROMO_CODE"/>
+  <int value="75" label="PASSWORD"/>
+  <int value="76" label="ACCOUNT_CREATION_PASSWORD"/>
+  <int value="77" label="ADDRESS_HOME_STREET_ADDRESS"/>
+  <int value="79" label="ADDRESS_HOME_SORTING_CODE"/>
+  <int value="81" label="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
+  <int value="83" label="ADDRESS_HOME_LINE3"/>
+  <int value="85" label="NOT_ACCOUNT_CREATION_PASSWORD"/>
+  <int value="86" label="USERNAME"/>
+  <int value="87" label="USERNAME_AND_EMAIL_ADDRESS"/>
+  <int value="88" label="NEW_PASSWORD"/>
+  <int value="89" label="PROBABLY_NEW_PASSWORD"/>
+  <int value="90" label="NOT_NEW_PASSWORD"/>
+  <int value="91" label="CREDIT_CARD_NAME_FIRST"/>
+  <int value="92" label="CREDIT_CARD_NAME_LAST"/>
+  <int value="93" label="PHONE_HOME_EXTENSION"/>
+  <int value="95" label="CONFIRMATION_PASSWORD"/>
+  <int value="96" label="AMBIGUOUS_TYPE"/>
+  <int value="97" label="SEARCH_TERM"/>
+  <int value="98" label="PRICE"/>
+  <int value="99" label="NOT_PASSWORD"/>
+  <int value="100" label="SINGLE_USERNAME"/>
+  <int value="101" label="NOT_USERNAME"/>
+  <int value="102" label="UPI_VPA"/>
+  <int value="103" label="ADDRESS_HOME_STREET_NAME"/>
+  <int value="104" label="ADDRESS_HOME_HOUSE_NUMBER"/>
+  <int value="105" label="ADDRESS_HOME_SUBPREMISE"/>
+  <int value="106" label="ADDRESS_HOME_OTHER_SUBUNIT"/>
+  <int value="107" label="NAME_LAST_FIRST"/>
+  <int value="108" label="NAME_LAST_CONJUNCTION"/>
+  <int value="109" label="NAME_LAST_SECOND"/>
+  <int value="110" label="NAME_HONORIFIC_PREFIX"/>
+  <int value="114" label="ADDRESS_HOME_ADDRESS"/>
+  <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
+  <int value="116" label="ADDRESS_HOME_FLOOR"/>
+  <int value="117" label="NAME_FULL_WITH_HONORIFIC_PREFIX"/>
+  <int value="118" label="BIRTHDATE_DAY"/>
+  <int value="119" label="BIRTHDATE_MONTH"/>
+  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
+  <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
+  <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
+  <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
+  <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
+  <int value="125" label="IBAN_VALUE"/>
+  <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
+  <int value="128" label="NUMERIC_QUANTITY"/>
+  <int value="129" label="ONE_TIME_CODE"/>
+  <int value="133" label="DELIVERY_INSTRUCTIONS"/>
+  <int value="135" label="ADDRESS_HOME_OVERFLOW"/>
+  <int value="136" label="ADDRESS_HOME_LANDMARK"/>
+  <int value="140" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK"/>
+  <int value="141" label="ADDRESS_HOME_ADMIN_LEVEL2"/>
+  <int value="142" label="ADDRESS_HOME_STREET_LOCATION"/>
+  <int value="143" label="ADDRESS_HOME_BETWEEN_STREETS"/>
+  <int value="144" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
+  <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
+  <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
+  <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
+  <int value="156" label="ADDRESS_HOME_APT"/>
+  <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
+  <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
+</enum>
+
 <enum name="AutofillFillingMethodMetric">
   <int value="0" label="Full form"/>
   <int value="1" label="Group filling name fields"/>
@@ -5026,107 +5127,6 @@ Called by update_autofill_enums.py.-->
       label="FIDO option was the only option provided but user has not opted
              in"/>
   <int value="8" label="Unexpected errors"/>
-</enum>
-
-<enum name="AutofillServerFieldType">
-<!-- Generated from components/autofill/core/browser/field_types.h.
-Called by update_autofill_enums.py.-->
-
-  <int value="0" label="NO_SERVER_DATA"/>
-  <int value="1" label="UNKNOWN_TYPE"/>
-  <int value="2" label="EMPTY_TYPE"/>
-  <int value="3" label="NAME_FIRST"/>
-  <int value="4" label="NAME_MIDDLE"/>
-  <int value="5" label="NAME_LAST"/>
-  <int value="6" label="NAME_MIDDLE_INITIAL"/>
-  <int value="7" label="NAME_FULL"/>
-  <int value="8" label="NAME_SUFFIX"/>
-  <int value="9" label="EMAIL_ADDRESS"/>
-  <int value="10" label="PHONE_HOME_NUMBER"/>
-  <int value="11" label="PHONE_HOME_CITY_CODE"/>
-  <int value="12" label="PHONE_HOME_COUNTRY_CODE"/>
-  <int value="13" label="PHONE_HOME_CITY_AND_NUMBER"/>
-  <int value="14" label="PHONE_HOME_WHOLE_NUMBER"/>
-  <int value="30" label="ADDRESS_HOME_LINE1"/>
-  <int value="31" label="ADDRESS_HOME_LINE2"/>
-  <int value="32" label="ADDRESS_HOME_APT_NUM"/>
-  <int value="33" label="ADDRESS_HOME_CITY"/>
-  <int value="34" label="ADDRESS_HOME_STATE"/>
-  <int value="35" label="ADDRESS_HOME_ZIP"/>
-  <int value="36" label="ADDRESS_HOME_COUNTRY"/>
-  <int value="51" label="CREDIT_CARD_NAME_FULL"/>
-  <int value="52" label="CREDIT_CARD_NUMBER"/>
-  <int value="53" label="CREDIT_CARD_EXP_MONTH"/>
-  <int value="54" label="CREDIT_CARD_EXP_2_DIGIT_YEAR"/>
-  <int value="55" label="CREDIT_CARD_EXP_4_DIGIT_YEAR"/>
-  <int value="56" label="CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR"/>
-  <int value="57" label="CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR"/>
-  <int value="58" label="CREDIT_CARD_TYPE"/>
-  <int value="59" label="CREDIT_CARD_VERIFICATION_CODE"/>
-  <int value="60" label="COMPANY_NAME"/>
-  <int value="61" label="FIELD_WITH_DEFAULT_VALUE"/>
-  <int value="73" label="MERCHANT_EMAIL_SIGNUP"/>
-  <int value="74" label="MERCHANT_PROMO_CODE"/>
-  <int value="75" label="PASSWORD"/>
-  <int value="76" label="ACCOUNT_CREATION_PASSWORD"/>
-  <int value="77" label="ADDRESS_HOME_STREET_ADDRESS"/>
-  <int value="79" label="ADDRESS_HOME_SORTING_CODE"/>
-  <int value="81" label="ADDRESS_HOME_DEPENDENT_LOCALITY"/>
-  <int value="83" label="ADDRESS_HOME_LINE3"/>
-  <int value="85" label="NOT_ACCOUNT_CREATION_PASSWORD"/>
-  <int value="86" label="USERNAME"/>
-  <int value="87" label="USERNAME_AND_EMAIL_ADDRESS"/>
-  <int value="88" label="NEW_PASSWORD"/>
-  <int value="89" label="PROBABLY_NEW_PASSWORD"/>
-  <int value="90" label="NOT_NEW_PASSWORD"/>
-  <int value="91" label="CREDIT_CARD_NAME_FIRST"/>
-  <int value="92" label="CREDIT_CARD_NAME_LAST"/>
-  <int value="93" label="PHONE_HOME_EXTENSION"/>
-  <int value="95" label="CONFIRMATION_PASSWORD"/>
-  <int value="96" label="AMBIGUOUS_TYPE"/>
-  <int value="97" label="SEARCH_TERM"/>
-  <int value="98" label="PRICE"/>
-  <int value="99" label="NOT_PASSWORD"/>
-  <int value="100" label="SINGLE_USERNAME"/>
-  <int value="101" label="NOT_USERNAME"/>
-  <int value="102" label="UPI_VPA"/>
-  <int value="103" label="ADDRESS_HOME_STREET_NAME"/>
-  <int value="104" label="ADDRESS_HOME_HOUSE_NUMBER"/>
-  <int value="105" label="ADDRESS_HOME_SUBPREMISE"/>
-  <int value="106" label="ADDRESS_HOME_OTHER_SUBUNIT"/>
-  <int value="107" label="NAME_LAST_FIRST"/>
-  <int value="108" label="NAME_LAST_CONJUNCTION"/>
-  <int value="109" label="NAME_LAST_SECOND"/>
-  <int value="110" label="NAME_HONORIFIC_PREFIX"/>
-  <int value="114" label="ADDRESS_HOME_ADDRESS"/>
-  <int value="115" label="ADDRESS_HOME_ADDRESS_WITH_NAME"/>
-  <int value="116" label="ADDRESS_HOME_FLOOR"/>
-  <int value="117" label="NAME_FULL_WITH_HONORIFIC_PREFIX"/>
-  <int value="118" label="BIRTHDATE_DAY"/>
-  <int value="119" label="BIRTHDATE_MONTH"/>
-  <int value="120" label="BIRTHDATE_4_DIGIT_YEAR"/>
-  <int value="121" label="PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX"/>
-  <int value="122" label="PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX"/>
-  <int value="123" label="PHONE_HOME_NUMBER_PREFIX"/>
-  <int value="124" label="PHONE_HOME_NUMBER_SUFFIX"/>
-  <int value="125" label="IBAN_VALUE"/>
-  <int value="126" label="CREDIT_CARD_STANDALONE_VERIFICATION_CODE"/>
-  <int value="128" label="NUMERIC_QUANTITY"/>
-  <int value="129" label="ONE_TIME_CODE"/>
-  <int value="133" label="DELIVERY_INSTRUCTIONS"/>
-  <int value="135" label="ADDRESS_HOME_OVERFLOW"/>
-  <int value="136" label="ADDRESS_HOME_LANDMARK"/>
-  <int value="140" label="ADDRESS_HOME_OVERFLOW_AND_LANDMARK"/>
-  <int value="141" label="ADDRESS_HOME_ADMIN_LEVEL2"/>
-  <int value="142" label="ADDRESS_HOME_STREET_LOCATION"/>
-  <int value="143" label="ADDRESS_HOME_BETWEEN_STREETS"/>
-  <int value="144" label="ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK"/>
-  <int value="151" label="ADDRESS_HOME_BETWEEN_STREETS_1"/>
-  <int value="152" label="ADDRESS_HOME_BETWEEN_STREETS_2"/>
-  <int value="154" label="SINGLE_USERNAME_FORGOT_PASSWORD"/>
-  <int value="156" label="ADDRESS_HOME_APT"/>
-  <int value="157" label="ADDRESS_HOME_APT_TYPE"/>
-  <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
 </enum>
 
 <enum name="AutofillServerPredictionAvailability">

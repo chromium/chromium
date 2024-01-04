@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Heuristics"
-    enum="AutofillServerFieldType" expires_after="2024-12-12">
+    enum="AutofillFieldType" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -760,7 +760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.Autocomplete.PredictionCollisionType.Server"
-    enum="AutofillServerFieldType" expires_after="2024-12-12">
+    enum="AutofillFieldType" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.PredictionCollisionType.ServerOrHeuristics"
-    enum="AutofillServerFieldType" expires_after="2024-12-12">
+    enum="AutofillFieldType" expires_after="2024-12-12">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -785,7 +785,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.Autocomplete.PredictionCollisionType2.{PredictionType}.{AutocompleteState}"
-    enum="AutofillServerFieldType" expires_after="2024-06-30">
+    enum="AutofillFieldType" expires_after="2024-06-30">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-team@google.com</owner>
@@ -1854,7 +1854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.FieldContextMenuImpressions.ByAutofillType"
-    enum="AutofillServerFieldType" expires_after="2024-05-19">
+    enum="AutofillFieldType" expires_after="2024-05-19">
   <owner>vidhanj@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
@@ -1955,7 +1955,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Predicted and actual form field type. This is a computed sparse histogram
     where the value is ((predicted &lt;&lt; 16)| actual). Predicted and actual
-    are taken from the autofill::ServerFieldType enumeration.
+    are taken from the autofill::FieldType enumeration.
     {AutofillFieldPredictionSource}
   </summary>
   <token key="AutofillFieldPredictionSource"
@@ -5891,8 +5891,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the server prediction of any field isn't NO_SERVER_DATA.
     This histogram is recorded when the server prediction is available for the
-    current form, and only if AndroidAutofillQueryServerFieldTypes feature is
-    enabled.
+    current form.
   </summary>
 </histogram>
 
@@ -5904,8 +5903,7 @@ chromium-metrics-reviews@google.com.
     Records whether and when the server prediction response of current autofill
     session is available even if query failed or there is no server data. This
     histogram is recorded when the prediction becomes available or the new
-    session starts, and only if AndroidAutofillQueryServerFieldTypes feature is
-    enabled.
+    session starts.
   </summary>
 </histogram>
 
