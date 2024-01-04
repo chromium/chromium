@@ -8,6 +8,8 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <color name="post_follow_illustration_device_outline">@color/modern_grey_300</color>
 
+    <color name="feed_placeholder_color">@color/black_alpha_5</color>
+
     <!-- Footer chip -->
     <color name="menu_footer_chip_background_color_baseline">@color/menu_footer_chip_background_color_dark</color>
     <color name="menu_footer_chip_background_color_disabled">@color/menu_footer_chip_background_color_disabled_dark</color>
