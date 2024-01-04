@@ -10,6 +10,7 @@ build_webui("build") {
 
   web_component_files = [
     "content_setting_pattern_source.ts",
+    "pref_display.ts",
     "value_display.ts",
     "mojo_timedelta.ts",
     "mojo_timestamp.ts",

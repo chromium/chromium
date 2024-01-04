@@ -4,7 +4,9 @@
 import 'chrome://privacy-sandbox-internals/mojo_timestamp.js';
 import 'chrome://privacy-sandbox-internals/mojo_timedelta.js';
 import 'chrome://privacy-sandbox-internals/value_display.js';
+import 'chrome://privacy-sandbox-internals/pref_display.js';
 
+import {PrefDisplayElement} from 'chrome://privacy-sandbox-internals/pref_display.js';
 import {timestampLogicalFn, ValueDisplayElement} from 'chrome://privacy-sandbox-internals/value_display.js';
 import {DictionaryValue, ListValue, Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -195,5 +197,92 @@ suite('ValueDisplayElementTest', function() {
     valueElement.configure(v);
     assertValue('[10,20,30,40]');
     assertType('(binary)');
+  });
+});
+
+// Test the <pref-display> element.
+suite('PrefDisplayElementTest', function() {
+  let v: Value;
+  let prefDisplay: PrefDisplayElement;
+
+  suiteSetup(async function() {
+    await customElements.whenDefined('pref-display');
+    await customElements.whenDefined('value-display');
+  });
+
+  setup(function() {
+    v = {} as Value;
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    prefDisplay = document.createElement('pref-display');
+    document.body.appendChild(prefDisplay);
+  });
+
+  const assertName = (s: string) => {
+    const span = prefDisplay.$('.id-pref-name');
+    assertTrue(!!span);
+    assertEquals(span.textContent, s);
+  };
+
+  const getValueElementOrFail = () => {
+    const span = prefDisplay.$('.id-pref-value');
+    assertTrue(!!span);
+    const value = span.querySelector('value-display');
+    assertTrue(!!value);
+    return value;
+  };
+
+  const assertType = (s: string) => {
+    const vElem = getValueElementOrFail();
+    const type = vElem.$('#type');
+    assertTrue(!!type);
+    assertEquals(type.textContent, s);
+  };
+
+  const assertValue = (s: string) => {
+    const vElem = getValueElementOrFail();
+    const value = vElem.$('#value');
+    assertTrue(!!value);
+    assertEquals(value.textContent, s);
+  };
+
+  const getLogicalValueElementOrFail = () => {
+    const vElem = getValueElementOrFail();
+    const value = vElem.$('#logical-value');
+    assertTrue(!!value);
+    return value;
+  };
+
+  test('basicStringPref', async () => {
+    v.stringValue = 'this is a string';
+    prefDisplay.configure('foo', v);
+    assertName('foo');
+
+    assertType('(string)');
+    assertValue('this is a string');
+    assertEquals(getLogicalValueElementOrFail().children.length, 0);
+  });
+
+  test('basicIntPref', async () => {
+    v.intValue = 100;
+    prefDisplay.configure('some.int', v);
+    assertName('some.int');
+
+    assertType('(int)');
+    assertValue('100');
+    assertEquals(getLogicalValueElementOrFail().children.length, 0);
+  });
+
+  test('logicalStringPref', async () => {
+    v.stringValue = '12345';
+    prefDisplay.configure('some.timestamp', v, timestampLogicalFn);
+    assertName('some.timestamp');
+
+    assertType('(string)');
+    assertValue('12345');
+    const value = getLogicalValueElementOrFail();
+    assertEquals(value.children.length, 1);
+    const mojoTs = value.querySelector('mojo-timestamp');
+    assertTrue(!!mojoTs);
+    assertEquals(mojoTs.getAttribute('ts'), '12345');
   });
 });
