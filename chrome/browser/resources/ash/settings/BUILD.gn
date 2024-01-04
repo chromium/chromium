@@ -35,7 +35,6 @@ build_webui("build") {
     "images/notification_access_finished.svg",
     "images/notification_access_setup.svg",
     "images/notification_access_setup_dark.svg",
-    "images/smart_privacy.svg",
     "images/switch_access_setup_guide_assign_next.svg",
     "images/switch_access_setup_guide_assign_next_dark.svg",
     "images/switch_access_setup_guide_assign_previous.svg",
@@ -604,12 +603,4 @@ copy("rename_personalization_search_mojom") {
     "$root_gen_dir/ash/webui/personalization_app/search/search.mojom-webui.ts",
   ]
   outputs = [ "$target_gen_dir/personalization_search.mojom-webui.ts" ]
-}
-
-# grdp for OS Settings files that are needed by OOBE.
-generate_grd("build_oobe_grdp") {
-  grd_prefix = "os_settings_oobe"
-  out_grd = "$target_gen_dir/os_settings_oobe_resources.grdp"
-  input_files_base_dir = rebase_path(".", "//")
-  input_files = [ "images/smart_privacy.svg" ]
 }
