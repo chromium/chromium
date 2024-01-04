@@ -364,7 +364,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1277020343994096713">Créez un NIP différent de votre NIP actuel</translation>
 <translation id="1277597051786235230">&amp;Rechercher « <ph name="SEARCH_TERMS" /> » dans <ph name="SEARCH_ENGINE" /> dans un nouvel onglet</translation>
 <translation id="1278859221870828664">Examiner les applications et services Google Play</translation>
-<translation id="127946606521051357">Un appareil à proximité partage des fichiers</translation>
+<translation id="127946606521051357">Un appareil à proximité partage des contenus</translation>
 <translation id="1280965841156951489">Modifier les fichiers</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossible d'ouvrir le fichier}one{Impossible d'ouvrir le fichier}other{Impossible d'ouvrir les fichiers}}</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
