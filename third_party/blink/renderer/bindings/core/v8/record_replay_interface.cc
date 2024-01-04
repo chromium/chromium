@@ -3314,12 +3314,12 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     writeToRecordingDirectory(name, sourceMap);
 
     sources = collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, sourceURL);
-    writeToRecordingDirectory(lookupName, JSON_stringify(sources));
+    writeToRecordingDirectory(lookupName, JSON.stringify(sources));
   } else {
-    sources = JSON_parse(readFromRecordingDirectory(lookupName));
+    sources = JSON.parse(readFromRecordingDirectory(lookupName));
   }
 
-  addRecordingEvent(JSON_stringify({
+  addRecordingEvent(JSON.stringify({
     kind: "sourcemapAdded",
     path: getRecordingFilePath(name),
     recordingId,
@@ -3345,7 +3345,7 @@ addNewScriptHandler(async (scriptId, sourceURL, relativeSourceMapURL) => {
     if (!recordingDirectoryFileExists(name)) {
       writeToRecordingDirectory(name, sourceContent);
     }
-    addRecordingEvent(JSON_stringify({
+    addRecordingEvent(JSON.stringify({
       kind: "originalSourceAdded",
       path: getRecordingFilePath(name),
       recordingId,
