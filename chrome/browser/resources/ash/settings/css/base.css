@@ -22,7 +22,7 @@ html:not(body) {
 }
 
 html {
-  background-color: var(--cros-sys-app_base_shaded);
+  background-color: var(--settings-base-bg-color);
   overflow: hidden;
   /* Remove 300ms delay for 'click' event, when using touch interface. */
   touch-action: manipulation;
