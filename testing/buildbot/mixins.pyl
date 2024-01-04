@@ -133,18 +133,18 @@
   },
   '13-x64-emulator': {
     'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android33.textpb',
+      '--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb',
     ],
     'swarming': {
       'optional_dimensions': {
         '60': {
-          'caches': 'generic_android33',
+          'caches': 'android_33_google_apis_x64',
         },
       },
       'named_caches': [
         {
-          'name': 'generic_android33',
-          'path': '.android_emulator/generic_android33',
+          'name': 'android_33_google_apis_x64',
+          'path': '.android_emulator/android_33_google_apis_x64',
         },
       ],
     },
