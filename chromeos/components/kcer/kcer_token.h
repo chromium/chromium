@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace kcer::internal {
 
@@ -34,6 +36,19 @@ class COMPONENT_EXPORT(KCER) KcerToken {
   KcerToken(KcerToken&&) = delete;
   KcerToken& operator=(Token&&) = delete;
   virtual ~KcerToken() = default;
+
+  // Returns a weak pointer for the token. The pointer can be used to post tasks
+  // for the token.
+  virtual base::WeakPtr<KcerToken> GetWeakPtr() = 0;
+
+  // Initialization methods for different specializations of KcerToken. They
+  // should be used by the factory that creates instances of Kcer and knows
+  // which tokens are used at the moment, even when it has only a generic
+  // pointer to them. Each KcerToken specialization only needs to implement the
+  // correct relevant method.
+  virtual void InitializeWithoutNss(SessionChapsClient::SlotId pkcs11_slot_id) {
+  }
+  virtual void InitializeForNss(crypto::ScopedPK11Slot nss_slot) {}
 
   // These methods mirror the methods from the Kcer class, except they are
   // specialized for a single token.

@@ -967,7 +967,7 @@ KcerTokenImplNss::~KcerTokenImplNss() {
   net::CertDatabase::GetInstance()->RemoveObserver(this);
 }
 
-void KcerTokenImplNss::Initialize(crypto::ScopedPK11Slot nss_slot) {
+void KcerTokenImplNss::InitializeForNss(crypto::ScopedPK11Slot nss_slot) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   if (nss_slot) {
@@ -982,7 +982,7 @@ void KcerTokenImplNss::Initialize(crypto::ScopedPK11Slot nss_slot) {
   UnblockQueueProcessNextTask();
 }
 
-base::WeakPtr<KcerTokenImplNss> KcerTokenImplNss::GetWeakPtr() {
+base::WeakPtr<KcerToken> KcerTokenImplNss::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
@@ -1004,7 +1004,7 @@ void KcerTokenImplNss::GenerateRsaKey(RsaModulusLength modulus_length_bits,
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::GenerateRsaKey, weak_factory_.GetWeakPtr(),
         modulus_length_bits, hardware_backed, std::move(callback)));
   }
@@ -1029,7 +1029,7 @@ void KcerTokenImplNss::GenerateEcKey(EllipticCurve curve,
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::GenerateEcKey, weak_factory_.GetWeakPtr(), curve,
         hardware_backed, std::move(callback)));
   }
@@ -1053,7 +1053,7 @@ void KcerTokenImplNss::ImportKey(
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::ImportKey, weak_factory_.GetWeakPtr(),
         std::move(pkcs8_private_key_info_der), std::move(callback)));
   }
@@ -1078,7 +1078,7 @@ void KcerTokenImplNss::ImportCertFromBytes(CertDer cert_der,
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::ImportCertFromBytes, weak_factory_.GetWeakPtr(),
         std::move(cert_der), std::move(callback)));
   }
@@ -1121,7 +1121,7 @@ void KcerTokenImplNss::RemoveKeyAndCerts(PrivateKeyHandle key,
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::RemoveKeyAndCerts, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
@@ -1149,7 +1149,7 @@ void KcerTokenImplNss::RemoveCert(scoped_refptr<const Cert> cert,
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::RemoveCert, weak_factory_.GetWeakPtr(),
         std::move(cert), std::move(callback)));
   }
@@ -1176,9 +1176,9 @@ void KcerTokenImplNss::ListKeys(TokenListKeysCallback callback) {
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::ListKeys,
-                                           weak_factory_.GetWeakPtr(),
-                                           std::move(callback)));
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImplNss::ListKeys,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
   }
 
   // Block task queue, attach unblocking task to the callback.
@@ -1199,9 +1199,9 @@ void KcerTokenImplNss::ListCerts(TokenListCertsCallback callback) {
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::ListCerts,
-                                           weak_factory_.GetWeakPtr(),
-                                           std::move(callback)));
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImplNss::ListCerts,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
   }
   return std::move(callback)
       .Then(BlockQueueGetUnblocker())
@@ -1216,7 +1216,7 @@ void KcerTokenImplNss::DoesPrivateKeyExist(
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::DoesPrivateKeyExist, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
@@ -1242,7 +1242,7 @@ void KcerTokenImplNss::Sign(PrivateKeyHandle key,
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::Sign, weak_factory_.GetWeakPtr(), std::move(key),
         signing_scheme, std::move(data), std::move(callback)));
   }
@@ -1268,7 +1268,7 @@ void KcerTokenImplNss::SignRsaPkcs1Raw(PrivateKeyHandle key,
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::SignRsaPkcs1Raw, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(digest_with_prefix), std::move(callback)));
   }
@@ -1292,9 +1292,9 @@ void KcerTokenImplNss::GetTokenInfo(Kcer::GetTokenInfoCallback callback) {
     return HandleInitializationFailed(std::move(callback));
   }
   if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(&KcerTokenImplNss::GetTokenInfo,
-                                           weak_factory_.GetWeakPtr(),
-                                           std::move(callback)));
+    return task_queue_.push_back(base::BindOnce(&KcerTokenImplNss::GetTokenInfo,
+                                                weak_factory_.GetWeakPtr(),
+                                                std::move(callback)));
   }
 
   // Block task queue, attach unblocking task to the callback.
@@ -1315,7 +1315,7 @@ void KcerTokenImplNss::GetKeyInfo(PrivateKeyHandle key,
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::GetKeyInfo, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(callback)));
   }
@@ -1340,7 +1340,7 @@ void KcerTokenImplNss::SetKeyNickname(PrivateKeyHandle key,
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::SetKeyNickname, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(nickname), std::move(callback)));
   }
@@ -1365,7 +1365,7 @@ void KcerTokenImplNss::SetKeyPermissions(PrivateKeyHandle key,
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(base::BindOnce(
+    return task_queue_.push_back(base::BindOnce(
         &KcerTokenImplNss::SetKeyPermissions, weak_factory_.GetWeakPtr(),
         std::move(key), std::move(key_permissions), std::move(callback)));
   }
@@ -1392,7 +1392,7 @@ void KcerTokenImplNss::SetCertProvisioningProfileId(
   if (UNLIKELY(state_ == State::kInitializationFailed)) {
     return HandleInitializationFailed(std::move(callback));
   } else if (is_blocked_) {
-    return task_queue_.push(
+    return task_queue_.push_back(
         base::BindOnce(&KcerTokenImplNss::SetCertProvisioningProfileId,
                        weak_factory_.GetWeakPtr(), std::move(key),
                        std::move(profile_id), std::move(callback)));
@@ -1461,7 +1461,7 @@ void KcerTokenImplNss::UnblockQueueProcessNextTask() {
   }
 
   base::OnceClosure next_task = std::move(task_queue_.front());
-  task_queue_.pop();
+  task_queue_.pop_front();
   std::move(next_task).Run();
 }
 
