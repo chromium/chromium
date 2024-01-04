@@ -21,7 +21,7 @@
 
 namespace {
 constexpr int kTabOrganizeCornerRadius = 10;
-constexpr int kTabOrganizeFlatCornerRadius = 2;
+constexpr int kTabOrganizeFlatCornerRadius = 4;
 constexpr int kTabOrganizeLabelMargin = 10;
 constexpr int kTabOrganizeCloseButtonMargin = 8;
 constexpr int kTabOrganizeCloseButtonSize = 16;
