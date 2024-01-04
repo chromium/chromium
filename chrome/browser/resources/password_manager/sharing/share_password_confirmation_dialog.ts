@@ -10,6 +10,7 @@ import './share_password_dialog_header.js';
 import './share_password_group_avatar.js';
 import '../site_favicon.js';
 
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,6 +27,7 @@ export interface SharePasswordConfirmationDialogElement {
     header: HTMLElement,
     cancel: HTMLElement,
     done: HTMLElement,
+    dialog: CrDialogElement,
     senderAvatar: HTMLImageElement,
     recipientAvatar: HTMLElement,
     description: HTMLElement,
@@ -57,7 +59,10 @@ export class SharePasswordConfirmationDialogElement extends
 
   static get properties() {
     return {
-      dialogStage_: Number,
+      dialogStage_: {
+        type: Number,
+        observer: 'stateChange_',
+      },
 
       password: Object,
       passwordName: String,
@@ -101,6 +106,13 @@ export class SharePasswordConfirmationDialogElement extends
 
   private isStage_(stage: ConfirmationDialogStage): boolean {
     return this.dialogStage_ === stage;
+  }
+
+  private stateChange_() {
+    // Force the screen reader to focus on the updated dialog header.
+    this.focus();
+    this.blur();
+    this.$.dialog.focus();
   }
 
 
