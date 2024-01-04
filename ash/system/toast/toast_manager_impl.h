@@ -70,6 +70,7 @@ class ASH_EXPORT ToastManagerImpl : public ToastManager,
   friend class AutoConnectNotifierTest;
   friend class BluetoothNotificationControllerTest;
   friend class DesksTestApi;
+  friend class LoginScreenControllerTest;
   friend class ToastManagerImplTest;
   friend class BatterySaverControllerTest;
   friend class BatteryNotificationTest;

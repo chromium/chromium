@@ -41,6 +41,8 @@ namespace ash {
 
 namespace {
 
+constexpr std::string_view kKioskToastId = "KioskAppError";
+
 enum class SystemTrayVisibility {
   kNone,     // Tray not visible anywhere.
   kPrimary,  // Tray visible only on primary display.
@@ -301,7 +303,8 @@ LoginScreenModel* LoginScreenController::GetModel() {
 }
 
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
-  ToastData toast_data("KioskAppError", ToastCatalogName::kKioskAppError,
+  ToastData toast_data(std::string(kKioskToastId),
+                       ToastCatalogName::kKioskAppError,
                        base::UTF8ToUTF16(message), ToastData::kInfiniteDuration,
                        /*visible_on_lock_screen=*/true,
                        /*has_dismiss_button=*/true);
@@ -530,6 +533,9 @@ void LoginScreenController::OnLockScreenDestroyed() {
     LOG(WARNING) << "Lock screen is destroyed while the authentication stage: "
                  << authentication_stage_;
   }
+
+  // Dimiss the toast created by `ShowKioskAppError`, if any.
+  Shell::Get()->toast_manager()->Cancel(kKioskToastId);
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
   SetAuthenticationStage(AuthenticationStage::kIdle);
