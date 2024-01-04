@@ -88,6 +88,15 @@ class TemplateURLService : public WebDataServiceConsumer,
   using OwnedTemplateURLDataVector =
       EnterpriseSiteSearchManager::OwnedTemplateURLDataVector;
 
+  static constexpr char kSiteSearchPolicyConflictCountHistogramName[] =
+      "Search.SiteSearchPolicyConflict";
+  static constexpr char
+      kSiteSearchPolicyHasConflictWithFeaturedHistogramName[] =
+          "Search.SiteSearchPolicyConflict.HasConflictWith.WithFeatured";
+  static constexpr char
+      kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName[] =
+          "Search.SiteSearchPolicyConflict.HasConflictWith.WithNonFeatured";
+
   // Struct used for initializing the data store with fake data.
   // Each initializer is mapped to a TemplateURL.
   struct Initializer {
@@ -108,6 +117,17 @@ class TemplateURLService : public WebDataServiceConsumer,
     RAW_PTR_EXCLUSION const TemplateURL* template_url;
     GURL normalized_url;
     std::u16string search_terms;
+  };
+
+  // Values for an enumerated histogram used to track keyword conflicts between
+  // search engines created by the SiteSearchSettings policy and search engines
+  // the user manually edited. Keep in sync with `SiteSearchPolicyConflictType`
+  // in tools/metrics/histograms/enums.xml.
+  enum class SiteSearchPolicyConflictType {
+    kNone = 0,
+    kWithFeatured = 1,
+    kWithNonFeatured = 2,
+    kMaxValue = kWithNonFeatured,
   };
 
   TemplateURLService(
@@ -662,7 +682,7 @@ class TemplateURLService : public WebDataServiceConsumer,
 
   // Applies site search changes and reports metrics if appropriate.
   void EnterpriseSiteSearchChanged(
-      OwnedTemplateURLDataVector&& site_search_engines);
+      OwnedTemplateURLDataVector&& policy_site_search_engines);
 
   // Applies a DSE change. May be called at startup or after transitioning to
   // the loaded state. Returns true if a change actually occurred.
@@ -672,7 +692,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Applies changes due to Enterprise policy `SiteSearchSettings`. Called after
   // transitioning to the loaded state.
   void ApplyEnterpriseSiteSearchChanges(
-      OwnedTemplateURLVector&& site_search_engines);
+      OwnedTemplateURLVector&& policy_site_search_engines);
 
   // Returns false if there is a TemplateURL that has a search url with the
   // specified host and that TemplateURL has been manually modified.
@@ -823,6 +843,12 @@ class TemplateURLService : public WebDataServiceConsumer,
   // |kSiteSearchSettingsPolicy| or nullptr otherwise.
   std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
       PrefService* prefs);
+
+  // Logs a histogram to track keyword conflicts between search engines created
+  // by the SiteSearchSettings policy and search engines the user manually
+  // edited.
+  void LogSiteSearchPolicyConflict(
+      const OwnedTemplateURLVector& policy_site_search_engines);
 
   // ---------- Browser state related members ---------------------------------
   raw_ptr<PrefService> prefs_ = nullptr;

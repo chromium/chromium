@@ -4,6 +4,7 @@
 
 #include "components/search_engines/template_url_service.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <string>
@@ -528,7 +529,7 @@ bool TemplateURLService::ShowInActivesList(const TemplateURL* t_url) const {
   return t_url->is_active() == TemplateURLData::ActiveStatus::kTrue ||
          (t_url->created_by_policy() ==
               TemplateURLData::CreatedByPolicy::kSiteSearch &&
-          t_url->keyword()[0] != u'@');
+          t_url->featured_by_policy());
 }
 
 bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
@@ -537,7 +538,7 @@ bool TemplateURLService::HiddenFromLists(const TemplateURL* t_url) const {
   // start with "@" is already shown in the actives list.
   return t_url->created_by_policy() ==
              TemplateURLData::CreatedByPolicy::kSiteSearch &&
-         t_url->keyword()[0] == u'@';
+         t_url->featured_by_policy();
 }
 
 void TemplateURLService::AddMatchingKeywords(const std::u16string& prefix,
@@ -2302,14 +2303,17 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
 }
 
 void TemplateURLService::ApplyEnterpriseSiteSearchChanges(
-    TemplateURLService::OwnedTemplateURLVector&& site_search_engines) {
+    TemplateURLService::OwnedTemplateURLVector&& policy_site_search_engines) {
   CHECK(loaded_);
 
   Scoper scoper(this);
 
+  LogSiteSearchPolicyConflict(policy_site_search_engines);
+
   base::flat_set<std::u16string> new_keywords;
   base::ranges::transform(
-      site_search_engines, std::inserter(new_keywords, new_keywords.begin()),
+      policy_site_search_engines,
+      std::inserter(new_keywords, new_keywords.begin()),
       [](const std::unique_ptr<TemplateURL>& turl) { return turl->keyword(); });
 
   // Remove old site search entries no longer present in the policy's list.
@@ -2338,7 +2342,7 @@ void TemplateURLService::ApplyEnterpriseSiteSearchChanges(
       });
 
   // Either add new site search entries or update existing ones if necessary.
-  for (auto& site_search_engine : site_search_engines) {
+  for (auto& site_search_engine : policy_site_search_engines) {
     const std::u16string& keyword = site_search_engine->keyword();
     auto it = enterprise_site_search_keyword_to_turl_.find(keyword);
     if (it == enterprise_site_search_keyword_to_turl_.end()) {
@@ -2359,9 +2363,10 @@ void TemplateURLService::ApplyEnterpriseSiteSearchChanges(
 }
 
 void TemplateURLService::EnterpriseSiteSearchChanged(
-    OwnedTemplateURLDataVector&& site_search_engines) {
+    OwnedTemplateURLDataVector&& policy_site_search_engines) {
   OwnedTemplateURLVector turl_site_search_engines;
-  for (const std::unique_ptr<TemplateURLData>& it : site_search_engines) {
+  for (const std::unique_ptr<TemplateURLData>& it :
+       policy_site_search_engines) {
     turl_site_search_engines.push_back(
         std::make_unique<TemplateURL>(*it, TemplateURL::NORMAL));
   }
@@ -2857,4 +2862,50 @@ TemplateURLService::GetEnterpriseSiteSearchManager(PrefService* prefs) {
 #else
   return nullptr;
 #endif
+}
+
+void TemplateURLService::LogSiteSearchPolicyConflict(
+    const TemplateURLService::OwnedTemplateURLVector&
+        policy_site_search_engines) {
+  if (policy_site_search_engines.empty()) {
+    // No need to record conflict histograms if the SiteSearchSettings policy
+    // doesn't create any search engine.
+    return;
+  }
+
+  bool has_conflict_with_featured = false;
+  bool has_conflict_with_non_featured = false;
+  for (const auto& policy_turl : policy_site_search_engines) {
+    const std::u16string& keyword = policy_turl->keyword();
+    CHECK(!keyword.empty());
+
+    const auto match_range = keyword_to_turl_.equal_range(keyword);
+    bool conflicts_with_active =
+        std::any_of(match_range.first, match_range.second,
+                    [](const KeywordToTURL::value_type& entry) {
+                      return entry.second->created_by_policy() ==
+                                 TemplateURLData::CreatedByPolicy::kNoPolicy &&
+                             !entry.second->safe_for_autoreplace();
+                    });
+    SiteSearchPolicyConflictType type =
+        conflicts_with_active
+            ? (policy_turl->featured_by_policy()
+                   ? SiteSearchPolicyConflictType::kWithFeatured
+                   : SiteSearchPolicyConflictType::kWithNonFeatured)
+            : SiteSearchPolicyConflictType::kNone;
+    base::UmaHistogramEnumeration(kSiteSearchPolicyConflictCountHistogramName,
+                                  type);
+
+    has_conflict_with_featured |=
+        type == SiteSearchPolicyConflictType::kWithFeatured;
+    has_conflict_with_non_featured |=
+        type == SiteSearchPolicyConflictType::kWithNonFeatured;
+  }
+
+  base::UmaHistogramBoolean(
+      kSiteSearchPolicyHasConflictWithFeaturedHistogramName,
+      has_conflict_with_featured);
+  base::UmaHistogramBoolean(
+      kSiteSearchPolicyHasConflictWithNonFeaturedHistogramName,
+      has_conflict_with_non_featured);
 }
