@@ -559,31 +559,4 @@ TEST_F(UrlRealTimeMechanismTest, CheckUrl_UrlRealTime_UnsuccessfulLookup) {
   task_environment_.RunUntilIdle();
 }
 
-TEST_F(UrlRealTimeMechanismTest, CheckUrl_UrlRealTime_SuspiciousSiteDetection) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      safe_browsing::kSuspiciousSiteDetectionRTLookups);
-  GURL url("https://example.test/");
-  auto mechanism = CreateUrlRealTimeMechanism(url, /*can_check_db=*/true);
-  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SUSPICIOUS_SITE,
-                                           /*should_complete_lookup=*/true);
-  database_manager_->SetAllowlistResultForUrl(url, false);
-  base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
-      callback;
-  mechanism->StartCheck(callback.Get());
-
-  // Suspicious site detection should happen for URL real time lookups.
-  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(testing::_))
-      .Times(1);
-
-  EXPECT_CALL(callback,
-              Run(Matches(
-                  /*matched_high_confidence_allowlist=*/false,
-                  /*locally_cached_results_threat_type=*/SB_THREAT_TYPE_SAFE,
-                  /*real_time_request_failed=*/false)))
-      .Times(1);
-
-  task_environment_.RunUntilIdle();
-}
-
 }  // namespace safe_browsing

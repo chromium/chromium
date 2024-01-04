@@ -325,6 +325,10 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
         threat_type = RTLookupResponse::ThreatInfo::MANAGED_POLICY;
         verdict_type = RTLookupResponse::ThreatInfo::WARN;
         break;
+      case SB_THREAT_TYPE_SUSPICIOUS_SITE:
+        threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
+        verdict_type = RTLookupResponse::ThreatInfo::SUSPICIOUS;
+        break;
       default:
         NOTREACHED();
         threat_type = RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED;
@@ -945,6 +949,43 @@ TEST_F(SafeBrowsingUrlCheckerTest,
       "SafeBrowsing.RT.GetCache.FallbackThreatType",
       /*sample=*/SB_THREAT_TYPE_URL_PHISHING,
       /*expected_bucket_count=*/1);
+  CheckUrlRealTimeLocalMatchMetrics(
+      /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
+      /*expect_url_lookup_service_metric_suffix=*/true);
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_UrlRealTimeEnabled_SuspiciousSiteDetection) {
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSuspiciousSiteDetectionRTLookups);
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/true,
+      /*hash_real_time_selection=*/
+      hash_realtime_utils::HashRealTimeSelection::kNone);
+
+  GURL url("https://example.test/");
+  url_lookup_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SUSPICIOUS_SITE,
+                                           /*should_complete_lookup=*/true);
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/false,
+                                                     {"RT"});
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(
+      callback,
+      Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
+      .Times(1);
+  // Suspicious site detection should happen for URL real time lookups.
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(testing::_))
+      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
   CheckUrlRealTimeLocalMatchMetrics(
       /*expected_local_match_result=*/false, /*expected_mainframe_log=*/true,
       /*expect_url_lookup_service_metric_suffix=*/true);
