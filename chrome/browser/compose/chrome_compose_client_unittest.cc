@@ -133,6 +133,9 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},
         {});
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
+
     SetPrefsForComposeConsentState(compose::mojom::ConsentState::kConsented);
     SetPrefsForComposeMSBBState(true);
     AddTab(browser(), GetPageUrl());
@@ -164,6 +167,14 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
+  void TearDown() override {
+    client_ = nullptr;
+    scoped_feature_list_.Reset();
+    // Needed for feature params to reset.
+    compose::ResetConfigForTesting();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
   void SetPrefsForComposeConsentState(
       compose::mojom::ConsentState consent_state) {
     PrefService* prefs = GetProfile()->GetPrefs();
@@ -185,6 +196,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         msbb_state);
   }
+
   void EnableAutoCompose() {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeaturesAndParameters(
@@ -194,7 +206,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                    kOptimizationGuideModelExecution,
                                {}}},
         /*disabled_features=*/{});
-    // Needed for feature flags to apply.
+    // Needed for feature params to apply.
     compose::ResetConfigForTesting();
   }
 
@@ -263,12 +275,6 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   }
 
   GURL GetPageUrl() { return GURL("http://foo/1"); }
-
-  void TearDown() override {
-    client_ = nullptr;
-    compose::ResetConfigForTesting();
-    BrowserWithTestWindowTest::TearDown();
-  }
 
   void SetSelection(const std::u16string& selection) {
     field_data().selected_text = selection;

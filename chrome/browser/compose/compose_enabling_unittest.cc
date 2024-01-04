@@ -167,6 +167,9 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     compose::ResetConfigForTesting();
     BrowserWithTestWindowTest::TearDown();
     MockOptimizationGuideKeyedService::ResetForTesting();
+
+    ComposeEnabling::SetEnabledForTesting(false);
+    ComposeEnabling::SkipUserEnabledCheckForTesting(false);
   }
 
   void SignIn(signin::ConsentLevel consent_level) {
