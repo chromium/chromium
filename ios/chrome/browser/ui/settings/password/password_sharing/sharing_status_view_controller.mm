@@ -652,7 +652,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
                  action:@selector(doneButtonTapped)
        forControlEvents:UIControlEventTouchUpInside];
   SetConfigurationTitle(doneButton, l10n_util::GetNSString(IDS_DONE));
-  doneButton.accessibilityIdentifier = kSharingStatusDoneButtonId;
+  doneButton.accessibilityIdentifier = kSharingStatusDoneButtonID;
   return doneButton;
 }
 

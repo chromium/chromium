@@ -55,7 +55,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
 
   UITableView* tableView = self.tableView;
   tableView.allowsMultipleSelection = YES;
-  tableView.accessibilityIdentifier = kFamilyPickerTableViewId;
+  tableView.accessibilityIdentifier = kFamilyPickerTableViewID;
 
   [self loadModel];
 }
@@ -131,7 +131,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
                    action:@selector(infoButtonTapped:)
          forControlEvents:UIControlEventTouchUpInside];
     infoButton.accessibilityIdentifier =
-        [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonId,
+        [NSString stringWithFormat:@"%@ %@", kFamilyPickerInfoButtonID,
                                    _recipients[indexPath.row].email];
     cell.accessoryView = infoButton;
   }
@@ -193,7 +193,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
              target:self
              action:@selector(backButtonTapped)];
   navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerBackButtonId;
+      kFamilyPickerBackButtonID;
 }
 
 - (void)setupLeftCancelButton {
@@ -203,7 +203,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
                            target:self
                            action:@selector(cancelButtonTapped)];
   navigationItem.leftBarButtonItem.accessibilityIdentifier =
-      kFamilyPickerCancelButtonId;
+      kFamilyPickerCancelButtonID;
 }
 
 #pragma mark - PopoverLabelViewControllerDelegate
@@ -316,7 +316,7 @@ NSArray<RecipientInfoForIOSDisplay*>* _recipients;
              target:self
              action:@selector(shareButtonTapped)];
   shareButton.enabled = NO;
-  shareButton.accessibilityIdentifier = kFamilyPickerShareButtonId;
+  shareButton.accessibilityIdentifier = kFamilyPickerShareButtonID;
   return shareButton;
 }
 
