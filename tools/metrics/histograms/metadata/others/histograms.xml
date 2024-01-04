@@ -7258,6 +7258,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OnDeviceModel.GpuErrorReason" enum="GpuErrorReason"
+    expires_after="2024-07-04">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records a fatal error received by the OnDeviceModelService. Logged whenever
+    the service crashes due to a GPU error.
+  </summary>
+</histogram>
+
 <histogram name="OnDeviceModel.LoadModelDuration" units="ms"
     expires_after="2024-05-27">
   <owner>cduvall@chromium.org</owner>
