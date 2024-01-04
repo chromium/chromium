@@ -2429,6 +2429,9 @@ extern const char kOmahaMinSdkVersionAndroidDescription[];
 extern const char kOmahaMinSdkVersionAndroidMinSdk1Description[];
 extern const char kOmahaMinSdkVersionAndroidMinSdk1000Description[];
 
+extern const char kOpenDownloadDialog[];
+extern const char kOpenDownloadDialogDescription[];
+
 extern const char kPassExplicitSyncPassphraseToGmsCoreName[];
 extern const char kPassExplicitSyncPassphraseToGmsCoreDescription[];
 

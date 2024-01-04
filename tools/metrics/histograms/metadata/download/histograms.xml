@@ -64,6 +64,17 @@ chromium-metrics-reviews@google.com.
   <variant name="UserValidated"/>
 </variants>
 
+<histogram name="Download.Android.OpenDialog.Events"
+    enum="OpenDownloadDialogEvent" expires_after="2024-12-31">
+  <owner>qinmin@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records user interactions with the open download dialog on Android. Records
+    when the dialog is shown, or when user clicks on a button or dismisses the
+    dialog.
+  </summary>
+</histogram>
+
 <histogram name="Download.ApiFunctions" enum="DownloadFunctions"
     expires_after="2024-06-30">
   <owner>dtrainor@chromium.org</owner>

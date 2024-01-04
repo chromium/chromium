@@ -1806,16 +1806,16 @@ Your Google account may have other forms of browsing history like searches and a
         File might be harmful
       </message>
 
-        <!-- Mixed content download -->
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
-          File can’t be downloaded securely
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
-          Keep
-        </message>
-        <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
-          Discard
-        </message>
+      <!-- Mixed content download -->
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm an insecure download">
+        File can’t be downloaded securely
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the insecure download dialog for user to confirm the download.">
+        Keep
+      </message>
+      <message name="IDS_INSECURE_DOWNLOAD_DIALOG_DISCARD_TEXT" desc="Text label for the cancel button on the insecure download dialog for user to confirm the download.">
+        Discard
+      </message>
 
       <!-- Downloads location -->
       <message name="IDS_DOWNLOADS_LOCATION_SELECTOR_TITLE" desc="Title of the preference that allows the user to select which of the folders they would like to make the default location to save their downloads.">
@@ -1894,8 +1894,8 @@ Your Google account may have other forms of browsing history like searches and a
         New file name
       </message>
 
-       <!-- Duplicate download -->
-       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
+      <!-- Duplicate download -->
+      <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_CONFIRM_TEXT" desc="Text label for the confirm button on the dangerous download dialog for user to confirm the download.">
         Download again
       </message>
       <message name="IDS_DUPLICATE_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm the download of a duplicate file.">
@@ -1906,6 +1906,20 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
       <message name="IDS_DUPLICATE_PAGE_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm downloading a page that has been downloaded before.">
         Download page again?
+      </message>
+
+      <!-- Download open dialog -->
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TITLE" desc="Title of the dialog for asking user to confirm they want to open a downloaded pdf file.">
+        Automatically open PDFs?
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_TEXT" desc="Warning message shown on a dialog to ask user to confirm they want to open a downloaded pdf file.">
+        Chrome can automatically open a PDF when you download them.
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN_TEXT" desc="Text label for the button on the open download dialog for user to open the download always.">
+        Always open
+      </message>
+      <message name="IDS_OPEN_DOWNLOAD_DIALOG_JUST_ONCE_TEXT" desc="Text label for the button on the open download dialog for user to just open the current download once.">
+        Just once
       </message>
 
       <!-- About Chrome preferences -->

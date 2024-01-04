@@ -26284,6 +26284,7 @@ from previous Chrome versions.
   <int value="-1834475132" label="IgnoreSyncEncryptionKeysLongMissing:enabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
+  <int value="-1832878034" label="OpenDownloadDialog:enabled"/>
   <int value="-1832575380" label="show-saved-copy"/>
   <int value="-1832512456" label="LibinputHandleTouchpad:disabled"/>
   <int value="-1832221649" label="disable-out-of-process-pac"/>
@@ -30772,6 +30773,7 @@ from previous Chrome versions.
   <int value="291866104" label="WebAuthenticationPhoneSupport:enabled"/>
   <int value="291968978" label="HomepagePromoCard:enabled"/>
   <int value="291998717" label="AccessibilitySnapshotStressTests:disabled"/>
+  <int value="292058664" label="OpenDownloadDialog:disabled"/>
   <int value="292560715" label="ViewsCastDialog:disabled"/>
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="292842744"
@@ -38716,6 +38718,13 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Load timeout"/>
   <int value="2" label="Load error"/>
   <int value="3" label="HTTP error"/>
+</enum>
+
+<enum name="OpenDownloadDialogEvent">
+  <int value="0" label="Dialog shown"/>
+  <int value="1" label="Always open clicked"/>
+  <int value="2" label="Just once clicked"/>
+  <int value="3" label="Dialog dismissed"/>
 </enum>
 
 <enum name="OpenLinkAs">
