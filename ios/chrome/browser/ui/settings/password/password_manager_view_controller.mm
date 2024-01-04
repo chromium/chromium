@@ -369,10 +369,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   searchBar.backgroundColor = UIColor.clearColor;
   searchBar.accessibilityIdentifier = kPasswordsSearchBarID;
 
-  // TODO(crbug.com/1268684): Explicitly set the background color for the search
-  // bar to match with the color of navigation bar in iOS 13/14 to work around
-  // an iOS issue.
-
   // UIKit needs to know which controller will be presenting the
   // searchController. If we don't add this trying to dismiss while
   // SearchController is active will fail.
