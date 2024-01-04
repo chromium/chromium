@@ -14,7 +14,7 @@ void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
 #if DCHECK_IS_ON()
   int severity = logging::LOG_ERROR;
 #else
-  int severity = logging::LOG_INFO;
+  int severity = logging::LOGGING_INFO;
 #endif
   if (severity < logging::GetMinLogLevel())
     return;

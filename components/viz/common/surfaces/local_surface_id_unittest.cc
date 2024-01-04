@@ -46,9 +46,9 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
   EXPECT_EQ(big_verbose_expected, big_local_surface_id.ToString());
   EXPECT_EQ(small_verbose_expected, small_local_surface_id.ToString());
 
-  // When |g_min_log_level| is set to LOG_INFO we expect less verbose versions
-  // of local_surface_id::ToString().
-  logging::SetMinLogLevel(logging::LOG_INFO);
+  // When |g_min_log_level| is set to LOGGING_INFO we expect less verbose
+  // versions of local_surface_id::ToString().
+  logging::SetMinLogLevel(logging::LOGGING_INFO);
   EXPECT_FALSE(VLOG_IS_ON(1));
   EXPECT_EQ(brief_expected, local_surface_id.ToString());
   EXPECT_EQ(big_brief_expected, big_local_surface_id.ToString());

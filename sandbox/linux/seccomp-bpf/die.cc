@@ -71,7 +71,7 @@ void Die::RawSandboxDie(const char* msg) {
 
 void Die::SandboxInfo(const char* msg, const char* file, int line) {
   if (!suppress_info_) {
-    logging::LogMessage(file, line, logging::LOG_INFO).stream() << msg;
+    logging::LogMessage(file, line, logging::LOGGING_INFO).stream() << msg;
   }
 }
 

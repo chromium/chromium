@@ -69,7 +69,7 @@ inline int WebRtcSevToChromeSev(LoggingSeverity sev) {
     case LS_WARNING:
       return ::logging::LOGGING_WARNING;
     case LS_INFO:
-      return ::logging::LOG_INFO;
+      return ::logging::LOGGING_INFO;
     case LS_VERBOSE:
     case LS_SENSITIVE:
       return ::logging::LOGGING_VERBOSE;

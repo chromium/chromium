@@ -69,7 +69,7 @@ TEST_F(ProximityAuthLoggingTest, LogsSavedToBuffer) {
   EXPECT_EQ(kLog1, log_message1.text);
   EXPECT_EQ(__FILE__, log_message1.file);
   EXPECT_EQ(base_line_number + 1, log_message1.line);
-  EXPECT_EQ(logging::LOG_INFO, log_message1.severity);
+  EXPECT_EQ(logging::LOGGING_INFO, log_message1.severity);
 
   ++iterator;
   const LogBuffer::LogMessage& log_message2 = *iterator;

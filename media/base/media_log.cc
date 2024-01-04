@@ -152,7 +152,8 @@ LogHelper::~LogHelper() {
       case MediaLogMessageLevel::kINFO:
       case MediaLogMessageLevel::kDEBUG:
         if (DLOG_IS_ON(INFO)) {
-          logging::LogMessage(file_, line_, logging::LOG_INFO).stream() << log;
+          logging::LogMessage(file_, line_, logging::LOGGING_INFO).stream()
+              << log;
         }
         break;
     }

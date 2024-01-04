@@ -34,7 +34,7 @@ logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
     case TRACE_LEVEL_WARNING:
       return logging::LOGGING_WARNING;
     case TRACE_LEVEL_INFORMATION:
-      return logging::LOG_INFO;
+      return logging::LOGGING_INFO;
     default:
       // These represent VLOG verbosity levels.
       return TRACE_LEVEL_INFORMATION - level;
@@ -110,7 +110,7 @@ EventTraceData EventTraceData::Create(EVENT_TRACE* event) {
 // static
 std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
   switch (severity) {
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
       return kInfoSeverity;
     case logging::LOGGING_WARNING:
       return kWarningSeverity;

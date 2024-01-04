@@ -16,7 +16,7 @@ logging::LogSeverity ConsoleMessageLevelToLogSeverity(
       log_severity = logging::LOGGING_VERBOSE;
       break;
     case blink::mojom::ConsoleMessageLevel::kInfo:
-      log_severity = logging::LOG_INFO;
+      log_severity = logging::LOGGING_INFO;
       break;
     case blink::mojom::ConsoleMessageLevel::kWarning:
       log_severity = logging::LOGGING_WARNING;

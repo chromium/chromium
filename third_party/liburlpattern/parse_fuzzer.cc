@@ -48,7 +48,7 @@ std::string FancyHexDump(base::StringPiece label, base::StringPiece data) {
 }
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_INFO); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_INFO); }
 };
 }  // namespace
 

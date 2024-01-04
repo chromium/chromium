@@ -158,7 +158,7 @@ void CastCdm::OnSessionClosed(const std::string& session_id,
 void CastCdm::OnSessionKeysChange(const std::string& session_id,
                                   bool newly_usable_keys,
                                   ::media::CdmKeysInfo keys_info) {
-  logging::LogMessage log_message(__FILE__, __LINE__, logging::LOG_INFO);
+  logging::LogMessage log_message(__FILE__, __LINE__, logging::LOGGING_INFO);
   log_message.stream() << "keystatuseschange ";
   int status_count[kKeyStatusCount] = {0};
   for (const auto& key_info : keys_info) {

@@ -35,7 +35,7 @@ base::FilePath GetImeDecoderLibPath() {
 // Chrome.
 void ImeLoggerBridge(int severity, const char* message) {
   switch (severity) {
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
       // TODO(b/162375823): VLOG_IF(INFO, is_debug_version).
       break;
     case logging::LOGGING_WARNING:

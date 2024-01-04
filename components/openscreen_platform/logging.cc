@@ -20,7 +20,7 @@ namespace {
     case LogLevel::kVerbose:
       return ::logging::LOGGING_VERBOSE;
     case LogLevel::kInfo:
-      return ::logging::LOG_INFO;
+      return ::logging::LOGGING_INFO;
     case LogLevel::kWarning:
       return ::logging::LOGGING_WARNING;
     case LogLevel::kError:

@@ -209,7 +209,7 @@ bool CastWebViewDefault::DidAddMessageToConsole(
   std::u16string single_line_message;
   // Mult-line message is not friendly to dumpstate redact.
   base::ReplaceChars(message, u"\n", u"\\n ", &single_line_message);
-  logging::LogMessage("CONSOLE", line_no, ::logging::LOG_INFO).stream()
+  logging::LogMessage("CONSOLE", line_no, ::logging::LOGGING_INFO).stream()
       << params_->log_prefix << ": \"" << single_line_message
       << "\", source: " << source_id << " (" << line_no << ")";
   return true;

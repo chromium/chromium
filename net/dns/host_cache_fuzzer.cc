@@ -21,7 +21,7 @@
 namespace net {
 
 struct Environment {
-  Environment() { logging::SetMinLogLevel(logging::LOG_INFO); }
+  Environment() { logging::SetMinLogLevel(logging::LOGGING_INFO); }
   const bool kDumpStats = getenv("DUMP_FUZZER_STATS");
   const bool kDumpNativeInput = getenv("LPM_DUMP_NATIVE_INPUT");
 };

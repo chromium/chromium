@@ -36,7 +36,7 @@ struct EventTraceData {
   uint8_t event_type = 0;
 
   // The severity of the event (e.g. warning, info, error).
-  logging::LogSeverity severity = logging::LOG_INFO;
+  logging::LogSeverity severity = logging::LOGGING_INFO;
 
   // The ID of the process which originally logged the event.
   int process_id = 0;

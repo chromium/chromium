@@ -15,7 +15,7 @@ namespace {
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
     case logging::LOGGING_VERBOSE:
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
       VLOG(2) << message;
       break;
     case logging::LOGGING_WARNING:

@@ -29,7 +29,7 @@ WORD SeverityToEventLogType(logging::LogSeverity severity) {
     case logging::LOG_ERROR:
       // Fatal or Error event.
       return EVENTLOG_ERROR_TYPE;
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
     default:
       // Info or Verbose event.
       return EVENTLOG_INFORMATION_TYPE;

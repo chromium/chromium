@@ -602,7 +602,7 @@ bool ShouldLogToStderr(int severity) {
 }
 
 int GetVlogVerbosity() {
-  return std::max(-1, LOG_INFO - GetMinLogLevel());
+  return std::max(-1, LOGGING_INFO - GetMinLogLevel());
 }
 
 int GetVlogLevelHelper(const char* file, size_t N) {

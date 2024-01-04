@@ -164,7 +164,7 @@ TEST(ScopedAlsaMixerTest, MixerOpenFailure) {
 
   EXPECT_CALL(alsa, MixerOpen(_, 0))
       .WillOnce(DoAll(SetArgPointee<0>(mixer), Return(kFailure)));
-  EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+  EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                             ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                             /*line=*/_,
                             /*message_start=*/_, /*str=*/_));
@@ -191,7 +191,7 @@ TEST(ScopedAlsaMixerTest, MixerAttachFailure) {
       .WillOnce(DoAll(SetArgPointee<0>(mixer), Return(kSuccess)));
   EXPECT_CALL(alsa, MixerAttach(mixer, StrEq(kMixerDeviceName)))
       .WillOnce(Return(kFailure));
-  EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+  EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                             ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                             /*line=*/_,
                             /*message_start=*/_, /*str=*/_));
@@ -222,7 +222,7 @@ TEST(ScopedAlsaMixerTest, MixerLoadFailure) {
   EXPECT_CALL(alsa, MixerElementRegister(mixer, nullptr, nullptr))
       .WillOnce(Return(kSuccess));
   EXPECT_CALL(alsa, MixerLoad(mixer)).WillOnce(Return(kFailure));
-  EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+  EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                             ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                             /*line=*/_,
                             /*message_start=*/_, /*str=*/_));
@@ -261,7 +261,7 @@ TEST(ScopedAlsaMixerTest, MixerFindSelemFailure) {
               MixerSelemIdSetName(mixer_selem_id, StrEq(kMixerElementName)));
   EXPECT_CALL(alsa, MixerFindSelem(mixer, mixer_selem_id))
       .WillOnce(Return(nullptr));
-  EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+  EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                             ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                             /*line=*/_,
                             /*message_start=*/_, /*str=*/_));
@@ -293,7 +293,7 @@ TEST(ScopedAlsaMixerDeathTest, MixerElementRegisterFailure) {
             .WillOnce(Return(kSuccess));
         EXPECT_CALL(alsa, MixerElementRegister(mixer, nullptr, nullptr))
             .WillOnce(Return(kFailure));
-        EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+        EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                                   ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                                   /*line=*/_,
                                   /*message_start=*/_, /*str=*/_));
@@ -330,7 +330,7 @@ TEST(ScopedAlsaMixerDeathTest, MixerSelemIdMallocFailure) {
         EXPECT_CALL(alsa, MixerSelemIdMalloc(_))
             .WillOnce(
                 DoAll(SetArgPointee<0>(mixer_selem_id), Return(kFailure)));
-        EXPECT_CALL(mock_log, Log(logging::LOG_INFO,
+        EXPECT_CALL(mock_log, Log(logging::LOGGING_INFO,
                                   ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                                   /*line=*/_,
                                   /*message_start=*/_, /*str=*/_));

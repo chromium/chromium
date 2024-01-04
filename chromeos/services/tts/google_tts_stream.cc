@@ -18,7 +18,7 @@ namespace tts {
 // Simple helper to bridge logging in the shared library to Chrome's logging.
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
-    case logging::LOG_INFO:
+    case logging::LOGGING_INFO:
       // Suppressed.
       break;
     case logging::LOGGING_WARNING:
