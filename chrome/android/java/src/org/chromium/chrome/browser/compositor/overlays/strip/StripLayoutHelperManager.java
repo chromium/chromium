@@ -177,6 +177,7 @@ public class StripLayoutHelperManager
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final String mDefaultTitle;
     private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     // Drag-Drop
     @Nullable private TabDragSource mTabDragSource;
@@ -324,6 +325,7 @@ public class StripLayoutHelperManager
         mTabSwitcherLayoutObserver = new TabSwitcherLayoutObserver();
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+        mBrowserControlsStateProvider = browserControlsStateProvider;
         mDefaultTitle = context.getString(R.string.tab_loading_default_title);
         mEventFilter =
                 new AreaMotionEventFilter(context, mTabStripEventHandler, null, false, false);
@@ -691,6 +693,9 @@ public class StripLayoutHelperManager
     @Override
     public void getVirtualViews(List<VirtualView> views) {
         if (mBrowserScrimShowing) return;
+        if (duringTabStripTransition() || mIsHidden) return;
+        // Remove the a11y views when top controls is partially invisible.
+        if (mBrowserControlsStateProvider.getTopControlOffset() < 0) return;
 
         getActiveStripLayoutHelper().getVirtualViews(views);
         if (mModelSelectorButton.isVisible()) views.add(mModelSelectorButton);

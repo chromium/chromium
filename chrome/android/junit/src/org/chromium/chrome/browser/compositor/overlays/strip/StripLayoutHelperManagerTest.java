@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -57,6 +58,8 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperMa
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.TabStripSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -72,6 +75,9 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link StripLayoutHelperManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -657,5 +663,51 @@ public class StripLayoutHelperManagerTest {
                         anyInt(),
                         /* scrimOpacity= */ eq(mStripLayoutHelperManager.getBackgroundColor()),
                         eq(0f));
+    }
+
+    @Test
+    public void testGetVirtualViews() {
+        List<VirtualView> views = new ArrayList<>();
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertFalse("Views are not empty during regular mode.", views.isEmpty());
+    }
+
+    @Test
+    public void testGetVirtualViews_TabSwitcher() {
+        List<VirtualView> views = new ArrayList<>();
+        mStripLayoutHelperManager
+                .getTabSwitcherObserver()
+                .onStartedShowing(LayoutType.TAB_SWITCHER);
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertTrue("Views are empty when tab switcher is showing.", views.isEmpty());
+
+        mStripLayoutHelperManager.getTabSwitcherObserver().onStartedHiding(LayoutType.TAB_SWITCHER);
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertFalse("Views are not empty after tab switcher is hiding.", views.isEmpty());
+    }
+
+    @Test
+    public void testGetVirtualViews_BrowserControlsOffset() {
+        List<VirtualView> views = new ArrayList<>();
+        doReturn(-1).when(mBrowserControlStateProvider).getTopControlOffset();
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertTrue("Views empty when browser controls partially visible.", views.isEmpty());
+    }
+
+    @Test
+    public void testGetVirtualViews_TabStripTransition() {
+        List<VirtualView> views = new ArrayList<>();
+        mStripLayoutHelperManager.setIsTabStripHidden(true);
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertTrue("Views are empty when tab strip hidden.", views.isEmpty());
+
+        mStripLayoutHelperManager.setIsTabStripHidden(false);
+        mStripLayoutHelperManager.onHeightChanged(40);
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertTrue("Views are empty during tab strip transition.", views.isEmpty());
+
+        mStripLayoutHelperManager.onTransitionFinished();
+        mStripLayoutHelperManager.getVirtualViews(views);
+        assertFalse("Views are not empty after tab strip transition.", views.isEmpty());
     }
 }
