@@ -20,12 +20,12 @@
 OmniboxController::OmniboxController(OmniboxView* view,
                                      std::unique_ptr<OmniboxClient> client)
     : client_(std::move(client)),
-      edit_model_(std::make_unique<OmniboxEditModel>(
-          /*omnibox_controller=*/this,
-          view)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
-          AutocompleteClassifier::DefaultOmniboxProviders())) {
+          AutocompleteClassifier::DefaultOmniboxProviders())),
+      edit_model_(std::make_unique<OmniboxEditModel>(
+          /*omnibox_controller=*/this,
+          view)) {
   // Directly observe omnibox's `AutocompleteController` instance - i.e., when
   // `view` is provided in the constructor. In the case of realbox - i.e., when
   // `view` is not provided in the constructor - `RealboxHandler` directly

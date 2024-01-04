@@ -14,6 +14,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
+#include "components/omnibox/browser/provider_state_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "omnibox_feature_configs.h"
@@ -44,6 +45,10 @@ class CalculatorProviderTest : public testing::Test,
     search_provider_ = new FakeSearchProvider(client_.get(), this);
     calculator_provider_ =
         new CalculatorProvider(client_.get(), this, search_provider_.get());
+  }
+
+  ~CalculatorProviderTest() override {
+    client_->GetProviderStateService()->calculator_provider_cache.clear();
   }
 
   // AutocompleteProviderListener:

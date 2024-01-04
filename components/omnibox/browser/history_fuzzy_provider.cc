@@ -617,10 +617,10 @@ void HistoryFuzzyProvider::DoAutocomplete() {
                         matches_.begin() + provider_max_matches_,
                         matches_.end(), AutocompleteMatch::MoreRelevant);
       for (size_t i = provider_max_matches_; i < matches_.size(); i++) {
-        DCHECK(matches_[i].provider == history_quick_provider ||
-               matches_[i].provider == bookmark_provider)
+        DCHECK(matches_[i].provider.get() == history_quick_provider ||
+               matches_[i].provider.get() == bookmark_provider)
             << matches_[i].provider->GetName();
-        if (matches_[i].provider == history_quick_provider) {
+        if (matches_[i].provider.get() == history_quick_provider) {
           count_history_quick--;
         } else {
           count_bookmark--;

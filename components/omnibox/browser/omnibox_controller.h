@@ -85,9 +85,14 @@ class OmniboxController : public AutocompleteController::Observer {
 
   std::unique_ptr<OmniboxClient> client_;
 
-  std::unique_ptr<OmniboxEditModel> edit_model_;
-
   std::unique_ptr<AutocompleteController> autocomplete_controller_;
+
+  // `edit_model_` may indirectly contains raw pointers (e.g.
+  // `edit_model_->current_match_->provider`) into `AutocompleteProvider`
+  // objects owned by `autocomplete_controller_`.  Because of this (per
+  // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
+  // *after* the `autocomplete_controller_` field.
+  std::unique_ptr<OmniboxEditModel> edit_model_;
 
   // Observes changes to the prefs for the visibility of groups.
   PrefChangeRegistrar pref_change_registrar_;
