@@ -1,0 +1,34 @@
+{
+  "linux-chromeos-archive-rel": {
+    "additional_compile_targets": [
+      "base_unittests",
+      "browser_tests",
+      "chromeos_unittests",
+      "components_unittests",
+      "compositor_unittests",
+      "content_browsertests",
+      "content_unittests",
+      "crypto_unittests",
+      "dbus_unittests",
+      "device_unittests",
+      "gcm_unit_tests",
+      "google_apis_unittests",
+      "gpu_unittests",
+      "interactive_ui_tests",
+      "ipc_tests",
+      "media_unittests",
+      "message_center_unittests",
+      "nacl_loader_unittests",
+      "net_unittests",
+      "ppapi_unittests",
+      "printing_unittests",
+      "remoting_unittests",
+      "sandbox_linux_unittests",
+      "sql_unittests",
+      "ui_base_unittests",
+      "unit_tests",
+      "url_unittests",
+      "views_unittests"
+    ]
+  }
+}

@@ -9,6 +9,9 @@
 # * trailing commas are allowed.
 
 [
+  # The following builder groups have been migrated to set their targets in the
+  # builders' declarations in //infra/config/subprojects/ci/<builder-group>.star
+  #   chromium
   {
     'name': 'chrome',
     'mixins': ['chrome-tester-service-account'],
@@ -373,133 +376,6 @@
           'gpu_telemetry_tests': 'gpu_fyi_lacros_device_release_telemetry_tests',
         },
         'skip_merge_script': True,
-      },
-    }
-  },
-  {
-    'name': 'chromium',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'android-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'android-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'android-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'lacros-arm-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'lacros-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'lacros64-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-        'os_type': 'chromeos',
-      },
-      'linux-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'linux-chromeos-archive-rel': {
-        'additional_compile_targets': [
-          'base_unittests',
-          'browser_tests',
-          'chromeos_unittests',
-          'components_unittests',
-          'compositor_unittests',
-          'content_browsertests',
-          'content_unittests',
-          'crypto_unittests',
-          'dbus_unittests',
-          'device_unittests',
-          'gcm_unit_tests',
-          'google_apis_unittests',
-          'gpu_unittests',
-          'interactive_ui_tests',
-          'ipc_tests',
-          'media_unittests',
-          'message_center_unittests',
-          'nacl_loader_unittests',
-          'net_unittests',
-          'ppapi_unittests',
-          'printing_unittests',
-          'remoting_unittests',
-          'sandbox_linux_unittests',
-          'sql_unittests',
-          'ui_base_unittests',
-          'unit_tests',
-          'url_unittests',
-          'views_unittests',
-        ],
-      },
-      'linux-lacros-archive-rel': {
-        'additional_compile_targets': [
-          'chrome',
-        ],
-      },
-      'linux-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-arm64-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'mac-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
-      'win-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'win32-archive-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'scripts': 'public_build_scripts',
-        },
-      },
-      'win32-official': {
-        'additional_compile_targets': [
-          'all',
-        ],
       },
     }
   },

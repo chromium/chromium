@@ -32,6 +32,11 @@ running fuzz tests are not included.
   * generated_script
   * script
   * windowed_test_launcher
+* [bundles.star](./bundles.star) - This contains declarations of bundles, which
+  are groupings of tests and compile targets that can be referenced by builders
+  that set their tests in starlark. These bundles cannot be referenced by any
+  legacy suites or by builders setting their tests in
+  [waterfalls.pyl][waterfalls.pyl].
 * [compile_targets.star](./compile_targets.star) - This contains definition of
   compile-only targets. These targets can only be built by a builder and have no
   provision for execution. These targets can be included in the
@@ -123,3 +128,54 @@ run [generate_buildbot_json.py](/testing/buildbot/generate_buildbot_json.py) to
 generate the targets spec files.
 
 [waterfalls.pyl]: /testing/buildbot/waterfalls.pyl
+
+### Setting tests for a builder in starlark
+
+It is now possible to specify test in starlark for builders in limited
+conditions:
+
+* No legacy suites can be referenced
+* Only compile-only targets and script tests can be included
+* Cannot rely on any fields being set on the builder's waterfall in
+  waterfalls.pyl
+* Cannot rely on any fields besides additional_compile_targets and
+  test_suites being set for the builder in waterfalls.pyl.
+
+These conditions will be removed as more support is implemented.
+
+To set tests for a builder in starlark, the builder must be setting the
+builder_spec argument. If that is the case, simply set the targets field of a
+builder to the name of a bundle or a list of bundle names to include. Supported
+target types create a bundle with the same name as the target, so single targets
+can be referenced wherever a bundle is expected.
+
+```starlark
+ci.builder(
+  name = "foo-builder",
+  builder_spec = ...,
+  # Configures the builder to build all
+  targets = targets.bundle(
+      additional_compile_targets = "all",
+  ),
+)
+
+ci.builder(
+  name = "bar-builder",
+  builder_spec = ...,
+  # Configures the builder to build all and run any tests and build any compile
+  # targets specified by the public_build_scripts bundle
+  targets = targets.bundle(
+      additional_compile_targets = "all",
+      targets = "public_build_scripts",
+  ),
+)
+```
+
+This will cause json files containing the targets specs to be written out in the
+per-builder generated directory. Try builders that mirror other builders do not
+need to set the targets field (and it is an error to do so). The mirroring
+relationship indicates that it should use the targets configured for the
+builders that it mirrors, so mirroring try builders will have their own json
+files generated containing the logical union of the contents of the mirrored
+builders. This makes it more clear what builders are affected by modifications
+to a CI builder's targets.

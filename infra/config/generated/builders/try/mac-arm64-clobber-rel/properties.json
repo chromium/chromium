@@ -37,7 +37,8 @@
           "builder": "mac-arm64-archive-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-arm64-clobber-rel/targets"
     }
   },
   "$build/reclient": {

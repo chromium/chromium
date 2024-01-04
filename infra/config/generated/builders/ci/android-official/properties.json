@@ -48,7 +48,8 @@
           "builder": "android-official",
           "group": "tryserver.chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-official/targets"
     }
   },
   "$build/reclient": {

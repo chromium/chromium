@@ -4479,16 +4479,6 @@ targets.legacy_basic_suite(
     },
 )
 
-# TODO(dpranke): These are run on the p/chromium waterfall; they should
-# probably be run on other builders, and we should get rid of the p/chromium
-# waterfall.
-targets.legacy_basic_suite(
-    name = "public_build_scripts",
-    tests = {
-        "checkbins": targets.legacy_test_config(),
-    },
-)
-
 targets.legacy_basic_suite(
     name = "pytype_tests",
     tests = {

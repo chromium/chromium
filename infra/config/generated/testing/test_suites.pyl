@@ -4832,12 +4832,6 @@
       'private_code_failure_test': {},
     },
 
-    'public_build_scripts': {
-      'checkbins': {
-        'script': 'checkbins.py',
-      },
-    },
-
     'pytype_tests': {
       'blink_pytype': {
         'mixins': [

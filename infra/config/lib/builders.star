@@ -497,6 +497,7 @@ def builder(
         shadow_service_account = args.DEFAULT,
         shadow_reclient_instance = args.DEFAULT,
         gn_args = None,
+        targets = None,
         contact_team_email = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -718,6 +719,11 @@ def builder(
             gn_args.config declaration for an unphased config. A builder can use
             phased configs by setting a dict with the phase names as keys and
             the values being the config to use for the phase.
+        targets: The targets that should be built and/or run by the builder. Can
+            take the form of the name of a targets bundle (individual targets
+            define a bundle with the same name containing only that target), a
+            targets.bundle instance or a list where each element is the name of
+            a targets bundle or a targets.bundle instance.
         contact_team_email: The e-mail of the team responsible for the health of
             the builder.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
@@ -989,6 +995,7 @@ def builder(
         builder_spec,
         mirrors,
         try_settings,
+        targets,
         additional_exclusions,
     )
 

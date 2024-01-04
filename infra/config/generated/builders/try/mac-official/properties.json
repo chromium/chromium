@@ -38,7 +38,8 @@
           "builder": "mac-official",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-official/targets"
     }
   },
   "$build/reclient": {

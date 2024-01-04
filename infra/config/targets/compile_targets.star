@@ -5,6 +5,10 @@
 load("//lib/targets.star", "targets")
 
 targets.compile_target(
+    name = "all",
+)
+
+targets.compile_target(
     name = "android_lint",
     label = "//chrome/android:android_lint",
 )
