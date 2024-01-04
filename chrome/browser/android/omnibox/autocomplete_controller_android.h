@@ -24,7 +24,8 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcontroller,
       Profile* profile,
-      std::unique_ptr<ChromeAutocompleteProviderClient> client);
+      std::unique_ptr<ChromeAutocompleteProviderClient> client,
+      bool is_low_memory_device);
 
   AutocompleteControllerAndroid(const AutocompleteControllerAndroid&) = delete;
   AutocompleteControllerAndroid& operator=(

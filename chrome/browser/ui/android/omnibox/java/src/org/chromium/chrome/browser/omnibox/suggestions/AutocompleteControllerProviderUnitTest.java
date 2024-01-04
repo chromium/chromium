@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
@@ -63,10 +64,10 @@ public class AutocompleteControllerProviderUnitTest {
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
         doReturn(NATIVE_CONTROLLER_1)
                 .when(mAutocompleteControllerJniMock)
-                .create(any(), eq(mProfile1));
+                .create(any(), eq(mProfile1), anyBoolean());
         doReturn(NATIVE_CONTROLLER_2)
                 .when(mAutocompleteControllerJniMock)
-                .create(any(), eq(mProfile2));
+                .create(any(), eq(mProfile2), anyBoolean());
 
         mShadowLooper = ShadowLooper.shadowMainLooper();
         mWindowAndroid1 = new WindowAndroid(ContextUtils.getApplicationContext());
@@ -122,8 +123,8 @@ public class AutocompleteControllerProviderUnitTest {
     @Test
     @SmallTest
     public void controllersAreDestroyedWithProfile() {
-        var controller1 = mProvider1.get(mProfile1);
-        var controller2 = mProvider1.get(mProfile2);
+        mProvider1.get(mProfile1);
+        mProvider1.get(mProfile2);
 
         reset(mAutocompleteControllerJniMock);
 
@@ -137,8 +138,8 @@ public class AutocompleteControllerProviderUnitTest {
     @Test
     @SmallTest
     public void controllersAreDestroyedWithProvider() {
-        var controller1 = mProvider1.get(mProfile1);
-        var controller2 = mProvider1.get(mProfile2);
+        mProvider1.get(mProfile1);
+        mProvider1.get(mProfile2);
 
         reset(mAutocompleteControllerJniMock);
         mProvider1.onDetachedFromHost(mWindowAndroid1.getUnownedUserDataHost());
@@ -150,9 +151,8 @@ public class AutocompleteControllerProviderUnitTest {
     @Test
     @SmallTest
     public void singleWindow_controllersAreDestroyedOnlyOnce() {
-        var controller1 = mProvider1.get(mProfile1);
-        var controller2 = mProvider1.get(mProfile2);
-        var controller3 = mProvider1.get(mProfile2);
+        mProvider1.get(mProfile1);
+        mProvider1.get(mProfile2);
 
         reset(mAutocompleteControllerJniMock);
 
@@ -175,11 +175,11 @@ public class AutocompleteControllerProviderUnitTest {
     @Test
     @SmallTest
     public void multiWindow_controllersAreDestroyedForAppropriateWindow() {
-        var controller1 = mProvider1.get(mProfile1);
-        var controller2 = mProvider2.get(mProfile1);
+        mProvider1.get(mProfile1);
+        mProvider2.get(mProfile1);
 
         // Two distinct controllers are associated with the same profile.
-        verify(mAutocompleteControllerJniMock, times(2)).create(any(), eq(mProfile1));
+        verify(mAutocompleteControllerJniMock, times(2)).create(any(), eq(mProfile1), anyBoolean());
 
         // Dispose of all the controllers associated with the first window.
         mProvider1.onDetachedFromHost(mWindowAndroid1.getUnownedUserDataHost());
@@ -197,11 +197,11 @@ public class AutocompleteControllerProviderUnitTest {
     @Test
     @SmallTest
     public void multiWindow_controllersAreDestroyedForAppropriateProfile() {
-        var controller1 = mProvider1.get(mProfile1);
-        var controller2 = mProvider2.get(mProfile1);
+        mProvider1.get(mProfile1);
+        mProvider2.get(mProfile1);
 
         // Two distinct controllers are associated with the same profile.
-        verify(mAutocompleteControllerJniMock, times(2)).create(any(), eq(mProfile1));
+        verify(mAutocompleteControllerJniMock, times(2)).create(any(), eq(mProfile1), anyBoolean());
 
         // Controllers should be removed everywhere if the profile is gone.
         ProfileManager.onProfileDestroyed(mProfile1);
@@ -238,7 +238,8 @@ public class AutocompleteControllerProviderUnitTest {
     @SmallTest
     public void closeableControllers_releasedWhenOutOfScope() {
         try (var controller = AutocompleteControllerProvider.createCloseableController(mProfile2)) {
-            verify(mAutocompleteControllerJniMock, times(1)).create(any(), eq(mProfile2));
+            verify(mAutocompleteControllerJniMock, times(1))
+                    .create(any(), eq(mProfile2), anyBoolean());
             verifyNoMoreInteractions(mAutocompleteControllerJniMock);
         }
         verify(mAutocompleteControllerJniMock, times(1)).destroy(NATIVE_CONTROLLER_2);

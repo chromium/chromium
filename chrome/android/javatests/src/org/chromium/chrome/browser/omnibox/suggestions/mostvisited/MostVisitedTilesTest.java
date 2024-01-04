@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.mostvisited;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -76,7 +77,7 @@ import java.util.Arrays;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class MostVisitedTilesTest {
-    // A dummy URL used in the Omnibox for factual correctness.
+    // A placeholder URL used in the Omnibox for factual correctness.
     // The MV tiles are meant to be shown when the user is currently on any website.
     // Note: since we use the TestAutocompleteController, this could be any string.
     private static final String START_PAGE_LOCATION = "/echo/start.html";
@@ -110,13 +111,13 @@ public class MostVisitedTilesTest {
     @Before
     public void setUp() throws Exception {
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
-        doReturn(1L).when(mAutocompleteControllerJniMock).create(any(), any());
+        doReturn(1L).when(mAutocompleteControllerJniMock).create(any(), any(), anyBoolean());
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityNativeInitializationComplete();
 
         verify(mAutocompleteControllerJniMock, times(1))
-                .create(mAutocompleteControllerCaptor.capture(), any());
+                .create(mAutocompleteControllerCaptor.capture(), any(), anyBoolean());
         mController = mAutocompleteControllerCaptor.getValue();
 
         mActivity = mActivityTestRule.getActivity();

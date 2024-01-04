@@ -39,9 +39,10 @@ void AutocompleteClassifier::Shutdown() {
 }
 
 // static
-int AutocompleteClassifier::DefaultOmniboxProviders() {
+int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
   int optional_query_tiles =
-      base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP)
+      (base::FeatureList::IsEnabled(omnibox::kQueryTilesInZPSOnNTP) &&
+       !is_low_memory_device)
           ? AutocompleteProvider::TYPE_QUERY_TILE
           : 0;
   return optional_query_tiles |

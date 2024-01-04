@@ -10,6 +10,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -120,7 +121,7 @@ public class OmniboxPedalsTest {
         mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
 
-        doReturn(1L).when(mAutocompleteControllerJniMock).create(any(), any());
+        doReturn(1L).when(mAutocompleteControllerJniMock).create(any(), any(), anyBoolean());
     }
 
     @After
@@ -161,7 +162,7 @@ public class OmniboxPedalsTest {
         Assert.assertNotNull("No suggestions with actions", info);
     }
 
-    private AutocompleteMatch createDummyPedalSuggestion(@OmniboxPedalId int pedalId) {
+    private AutocompleteMatch createPedalSuggestion(@OmniboxPedalId int pedalId) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText("Suggestion")
                 .setActions(
@@ -196,7 +197,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), ClearBrowsingDataFragmentAdvanced.class);
         verify(mOmniboxActionJni, times(1))
@@ -211,7 +212,7 @@ public class OmniboxPedalsTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void testClearBrowsingData_withQuickDeleteEnabled() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.CLEAR_BROWSING_DATA));
         mOmniboxUtils.clickOnAction(0, 0);
 
         onViewWaiting(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
@@ -226,7 +227,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testManagePasswords() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_PASSWORDS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), PasswordSettings.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
@@ -237,7 +238,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testManagePaymentMethods() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.UPDATE_CREDIT_CARD));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AutofillPaymentMethodsFragment.class);
         verify(mOmniboxActionJni, times(1))
@@ -249,7 +250,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testOpenIncognitoTab() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.LAUNCH_INCOGNITO));
 
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
@@ -268,7 +269,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testRunChromeSafetyCheck() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.RUN_CHROME_SAFETY_CHECK));
 
         HistogramWatcher safetyCheckHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -289,7 +290,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testManageSiteSettings() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_SITE_SETTINGS));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_SITE_SETTINGS));
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), SiteSettings.class);
         verify(mOmniboxActionJni, times(1))
                 .recordActionShown(
@@ -302,7 +303,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testManageChromeSettings() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_SETTINGS));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_SETTINGS));
 
         clickOnPedalToSettings(() -> mOmniboxUtils.clickOnAction(0, 0), MainSettings.class);
         verify(mOmniboxActionJni, times(1))
@@ -316,7 +317,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testViewYourChromeHistory() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.VIEW_CHROME_HISTORY));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.VIEW_CHROME_HISTORY));
 
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
@@ -338,7 +339,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testManageAccessibilitySettings() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
         clickOnPedalToSettings(
                 () -> mOmniboxUtils.clickOnAction(0, 0), AccessibilitySettings.class);
         verify(mOmniboxActionJni, times(1))
@@ -352,7 +353,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testPedalsStartedOnTabEnterKeyStroke() throws Exception {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.MANAGE_CHROME_ACCESSIBILITY));
 
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_DPAD_DOWN));
         onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_TAB));
@@ -373,7 +374,7 @@ public class OmniboxPedalsTest {
     @Test
     @MediumTest
     public void testPlayChromeDinoGame() throws InterruptedException {
-        setSuggestions(createDummyPedalSuggestion(OmniboxPedalId.PLAY_CHROME_DINO_GAME));
+        setSuggestions(createPedalSuggestion(OmniboxPedalId.PLAY_CHROME_DINO_GAME));
 
         mOmniboxUtils.clickOnAction(0, 0);
         CriteriaHelper.pollUiThread(
