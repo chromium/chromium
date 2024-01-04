@@ -16,6 +16,7 @@
 }
 
 #dropdownContainer {
+  display: none;
   overflow: hidden;
   position: absolute;
   border-radius: 12px;
@@ -25,8 +26,12 @@
   width: 220px;
 }
 
-#dropdownContainer {
-  display: none;
+@media (forced-colors: active) {
+  #dropdownContainer {
+    background: Field;
+    color: FieldText;
+    border: solid 1px Highlight;
+  }
 }
 
 :host([expanded_]) #dropdownContainer {
@@ -79,6 +84,15 @@
 .group-item[highlighted],
 .item[highlighted] {
   background: var(--cr-active-neutral-on-subtle-background-color);
+}
+
+@media (forced-colors: active) {
+  .group-item[highlighted],
+  .item[highlighted] {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
 }
 
 .item iron-icon {
