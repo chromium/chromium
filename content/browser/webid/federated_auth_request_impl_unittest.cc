@@ -4121,12 +4121,33 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpError) {
   EXPECT_FALSE(DidFetchAnyEndpoint());
 }
 
-// Test successful multi IDP FedCM request.
-TEST_F(FederatedAuthRequestImplTest, AllSuccessfulMultiIdpRequest) {
+TEST_F(FederatedAuthRequestImplTest,
+       AllSuccessfulMultiIdpRequestWithoutIdpReorder) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
 
-  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess,
+  // Set the account from the first IDP as returning as well, so the first
+  // selected account should be that one (second IDP also has returning accounts
+  // and no reordering should happen).
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderUrlFull].accounts[0].login_state =
+      LoginState::kSignIn;
+  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
+  EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
+}
+
+// Test successful multi IDP FedCM request.
+TEST_F(FederatedAuthRequestImplTest,
+       AllSuccessfulMultiIdpRequestWithIdpReorder) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  RequestExpectations expectations = kExpectationSuccess;
+  // Since the first IDP does not set the login state of the account but the
+  // second IDP has one with state set to SignIn, selecting the first account
+  // means that the second IDP is the one that is selected.
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations,
               kConfigurationMultiIdpValid);
   EXPECT_EQ(2u, NumFetched(FetchedEndpoint::ACCOUNTS));
 }
@@ -4598,12 +4619,17 @@ TEST_F(FederatedAuthRequestImplTest, MetricsEndpointMultiIdp) {
       unique_metrics_recorder.get();
   SetNetworkRequestManager(std::move(unique_metrics_recorder));
 
-  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess,
+  // Since the first IDP does not set the login state of the account but the
+  // second IDP has one with state set to SignIn, selecting the first account
+  // means that the second IDP is the one that is selected.
+  RequestExpectations expectations = kExpectationSuccess;
+  expectations.selected_idp_config_url = kProviderTwoUrlFull;
+  RunAuthTest(kDefaultMultiIdpRequestParameters, expectations,
               kConfigurationMultiIdpValid);
   EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_success(),
-              ElementsAre(kMetricsEndpoint));
-  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
               ElementsAre("https://idp2.example/metrics"));
+  EXPECT_THAT(metrics_recorder->get_metrics_endpoints_notified_failure(),
+              ElementsAre(kMetricsEndpoint));
 }
 
 // Test that the metrics endpoint is notified when

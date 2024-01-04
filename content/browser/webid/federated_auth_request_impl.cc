@@ -1418,28 +1418,29 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // Account" flow or the IDP login mismatch in multiple IDP case.
   idp_data_for_display_.clear();
 
-  // We temporarily store IDPs with accounts on a separate vector to ensure that
-  // IDPs with login status mismatch are listed first.
-  std::vector<IdentityProviderData> idps_with_accounts;
   for (const auto& idp : idp_order_) {
     auto idp_info_it = idp_infos_.find(idp);
     if (idp_info_it != idp_infos_.end() && idp_info_it->second->data) {
-      if (idp_info_it->second->data->has_login_status_mismatch) {
-        // Append to `idp_data_for_display_` right away: IDPs with login status
-        // mismatch should go first in the list, before IDPs with accounts.
-        DCHECK(idp_info_it->second->data->accounts.empty());
-        idp_data_for_display_.push_back(*idp_info_it->second->data);
-      } else {
-        // Append to `idps_with_accounts`, which will later be appended to
-        // `idp_data_for_display_`.
-        DCHECK(!idp_info_it->second->data->accounts.empty());
-        idps_with_accounts.push_back(*idp_info_it->second->data);
-      }
+      idp_data_for_display_.push_back(*idp_info_it->second->data);
     }
   }
-  std::move(idps_with_accounts.begin(), idps_with_accounts.end(),
-            std::back_inserter(idp_data_for_display_));
-  idps_with_accounts.clear();
+  // We want to show IDPs in the following order in the UI:
+  // 1. IDPs for which there was a mismatch.
+  // 2. IDPs for which there were returning accounts.
+  // 3. IDPs for which there weren't returning accounts.
+  base::ranges::stable_sort(idp_data_for_display_, [](const auto& idp1,
+                                                      const auto& idp2) {
+    if (idp1.has_login_status_mismatch != idp2.has_login_status_mismatch) {
+      // The IDP with mismatch should go first.
+      return idp1.has_login_status_mismatch > idp2.has_login_status_mismatch;
+    }
+    LoginState state1 = idp1.accounts.empty() ? LoginState::kSignIn
+                                              : *idp1.accounts[0].login_state;
+    LoginState state2 = idp2.accounts.empty() ? LoginState::kSignIn
+                                              : *idp2.accounts[0].login_state;
+    // LoginState::kSignIn should go first.
+    return state1 < state2;
+  });
 
   // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
