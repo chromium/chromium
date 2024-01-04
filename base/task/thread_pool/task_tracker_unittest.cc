@@ -977,11 +977,11 @@ TEST_F(ThreadPoolTaskTrackerTest, CurrentSequenceToken) {
     sequence_transaction.WillPushImmediateTask();
     sequence_transaction.PushImmediateTask(std::move(task));
 
-    EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+    EXPECT_NE(SequenceToken::GetForCurrentThread(), sequence_token);
   }
 
   test::QueueAndRunTaskSource(&tracker_, std::move(sequence));
-  EXPECT_FALSE(SequenceToken::GetForCurrentThread().IsValid());
+  EXPECT_NE(SequenceToken::GetForCurrentThread(), sequence_token);
 }
 
 TEST_F(ThreadPoolTaskTrackerTest, LoadWillPostAndRunBeforeShutdown) {

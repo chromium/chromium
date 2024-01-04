@@ -26,6 +26,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/job_task_source.h"
+#include "base/task/thread_pool/task_source.h"
 #include "base/threading/sequence_local_storage_map.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
@@ -450,8 +451,9 @@ void TaskTracker::RunTask(Task task,
 
   {
     DCHECK(environment.token.IsValid());
-    ScopedSetSequenceTokenForCurrentThread
-        scoped_set_sequence_token_for_current_thread(environment.token);
+    TaskScope task_scope(environment.token,
+                         /* is_thread_bound=*/task_source->execution_mode() ==
+                             TaskSourceExecutionMode::kSingleThread);
     ScopedSetTaskPriorityForCurrentThread
         scoped_set_task_priority_for_current_thread(traits.priority());
 

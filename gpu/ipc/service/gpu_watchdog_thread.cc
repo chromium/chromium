@@ -74,7 +74,6 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       watchdog_restart_factor_(restart_factor),
       is_test_mode_(is_test_mode) {
   base::CurrentThread::Get()->AddTaskObserver(this);
-  DETACH_FROM_SEQUENCE(watchdog_thread_sequence_checker_);
 
   // DO NOT CHANGE |watched_thread_name_str_uma_|. It's used for UMA and crash
   // report.
@@ -307,7 +306,7 @@ void GpuWatchdogThread::Init() {
 
 // Running on the watchdog thread.
 void GpuWatchdogThread::CleanUp() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   weak_factory_.InvalidateWeakPtrs();
 }
 
@@ -339,14 +338,14 @@ void GpuWatchdogThread::DidProcessTask(const base::PendingTask& pending_task) {
 
 // Power Suspends. Running on the watchdog thread.
 void GpuWatchdogThread::OnSuspend() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   InProgress();
   StopWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
 // Power Resumes. Running on the watchdog thread.
 void GpuWatchdogThread::OnResume() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   RestartWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
@@ -354,7 +353,7 @@ void GpuWatchdogThread::OnResume() {
 // Call AddPowerSuspendObserver on the watchdog thread so that OnSuspend() and
 // OnResume() will be called on this thread.
 void GpuWatchdogThread::AddPowerObserver() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
   // Adding the Observer to the power monitor is safe even if power monitor is
   // not yet initialized.
@@ -367,7 +366,7 @@ void GpuWatchdogThread::AddPowerObserver() {
 // Running on the watchdog thread.
 void GpuWatchdogThread::RestartWatchdogTimeoutTask(
     PauseResumeSource source_of_request) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   base::TimeDelta timeout;
 
   switch (source_of_request) {
@@ -418,7 +417,7 @@ void GpuWatchdogThread::RestartWatchdogTimeoutTask(
 
 void GpuWatchdogThread::StopWatchdogTimeoutTask(
     PauseResumeSource source_of_request) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
   switch (source_of_request) {
     case kAndroidBackgroundForeground:
@@ -449,13 +448,13 @@ void GpuWatchdogThread::StopWatchdogTimeoutTask(
 
 // On the watchdog thread only.
 void GpuWatchdogThread::SetReportOnlyModeTask(bool enabled) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   in_report_only_mode_ = enabled;
 }
 
 // On the watchdog thread only.
 void GpuWatchdogThread::UpdateInitializationFlag() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   in_gpu_initialization_ = false;
 }
 
@@ -497,7 +496,7 @@ base::subtle::Atomic32 GpuWatchdogThread::ReadArmDisarmCounter() {
 
 // Running on the watchdog thread.
 void GpuWatchdogThread::OnWatchdogTimeout() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
   DCHECK(!is_backgrounded_);
   DCHECK(!in_power_suspension_);
   DCHECK(!is_paused_);
@@ -661,7 +660,7 @@ base::ThreadTicks GpuWatchdogThread::GetWatchedThreadTime() {
 #endif
 
 void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(watchdog_thread_sequence_checker_);
+  DCHECK(task_runner()->RunsTasksInCurrentSequence());
 
   // If this is for gpu testing, do not terminate the gpu process.
   // Just signal and quit.
