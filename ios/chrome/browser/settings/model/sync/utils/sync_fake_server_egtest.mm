@@ -10,6 +10,7 @@
 #import "components/browser_sync/browser_sync_switches.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/features.h"
+#import "components/sync/base/model_type.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -17,9 +18,13 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
@@ -34,6 +39,12 @@ namespace {
 
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
+
+constexpr NSString* kBookmarkUrl = @"https://www.goo.com/";
+constexpr NSString* kBookmarkTitle = @"Goo";
+
+constexpr NSString* kReadingListUrl = @"https://www.rl.com/";
+constexpr NSString* kReadingListTitle = @"RL";
 
 // Waits for `entity_count` entities of type `entity_type` on the fake server,
 // and fails with a GREYAssert if the condition is not met, within a short
@@ -120,9 +131,15 @@ void ClearRelevantData() {
       [self isRunningTest:@selector(testSyncUpdateAutofillProfile)]) {
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-  } else if ([self isRunningTest:@selector(testMigrateSyncToSignin)]) {
-    // testMigrateSyncToSignin starts out with SyncToSignin disabled; it'll turn
-    // on flags and restart Chrome.
+  } else if ([self isRunningTest:@selector(testMigrateSyncToSignin)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_PasswordsDisabled)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_BookmarksDisabled)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_ReadingListDisabled)]) {
+    // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
+    // later turn on the appropriate flags and restart Chrome.
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_disabled.push_back(switches::kMigrateSyncingUserToSignedIn);
@@ -138,6 +155,8 @@ void ClearRelevantData() {
   // Before restarting, ensure that the FakeServer has written all its pending
   // state to disk.
   [ChromeEarlGrey flushFakeSyncServerToDisk];
+  // Also make sure any pending pref changes are written to disk.
+  [ChromeEarlGreyAppInterface commitPendingUserPrefsWrite];
 
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -150,6 +169,30 @@ void ClearRelevantData() {
         [FakeSystemIdentity encodeIdentitiesToBase64:@[ identity ]]
   }));
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // After the relaunch, wait for Sync-the-transport to become active again
+  // (which should always happen if there's a signed-in account).
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+}
+
+// Opens the legacy Sync settings, and disables the data type whose toggle is
+// identified by `typeIdentifier` (e.g. `kSyncPasswordsIdentifier`).
+- (void)disableTypeForSyncTheFeature:(NSString*)typeIdentifier {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kSyncEverythingItemAccessibilityIdentifier)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          typeIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Tests that a bookmark added on the client (before Sync is enabled) is
@@ -503,12 +546,6 @@ void ClearRelevantData() {
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
-  NSString* const kBookmarkUrl = @"https://www.goo.com/";
-  NSString* const kBookmarkTitle = @"Goo";
-
-  NSString* const kReadingListUrl = @"https://www.rl.com/";
-  NSString* const kReadingListTitle = @"RL";
-
   // Create some data and wait for it to arrive on the server.
   [BookmarkEarlGrey
       addBookmarkWithTitle:kBookmarkTitle
@@ -532,10 +569,6 @@ void ClearRelevantData() {
   // Sync-the-feature should still be enabled.
   [ChromeEarlGrey waitForSyncFeatureEnabled:YES
                                 syncTimeout:kSyncOperationTimeout];
-  // Wait for the sync machinery to become active, which is required for the
-  // migration.
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
   // Verify that the bookmark still exists in the local-or-syncable storage.
   [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
@@ -558,8 +591,6 @@ void ClearRelevantData() {
   // Sync-the-feature should *not* be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
-  [ChromeEarlGrey
-      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 
   // The bookmark should still exist, but now be in the account store.
   [BookmarkEarlGrey
@@ -593,12 +624,195 @@ void ClearRelevantData() {
                                           kTableViewNavigationDismissButtonId)]
       performAction:grey_tap()];
 
-  // The sync machinery should still be functional: Add an account bookmarks
+  // The sync machinery should still be functional: Add an account bookmark
   // and ensure it arrives on the server.
   [BookmarkEarlGrey addBookmarkWithTitle:@"Second bookmark"
                                      URL:@"https://second.com/"
                                inStorage:bookmarks::StorageType::kAccount];
   WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
+}
+
+- (void)testMigrateSyncToSignin_PasswordsDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Save a password and wait for it to be uploaded to the server.
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Also create a bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+
+  // Disable the Passwords data type.
+  [self disableTypeForSyncTheFeature:kSyncPasswordsIdentifier];
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
+  // for simplicity, this test skips phase 2, which doesn't change anything
+  // relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The password should still be in the profile store, since the Passwords data
+  // type was disabled at the time of migration.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should (still) be in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store");
+
+  // The bookmark should have been moved to the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+}
+
+- (void)testMigrateSyncToSignin_BookmarksDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Create a bookmark and wait for it to be uploaded to the server.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  WaitForEntitiesOnFakeServer(1, syncer::BOOKMARKS);
+
+  // Also save a password.
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Disable the Bookmarks data type.
+  [self disableTypeForSyncTheFeature:kSyncBookmarksIdentifier];
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
+  // for simplicity, this test skips phase 2, which doesn't change anything
+  // relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The bookmark should still be in the local-or-syncable store, since the
+  // Bookmarks data type was disabled at the time of migration.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kAccount];
+
+  // The password should have been moved to the account store.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
+}
+
+- (void)testMigrateSyncToSignin_ReadingListDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Disable the ReadingList data type.
+  [self disableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Create a reading list entry.
+  GREYAssertNil([ReadingListAppInterface
+                    addEntryWithURL:[NSURL URLWithString:kReadingListUrl]
+                              title:kReadingListTitle
+                               read:YES],
+                @"Unable to add Reading List item");
+
+  // Also save a password.
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
+  // for simplicity, this test skips phase 2, which doesn't change anything
+  // relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // Enable the ReadingList data type again. This isn't really required, but
+  // without doing this there's no easy way to verify that the entry is still in
+  // the local store (the crossed-out cloud icon only shows up if the type is
+  // enabled).
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncReadingListIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // The reading list entry should still be in the local-or-syncable store
+  // (indicated by the crossed-out cloud icon), since the ReadingList data type
+  // was disabled at the time of migration.
+  reading_list_test_utils::OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleReadingListItem(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:reading_list_test_utils::VisibleLocalItemIcon(
+                                   kReadingListTitle)]
+      assertWithMatcher:grey_notNil()];
+
+  // The password should have been moved to the account store.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
 }
 
 @end
