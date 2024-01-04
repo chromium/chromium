@@ -131,6 +131,7 @@ class StructuredLogAdapter(logging.Handler):
 
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
+        'android_webview': 'webview',
         'chrome': 'chrome',
     }
 
