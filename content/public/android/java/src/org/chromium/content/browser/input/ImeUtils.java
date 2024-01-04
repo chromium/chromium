@@ -108,7 +108,8 @@ public class ImeUtils {
                     break;
                 case WebTextInputMode.NUMERIC:
                     outAttrs.inputType = InputType.TYPE_CLASS_NUMBER;
-                    if (inputType == TextInputType.PASSWORD) {
+                    if (inputType == TextInputType.PASSWORD
+                            || (inputFlags & WebTextInputFlags.HAS_BEEN_PASSWORD_FIELD) != 0) {
                         outAttrs.inputType |= InputType.TYPE_NUMBER_VARIATION_PASSWORD;
                     }
                     break;
