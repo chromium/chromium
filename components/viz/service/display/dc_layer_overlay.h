@@ -312,6 +312,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor final
   // to be in overlay, but we also exclude them from de-promotion to keep the
   // protection benefits of being in an overlay.
   void RemoveClearVideoQuadCandidatesIfMoving(
+      DisplayResourceProvider* resource_provider,
       RenderPassOverlayDataMap& render_pass_overlay_data_map,
       RenderPassCurrentFrameStateMap& render_pass_current_state_map);
 

@@ -303,7 +303,7 @@ class DCLayerOverlayTest : public testing::Test,
 TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
   InitializeOverlayProcessor();
   auto ProcessForOverlaysSingleVideoRectWithOffset =
-      [&](gfx::Vector2d video_rect_offset) {
+      [&](gfx::Vector2d video_rect_offset, bool is_hdr = false) {
         auto pass = CreateRenderPass();
         auto* video_quad = CreateFullscreenCandidateYUVVideoQuad(
             resource_provider_.get(), child_resource_provider_.get(),
@@ -311,6 +311,37 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
             pass.get());
         video_quad->rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
         video_quad->visible_rect = gfx::Rect(0, 0, 10, 10) + video_rect_offset;
+
+        if (is_hdr) {
+          // Render Pass has HDR content usage.
+          pass->content_color_usage = gfx::ContentColorUsage::kHDR;
+
+          // Device has RGB10A2 overlay support.
+          gl::SetDirectCompositionScaledOverlaysSupportedForTesting(true);
+
+          // Device enabled system HDR feature.
+          overlay_processor_->set_system_hdr_enabled_for_testing(true);
+
+          // Device has video processor support.
+          overlay_processor_->set_has_p010_video_processor_support_for_testing(
+              true);
+
+          // Video playback in fullscreen mode.
+          overlay_processor_->SetIsPageFullscreen(true);
+
+          // Content is 10bit P010 content.
+          video_quad->bits_per_channel = 10;
+
+          // Content has valid HDR metadata.
+          video_quad->hdr_metadata = gfx::HDRMetadata();
+          video_quad->hdr_metadata->cta_861_3 =
+              gfx::HdrMetadataCta861_3(1000, 400);
+          video_quad->hdr_metadata->smpte_st_2086 = gfx::HdrMetadataSmpteSt2086(
+              SkNamedPrimariesExt::kRec2020, 1000, 0.0001);
+
+          // Content has HDR10 colorspace.
+          video_quad->video_color_space = gfx::ColorSpace::CreateHDR10();
+        }
 
         OverlayCandidateList dc_layer_list;
         OverlayProcessorInterface::FilterOperationsMap render_pass_filters;
@@ -336,6 +367,7 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
   }
+
   {
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndEnableFeature(
@@ -354,6 +386,25 @@ TEST_P(DCLayerOverlayTest, DisableVideoOverlayIfMovingFeature) {
       ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
+  }
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        features::kDisableVideoOverlayIfMoving);
+    // We expect an overlay promotion after a couple frames of no movement
+    for (int i = 0; i < 10; i++) {
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
+          .size();
+    }
+    EXPECT_EQ(
+        1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
+                .size());
+    // We still expect an overlay promotion for HDR video when moving to
+    // ensure uniform tone mapping results between viz and GPU driver.
+    EXPECT_EQ(
+        1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}, /*is_hdr=*/true)
+                .size());
   }
 }
 
