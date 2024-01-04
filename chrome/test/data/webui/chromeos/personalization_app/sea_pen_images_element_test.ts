@@ -5,7 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {SeaPenImagesElement, SparklePlaceholderElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SeaPenImagesElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {SparklePlaceholderElement} from 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -61,7 +62,7 @@ suite('SeaPenImagesElementTest', function() {
     const loadingThumbnailPlaceholders =
         seaPenImagesElement.shadowRoot!
             .querySelectorAll<SparklePlaceholderElement>(
-                'div:not([hidden]) sparkle-placeholder-element');
+                'div:not([hidden]) sparkle-placeholder');
     assertEquals(
         4, loadingThumbnailPlaceholders!.length,
         'should be 4 loading placeholders available.');

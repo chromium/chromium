@@ -10,14 +10,14 @@ import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Sparkle} from '../../surface_effects/sparkle.js';
-import {parseCssColor} from '../../surface_effects/utils.js';
+import {Sparkle} from './sparkle.js';
+import {parseCssColor} from './utils.js';
 
-import {getTemplate} from './sparkle_placeholder_element.html.js';
+import {getTemplate} from './sparkle_placeholder.html.js';
 
 export class SparklePlaceholderElement extends PolymerElement {
   static get is() {
-    return 'sparkle-placeholder-element';
+    return 'sparkle-placeholder';
   }
 
   static get template() {
@@ -95,6 +95,12 @@ export class SparklePlaceholderElement extends PolymerElement {
 
     const rect = this.sparkleImpl.element.getBoundingClientRect();
     this.sparkleImpl.resize(rect.width, rect.height);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'sparkle-placeholder': SparklePlaceholderElement;
   }
 }
 
