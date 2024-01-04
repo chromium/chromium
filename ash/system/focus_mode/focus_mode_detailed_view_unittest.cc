@@ -653,4 +653,17 @@ TEST_F(FocusModeDetailedViewTest, ExpandOrShrinkTaskViewContainer) {
   EXPECT_EQ(old_height_before_shrink, task_container_view->bounds().height());
 }
 
+// Tests that tabbing to the timer decrease button after setting the time to 1
+// does not cause a crash. Regression test for b/315358227.
+TEST_F(FocusModeDetailedViewTest, TabToDisablingButton) {
+  SystemTextfield* textfield = GetTimerSettingTextfield();
+  LeftClickOn(textfield);
+  ASSERT_TRUE(textfield->IsActive());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DELETE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  ASSERT_EQ(u"1", textfield->GetText());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_TAB);
+  EXPECT_FALSE(GetTimerSettingDecrementButton()->GetEnabled());
+}
+
 }  // namespace ash

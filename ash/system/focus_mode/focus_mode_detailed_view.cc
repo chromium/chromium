@@ -235,12 +235,22 @@ class FocusModeDetailedView::TimerTextfieldController
         textfield_->SetActive(false);
       }
 
+      owner_->SetInactiveSessionDuration(base::Minutes(
+          focus_mode_util::GetTimerTextfieldInputInMinutes(textfield_)));
+
       focus_manager->ClearFocus();
 
       // Avoid having the focus restored to the same view when the parent view
       // is refocused.
       focus_manager->SetStoredFocusView(nullptr);
       return true;
+    }
+
+    // Make sure that we set the timer adjustment buttons' enabled states before
+    // moving focus to avoid recursively focusing.
+    if (key_event.key_code() == ui::VKEY_TAB) {
+      owner_->SetInactiveSessionDuration(base::Minutes(
+          focus_mode_util::GetTimerTextfieldInputInMinutes(textfield_)));
     }
 
     if (SystemTextfieldController::HandleKeyEvent(sender, key_event)) {
@@ -274,8 +284,6 @@ class FocusModeDetailedView::TimerTextfieldController
   }
 
   void OnViewBlurred(views::View* view) override {
-    owner_->SetInactiveSessionDuration(base::Minutes(
-        focus_mode_util::GetTimerTextfieldInputInMinutes(textfield_)));
     valid_new_contents_.clear();
   }
 
