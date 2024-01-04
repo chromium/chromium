@@ -70,3 +70,14 @@
 # crbug.com/1498169
 -org.chromium.chrome.features.start_surface.InstantStartTabSwitcherTest.testSingleAsHomepage_Landscape_TabSize
 -org.chromium.chrome.features.start_surface.InstantStartTabSwitcherTest.testSingleAsHomepage_Landscape_TabSize_RefactorEnabled
+
+# crbug.com/1515446
+-org.chromium.chrome.browser.webauth.Fido2CredentialRequestTest.*
+
+# crbug.com/1511804
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_GroupActionAndUndo
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionGroupsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsOnly
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionTabsWithGroups
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testToolbarMenuItem_ShareActionView
+-org.chromium.chrome.browser.tasks.tab_management.SelectableTabListEditorTest.testUndoToolbarGroup
