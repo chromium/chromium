@@ -20,9 +20,7 @@ class Invalidation;
 
 // This AckHandler implementation colaborates with the FakeInvalidationService
 // to enable unit tests to assert that invalidations are being acked properly.
-class INVALIDATION_EXPORT FakeAckHandler
-    : public AckHandler,
-      public base::SupportsWeakPtr<FakeAckHandler> {
+class INVALIDATION_EXPORT FakeAckHandler final : public AckHandler {
  public:
   FakeAckHandler();
   ~FakeAckHandler() override;
@@ -60,6 +58,8 @@ class INVALIDATION_EXPORT FakeAckHandler
   InvalidationVector acked_invalidations_;
 
   std::map<Topic, AckHandle> unrecovered_drop_events_;
+
+  base::WeakPtrFactory<FakeAckHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace invalidation
