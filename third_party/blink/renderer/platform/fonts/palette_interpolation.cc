@@ -91,8 +91,9 @@ PaletteInterpolation::RetrieveColorRecords(const FontPalette* palette,
     }
   }
   Vector<FontPalette::FontPaletteOverride> color_records(colors_size);
+  DCHECK_LT(colors_size, std::numeric_limits<std::uint16_t>::max());
   for (wtf_size_t i = 0; i < colors_size; i++) {
-    color_records[i] = {static_cast<int>(i), colors[i]};
+    color_records[i] = {static_cast<uint16_t>(i), colors[i]};
   }
   return color_records;
 }
