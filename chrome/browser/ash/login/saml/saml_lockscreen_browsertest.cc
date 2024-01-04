@@ -259,6 +259,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlSwitchToGaia) {
   reauth_dialog_helper->ClickChangeIdPButtonOnSamlScreen();
 
   reauth_dialog_helper->ExpectGaiaScreenVisible();
+  reauth_dialog_helper->ExpectGaiaButtonsVisible();
 }
 
 // Tests the cancel button in Verify Screen.
@@ -427,7 +428,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedMultiple) {
   signin_frame_js.TapOn("Submit");
 
   reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
-  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectSigninWebviewHidden();
   reauth_dialog_helper->ExpectPasswordConfirmInputHidden();
 
   // Entering an unknown password should go back to the confirm password screen.
@@ -467,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ScrapedNone) {
   signin_frame_js.TapOn("Submit");
 
   reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
-  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectSigninWebviewHidden();
   reauth_dialog_helper->ExpectPasswordConfirmInputVisible();
 
   // Entering passwords that don't match will make us land again in the same
@@ -880,7 +881,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   reauth_dialog_helper->WaitForVerifyAccountScreen();
   reauth_dialog_helper->ClickVerifyButton();
 
-  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->WaitForSigninWebview();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Wait for http auth dialog and authenticate.
@@ -929,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   reauth_dialog_helper->WaitForVerifyAccountScreen();
   reauth_dialog_helper->ClickVerifyButton();
 
-  reauth_dialog_helper->WaitForSamlScreen();
+  reauth_dialog_helper->WaitForSigninWebview();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
 
   // Appearance of http auth dialog means that proxy authentication was

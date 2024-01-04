@@ -27,7 +27,7 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Authenticator, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../gaia_auth_host/authenticator.js';
+import {Authenticator, AuthFlow, AuthMode, AuthParams, SUPPORTED_PARAMS} from '../../gaia_auth_host/authenticator.js';
 
 const clearDataType = {
   appcache: true,
@@ -89,9 +89,18 @@ class LockReauth extends LockReauthBase {
       },
 
       /**
-       * Whether user is authenticating on SAML page.
+       * Whether the webview for online sign-in is shown.
        */
-      isSamlPage_: {
+      isSigninFrameDisplayed_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the authenticator is currently showing SAML IdP page.
+       * @private
+       */
+      isSaml_: {
         type: Boolean,
         value: false,
       },
@@ -199,6 +208,9 @@ class LockReauth extends LockReauthBase {
       sendWithPromise('getDeviceId')
           .then(deviceId => this.authenticator_.getDeviceIdResponse(deviceId));
     });
+    this.authenticator_.addEventListener('authFlowChange', (e) => {
+      this.isSaml_ = e.detail.newValue === AuthFlow.SAML;
+    });
     chrome.send('initialize');
   }
 
@@ -206,7 +218,8 @@ class LockReauth extends LockReauthBase {
   resetState_() {
     this.isVerifyUser_ = false;
     this.isErrorDisplayed_ = false;
-    this.isSamlPage_ = false;
+    this.isSaml_ = false;
+    this.isSigninFrameDisplayed_ = false;
     this.isConfirmPassword_ = false;
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
@@ -259,6 +272,7 @@ class LockReauth extends LockReauthBase {
     this.authenticatorParams_ = /** @type {AuthParams} */ (params);
     this.email_ = data.email;
     this.isDefaultSsoProvider = data.doSamlRedirect;
+    this.isSaml_ = this.isDefaultSsoProvider;
     if (!data['doSamlRedirect']) {
       this.doGaiaRedirect_();
     }
@@ -373,7 +387,7 @@ class LockReauth extends LockReauthBase {
      * These statements override resetStates_ calls.
      * Thus have to be AFTER resetState_.
      */
-    this.isSamlPage_ = true;
+    this.isSigninFrameDisplayed_ = true;
     this.showSamlNoticeMessage_ = true;
   }
 
@@ -425,7 +439,7 @@ class LockReauth extends LockReauthBase {
      * These statements override resetStates_ calls.
      * Thus have to be AFTER resetState_.
      */
-    this.isSamlPage_ = true;
+    this.isSigninFrameDisplayed_ = true;
   }
 
   /** @private */
@@ -449,6 +463,7 @@ class LockReauth extends LockReauthBase {
     this.authenticatorParams_.doSamlRedirect = false;
     this.authenticatorParams_.enableGaiaActionButtons = true;
     this.isDefaultSsoProvider = false;
+    this.isSaml_ = false;
     // Replace Gaia path with a fallback path to land on Gaia username page.
     assert(
         this.fallbackGaiaPath_,
