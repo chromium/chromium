@@ -1384,7 +1384,7 @@ void BrowserAutofillManager::FillOrPreviewField(
         .fill_event_id = GetNextFillEventId(),
         .had_value_before_filling = ToOptionalBoolean(!field.value.empty()),
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-        .was_autofilled = ToOptionalBoolean(true),
+        .was_autofilled_before_security_policy = ToOptionalBoolean(true),
         .had_value_after_filling = ToOptionalBoolean(true),
         .filling_method = AutofillFillingMethod::kFieldByFieldFilling});
   }
@@ -2434,7 +2434,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
             .fill_event_id = *fill_event_id,
             .had_value_before_filling = ToOptionalBoolean(has_value_before),
             .autofill_skipped_status = skip_reasons[i],
-            .was_autofilled = OptionalBoolean::kFalse,
+            .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
             .had_value_after_filling = ToOptionalBoolean(has_value_before),
             .filling_method = AutofillFillingMethod::kNone,
         });
@@ -2484,7 +2484,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           .fill_event_id = *fill_event_id,
           .had_value_before_filling = ToOptionalBoolean(has_value_before),
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = ToOptionalBoolean(is_autofilled_after),
+          .was_autofilled_before_security_policy =
+              ToOptionalBoolean(is_autofilled_after),
           .had_value_after_filling = ToOptionalBoolean(has_value_after),
           .filling_method = base::FeatureList::IsEnabled(
                                 features::kAutofillGranularFillingAvailable)
@@ -2543,8 +2544,25 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
           form.FindFieldByGlobalId(newly_filled_field_id));
       safe_newly_filled_fields.new_values.push_back(
           result.FindFieldByGlobalId(newly_filled_field_id));
-      safe_newly_filled_fields.cached.push_back(
-          form_structure->GetFieldById(newly_filled_field_id));
+      AutofillField* newly_filled_field =
+          form_structure->GetFieldById(newly_filled_field_id);
+      CHECK(newly_filled_field);
+      safe_newly_filled_fields.cached.push_back(newly_filled_field);
+
+      if (fill_event_id && !IsCheckable(newly_filled_field->check_status)) {
+        // The field's last field log event should be a type of
+        // FillFieldLogEvent. Record in this FillFieldLogEvent object that this
+        // newly filled field was actually filled after checking the iframe
+        // security policy.
+        base::optional_ref<AutofillField::FieldLogEventType>
+            last_field_log_event = newly_filled_field->last_field_log_event();
+        CHECK(last_field_log_event.has_value());
+        CHECK(
+            absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
+        absl::get<FillFieldLogEvent>(*last_field_log_event)
+            .filling_prevented_by_iframe_security_policy =
+            OptionalBoolean::kFalse;
+      }
       continue;
     }
     // Find and report index of fields that were not filled.
@@ -2556,6 +2574,23 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
                         "security policy.";
+
+      // Record in this AutofillField object's last FillFieldLogEvent object
+      // that this field was actually not filled due to the iframe security
+      // policy.
+      AutofillField* not_filled_field =
+          form_structure->GetFieldById(it->global_id());
+      CHECK(not_filled_field);
+      if (fill_event_id && !IsCheckable(not_filled_field->check_status)) {
+        base::optional_ref<AutofillField::FieldLogEventType>
+            last_field_log_event = not_filled_field->last_field_log_event();
+        CHECK(last_field_log_event.has_value());
+        CHECK(
+            absl::holds_alternative<FillFieldLogEvent>(*last_field_log_event));
+        absl::get<FillFieldLogEvent>(*last_field_log_event)
+            .filling_prevented_by_iframe_security_policy =
+            OptionalBoolean::kTrue;
+      }
     }
   }
 

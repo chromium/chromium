@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -311,6 +312,15 @@ class AutofillField : public FormFieldData {
 
   const std::vector<FieldLogEventType>& field_log_events() const {
     return field_log_events_;
+  }
+
+  // Avoid holding references to the return value. It is invalidated by
+  // AppendLogEventIfNotRepeated().
+  base::optional_ref<FieldLogEventType> last_field_log_event() {
+    if (!field_log_events_.empty()) {
+      return field_log_events_.back();
+    }
+    return std::nullopt;
   }
 
   // Add the field log events into the vector |field_log_events_| when it is

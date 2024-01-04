@@ -632,8 +632,10 @@ class AutofillMetrics {
     kIsFocusable = 0,
     kWasFocused = 1,
     kWasAutofillTriggered = 2,
-    // kWasAutofilled is only set when kWasAutofillTriggered is set.
-    kWasAutofilled = 3,
+    // Note that this is set before checking the iframe security policy.
+    // This value is true even when the filling was prevented because of the
+    // cross iframe autofill security policy.
+    kWasAutofilledBeforeSecurityPolicy = 3,
     kWasRefill = 4,
     // The below suggestion statuses are set only when kWasFocused is set.
     kSuggestionWasAvailable = 5,
@@ -644,7 +646,11 @@ class AutofillMetrics {
     kHadValueBeforeFilling = 10,
     kHadTypedOrFilledValueAtSubmission = 11,
     kIsInSubFrame = 12,
-    kMaxValue = kIsInSubFrame
+    kFillingPreventedByIframeSecurityPolicy = 13,
+    // The field was sent to the renderer for autofilling. Note that this is
+    // still true if the user later edited the autofilled value.
+    kWasAutofilledAfterSecurityPolicy = 14,
+    kMaxValue = kWasAutofilledAfterSecurityPolicy
   };
 
   struct FormEventSetTraits {

@@ -467,7 +467,7 @@ TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
       .had_value_before_filling = OptionalBoolean::kTrue,
       .autofill_skipped_status =
           FieldFillingSkipReason::kAutofilledFieldsNotRefill,
-      .was_autofilled = OptionalBoolean::kTrue,
+      .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue};
 
   AutofillField f;

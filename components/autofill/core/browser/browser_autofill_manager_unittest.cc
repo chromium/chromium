@@ -360,23 +360,28 @@ TestAddressFillData GetElvisAddressFillData() {
 // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
 // you want to ignore the fill_event_id.
 auto EqualsFillFieldLogEvent(const FillFieldLogEvent& expected) {
-  return AllOf(testing::Conditional(
-                   expected.fill_event_id == FillEventId(-1), _,
-                   Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
-                         expected.fill_event_id)),
-               Field("had_value_before_filling",
-                     &FillFieldLogEvent::had_value_before_filling,
-                     expected.had_value_before_filling),
-               Field("autofill_skipped_status",
-                     &FillFieldLogEvent::autofill_skipped_status,
-                     expected.autofill_skipped_status),
-               Field("was_autofilled", &FillFieldLogEvent::was_autofilled,
-                     expected.was_autofilled),
-               Field("had_value_after_filling",
-                     &FillFieldLogEvent::had_value_after_filling,
-                     expected.had_value_after_filling),
-               Field("filling_method", &FillFieldLogEvent::filling_method,
-                     expected.filling_method));
+  return AllOf(
+      testing::Conditional(
+          expected.fill_event_id == FillEventId(-1), _,
+          Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
+                expected.fill_event_id)),
+      Field("had_value_before_filling",
+            &FillFieldLogEvent::had_value_before_filling,
+            expected.had_value_before_filling),
+      Field("autofill_skipped_status",
+            &FillFieldLogEvent::autofill_skipped_status,
+            expected.autofill_skipped_status),
+      Field("was_autofilled_before_security_policy",
+            &FillFieldLogEvent::was_autofilled_before_security_policy,
+            expected.was_autofilled_before_security_policy),
+      Field("had_value_after_filling",
+            &FillFieldLogEvent::had_value_after_filling,
+            expected.had_value_after_filling),
+      Field("filling_method", &FillFieldLogEvent::filling_method,
+            expected.filling_method),
+      Field("filling_prevented_by_iframe_security_policy",
+            &FillFieldLogEvent::filling_prevented_by_iframe_security_policy,
+            expected.filling_prevented_by_iframe_security_policy));
 }
 
 // Creates a GUID for testing. For example,
@@ -927,9 +932,12 @@ class BrowserAutofillManagerTest : public testing::Test {
       AutofillTriggerDetails trigger_details = {
           .trigger_source = AutofillTriggerSource::kPopup}) {
     FormData response_data;
+    std::vector<FieldGlobalId> global_ids;
+    for (const auto& field : input_form.fields) {
+      global_ids.push_back(field.global_id());
+    }
     EXPECT_CALL(*autofill_driver_, ApplyFormAction)
-        .WillOnce(DoAll(SaveArg<2>(&response_data),
-                        Return(std::vector<FieldGlobalId>{})));
+        .WillOnce(DoAll(SaveArg<2>(&response_data), Return(global_ids)));
     FillAutofillFormData(input_form, input_field, guid, trigger_details);
     return response_data;
   }
@@ -1116,24 +1124,28 @@ class BrowserAutofillManagerTest : public testing::Test {
   // Matches a FillFieldLogEvent by equality of fields. Use FillEventId(-1) if
   // you want to ignore the fill_event_id.
   auto Equal(const FillFieldLogEvent& expected) {
-    return VariantWith<FillFieldLogEvent>(
-        AllOf(testing::Conditional(
-                  expected.fill_event_id == FillEventId(-1), _,
-                  Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
-                        expected.fill_event_id)),
-              Field("had_value_before_filling",
-                    &FillFieldLogEvent::had_value_before_filling,
-                    expected.had_value_before_filling),
-              Field("autofill_skipped_status",
-                    &FillFieldLogEvent::autofill_skipped_status,
-                    expected.autofill_skipped_status),
-              Field("was_autofilled", &FillFieldLogEvent::was_autofilled,
-                    expected.was_autofilled),
-              Field("had_value_after_filling",
-                    &FillFieldLogEvent::had_value_after_filling,
-                    expected.had_value_after_filling),
-              Field("filling_method", &FillFieldLogEvent::filling_method,
-                    expected.filling_method)));
+    return VariantWith<FillFieldLogEvent>(AllOf(
+        testing::Conditional(
+            expected.fill_event_id == FillEventId(-1), _,
+            Field("fill_event_id", &FillFieldLogEvent::fill_event_id,
+                  expected.fill_event_id)),
+        Field("had_value_before_filling",
+              &FillFieldLogEvent::had_value_before_filling,
+              expected.had_value_before_filling),
+        Field("autofill_skipped_status",
+              &FillFieldLogEvent::autofill_skipped_status,
+              expected.autofill_skipped_status),
+        Field("was_autofilled_before_security_policy",
+              &FillFieldLogEvent::was_autofilled_before_security_policy,
+              expected.was_autofilled_before_security_policy),
+        Field("had_value_after_filling",
+              &FillFieldLogEvent::had_value_after_filling,
+              expected.had_value_after_filling),
+        Field("filling_method", &FillFieldLogEvent::filling_method,
+              expected.filling_method),
+        Field("filling_prevented_by_iframe_security_policy",
+              &FillFieldLogEvent::filling_prevented_by_iframe_security_policy,
+              expected.filling_prevented_by_iframe_security_policy)));
   }
 
   // Matches a TypingFieldLogEvent by equality of fields.
@@ -5700,9 +5712,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtFormSubmitted) {
         .fill_event_id = trigger_fill_field_log_event->fill_event_id,
         .had_value_before_filling = OptionalBoolean::kFalse,
         .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-        .was_autofilled = OptionalBoolean::kTrue,
+        .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
         .had_value_after_filling = OptionalBoolean::kTrue,
         .filling_method = AutofillFillingMethod::kFullForm,
+        .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
     });
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));
@@ -5777,9 +5790,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kTrue,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
       });
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
                autofill_field_ptr->parseable_label() == u"Email") {
@@ -5788,9 +5803,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kFalse,
+          .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
           .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kUndefined,
       });
     } else if (autofill_field_ptr->parseable_label() == u"Last Name") {
       // Not filled because the field contained a user typed value already.
@@ -5798,17 +5815,21 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kTrue,
           .autofill_skipped_status = FieldFillingSkipReason::kUserFilledFields,
-          .was_autofilled = OptionalBoolean::kFalse,
+          .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kUndefined,
       });
     } else {
       expected_events.push_back(FillFieldLogEvent{
           .fill_event_id = fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kTrue,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
       });
     }
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
@@ -5840,9 +5861,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = FillEventId(-1),
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kTrue,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
       }));
 }
 
@@ -5870,9 +5893,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = FillEventId(-1),
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kTrue,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = AutofillFillingMethod::kGroupFilling,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
       }));
 }
 
@@ -5900,9 +5925,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = FillEventId(-1),
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kTrue,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
           .had_value_after_filling = OptionalBoolean::kTrue,
           .filling_method = AutofillFillingMethod::kFieldByFieldFilling,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse,
       }));
 }
 
@@ -5959,24 +5986,16 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
       FindNthEventOfType<TriggerFillFieldLogEvent>(focus_field_log_events, 2);
   ASSERT_TRUE(trigger_fill_field_log_event2);
 
-  // All filled fields share the same expected FillFieldLogEvent.
   // The first TriggerFillFieldLogEvent determines the fill_event_id for
   // all following FillFieldLogEvents.
   FillFieldLogEvent expected_fill_field_log_event1{
       .fill_event_id = trigger_fill_field_log_event1->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled = OptionalBoolean::kTrue,
+      .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
       .filling_method = AutofillFillingMethod::kFullForm,
-  };
-  FillFieldLogEvent expected_fill_field_log_event2{
-      .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
-      .had_value_before_filling = OptionalBoolean::kTrue,
-      .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled = OptionalBoolean::kTrue,
-      .had_value_after_filling = OptionalBoolean::kTrue,
-      .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
@@ -5999,26 +6018,45 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtRefillForm) {
           .data_type = FillDataType::kAutofillProfile,
           .associated_country_code = "US",
           .timestamp = AutofillClock::Now()});
-      expected_events.push_back(expected_fill_field_log_event2);
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kTrue,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse});
     } else if (autofill_field_ptr->parseable_label() == u"Phone Number" ||
                autofill_field_ptr->parseable_label() == u"Email") {
       FillFieldLogEvent expected_event = expected_fill_field_log_event1;
-      expected_event.was_autofilled = OptionalBoolean::kFalse;
+      expected_event.was_autofilled_before_security_policy =
+          OptionalBoolean::kFalse;
       expected_event.had_value_after_filling = OptionalBoolean::kFalse;
+      expected_event.filling_prevented_by_iframe_security_policy =
+          OptionalBoolean::kUndefined;
       expected_events.push_back(expected_event);
-
-      FillFieldLogEvent expected_event2 = expected_fill_field_log_event2;
-      expected_event2.had_value_before_filling = OptionalBoolean::kFalse;
-      expected_events.push_back(expected_event2);
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kFalse,
+          .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
+          .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kFalse});
     } else {
       expected_events.push_back(expected_fill_field_log_event1);
-
-      FillFieldLogEvent expected_event2 = expected_fill_field_log_event2;
-      expected_event2.autofill_skipped_status =
-          FieldFillingSkipReason::kAutofilledFieldsNotRefill;
-      expected_event2.was_autofilled = OptionalBoolean::kFalse;
-      expected_event2.filling_method = AutofillFillingMethod::kNone;
-      expected_events.push_back(expected_event2);
+      expected_events.push_back(FillFieldLogEvent{
+          .fill_event_id = trigger_fill_field_log_event2->fill_event_id,
+          .had_value_before_filling = OptionalBoolean::kTrue,
+          .autofill_skipped_status =
+              FieldFillingSkipReason::kAutofilledFieldsNotRefill,
+          .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
+          .had_value_after_filling = OptionalBoolean::kTrue,
+          .filling_method = AutofillFillingMethod::kNone,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kUndefined});
     }
     EXPECT_THAT(autofill_field_ptr->field_log_events(),
                 ArrayEquals(expected_events));
@@ -6067,9 +6105,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
       .fill_event_id = trigger_fill_field_log_event->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled = OptionalBoolean::kTrue,
+      .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
       .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
@@ -6143,9 +6182,10 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
       .fill_event_id = trigger_fill_field_log_event->fill_event_id,
       .had_value_before_filling = OptionalBoolean::kFalse,
       .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-      .was_autofilled = OptionalBoolean::kTrue,
+      .was_autofilled_before_security_policy = OptionalBoolean::kTrue,
       .had_value_after_filling = OptionalBoolean::kTrue,
       .filling_method = AutofillFillingMethod::kFullForm,
+      .filling_prevented_by_iframe_security_policy = OptionalBoolean::kFalse,
   };
 
   for (const auto& autofill_field_ptr : *form_structure) {
@@ -6175,9 +6215,11 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
           .fill_event_id = trigger_fill_field_log_event->fill_event_id,
           .had_value_before_filling = OptionalBoolean::kFalse,
           .autofill_skipped_status = FieldFillingSkipReason::kNotSkipped,
-          .was_autofilled = OptionalBoolean::kFalse,
+          .was_autofilled_before_security_policy = OptionalBoolean::kFalse,
           .had_value_after_filling = OptionalBoolean::kFalse,
           .filling_method = AutofillFillingMethod::kFullForm,
+          .filling_prevented_by_iframe_security_policy =
+              OptionalBoolean::kUndefined,
       });
     } else {
       expected_events.push_back(expected_fill_field_log_event);

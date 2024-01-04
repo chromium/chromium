@@ -7907,6 +7907,17 @@ class AutofillMetricsSeamlessnessTest
   static constexpr auto kVisible = MetricName::Visibility::kVisible;
   static constexpr auto kQualitative = MetricName::Variant::kQualitative;
   static constexpr auto kBitmask = MetricName::Variant::kBitmask;
+
+ protected:
+  AutofillMetricsSeamlessnessTest() {
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillLogUKMEventsWithSampleRate,
+                              features::kAutofillParsingPatternProvider},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 // Tests that Autofill.CreditCard.SeamlessFills.* is not emitted for manual
@@ -8120,6 +8131,112 @@ TEST_F(AutofillMetricsSeamlessnessTest,
        }});
 }
 
+// Test if we have correctly recorded the filling status of fields in an unsafe
+// iframe.
+TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
+  // Create a form with the credit card number and CVC code fields in an
+  // iframe with a different origin.
+  SeeForm(form_);
+
+  // Triggering autofill from the credit card name field cannot fill the credit
+  // card number and CVC code fields, which are in an unsafe iframe.
+  FillForm(form_.fields[0]);
+  SetFormValues({CREDIT_CARD_NAME_FULL, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR},
+                /*is_autofilled=*/true, /*is_user_typed=*/false);
+
+  // Triggering autofill from the credit card number field can fill all the
+  // credit card fields with values.
+  FillForm(form_.fields[1]);
+  SetFormValues({CREDIT_CARD_NUMBER, CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
+                 CREDIT_CARD_VERIFICATION_CODE},
+                /*is_autofilled=*/true, /*is_user_typed=*/false);
+
+  // Record Autofill2.FieldInfo UKM event at autofill manager reset.
+  SubmitForm(form_);
+  ResetDriverToCommitMetrics();
+
+  std::vector<FieldType> field_types = {
+      CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+      CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, CREDIT_CARD_VERIFICATION_CODE};
+
+  // Verify FieldInfo UKM event for every field.
+  auto field_entries =
+      test_ukm_recorder().GetEntriesByName(UkmFieldInfoType::kEntryName);
+  ASSERT_EQ(4u, field_entries.size());
+  for (size_t i = 0; i < field_entries.size(); ++i) {
+    SCOPED_TRACE(testing::Message() << i);
+    using UFIT = UkmFieldInfoType;
+    const auto* const entry = field_entries[i].get();
+    DenseSet<FieldFillingSkipReason> skipped_status_vector;
+    if (i == 0 || i == 2) {
+      skipped_status_vector = {
+          FieldFillingSkipReason::kNotSkipped,
+          FieldFillingSkipReason::kAutofilledFieldsNotRefill};
+    } else {
+      skipped_status_vector = {FieldFillingSkipReason::kNotSkipped};
+    }
+    DenseSet<AutofillStatus> autofill_status_vector;
+    int field_log_events_count = 0;
+    if (i == 0 || i == 2) {
+      autofill_status_vector = {
+          AutofillStatus::kIsFocusable,
+          AutofillStatus::kWasAutofillTriggered,
+          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+          AutofillStatus::kWasRefill,
+          AutofillStatus::kHadValueBeforeFilling,
+          AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+          AutofillStatus::kWasAutofilledAfterSecurityPolicy};
+      field_log_events_count = i == 0 ? 3 : 2;
+    } else {
+      autofill_status_vector = {
+          AutofillStatus::kIsFocusable,
+          AutofillStatus::kWasAutofillTriggered,
+          AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+          AutofillStatus::kWasRefill,
+          AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+          AutofillStatus::kFillingPreventedByIframeSecurityPolicy,
+          AutofillStatus::kWasAutofilledAfterSecurityPolicy};
+      field_log_events_count = i == 1 ? 3 : 2;
+    }
+    std::map<std::string, int64_t> expected = {
+        {UFIT::kFormSessionIdentifierName,
+         AutofillMetrics::FormGlobalIdToHash64Bit(form_.global_id())},
+        {UFIT::kFieldSessionIdentifierName,
+         AutofillMetrics::FieldGlobalIdToHash64Bit(
+             form_.fields[i].global_id())},
+        {UFIT::kFieldSignatureName,
+         Collapse(CalculateFieldSignatureForField(form_.fields[i])).value()},
+        {UFIT::kAutofillSkippedStatusName, skipped_status_vector.data()[0]},
+        {UFIT::kFormControlType2Name,
+         base::to_underlying(FormControlType::kInputText)},
+        {UFIT::kAutocompleteStateName,
+         base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
+        {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
+        {UFIT::kOverallTypeName, field_types[i]},
+        {UFIT::kSectionIdName, 1},
+        {UFIT::kTypeChangedByRationalizationName, false},
+        {UFIT::kRankInFieldSignatureGroupName, 1},
+        {UFIT::kHeuristicTypeName, field_types[i]},
+        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+        {UFIT::kHeuristicTypeDefaultName, field_types[i]},
+        {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
+        {UFIT::kHeuristicTypeNextGenName, field_types[i]},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 5},
+#else
+        {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
+        {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 2},
+#endif
+    };
+    EXPECT_EQ(expected.size(), entry->metrics.size());
+    for (const auto& [metric, value] : expected) {
+      test_ukm_recorder().ExpectEntryMetric(entry, metric, value);
+    }
+  }
+}
+
 // Test the field log events at the form submission.
 class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
  protected:
@@ -8267,19 +8384,21 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
             AutofillStatus::kIsFocusable,
             AutofillStatus::kWasFocused,
             AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilled,
+            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
             AutofillStatus::kSuggestionWasAvailable,
             AutofillStatus::kSuggestionWasShown,
             AutofillStatus::kSuggestionWasAccepted,
             AutofillStatus::kUserTypedIntoField,
             AutofillStatus::kFilledValueWasModified,
-            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+            AutofillStatus::kWasAutofilledAfterSecurityPolicy};
         field_log_events_count = 4;
       } else if (i == 1) {
         autofill_status_vector = {
             AutofillStatus::kIsFocusable, AutofillStatus::kWasAutofillTriggered,
-            AutofillStatus::kWasAutofilled,
-            AutofillStatus::kHadTypedOrFilledValueAtSubmission};
+            AutofillStatus::kWasAutofilledBeforeSecurityPolicy,
+            AutofillStatus::kHadTypedOrFilledValueAtSubmission,
+            AutofillStatus::kWasAutofilledAfterSecurityPolicy};
         field_log_events_count = 1;
       } else if (i == 2) {
         autofill_status_vector = {AutofillStatus::kIsFocusable,
