@@ -277,6 +277,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSBlueDotPromoEnhancedSafeBrowsingFeature,
                        "IPH_iOSBlueDotPromoEnhancedSafeBrowsing");
 DEFINE_VARIATION_PARAM(kIPHiOSInlinePromoEnhancedSafeBrowsingFeature,
                        "IPH_iOSInlinePromoEnhancedSafeBrowsing");
+DEFINE_VARIATION_PARAM(kIPHiOSTabGridSwipeLeftForIncognito,
+                       "IPH_iOSTabGridSwipeLeftForIncognito");
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
@@ -596,6 +598,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSParcelTrackingFeature),
         VARIATION_ENTRY(kIPHiOSPullToRefreshFeature),
         VARIATION_ENTRY(kIPHiOSReplaceSyncPromosWithSignInPromos),
+        VARIATION_ENTRY(kIPHiOSTabGridSwipeLeftForIncognito),
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
         VARIATION_ENTRY(kIPHBatterySaverModeFeature),

@@ -1962,9 +1962,10 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
-    // The IPH is shown at most once a week.
-    config->trigger =
-        EventConfig("iph_pull_to_refresh_trigger", Comparator(EQUAL, 0), 7, 7);
+    // The IPH is shown at most once.
+    config->trigger = EventConfig(
+        "iph_pull_to_refresh_trigger", Comparator(EQUAL, 0),
+        kMaxStorageDaysForIOSPullToRefresh, kMaxStorageDaysForIOSPullToRefresh);
     // The user hasn't used the pull-to-refresh feature.
     config->used = EventConfig(
         feature_engagement::events::kIOSPullToRefreshUsed, Comparator(EQUAL, 0),
@@ -1974,11 +1975,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig(feature_engagement::events::kIOSMultiGestureRefreshUsed,
                     Comparator(GREATER_THAN_OR_EQUAL, 2),
-                    kMaxStorageDaysForIOSPullToRefresh,
-                    kMaxStorageDaysForIOSPullToRefresh));
-    // The IPH is shown at most twice.
-    config->event_configs.insert(
-        EventConfig("iph_pull_to_refresh_trigger", Comparator(LESS_THAN, 2),
                     kMaxStorageDaysForIOSPullToRefresh,
                     kMaxStorageDaysForIOSPullToRefresh));
     return config;
@@ -2042,6 +2038,42 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     feature_engagement::kMaxStoragePeriod);
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
+    return config;
+  }
+
+  if (kIPHiOSTabGridSwipeLeftForIncognito.name == feature->name) {
+    // The IPH of the tab grid swipe feature.
+    //
+    // Note that the IPH is only triggered for users who installed Chrome on iOS
+    // in the last specified number of days, so this could be used as the
+    // maximum storage period of respective events.
+    const uint32_t kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito = 61;
+    // Event constant for IPH trigger for kIPHiOSTabGridSwipeLeftForIncognito
+    // feature.
+    const char kIOSSwipeLeftForIncognitoTrigger[] =
+        "swipe_left_for_incognito_trigger";
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // The IPH is shown at most once a week.
+    config->trigger =
+        EventConfig(kIOSSwipeLeftForIncognitoTrigger, Comparator(EQUAL, 0),
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito);
+    // The user hasn't swiped from the regular tab grid to incognito.
+    config->used = EventConfig(
+        feature_engagement::events::kIOSSwipeLeftForIncognitoUsed,
+        Comparator(EQUAL, 0), kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+        kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito);
+    // The IPH only shows when user taps the "incognito" icon inside the page
+    // control at least twice.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kIOSIncognitoPageControlTapped,
+                    Comparator(GREATER_THAN_OR_EQUAL, 2),
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito,
+                    kMaxStorageDaysForIOSTabGridSwipeLeftForIncognito));
     return config;
   }
 

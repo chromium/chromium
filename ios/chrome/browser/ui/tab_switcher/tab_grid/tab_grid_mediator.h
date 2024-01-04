@@ -14,6 +14,10 @@
 @protocol TabGridConsumer;
 @protocol TabGridPageMutator;
 
+namespace feature_engagement {
+class Tracker;
+}  // namespace feature_engagement
+
 class PrefService;
 
 // Mediates between model layer and tab grid UI layer.
@@ -34,6 +38,7 @@ class PrefService;
 @property(nonatomic, weak) id<TabGridConsumer> consumer;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

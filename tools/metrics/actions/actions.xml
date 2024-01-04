@@ -40880,6 +40880,8 @@ should be able to be added at any place in this file.
       label="For iOSReplaceSyncPromosWithSignInPromos feature"/>
   <suffix name="iOSShareToolbarItemFeature"
       label="For iOSShareToolbarItemFeature feature"/>
+  <suffix name="iOSTabGridSwipeLeftForIncognito"
+      label="For iOSTabGridSwipeLeftForIncognito feature"/>
   <suffix name="iOSTabGridToolbarItemFeature"
       label="For iOSTabGridToolbarItemFeature feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"

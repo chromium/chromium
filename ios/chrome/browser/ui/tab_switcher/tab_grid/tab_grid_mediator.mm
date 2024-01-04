@@ -6,6 +6,8 @@
 
 #import "base/feature_list.h"
 #import "base/metrics/histogram_macros.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -27,6 +29,8 @@
   id<TabGridPageMutator> _currentPageMutator;
   // Preference service from the application context.
   PrefService* _prefService;
+  // Feature engagement tracker.
+  feature_engagement::Tracker* _engagementTracker;
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
@@ -37,11 +41,14 @@
   TabGridPage _currentPage;
 }
 
-- (instancetype)initWithPrefService:(PrefService*)prefService {
+- (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
   if (self) {
     CHECK(prefService);
+    CHECK(tracker);
     _prefService = prefService;
+    _engagementTracker = tracker;
     _prefChangeRegistrar.Init(_prefService);
     _prefObserverBridge.reset(new PrefObserverBridge(self));
 
@@ -125,6 +132,23 @@
                             interaction);
 
   [self notifyPageMutatorAboutPage:currentPage];
+  if (currentPage == TabGridPageIncognitoTabs) {
+    switch (interaction) {
+      case TabSwitcherPageChangeInteraction::kScrollDrag:
+      case TabSwitcherPageChangeInteraction::kAccessibilitySwipe:
+        _engagementTracker->NotifyEvent(
+            feature_engagement::events::kIOSSwipeLeftForIncognitoUsed);
+        break;
+      case TabSwitcherPageChangeInteraction::kControlTap:
+      case TabSwitcherPageChangeInteraction::kControlDrag:
+        _engagementTracker->NotifyEvent(
+            feature_engagement::events::kIOSIncognitoPageControlTapped);
+        break;
+      case TabSwitcherPageChangeInteraction::kNone:
+      case TabSwitcherPageChangeInteraction::kItemDrag:
+        break;
+    }
+  }
   // TODO(crbug.com/1462133): Implement the incognito grid or content visible
   // notification.
 }

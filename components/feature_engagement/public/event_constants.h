@@ -217,6 +217,12 @@ extern const char kIOSMultiGestureRefreshUsed[];
 // The user has used the pull-to-refresh feature in iOS.
 extern const char kIOSPullToRefreshUsed[];
 
+// The user has tapped "incognito" on the page control in the tab grid.
+extern const char kIOSIncognitoPageControlTapped[];
+
+// The user has swiped left from regular tab grid to the incognito tab grid.
+extern const char kIOSSwipeLeftForIncognitoUsed[];
+
 // The user has met a condition that makes the Enhanced Safe Browsing
 // inline and blue-dot promos eligible to be displayed.
 extern const char kEnhancedSafeBrowsingPromoCriterionMet[];
