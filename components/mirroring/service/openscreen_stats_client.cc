@@ -8,10 +8,12 @@
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
+#include "media/cast/logging/stats_event_subscriber.h"
 
 namespace mirroring {
 
 namespace {
+
 media::cast::StatsEventSubscriber::CastStat StatisticTypeToCastStat(
     const openscreen::cast::StatisticType& stat_type) {
   switch (stat_type) {

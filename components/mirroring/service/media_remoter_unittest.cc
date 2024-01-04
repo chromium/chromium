@@ -12,7 +12,6 @@
 #include "base/time/default_tick_clock.h"
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
-#include "components/mirroring/service/message_dispatcher.h"
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/openscreen_platform/task_runner.h"
@@ -295,7 +294,6 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   mojo::Receiver<mojom::CastMessageChannel> receiver_{this};
-  base::MockCallback<MessageDispatcher::ErrorCallback> error_callback_;
   mojo::Remote<mojom::CastMessageChannel> inbound_channel_;
   testing::StrictMock<MockRpcDispatcher> rpc_dispatcher_;
   const media::mojom::RemotingSinkMetadata sink_metadata_;

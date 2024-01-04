@@ -34,7 +34,6 @@
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
-#include "components/mirroring/service/udp_socket_client.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "components/openscreen_platform/network_context.h"
 #include "components/openscreen_platform/network_util.h"
