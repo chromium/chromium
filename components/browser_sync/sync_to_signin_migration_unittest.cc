@@ -16,6 +16,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -32,9 +33,14 @@ class SyncToSigninMigrationTestBase {
  public:
   explicit SyncToSigninMigrationTestBase(bool migration_feature_enabled) {
     if (migration_feature_enabled) {
-      features_.InitAndEnableFeature(switches::kMigrateSyncingUserToSignedIn);
+      features_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
+                                switches::kMigrateSyncingUserToSignedIn},
+          /*disabled_features=*/{});
     } else {
-      features_.InitAndDisableFeature(switches::kMigrateSyncingUserToSignedIn);
+      features_.InitWithFeatures(
+          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+          /*disabled_features=*/{switches::kMigrateSyncingUserToSignedIn});
     }
 
     signin::IdentityManager::RegisterProfilePrefs(pref_service_.registry());

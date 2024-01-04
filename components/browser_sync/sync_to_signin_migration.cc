@@ -18,6 +18,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
@@ -89,9 +90,11 @@ SyncToSigninMigrationDecision GetSyncToSigninMigrationDecision(
   // "initializing" or "undefined/unknown" as "Sync disabled" and go ahead with
   // the migration?
 
-  // Check the feature flag last, so that metrics can record all the other
+  // Check the feature flag(s) last, so that metrics can record all the other
   // reasons to not do the migration, even with the flag disabled.
-  if (!base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) ||
+      !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn)) {
     return SyncToSigninMigrationDecision::kDontMigrateFlagDisabled;
   }
 
