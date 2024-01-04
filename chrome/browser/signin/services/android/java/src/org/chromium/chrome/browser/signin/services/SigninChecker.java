@@ -39,8 +39,7 @@ public class SigninChecker
     private final AccountTrackerService mAccountTrackerService;
     private final SyncService mSyncService;
     private final AccountManagerFacade mAccountManagerFacade;
-    // TODO(crbug/1491005): Delete this once SeedAccountsRevamp is fully enabled.
-    @Nullable private SigninManager mSigninManager;
+    private final SigninManager mSigninManager;
     // Counter to record the number of child account checks done for tests.
     private int mNumOfChildAccountChecksDone;
 
@@ -52,19 +51,24 @@ public class SigninChecker
             SigninManager signinManager,
             AccountTrackerService accountTrackerService,
             SyncService syncService) {
-        if (!SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
-            mSigninManager = signinManager;
-        }
+        mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
         mSyncService = syncService;
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.addObserver(this);
+        } else {
+            mAccountTrackerService.addObserver(this);
+        }
         mNumOfChildAccountChecksDone = 0;
-        mAccountTrackerService.addObserver(this);
     }
 
     @Override
     public void destroy() {
         mAccountTrackerService.removeObserver(this);
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            mAccountManagerFacade.removeObserver(this);
+        }
     }
 
     private void validateAccountSettings() {

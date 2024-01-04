@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -78,11 +80,7 @@ public final class SigninTestUtil {
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(
-                            coreAccountInfo,
-                            IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
     }
 
@@ -126,17 +124,17 @@ public final class SigninTestUtil {
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertEquals(
-                            coreAccountInfo,
-                            IdentityServicesProvider.get()
-                                    .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                    .getPrimaryAccountInfo(ConsentLevel.SYNC));
+                    Assert.assertEquals(coreAccountInfo, getPrimaryAccount(ConsentLevel.SYNC));
                 });
     }
 
     /** Waits for the AccountTrackerService to seed system accounts. */
     static void seedAccounts() {
         ThreadUtils.assertOnBackgroundThread();
+        if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
+            throw new IllegalStateException(
+                    "This method should never be called when SeedAccountsRevamp is enabled");
+        }
         CallbackHelper ch = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

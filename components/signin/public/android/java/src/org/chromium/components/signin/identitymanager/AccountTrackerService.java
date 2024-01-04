@@ -106,6 +106,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
      * immediately.
      */
     @MainThread
+    @Deprecated
     public void legacySeedAccountsIfNeeded(Runnable onAccountsSeeded) {
         if (SigninFeatureMap.isEnabled(SigninFeatures.SEED_ACCOUNTS_REVAMP)) {
             throw new IllegalStateException(
