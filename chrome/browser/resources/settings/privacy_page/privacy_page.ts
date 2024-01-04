@@ -555,12 +555,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         TrustSafetyInteraction.USED_PRIVACY_CARD);
   }
 
-  private computePrivacySandboxSublabel_(): string {
-    const enabled = this.getPref('privacy_sandbox.apis_enabled_v2').value;
-    return enabled ? this.i18n('privacySandboxTrialsEnabled') :
-                     this.i18n('privacySandboxTrialsDisabled');
-  }
-
   private computeAdPrivacySublabel_(): string {
     // When the privacy sandbox is restricted with a notice, the sublabel
     // wording indicates measurement only, rather than general ad privacy.

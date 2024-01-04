@@ -155,7 +155,6 @@ enum class StateKey {
   kHasBlockedTopics = 10,
   kAdvanceClockBy = 11,
   kActiveTopicsConsent = 12,
-  kApisEnabledV2 = 13,
   kTrialsConsentDecisionMade = 14,
   kTrialsNoticeDisplayed = 15,
   kM1ConsentDecisionPreviouslyMade = 16,

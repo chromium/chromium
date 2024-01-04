@@ -2129,13 +2129,16 @@ TEST_F(PrivacySandboxServiceM1ConsentPromptTest, SuppressedConsent) {
 }
 
 TEST_F(PrivacySandboxServiceM1ConsentPromptTest, TrialsConsentDeclined) {
-  // If a previous consent decision was made to decline the privacy sandbox
-  // (privacy_sandbox.apis_enabled_v2 is false), set kTrialsConsentDeclined
-  // as suppressed reason and return kNone.
+  // If a previous consent decision was made to decline privacy sandbox, set
+  // kTrialsConsentDeclined as suppressed reason and return kNone.
+  // Now that the trials pref is deprecated users won't be able to enter that
+  // state. Users who had the prompt suppressed due to declining the trials
+  // consent should remain in this state.
   RunTestCase(
-      TestState{{kM1PromptPreviouslySuppressedReason,
-                 static_cast<int>(PromptSuppressedReason::kNone)},
-                {kTrialsConsentDecisionMade, true}},
+      TestState{
+          {kM1PromptPreviouslySuppressedReason,
+           static_cast<int>(PromptSuppressedReason::kTrialsConsentDeclined)},
+          {kTrialsConsentDecisionMade, true}},
       TestInput{{kForceChromeBuild, true}},
       TestOutput{
           {kPromptType, static_cast<int>(PromptType::kNone)},
@@ -2307,12 +2310,15 @@ TEST_F(PrivacySandboxServiceM1NoticePromptTest, SuppressedNotice) {
 }
 
 TEST_F(PrivacySandboxServiceM1NoticePromptTest, TrialsDisabledAfterNotice) {
-  // If a previous notice was shown and then the privacy sandbox was disabled
-  // after (privacy_sandbox.apis_enabled_v2 is false), set
-  // kTrialsDisabledAfterNotice as suppressed reason and return kNone.
+  // If a previous notice was shown and then privacy sandbox was disabled after,
+  // set kTrialsDisabledAfterNotice as suppressed reason and return kNone.
+  // Now that the trials pref is deprecated users won't be able to enter that
+  // state. Users who had the prompt suppressed due to declining the trials
+  // consent should remain in this state.
   RunTestCase(
       TestState{{kM1PromptPreviouslySuppressedReason,
-                 static_cast<int>(PromptSuppressedReason::kNone)},
+                 static_cast<int>(
+                     PromptSuppressedReason::kTrialsDisabledAfterNotice)},
                 {kTrialsNoticeDisplayed, true}},
       TestInput{{kForceChromeBuild, true}},
       TestOutput{{kPromptType, static_cast<int>(PromptType::kNone)},

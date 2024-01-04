@@ -265,24 +265,6 @@ suite(`PrivacySandbox`, function() {
         privacySandboxLinkRow.label);
   });
 
-  test('privacySandboxRowSublabel', async function() {
-    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', true);
-    assertTrue(isChildVisible(page, '#privacySandboxLinkRow'));
-    const privacySandboxLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#privacySandboxLinkRow')!;
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('adPrivacyLinkRowSubLabel'),
-        privacySandboxLinkRow.subLabel);
-
-    page.set('prefs.privacy_sandbox.apis_enabled_v2.value', false);
-    await flushTasks();
-    assertEquals(
-        loadTimeData.getString('adPrivacyLinkRowSubLabel'),
-        privacySandboxLinkRow.subLabel);
-  });
-
   test('privacySandboxNotExternalLink', function() {
     const privacySandboxLinkRow =
         page.shadowRoot!.querySelector<CrLinkRowElement>(

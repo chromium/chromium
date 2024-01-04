@@ -44,7 +44,6 @@ class MockPrivacySandboxService : public PrivacySandboxService {
   MOCK_METHOD(void, ForceChromeBuildForTests, (bool), (override));
   // Mock this method to enable opening the settings page in tests.
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override));
-  MOCK_METHOD(void, OnPrivacySandboxV2PrefChanged, (), (override));
   MOCK_METHOD(bool, IsRestrictedNoticeEnabled, (), (override));
   MOCK_METHOD(void, SetFirstPartySetsDataAccessEnabled, (bool), (override));
   MOCK_METHOD(bool, IsFirstPartySetsDataAccessEnabled, (), (const, override));

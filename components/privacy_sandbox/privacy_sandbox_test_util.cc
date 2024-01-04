@@ -195,12 +195,6 @@ void ApplyTestState(
           prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate, "Foo Bar Baz");
       return;
     }
-    case (StateKey::kApisEnabledV2): {
-      SCOPED_TRACE("State Setup: Privacy Sandbox Apis enabled");
-      testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                        base::Value(GetItemValue<bool>(value)));
-      return;
-    }
     case (StateKey::kTrialsConsentDecisionMade): {
       SCOPED_TRACE("State Setup: Trials consent decision made");
       testing_pref_service->SetUserPref(
@@ -974,9 +968,6 @@ void SetupTestState(
   content_settings::TestUtils::OverrideProvider(
       map, std::move(managed_provider),
       HostContentSettingsMap::POLICY_PROVIDER);
-
-  testing_pref_service->SetUserPref(prefs::kPrivacySandboxApisEnabledV2,
-                                    base::Value(privacy_sandbox_enabled));
 }
 
 void RunTestCase(

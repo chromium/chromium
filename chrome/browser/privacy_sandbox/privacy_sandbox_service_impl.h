@@ -71,7 +71,6 @@ class PrivacySandboxServiceImpl : public PrivacySandboxService {
 #endif  // !BUILDFLAG(IS_ANDROID)
   void ForceChromeBuildForTests(bool force_chrome_build) override;
   bool IsPrivacySandboxRestricted() override;
-  void OnPrivacySandboxV2PrefChanged() override;
   bool IsRestrictedNoticeEnabled() override;
   void SetFirstPartySetsDataAccessEnabled(bool enabled) override;
   bool IsFirstPartySetsDataAccessEnabled() const override;

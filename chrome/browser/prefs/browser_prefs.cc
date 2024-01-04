@@ -936,6 +936,11 @@ const char kSync_ExplicitBrowserSignin[] = "sync.explicit_browser_signin";
 // Deprecated 01/2024.
 const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
 
+// Deprecated 01/2024.
+const char kPrivacySandboxApisEnabledV2[] = "privacy_sandbox.apis_enabled_v2";
+const char kPrivacySandboxManuallyControlledV2[] =
+    "privacy_sandbox.manually_controlled_v2";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1308,6 +1313,10 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 01/2024.
   registry->RegisterBooleanPref(kPrivacySandboxPageViewed, false);
+
+  // Deprecated 01/2024.
+  registry->RegisterBooleanPref(kPrivacySandboxApisEnabledV2, false);
+  registry->RegisterBooleanPref(kPrivacySandboxManuallyControlledV2, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2517,6 +2526,10 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 01/2024.
   profile_prefs->ClearPref(kPrivacySandboxPageViewed);
+
+  // Added 01/2024.
+  profile_prefs->ClearPref(kPrivacySandboxApisEnabledV2);
+  profile_prefs->ClearPref(kPrivacySandboxManuallyControlledV2);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
