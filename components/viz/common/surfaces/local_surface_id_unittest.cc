@@ -38,9 +38,9 @@ TEST(LocalSurfaceIdTest, VerifyToString) {
 
   int previous_log_lvl = logging::GetMinLogLevel();
 
-  // When |g_min_log_level| is set to LOG_VERBOSE we expect verbose versions
+  // When |g_min_log_level| is set to LOGGING_VERBOSE we expect verbose versions
   // of local_surface_id::ToString().
-  logging::SetMinLogLevel(logging::LOG_VERBOSE);
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
   EXPECT_TRUE(VLOG_IS_ON(1));
   EXPECT_EQ(verbose_expected, local_surface_id.ToString());
   EXPECT_EQ(big_verbose_expected, big_local_surface_id.ToString());

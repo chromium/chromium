@@ -14,7 +14,7 @@ namespace {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void HandleLibraryLogging(int severity, const char* message) {
   switch (severity) {
-    case logging::LOG_VERBOSE:
+    case logging::LOGGING_VERBOSE:
     case logging::LOG_INFO:
       VLOG(2) << message;
       break;

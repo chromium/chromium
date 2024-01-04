@@ -233,8 +233,8 @@ struct Environment {
 
     media::InitializeMediaLibrary();
 
-    // Note, instead of LOG_FATAL, use a value at or below logging::LOG_VERBOSE
-    // here to assist local debugging.
+    // Note, instead of LOG_FATAL, use a value at or below
+    // logging::LOGGING_VERBOSE here to assist local debugging.
     logging::SetMinLogLevel(logging::LOG_FATAL);
   }
 };

@@ -769,7 +769,7 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
   InitializeStatisticsRecorder();
   EXPECT_FALSE(VLOG_IS_ON(1));
   EXPECT_FALSE(IsVLogInitialized());
-  logging::SetMinLogLevel(logging::LOG_VERBOSE);
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
   EXPECT_TRUE(VLOG_IS_ON(1));
   InitLogOnShutdown();
   EXPECT_TRUE(IsVLogInitialized());
@@ -777,7 +777,7 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitialized) {
   ResetVLogInitialized();
-  logging::SetMinLogLevel(logging::LOG_VERBOSE);
+  logging::SetMinLogLevel(logging::LOGGING_VERBOSE);
   InitializeStatisticsRecorder();
   EXPECT_TRUE(VLOG_IS_ON(1));
   EXPECT_TRUE(IsVLogInitialized());

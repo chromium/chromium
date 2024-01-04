@@ -89,7 +89,7 @@ TEST_F(QuickPairLoggingTest, LogsSavedToBuffer) {
   EXPECT_EQ(kLog3, log_message4.text);
   EXPECT_EQ(__FILE__, log_message4.file);
   EXPECT_EQ(base_line_number + 4, log_message4.line);
-  EXPECT_EQ(logging::LOG_VERBOSE, log_message4.severity);
+  EXPECT_EQ(logging::LOGGING_VERBOSE, log_message4.severity);
 }
 
 TEST_F(QuickPairLoggingTest, LogWhenBufferIsFull) {

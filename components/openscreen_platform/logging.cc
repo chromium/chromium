@@ -18,7 +18,7 @@ namespace {
 ::logging::LogSeverity MapLogLevel(LogLevel level) {
   switch (level) {
     case LogLevel::kVerbose:
-      return ::logging::LOG_VERBOSE;
+      return ::logging::LOGGING_VERBOSE;
     case LogLevel::kInfo:
       return ::logging::LOG_INFO;
     case LogLevel::kWarning:
