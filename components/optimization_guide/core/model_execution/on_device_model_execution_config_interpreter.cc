@@ -32,12 +32,12 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& path) {
     return nullptr;
   }
 
-  proto::OnDeviceModelExecutionConfig config;
-  if (!config.ParseFromString(binary_config_pb)) {
+  auto config = std::make_unique<proto::OnDeviceModelExecutionConfig>();
+  if (!config->ParseFromString(binary_config_pb)) {
     return nullptr;
   }
 
-  return std::make_unique<proto::OnDeviceModelExecutionConfig>(config);
+  return config;
 }
 
 std::vector<Rule> ExtractRedactRules(const proto::RedactRules& proto_rules) {
@@ -179,11 +179,6 @@ const Redactor* OnDeviceModelExecutionConfigInterpreter::GetRedactorForFeature(
   return feature_iter != feature_to_data_.end()
              ? feature_iter->second->redactor.get()
              : nullptr;
-}
-
-void OnDeviceModelExecutionConfigInterpreter::OverrideFeatureConfigForTesting(
-    const proto::OnDeviceModelExecutionFeatureConfig& config) {
-  RegisterFeature(config);
 }
 
 void OnDeviceModelExecutionConfigInterpreter::RegisterFeature(

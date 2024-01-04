@@ -29,6 +29,10 @@ class OnDeviceModelExecutionConfigInterpreter {
   // `file_dir`.
   void UpdateConfigWithFileDir(const base::FilePath& file_dir);
 
+  // Clears the current state of `this` that may be associated with a previous
+  // config.
+  void ClearState();
+
   // Whether there is an on-device model execution config for `feature`.
   bool HasConfigForFeature(proto::ModelExecutionFeature feature) const;
 
@@ -66,9 +70,6 @@ class OnDeviceModelExecutionConfigInterpreter {
   const Redactor* GetRedactorForFeature(
       proto::ModelExecutionFeature feature) const;
 
-  void OverrideFeatureConfigForTesting(
-      const proto::OnDeviceModelExecutionFeatureConfig& config);
-
  private:
   // Contains the state applicable to a feature.
   struct FeatureData {
@@ -84,10 +85,6 @@ class OnDeviceModelExecutionConfigInterpreter {
   // Populates `feature_to_data_` based on `config`.
   void PopulateFeatureConfigs(
       std::unique_ptr<proto::OnDeviceModelExecutionConfig> config);
-
-  // Clears the current state of `this` that may be associated with a previous
-  // config.
-  void ClearState();
 
   // The task runner to process new config files on.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

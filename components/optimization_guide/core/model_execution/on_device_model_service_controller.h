@@ -57,12 +57,8 @@ class OnDeviceModelServiceController
       base::WeakPtr<OnDeviceModelComponentStateManager>
           on_device_component_state_manager);
 
-  // Initializes the on-device model controller with the parameters, to be ready
-  // to load models and execute.
-  void Init(const base::FilePath& model_path,
-            std::unique_ptr<OnDeviceModelExecutionConfigInterpreter>
-                config_interpreter);
-  // Calls multi-arg init with appropriate parameters.
+  // Initializes OnDeviceModelServiceController. This should be called once
+  // after creation.
   void Init();
 
   // Starts a session for `feature`. This will start the service and load the
@@ -117,6 +113,11 @@ class OnDeviceModelServiceController
   friend class ChromeOnDeviceModelServiceController;
   friend class OnDeviceModelServiceControllerTest;
   friend class FakeOnDeviceModelServiceController;
+
+  // Sets the base model directory and initializes the on-device model
+  // controller with the parameters, to be ready to load models and execute.
+  void SetModelPath(const base::FilePath& model_path);
+  void ClearModelPath();
 
   // Makes sure the service is running and starts a mojo session.
   void StartMojoSession(

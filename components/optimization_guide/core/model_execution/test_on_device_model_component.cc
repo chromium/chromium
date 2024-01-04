@@ -5,10 +5,12 @@
 #include "components/optimization_guide/core/model_execution/test_on_device_model_component.h"
 
 #include "base/check.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/version.h"
 
 namespace optimization_guide {
 
@@ -101,6 +103,11 @@ bool TestOnDeviceModelComponentStateManager::WasComponentUninstalled() const {
 void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
     int64_t free_space_bytes) {
   state_->free_disk_space_ = free_space_bytes;
+}
+
+void TestOnDeviceModelComponentStateManager::SetReady(
+    const base::FilePath& install_dir) {
+  get()->SetReady(base::Version(), install_dir, base::Value::Dict());
 }
 
 }  // namespace optimization_guide
