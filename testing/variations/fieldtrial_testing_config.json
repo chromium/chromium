@@ -17172,25 +17172,6 @@
             ]
         }
     ],
-    "SidePanelMinimumWidthDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20231206",
-                    "enable_features": [
-                        "SidePanelMinimumWidth"
-                    ]
-                }
-            ]
-        }
-    ],
     "SideSearchDesktopChromeOS": [
         {
             "platforms": [
