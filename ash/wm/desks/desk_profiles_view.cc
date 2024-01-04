@@ -106,6 +106,7 @@ class DeskProfilesMenuModelAdapter : public views::MenuModelAdapter {
           gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
               kIconProfileSize, icon)));
       item_view->SetTitle(base::UTF8ToUTF16(summary.name));
+      item_view->SetHighlightWhenSelectedWithChildViews(true);
       // Add a secondary title for email if available. Note that local profile
       // may not have an associated email.
       if (!summary.email.empty()) {
