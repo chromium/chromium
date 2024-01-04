@@ -7166,7 +7166,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kCell:
     case ax::mojom::blink::Role::kCheckBox:
     case ax::mojom::blink::Role::kColumnHeader:
-    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kDocBackLink:
     case ax::mojom::blink::Role::kDocBiblioRef:
     case ax::mojom::blink::Role::kDocNoteRef:
@@ -7210,6 +7209,7 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kComboBoxMenuButton:  // Only value from
                                                        // content.
     case ax::mojom::blink::Role::kComboBoxGrouping:
+    case ax::mojom::blink::Role::kComboBoxSelect:
     case ax::mojom::blink::Role::kComment:
     case ax::mojom::blink::Role::kComplementary:
     case ax::mojom::blink::Role::kContentInfo:
