@@ -2497,9 +2497,6 @@ extern const char kReengagementNotificationDescription[];
 extern const char kRelatedSearchesAllLanguageName[];
 extern const char kRelatedSearchesAllLanguageDescription[];
 
-extern const char kRelatedSearchesName[];
-extern const char kRelatedSearchesDescription[];
-
 extern const char kRemoveUPMUnenrollmentName[];
 extern const char kRemoveUPMUnenrollmentDescription[];
 

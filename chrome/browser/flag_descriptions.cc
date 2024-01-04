@@ -4248,12 +4248,6 @@ const char kRelatedSearchesAllLanguageName[] =
 const char kRelatedSearchesAllLanguageDescription[] =
     "Enables requesting related searches suggestions for all the languages.";
 
-const char kRelatedSearchesName[] =
-    "Enables an experiment for Related Searches on Android";
-const char kRelatedSearchesDescription[] =
-    "Enables requesting related searches suggestions. These will be requested "
-    "but not shown unless the UI flag is also enabled.";
-
 const char kRemoveUPMUnenrollmentName[] = "Removes unenrollment fro UPM.";
 const char kRemoveUPMUnenrollmentDescription[] =
     "Instead of unenrolling from UPM the Password Manager will be disabled (no "

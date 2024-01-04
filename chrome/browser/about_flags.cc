@@ -2182,13 +2182,6 @@ const FeatureEntry::FeatureVariation kNtpTabResumptionModuleVariations[] = {
 
 #if BUILDFLAG(IS_ANDROID)
 
-const FeatureEntry::FeatureParam kRelatedSearchesUrl = {"stamp", "1Ru"};
-const FeatureEntry::FeatureParam kRelatedSearchesContent = {"stamp", "1Rc"};
-const FeatureEntry::FeatureVariation kRelatedSearchesVariations[] = {
-    {"from URL", &kRelatedSearchesUrl, 1, nullptr},
-    {"from content", &kRelatedSearchesContent, 1, nullptr},
-};
-
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith300Dp[] =
     {{"contextual_search_minimum_page_height_dp", "300"}};
 const FeatureEntry::FeatureParam kContextualSearchSuppressShortViewWith400Dp[] =
@@ -3823,11 +3816,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kContextualSearchSuppressShortView,
          kContextualSearchSuppressShortViewVariations,
          "ContextualSearchSuppressShortView")},
-    {"related-searches", flag_descriptions::kRelatedSearchesName,
-     flag_descriptions::kRelatedSearchesDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kRelatedSearches,
-                                    kRelatedSearchesVariations,
-                                    "RelatedSearches")},
     {"related-searches-all-language",
      flag_descriptions::kRelatedSearchesAllLanguageName,
      flag_descriptions::kRelatedSearchesAllLanguageDescription, kOsAndroid,

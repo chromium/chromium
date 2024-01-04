@@ -6893,11 +6893,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "related-searches",
-    "owners": [ "gangwu@chromium.org", "related-searches-vteam@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "related-searches-all-language",
     "owners": [ "gangwu@chromium.org", "related-searches-vteam@google.com" ],
     "expiry_milestone": 140

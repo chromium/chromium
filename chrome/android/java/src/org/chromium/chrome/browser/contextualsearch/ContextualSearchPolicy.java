@@ -536,14 +536,6 @@ class ContextualSearchPolicy {
         return mRelatedSearchesStamp.getRelatedSearchesStamp(basePageLanguage);
     }
 
-    /**
-     * @return whether the given parameter is currently enabled in the Related Searches Variation
-     *         configuration.
-     */
-    boolean isRelatedSearchesParamEnabled(String paramName) {
-        return ContextualSearchFieldTrial.isRelatedSearchesParamEnabled(paramName);
-    }
-
     // --------------------------------------------------------------------------------------------
     // Testing helpers.
     // --------------------------------------------------------------------------------------------
