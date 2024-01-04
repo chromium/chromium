@@ -6,7 +6,7 @@
 import json
 import os
 import subprocess
-from typing import Optional
+from typing import List, Optional
 
 from flake_suppressor_common import common_typing as ct
 from flake_suppressor_common import queries as queries_module
@@ -149,6 +149,14 @@ WITH
   GROUP BY blink_flaky_bugs.id, blink_flaky_bugs.create_time
 """
 
+# Query that inserts all web test analyzer bugs attach result to the database.
+WEB_TEST_ANALYZER_RESULT_UPDATE_QUERY = """
+INSERT INTO `chrome-unexpected-pass-data.chromium.web_test_analyzer_data` (
+  timestamp, analyzer_type, bug_type, bug_id)
+VALUES
+{values}
+"""
+
 
 class Querier:
     def __init__(self, sample_period: int, billing_project: str):
@@ -233,6 +241,23 @@ class Querier:
 
         return self._get_json_results(WEB_TEST_FLAKY_BUGS_QUERY)
 
+    def insert_web_test_analyzer_result(self, analyzer_type: str,
+                                        bug_type: str, bug_list: List[str]):
+        """Insert all web test analyzer bugs attach result to the database.
+
+        Args:
+          analyzer_type: The type of analyzer.
+          bug_type: The type of this bug.
+          bug_list: List of all bug ids for this type.
+        """
+        values = []
+        for bug_id in bug_list:
+            values.append(f"(CURRENT_TIMESTAMP, '{analyzer_type}',"
+                          f" '{bug_type}', '{bug_id}')")
+        value_string = ','.join(values)
+        self._execute_query(
+            WEB_TEST_ANALYZER_RESULT_UPDATE_QUERY.format(values=value_string))
+
     def _get_json_results(self, query: str) -> ct.QueryJsonType:
         """Gets the JSON results from an input BigQuery query.
 
@@ -266,3 +291,25 @@ class Querier:
                 raise error
 
         return json.loads(completed_process.stdout)
+
+    def _execute_query(self, query: str):
+        """Execute an input BigQuery query.
+
+        Args:
+          query: A string containing the SQL query to run in BigQuery.
+        """
+        cmd = upc_queries.GenerateBigQueryCommand(self._billing_project, {},
+                                                  batch=False)
+
+        with open(os.devnull, 'w') as devnull:
+            try:
+                subprocess.run(cmd,
+                               input=query,
+                               stdout=devnull,
+                               stderr=devnull,
+                               check=True,
+                               text=True)
+            except subprocess.CalledProcessError as error:
+                print("Failed to execute query, run 'gcloud auth login'"
+                      " might fix the issue.")
+                raise error

@@ -111,6 +111,7 @@ def main() -> int:
     results_processor = results.ResultProcessor()
     slowness_analyzer = analyzer.SlowTestAnalyzer(
         args.slow_result_ratio_threshold, args.timeout_result_threshold)
+    bug_ids = []
     for bug_id, test_list in bugs.items():
         bug_result_string = ''
         for test_path in test_list:
@@ -129,6 +130,12 @@ def main() -> int:
                     monorail_api.get_comment_list('chromium', bug_id)):
                 monorail_api.insert_comment('chromium', bug_id,
                                             bug_result_string)
+                bug_ids.append(bug_id)
+
+    # Insert bug attachment results to database.
+    if bug_ids:
+        querier_instance.insert_web_test_analyzer_result(
+            data_types.SLOW_TEST_ANALYZER, data_types.MONORAIL, bug_ids)
 
     return 0
 

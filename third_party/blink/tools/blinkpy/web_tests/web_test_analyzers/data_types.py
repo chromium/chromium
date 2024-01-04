@@ -43,6 +43,9 @@ TestSlownessData = namedtuple(
     'TestSlownessData',
     ['builder', 'slow_count', 'slow_ratio', 'timeout_count', 'avg_duration'])
 
+MONORAIL = 'Monorail'
+FUZZY_DIFF_ANALYZER = 'fuzzy_diff_analyzer'
+SLOW_TEST_ANALYZER = 'slow_test_analyzer'
 
 class Result:
     """Container for an image diff test result.
