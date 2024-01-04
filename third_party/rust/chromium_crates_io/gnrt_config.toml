@@ -112,6 +112,13 @@ group = 'test'
 [crate.nom]
 remove_deps = ['minimal-lexical']
 
+[crate.prost]
+extra_input_roots = ['../README.md']
+group = 'test'
+
+[crate.prost-derive]
+group = 'test'
+
 [crate.rand]
 group = 'test'
 

@@ -160,3 +160,33 @@ Reviewed in https://chromium-review.googlesource.com/c/chromium/src/+/4977110
 - Unsound unsafe blocks present.
 - Safe traits that can cause soundness bugs.
 """
+
+[[audits.bytes]]
+who = "agl@chromium.org"
+criteria = ["safe-to-run", "does-not-increment-crypto"]
+version = "1.4.0 -> 1.5.0"
+
+[[audits.either]]
+who = "agl@chromium.org"
+criteria = ["safe-to-run", "does-not-increment-crypto"]
+version = "1.9.0"
+
+[[audits.itertools]]
+who = "agl@chromium.org"
+criteria = ["safe-to-run", "does-not-increment-crypto"]
+version = "0.11.0"
+notes = """
+This is 12K lines of code, plus 6K lines of tests and benchmarks.
+It has minimal use of unsafe and so I have paged though it all with "::"
+highlighted and paid attention to which imported functions are being called.
+"""
+
+[[audits.prost-derive]]
+who = "agl@chromium.org"
+criteria = ["safe-to-run", "does-not-increment-crypto", "ub-risk-0"]
+version = "0.12.3"
+
+[[audits.prost]]
+who = "agl@chromium.org"
+criteria = ["safe-to-run", "does-not-increment-crypto"]
+version = "0.12.3"
