@@ -6292,7 +6292,7 @@
   {
     "name": "passpoint-settings",
     "owners": [ "cros-networking@google.com" ],
-    "expiry_milestone": 121
+    "expiry_milestone": 130
   },
   {
     "name": "password-generation-bottom-sheet",
