@@ -4141,11 +4141,6 @@ const char kNotificationPermissionRationaleBottomSheetDescription[] =
     "flow. "
     "Only works with builds targeting Android T+.";
 
-const char kPageInfoHistoryName[] = "Page info history";
-const char kPageInfoHistoryDescription[] =
-    "Enable a history sub page to the page info menu, and a button to forget "
-    "a site, removing all preferences and history.";
-
 const char kPassExplicitSyncPassphraseToGmsCoreName[] =
     "Pass explicit sync passphrase to GmsCore";
 const char kPassExplicitSyncPassphraseToGmsCoreDescription[] =

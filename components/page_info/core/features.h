@@ -13,8 +13,6 @@
 namespace page_info {
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables the history sub page for Page Info.
-BASE_DECLARE_FEATURE(kPageInfoHistory);
 // Enables the store info row for Page Info.
 BASE_DECLARE_FEATURE(kPageInfoStoreInfo);
 #endif
