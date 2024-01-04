@@ -138,9 +138,8 @@ class BASE_EXPORT PeImageReader {
   // section.
   const IMAGE_SECTION_HEADER* FindSectionFromRva(uint32_t relative_address);
 
-  // Returns a pointer to the |data_length| bytes referenced by the |index|'th
-  // data directory entry.
-  const uint8_t* GetImageData(size_t index, size_t* data_length);
+  // Returns the bytes referenced by the |index|'th data directory entry.
+  span<const uint8_t> GetImageData(size_t index);
 
   // Populates |structure| with a pointer to a desired structure of type T at
   // the given offset if the image is sufficiently large to contain it. Returns
