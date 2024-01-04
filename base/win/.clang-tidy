@@ -1,6 +1,7 @@
 ---
 Checks: '-*,
          bugprone-argument-comment,
+         bugprone-unique-ptr-array-mismatch,
          google-build-namespaces,
          google-default-arguments,
          google-readability-namespace-comments,
