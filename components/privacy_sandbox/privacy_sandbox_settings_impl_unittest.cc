@@ -683,12 +683,6 @@ TEST_F(PrivacySandboxSettingsTestCookiesClearOnExitTurnedOn,
             privacy_sandbox_settings()->TopicsDataAccessibleSince());
 }
 
-TEST_F(PrivacySandboxSettingsTest, DisabledInIncognito) {
-  mock_delegate()->SetUpIsIncognitoProfileResponse(/*incognito=*/true);
-  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
-  EXPECT_FALSE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
-}
-
 class PrivacySandboxSettingsMockDelegateTest
     : public PrivacySandboxSettingsTest {
  public:

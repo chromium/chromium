@@ -52,10 +52,6 @@ ScopedJavaLocalRef<jobjectArray> ToJavaTopicsArray(
 }
 }  // namespace
 
-static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxEnabled(JNIEnv* env) {
-  return GetPrivacySandboxService()->IsPrivacySandboxEnabled();
-}
-
 static jboolean JNI_PrivacySandboxBridge_IsPrivacySandboxManaged(JNIEnv* env) {
   return GetPrivacySandboxService()->IsPrivacySandboxManaged();
 }

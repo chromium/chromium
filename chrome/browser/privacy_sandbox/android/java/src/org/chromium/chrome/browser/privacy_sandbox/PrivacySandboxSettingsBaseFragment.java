@@ -56,13 +56,6 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
                 context, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
-    public static CharSequence getStatusString(Context context) {
-        return context.getString(
-                PrivacySandboxBridge.isPrivacySandboxEnabled()
-                        ? R.string.privacy_sandbox_status_enabled
-                        : R.string.privacy_sandbox_status_disabled);
-    }
-
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         // Enable the options menu to be able to use a custom question mark button.

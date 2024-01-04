@@ -681,19 +681,6 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationDebugModeAllowed(
       net::CookieSettingOverrides());
 }
 
-bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabled() const {
-  // For Measurement and Relevance APIs, we explicitly do not require the
-  // underlying pref to be enabled if there is a local flag enabling the APIs to
-  // allow for local testing.
-  if (base::FeatureList::IsEnabled(
-          privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting)) {
-    return true;
-  }
-
-  PrivacySandboxSettingsImpl::Status status = GetPrivacySandboxAllowedStatus();
-  return IsAllowed(status);
-}
-
 void PrivacySandboxSettingsImpl::SetAllPrivacySandboxAllowedForTesting() {
   pref_service_->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
   pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);

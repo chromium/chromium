@@ -13,7 +13,6 @@ import java.util.Set;
 
 /** Java implementation of PrivacySandboxBridge for testing. */
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
-    private boolean mIsPrivacySandboxEnabled = true;
     private boolean mIsPrivacySandboxRestricted /* = false*/;
     private boolean mIsRestrictedNoticeEnabled /* = false*/;
 
@@ -57,11 +56,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
             mTopics.put(name, t);
         }
         return t;
-    }
-
-    @Override
-    public boolean isPrivacySandboxEnabled() {
-        return mIsPrivacySandboxEnabled;
     }
 
     @Override
