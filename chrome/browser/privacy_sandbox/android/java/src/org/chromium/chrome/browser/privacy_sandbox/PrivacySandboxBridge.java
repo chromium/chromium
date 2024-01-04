@@ -17,10 +17,6 @@ import java.util.List;
 // TODO(crbug.com/1410601): Pass in the profile and remove GetActiveUserProfile in C++.
 public class PrivacySandboxBridge {
 
-    public static boolean isPrivacySandboxManaged() {
-        return PrivacySandboxBridgeJni.get().isPrivacySandboxManaged();
-    }
-
     public static boolean isPrivacySandboxRestricted() {
         return PrivacySandboxBridgeJni.get().isPrivacySandboxRestricted();
     }
@@ -114,8 +110,6 @@ public class PrivacySandboxBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean isPrivacySandboxManaged();
-
         boolean isPrivacySandboxRestricted();
 
         boolean isRestrictedNoticeEnabled();

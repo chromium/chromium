@@ -414,11 +414,6 @@ void PrivacySandboxServiceImpl::ForceChromeBuildForTests(
   force_chrome_build_for_tests_ = force_chrome_build;
 }
 
-bool PrivacySandboxServiceImpl::IsPrivacySandboxManaged() {
-  return pref_service_->IsManagedPreference(
-      prefs::kPrivacySandboxApisEnabledV2);
-}
-
 bool PrivacySandboxServiceImpl::IsPrivacySandboxRestricted() {
   return privacy_sandbox_settings_->IsPrivacySandboxRestricted();
 }

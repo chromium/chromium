@@ -164,9 +164,6 @@ class PrivacySandboxService : public KeyedService {
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
 
-  // Returns whether the state of the API is managed.
-  virtual bool IsPrivacySandboxManaged() = 0;
-
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,
   // Privacy Sandbox related UI is updated appropriately.

@@ -59,11 +59,6 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isPrivacySandboxManaged() {
-        return false;
-    }
-
-    @Override
     public boolean isPrivacySandboxRestricted() {
         return mIsPrivacySandboxRestricted;
     }
