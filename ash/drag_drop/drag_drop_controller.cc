@@ -536,7 +536,7 @@ void DragDropController::DragUpdate(aura::Window* target,
                                     const ui::LocatedEvent& event) {
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
-  e.set_flags(event.flags());
+  e.SetFlags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
   aura::client::DragUpdateInfo drag_info;
@@ -623,7 +623,7 @@ void DragDropController::Drop(aura::Window* target,
 
   ui::DropTargetEvent e(*drag_data_.get(), event.location_f(),
                         event.root_location_f(), allowed_operations_);
-  e.set_flags(event.flags());
+  e.SetFlags(event.flags());
   ui::Event::DispatcherApi(&e).set_target(target);
 
   for (aura::client::DragDropClientObserver& observer : observers_) {

@@ -4343,7 +4343,7 @@ TEST_F(GestureRecognizerTest, GestureEventFlagsPassedFromTouchEvent) {
   ui::TouchEvent move1(
       ui::ET_TOUCH_MOVED, gfx::Point(397, 149), tes.LeapForward(50),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-  move1.set_flags(992);
+  move1.SetFlags(992);
 
   DispatchEventUsingWindowDispatcher(&move1);
   EXPECT_NE(default_flags, delegate->flags());

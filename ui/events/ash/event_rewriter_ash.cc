@@ -1469,7 +1469,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   if (sticky_keys_controller_) {
     KeyEvent tmp_event = key_event;
     tmp_event.set_key_code(state.key_code);
-    tmp_event.set_flags(state.flags);
+    tmp_event.SetFlags(state.flags);
     std::unique_ptr<Event> output_event;
     status = sticky_keys_controller_->RewriteEvent(tmp_event, &output_event);
     if (status == EVENT_REWRITE_REWRITTEN ||
@@ -1527,7 +1527,7 @@ EventDispatchDetails EventRewriterAsh::RewriteMouseButtonEvent(
   EventRewriteStatus status = EVENT_REWRITE_CONTINUE;
   if (sticky_keys_controller_) {
     MouseEvent tmp_event = mouse_event;
-    tmp_event.set_flags(flags);
+    tmp_event.SetFlags(flags);
     std::unique_ptr<Event> output_event;
     status = sticky_keys_controller_->RewriteEvent(tmp_event, &output_event);
     if (status == EVENT_REWRITE_REWRITTEN ||
@@ -1545,7 +1545,7 @@ EventDispatchDetails EventRewriterAsh::RewriteMouseButtonEvent(
   }
 
   std::unique_ptr<Event> rewritten_event = mouse_event.Clone();
-  rewritten_event->set_flags(flags);
+  rewritten_event->SetFlags(flags);
   if (changed_button != EF_NONE) {
     static_cast<MouseEvent*>(rewritten_event.get())
         ->set_changed_button_flags(changed_button);
@@ -1572,7 +1572,7 @@ EventDispatchDetails EventRewriterAsh::RewriteMouseWheelEvent(
 
   const int flags = RewriteLocatedEvent(wheel_event);
   MouseWheelEvent tmp_event = wheel_event;
-  tmp_event.set_flags(flags);
+  tmp_event.SetFlags(flags);
   return sticky_keys_controller_->RewriteEvent(tmp_event, continuation);
 }
 
@@ -1584,7 +1584,7 @@ EventDispatchDetails EventRewriterAsh::RewriteTouchEvent(
     return SendEvent(continuation, &touch_event);
   }
   TouchEvent rewritten_touch_event(touch_event);
-  rewritten_touch_event.set_flags(flags);
+  rewritten_touch_event.SetFlags(flags);
   return SendEventFinally(continuation, &rewritten_touch_event);
 }
 

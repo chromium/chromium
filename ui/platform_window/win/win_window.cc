@@ -257,7 +257,7 @@ LRESULT WinWindow::OnMouseRange(UINT message, WPARAM w_param, LPARAM l_param) {
                     {CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)}};
   std::unique_ptr<Event> event = EventFromNative(msg);
   if (IsMouseEventFromTouch(message))
-    event->set_flags(event->flags() | EF_FROM_TOUCH);
+    event->SetFlags(event->flags() | EF_FROM_TOUCH);
   if (!(event->flags() & ui::EF_IS_NON_CLIENT))
     delegate_->DispatchEvent(event.get());
   SetMsgHandled(event->handled());

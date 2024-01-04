@@ -364,7 +364,7 @@ DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent(
   auto event = std::make_unique<ui::DropTargetEvent>(
       *data_to_drop_, target_location, gfx::PointF(root_location),
       last_drop_operation_);
-  event->set_flags(modifiers);
+  event->SetFlags(modifiers);
   if (delegate_has_changed)
     drag_drop_delegate_->OnDragEntered(*event);
   return event;

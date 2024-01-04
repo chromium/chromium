@@ -438,7 +438,7 @@ ui::EventDispatchDetails FullscreenMagnifierController::RewriteEvent(
                                         it.second->pointer_details());
       touch_cancel_event.set_location_f(it.second->location_f());
       touch_cancel_event.set_root_location_f(it.second->root_location_f());
-      touch_cancel_event.set_flags(it.second->flags());
+      touch_cancel_event.SetFlags(it.second->flags());
 
       // TouchExplorationController is watching event stream and managing its
       // internal state. If an event rewriter (FullscreenMagnifierController)

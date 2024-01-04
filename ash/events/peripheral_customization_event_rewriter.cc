@@ -721,7 +721,7 @@ PeripheralCustomizationEventRewriter::RewriteMouseEvent(
     std::unique_ptr<ui::Event> rewritten_event = CloneEvent(mouse_event);
     const int remappable_flags =
         GetRemappableMouseEventFlags(*device_type_to_observe);
-    rewritten_event->set_flags(rewritten_event->flags() & ~remappable_flags);
+    rewritten_event->SetFlags(rewritten_event->flags() & ~remappable_flags);
     if (rewritten_event->IsMouseEvent()) {
       auto& rewritten_mouse_event = *rewritten_event->AsMouseEvent();
       rewritten_mouse_event.set_changed_button_flags(
@@ -818,7 +818,7 @@ void PeripheralCustomizationEventRewriter::RemoveRemappedModifiers(
   // remapped, this will behave incorrectly as it will remove "Ctrl". Instead,
   // this needs to track what keys are being pressed by the device that have
   // modifiers attached to them. For now, this is close enough to being correct.
-  event.set_flags(event.flags() & ~modifier_flags);
+  event.SetFlags(event.flags() & ~modifier_flags);
 }
 
 void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
@@ -827,7 +827,7 @@ void PeripheralCustomizationEventRewriter::ApplyRemappedModifiers(
   for (const auto& [_, flag] : device_button_to_flags_) {
     flags |= flag;
   }
-  event.set_flags(event.flags() | flags);
+  event.SetFlags(event.flags() | flags);
 }
 
 std::unique_ptr<ui::Event> PeripheralCustomizationEventRewriter::CloneEvent(

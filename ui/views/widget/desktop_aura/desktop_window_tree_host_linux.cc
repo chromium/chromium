@@ -204,7 +204,7 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
           gfx::ToRoundedPoint(location_in_dip));
       if (hit_test_code != HTCLIENT && hit_test_code != HTNOWHERE)
         flags |= ui::EF_IS_NON_CLIENT;
-      located_event->set_flags(flags);
+      located_event->SetFlags(flags);
     }
 
     // While we unset the urgency hint when we gain focus, we also must remove

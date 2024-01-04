@@ -57,7 +57,7 @@ void KeyHoldDetector::OnKeyEvent(ui::KeyEvent* event) {
       case INITIAL:
         // Pass through posted event.
         if (event->flags() & ui::EF_IS_SYNTHESIZED) {
-          event->set_flags(event->flags() & ~ui::EF_IS_SYNTHESIZED);
+          event->SetFlags(event->flags() & ~ui::EF_IS_SYNTHESIZED);
           return;
         }
         state_ = PRESSED;

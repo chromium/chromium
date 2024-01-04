@@ -88,10 +88,7 @@ class EVENTS_EXPORT Event {
 
   // This is only intended to be used externally by classes that are modifying
   // events in an EventRewriter.
-  void set_flags(int flags) {
-    flags_ = flags;
-    OnFlagsUpdated();
-  }
+  void SetFlags(int flags);
 
   EventTarget* target() const { return target_; }
   EventPhase phase() const { return phase_; }
@@ -478,7 +475,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
         movement_(model.movement_),
         pointer_details_(model.pointer_details_) {
     SetType(type);
-    set_flags(flags);
+    SetFlags(flags);
   }
 
   // Note: Use the ctor for MouseWheelEvent if type is ET_MOUSEWHEEL.
@@ -516,7 +513,7 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
     // TODO(eirage): convert this to builder pattern.
     void set_movement(const gfx::Vector2dF& movement) {
       event_->movement_ = movement;
-      event_->set_flags(event_->flags() | EF_UNADJUSTED_MOUSE);
+      event_->SetFlags(event_->flags() | EF_UNADJUSTED_MOUSE);
     }
 
    private:

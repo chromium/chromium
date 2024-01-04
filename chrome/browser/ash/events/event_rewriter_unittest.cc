@@ -3346,7 +3346,7 @@ TEST_F(EventRewriterTest, TestRewriteNonNativeEvent) {
   ui::TouchEvent press(
       ui::ET_TOUCH_PRESSED, location, base::TimeTicks(),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-  press.set_flags(ui::EF_CONTROL_DOWN);
+  press.SetFlags(ui::EF_CONTROL_DOWN);
 
   source().Send(&press);
   auto events = TakeEvents();
