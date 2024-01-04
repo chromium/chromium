@@ -467,7 +467,16 @@ class unordered_map_add_item_initializer {
 
 }  // anonymous namespace
 
-TEST(SmallMap, SubclassInitializationWithFunctionPointer) {
+// TODO(http://crbug.com/1515442) - reports a large negative number of failed
+// tests.
+#if BUILDFLAG(IS_IOS) && !defined(NDEBUG)
+#define MAYBE_SubclassInitializationWithFunctionPointer \
+  DISABLED_SubclassInitializationWithFunctionPointer
+#else
+#define MAYBE_SubclassInitializationWithFunctionPointer \
+  SubclassInitializationWithFunctionPointer
+#endif
+TEST(SmallMap, MAYBE_SubclassInitializationWithFunctionPointer) {
   small_map<unordered_map_add_item, 4, std::equal_to<int>,
             void (&)(unordered_map_add_item*)>
       m(InitMap);

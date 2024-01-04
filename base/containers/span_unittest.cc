@@ -149,7 +149,14 @@ namespace {
 
 }  // namespace
 
-TEST(SpanTest, DefaultConstructor) {
+// TODO(http://crbug.com/1515442) - reports a large negative number of failed
+// tests.
+#if BUILDFLAG(IS_IOS) && !defined(NDEBUG)
+#define MAYBE_DefaultConstructor DISABLED_DefaultConstructor
+#else
+#define MAYBE_DefaultConstructor DefaultConstructor
+#endif
+TEST(SpanTest, MAYBE_DefaultConstructor) {
   span<int> dynamic_span;
   EXPECT_EQ(nullptr, dynamic_span.data());
   EXPECT_EQ(0u, dynamic_span.size());
