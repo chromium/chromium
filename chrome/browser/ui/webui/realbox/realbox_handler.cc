@@ -950,11 +950,11 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
 
-  autocomplete_controller()->Start(autocomplete_input);
+  controller_->StartAutocomplete(autocomplete_input);
 }
 
 void RealboxHandler::StopAutocomplete(bool clear_result) {
-  autocomplete_controller()->Stop(clear_result);
+  controller_->StopAutocomplete(clear_result);
 }
 
 void RealboxHandler::OpenAutocompleteMatch(uint8_t line,
@@ -1010,7 +1010,7 @@ void RealboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
     // the web UI is referencing a stale match.
     return;
   }
-  autocomplete_controller()->Stop(false);
+  controller_->StopAutocomplete(/*clear_result=*/false);
   autocomplete_controller()->DeleteMatch(*match);
 }
 

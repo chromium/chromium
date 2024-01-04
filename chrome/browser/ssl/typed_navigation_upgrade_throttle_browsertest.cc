@@ -391,8 +391,12 @@ class TypedNavigationUpgradeThrottleBrowserTest
     ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
     WaitForAutocompleteControllerDone();
     ASSERT_TRUE(omnibox()->model()->PopupIsOpen());
-    EXPECT_EQ(base::UTF8ToUTF16(text),
-              omnibox()->controller()->result().match_at(0).fill_into_edit);
+    EXPECT_EQ(base::UTF8ToUTF16(text), omnibox()
+                                           ->controller()
+                                           ->autocomplete_controller()
+                                           ->result()
+                                           .match_at(0)
+                                           .fill_into_edit);
   }
 
  private:

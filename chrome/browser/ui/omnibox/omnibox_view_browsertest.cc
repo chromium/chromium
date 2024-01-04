@@ -561,7 +561,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DesiredTLDWithTemporaryText) {
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
 
   // Arrow down to the "abc" entry in the popup.
-  size_t size = omnibox_view->controller()->result().size();
+  size_t size =
+      omnibox_view->controller()->autocomplete_controller()->result().size();
   while (omnibox_view->model()->GetPopupSelection().line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
     if (omnibox_view->GetText() == u"abc")
@@ -628,7 +629,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
   ASSERT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            omnibox_view->controller()->result().default_match()->type);
+            omnibox_view->controller()
+                ->autocomplete_controller()
+                ->result()
+                .default_match()
+                ->type);
   ASSERT_NO_FATAL_FAILURE(NavigateExpectUrl(GURL(kSearchTextURL)));
 
   // Test that entering a single character then Enter performs a search.
@@ -638,7 +643,11 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_EnterToSearch) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
   ASSERT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            omnibox_view->controller()->result().default_match()->type);
+            omnibox_view->controller()
+                ->autocomplete_controller()
+                ->result()
+                .default_match()
+                ->type);
   ASSERT_NO_FATAL_FAILURE(
       NavigateExpectUrl(GURL("http://www.foo.com/search?q=z")));
 }
@@ -661,7 +670,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, EscapeToDefaultMatch) {
   EXPECT_EQ(0U, old_selected_line);
 
   // Move to another line with different text.
-  size_t size = omnibox_view->controller()->result().size();
+  size_t size =
+      omnibox_view->controller()->autocomplete_controller()->result().size();
   while (omnibox_view->model()->GetPopupSelection().line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
     ASSERT_NE(old_selected_line,
@@ -698,7 +708,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   EXPECT_EQ(0U, old_selected_line);
 
   // Move to another line with different text.
-  size_t size = omnibox_view->controller()->result().size();
+  size_t size =
+      omnibox_view->controller()->autocomplete_controller()->result().size();
   while (omnibox_view->model()->GetPopupSelection().line < size - 1) {
     ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DOWN, 0));
     ASSERT_NE(old_selected_line,
@@ -898,8 +909,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
 
   // Check if the default match result is Search Primary Provider.
   ASSERT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
-            omnibox_view->controller()->result().default_match()->type);
+            omnibox_view->controller()
+                ->autocomplete_controller()
+                ->result()
+                .default_match()
+                ->type);
   ASSERT_EQ(kSearchTextURL, omnibox_view->controller()
+                                ->autocomplete_controller()
                                 ->result()
                                 .default_match()
                                 ->destination_url.spec());
@@ -919,8 +935,13 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, NonSubstitutingKeywordTest) {
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
   ASSERT_EQ(AutocompleteMatchType::HISTORY_KEYWORD,
-            omnibox_view->controller()->result().default_match()->type);
+            omnibox_view->controller()
+                ->autocomplete_controller()
+                ->result()
+                .default_match()
+                ->type);
   ASSERT_EQ("http://abc.com/", omnibox_view->controller()
+                                   ->autocomplete_controller()
                                    ->result()
                                    .default_match()
                                    ->destination_url.spec());
@@ -954,7 +975,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_DELETE, 0));
   ASSERT_NO_FATAL_FAILURE(WaitForAutocompleteControllerDone());
   ASSERT_TRUE(omnibox_view->model()->PopupIsOpen());
-  ASSERT_GE(omnibox_view->controller()->result().size(), 3U);
+  ASSERT_GE(
+      omnibox_view->controller()->autocomplete_controller()->result().size(),
+      3U);
 
   std::u16string user_text = omnibox_view->GetText();
   ASSERT_EQ(u"site.com/p", user_text);
@@ -966,6 +989,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   omnibox_view->model()->OnUpOrDownPressed(true, false);
   ASSERT_EQ(default_line + 1, omnibox_view->model()->GetPopupSelection().line);
   std::u16string selected_text = omnibox_view->controller()
+                                     ->autocomplete_controller()
                                      ->result()
                                      .match_at(default_line + 1)
                                      .fill_into_edit;
@@ -981,10 +1005,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   ASSERT_EQ(default_line + 1, omnibox_view->model()->GetPopupSelection().line);
   // Make sure the item is really deleted.
   ASSERT_NE(selected_text, omnibox_view->controller()
+                               ->autocomplete_controller()
                                ->result()
                                .match_at(default_line + 1)
                                .fill_into_edit);
   selected_text = omnibox_view->controller()
+                      ->autocomplete_controller()
                       ->result()
                       .match_at(default_line + 1)
                       .fill_into_edit;
@@ -1004,6 +1030,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_DeleteItem) {
   ASSERT_EQ(default_line, omnibox_view->model()->GetPopupSelection().line);
 
   selected_text = omnibox_view->controller()
+                      ->autocomplete_controller()
                       ->result()
                       .match_at(default_line)
                       .fill_into_edit;

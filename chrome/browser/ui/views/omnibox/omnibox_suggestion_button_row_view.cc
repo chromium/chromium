@@ -405,11 +405,15 @@ views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
 }
 
 bool OmniboxSuggestionButtonRowView::HasMatch() const {
-  return popup_view_->controller()->result().size() > model_index_;
+  return popup_view_->controller()->autocomplete_controller()->result().size() >
+         model_index_;
 }
 
 const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
-  return popup_view_->controller()->result().match_at(model_index_);
+  return popup_view_->controller()
+      ->autocomplete_controller()
+      ->result()
+      .match_at(model_index_);
 }
 
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(

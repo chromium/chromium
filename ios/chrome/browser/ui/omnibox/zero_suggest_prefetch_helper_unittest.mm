@@ -6,10 +6,9 @@
 
 #import "base/test/task_environment.h"
 #import "components/omnibox/browser/omnibox_client.h"
-#import "components/omnibox/browser/omnibox_edit_model.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/test_location_bar_model.h"
 #import "components/omnibox/browser/test_omnibox_client.h"
-#import "components/omnibox/browser/test_omnibox_view.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
@@ -34,19 +33,20 @@ namespace {
 const char kTestURL[] = "http://chromium.org";
 const char kTestSRPURL[] = "https://www.google.com/search?q=omnibox";
 
-class MockOmniboxEditModel : public OmniboxEditModel {
+class TestOmniboxController : public OmniboxController {
  public:
-  MockOmniboxEditModel(OmniboxController* omnibox_controller, OmniboxView* view)
-      : OmniboxEditModel(omnibox_controller, view) {}
+  TestOmniboxController(OmniboxView* view,
+                        std::unique_ptr<OmniboxClient> client)
+      : OmniboxController(view, std::move(client)) {}
 
-  ~MockOmniboxEditModel() override = default;
-  MockOmniboxEditModel(const MockOmniboxEditModel&) = delete;
-  MockOmniboxEditModel& operator=(const MockOmniboxEditModel&) = delete;
+  ~TestOmniboxController() override = default;
+  TestOmniboxController(const TestOmniboxController&) = delete;
+  TestOmniboxController& operator=(const TestOmniboxController&) = delete;
 
-  // OmniboxEditModel:
-  void StartPrefetch() override { call_count_++; }
+  // OmniboxController:
+  void StartZeroSuggestPrefetch() override { start_prefetch_call_count_++; }
 
-  int call_count_ = 0;
+  int start_prefetch_call_count_ = 0;
 };
 
 }  // namespace
@@ -63,15 +63,14 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
     EXPECT_CALL(*omnibox_client, GetLocationBarModel())
         .WillRepeatedly(Return(&location_bar_model_));
 
-    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
-    model_ = std::make_unique<MockOmniboxEditModel>(view_->controller(),
-                                                    view_.get());
+    controller_ = std::make_unique<TestOmniboxController>(
+        /*view=*/nullptr, std::move(omnibox_client));
   }
 
   void CreateHelper() {
     helper_ = [[ZeroSuggestPrefetchHelper alloc]
         initWithWebStateList:web_state_list_.get()
-                   editModel:model_.get()];
+                  controller:controller_.get()];
   }
   // Message loop for the main test thread.
   base::test::TaskEnvironment environment_;
@@ -80,8 +79,7 @@ class ZeroSuggestPrefetchHelperTest : public PlatformTest {
   std::unique_ptr<WebStateList> web_state_list_;
 
   TestLocationBarModel location_bar_model_;
-  std::unique_ptr<TestOmniboxView> view_;
-  std::unique_ptr<MockOmniboxEditModel> model_;
+  std::unique_ptr<TestOmniboxController> controller_;
 
   ZeroSuggestPrefetchHelper* helper_;
 };
@@ -91,7 +89,7 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestReactToNavigation) {
   CreateHelper();
   web::FakeNavigationContext context;
 
-  EXPECT_EQ(model_.get()->call_count_, 0);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
   GURL not_ntp_url(kTestURL);
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
@@ -99,29 +97,29 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestReactToNavigation) {
   web_state_list_->InsertWebState(
       0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(model_.get()->call_count_, 1);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_EQ(model_.get()->call_count_, 2);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 2);
+  controller_.get()->start_prefetch_call_count_ = 0;
 
   // Now navigate to NTP.
-  EXPECT_EQ(model_.get()->call_count_, 0);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
 
   GURL url(kChromeUINewTabURL);
   web_state_ptr->SetCurrentURL(url);
   web_state_ptr->OnNavigationFinished(&context);
 
-  EXPECT_EQ(model_.get()->call_count_, 1);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  controller_.get()->start_prefetch_call_count_ = 0;
 
   // Now navigate to SRP.
-  EXPECT_EQ(model_.get()->call_count_, 0);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
 
   web_state_ptr->SetCurrentURL(GURL(kTestSRPURL));
   web_state_ptr->OnNavigationFinished(&context);
 
-  EXPECT_EQ(model_.get()->call_count_, 1);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  controller_.get()->start_prefetch_call_count_ = 0;
 }
 
 // Test that switching between tabs starts prefetch.
@@ -129,7 +127,7 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   CreateHelper();
   web::FakeNavigationContext context;
 
-  EXPECT_EQ(model_.get()->call_count_, 0);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 0);
   GURL not_ntp_url(kTestURL);
   auto web_state = std::make_unique<web::FakeWebState>();
   FakeWebState* web_state_ptr = web_state.get();
@@ -137,10 +135,10 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   web_state_list_->InsertWebState(
       0, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(model_.get()->call_count_, 1);
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
   web_state_ptr->OnNavigationFinished(&context);
-  EXPECT_EQ(model_.get()->call_count_, 2);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 2);
+  controller_.get()->start_prefetch_call_count_ = 0;
 
   // Second tab
   web_state = std::make_unique<web::FakeWebState>();
@@ -149,13 +147,13 @@ TEST_F(ZeroSuggestPrefetchHelperTest, TestPrefetchOnTabSwitch) {
   web_state_list_->InsertWebState(
       1, std::move(web_state), WebStateList::INSERT_NO_FLAGS, WebStateOpener());
   web_state_list_->ActivateWebStateAt(1);
-  EXPECT_EQ(model_.get()->call_count_, 1);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  controller_.get()->start_prefetch_call_count_ = 0;
 
   // Just switch
   web_state_list_->ActivateWebStateAt(0);
-  EXPECT_EQ(model_.get()->call_count_, 1);
-  model_.get()->call_count_ = 0;
+  EXPECT_EQ(controller_.get()->start_prefetch_call_count_, 1);
+  controller_.get()->start_prefetch_call_count_ = 0;
 }
 
 }  // namespace

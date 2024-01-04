@@ -19,7 +19,8 @@ OmniboxPopupViewViewsTest::ThemeChangeWaiter::~ThemeChangeWaiter() {
 }
 
 views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
-  EXPECT_TRUE(controller()->result().empty());
+  const auto* autocomplete_controller = controller()->autocomplete_controller();
+  EXPECT_TRUE(autocomplete_controller->result().empty());
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(GetPopupWidget());
 
@@ -28,9 +29,9 @@ views::Widget* OmniboxPopupViewViewsTest::CreatePopupForTestQuery() {
       u"foo", metrics::OmniboxEventProto::BLANK,
       ChromeAutocompleteSchemeClassifier(browser()->profile()));
   input.set_omit_asynchronous_matches(true);
-  controller()->autocomplete_controller()->Start(input);
+  controller()->StartAutocomplete(input);
 
-  EXPECT_FALSE(controller()->result().empty());
+  EXPECT_FALSE(autocomplete_controller->result().empty());
   EXPECT_TRUE(popup_view()->IsOpen());
   views::Widget* popup = GetPopupWidget();
   EXPECT_TRUE(popup);

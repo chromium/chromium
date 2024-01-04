@@ -12,7 +12,6 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class AutocompleteResult;
 class OmniboxClient;
 class OmniboxView;
 
@@ -27,6 +26,16 @@ class OmniboxController : public AutocompleteController::Observer {
 
   // The |current_url| field of input is only set for mobile ports.
   void StartAutocomplete(const AutocompleteInput& input) const;
+
+  // Cancels any pending asynchronous query. If `clear_result` is true, will
+  // also erase the result set.
+  void StopAutocomplete(bool clear_result) const;
+
+  // Starts an autocomplete prefetch request so that zero-prefix providers can
+  // optionally start a prefetch request to warm up the their underlying
+  // service(s) and/or optionally cache their otherwise async response.
+  // Virtual for testing.
+  virtual void StartZeroSuggestPrefetch();
 
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
@@ -44,17 +53,14 @@ class OmniboxController : public AutocompleteController::Observer {
     return autocomplete_controller_.get();
   }
 
+  const AutocompleteController* autocomplete_controller() const {
+    return autocomplete_controller_.get();
+  }
+
   void SetAutocompleteControllerForTesting(
       std::unique_ptr<AutocompleteController> autocomplete_controller) {
     autocomplete_controller_ = std::move(autocomplete_controller);
   }
-
-  const AutocompleteResult& result() const {
-    return autocomplete_controller_->result();
-  }
-
-  // Returns whether `AutocompleteController` is currently processing a query.
-  bool query_in_progress() const { return !autocomplete_controller_->done(); }
 
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
