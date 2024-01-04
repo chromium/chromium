@@ -82,9 +82,8 @@ void ChromePDFDocumentHelperClient::SetPluginCanSave(
       return;
     }
 
-    content::RenderFrameHost* extension_host = render_frame_host->GetParent();
-    CHECK(extension_host);
-    content::RenderFrameHost* embedder_host = extension_host->GetParent();
+    content::RenderFrameHost* embedder_host =
+        pdf_frame_util::GetEmbedderHost(render_frame_host);
     CHECK(embedder_host);
 
     pdf_viewer_stream_manager->SetPluginCanSave(embedder_host, can_save);

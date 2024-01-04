@@ -22,6 +22,12 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
 // hosts PDF content.
 content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh);
 
+// For OOPIF PDF viewer only. Gets the embedder `RenderFrameHost` given the PDF
+// content host. Returns nullptr if `content_host` is an invalid PDF content
+// host.
+content::RenderFrameHost* GetEmbedderHost(
+    content::RenderFrameHost* content_host);
+
 }  // namespace pdf_frame_util
 
 #endif  // CHROME_BROWSER_PDF_PDF_FRAME_UTIL_H_
