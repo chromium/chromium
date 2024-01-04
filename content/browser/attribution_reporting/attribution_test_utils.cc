@@ -368,26 +368,29 @@ TriggerBuilder& TriggerBuilder::SetTriggerContextId(
 
 AttributionTrigger TriggerBuilder::Build(
     bool generate_event_trigger_data) const {
-  std::vector<attribution_reporting::EventTriggerData> event_triggers;
+  attribution_reporting::TriggerRegistration reg;
+  reg.filters = filter_pair_;
+  reg.debug_key = debug_key_;
+  reg.aggregatable_dedup_keys.emplace_back(
+      /*dedup_key=*/aggregatable_dedup_key_,
+      aggregatable_dedup_key_filter_pair_);
 
   if (generate_event_trigger_data) {
-    event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
-                                FilterPair());
+    reg.event_triggers.emplace_back(trigger_data_, priority_, dedup_key_,
+                                    FilterPair());
   }
 
-  return AttributionTrigger(
-      reporting_origin_,
-      attribution_reporting::TriggerRegistration(
-          filter_pair_, debug_key_,
-          {attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/aggregatable_dedup_key_,
-              aggregatable_dedup_key_filter_pair_)},
-          std::move(event_triggers), aggregatable_trigger_data_,
-          aggregatable_values_, debug_reporting_,
-          aggregation_coordinator_origin_,
-          *attribution_reporting::AggregatableTriggerConfig::Create(
-              source_registration_time_config_, trigger_context_id_)),
-      destination_origin_, verifications_, is_within_fenced_frame_);
+  reg.aggregatable_trigger_data = aggregatable_trigger_data_;
+  reg.aggregatable_values = aggregatable_values_;
+  reg.debug_reporting = debug_reporting_;
+  reg.aggregation_coordinator_origin = aggregation_coordinator_origin_;
+  reg.aggregatable_trigger_config =
+      *attribution_reporting::AggregatableTriggerConfig::Create(
+          source_registration_time_config_, trigger_context_id_);
+
+  return AttributionTrigger(reporting_origin_, std::move(reg),
+                            destination_origin_, verifications_,
+                            is_within_fenced_frame_);
 }
 
 AttributionInfoBuilder::AttributionInfoBuilder(SuitableOrigin context_origin)

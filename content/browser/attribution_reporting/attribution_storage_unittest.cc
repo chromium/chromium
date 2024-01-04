@@ -2475,18 +2475,14 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
   task_environment_.FastForwardBy(kReportDelay);
 
   AttributionTrigger trigger1(
-      /*reporting_origin=*/origin,
-      attribution_reporting::TriggerRegistration(
-          FilterPair(),
-          /*debug_key=*/absl::nullopt,
-          {attribution_reporting::AggregatableDedupKey(
-              /*dedup_key=*/123, FilterPair())},
-          /*event_triggers=*/{}, aggregatable_trigger_data, aggregatable_values,
-          /*debug_reporting=*/false,
-          /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::AggregatableTriggerConfig()),
+      /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
+
+  trigger1.registration().aggregatable_dedup_keys.emplace_back(
+      /*dedup_key=*/123, FilterPair());
+  trigger1.registration().aggregatable_trigger_data = aggregatable_trigger_data;
+  trigger1.registration().aggregatable_values = aggregatable_values;
 
   EXPECT_EQ(AttributionTrigger::AggregatableResult::kSuccess,
             MaybeCreateAndStoreAggregatableReport(trigger1));
@@ -2600,16 +2596,15 @@ TEST_F(AttributionStorageTest, AggregatableDedupKeysFiltering) {
   for (const auto& test_case : kTestCases) {
     AttributionTrigger trigger2(
         /*reporting_origin=*/origin,
-        attribution_reporting::TriggerRegistration(
-            FilterPair(),
-            /*debug_key=*/absl::nullopt, {test_case.aggregatable_dedup_key},
-            /*event_triggers=*/{}, aggregatable_trigger_data,
-            aggregatable_values,
-            /*debug_reporting=*/false,
-            /*aggregation_coordinator_origin=*/absl::nullopt,
-            attribution_reporting::AggregatableTriggerConfig()),
+        attribution_reporting::TriggerRegistration(),
         /*destination_origin=*/origin, /*verifications=*/{},
         /*is_within_fenced_frame=*/false);
+
+    trigger2.registration().aggregatable_dedup_keys.emplace_back(
+        test_case.aggregatable_dedup_key);
+    trigger2.registration().aggregatable_trigger_data =
+        aggregatable_trigger_data;
+    trigger2.registration().aggregatable_values = aggregatable_values;
 
     EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger2),
               test_case.expectDeduplicated
@@ -3323,31 +3318,22 @@ TEST_F(AttributionStorageTest, NoMatchingTriggerData_ReturnsError) {
                              .SetReportingOrigin(origin)
                              .Build());
 
-  EXPECT_EQ(
-      AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
-      MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-          /*reporting_origin=*/origin,
-          attribution_reporting::TriggerRegistration(
-              FilterPair(),
-              /*debug_key=*/absl::nullopt,
-              /*aggregatable_dedup_keys=*/{},
-              {attribution_reporting::EventTriggerData(
-                  /*data=*/11,
-                  /*priority=*/12,
-                  /*dedup_key=*/13,
-                  FilterPair(
-                      /*positive=*/attribution_reporting::FiltersForSourceType(
-                          SourceType::kEvent),
-                      /*negative=*/{}))},
-              /*aggregatable_trigger_data=*/{},
-              /*aggregatable_values=*/
-              attribution_reporting::AggregatableValues(),
-              /*debug_reporting=*/false,
-              /*aggregation_coordinator_origin=*/absl::nullopt,
-              attribution_reporting::AggregatableTriggerConfig()),
-          /*destination_origin=*/origin,
-          /*verifications=*/{},
-          /*is_within_fenced_frame=*/false)));
+  attribution_reporting::TriggerRegistration registration;
+  registration.event_triggers.emplace_back(
+      /*data=*/11,
+      /*priority=*/12,
+      /*dedup_key=*/13,
+      FilterPair(
+          /*positive=*/attribution_reporting::FiltersForSourceType(
+              SourceType::kEvent),
+          /*negative=*/{}));
+
+  EXPECT_EQ(AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
+            MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
+                /*reporting_origin=*/origin, std::move(registration),
+                /*destination_origin=*/origin,
+                /*verifications=*/{},
+                /*is_within_fenced_frame=*/false)));
 
   EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
 
@@ -3368,68 +3354,57 @@ TEST_F(AttributionStorageTest, MatchingTriggerData_UsesCorrectData) {
 
   task_environment_.FastForwardBy(kReportDelay);
 
-  const std::vector<attribution_reporting::EventTriggerData> event_triggers = {
-      // Filters don't match.
-      attribution_reporting::EventTriggerData(
-          /*data=*/1,
-          /*priority=*/12,
-          /*dedup_key=*/13,
-          FilterPair(/*positive=*/{*FilterConfig::Create({
-                         {"abc", {"456"}},
-                     })},
-                     /*negative=*/{})),
+  attribution_reporting::TriggerRegistration registration;
 
-      // Filters match, but negated filters do not.
-      attribution_reporting::EventTriggerData(
-          /*data=*/2,
-          /*priority=*/22,
-          /*dedup_key=*/23,
-          FilterPair(/*positive=*/{*FilterConfig::Create({
-                         {"abc", {"123"}},
-                     })},
-                     /*negative=*/{*FilterConfig::Create({
-                         {"source_type", {"navigation"}},
-                     })})),
+  // Filters don't match.
+  registration.event_triggers.emplace_back(
+      /*data=*/1,
+      /*priority=*/12,
+      /*dedup_key=*/13,
+      FilterPair(/*positive=*/{*FilterConfig::Create({
+                     {"abc", {"456"}},
+                 })},
+                 /*negative=*/{}));
 
-      // Filters and negated filters match.
-      attribution_reporting::EventTriggerData(
-          /*data=*/3,
-          /*priority=*/32,
-          /*dedup_key=*/33,
-          FilterPair(
-              /*positive=*/{*FilterConfig::Create({
-                  {"abc", {"123"}},
-              })},
-              /*negative=*/{*FilterConfig::Create(
-                  {{"source_type", {"event"}}})})),
+  // Filters match, but negated filters do not.
+  registration.event_triggers.emplace_back(
+      /*data=*/2,
+      /*priority=*/22,
+      /*dedup_key=*/23,
+      FilterPair(/*positive=*/{*FilterConfig::Create({
+                     {"abc", {"123"}},
+                 })},
+                 /*negative=*/{*FilterConfig::Create({
+                     {"source_type", {"navigation"}},
+                 })}));
 
-      // Filters and negated filters match, but not the first event
-      // trigger to match.
-      attribution_reporting::EventTriggerData(
-          /*data=*/4,
-          /*priority=*/42,
-          /*dedup_key=*/43,
-          FilterPair(/*positive=*/{*FilterConfig::Create({
-                         {"abc", {"123"}},
-                     })},
-                     /*negative=*/{*FilterConfig::Create({
-                         {"source_type", {"event"}},
-                     })})),
-  };
+  // Filters and negated filters match.
+  registration.event_triggers.emplace_back(
+      /*data=*/3,
+      /*priority=*/32,
+      /*dedup_key=*/33,
+      FilterPair(
+          /*positive=*/{*FilterConfig::Create({
+              {"abc", {"123"}},
+          })},
+          /*negative=*/{*FilterConfig::Create({{"source_type", {"event"}}})}));
+
+  // Filters and negated filters match, but not the first event
+  // trigger to match.
+  registration.event_triggers.emplace_back(
+      /*data=*/4,
+      /*priority=*/42,
+      /*dedup_key=*/43,
+      FilterPair(/*positive=*/{*FilterConfig::Create({
+                     {"abc", {"123"}},
+                 })},
+                 /*negative=*/{*FilterConfig::Create({
+                     {"source_type", {"event"}},
+                 })}));
 
   EXPECT_EQ(AttributionTrigger::EventLevelResult::kSuccess,
             MaybeCreateAndStoreEventLevelReport(AttributionTrigger(
-                /*reporting_origin=*/origin,
-                attribution_reporting::TriggerRegistration(
-                    FilterPair(),
-                    /*debug_key=*/absl::nullopt,
-                    /*aggregatable_dedup_keys=*/{}, event_triggers,
-                    /*aggregatable_trigger_data=*/{},
-                    /*aggregatable_values=*/
-                    attribution_reporting::AggregatableValues(),
-                    /*debug_reporting=*/false,
-                    /*aggregation_coordinator_origin=*/absl::nullopt,
-                    attribution_reporting::AggregatableTriggerConfig()),
+                /*reporting_origin=*/origin, std::move(registration),
                 /*destination_origin=*/origin,
                 /*verifications=*/{},
                 /*is_within_fenced_frame=*/false)));
@@ -3472,74 +3447,52 @@ TEST_F(AttributionStorageTest, TopLevelTriggerFiltering) {
   task_environment_.FastForwardBy(kReportDelay);
 
   AttributionTrigger trigger1(
-      /*reporting_origin=*/origin,
-      attribution_reporting::TriggerRegistration(
-          FilterPair(/*positive=*/{*FilterConfig::Create({
-                         {"abc", {"456"}},
-                     })},
-                     /*negative=*/{}),
-          /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_keys=*/{}, event_triggers,
-          aggregatable_trigger_data, aggregatable_values,
-          /*debug_reporting=*/false,
-          /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::AggregatableTriggerConfig()),
+      /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
+  trigger1.registration().filters.positive.emplace_back(*FilterConfig::Create({
+      {"abc", {"456"}},
+  }));
+  trigger1.registration().event_triggers = event_triggers;
+  trigger1.registration().aggregatable_trigger_data = aggregatable_trigger_data;
+  trigger1.registration().aggregatable_values = aggregatable_values;
 
   AttributionTrigger trigger2(
-      /*reporting_origin=*/origin,
-      attribution_reporting::TriggerRegistration(
-          FilterPair(
-              /*positive=*/{*FilterConfig::Create(
-                  {
-                      {"abc", {"123"}},
-                  },
-                  /*lookback_window=*/kReportDelay)},
-              /*negative=*/{}),
-          /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_keys=*/{}, event_triggers,
-          aggregatable_trigger_data, aggregatable_values,
-          /*debug_reporting=*/false,
-          /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::AggregatableTriggerConfig()),
+      /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
+  trigger2.registration().filters.positive.emplace_back(*FilterConfig::Create(
+      {
+          {"abc", {"123"}},
+      },
+      /*lookback_window=*/kReportDelay));
+  trigger2.registration().event_triggers = event_triggers;
+  trigger2.registration().aggregatable_trigger_data = aggregatable_trigger_data;
+  trigger2.registration().aggregatable_values = aggregatable_values;
 
   AttributionTrigger trigger3(
-      /*reporting_origin=*/origin,
-      attribution_reporting::TriggerRegistration(
-          FilterPair(/*positive=*/{},
-                     /*negative=*/attribution_reporting::FiltersForSourceType(
-                         SourceType::kNavigation)),
-          /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_keys=*/{}, event_triggers,
-          aggregatable_trigger_data, aggregatable_values,
-          /*debug_reporting=*/false,
-          /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::AggregatableTriggerConfig()),
+      /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin,
       /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
+  trigger3.registration().filters.negative =
+      attribution_reporting::FiltersForSourceType(SourceType::kNavigation);
+  trigger3.registration().event_triggers = event_triggers;
+  trigger3.registration().aggregatable_trigger_data = aggregatable_trigger_data;
+  trigger3.registration().aggregatable_values = aggregatable_values;
 
   AttributionTrigger trigger4(
-      /*reporting_origin=*/origin,
-      attribution_reporting::TriggerRegistration(
-          FilterPair(
-              /*positive=*/{*FilterConfig::Create(
-                  {
-                      {"abc", {"123"}},
-                  },
-                  /*lookback_window=*/kReportDelay - base::Microseconds(1))},
-              /*negative=*/{}),
-          /*debug_key=*/absl::nullopt,
-          /*aggregatable_dedup_keys=*/{}, event_triggers,
-          aggregatable_trigger_data, aggregatable_values,
-          /*debug_reporting=*/false,
-          /*aggregation_coordinator_origin=*/absl::nullopt,
-          attribution_reporting::AggregatableTriggerConfig()),
+      /*reporting_origin=*/origin, attribution_reporting::TriggerRegistration(),
       /*destination_origin=*/origin, /*verifications=*/{},
       /*is_within_fenced_frame=*/false);
+  trigger4.registration().filters.positive.emplace_back(*FilterConfig::Create(
+      {
+          {"abc", {"123"}},
+      },
+      /*lookback_window=*/kReportDelay - base::Microseconds(1)));
+  trigger4.registration().event_triggers = event_triggers;
+  trigger4.registration().aggregatable_trigger_data = aggregatable_trigger_data;
+  trigger4.registration().aggregatable_values = aggregatable_values;
 
   EXPECT_THAT(storage()->MaybeCreateAndStoreReport(trigger1),
               AllOf(CreateReportEventLevelStatusIs(
