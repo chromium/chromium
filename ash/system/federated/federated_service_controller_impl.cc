@@ -29,6 +29,8 @@ const auto kClientFeatureMap =
     base::MakeFixedFlatMapNonConsteval<std::string, const base::Feature*>({
         {"launcher_query_analytics_v1",
          &features::kFederatedLauncherQueryAnalyticsTask},
+        {"launcher_query_analytics_v2",
+         &features::kFederatedLauncherQueryAnalyticsVersion2Task},
         {"timezone_code_phh", &features::kFederatedTimezoneCodePhh},
     });
 
