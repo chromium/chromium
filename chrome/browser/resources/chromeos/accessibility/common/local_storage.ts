@@ -7,15 +7,13 @@
  */
 
 export class LocalStorage {
-  /** @param {function(LocalStorage)} onInit */
-  constructor(onInit) {
-    /** @private {?Object} */
-    this.values_ = null;
-    /** @private {!Object<string, !Array<!Function>>} */
-    this.keyCallbacks_ = {};
+  private values_: Record<string, any>|null = null;
+  private keyCallbacks_: Record<string, Array<(value: any) => void>> = {};
+  private static instance?: LocalStorage;
 
+  constructor(onInit: (localStorage: LocalStorage) => void) {
     chrome.storage.local.get(
-        null /* get all values */,
+        undefined /* get all values */,
         values => this.onInitialGet_(values, onInit));
     chrome.storage.local.onChanged.addListener(
         updates => this.update_(updates));
@@ -23,7 +21,7 @@ export class LocalStorage {
 
   // ========== Static methods ==========
 
-  static async init() {
+  static async init(): Promise<void> {
     if (LocalStorage.instance) {
       throw new Error(
           'LocalStorage.init() should be called at most once in each ' +
@@ -33,72 +31,43 @@ export class LocalStorage {
     LocalStorage.instance =
         await new Promise(resolve => new LocalStorage(resolve));
     LocalStorage.migrateFromLocalStorage_();
-
-    return;
   }
 
-  /**
-   * @param {string} key
-   * @param {Function} callback
-   */
-  static addListenerForKey(key, callback) {
-    if (!LocalStorage.instance.keyCallbacks_[key]) {
-      LocalStorage.instance.keyCallbacks_[key] = [];
+  static addListenerForKey(key: string, callback: (value: any) => void): void {
+    // TODO(b/314203187): Not nulls asserted, check these to make sure they are
+    // correct.
+    if (!LocalStorage.instance!.keyCallbacks_[key]) {
+      LocalStorage.instance!.keyCallbacks_[key] = [];
     }
     if (callback) {
-      LocalStorage.instance.keyCallbacks_[key].push(callback);
+      LocalStorage.instance!.keyCallbacks_[key].push(callback);
     }
   }
 
-  /**
-   * @param {string} key
-   * @param {*=} defaultValue
-   * @return {*}
-   */
-  static get(key, defaultValue = undefined) {
+  static get(key: string, defaultValue: any = undefined): any {
     LocalStorage.assertReady_();
-    const value = LocalStorage.instance.values_[key];
+    const value = LocalStorage.instance!.values_![key];
     if (value !== undefined) {
       return value;
     }
     return defaultValue;
   }
 
-  /**
-   * @param {string} key
-   * @param {string|Function} type A string (for primitives) or type constructor
-   *     (for classes) corresponding to the expected type
-   * @param {*=} defaultValue
-   * @return {*}
-   */
-  static getTypeChecked(key, type, defaultValue) {
+  static getTypeChecked(key: string, type: string, defaultValue?: any): any {
     const value = LocalStorage.get(key, defaultValue);
-    if ((typeof type === 'string') && (typeof value === type)) {
-      return value;
-    }
-    if ((typeof type === 'function') && (value instanceof type)) {
+    if (typeof value === type) {
       return value;
     }
     throw new Error(
         'Value in LocalStorage for key "' + key + '" is not a ' + type);
   }
 
-  /**
-   * @param {string} key
-   * @param {boolean=} defaultValue
-   * @return {boolean}
-   */
-  static getBoolean(key, defaultValue) {
+  static getBoolean(key: string, defaultValue?: boolean): boolean {
     const value = LocalStorage.getTypeChecked(key, 'boolean', defaultValue);
     return Boolean(value);
   }
 
-  /**
-   * @param {string} key
-   * @param {number=} defaultValue
-   * @return {number}
-   */
-  static getNumber(key, defaultValue) {
+  static getNumber(key: string, defaultValue?: number): number {
     const value = LocalStorage.getTypeChecked(key, 'number', defaultValue);
     if (isNaN(value)) {
       throw new Error('Value in LocalStorage for key "' + key + '" is NaN');
@@ -106,35 +75,24 @@ export class LocalStorage {
     return Number(value);
   }
 
-  /**
-   * @param {string} key
-   * @param {string=} defaultValue
-   * @return {string}
-   */
-  static getString(key, defaultValue) {
+  static getString(key: string, defaultValue?: string): string {
     const value = LocalStorage.getTypeChecked(key, 'string', defaultValue);
     return String(value);
   }
 
-  /** @param {string} key */
-  static remove(key) {
+  static remove(key: string): void {
     LocalStorage.assertReady_();
     chrome.storage.local.remove(key);
-    delete LocalStorage.instance.values_[key];
+    delete LocalStorage.instance!.values_![key];
   }
 
-  /**
-   * @param {string} key
-   * @param {*} val
-   */
-  static set(key, val) {
+  static set(key: string, val: any): void {
     LocalStorage.assertReady_();
     chrome.storage.local.set({[key]: val});
-    LocalStorage.instance.values_[key] = val;
+    LocalStorage.instance!.values_![key] = val;
   }
 
-  /** @param {string} key */
-  static toggle(key) {
+  static toggle(key: string): void {
     LocalStorage.assertReady_();
     const val = LocalStorage.get(key);
     if (typeof val !== 'boolean') {
@@ -145,23 +103,16 @@ export class LocalStorage {
 
   // ========= Private Methods ==========
 
-  /**
-   * @param {!Object} values
-   * @param {function(LocalStorage)} onInit
-   * @private
-   */
-  onInitialGet_(values, onInit) {
+  private onInitialGet_(values: Record<string, any>, onInit: (localStorage: LocalStorage) => void): void {
     this.values_ = values;
     onInit(this);
   }
 
-  /**
-   * @param {!Object<string, {newValue: *}>} updates
-   * @private
-   */
-  update_(updates) {
+  private update_(updates: Record<string, chrome.storage.StorageChange>): void {
     for (const key in updates) {
-      this.values_[key] = updates[key].newValue;
+      // TODO(b/314203187): Not null asserted, check these to make sure they are
+      // correct.
+      this.values_![key] = updates[key].newValue;
       if (this.keyCallbacks_[key]) {
         this.keyCallbacks_[key].forEach(
             callback => callback(updates[key].newValue));
@@ -169,13 +120,12 @@ export class LocalStorage {
     }
   }
 
-  /** @private */
-  static migrateFromLocalStorage_() {
+  private static migrateFromLocalStorage_(): void {
     // Save the keys, because otherwise the values are shifting under us as we
     // iterate.
-    const keys = [];
+    const keys: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
-      keys.push(localStorage.key(i));
+      keys.push(localStorage.key(i)!);
     }
 
     for (const key of keys) {
@@ -214,12 +164,11 @@ export class LocalStorage {
 
       // We cannot call LocalStorage.set() because assertReady will fail.
       chrome.storage.local.set({[key]: val});
-      LocalStorage.instance.values_[key] = val;
+      LocalStorage.instance!.values_![key] = val;
     }
   }
 
-  /** @private */
-  static assertReady_() {
+  private static assertReady_(): void {
     if (!LocalStorage.instance || !LocalStorage.instance.values_) {
       throw new Error(
           'LocalStorage should not be accessed until initialization is ' +
@@ -227,6 +176,3 @@ export class LocalStorage {
     }
   }
 }
-
-/** @private {!LocalStorage} */
-LocalStorage.instance;
