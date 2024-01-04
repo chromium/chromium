@@ -831,7 +831,7 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  // Verify that FormStructure::ParseApiQueryResponse was called (here and
+  // Verify that ParseServerPredictionsQueryResponse was called (here and
   // below).
   EXPECT_THAT(
       histogram_tester.GetAllSamples("Autofill.ServerQueryResponse"),

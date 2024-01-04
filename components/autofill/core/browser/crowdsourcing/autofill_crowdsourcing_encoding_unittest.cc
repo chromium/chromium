@@ -2543,8 +2543,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   FormStructure form(form_data);
   form.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr, nullptr);
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 2U);
 
   // Validate the type predictions.
@@ -2616,8 +2617,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate the heuristic and server predictions.
@@ -2682,8 +2684,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 4U);
 
   // Validate the heuristic and server predictions.
@@ -2729,8 +2732,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2755,9 +2759,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_TooManyTypes) {
   FormStructure empty_form{FormData()};
   std::vector<raw_ptr<FormStructure, VectorExperimental>> empty_forms{
       &empty_form};
-  ParseApiQueryResponse(response_string, empty_forms,
-                        test::GetEncodedSignatures(empty_forms), nullptr,
-                        nullptr);
+  ParseServerPredictionsQueryResponse(response_string, empty_forms,
+                                      test::GetEncodedSignatures(empty_forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(empty_form.field_count(), 0U);
 }
 
@@ -2789,8 +2793,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   // Validate field 0.
@@ -2815,8 +2820,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_UnknownType) {
 // Tests that precedence of server's query response is indeed: Main frame
 // overrides > iframe overrides > main frame crowdsourcing > iframe
 // crowdsourcing
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponse_PrecedenceRulesBetweenMainFrameAndIframe) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponse_PrecedenceRulesBetweenMainFrameAndIframe) {
   struct TestCase {
     bool main_frame_has_override;
     bool iframe_has_override;
@@ -2886,8 +2892,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
     std::string encoded_response_string;
     ASSERT_TRUE(api_response.SerializeToString(&response_string));
     base::Base64Encode(response_string, &encoded_response_string);
-    ParseApiQueryResponse(std::move(encoded_response_string), forms,
-                          encoded_signatures, nullptr, nullptr);
+    ParseServerPredictionsQueryResponse(std::move(encoded_response_string),
+                                        forms, encoded_signatures, nullptr,
+                                        nullptr);
 
     ASSERT_EQ(forms.front()->field_count(), 1U);
     EXPECT_EQ(forms.front()->field(0)->server_type(),
@@ -2928,8 +2935,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::string response_string = SerializeAndEncode(response);
 
   // Parse the response and update the field type predictions.
-  ParseApiQueryResponse(response_string, forms, encoded_signatures, nullptr,
-                        nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      encoded_signatures, nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 1U);
 
   // Validate field 0.
@@ -2942,7 +2949,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // used as a fallback if the form's signature does not contain useful type
 // predictions.
 TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponse_FallbackToHostFormSignature) {
+       ParseServerPredictionsQueryResponse_FallbackToHostFormSignature) {
   std::vector<FieldType> expected_types;
 
   // Create a form whose fields have FormFieldData::host_form_signature either
@@ -3044,8 +3051,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
   base::Base64Encode(response_string, &encoded_response_string);
 
-  ParseApiQueryResponse(std::move(encoded_response_string), forms,
-                        encoded_signatures, nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(std::move(encoded_response_string), forms,
+                                      encoded_signatures, nullptr, nullptr);
 
   // Check expected field types.
   ASSERT_GE(forms[0]->field_count(), 6U);
@@ -3060,7 +3067,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   EXPECT_EQ(forms.front()->field(6)->server_type(), expected_types[6]);
 }
 
-TEST_F(AutofillCrowdsourcingEncoding, ParseApiQueryResponse) {
+TEST_F(AutofillCrowdsourcingEncoding, ParseServerPredictionsQueryResponse) {
   // Make form 1 data.
   FormData form;
   form.url = GURL("http://foo.com");
@@ -3125,8 +3132,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseApiQueryResponse) {
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
   base::Base64Encode(response_string, &encoded_response_string);
 
-  ParseApiQueryResponse(std::move(encoded_response_string), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(std::move(encoded_response_string), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   // Verify that the form fields are properly filled with data retrieved from
   // the query.
@@ -3155,7 +3163,7 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseApiQueryResponse) {
 // Tests that manually specified (i.e. passed as a feature parameter) field type
 // predictions override server predictions.
 TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWithManualOverrides) {
+       ParseServerPredictionsQueryResponseWithManualOverrides) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3192,8 +3200,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {CreateFieldPrediction(PASSWORD, FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3210,8 +3219,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
 // Tests that specifying manual field type prediction overrides also works in
 // the absence of any server predictions.
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWithManualOverridesAndNoServerPredictions) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponseWithManualOverridesAndNoServerPredictions) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3247,8 +3257,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Make serialized API response.
   AutofillQueryResponse api_response;
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3268,8 +3279,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // form / field signature pair leads to defaulting back to server predictions
 // at that position and all other fields with the same form / field signature
 // pair that follow.
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWithManualOverridesAndPassthroughInLastPosition) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponseWithManualOverridesAndPassthroughInLastPosition) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3322,8 +3334,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {CreateFieldPrediction(COMPANY_NAME, FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 3u);
 
@@ -3344,8 +3357,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // pass-through (i.e. no prediction at all) in a middle override for that
 // form / field signature pair leads to defaulting back to server predictions
 // only for that middle field.
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWithManualOverridesAndPassthroughInMiddlePosition) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponseWithManualOverridesAndPassthroughInMiddlePosition) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3394,8 +3408,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {CreateFieldPrediction(NAME_LAST, FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 4u);
 
@@ -3425,7 +3440,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // alternative_form_signature based field type predictions override
 // alternative_form_signature server predictions.
 TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseOverridesAlternativeFormSignature) {
+       ParseServerPredictionsQueryResponseOverridesAlternativeFormSignature) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3464,9 +3479,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {CreateFieldPrediction(PASSWORD, FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedAlternativeSignatures(forms), nullptr,
-                        nullptr);
+  ParseServerPredictionsQueryResponse(
+      SerializeAndEncode(api_response), forms,
+      test::GetEncodedAlternativeSignatures(forms), nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3484,8 +3499,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 // Tests that manually specified (i.e. passed as a feature parameter)
 // alternative_form_signature based field type predictions override
 // form_signature server predictions.
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseServerOverridesAlternativeFormSignature) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponseServerOverridesAlternativeFormSignature) {
   // Make form.
   FormFieldData field1 =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
@@ -3526,8 +3542,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
                              FieldPrediction::SOURCE_PASSWORDS_DEFAULT)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3541,8 +3558,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 }
 
 // Tests that server overrides have lower priority than manual overrides.
-TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseReplaceServerOverrideWithManualOverride) {
+TEST_F(
+    AutofillCrowdsourcingEncoding,
+    ParseServerPredictionsQueryResponseReplaceServerOverrideWithManualOverride) {
   FormFieldData name_field =
       CreateTestFormField("name", "name", "", FormControlType::kInputText);
   FormFieldData password_field = CreateTestFormField(
@@ -3581,8 +3599,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
       {CreateFieldPrediction(PASSWORD, FieldPrediction::SOURCE_OVERRIDE)},
       form_suggestion);
 
-  ParseApiQueryResponse(SerializeAndEncode(api_response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(api_response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(forms[0]->field_count(), 2u);
 
@@ -3596,10 +3615,10 @@ TEST_F(AutofillCrowdsourcingEncoding,
 }
 #endif
 
-// Tests ParseApiQueryResponse when the payload cannot be parsed to an
-// AutofillQueryResponse where we expect an early return of the function.
+// Tests ParseServerPredictionsQueryResponse when the payload cannot be parsed
+// to an AutofillQueryResponse where we expect an early return of the function.
 TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWhenCannotParseProtoFromString) {
+       ParseServerPredictionsQueryResponseWhenCannotParseProtoFromString) {
   FormData form;
   form.url = GURL("http://foo.com");
   form.fields = {CreateTestFormField("emailaddress", "emailaddress", "",
@@ -3613,19 +3632,21 @@ TEST_F(AutofillCrowdsourcingEncoding,
   forms.push_back(&form_structure);
 
   std::string response_string = "invalid string that cannot be parsed";
-  ParseApiQueryResponse(std::move(response_string), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(std::move(response_string), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
-  // Verify that the form fields remain intact because ParseApiQueryResponse
-  // could not parse the server's response because it was badly serialized.
+  // Verify that the form fields remain intact because
+  // ParseServerPredictionsQueryResponse could not parse the server's response
+  // because it was badly serialized.
   ASSERT_GE(forms[0]->field_count(), 1U);
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
 }
 
-// Tests ParseApiQueryResponse when the payload is not base64 where we expect
-// an early return of the function.
+// Tests ParseServerPredictionsQueryResponse when the payload is not base64
+// where we expect an early return of the function.
 TEST_F(AutofillCrowdsourcingEncoding,
-       ParseApiQueryResponseWhenPayloadNotBase64) {
+       ParseServerPredictionsQueryResponseWhenPayloadNotBase64) {
   FormData form;
   form.url = GURL("http://foo.com");
   form.fields = {CreateTestFormField("emailaddress", "emailaddress", "",
@@ -3652,11 +3673,13 @@ TEST_F(AutofillCrowdsourcingEncoding,
   std::string response_string;
   ASSERT_TRUE(api_response.SerializeToString(&response_string));
 
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
-  // Verify that the form fields remain intact because ParseApiQueryResponse
-  // could not parse the server's response that was badly encoded.
+  // Verify that the form fields remain intact because
+  // ParseServerPredictionsQueryResponse could not parse the server's response
+  // that was badly encoded.
   ASSERT_GE(forms[0]->field_count(), 1U);
   EXPECT_EQ(NAME_FULL, forms[0]->field(0)->server_type());
 }
@@ -3682,8 +3705,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_AuthorDefinedTypes) {
                            form_suggestion);
 
   std::string response_string = SerializeAndEncode(response);
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_GE(forms[0]->field_count(), 2U);
   // Server type is parsed from the response and is the end result type.
@@ -3749,8 +3773,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3813,8 +3838,9 @@ TEST_F(AutofillCrowdsourcingEncoding, NoServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3882,8 +3908,9 @@ TEST_F(AutofillCrowdsourcingEncoding, WithServerDataCCFields_CVC_NoOverwrite) {
   forms.push_back(&form_structure);
 
   // Will call RationalizeFieldTypePredictions
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(1U, forms.size());
   ASSERT_EQ(4U, forms[0]->field_count());
@@ -3930,8 +3957,9 @@ TEST_F(AutofillCrowdsourcingEncoding, ParseQueryResponse_RankEqualSignatures) {
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
@@ -3968,8 +3996,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(response_string, forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(response_string, forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
   ASSERT_EQ(form.field_count(), 3U);
 
   EXPECT_EQ(NAME_FIRST, form.field(0)->server_type());
@@ -4042,8 +4071,9 @@ TEST_F(AutofillCrowdsourcingEncoding,
 
   // Parse the response and update the field type predictions.
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms{&form};
-  ParseApiQueryResponse(SerializeAndEncode(response), forms,
-                        test::GetEncodedSignatures(forms), nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(SerializeAndEncode(response), forms,
+                                      test::GetEncodedSignatures(forms),
+                                      nullptr, nullptr);
 
   ASSERT_EQ(form.field_count(), 6U);
 

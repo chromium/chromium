@@ -150,9 +150,9 @@ std::unique_ptr<FormStructure> BuildFormStructure(
     }
   }
   // Calls RationalizeFieldTypePredictions.
-  ParseApiQueryResponse(response_string, {form_structure.get()},
-                        test::GetEncodedSignatures({form_structure.get()}),
-                        nullptr, nullptr);
+  ParseServerPredictionsQueryResponse(
+      response_string, {form_structure.get()},
+      test::GetEncodedSignatures({form_structure.get()}), nullptr, nullptr);
   return form_structure;
 }
 

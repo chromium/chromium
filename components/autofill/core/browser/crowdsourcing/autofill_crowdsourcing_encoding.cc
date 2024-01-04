@@ -58,8 +58,8 @@ std::ostream& operator<<(std::ostream& out,
 //   override instead of the server override. Pop the server override, but only
 //   if there are at least two server overrides left. This is because the last
 //   server override may be used for multiple fields (`GetPrediction` inside
-//   `ProcessQueryResponse` will keep returning the last value) and we only wish
-//   to override the prediction for the current field.
+//   `ProcessServerPredictionsQueryResponse` will keep returning the last value)
+//   and we only wish to override the prediction for the current field.
 // * If the manual override has no specified field prediction (i.e. is a "pass
 //   through"), then it was not intended to override this specific prediction.
 //   In that case, use the server prediction instead. In the special case that
@@ -736,7 +736,7 @@ EncodeAutofillPageQueryRequest(
   return std::make_pair(std::move(query), std::move(queried_form_signatures));
 }
 
-void ParseApiQueryResponse(
+void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
@@ -760,11 +760,12 @@ void ParseApiQueryResponse(
   VLOG(1) << "Autofill query response from API was successfully parsed: "
           << response;
 
-  ProcessQueryResponse(response, forms, queried_form_signatures,
-                       form_interactions_ukm_logger, log_manager);
+  ProcessServerPredictionsQueryResponse(
+      response, forms, queried_form_signatures, form_interactions_ukm_logger,
+      log_manager);
 }
 
-void ProcessQueryResponse(
+void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,

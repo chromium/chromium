@@ -64,8 +64,8 @@ EncodeAutofillPageQueryRequest(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
-// ProcessQueryResponse.
-void ParseApiQueryResponse(
+// ProcessServerPredictionsQueryResponse.
+void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,
@@ -76,7 +76,7 @@ void ParseApiQueryResponse(
 // same as the one passed to `EncodeAutofillPageQueryRequest()` when
 // constructing the query. `form_interactions_ukm_logger` is used to provide
 // logs to UKM and can be null in tests.
-void ProcessQueryResponse(
+void ProcessServerPredictionsQueryResponse(
     const AutofillQueryResponse& response,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
     const std::vector<FormSignature>& queried_form_signatures,

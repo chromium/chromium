@@ -848,9 +848,9 @@ void AutofillManager::OnLoadedServerPredictions(
   }
 
   // Parse and store the server predictions.
-  ParseApiQueryResponse(std::move(response), queried_forms,
-                        queried_form_signatures, form_interactions_ukm_logger(),
-                        log_manager_);
+  ParseServerPredictionsQueryResponse(
+      std::move(response), queried_forms, queried_form_signatures,
+      form_interactions_ukm_logger(), log_manager_);
 
   // Will log quality metrics for each FormStructure based on the presence of
   // autocomplete attributes, if available.

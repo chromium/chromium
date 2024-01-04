@@ -31,15 +31,16 @@ void AddField(const std::string& label,
   form_data->fields.push_back(field);
 }
 
-// We run ProcessQueryResponse twice with hardcoded forms vectors. Ideally we
-// should also generate forms vectors by using fuzzing, but at the moment we use
-// simplified approach. There is no specific reason to use those two hardcoded
-// forms vectors, so it can be changed if needed.
+// We run ProcessServerPredictionsQueryResponse twice with hardcoded forms
+// vectors. Ideally we should also generate forms vectors by using fuzzing, but
+// at the moment we use simplified approach. There is no specific reason to use
+// those two hardcoded forms vectors, so it can be changed if needed.
 DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
   std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
-  ProcessQueryResponse(response, forms, test::GetEncodedSignatures(forms),
-                       /*form_interactions_ukm_logger=*/nullptr,
-                       /*log_manager=*/nullptr);
+  ProcessServerPredictionsQueryResponse(
+      response, forms, test::GetEncodedSignatures(forms),
+      /*form_interactions_ukm_logger=*/nullptr,
+      /*log_manager=*/nullptr);
 
   FormData form_data;
   AddField("username", "username", FormControlType::kInputText, &form_data);
@@ -47,9 +48,10 @@ DEFINE_BINARY_PROTO_FUZZER(const AutofillQueryResponse& response) {
 
   FormStructure form(form_data);
   forms.push_back(&form);
-  ProcessQueryResponse(response, forms, test::GetEncodedSignatures(forms),
-                       /*form_interactions_ukm_logger=*/nullptr,
-                       /*log_manager=*/nullptr);
+  ProcessServerPredictionsQueryResponse(
+      response, forms, test::GetEncodedSignatures(forms),
+      /*form_interactions_ukm_logger=*/nullptr,
+      /*log_manager=*/nullptr);
 }
 
 }  // namespace
