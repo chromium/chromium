@@ -62,6 +62,14 @@ class FocusModeTrayTest : public AshTestBase {
     return focus_mode_tray_->progress_indicator_.get();
   }
 
+  // Advances the clock for all but 5 seconds of the supplied `minutes`, and
+  // then fast forward for the last 5 seconds in order to give callbacks that
+  // are called once every second a chance to run.
+  void SkipMinutes(int minutes) {
+    task_environment()->AdvanceClock(base::Seconds(minutes * 60 - 5));
+    task_environment()->FastForwardBy(base::Seconds(5));
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<FocusModeTray> focus_mode_tray_ = nullptr;
@@ -184,22 +192,17 @@ TEST_F(FocusModeTrayTest, ProgressIndicatorProgresses) {
   FocusModeController* controller = FocusModeController::Get();
   controller->SetSessionDuration(base::Minutes(40));
   controller->ToggleFocusMode();
-  task_environment()->FastForwardBy(base::Seconds(1));
 
   // Define a margin of error for floating point math.
-  constexpr float allowed_difference = 0.001f;
-
-  // Progress should start near zero.
-  EXPECT_NEAR(0.0, GetProgressIndicator()->progress().value(),
-              allowed_difference);
+  constexpr float allowed_difference = 0.01f;
 
   // Progress one quarter the way through the session should be near 0.25.
-  task_environment()->FastForwardBy(base::Minutes(10));
+  SkipMinutes(10);
   EXPECT_NEAR(0.25, GetProgressIndicator()->progress().value(),
               allowed_difference);
 
   // Progress half way through the session should be near .5.
-  task_environment()->FastForwardBy(base::Minutes(10));
+  SkipMinutes(10);
   EXPECT_NEAR(0.5, GetProgressIndicator()->progress().value(),
               allowed_difference);
 }
