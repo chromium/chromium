@@ -259,10 +259,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 // Tests that the retention policy cleanup removes an expired entry.
 IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_RemovesExpiredEntry) {
-  // Go back in time, far enough so that we'll expire the entry.
-  TestAutofillClock test_clock;
-  base::TimeDelta days_delta = 2 * kAutocompleteRetentionPolicyPeriod;
-  test_clock.SetNow(AutofillClock::Now() - days_delta);
+  TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.
   std::string prefix = "Some";
@@ -273,9 +270,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
-  // Come back to current time, modify the saved major version and setup our
-  // observer.
-  test_clock.Advance(days_delta);
+  // Advance time to expire the entry.
+  test_clock.Advance(2 * kAutocompleteRetentionPolicyPeriod);
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
 
@@ -292,11 +288,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 // 20 days old).
 IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
                        RetentionPolicy_DoesNot_RemoveValidEntry) {
-  // Go back in time, but not far enough so that we'd expire the entry.
-  TestAutofillClock test_clock;
-  base::TimeDelta days_delta =
-      kAutocompleteRetentionPolicyPeriod - base::Days(2);
-  test_clock.SetNow(AutofillClock::Now() - days_delta);
+  TestAutofillClock test_clock(AutofillClock::Now());
 
   // Add an entry.
   std::string prefix = "Some";
@@ -307,9 +299,8 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
               SuggestionVectorMainTextsAre(Suggestion::Text(
                   UTF8ToUTF16(test_value), Suggestion::Text::IsPrimary(true))));
 
-  // Come back to current time, modify the saved major version and setup our
-  // observer.
-  test_clock.Advance(days_delta);
+  // Advance time by less than `kAutocompleteRetentionPolicyPeriod`.
+  test_clock.Advance(kAutocompleteRetentionPolicyPeriod - base::Days(2));
   pref_service()->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                              CHROME_VERSION_MAJOR - 1);
 
