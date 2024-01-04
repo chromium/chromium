@@ -290,7 +290,7 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
 // element in the carousel.
 BASE_FEATURE(kMostVisitedTilesHorizontalRenderGroup,
              "OmniboxMostVisitedTilesHorizontalRenderGroup",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             enabled_by_default_android_only);
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
