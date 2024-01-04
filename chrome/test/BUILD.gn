@@ -4485,7 +4485,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/ash/login/encryption_migration_browsertest.cc",
         "../browser/ash/login/enrollment/enrollment_embedded_policy_server_browsertest.cc",
         "../browser/ash/login/enrollment/enrollment_screen_browsertest.cc",
-        "../browser/ash/login/enrollment/hands_off_enrollment_browsertest.cc",
         "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.cc",
         "../browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h",
         "../browser/ash/login/enrollment_nudge_browsertest.cc",
