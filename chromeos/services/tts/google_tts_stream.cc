@@ -21,7 +21,7 @@ void HandleLibraryLogging(int severity, const char* message) {
     case logging::LOG_INFO:
       // Suppressed.
       break;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       LOG(WARNING) << message;
       break;
     case logging::LOG_FATAL:

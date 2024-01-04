@@ -32,7 +32,7 @@ logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
     case TRACE_LEVEL_ERROR:
       return logging::LOG_ERROR;
     case TRACE_LEVEL_WARNING:
-      return logging::LOG_WARNING;
+      return logging::LOGGING_WARNING;
     case TRACE_LEVEL_INFORMATION:
       return logging::LOG_INFO;
     default:
@@ -112,7 +112,7 @@ std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
   switch (severity) {
     case logging::LOG_INFO:
       return kInfoSeverity;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       return kWarningSeverity;
     case logging::LOG_ERROR:
       return kErrorSeverity;

@@ -22,7 +22,7 @@ namespace {
     case LogLevel::kInfo:
       return ::logging::LOG_INFO;
     case LogLevel::kWarning:
-      return ::logging::LOG_WARNING;
+      return ::logging::LOGGING_WARNING;
     case LogLevel::kError:
       return ::logging::LOG_ERROR;
     case LogLevel::kFatal:

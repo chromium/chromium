@@ -38,7 +38,7 @@ void ImeLoggerBridge(int severity, const char* message) {
     case logging::LOG_INFO:
       // TODO(b/162375823): VLOG_IF(INFO, is_debug_version).
       break;
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       LOG(WARNING) << message;
       break;
     case logging::LOG_ERROR:

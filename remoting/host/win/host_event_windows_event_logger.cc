@@ -23,7 +23,7 @@ WORD SeverityToEventLogType(logging::LogSeverity severity) {
   // The Windows event log only has 3 log levels so some severity levels will
   // need to be combined (info and verbose, error and fatal).
   switch (severity) {
-    case logging::LOG_WARNING:
+    case logging::LOGGING_WARNING:
       return EVENTLOG_WARNING_TYPE;
     case logging::LOG_FATAL:
     case logging::LOG_ERROR:

@@ -755,7 +755,7 @@ TEST_P(StatisticsRecorderTest, GlobalCallbackCalled) {
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
   ResetVLogInitialized();
-  logging::SetMinLogLevel(logging::LOG_WARNING);
+  logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
   EXPECT_FALSE(VLOG_IS_ON(1));
   EXPECT_FALSE(IsVLogInitialized());
@@ -765,7 +765,7 @@ TEST_P(StatisticsRecorderTest, LogOnShutdownNotInitialized) {
 
 TEST_P(StatisticsRecorderTest, LogOnShutdownInitializedExplicitly) {
   ResetVLogInitialized();
-  logging::SetMinLogLevel(logging::LOG_WARNING);
+  logging::SetMinLogLevel(logging::LOGGING_WARNING);
   InitializeStatisticsRecorder();
   EXPECT_FALSE(VLOG_IS_ON(1));
   EXPECT_FALSE(IsVLogInitialized());

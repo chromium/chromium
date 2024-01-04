@@ -13,7 +13,7 @@ namespace extension_misc {
 
 // The minimum severity of a log or error in order to report it to the browser.
 inline constexpr logging::LogSeverity kMinimumSeverityToReportError =
-    logging::LOG_WARNING;
+    logging::LOGGING_WARNING;
 
 }  // namespace extension_misc
 

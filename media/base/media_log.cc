@@ -145,7 +145,7 @@ LogHelper::~LogHelper() {
         break;
       case MediaLogMessageLevel::kWARNING:
         if (DLOG_IS_ON(WARNING)) {
-          logging::LogMessage(file_, line_, logging::LOG_WARNING).stream()
+          logging::LogMessage(file_, line_, logging::LOGGING_WARNING).stream()
               << log;
         }
         break;
