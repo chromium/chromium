@@ -3818,32 +3818,6 @@
             ]
         }
     ],
-    "ChromeOSZramWriteback": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroupA_20230911",
-                    "params": {
-                        "CrOSZramWritebackWritebackBackoffTimeSec": "300",
-                        "ZramWritebackHuge": "false",
-                        "ZramWritebackHugeIdle": "true",
-                        "ZramWritebackIdle": "true",
-                        "ZramWritebackIdleMaxTimeSec": "86400",
-                        "ZramWritebackIdleMinTimeSec": "64800",
-                        "ZramWritebackMaxPages": "25600",
-                        "ZramWritebackMinPages": "0",
-                        "ZramWritebackPeriodicTimeSec": "300"
-                    },
-                    "enable_features": [
-                        "ChromeOSZramWriteback"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeStartAccessibility": [
         {
             "platforms": [
@@ -4955,6 +4929,32 @@
                     },
                     "enable_features": [
                         "CrOSLateBootSwapZramRecompression"
+                    ]
+                }
+            ]
+        }
+    ],
+    "CrOSLateBootSwapZramWriteback": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroupB_20240104",
+                    "params": {
+                        "backoff_time_sec": "600",
+                        "idle_max_time_sec": "90000",
+                        "idle_min_time_sec": "72000",
+                        "max_pages": "76800",
+                        "min_pages": "1280",
+                        "periodic_time_sec": "3600",
+                        "writeback_huge": "true",
+                        "writeback_huge_idle": "true",
+                        "writeback_idle": "true"
+                    },
+                    "enable_features": [
+                        "CrOSLateBootSwapZramWriteback"
                     ]
                 }
             ]
