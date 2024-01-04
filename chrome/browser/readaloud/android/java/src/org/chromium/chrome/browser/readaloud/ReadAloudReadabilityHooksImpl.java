@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.readaloud;
 import android.content.Context;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
 
 /** Empty implementation of ReadAloudReadabilityHooks. */
 public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks {
@@ -18,7 +19,8 @@ public class ReadAloudReadabilityHooksImpl implements ReadAloudReadabilityHooks 
     }
 
     @Override
-    public void isPageReadable(String url, ReadabilityCallback callback) {
-        return;
-    }
+    public void isPageReadable(Tab tab, String url, ReadabilityCallback callback) {}
+
+    @Override
+    public void isPageReadable(String url, ReadabilityCallback callback) {}
 }
