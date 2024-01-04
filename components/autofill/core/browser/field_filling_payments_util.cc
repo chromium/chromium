@@ -126,7 +126,7 @@ bool LastTwoDigitsMatch(const std::u16string& year,
 
 // Gets the year `value` in a select control to fill into the given `field` by
 // comparing the last two digits of the year to the field's options.
-// A nullopt value means that no value for filling was found.
+// Returns an empty string if no value for filling was found.
 std::u16string GetYearSelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
@@ -159,7 +159,7 @@ std::u16string GetYearSelectControlValue(
 // Gets the credit card type `value` (Visa, Mastercard, etc.) to fill into the
 // given `field`. We ignore whitespace when filling credit card types to
 // allow for cases such as "Master card".
-// A nullopt value means that no value for filling was found.
+// Returns an empty string if no value for filling was found.
 std::u16string GetCreditCardTypeSelectControlValue(
     const std::u16string& value,
     base::span<const SelectOption> field_options,
