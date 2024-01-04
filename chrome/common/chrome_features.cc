@@ -578,16 +578,6 @@ const base::FeatureParam<base::TimeDelta>
         &kHappinessTrackingSurveysForDesktopPrivacyGuide, "settings-time",
         base::Seconds(20)};
 
-// Enables or disables the Happiness Tracking System for Desktop Privacy
-// Sandbox.
-BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacySandbox,
-             "HappinessTrackingSurveysForDesktopPrivacySandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta>
-    kHappinessTrackingSurveysForDesktopPrivacySandboxTime{
-        &kHappinessTrackingSurveysForDesktopPrivacySandbox, "settings-time",
-        base::Seconds(20)};
-
 // Enables or disables the Happiness Tracking System for Desktop Chrome
 // Settings.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
@@ -599,10 +589,6 @@ BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettings,
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopSettingsPrivacy,
              "HappinessTrackingSurveysForDesktopSettingsPrivacy",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool>
-    kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox{
-        &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-sandbox",
-        false};
 const base::FeatureParam<bool>
     kHappinessTrackingSurveysForDesktopSettingsPrivacyNoGuide{
         &kHappinessTrackingSurveysForDesktopSettingsPrivacy, "no-guide", false};

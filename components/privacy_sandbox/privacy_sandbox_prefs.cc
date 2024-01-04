@@ -32,7 +32,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(prefs::kPrivacySandboxManuallyControlledV2,
                                 false);
-  registry->RegisterBooleanPref(prefs::kPrivacySandboxPageViewed, false);
   registry->RegisterTimePref(prefs::kPrivacySandboxTopicsDataAccessibleSince,
                              base::Time());
   registry->RegisterListPref(prefs::kPrivacySandboxBlockedTopics);

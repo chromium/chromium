@@ -47,7 +47,6 @@ constexpr char kHatsSurveyTriggerPerformanceControlsBatterySaverOptOut[] =
 // simultaneously. Each trigger increments a counter at the end -->
 // "permission-prompt0", "permission-prompt1", ...
 constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
-constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
 constexpr char kHatsSurveyTriggerRedWarning[] = "red-warning";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
@@ -199,11 +198,6 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
       kHatsSurveyTriggerPrivacyGuide);
-  survey_configs.emplace_back(
-      &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
-      kHatsSurveyTriggerPrivacySandbox,
-      /*presupplied_trigger_id=*/std::nullopt,
-      std::vector<std::string>{"3P cookies blocked"});
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   survey_configs.emplace_back(&features::kHappinessTrackingSurveysGetMostChrome,

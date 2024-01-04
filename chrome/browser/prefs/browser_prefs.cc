@@ -966,6 +966,8 @@ const char kModelQualityLoggingClientId[] =
 // Deprecated 12/2023.
 const char kSync_ExplicitBrowserSignin[] = "sync.explicit_browser_signin";
 
+// Deprecated 01/2024.
+const char kPrivacySandboxPageViewed[] = "privacy_sandbox.page_viewed";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1365,6 +1367,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 12/2023.
   registry->RegisterInt64Pref(kModelQualityLoggingClientId, true);
   registry->RegisterBooleanPref(kSync_ExplicitBrowserSignin, false);
+
+  // Deprecated 01/2024.
+  registry->RegisterBooleanPref(kPrivacySandboxPageViewed, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2598,6 +2603,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
         profile_prefs->GetBoolean(kSync_ExplicitBrowserSignin));
     profile_prefs->ClearPref(kSync_ExplicitBrowserSignin);
   }
+
+  // Added 01/2024.
+  profile_prefs->ClearPref(kPrivacySandboxPageViewed);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

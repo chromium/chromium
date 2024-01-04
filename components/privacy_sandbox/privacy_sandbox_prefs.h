@@ -69,11 +69,6 @@ inline constexpr char kPrivacySandboxApisEnabledV2[] =
 inline constexpr char kPrivacySandboxManuallyControlledV2[] =
     "privacy_sandbox.manually_controlled_v2";
 
-// Boolean that indicates whether the privacy sandbox desktop page at
-// chrome://settings/privacySandbox has been viewed.
-inline constexpr char kPrivacySandboxPageViewed[] =
-    "privacy_sandbox.page_viewed";
-
 // The point in time from which history is eligible to be used when calculating
 // a user's Topics API topics.
 inline constexpr char kPrivacySandboxTopicsDataAccessibleSince[] =

@@ -263,15 +263,6 @@ void HatsHandler::RequestHatsSurvey(TrustSafetyInteraction interaction) {
               prefs::kPrivacyGuideViewed)) {
         return;
       }
-      // If the privacy settings survey is explicitly targeting users who have
-      // not viewed the Privacy Sandbox page, and this user has viewed the page,
-      // do not attempt to show the privacy settings survey.
-      if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
-              .Get() &&
-          Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
-              prefs::kPrivacySandboxPageViewed)) {
-        return;
-      }
       trigger = kHatsSurveyTriggerSettingsPrivacy;
       timeout_ms =
           features::kHappinessTrackingSurveysForDesktopSettingsPrivacyTime.Get()

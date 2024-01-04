@@ -39,9 +39,6 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
     base::test::FeatureRefAndParams settings_privacy{
         features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
         {{"settings-time", "15s"}}};
-    base::test::FeatureRefAndParams privacy_sandbox{
-        features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
-        {{"settings-time", "10s"}}};
     base::test::FeatureRefAndParams privacy_guide{
         features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
         {{"settings-time", "15s"}}};
@@ -49,7 +46,7 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
         features::kHappinessTrackingSurveysForSecurityPage,
         {{"security-page-time", "15s"}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {settings_privacy, privacy_sandbox, privacy_guide, security_page}, {});
+        {settings_privacy, privacy_guide, security_page}, {});
   }
 
   void SetUp() override {
@@ -291,36 +288,6 @@ TEST_F(
   task_environment()->RunUntilIdle();
 }
 
-class HatsHandlerNoSandboxTest : public HatsHandlerTest {
- public:
-  HatsHandlerNoSandboxTest() {
-    scoped_feature_list_.Reset();
-    base::test::FeatureRefAndParams settings_privacy{
-        features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
-        {{"no-sandbox", "true"}}};
-    scoped_feature_list_.InitWithFeaturesAndParameters({settings_privacy}, {});
-  }
-};
-
-TEST_F(HatsHandlerNoSandboxTest, PrivacySettings) {
-  profile()->GetPrefs()->SetInteger(
-      prefs::kCookieControlsMode,
-      static_cast<int>(content_settings::CookieControlsMode::kBlockThirdParty));
-  // Enable targeting for users who have not seen the Privacy Sandbox page and
-  // ensure the handler does not attempt to launch the survey.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchDelayedSurveyForWebContents(_, _, _, _, _, _, _, _, _))
-      .Times(0);
-
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-
-  base::Value::List args;
-  args.Append(
-      static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(args);
-  task_environment()->RunUntilIdle();
-}
-
 TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   // Check that interactions relevant to the T&S sentiment service are
   // correctly reported.
@@ -335,25 +302,6 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
   args[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(args);
-}
-
-TEST_F(HatsHandlerNoSandboxTest, TrustSafetySentimentInteractions) {
-  // A profile & feature state that would exclude the user from receiving the
-  // Privacy Settings HaTS survey should not stop the sentiment service being
-  // informed that the interaction occurred.
-  // Check that interactions relevant to the T&S sentiment service are
-  // correctly reported.
-  EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(1);
-  base::Value::List args;
-  args.Append(
-      static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-  handler()->HandleTrustSafetyInteractionOccurred(args);
-
-  EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
-  args[0] = base::Value(static_cast<int>(
-      HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
   handler()->HandleTrustSafetyInteractionOccurred(args);
 }
 
