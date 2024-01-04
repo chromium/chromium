@@ -2,6 +2,7 @@
 Checks: '-*,
          bugprone-argument-comment,
          google-build-namespaces,
+         google-default-arguments,
          google-readability-namespace-comments,
          modernize-avoid-bind,
          modernize-concat-nested-namespaces,

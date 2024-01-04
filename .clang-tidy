@@ -12,6 +12,7 @@
                     bugprone-unused-raii,
                     bugprone-use-after-move,
                     google-build-explicit-make-pair,
+                    google-default-arguments,
                     google-explicit-constructor,
                     google-objc-avoid-nsobject-new,
                     misc-misleading-identifier,
