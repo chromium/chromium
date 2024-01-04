@@ -16,7 +16,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -46,7 +45,6 @@
 #include "sql/database_memory_dump_provider.h"
 #include "sql/initialization.h"
 #include "sql/meta_table.h"
-#include "sql/sql_features.h"
 #include "sql/sqlite_result_code.h"
 #include "sql/sqlite_result_code_values.h"
 #include "sql/statement.h"
@@ -426,10 +424,7 @@ void Database::CloseInternal(bool forced) {
 }
 
 bool Database::is_open() const {
-  bool is_closed_due_to_poisoning =
-      poisoned_ && base::FeatureList::IsEnabled(
-                       sql::features::kConsiderPoisonedDatabasesClosed);
-  return static_cast<bool>(db_) && !is_closed_due_to_poisoning;
+  return static_cast<bool>(db_) && !poisoned_;
 }
 
 void Database::Close() {
