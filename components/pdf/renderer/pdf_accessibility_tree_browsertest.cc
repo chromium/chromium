@@ -2686,9 +2686,11 @@ TEST_P(PdfOcrServiceTest, PageBatching) {
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       pdf_accessibility_tree_->ocr_service_for_testing()->OcrPage(requests);
 
       // Each page has two images.
@@ -2792,9 +2794,11 @@ TEST_P(PdfOcrServiceTest, UMAMetrics) {
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       pdf_accessibility_tree_->ocr_service_for_testing()->OcrPage(requests);
       // The UMA metric recorded in `PdfAccessibilityTree::OnOcrDataReceived()`
       // is triggered by `OcrPage()`. `WaitForThreadTasks()` below is similar
@@ -2871,9 +2875,11 @@ TEST_P(PdfOcrServiceTest, EmptyOCRResults) {
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       pdf_accessibility_tree_->ocr_service_for_testing()->OcrPage(requests);
     }
 
@@ -2945,9 +2951,11 @@ TEST_P(PdfOcrServiceTest, OCRCompleteNotification) {
       ASSERT_NE(nullptr, image2_node);
       base::queue<PdfAccessibilityTree::PdfOcrRequest> requests;
       requests.emplace(image1_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       requests.emplace(image2_node->id(), CreateMockInaccessibleImage(),
-                       paragraph_node->id(), page_node->id(), /*page_index=*/i);
+                       root_node->id(), paragraph_node->id(), page_node->id(),
+                       /*page_index=*/i);
       pdf_accessibility_tree_->ocr_service_for_testing()->OcrPage(requests);
     }
 
@@ -3164,7 +3172,8 @@ TEST_F(PdfOcrTest, TestTransformFromOnOcrDataReceived) {
   EXPECT_EQ(child_tree_update.tree_data.tree_id, ui::AXTreeIDUnknown());
 
   PdfAccessibilityTree::PdfOcrRequest request(
-      image_node->id(), image, paragraph_node->id(), page_node->id(),
+      image_node->id(), image, root_node->id(), paragraph_node->id(),
+      page_node->id(),
       /*page_index=*/0);
   // Image pixel size is automatically set when OCR request is running, but
   // this test skips that step.
