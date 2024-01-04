@@ -2560,7 +2560,7 @@
     'blink_css_grid_layout': ['jfernandez@igalia.com',
                               'obrufau@igalia.com'],
     'blink_custom_elements': ['dominicc+watchlist@chromium.org'],
-    'blink_device_orientation': ['rijubrata.bhaumik@intel.com'],
+    'blink_device_orientation': ['raphael.kubo.da.costa@intel.com'],
     'blink_devtools': ['devtools-reviews+blink@chromium.org'],
     'blink_dom': ['blink-reviews-dom@chromium.org'],
     'blink_dom_storage': ['dmurph+watching-domstorage@chromium.org'],
