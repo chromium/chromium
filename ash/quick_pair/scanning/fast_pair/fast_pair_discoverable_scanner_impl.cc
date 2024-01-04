@@ -29,6 +29,7 @@
 #include "components/cross_device/logging/logging.h"
 #include "device/bluetooth//bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/floss/floss_features.h"
 
 namespace {
 
@@ -50,6 +51,8 @@ bool IsMetadataPublished(const nearby::fastpair::Device& device) {
 
 bool IsValidDeviceType(const nearby::fastpair::Device& device) {
   if (ash::features::IsFastPairHIDEnabled() &&
+      // Fast Pair HID only works on Floss.
+      floss::features::IsFlossEnabled() &&
       device.device_type() == nearby::fastpair::DeviceType::INPUT_DEVICE) {
     return true;
   }
