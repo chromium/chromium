@@ -16,8 +16,7 @@ namespace password_manager {
 struct MatchingReusedCredential;
 
 // Callback interface for receiving a password reuse event.
-class PasswordReuseDetectorConsumer
-    : public base::SupportsWeakPtr<PasswordReuseDetectorConsumer> {
+class PasswordReuseDetectorConsumer {
  public:
   PasswordReuseDetectorConsumer();
   virtual ~PasswordReuseDetectorConsumer();
@@ -43,6 +42,9 @@ class PasswordReuseDetectorConsumer
       int saved_passwords,
       const std::string& domain,
       uint64_t reused_password_hash) = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<PasswordReuseDetectorConsumer> AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

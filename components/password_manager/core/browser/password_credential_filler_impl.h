@@ -14,7 +14,7 @@ namespace password_manager {
 
 struct SubmissionReadinessParams;
 
-class PasswordCredentialFillerImpl : public PasswordCredentialFiller {
+class PasswordCredentialFillerImpl final : public PasswordCredentialFiller {
  public:
   PasswordCredentialFillerImpl(
       base::WeakPtr<PasswordManagerDriver> driver,
@@ -37,6 +37,8 @@ class PasswordCredentialFillerImpl : public PasswordCredentialFiller {
 
   void Dismiss(ToShowVirtualKeyboard should_show) override;
 
+  base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
+
  private:
   // Driver supplied by the client.
   base::WeakPtr<PasswordManagerDriver> driver_;
@@ -48,6 +50,8 @@ class PasswordCredentialFillerImpl : public PasswordCredentialFiller {
   // Whether the controller should trigger submission when a credential is
   // filled in.
   bool trigger_submission_;
+
+  base::WeakPtrFactory<PasswordCredentialFillerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager

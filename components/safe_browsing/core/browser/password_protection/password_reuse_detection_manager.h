@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_reuse_detector_consumer.h"
@@ -25,7 +26,7 @@ namespace safe_browsing {
 // password_reuse_detection_manager files. Class for managing password reuse
 // detection. Now it receives keystrokes and does nothing with them.
 // PasswordReuseDetectionManager is instantiated once one per WebContents.
-class PasswordReuseDetectionManager
+class PasswordReuseDetectionManager final
     : public password_manager::PasswordReuseDetectorConsumer {
  public:
   explicit PasswordReuseDetectionManager(
@@ -64,6 +65,8 @@ class PasswordReuseDetectionManager
       const std::string& domain,
       uint64_t reused_password_hash) override;
 
+  base::WeakPtr<PasswordReuseDetectorConsumer> AsWeakPtr() override;
+
   void SetClockForTesting(base::Clock* clock);
 
  private:
@@ -89,6 +92,8 @@ class PasswordReuseDetectionManager
   // Helps determine whether or not to check reuse based on if a reuse was
   // already found.
   bool reuse_on_this_page_was_found_ = false;
+
+  base::WeakPtrFactory<PasswordReuseDetectionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace safe_browsing

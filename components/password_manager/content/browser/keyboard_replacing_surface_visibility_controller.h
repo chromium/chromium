@@ -15,9 +15,7 @@ class ContentPasswordManagerDriver;
 // `kCanBeShown`. The state can be reset, using `Reset()` to redisplay.
 // The lifetime is controlled by the owner (i.e. `PasswordManagerClient`) and
 // the object will be used by `TouchToFillController` and `CredManController`.
-class KeyboardReplacingSurfaceVisibilityController
-    : public base::SupportsWeakPtr<
-          KeyboardReplacingSurfaceVisibilityController> {
+class KeyboardReplacingSurfaceVisibilityController {
  public:
   enum class State {
     kNotShownYet,
@@ -47,6 +45,10 @@ class KeyboardReplacingSurfaceVisibilityController
   // Resets the state to the initial (`kNotShownYet`) and removes the added IME
   // suppression if there's one.
   virtual void Reset() = 0;
+
+  // Get a WeakPtr to the instance.
+  virtual base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
+  AsWeakPtr() = 0;
 };
 
 }  // namespace password_manager

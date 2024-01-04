@@ -836,6 +836,10 @@ void PasswordStoreAndroidBackend::OnSyncServiceInitialized(
   }
 }
 
+base::WeakPtr<PasswordStoreBackend> PasswordStoreAndroidBackend::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordStoreAndroidBackend::GetAutofillableLoginsInternal(
     LoginsOrErrorReply callback,
     PasswordStoreOperation operation,

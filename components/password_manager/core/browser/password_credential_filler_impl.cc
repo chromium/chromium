@@ -173,4 +173,9 @@ void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
   driver_->KeyboardReplacingSurfaceClosed(should_show);
 }
 
+base::WeakPtr<PasswordCredentialFiller>
+PasswordCredentialFillerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace password_manager

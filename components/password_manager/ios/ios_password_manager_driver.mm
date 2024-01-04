@@ -128,3 +128,8 @@ int IOSPasswordManagerDriver::GetFrameId() const {
 const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
 }
+
+base::WeakPtr<password_manager::PasswordManagerDriver>
+IOSPasswordManagerDriver::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}

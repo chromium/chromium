@@ -23,7 +23,7 @@ namespace password_manager {
 // This backend forwards requests to two backends in order to compare and record
 // their results and time differences. The main backend fulfills the  request
 // while the shadow backend is only queried to record shadow traffic.
-class PasswordStoreProxyBackend : public PasswordStoreBackend {
+class PasswordStoreProxyBackend final : public PasswordStoreBackend {
  public:
   // `built_in_backend` and `android_backend` must not be null and must outlive
   // this object as long as Shutdown() is not called.
@@ -83,6 +83,7 @@ class PasswordStoreProxyBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Forwards the (possible) forms changes caused by a remote event to the
   // main backend.

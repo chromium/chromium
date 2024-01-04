@@ -210,6 +210,7 @@ class PasswordStoreAndroidBackend
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Internal method used for implementing the GetAutofillableLoginsAsync method
   // from the PasswordStoreBackend interface. |operation| is the

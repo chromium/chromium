@@ -58,4 +58,9 @@ void KeyboardReplacingSurfaceVisibilityControllerImpl::Reset() {
   suppress_callback_.Reset();
 }
 
+base::WeakPtr<KeyboardReplacingSurfaceVisibilityController>
+KeyboardReplacingSurfaceVisibilityControllerImpl::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace password_manager

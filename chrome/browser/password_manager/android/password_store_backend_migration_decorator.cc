@@ -312,6 +312,11 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
     migrator_->OnSyncServiceInitialized(sync_service);
 }
 
+base::WeakPtr<PasswordStoreBackend>
+PasswordStoreBackendMigrationDecorator::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 void PasswordStoreBackendMigrationDecorator::StartMigrationAfterInit() {
   // Return early if the user was evicted after scheduling migration.
   if (!ShouldAttemptMigration(prefs_))

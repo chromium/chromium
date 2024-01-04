@@ -26,10 +26,10 @@
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/mock_password_credential_filler.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/password_credential_filler.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -49,6 +49,7 @@ using ToShowVirtualKeyboard =
 using autofill::mojom::SubmissionReadinessState;
 using base::test::RunOnceCallback;
 using device_reauth::MockDeviceAuthenticator;
+using password_manager::MockPasswordCredentialFiller;
 using password_manager::PasskeyCredential;
 using password_manager::UiCredential;
 using ::testing::_;
@@ -92,26 +93,6 @@ struct MockTouchToFillView : TouchToFillView {
               (override));
   MOCK_METHOD(void, OnCredentialSelected, (const UiCredential&));
   MOCK_METHOD(void, OnDismiss, ());
-};
-
-struct MockPasswordCredentialFiller
-    : public password_manager::PasswordCredentialFiller {
-  MOCK_METHOD(void,
-              FillUsernameAndPassword,
-              (const std::u16string&, const std::u16string&),
-              (override));
-  MOCK_METHOD(void, UpdateTriggerSubmission, (bool), (override));
-  MOCK_METHOD(bool, ShouldTriggerSubmission, (), (const override));
-  MOCK_METHOD(SubmissionReadinessState,
-              GetSubmissionReadinessState,
-              (),
-              (const override));
-  MOCK_METHOD(base::WeakPtr<password_manager::PasswordManagerDriver>,
-              GetDriver,
-              (),
-              (const override));
-  MOCK_METHOD(const GURL&, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
 };
 
 struct MockWebAuthnCredManDelegate : public WebAuthnCredManDelegate {

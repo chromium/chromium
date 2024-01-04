@@ -198,9 +198,8 @@ class PasswordGenerationControllerTest
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
                     autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-    controller()->FocusedInputChanged(
-        FocusedFieldType::kFillablePasswordField,
-        base::AsWeakPtr(password_manager_driver_.get()));
+    controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
+                                      active_driver());
   }
 
   PasswordGenerationController* controller() {
@@ -209,12 +208,12 @@ class PasswordGenerationControllerTest
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   active_driver() {
-    return base::AsWeakPtr(password_manager_driver_.get());
+    return password_manager_driver_->AsWeakPtrImpl();
   }
 
   base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   non_active_driver() {
-    return base::AsWeakPtr(another_password_manager_driver_.get());
+    return another_password_manager_driver_->AsWeakPtrImpl();
   }
 
   const base::MockCallback<

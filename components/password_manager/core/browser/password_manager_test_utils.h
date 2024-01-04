@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
@@ -142,7 +143,8 @@ class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
               (override));
 };
 
-class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
+class MockPasswordReuseDetectorConsumer final
+    : public PasswordReuseDetectorConsumer {
  public:
   MockPasswordReuseDetectorConsumer();
   ~MockPasswordReuseDetectorConsumer() override;
@@ -157,6 +159,12 @@ class MockPasswordReuseDetectorConsumer : public PasswordReuseDetectorConsumer {
                const std::string&,
                uint64_t),
               (override));
+
+  base::WeakPtr<PasswordReuseDetectorConsumer> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<MockPasswordReuseDetectorConsumer> weak_ptr_factory_{
+      this};
 };
 
 // Matcher class used to compare PasswordHashData in tests.

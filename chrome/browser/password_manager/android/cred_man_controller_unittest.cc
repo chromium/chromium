@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/password_manager/android/cred_man_controller.h"
 #include "components/password_manager/content/browser/mock_keyboard_replacing_surface_visibility_controller.h"
-#include "components/password_manager/core/browser/password_credential_filler.h"
+#include "components/password_manager/core/browser/mock_password_credential_filler.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -23,25 +24,6 @@ using testing::Return;
 using webauthn::CredManSupport;
 using webauthn::WebAuthnCredManDelegate;
 using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
-
-struct MockPasswordCredentialFiller : public PasswordCredentialFiller {
-  MOCK_METHOD(void,
-              FillUsernameAndPassword,
-              (const std::u16string&, const std::u16string&),
-              (override));
-  MOCK_METHOD(void, UpdateTriggerSubmission, (bool), (override));
-  MOCK_METHOD(bool, ShouldTriggerSubmission, (), (const override));
-  MOCK_METHOD(SubmissionReadinessState,
-              GetSubmissionReadinessState,
-              (),
-              (const override));
-  MOCK_METHOD(base::WeakPtr<password_manager::PasswordManagerDriver>,
-              GetDriver,
-              (),
-              (const override));
-  MOCK_METHOD(const GURL&, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
-};
 
 class CredManControllerTest : public testing::Test {
  public:

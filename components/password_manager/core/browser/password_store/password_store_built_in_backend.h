@@ -86,6 +86,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
+  base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // SmartBubbleStatsStore:
   void AddSiteStats(const InteractionsStats& stats) override;

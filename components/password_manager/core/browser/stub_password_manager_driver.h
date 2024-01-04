@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_STUB_PASSWORD_MANAGER_DRIVER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
@@ -47,6 +48,10 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   bool CanShowAutofillUi() const override;
   int GetFrameId() const override;
   const GURL& GetLastCommittedURL() const override;
+  base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;
+
+ private:
+  base::WeakPtrFactory<StubPasswordManagerDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace password_manager
