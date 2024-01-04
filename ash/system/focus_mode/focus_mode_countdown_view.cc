@@ -14,6 +14,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -142,6 +143,8 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
           include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
+  views::InkDrop::Get(extend_session_duration_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }
 
 void FocusModeCountdownView::UpdateUI() {

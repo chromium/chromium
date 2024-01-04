@@ -571,11 +571,13 @@ void FocusModeDetailedView::CreateTimerView() {
               &FocusModeDetailedView::AdjustInactiveSessionDuration,
               base::Unretained(this),
               /*decrement=*/true),
-          kChevronDownIcon, cros_tokens::kCrosSysBaseElevated,
+          kChevronDownIcon, cros_tokens::kCrosSysHighlightShape,
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIMER_DECREMENT_BUTTON));
   views::InstallRoundRectHighlightPathGenerator(
       timer_decrement_button_, gfx::Insets(),
       kTimerAdjustmentButtonSize.height() / 2);
+  views::InkDrop::Get(timer_decrement_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   timer_increment_button_ =
       timer_setting_view_->AddChildView(CreateTimerAdjustmentButton(
@@ -588,6 +590,8 @@ void FocusModeDetailedView::CreateTimerView() {
   views::InstallRoundRectHighlightPathGenerator(
       timer_increment_button_, gfx::Insets(),
       kTimerAdjustmentButtonSize.height() / 2);
+  views::InkDrop::Get(timer_increment_button_)
+      ->SetMode(views::InkDropHost::InkDropMode::OFF);
 
   UpdateTimerView(FocusModeController::Get()->in_focus_session());
 }
