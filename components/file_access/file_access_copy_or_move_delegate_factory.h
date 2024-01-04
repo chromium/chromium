@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/memory/weak_ptr.h"
 
 namespace storage {
 
@@ -24,8 +23,7 @@ namespace file_access {
 // instance. When it is replaced the old instance is destructed. The class is
 // used in the copy operation to be able to inject in the different copy stages
 // (begin, process, end).
-class COMPONENT_EXPORT(FILE_ACCESS) FileAccessCopyOrMoveDelegateFactory
-    : public base::SupportsWeakPtr<FileAccessCopyOrMoveDelegateFactory> {
+class COMPONENT_EXPORT(FILE_ACCESS) FileAccessCopyOrMoveDelegateFactory {
  public:
   FileAccessCopyOrMoveDelegateFactory(
       const FileAccessCopyOrMoveDelegateFactory&) = delete;
