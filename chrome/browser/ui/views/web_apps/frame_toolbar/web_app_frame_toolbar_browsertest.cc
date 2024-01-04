@@ -1941,6 +1941,44 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(CheckAreSameSize(client_view_size_before,
                                browser_view->frame()->client_view()->size()));
 }
+
+// Test to ensure crbug.com/1513330 won't reproduce.
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    WindowSetResizableDoesntBlockMoveToAndMoveByApis) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+
+  auto* browser_view = helper()->browser_view();
+  browser_view->SetCanResize(true);
+  auto* web_contents = browser_view->GetActiveWebContents();
+
+  // Set the initial window size to something small and close to the origin of
+  // the screen.
+  EXPECT_TRUE(ExecJs(web_contents, "window.resizeTo(100,100);"));
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(10,10);"));
+  WaitForResizeComplete(web_contents);
+  int initial_pos_x = EvalJs(web_contents, "window.screenX").ExtractInt();
+  int initial_pos_y = EvalJs(web_contents, "window.screenY").ExtractInt();
+
+  SetResizableAndWait(web_contents, /*resizable=*/false, /*expected=*/false);
+  EXPECT_FALSE(browser_view->GetCanResizeFromWebAPI().value());
+  EXPECT_FALSE(browser_view->CanResize());
+
+  // window.moveBy API still takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveBy(10,10);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_EQ(EvalJs(web_contents, "window.screenX").ExtractInt(),
+            initial_pos_x + 10);
+  EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(),
+            initial_pos_y + 10);
+
+  // window.moveTo API still takes action.
+  EXPECT_TRUE(ExecJs(web_contents, "window.moveTo(10,10);"));
+  WaitForResizeComplete(web_contents);
+  EXPECT_EQ(EvalJs(web_contents, "window.screenX").ExtractInt(), initial_pos_x);
+  EXPECT_EQ(EvalJs(web_contents, "window.screenY").ExtractInt(), initial_pos_y);
+}
 #endif  // defined(USE_AURA)
 #endif  // !BUILDFLAG(IS_ANDROID)
 
