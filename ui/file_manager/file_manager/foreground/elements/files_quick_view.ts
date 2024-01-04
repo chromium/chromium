@@ -16,6 +16,7 @@ import type {FilesMetadataBox} from './files_metadata_box.js';
 import {getTemplate} from './files_quick_view.html.js';
 import type {FilesSafeMedia} from './files_safe_media.js';
 
+
 export interface FilesQuickView {
   $: {
     contentPanel: HTMLDivElement,

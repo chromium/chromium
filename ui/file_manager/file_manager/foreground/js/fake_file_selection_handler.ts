@@ -7,8 +7,8 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {AllowedPaths} from '../../common/js/volume_manager_types.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {Store} from '../../externs/ts/store.js';
 import {updateDirectoryContent, updateSelection} from '../../state/ducks/current_directory.js';
+import type {Store} from '../../state/store.js';
 
 import {type FileSelection, FileSelectionHandler} from './file_selection.js';
 import type {MetadataModel} from './metadata/metadata_model.js';

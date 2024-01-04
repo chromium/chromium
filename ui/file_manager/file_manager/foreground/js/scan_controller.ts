@@ -5,9 +5,8 @@
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {Store} from '../../externs/ts/store.js';
 import {updateDirectoryContent} from '../../state/ducks/current_directory.js';
-import {getStore} from '../../state/store.js';
+import {getStore, type Store} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';

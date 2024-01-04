@@ -7,7 +7,6 @@ import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashRootType} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
@@ -16,6 +15,7 @@ import {getFileData} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';
 
+import type {CommandHandlerDeps} from './command_handler.js';
 import type {DirectoryModel} from './directory_model.js';
 import type {FileSelection} from './file_selection.js';
 import type {MetadataKey} from './metadata/metadata_item.js';
