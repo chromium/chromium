@@ -12,6 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
@@ -93,6 +94,7 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
 public class ReadAloudControllerUnitTest {
     private static final GURL sTestGURL = JUnitTestGURLs.EXAMPLE_URL;
+    private static final long KNOWN_READABLE_TRIAL_PTR = 12345678L;
 
     private MockTab mTab;
     private ReadAloudController mController;
@@ -114,6 +116,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
     @Mock private LayoutManager mLayoutManager;
     @Mock private ReadAloudPrefs.Natives mReadAloudPrefsNatives;
+    @Mock private ReadAloudFeatures.Natives mReadAloudFeaturesNatives;
     @Mock private UserPrefsJni mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private TemplateUrlService mTemplateUrlService;
@@ -150,6 +153,7 @@ public class ReadAloudControllerUnitTest {
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
         mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
         mJniMocker.mock(ReadAloudPrefsJni.TEST_HOOKS, mReadAloudPrefsNatives);
+        mJniMocker.mock(ReadAloudFeaturesJni.TEST_HOOKS, mReadAloudFeaturesNatives);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
         when(mPrefService.getBoolean(Pref.LISTEN_TO_THIS_PAGE_ENABLED)).thenReturn(true);
@@ -175,6 +179,9 @@ public class ReadAloudControllerUnitTest {
                 .getSearchEngineTypeFromTemplateUrl(anyString());
         doReturn("Google").when(mSearchEngine).getKeyword();
         doReturn(mSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
+        doReturn(KNOWN_READABLE_TRIAL_PTR)
+                .when(mReadAloudFeaturesNatives)
+                .initSyntheticTrial(eq(ChromeFeatureList.READALOUD), eq("_KnownReadable"));
 
         mController =
                 new ReadAloudController(
@@ -205,6 +212,7 @@ public class ReadAloudControllerUnitTest {
     @After
     public void tearDown() {
         mUserActionTester.tearDown();
+        ReadAloudFeatures.shutdown();
     }
 
     @Test
@@ -1292,6 +1300,61 @@ public class ReadAloudControllerUnitTest {
 
         // should switch back to original one
         assertEquals(mTabModelSelector.getCurrentTab(), mTab);
+    }
+
+    @Test
+    public void testInitClearsStaleSyntheticTrialPrefs() {
+        verify(mReadAloudFeaturesNatives, times(1)).clearStaleSyntheticTrialPrefs();
+    }
+
+    @Test
+    public void testKnownReadableTrialInit() {
+        // ReadAloudController creation should init the trial.
+        verify(mReadAloudFeaturesNatives, times(1))
+                .initSyntheticTrial(eq(ChromeFeatureList.READALOUD), eq("_KnownReadable"));
+    }
+
+    @Test
+    public void testKnownReadableTrialActivate() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        // Page is readable so activate the trial.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        verify(mReadAloudFeaturesNatives, times(1))
+                .activateSyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+
+        // Subsequent readability checks may cause activateSyntheticTrial() to be called again
+        // (though it has no effect after the first call).
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), true, false);
+        verify(mReadAloudFeaturesNatives, times(2))
+                .activateSyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+    }
+
+    @Test
+    public void testKnownReadableTrialDoesNotActivateIfNotReadable() {
+        mController.maybeCheckReadability(sTestGURL);
+        verify(mHooksImpl, times(1))
+                .isPageReadable(eq(sTestGURL.getSpec()), mCallbackCaptor.capture());
+        // Page is not readable so do not activate the trial.
+        mCallbackCaptor.getValue().onSuccess(sTestGURL.getSpec(), false, false);
+        verify(mReadAloudFeaturesNatives, never()).activateSyntheticTrial(anyLong());
+    }
+
+    @Test
+    public void testDestroy() {
+        // Play tab
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        onPlaybackSuccess(mPlayback);
+
+        // Destroy should clean up playback, UI, synthetic trials, and more
+        mController.destroy();
+        verify(mPlayback).release();
+        verify(mPlayerCoordinator).destroy();
+        verify(mReadAloudFeaturesNatives).destroySyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
     }
 
     private void onPlaybackSuccess(Playback playback) {
