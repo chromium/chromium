@@ -20,6 +20,7 @@
 
 import argparse
 import io
+import re
 import shutil
 import sys
 import tempfile
@@ -47,7 +48,7 @@ export function getTemplate() {
 # Template for Lit component HTML templates.
 _LIT_ELEMENT_TEMPLATE = """import {html} from '%(scheme)s//resources/lit/v3_0/lit.rollup.js';
 import type {%(class_name)s} from './%(file_name)s.js';
-
+%(imports)s
 export function getHtml(this: %(class_name)s) {
   return html`<!--_html_template_start_-->%(content)s<!--_html_template_end_-->`;
 }"""
@@ -84,6 +85,44 @@ def detect_template_type(definition_file):
       return 'lit'
 
     return 'native'
+
+
+_IMPORTS_START_REGEX = '^<!-- #html_wrapper_imports_start$'
+_IMPORTS_END_REGEX = '^#html_wrapper_imports_end -->$'
+
+
+# Extract additional imports to carry over to the HTML wrapper file.
+def _extract_import_metadata(file, minify):
+  start_line = -1
+  end_line = -1
+
+  with io.open(file, encoding='utf-8', mode='r') as f:
+    lines = f.read().splitlines()
+
+    for i, line in enumerate(lines):
+      if start_line == -1:
+        if re.search(_IMPORTS_START_REGEX, line):
+          assert end_line == -1
+          start_line = i
+      else:
+        assert end_line == -1
+
+        if re.search(_IMPORTS_END_REGEX, line):
+          assert start_line > -1
+          end_line = i
+          break
+
+  if start_line == -1 or end_line == -1:
+    assert start_line == -1
+    assert end_line == -1
+    return None
+
+  return {
+      # Strip metadata from content, unless minification is used, which will
+      # strip any HTML comments anyway.
+      'content': None if minify else '\n'.join(lines[end_line + 1:]),
+      'imports': '\n'.join(lines[start_line + 1:end_line]) + '\n',
+  }
 
 
 def main(argv):
@@ -172,6 +211,15 @@ def main(argv):
         class_name = ''.join(map(str.title, basename.split('_'))) + 'Element'
         substitutions['class_name'] = class_name
         substitutions['file_name'] = basename
+
+        # Extracting import metadata from original non-minified template.
+        import_metadata = _extract_import_metadata(
+            path.join(args.in_folder, in_file), args.minify)
+        substitutions['imports'] = \
+            '' if import_metadata is None else import_metadata['imports']
+        if import_metadata is not None and not args.minify:
+          # Remove metadata lines from content.
+          substitutions['content'] = import_metadata['content']
 
       wrapper = TEMPLATE_MAP[template_type] % substitutions
 
