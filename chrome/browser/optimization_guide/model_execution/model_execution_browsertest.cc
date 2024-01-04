@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizationAllowed,
+  policies.Set(policy::key::kTabOrganizerSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
@@ -606,7 +606,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kTabOrganizationAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kTabOrganizerSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -645,8 +645,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+  policies.Set(policy::key::kHelpMeWriteSettings,
+               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+               policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
                    model_execution::prefs::ModelExecutionEnterprisePolicyValue::
                        kDisable)),
@@ -660,7 +661,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kComposeAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -693,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Disable via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kWallpaperSearchAllowed,
+  policies.Set(policy::key::kCreateThemesSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(
@@ -709,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // Enable via the enterprise policy.
   policies.Set(
-      policy::key::kWallpaperSearchAllowed, policy::POLICY_LEVEL_MANDATORY,
+      policy::key::kCreateThemesSettings, policy::POLICY_LEVEL_MANDATORY,
       policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
       base::Value(static_cast<int>(
           model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
@@ -736,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
 
   // EnableWithoutLogging via the enterprise policy.
   policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizationAllowed,
+  policies.Set(policy::key::kTabOrganizerSettings,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_CLOUD,
                base::Value(static_cast<int>(

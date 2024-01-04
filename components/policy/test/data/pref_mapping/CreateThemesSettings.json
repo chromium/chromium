@@ -11,37 +11,37 @@
       {
         "policies": {},
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "default_value": 0
           }
         }
       },
       {
         "policies": {
-          "ComposeAllowed": 0
+          "CreateThemesSettings": 0
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 0
           }
         }
       },
       {
         "policies": {
-          "ComposeAllowed": 1
+          "CreateThemesSettings": 1
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 1
           }
         }
       },
       {
         "policies": {
-          "ComposeAllowed": 2
+          "CreateThemesSettings": 2
         },
         "prefs": {
-          "optimization_guide.model_execution.compose_enterprise_policy_allowed": {
+          "optimization_guide.model_execution.wallpaper_search_enterprise_policy_allowed": {
             "value": 2
           }
         }
