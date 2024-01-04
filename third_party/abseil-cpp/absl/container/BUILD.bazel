@@ -403,6 +403,7 @@ cc_test(
     deps = [
         ":container_memory",
         ":test_instance_tracker",
+        "//absl/base:no_destructor",
         "//absl/meta:type_traits",
         "//absl/strings",
         "@com_google_googletest//:gtest",
@@ -453,6 +454,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":hash_policy_testing",
+        "//absl/base:no_destructor",
         "//absl/memory",
         "//absl/meta:type_traits",
         "//absl/strings",
@@ -732,10 +734,12 @@ cc_binary(
         ":hash_function_defaults",
         ":hashtable_debug",
         ":raw_hash_set",
+        "//absl/base:no_destructor",
         "//absl/random",
         "//absl/random:distributions",
         "//absl/strings",
         "//absl/strings:str_format",
+        "//absl/types:optional",
     ],
 )
 

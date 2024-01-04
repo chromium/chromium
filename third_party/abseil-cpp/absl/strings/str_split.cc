@@ -96,6 +96,11 @@ absl::string_view ByString::Find(absl::string_view text, size_t pos) const {
   return GenericFind(text, delimiter_, pos, LiteralPolicy());
 }
 
+absl::string_view ByAsciiWhitespace::Find(absl::string_view text,
+                                          size_t pos) const {
+  return GenericFind(text, " \t\v\f\r\n", pos, AnyOfPolicy());
+}
+
 //
 // ByChar
 //

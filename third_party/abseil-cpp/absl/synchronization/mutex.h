@@ -740,23 +740,25 @@ class Condition {
   // a function template is passed as `func`. Also, the dummy `typename = void`
   // template parameter exists just to work around a MSVC mangling bug.
   template <typename T, typename = void>
-  Condition(bool (*func)(T*), typename absl::internal::identity<T>::type* arg);
+  Condition(bool (*func)(T*),
+            typename absl::internal::type_identity<T>::type* arg);
 
   // Templated version for invoking a method that returns a `bool`.
   //
   // `Condition(object, &Class::Method)` constructs a `Condition` that evaluates
   // `object->Method()`.
   //
-  // Implementation Note: `absl::internal::identity` is used to allow methods to
-  // come from base classes. A simpler signature like
+  // Implementation Note: `absl::internal::type_identity` is used to allow
+  // methods to come from base classes. A simpler signature like
   // `Condition(T*, bool (T::*)())` does not suffice.
   template <typename T>
-  Condition(T* object, bool (absl::internal::identity<T>::type::*method)());
+  Condition(T* object,
+            bool (absl::internal::type_identity<T>::type::*method)());
 
   // Same as above, for const members
   template <typename T>
   Condition(const T* object,
-            bool (absl::internal::identity<T>::type::*method)() const);
+            bool (absl::internal::type_identity<T>::type::*method)() const);
 
   // A Condition that returns the value of `*cond`
   explicit Condition(const bool* cond);
@@ -1107,14 +1109,14 @@ inline Condition::Condition(bool (*func)(T*), T* arg)
 }
 
 template <typename T, typename>
-inline Condition::Condition(bool (*func)(T*),
-                            typename absl::internal::identity<T>::type* arg)
+inline Condition::Condition(
+    bool (*func)(T*), typename absl::internal::type_identity<T>::type* arg)
     // Just delegate to the overload above.
     : Condition(func, arg) {}
 
 template <typename T>
-inline Condition::Condition(T* object,
-                            bool (absl::internal::identity<T>::type::*method)())
+inline Condition::Condition(
+    T* object, bool (absl::internal::type_identity<T>::type::*method)())
     : eval_(&CastAndCallMethod<T, decltype(method)>), arg_(object) {
   static_assert(sizeof(&method) <= sizeof(callback_),
                 "An overlarge method pointer was passed to Condition.");
@@ -1122,9 +1124,9 @@ inline Condition::Condition(T* object,
 }
 
 template <typename T>
-inline Condition::Condition(const T* object,
-                            bool (absl::internal::identity<T>::type::*method)()
-                                const)
+inline Condition::Condition(
+    const T* object,
+    bool (absl::internal::type_identity<T>::type::*method)() const)
     : eval_(&CastAndCallMethod<const T, decltype(method)>),
       arg_(reinterpret_cast<void*>(const_cast<T*>(object))) {
   StoreCallback(method);

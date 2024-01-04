@@ -113,7 +113,7 @@ static void BM_StrToLower(benchmark::State& state) {
 BENCHMARK(BM_StrToLower)
     ->DenseRange(0, 32)
     ->RangeMultiplier(2)
-    ->Range(64, 1 << 20);
+    ->Range(64, 1 << 26);
 
 static void BM_StrToUpper(benchmark::State& state) {
   const int size = state.range(0);
@@ -127,6 +127,6 @@ static void BM_StrToUpper(benchmark::State& state) {
 BENCHMARK(BM_StrToUpper)
     ->DenseRange(0, 32)
     ->RangeMultiplier(2)
-    ->Range(64, 1 << 20);
+    ->Range(64, 1 << 26);
 
 }  // namespace

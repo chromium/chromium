@@ -144,7 +144,6 @@ using String = std::string;
 using int128 = absl::int128;
 using uint128 = absl::uint128;
 
-#if !defined(_MSC_VER) || defined(__clang__)
 #define DEFINE_CONSTRUCTED_FLAG(T, dflt, dflt_kind)                        \
   constexpr flags::FlagDefaultArg f1default##T{                            \
       flags::FlagDefaultSrc{dflt}, flags::FlagDefaultKind::dflt_kind};     \
@@ -157,16 +156,6 @@ using uint128 = absl::uint128;
           flags::FlagDefaultKind::kGenFunc                                 \
     }                                                                      \
   }
-#else
-#define DEFINE_CONSTRUCTED_FLAG(T, dflt, dflt_kind)                    \
-  constexpr flags::FlagDefaultArg f1default##T{                        \
-      flags::FlagDefaultSrc{dflt}, flags::FlagDefaultKind::dflt_kind}; \
-  constexpr absl::Flag<T> f1##T{"f1", "file", &TestLiteralHelpMsg,     \
-                                &TestMakeDflt<T>};                     \
-  ABSL_CONST_INIT absl::Flag<T> f2##T {                                \
-    "f2", "file", &TestHelpMsg, &TestMakeDflt<T>                       \
-  }
-#endif
 
 DEFINE_CONSTRUCTED_FLAG(bool, true, kOneWord);
 DEFINE_CONSTRUCTED_FLAG(int16_t, 1, kOneWord);

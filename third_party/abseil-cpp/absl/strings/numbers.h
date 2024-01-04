@@ -166,18 +166,24 @@ static const int kSixDigitsToBufferSize = 16;
 // Required buffer size is `kSixDigitsToBufferSize`.
 size_t SixDigitsToBuffer(double d, absl::Nonnull<char*> buffer);
 
-// These functions are intended for speed. All functions take an output buffer
+// WARNING: These functions may write more characters than necessary, because
+// they are intended for speed. All functions take an output buffer
 // as an argument and return a pointer to the last byte they wrote, which is the
 // terminating '\0'. At most `kFastToBufferSize` bytes are written.
-absl::Nonnull<char*> FastIntToBuffer(int32_t, absl::Nonnull<char*>);
-absl::Nonnull<char*> FastIntToBuffer(uint32_t, absl::Nonnull<char*>);
-absl::Nonnull<char*> FastIntToBuffer(int64_t, absl::Nonnull<char*>);
-absl::Nonnull<char*> FastIntToBuffer(uint64_t, absl::Nonnull<char*>);
+absl::Nonnull<char*> FastIntToBuffer(int32_t i, absl::Nonnull<char*> buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBufferSize);
+absl::Nonnull<char*> FastIntToBuffer(uint32_t i, absl::Nonnull<char*> buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBufferSize);
+absl::Nonnull<char*> FastIntToBuffer(int64_t i, absl::Nonnull<char*> buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBufferSize);
+absl::Nonnull<char*> FastIntToBuffer(uint64_t i, absl::Nonnull<char*> buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBufferSize);
 
 // For enums and integer types that are not an exact match for the types above,
 // use templates to call the appropriate one of the four overloads above.
 template <typename int_type>
-absl::Nonnull<char*> FastIntToBuffer(int_type i, absl::Nonnull<char*> buffer) {
+absl::Nonnull<char*> FastIntToBuffer(int_type i, absl::Nonnull<char*> buffer)
+    ABSL_INTERNAL_NEED_MIN_SIZE(buffer, kFastToBufferSize) {
   static_assert(sizeof(i) <= 64 / 8,
                 "FastIntToBuffer works only with 64-bit-or-less integers.");
   // TODO(jorg): This signed-ness check is used because it works correctly

@@ -71,12 +71,9 @@ ABSL_NAMESPACE_BEGIN
 // For type support of Abseil Flags, see the marshalling.h header file, which
 // discusses supported standard types, optional flags, and additional Abseil
 // type support.
-#if !defined(_MSC_VER) || defined(__clang__)
+
 template <typename T>
 using Flag = flags_internal::Flag<T>;
-#else
-#include "absl/flags/internal/flag_msvc.inc"
-#endif
 
 // GetFlag()
 //
@@ -196,18 +193,12 @@ ABSL_NAMESPACE_END
 // -----------------------------------------------------------------------------
 
 // ABSL_FLAG_IMPL macro definition conditional on ABSL_FLAGS_STRIP_NAMES
-#if !defined(_MSC_VER) || defined(__clang__)
 #define ABSL_FLAG_IMPL_FLAG_PTR(flag) flag
 #define ABSL_FLAG_IMPL_HELP_ARG(name)                      \
   absl::flags_internal::HelpArg<AbslFlagHelpGenFor##name>( \
       FLAGS_help_storage_##name)
 #define ABSL_FLAG_IMPL_DEFAULT_ARG(Type, name) \
   absl::flags_internal::DefaultArg<Type, AbslFlagDefaultGenFor##name>(0)
-#else
-#define ABSL_FLAG_IMPL_FLAG_PTR(flag) flag.GetImpl()
-#define ABSL_FLAG_IMPL_HELP_ARG(name) &AbslFlagHelpGenFor##name::NonConst
-#define ABSL_FLAG_IMPL_DEFAULT_ARG(Type, name) &AbslFlagDefaultGenFor##name::Gen
-#endif
 
 #if ABSL_FLAGS_STRIP_NAMES
 #define ABSL_FLAG_IMPL_FLAGNAME(txt) ""

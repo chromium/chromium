@@ -277,6 +277,96 @@ TEST_P(BasicLogDeathTest, QFatal) {
 }
 #endif
 
+#ifdef NDEBUG
+TEST_P(BasicLogTest, DFatal) {
+  absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
+
+  absl::ScopedMockLog test_sink(absl::MockLogDefault::kDisallowUnexpected);
+
+  const int log_line = __LINE__ + 1;
+  auto do_log = [] { ABSL_TEST_LOG(DFATAL) << "hello world"; };
+
+  if (LoggingEnabledAt(absl::LogSeverity::kError)) {
+    EXPECT_CALL(
+        test_sink,
+        Send(AllOf(SourceFilename(Eq(__FILE__)),
+                   SourceBasename(Eq("log_basic_test_impl.inc")),
+                   SourceLine(Eq(log_line)), Prefix(IsTrue()),
+                   LogSeverity(Eq(absl::LogSeverity::kError)),
+                   TimestampInMatchWindow(),
+                   ThreadID(Eq(absl::base_internal::GetTID())),
+                   TextMessage(Eq("hello world")),
+                   Verbosity(Eq(absl::LogEntry::kNoVerbosityLevel)),
+                   ENCODED_MESSAGE(EqualsProto(R"pb(value {
+                                                      literal: "hello world"
+                                                    })pb")),
+                   Stacktrace(IsEmpty()))));
+  }
+
+  test_sink.StartCapturingLogs();
+  do_log();
+}
+
+#elif GTEST_HAS_DEATH_TEST
+TEST_P(BasicLogDeathTest, DFatal) {
+  // TODO(b/242568884): re-enable once bug is fixed.
+  // absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
+
+  const int log_line = __LINE__ + 1;
+  auto do_log = [] { ABSL_TEST_LOG(DFATAL) << "hello world"; };
+
+  EXPECT_EXIT(
+      {
+        absl::ScopedMockLog test_sink(
+            absl::MockLogDefault::kDisallowUnexpected);
+
+        EXPECT_CALL(test_sink, Send)
+            .Times(AnyNumber())
+            .WillRepeatedly(DeathTestUnexpectedLogging());
+
+        ::testing::InSequence s;
+
+        if (LoggingEnabledAt(absl::LogSeverity::kFatal)) {
+          // The first call without the stack trace.
+          EXPECT_CALL(
+              test_sink,
+              Send(AllOf(SourceFilename(Eq(__FILE__)),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
+                         SourceLine(Eq(log_line)), Prefix(IsTrue()),
+                         LogSeverity(Eq(absl::LogSeverity::kFatal)),
+                         TimestampInMatchWindow(),
+                         ThreadID(Eq(absl::base_internal::GetTID())),
+                         TextMessage(Eq("hello world")),
+                         Verbosity(Eq(absl::LogEntry::kNoVerbosityLevel)),
+                         ENCODED_MESSAGE(EqualsProto(
+                             R"pb(value { literal: "hello world" })pb")),
+                         Stacktrace(IsEmpty()))))
+              .WillOnce(DeathTestExpectedLogging());
+
+          // The second call with the stack trace.
+          EXPECT_CALL(
+              test_sink,
+              Send(AllOf(SourceFilename(Eq(__FILE__)),
+                         SourceBasename(Eq("log_basic_test_impl.inc")),
+                         SourceLine(Eq(log_line)), Prefix(IsTrue()),
+                         LogSeverity(Eq(absl::LogSeverity::kFatal)),
+                         TimestampInMatchWindow(),
+                         ThreadID(Eq(absl::base_internal::GetTID())),
+                         TextMessage(Eq("hello world")),
+                         Verbosity(Eq(absl::LogEntry::kNoVerbosityLevel)),
+                         ENCODED_MESSAGE(EqualsProto(
+                             R"pb(value { literal: "hello world" })pb")),
+                         Stacktrace(Not(IsEmpty())))))
+              .WillOnce(DeathTestExpectedLogging());
+        }
+
+        test_sink.StartCapturingLogs();
+        do_log();
+      },
+      DiedOfFatal, DeathTestValidateExpectations());
+}
+#endif
+
 TEST_P(BasicLogTest, Level) {
   absl::log_internal::ScopedMinLogLevel scoped_min_log_level(GetParam());
 

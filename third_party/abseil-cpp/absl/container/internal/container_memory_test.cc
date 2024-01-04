@@ -25,6 +25,7 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/no_destructor.h"
 #include "absl/container/internal/test_instance_tracker.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
@@ -58,7 +59,7 @@ TEST(Memory, AlignmentSmallerThanBase) {
 }
 
 std::map<std::type_index, int>& AllocationMap() {
-  static auto* map = new std::map<std::type_index, int>;
+  static absl::NoDestructor<std::map<std::type_index, int>> map;
   return *map;
 }
 

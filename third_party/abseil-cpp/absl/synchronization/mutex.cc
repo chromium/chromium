@@ -1551,7 +1551,7 @@ void Mutex::ReaderLock() {
     }
     // We can avoid the loop and only use the CAS when the lock is free or
     // only held by readers.
-    if (ABSL_PREDICT_TRUE(mu_.compare_exchange_strong(
+    if (ABSL_PREDICT_TRUE(mu_.compare_exchange_weak(
             v, (kMuReader | v) + kMuOne, std::memory_order_acquire,
             std::memory_order_relaxed))) {
       break;

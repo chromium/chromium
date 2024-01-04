@@ -572,13 +572,6 @@ class btree_node {
   btree_node(btree_node const &) = delete;
   btree_node &operator=(btree_node const &) = delete;
 
-  // Public for EmptyNodeType.
-  constexpr static size_type Alignment() {
-    static_assert(LeafLayout(1).Alignment() == InternalLayout().Alignment(),
-                  "Alignment of all nodes must be equal.");
-    return InternalLayout().Alignment();
-  }
-
  protected:
   btree_node() = default;
 
@@ -651,6 +644,12 @@ class btree_node {
   }
   constexpr static size_type InternalSize() {
     return InternalLayout().AllocSize();
+  }
+
+  constexpr static size_type Alignment() {
+    static_assert(LeafLayout(1).Alignment() == InternalLayout().Alignment(),
+                  "Alignment of all nodes must be equal.");
+    return InternalLayout().Alignment();
   }
 
   // N is the index of the type in the Layout definition.
@@ -1321,7 +1320,7 @@ class btree {
 
   // We use a static empty node for the root/leftmost/rightmost of empty btrees
   // in order to avoid branching in begin()/end().
-  struct alignas(node_type::Alignment()) EmptyNodeType : node_type {
+  struct EmptyNodeType : node_type {
     using field_type = typename node_type::field_type;
     node_type *parent;
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
@@ -1334,25 +1333,12 @@ class btree {
     // as a leaf node). max_count() is never called when the tree is empty.
     field_type max_count = node_type::kInternalNodeMaxCount + 1;
 
-#ifdef _MSC_VER
-    // MSVC has constexpr code generations bugs here.
-    EmptyNodeType() : parent(this) {}
-#else
-    explicit constexpr EmptyNodeType(node_type *p) : parent(p) {}
-#endif
+    constexpr EmptyNodeType() : parent(this) {}
   };
 
   static node_type *EmptyNode() {
-#ifdef _MSC_VER
-    static EmptyNodeType *empty_node = new EmptyNodeType;
-    // This assert fails on some other construction methods.
-    assert(empty_node->parent == empty_node);
-    return empty_node;
-#else
-    static constexpr EmptyNodeType empty_node(
-        const_cast<EmptyNodeType *>(&empty_node));
+    alignas(node_type::Alignment()) static constexpr EmptyNodeType empty_node;
     return const_cast<EmptyNodeType *>(&empty_node);
-#endif
   }
 
   enum : uint32_t {

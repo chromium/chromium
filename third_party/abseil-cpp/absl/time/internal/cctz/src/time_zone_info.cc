@@ -752,19 +752,6 @@ bool TimeZoneInfo::Load(ZoneInfoSource* zip) {
     version_ = zip->Version();
   }
 
-  // Trim redundant transitions. zic may have added these to work around
-  // differences between the glibc and reference implementations (see
-  // zic.c:dontmerge) or to avoid bugs in old readers. For us, they just
-  // get in the way when we do future_spec_ extension.
-  while (hdr.timecnt > 1) {
-    if (!EquivTransitions(transitions_[hdr.timecnt - 1].type_index,
-                          transitions_[hdr.timecnt - 2].type_index)) {
-      break;
-    }
-    hdr.timecnt -= 1;
-  }
-  transitions_.resize(hdr.timecnt);
-
   // Ensure that there is always a transition in the first half of the
   // time line (the second half is handled below) so that the signed
   // difference between a civil_second and the civil_second of its

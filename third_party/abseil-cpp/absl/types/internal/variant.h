@@ -1047,11 +1047,11 @@ class VariantStateBase {
   std::size_t index_;
 };
 
-using absl::internal::identity;
+using absl::internal::type_identity;
 
 // OverloadSet::Overload() is a unary function which is overloaded to
 // take any of the element types of the variant, by reference-to-const.
-// The return type of the overload on T is identity<T>, so that you
+// The return type of the overload on T is type_identity<T>, so that you
 // can statically determine which overload was called.
 //
 // Overload() is not defined, so it can only be called in unevaluated
@@ -1062,7 +1062,7 @@ struct OverloadSet;
 template <typename T, typename... Ts>
 struct OverloadSet<T, Ts...> : OverloadSet<Ts...> {
   using Base = OverloadSet<Ts...>;
-  static identity<T> Overload(const T&);
+  static type_identity<T> Overload(const T&);
   using Base::Overload;
 };
 

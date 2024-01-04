@@ -191,6 +191,7 @@ absl_source_set("container_memory") {
 #  deps = [
 #    ":container_memory",
 #    ":test_instance_tracker",
+#    "//third_party/abseil-cpp/absl/base:no_destructor",
 #    "//third_party/abseil-cpp/absl/meta:type_traits",
 #    "//third_party/abseil-cpp/absl/strings",
 #  ]
@@ -214,6 +215,7 @@ absl_source_set("hash_generator_testing") {
   public = [ "internal/hash_generator_testing.h" ]
   deps = [
     ":hash_policy_testing",
+    "//third_party/abseil-cpp/absl/base:no_destructor",
     "//third_party/abseil-cpp/absl/memory",
     "//third_party/abseil-cpp/absl/meta:type_traits",
     "//third_party/abseil-cpp/absl/strings:string_view",
