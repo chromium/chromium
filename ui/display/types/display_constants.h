@@ -9,6 +9,7 @@
 #include <array>
 
 #include "base/containers/flat_map.h"
+#include "ui/display/types/display_types_export.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace display {
@@ -311,7 +312,8 @@ constexpr struct Data {
 using DrmFormatsAndModifiers = base::flat_map<uint32_t, std::vector<uint64_t>>;
 
 // Converts the display connection type from enum to string.
-std::string DisplayConnectionTypeString(DisplayConnectionType type);
+DISPLAY_TYPES_EXPORT std::string DisplayConnectionTypeString(
+    DisplayConnectionType type);
 
 }  // namespace display
 
