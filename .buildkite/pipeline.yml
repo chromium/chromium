@@ -112,8 +112,8 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/windows/x86_64/**"
-  - trigger: "testing-runtime-e2e"
-    label: ":hammer: Trigger Runtime Tests"
+  - label: ":hammer: Trigger Runtime Tests"
+    trigger: "testing-runtime-e2e"
     depends_on:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
@@ -136,6 +136,11 @@ steps:
             BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
       - replayio/buildevents#adb8a05: ~
     command: "be_cmd metabase-tests -- /home/ubuntu/chromium/src/replay_build_scripts/metabase.sh"
+
+  - label: ":hammer: Trigger Runtime FE Tests"
+    trigger: "runtime-fe-end-to-end-tests"
+    depends_on:
+      - "build-chromium-linux-x86_64"
 
   # wait for all steps above, but also continue if they fail
   - wait: ~
