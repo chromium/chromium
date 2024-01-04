@@ -358,6 +358,14 @@ void NotificationGroupingController::OnNotificationAdded(
   Notification* notification =
       message_center->FindNotificationById(notification_id);
 
+  // If we are adding a notification that starts as a parent,
+  // make sure to add it into the grouped notification list.
+  if (notification && notification->group_parent() &&
+      !grouped_notification_list_->ParentNotificationExists(notification_id)) {
+    grouped_notification_list_->AddGroupedNotification(notification_id,
+                                                       notification_id);
+  }
+
   // We only need to process notifications that are children of an
   // existing group. So do nothing otherwise.
   if (!notification || !notification->group_child()) {
@@ -458,6 +466,14 @@ void NotificationGroupingController::OnNotificationUpdated(
     return;
   }
   ReparentNotificationIfNecessary(notification);
+
+  // If we are updating a notification that starts as a parent,
+  // make sure to add it into the grouped notification list.
+  if (notification->group_parent() &&
+      !grouped_notification_list_->ParentNotificationExists(notification_id)) {
+    grouped_notification_list_->AddGroupedNotification(notification_id,
+                                                       notification_id);
+  }
   if (!notification->group_child()) {
     return;
   }

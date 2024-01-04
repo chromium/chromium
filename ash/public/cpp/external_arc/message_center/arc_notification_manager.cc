@@ -213,6 +213,17 @@ void ArcNotificationManager::OnNotificationPosted(ArcNotificationDataPtr data) {
     return;
   }
 
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+  if (render_on_chrome && data->children_data) {
+    const auto& children = *data->children_data;
+    for (size_t i = 0; i < children.size(); ++i) {
+      OnNotificationPosted(children[i]->Clone());
+    }
+    return;
+  }
+
   const std::string& key = data->key;
   auto it = items_.find(key);
   if (it == items_.end()) {
@@ -289,10 +300,28 @@ void ArcNotificationManager::OnNotificationUpdated(
       data->package_name
           ? ArcAppIdProvider::Get()->GetAppIdByPackageName(*data->package_name)
           : std::string();
-  it->second->OnUpdatedFromAndroid(std::move(data), app_id);
+  it->second->OnUpdatedFromAndroid(data->Clone(), app_id);
 
   for (auto& observer : observers_)
     observer.OnNotificationUpdated(it->second->GetNotificationId(), app_id);
+
+  const bool render_on_chrome =
+      features::IsRenderArcNotificationsByChromeEnabled() &&
+      data->render_on_chrome;
+  if (render_on_chrome && data->children_data) {
+    const auto& children = *data->children_data;
+    for (size_t i = 0; i < children.size(); ++i) {
+      const auto& child = children[i];
+      const std::string& child_key = child->key;
+      auto child_it = items_.find(child_key);
+      if (child_it == items_.end()) {
+        OnNotificationPosted(child->Clone());
+      } else {
+        OnNotificationUpdated(child->Clone());
+      }
+    }
+    return;
+  }
 }
 
 void ArcNotificationManager::OpenMessageCenter() {

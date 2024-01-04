@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 34
+// Next MinVersion: 35
 
 module arc.mojom;
 
@@ -207,6 +207,8 @@ struct ArcNotificationData {
   // The index of reply button among all actions, if exist. Otherwise set to -1.
   [MinVersion=30]
   int32 reply_button_index;
+  [MinVersion=34]
+  array<ArcNotificationData>? children_data;
 };
 
 struct ArcDoNotDisturbStatus {
