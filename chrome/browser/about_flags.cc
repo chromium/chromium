@@ -1438,6 +1438,11 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
+const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
+    {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
+    {"MlUrlScoringShortcutDocumentSignals", "true"},
+    {"stable_search_ranking", "true"},
+};
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringUnlimitedNumCandidates[] =
     {
         {"MlUrlScoringUnlimitedNumCandidates", "true"},
@@ -1456,6 +1461,8 @@ const FeatureEntry::FeatureParam kOmniboxMlUrlScoringMaxMatchesByProvider10[] =
 };
 
 const FeatureEntry::FeatureVariation kOmniboxMlUrlScoringVariations[] = {
+    {"Enabled with fixes", kOmniboxMlUrlScoringEnabledWithFixes,
+     std::size(kOmniboxMlUrlScoringEnabledWithFixes), nullptr},
     {"unlimited suggestion candidates",
      kOmniboxMlUrlScoringUnlimitedNumCandidates,
      std::size(kOmniboxMlUrlScoringUnlimitedNumCandidates), nullptr},
