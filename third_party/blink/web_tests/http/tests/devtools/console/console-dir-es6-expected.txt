@@ -38,6 +38,7 @@ console-dir-es6.js:44 WeakMap
 console-dir-es6.js:52 MapIterator
     [[Entries]]
         0: Object
+    constructor: ƒ Iterator()
     [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
@@ -45,6 +46,7 @@ console-dir-es6.js:52 MapIterator
 console-dir-es6.js:53 MapIterator
     [[Entries]]
         0: Object
+    constructor: ƒ Iterator()
     [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
@@ -52,6 +54,7 @@ console-dir-es6.js:53 MapIterator
 console-dir-es6.js:54 MapIterator
     [[Entries]]
         0: {Object => Object}
+    constructor: ƒ Iterator()
     [[Prototype]]: Map Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
@@ -59,6 +62,7 @@ console-dir-es6.js:54 MapIterator
 console-dir-es6.js:52 SetIterator
     [[Entries]]
         0: Object
+    constructor: ƒ Iterator()
     [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
@@ -66,6 +70,7 @@ console-dir-es6.js:52 SetIterator
 console-dir-es6.js:53 SetIterator
     [[Entries]]
         0: Object
+    constructor: ƒ Iterator()
     [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0
@@ -73,6 +78,7 @@ console-dir-es6.js:53 SetIterator
 console-dir-es6.js:54 SetIterator
     [[Entries]]
         0: {Object => Object}
+    constructor: ƒ Iterator()
     [[Prototype]]: Set Iterator
     [[IteratorHasMore]]: true
     [[IteratorIndex]]: 0

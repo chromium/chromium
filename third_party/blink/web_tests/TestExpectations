@@ -6818,3 +6818,9 @@ crbug.com/1470053 external/wpt/html/browsers/browsing-the-web/overlapping-naviga
 
 # DevTools roll
 crbug.com/1421694 http/tests/devtools/extensions/extensions-api.js [ Failure Pass ]
+
+# Skip the following tests to be able to ship iterator helpers in v8.
+# https://chromium-review.googlesource.com/c/v8/v8/+/5119127
+# TODO(rezvan): Re-enable tests after shipping iterator helpers.
+http/tests/devtools/console/console-dir-es6.js [ Failure ]
+http/tests/devtools/console/console-format-es6-2.js [ Failure ]
