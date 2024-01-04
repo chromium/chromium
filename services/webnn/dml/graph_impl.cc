@@ -2277,21 +2277,25 @@ GraphImpl::AllocateComputeResources(
     return nullptr;
   }
 
-  // Create the upload heap that can be written by CPU and read from GPU,
-  // and create a resource to map the heap.
   size_t total_byte_length_of_inputs =
       aligned_byte_length_of_inputs.value().total_byte_length;
   ComPtr<ID3D12Resource> upload_buffer;
-  RETURN_NULL_IF_FAILED(command_recorder->CreateUploadBuffer(
-      total_byte_length_of_inputs, L"WebNN_Upload_Buffer_Inputs",
-      upload_buffer));
-
-  // Create the default heap that only can be accessed by GPU not provide CPU
-  // access, and create a resource to map the heap.
   ComPtr<ID3D12Resource> input_buffer;
-  RETURN_NULL_IF_FAILED(command_recorder->CreateDefaultBuffer(
-      total_byte_length_of_inputs, L"WebNN_Default_Buffer_Inputs",
-      input_buffer));
+  // It is possible that a graph doesn't have any inputs. For example, a graph
+  // may only compute results given weights. For such graphs, there is no need
+  // to allocate upload and input buffers.
+  if (total_byte_length_of_inputs > 0) {
+    // Create the upload heap that can be written by CPU and read from GPU,
+    // and create a resource to map the heap.
+    RETURN_NULL_IF_FAILED(command_recorder->CreateUploadBuffer(
+        total_byte_length_of_inputs, L"WebNN_Upload_Buffer_Inputs",
+        upload_buffer));
+    // Create the default heap that only can be accessed by GPU not provide CPU
+    // access, and create a resource to map the heap.
+    RETURN_NULL_IF_FAILED(command_recorder->CreateDefaultBuffer(
+        total_byte_length_of_inputs, L"WebNN_Default_Buffer_Inputs",
+        input_buffer));
+  }
 
   // Calculate the total byte length of outputs array buffer to create
   // an output buffer and readback buffer, also records the aligned D3D12_RANGE
@@ -2376,10 +2380,12 @@ HRESULT GraphImpl::RecordGraphExecution(
                                                     &buffer_binding};
   }
 
-  UploadBufferWithBarrier(
-      command_recorder, compute_resources->input_buffer,
-      compute_resources->upload_buffer,
-      compute_resources->input_aligned_byte_length.total_byte_length);
+  if (compute_resources->input_aligned_byte_length.total_byte_length > 0) {
+    UploadBufferWithBarrier(
+        command_recorder, compute_resources->input_buffer,
+        compute_resources->upload_buffer,
+        compute_resources->input_aligned_byte_length.total_byte_length);
+  }
 
   // Create the output buffer bindings for the graph execution.
   size_t output_buffer_binding_count =
@@ -3120,15 +3126,17 @@ void GraphImpl::ComputeImpl(
     }
   }
 
-  hr = CopyInputDataToUploadBuffer(
-      named_inputs,
-      compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
-      compute_resources->upload_buffer.Get());
-  if (FAILED(hr)) {
-    HandleComputationFailure(
-        "Failed to copy the data from named inputs to the upload buffer.", hr,
-        std::move(callback));
-    return;
+  if (compute_resources->input_aligned_byte_length.total_byte_length > 0) {
+    hr = CopyInputDataToUploadBuffer(
+        named_inputs,
+        compute_resources->input_aligned_byte_length.key_to_d3d12_range_map,
+        compute_resources->upload_buffer.Get());
+    if (FAILED(hr)) {
+      HandleComputationFailure(
+          "Failed to copy the data from named inputs to the upload buffer.", hr,
+          std::move(callback));
+      return;
+    }
   }
 
   // Submit the command list for execution.

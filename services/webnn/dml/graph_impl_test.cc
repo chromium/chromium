@@ -5219,6 +5219,101 @@ TEST_F(WebNNGraphDMLImplTest, BuildAddWithReshapedConstantOperand) {
             std::vector<float>({2, 2, 2, 2}));
 }
 
+// Test building and computing a DML graph whose relu operator only has a
+// constant operand input, as the following topology:
+//    [constant]
+//         |
+//       relu
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeReluWithOnlyConstantInput) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_data = {-1, 0, 1};
+  uint64_t constant_operand_id =
+      builder.BuildConstant({3}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {3}, mojom::Operand::DataType::kFloat32);
+  builder.BuildRelu(constant_operand_id, output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({0, 0, 1}));
+}
+
+// Test building and computing a DML graph whose add operator only has constant
+// operand inputs, as the following topology:
+//    [constant_a]  [constant_b]
+//               \  /
+//               add
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddWithOnlyConstantInputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_a_data = {1, 1, 1, 1};
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_a_data)));
+  std::vector<float> constant_b_data = {2, 2, 2, 2};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_b_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 constant_a_operand_id, constant_b_operand_id,
+                                 output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({3, 3, 3, 3}));
+}
+
+// Test building and computing a DML graph whose add and mul operators only have
+// constant and intermediate operand inputs, as the following topology:
+//    [constant_a]  [constant_b]
+//               \  /
+//               add    [constant_c]
+//                  \  /
+//                   mul
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeAddAndMulWithOnlyConstantInputs) {
+  // Build the mojom graph info.
+  GraphInfoBuilder builder;
+  std::vector<float> constant_a_data = {1, 1, 1, 1};
+  uint64_t constant_a_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_a_data)));
+  std::vector<float> constant_b_data = {2, 2, 2, 2};
+  uint64_t constant_b_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_b_data)));
+  uint64_t intermediate_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
+                                 constant_a_operand_id, constant_b_operand_id,
+                                 intermediate_operand_id);
+  std::vector<float> constant_c_data = {3, 3, 3, 3};
+  uint64_t constant_c_operand_id =
+      builder.BuildConstant({2, 2}, mojom::Operand::DataType::kFloat32,
+                            base::as_bytes(base::make_span(constant_c_data)));
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kFloat32);
+  builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kMul,
+                                 intermediate_operand_id, constant_c_operand_id,
+                                 output_operand_id);
+
+  base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+  base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+  BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                  named_outputs);
+  EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output"])),
+            std::vector<float>({9, 9, 9, 9}));
+}
+
 // Test building a DML graph in the following topology.
 //    [input_a] [input_b]
 //           \    /
