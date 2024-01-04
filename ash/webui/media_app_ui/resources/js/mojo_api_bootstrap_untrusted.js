@@ -7,7 +7,9 @@ import './media_app_ui_untrusted.mojom-lite.js';
 
 // Used to make calls on the remote OcrUntrustedPageHandler interface. Singleton
 // that client modules can use directly.
-let ocrUntrustedPageHandler;
+// TODO(b/316239558): The client should use the result of connectToOcrHandler()
+// directly instead of us exporting this.
+export let ocrUntrustedPageHandler;
 
 // Use this subscribe to events e.g.
 // `ocrCallbackRouter.onEventOccurred.addListener(handleEvent)`.

@@ -20,6 +20,14 @@ interface UntrustedPageHandlerFactory {
 // chrome-untrusted:// Media App page.
 interface OcrUntrustedPageHandler {
   // TODO(b/301007305): Implement methods for the OCR service.
+
+  // Called whenever the viewport changes, e.g. due to scrolling, zooming,
+  // resizing the window, or opening and closing toolbars/panels.
+  //   viewportBox: The new bounding box of the viewport.
+  //   scaleFactor: The ratio between CSS pixels (i.e. ignoring browser and
+  //       pinch zoom) and ink units. Larger numbers indicate the document is
+  //       more zoomed in.
+  ViewportUpdated(gfx.mojom.RectF viewportBox, float scaleFactor);
 };
 
 // Interface implemented in JavaScript by the chrome-untrusted:// page for Media

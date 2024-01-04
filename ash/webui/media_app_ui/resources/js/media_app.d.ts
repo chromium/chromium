@@ -157,6 +157,24 @@ declare interface AbstractFileList {
 }
 
 /**
+ * Represents a box with top-left coordinates and a width and height.
+ */
+declare class Rect {
+  /**
+   * Represents a box with top-left coordinates and a width and height.
+   * @param left Left.
+   * @param top Top.
+   * @param width Width.
+   * @param height Height.
+   */
+  constructor(left: number, top: number, width: number, height: number);
+  height: number;
+  left: number;
+  top: number;
+  width: number;
+}
+
+/**
  * The delegate which exposes open source privileged WebUi functions to
  * MediaApp.
  */
@@ -218,24 +236,15 @@ declare interface ClientApiDelegate {
    * HaTS survey has occurred.
    */
   maybeTriggerPdfHats?: () => void;
-}
-
-/**
- * Represents a box with top-left coordinates and a width and height.
- */
-declare class Rect {
   /**
-   * Represents a box with top-left coordinates and a width and height.
-   * @param left Left.
-   * @param top Top.
-   * @param width Width.
-   * @param height Height.
+   * Called whenever the viewport changes, e.g. due to scrolling, zooming,
+   * resizing the window, or opening and closing toolbars/panels.
+   * @param viewportBox The new bounding box of the viewport.
+   * @param scaleFactor The ratio between CSS pixels (i.e. ignoring browser
+   *     and pinch zoom) and ink units. Larger numbers indicate the document
+   *     is more zoomed in.
    */
-  constructor(left: number, top: number, width: number, height: number);
-  height: number;
-  left: number;
-  top: number;
-  width: number;
+  viewportUpdated: (viewportBox: Rect, scaleFactor: number) => void;
 }
 
 /**

@@ -11,7 +11,7 @@ import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-
 import {assertCast, MessagePipe} from '//system_apps/message_pipe.js';
 
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
-import {connectToOcrHandler, ocrCallbackRouter} from './mojo_api_bootstrap_untrusted.js';
+import {connectToOcrHandler, ocrCallbackRouter, ocrUntrustedPageHandler} from './mojo_api_bootstrap_untrusted.js';
 import {loadPiex} from './piex_module_loader.js';
 
 /** A pipe through which we can send messages to the parent frame. */
@@ -348,6 +348,17 @@ const DELEGATE: ClientApiDelegate = {
     parentMessagePipe.sendMessage(Message.MAYBE_TRIGGER_PDF_HATS);
   },
   // TODO(b/219631600): Implement openUrlInBrowserTab() for LacrOS if needed.
+
+  async viewportUpdated(viewportBox: Rect, scaleFactor: number) {
+    await ocrUntrustedPageHandler?.viewportUpdated(
+        {
+          x: viewportBox.left,
+          y: viewportBox.top,
+          width: viewportBox.width,
+          height: viewportBox.height,
+        },
+        scaleFactor);
+  },
 };
 
 /**
