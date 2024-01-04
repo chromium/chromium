@@ -202,6 +202,7 @@ suite('ComboboxTest', () => {
     combobox.$.input.click();
     optionA1.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
     assertTrue(optionA1.hasAttribute('selected'));
+    assertEquals('true', optionA1.ariaSelected);
     assertFalse(isVisible(combobox.$.dropdown));
     assertTrue(combobox.$.input.textContent!.includes('I am option 1'));
 
@@ -209,9 +210,12 @@ suite('ComboboxTest', () => {
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertFalse(optionA2.hasAttribute('selected'));
+    assertEquals('false', optionA2.ariaSelected);
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     assertTrue(optionA2.hasAttribute('selected'));
+    assertEquals('true', optionA2.ariaSelected);
     assertFalse(optionA1.hasAttribute('selected'));
+    assertEquals('false', optionA1.ariaSelected);
     assertTrue(combobox.$.input.textContent!.includes('I am option 2'));
     assertFalse(isVisible(combobox.$.dropdown));
 
@@ -225,6 +229,7 @@ suite('ComboboxTest', () => {
     groupA.dispatchEvent(new Event('click', {composed: true, bubbles: true}));
     assertFalse(groupA.hasAttribute('selected'));
     assertTrue(optionA2.hasAttribute('selected'));
+    assertEquals('true', optionA2.ariaSelected);
     assertTrue(isVisible(combobox.$.dropdown));
   });
 
@@ -295,6 +300,7 @@ suite('ComboboxTest', () => {
 
     const groupLabel = getGroup(0).querySelector('label')!;
     const groupLabelIcon = groupLabel.querySelector('iron-icon')!;
+    assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
 
     // // Clicking on a group expands the dropdown items below it.
@@ -302,6 +308,7 @@ suite('ComboboxTest', () => {
     await flushTasks();
     assertEquals(
         2, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+    assertEquals('true', groupLabel.ariaExpanded);
     assertEquals('cr:expand-less', groupLabelIcon.icon);
 
     // // Clicking on the group again hides the dropdown items below it.
@@ -309,6 +316,7 @@ suite('ComboboxTest', () => {
     await flushTasks();
     assertEquals(
         0, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+    assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
   });
 

@@ -138,15 +138,20 @@
     <template is="dom-repeat" items="[[items]]" restamp>
       <template is="dom-if" if="[[isGroup_(item)]]" restamp>
         <div class="group" role="group">
-          <label class="group-item" on-click="onGroupClick_">
+          <label role="button" class="group-item" on-click="onGroupClick_"
+              aria-expanded="[[
+                  getGroupAriaExpanded_(index, expandedGroups_.*)]]">
             [[item.label]]
-            <iron-icon icon="[[getGroupIcon_(index, expandedGroups_.*)]]">
+            <iron-icon icon="[[getGroupIcon_(index, expandedGroups_.*)]]"
+                aria-hidden="true">
             </iron-icon>
           </label>
-          <template is="dom-if" restamp if="[[isGroupExpanded_(index, expandedGroups_.*)]]">
+          <template is="dom-if" restamp
+              if="[[isGroupExpanded_(index, expandedGroups_.*)]]">
             <template is="dom-repeat" items="[[item.items]]" as="subitem">
-              <div class="item" role="option" value="[[subitem.label]]">
-                <iron-icon icon="cr:check"></iron-icon>
+              <div class="item" role="option" value="[[subitem.label]]"
+                  aria-selected="[[getItemAriaSelected_(subitem, value)]]">
+                <iron-icon icon="cr:check" aria-hidden="true"></iron-icon>
                 <span>[[subitem.label]]</span>
               </div>
             </template>
@@ -155,7 +160,8 @@
       </template>
 
       <template is="dom-if" if="[[!isGroup_(item)]]" restamp>
-        <div class="item" role="option" value="[[item.label]]">
+        <div class="item" role="option" value="[[item.label]]"
+            aria-selected="[[getItemAriaSelected_(item, value)]]">
           <template is="dom-if" if="[[item.imagePath]]">
             <customize-chrome-check-mark-wrapper
                 checked="[[isItemSelected_(item, value)]]">

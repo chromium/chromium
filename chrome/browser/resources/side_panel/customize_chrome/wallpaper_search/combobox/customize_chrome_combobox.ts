@@ -114,6 +114,10 @@ export class CustomizeChromeCombobox extends PolymerElement {
     return this.highlightedElement_?.id;
   }
 
+  private getGroupAriaExpanded_(groupIndex: number): string {
+    return this.expandedGroups_[groupIndex] ? 'true' : 'false';
+  }
+
   private getGroupIcon_(groupIndex: number): string {
     return this.expandedGroups_[groupIndex] ? 'cr:expand-less' :
                                               'cr:expand-more';
@@ -125,6 +129,10 @@ export class CustomizeChromeCombobox extends PolymerElement {
     }
 
     return this.label;
+  }
+
+  private getItemAriaSelected_(item: ComboboxItem) {
+    return this.isItemSelected_(item) ? 'true' : 'false';
   }
 
   private highlightElement_(element: HTMLElement|null, byKeyboard: boolean) {
