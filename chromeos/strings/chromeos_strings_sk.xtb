@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">domovská stránka prehliadača</translation>
 <translation id="1526389707933164996">Animácia šetriča obrazovky</translation>
 <translation id="152892567002884378">Zvýšenie hlasitosti</translation>
-<translation id="1539242642795599947">Názov prístupového bodu (APN) je typ Predvolený aj Príloha.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">farba podsvietenia</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skenovať znova</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že aktivované pripojené názvy prístupových bodov (APN) sú deaktivované alebo odstránené.</translation>
 <translation id="5600027863942488546">Bol otestovaný kláves <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Iba interné</translation>
 <translation id="5649768706273821470">Počúvať</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Nemáte pripojenie. Ak váš mobilný operátor odporúča vlastný názov prístupového bodu (APN), vyberte + Nový názov prístupového bodu (APN) a zadajte informácie o ňom.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Predvolená tapeta</translation>
-<translation id="6001235009374883388">Názov prístupového bodu (APN) je typ Príloha.</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="6019566113895157499">Klávesové skratky</translation>
 <translation id="6034694447310538551">Povoliť automatický mesačný reset</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Nástroje pre vývojárov</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Priložiť</translation>
 <translation id="8206859287963243715">Mobilné</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>

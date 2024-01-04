@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Charger l'image</translation>
 <translation id="1026959648338730078">Windows Hello ou clé de sécurité externe</translation>
 <translation id="1028700151766901954">Motif : LBS reste dans <ph name="DEFAULT_OPEN_BROWSER" /> par défaut.</translation>
+<translation id="102916930470544692">Clé d'accès</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toucher pour cliquer</translation>
 <translation id="1031362278801463162">Chargement de l'aperçu...</translation>
@@ -367,7 +368,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1277020343994096713">Créez un NIP différent de votre NIP actuel</translation>
 <translation id="1277597051786235230">&amp;Rechercher « <ph name="SEARCH_TERMS" /> » dans <ph name="SEARCH_ENGINE" /> dans un nouvel onglet</translation>
 <translation id="1278859221870828664">Examiner les applications et services Google Play</translation>
-<translation id="127946606521051357">Un appareil à proximité partage des fichiers</translation>
+<translation id="127946606521051357">Un appareil à proximité partage des contenus</translation>
 <translation id="1280965841156951489">Modifier les fichiers</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Impossible d'ouvrir le fichier}one{Impossible d'ouvrir le fichier}other{Impossible d'ouvrir les fichiers}}</translation>
 <translation id="1282311502488501110">Ne pas se connecter</translation>
@@ -2193,7 +2194,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="265748523151262387">Rester connecté avec votre téléphone</translation>
 <translation id="2657612187216250073">Paramètres d'accessibilité du curseur</translation>
 <translation id="2658941648214598230">Afficher le contenu original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Les fonctionnalités varient selon l'appareil</translation>
 <translation id="2659971421398561408">Modification de la taille du disque pour Crostini</translation>
 <translation id="2660779039299703961">Événement</translation>
 <translation id="266079277508604648">Impossible de se connecter à l'imprimante. Vérifiez que l'imprimante est activée et connectée à votre Chromebook par Wi-Fi ou USB.</translation>
@@ -3267,7 +3267,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3514681096978190000">Ce fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="3515983984924808886">Touchez votre clé de sécurité à nouveau pour confirmer la réinitialisation. Toutes les données stockées sur la clé de sécurité, y compris son NIP, seront supprimées.</translation>
 <translation id="3518866566087677312">Ajouter aux favoris les éléments sur lesquels vous souhaitez revenir plus tard</translation>
-<translation id="3518985090088779359">Accepter et continuer</translation>
 <translation id="3519564332031442870">Service dorsal d'impression</translation>
 <translation id="3519938335881974273">Enregistrer la page sous…</translation>
 <translation id="3520824492621090923">Confirmer l'inscription d'appareil Kiosk et d'affichage?</translation>
@@ -5107,7 +5106,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="496185450405387901">Cette application a été installée par votre administrateur.</translation>
 <translation id="4963789650715167449">Retirer l'onglet actuel</translation>
 <translation id="4964455510556214366">Organisation</translation>
-<translation id="496446150016900060">Synchroniser les réseaux Wi-Fi avec votre téléphone</translation>
 <translation id="4965808351167763748">Voulez-vous vraiment configurer cet appareil pour exécuter Hangouts Meet?</translation>
 <translation id="4966972803217407697">Vous êtes en mode de navigation privée</translation>
 <translation id="4967227914555989138">Ajouter une note</translation>
@@ -8416,7 +8414,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7629827748548208700">Onglet : <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Cet appareil est géré par <ph name="MANAGER" /> et exige que vous vous connectiez chaque fois.</translation>
 <translation id="7631014249255418691">Les applications et les fichiers Linux ont été sauvegardées</translation>
-<translation id="7631205654593498032">En connectant vos appareils, vous acceptez que votre <ph name="DEVICE_TYPE" /> puisse :</translation>
 <translation id="7631887513477658702">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="7632948528260659758">Échec de la mise à jour des applications de kiosque suivantes :</translation>
 <translation id="7633724038415831385">C'est la seule fois où vous attendrez pour une mise à jour. Sur les Chromebook, les mises à jour logicielles se produisent en arrière-plan.</translation>

@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Bild laden</translation>
 <translation id="1026959648338730078">Windows Hello oder externer Sicherheitsschlüssel</translation>
 <translation id="1028700151766901954">Grund: Die Unterstützung älterer Browser bleibt standardmäßig in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1029317248976101138">Zoomen</translation>
 <translation id="1029526375103058355">Touchpad-Klick</translation>
 <translation id="1031362278801463162">Vorschau wird geladen...</translation>
@@ -2188,7 +2189,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="265748523151262387">Smartphoneverbindung nicht trennen</translation>
 <translation id="2657612187216250073">Einstellungen für Bedienungshilfen (Mauszeiger)</translation>
 <translation id="2658941648214598230">Originalinhalte anzeigen?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Die Funktionen variieren je nach Gerät</translation>
 <translation id="2659971421398561408">Crostini-Laufwerkgröße anpassen</translation>
 <translation id="2660779039299703961">Ereignis</translation>
 <translation id="266079277508604648">Verbindung zum Drucker nicht möglich. Vergewissere dich, dass der Drucker aktiviert und über WLAN oder USB mit deinem Chromebook verbunden ist.</translation>
@@ -3261,7 +3261,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3514681096978190000">Diese Archivdatei enthält weitere Dateien, die möglicherweise Malware verstecken</translation>
 <translation id="3515983984924808886">Tippe noch einmal auf deinen Sicherheitsschlüssel, um das Zurücksetzen zu bestätigen. Damit werden alle auf dem Sicherheitsschlüssel gespeicherten Informationen und die zugehörige PIN gelöscht.</translation>
 <translation id="3518866566087677312">Versehe Dinge mit Lesezeichen, auf die du später zurückkommen möchtest</translation>
-<translation id="3518985090088779359">Akzeptieren &amp; weiter</translation>
 <translation id="3519564332031442870">Print Backend Service</translation>
 <translation id="3519938335881974273">Seite speichern unter…</translation>
 <translation id="3520824492621090923">Registrierung für Kioske und digitale Beschilderung bestätigen?</translation>
@@ -5101,7 +5100,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="496185450405387901">Diese App wurde von deinem Administrator installiert.</translation>
 <translation id="4963789650715167449">Aktuellen Tab entfernen</translation>
 <translation id="4964455510556214366">Anordnung</translation>
-<translation id="496446150016900060">WLAN-Netzwerke mit Smartphone synchronisieren</translation>
 <translation id="4965808351167763748">Möchtest du dieses Gerät wirklich für Hangouts Meet einrichten?</translation>
 <translation id="4966972803217407697">Inkognitomodus ist aktiviert</translation>
 <translation id="4967227914555989138">Notiz hinzufügen</translation>
@@ -8406,7 +8404,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Dieses Gerät wird von <ph name="MANAGER" /> verwaltet und erfordert immer eine Anmeldung.</translation>
 <translation id="7631014249255418691">Linux-Apps und -Dateien wurden erfolgreich gesichert</translation>
-<translation id="7631205654593498032">Durch das Verbinden deiner Geräte erlaubst du „<ph name="DEVICE_TYPE" />“ Folgendes:</translation>
 <translation id="7631887513477658702">Dateien dieses Typs &amp;immer öffnen</translation>
 <translation id="7632948528260659758">Die folgenden Kiosk-Apps konnten nicht aktualisiert werden:</translation>
 <translation id="7633724038415831385">Dies ist das einzige Mal, dass du auf ein Update warten musst. Softwareupdates werden auf Chromebooks im Hintergrund durchgeführt.</translation>

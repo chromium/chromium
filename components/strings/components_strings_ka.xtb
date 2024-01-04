@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">საშლელი</translation>
 <translation id="1458140305240870199">საცვლები</translation>
 <translation id="1459693405370120464">ამინდი</translation>
+<translation id="1461041542809785877">ეფექტურობა</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">თქვენს კომპიუტერზე არსებული შრიფტების გამოყენება, აღწარმოების დიდი სიზუსტის მქონე კონტენტის შექმნა რომ შეძლოთ</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">კომპაქტდისკი</translation>
 <translation id="2235344399760031203">მესამე მხარის ქუქი-ჩანაწერები დაბლოკილია</translation>
 <translation id="2239100178324503013">ახლავე გაგზავნა</translation>
-<translation id="2239114457614475014">შენატანის რედაქტირება</translation>
 <translation id="2241693394036365668">ფაილის ჩამოტვირთვა</translation>
 <translation id="2246264294482514010">10 x 12 დუიმი</translation>
 <translation id="2246480341630108201">თქვენს მშობელს ჯერ არ დაუდასტურებია</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">სახის კანის და სხეულის მოვლა</translation>
 <translation id="2962073860865348475">12 x 18 დუიმი</translation>
 <translation id="2968103128155246731">ფურგონები და მიკროავტობუსები</translation>
-<translation id="2971483124699139256">ზევით აწეული ცერი ნიშნავს, რომ გენერირებული ტექსტი მოგეწონათ.</translation>
 <translation id="2972581237482394796">&amp;გამეორება</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ამჟამად არჩეულია. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ოპერა</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4132448310531350254">ფუნქციას file_extension „<ph name="FILE_EXTENSION" />“, რომელსაც მიმართავენ აპები „<ph name="POLICY_IDS_LIST" />“, დუბლიკატი დამმუშავებლები აქვს.</translation>
 <translation id="4134123981501319574">დოკუმენტის შექმნა</translation>
 <translation id="413544239732274901">შეიტყვეთ მეტი</translation>
-<translation id="4139859738677203214">ქვემოთ დაწეული ცერის არჩევის შემთხვევაში გაიხსნება ფორმა, რომელშიც დეტალურად უნდა მიუთითოთ, რატომ არ მოგწონთ გენერირებული ტექსტი.</translation>
 <translation id="4140905530744469899">პროფილის ID:</translation>
 <translation id="4142935452406587478">ლანგარი 10</translation>
 <translation id="4148925816941278100">American Express</translation>

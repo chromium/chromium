@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">pārlūkprogrammas sākumlapa</translation>
 <translation id="1526389707933164996">Ekrānsaudzētāja animācija</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
-<translation id="1539242642795599947">APN veids ir “noklusējums” un “pielikums”.</translation>
 <translation id="1555130319947370107">Zila</translation>
 <translation id="155865706765934889">Skārienpaliktnis</translation>
 <translation id="1561927818299383735">aizmugures apgaismojuma krāsa</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Atkārtoti skenēt</translation>
 <translation id="5583640892426849032">Atkāpšanās taustiņš</translation>
-<translation id="5584044598279886848">Nevar atspējot vai noņemt šo APN. Iespējotie pievienotie APN ir jāatspējo vai jānoņem.</translation>
 <translation id="5600027863942488546">Taustiņš “<ph name="KEY_NAME" />” ir pārbaudīts</translation>
 <translation id="5620281292257375798">Tikai iekšējai lietošanai</translation>
 <translation id="5649768706273821470">Klausīties</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Jūs vēl neesat izveidojis savienojumu. Ja mobilo sakaru operators iesaka pielāgotu APN, ievadiet APN informāciju, atlasot “+ Jauns APN”.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Noklusējuma fona tapete</translation>
-<translation id="6001235009374883388">APN veids ir “pielikums”.</translation>
 <translation id="6017514345406065928">Zaļa</translation>
 <translation id="6019566113895157499">Galvenās saīsnes</translation>
 <translation id="6034694447310538551">Iespējot automātisku atiestatīšanu katru mēnesi</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Izstrādātāju rīki</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Ievadīt</translation>
-<translation id="8183974620058026102">Pievienot</translation>
 <translation id="8206859287963243715">Mobilais tālrunis</translation>
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>

@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">브라우저 홈</translation>
 <translation id="1526389707933164996">화면 보호기 애니메이션</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
-<translation id="1539242642795599947">APN은 기본값 유형이며 첨부됩니다.</translation>
 <translation id="1555130319947370107">파란색</translation>
 <translation id="155865706765934889">터치패드</translation>
 <translation id="1561927818299383735">백라이트 색상</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">다시 스캔</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정 및 연결된 APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> 키는 테스트했습니다.</translation>
 <translation id="5620281292257375798">내부용</translation>
 <translation id="5649768706273821470">듣기</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">아직 연결되지 않았습니다. 이동통신사에서 맞춤 APN을 추천하는 경우 '+ 새 APN'을 선택하여 APN 정보를 입력합니다.</translation>
 <translation id="5972388717451707488">엔진 업데이트</translation>
 <translation id="5984145644188835034">기본 배경화면</translation>
-<translation id="6001235009374883388">APN은 유형 연결입니다.</translation>
 <translation id="6017514345406065928">녹색</translation>
 <translation id="6019566113895157499">키보드 단축키</translation>
 <translation id="6034694447310538551">월간 자동 재설정 사용 설정</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">개발자 도구</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">접속</translation>
 <translation id="8206859287963243715">휴대전화</translation>
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>

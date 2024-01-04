@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">pagrindinis naršyklės puslapis</translation>
 <translation id="1526389707933164996">Ekrano užsklandos animacija</translation>
 <translation id="152892567002884378">Padidinti garsumą</translation>
-<translation id="1539242642795599947">APN yra numatytojo ir priedo tipo.</translation>
 <translation id="1555130319947370107">Mėlyna</translation>
 <translation id="155865706765934889">Jutiklinis kilimėlis</translation>
 <translation id="1561927818299383735">fono spalva</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Nuskaityti iš naujo</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
-<translation id="5584044598279886848">Šio APN išjungti arba pašalinti negalima. Įsitikinkite, kad įgalinti pridėti APN yra išjungti ar pašalinti.</translation>
 <translation id="5600027863942488546">Išbandytas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Tik vidiniams naudotojams</translation>
 <translation id="5649768706273821470">Klausyti</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Dar nesate prisijungę. Jei jūsų mobiliojo ryšio operatorius rekomenduoja tinkintą APN, įveskite APN informaciją pasirinkdami „+ Naujas APN“</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Numatytasis ekrano fonas</translation>
-<translation id="6001235009374883388">APN yra priedo tipo.</translation>
 <translation id="6017514345406065928">Žalia</translation>
 <translation id="6019566113895157499">Pagrindiniai šaukiniai</translation>
 <translation id="6034694447310538551">Įgalinti automatinį nustatymą iš naujo kas mėnesį</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Kūrėjo įrankiai</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Įvesti</translation>
-<translation id="8183974620058026102">Pridėti</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>

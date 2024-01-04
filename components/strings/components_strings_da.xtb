@@ -259,6 +259,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1455413310270022028">Viskelæder</translation>
 <translation id="1458140305240870199">Undertøj</translation>
 <translation id="1459693405370120464">Vejr</translation>
+<translation id="1461041542809785877">Effektivitet</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Brug skrifttyperne på din computer, så du kan oprette indhold i høj kvalitet</translation>
 <translation id="1467432559032391204">Venstre</translation>
@@ -657,7 +658,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2233745931693710080">Cd</translation>
 <translation id="2235344399760031203">Tredjepartscookies er blokeret</translation>
 <translation id="2239100178324503013">Send nu</translation>
-<translation id="2239114457614475014">Rediger input</translation>
 <translation id="2241693394036365668">En fil downloades</translation>
 <translation id="2246264294482514010">10 x 12 tommer</translation>
 <translation id="2246480341630108201">Din forælder har ikke sagt, at det er OK endnu</translation>
@@ -992,7 +992,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2959113999220720579">Ansigts- og kropspleje</translation>
 <translation id="2962073860865348475">12 x 18 tommer</translation>
 <translation id="2968103128155246731">Kassevogne og minibusser</translation>
-<translation id="2971483124699139256">Hvis du giver et like, indsendes der feedback om, at du kan lide den genererede tekst.</translation>
 <translation id="2972581237482394796">&amp;Annuller fortryd</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" /> er i øjeblikket valgt. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1577,7 +1576,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4132448310531350254">Identiske handlere for filtypen "<ph name="FILE_EXTENSION" />", som der henvises til i applikationerne "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Opret dokument</translation>
 <translation id="413544239732274901">Få flere oplysninger</translation>
-<translation id="4139859738677203214">Hvis du giver et dislike, åbnes der en formular, hvor du kan give detaljeret feedback om, hvorfor du ikke kan lide den genererede tekst.</translation>
 <translation id="4140905530744469899">Profil-id:</translation>
 <translation id="4142935452406587478">Bakke 10</translation>
 <translation id="4148925816941278100">American Express</translation>

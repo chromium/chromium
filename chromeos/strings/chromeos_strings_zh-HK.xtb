@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">瀏覽器首頁</translation>
 <translation id="1526389707933164996">螢幕保護程式動畫</translation>
 <translation id="152892567002884378">調高音量</translation>
-<translation id="1539242642795599947">呢個 APN 係預設兼附加 APN。</translation>
 <translation id="1555130319947370107">藍色</translation>
 <translation id="155865706765934889">觸控板</translation>
 <translation id="1561927818299383735">背光顏色</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新掃瞄</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">無法停用或移除此 APN。請確保啟用的附加 APN 都已停用或移除。</translation>
 <translation id="5600027863942488546">測試咗 <ph name="KEY_NAME" /> 制</translation>
 <translation id="5620281292257375798">只供內部使用</translation>
 <translation id="5649768706273821470">收聽</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">您尚未連線。如果您的流動網絡供應商建議使用自訂 APN，請選取「+ 新增 APN」來輸入 APN 資料</translation>
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">預設桌布</translation>
-<translation id="6001235009374883388">呢個 APN 係附加 APN。</translation>
 <translation id="6017514345406065928">綠色</translation>
 <translation id="6019566113895157499">鍵盤快速鍵</translation>
 <translation id="6034694447310538551">啟用每月自動重設功能</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">開發人員工具</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
 <translation id="8179976553408161302">Enter 鍵</translation>
-<translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
 <translation id="8226628635270268143">選擇喜愛的相片和相簿</translation>

@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">छवि लोड गर्नुहोस्</translation>
 <translation id="1026959648338730078">Windows Hello वा बाह्य सुरक्षा साँचो</translation>
 <translation id="1028700151766901954">कारण: LBS स्वतः <ph name="DEFAULT_OPEN_BROWSER" /> मा रहन्छ।</translation>
+<translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">जुम आउट गर्नुहोस्</translation>
 <translation id="1029526375103058355">ट्याप टु क्लिक</translation>
 <translation id="1031362278801463162">पूर्वावलोकन लोड गर्दै</translation>
@@ -2195,7 +2196,6 @@
 <translation id="265748523151262387">आफ्नो फोनसँग कनेक्ट गरिराख्नुहोस्</translation>
 <translation id="2657612187216250073">पोइन्टरसम्बन्धी एस्सेसिबिलिटी सेटिङ</translation>
 <translation id="2658941648214598230">मूल सामग्री देखाउने हो?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिभाइसअनुसार सुविधा फरक हुन्छन्</translation>
 <translation id="2659971421398561408">Crostini का लागि छुट्याइएको डिस्कको आकार बदल्ने</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="266079277508604648">प्रिन्टरमा जडान गर्न सकिएन। उक्त प्रिन्टर सक्रिय अवस्थामा हुनुका साथै त्यसलाई Wi-Fi वा USB मार्फत तपाईंको Chromebook सँग जडान गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
@@ -3273,7 +3273,6 @@
 <translation id="3514681096978190000">यो आर्काइभ फाइलमा मालवेयर लुकाउन सक्ने अन्य फाइलहरू समावेश हुन्छन्</translation>
 <translation id="3515983984924808886">रिसेट गर्ने कार्य पुष्टि गर्न आफ्नो सुरक्षा साँचो फेरि छुनुहोस्। सुरक्षा साँचोको PIN लगायत यस साँचोमा भण्डारण गरिएका सबै जानकारी मेटाइने छन्।</translation>
 <translation id="3518866566087677312">तपाईं पछि जुन जुन पेज फेरि हेर्न चाहनुहुन्छ ती पेजहरू बुकमार्क गर्नुहोस्</translation>
-<translation id="3518985090088779359">स्वीकार र जारी</translation>
 <translation id="3519564332031442870">प्रिन्टको ब्याकइन्ड सेवा</translation>
 <translation id="3519938335881974273">पेजलाई निम्न रूपमा सेभ गर्नुहोस्...</translation>
 <translation id="3520824492621090923">तपाईंले किअस्क र साइनेज डिभाइस दर्ता गर्न खोज्नुभएकै हो?</translation>
@@ -5116,7 +5115,6 @@
 <translation id="496185450405387901">तपाईंका प्रशासकले यो एप स्थापना गर्नुभएको हो।</translation>
 <translation id="4963789650715167449">हालको ट्याब हटाउनुहोस्</translation>
 <translation id="4964455510556214366">प्रबन्ध</translation>
-<translation id="496446150016900060">आफ्नो फोनमा Wi-Fi नेटवर्कहरू सिंक गर्नुहोस्</translation>
 <translation id="4965808351167763748">तपाईं Hangouts Meet चलाउन निश्चित रूपमा यो डिभाइस सेटअप गर्न चाहनुहुन्छ?</translation>
 <translation id="4966972803217407697">तपाईं इन्कोग्निटो मोडमा हुनुहुन्छ</translation>
 <translation id="4967227914555989138">टिपोट हाल्नुहोस्</translation>
@@ -8432,7 +8430,6 @@
 <translation id="7629827748548208700">ट्याब: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">यो डिभाइस <ph name="MANAGER" /> ले व्यवस्थापन गर्छ र यो डिभाइस प्रयोग गर्न तपाईंले हरेक पटक साइन इन गर्नु पर्ने हुन्छ।</translation>
 <translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
-<translation id="7631205654593498032">तपाईंले आफ्ना यन्त्रहरू जोड्दा, तपाईं आफ्नो <ph name="DEVICE_TYPE" /> ले निम्न कार्यहरू गर्न सक्छ भन्ने कुरामा सहमत हुनुहुन्छ:</translation>
 <translation id="7631887513477658702">&amp;जहिले पनि यस प्रकारको</translation>
 <translation id="7632948528260659758">निम्न किअस्क एपहरू अद्यावधिकको लागि असफल भएको छ:</translation>
 <translation id="7633724038415831385">तपाईं यस पटक मात्र कुनै सफ्टवेयर अपडेट गर्न पर्खनु पर्ने छ। Chromebook मा सफ्टवेयर पृष्ठभूमिमा अपडेट हुन्छ।</translation>

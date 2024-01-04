@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Načítať obrázok</translation>
 <translation id="1026959648338730078">Windows Hello alebo externý bezpečnostný kľúč</translation>
 <translation id="1028700151766901954">Dôvod: PSP zostane predvolene v prehliadači <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
+<translation id="102916930470544692">Prístupový kľúč</translation>
 <translation id="1029317248976101138">Lupa</translation>
 <translation id="1029526375103058355">Kliknutie klepnutím</translation>
 <translation id="1031362278801463162">Načítava sa ukážka</translation>
@@ -2200,7 +2201,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="265748523151262387">Nechajte si aktívne pripojenie prostredníctvom telefónu</translation>
 <translation id="2657612187216250073">Nastavenia dostupnosti kurzora</translation>
 <translation id="2658941648214598230">Chcete zobraziť pôvodný obsah?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funkcie sa môžu v rôznych zariadeniach líšiť</translation>
 <translation id="2659971421398561408">Zmena veľkosti na disku v systéme Crostini</translation>
 <translation id="2660779039299703961">Udalosť</translation>
 <translation id="266079277508604648">K tlačiarni sa nepodarilo pripojiť. Skontrolujte, či je zapnutá a pripojená k Chromebooku prostredníctvom Wi-Fi alebo USB.</translation>
@@ -3277,7 +3277,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3514681096978190000">Tento súbor archívu obsahuje ďalšie súbory, ktoré môžu skrývať malvér</translation>
 <translation id="3515983984924808886">Resetovanie potvrďte opätovným stlačením bezpečnostného kľúča. Všetky informácie uchované v bezpečnostnom kľúči (vrátane jeho kódu PIN) budú odstránené.</translation>
 <translation id="3518866566087677312">Uložte si položky, ku ktorým sa chcete neskôr vrátiť, ako záložky</translation>
-<translation id="3518985090088779359">Prijať a pokračovať</translation>
 <translation id="3519564332031442870">Tlačová služba na strane servera</translation>
 <translation id="3519938335881974273">Uložiť stránku ako…</translation>
 <translation id="3520824492621090923">Chcete potvrdiť registráciu zariadenia pomocou verejného terminálu a značenia?</translation>
@@ -5121,7 +5120,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="496185450405387901">Túto aplikáciu nainštaloval váš správca.</translation>
 <translation id="4963789650715167449">Odstrániť aktuálnu kartu</translation>
 <translation id="4964455510556214366">Usporiadanie</translation>
-<translation id="496446150016900060">Synchronizujte siete Wi‑Fi so svojím telefónom</translation>
 <translation id="4965808351167763748">Naozaj chcete v tomto zariadení nastaviť službu Hangouts Meet?</translation>
 <translation id="4966972803217407697">Ste v režime inkognito</translation>
 <translation id="4967227914555989138">Pridať poznámku</translation>
@@ -8442,7 +8440,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7629827748548208700">Karta: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Toto zariadenie spravuje doména <ph name="MANAGER" /> a vyžaduje, aby ste sa vždy prihlásili.</translation>
 <translation id="7631014249255418691">Aplikácie a súbory pre Linux boli úspešne zálohované</translation>
-<translation id="7631205654593498032">Keď prepojíte svoje zariadenia, súhlasíte s tým, že <ph name="DEVICE_TYPE" /> bude môcť:</translation>
 <translation id="7631887513477658702">Súbory tohto typu &amp;vždy otvoriť</translation>
 <translation id="7632948528260659758">Nepodarilo sa aktualizovať nasledujúce aplikácie Kiosku:</translation>
 <translation id="7633724038415831385">Na aktualizáciu budete musieť čakať iba teraz. V Chromebookoch sa softvér aktualizuje na pozadí.</translation>

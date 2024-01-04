@@ -29,7 +29,7 @@
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1154984953698510061">Ogled drugih zavihkov</translation>
 <translation id="1161340988127985692">Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>
-<translation id="1164064664035028907">Uproabi zapleteno geslo:</translation>
+<translation id="1164064664035028907">Uporabi močno geslo:</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1172898394251786223">Naslednje polje</translation>
@@ -652,7 +652,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4502566650163919158">Preveri</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
 <translation id="4509449376545878717">Nikoli ne zaznaj samodejno paketov</translation>
-<translation id="4514889972748124117">Predlagaj zapleteno geslo ...</translation>
+<translation id="4514889972748124117">Predlagaj močno geslo ...</translation>
 <translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
@@ -986,7 +986,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6231782223312638214">Predlagano</translation>
 <translation id="6232329973559504466">Anonimno iskanje</translation>
 <translation id="6236952928980352967">Obnovi opozorilo</translation>
-<translation id="6247557882553405851">Google Upravitelj gesel</translation>
+<translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6254066287920239840">Povezave namesto v brskalniku odpri v aplikaciji.</translation>
 <translation id="6255097610484507482">Urejanje kreditne kartice</translation>
 <translation id="6266039999629596120">Potrebno je ukrepanje</translation>
@@ -1372,6 +1372,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8237382152611443140">Odprite nastavitve za samodejno izpolnjevanje gesel.</translation>
 <translation id="8248969482078657578">Neaktivni zavihki vam pomagajo pri osredotočenosti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8263336784344783289">Poimenujte to skupino</translation>
 <translation id="8264966119170358612">Nekatera shranjena gesla so bila razkrita v podatkovni kršitvi pri ponudniku, ki ni Google. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Zaradi ponastavitve iPada ste bili odjavljeni iz računa <ph name="USER_NAME" />. Če se želite znova prijaviti, spodaj kliknite »Continue« (Naprej).</translation>
 <translation id="8271720166617117963">Sprejem in prijava</translation>

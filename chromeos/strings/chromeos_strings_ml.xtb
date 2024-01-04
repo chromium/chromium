@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ബ്രൗസർ ഹോം</translation>
 <translation id="1526389707933164996">സ്ക്രീൻ സേവർ ആനിമേഷൻ</translation>
 <translation id="152892567002884378">ശബ്ദം കൂട്ടുക</translation>
-<translation id="1539242642795599947">APN തരം ഡിഫോൾട്ടും അറ്റാച്ചും ആണ്.</translation>
 <translation id="1555130319947370107">നീല</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">വീണ്ടും സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
-<translation id="5584044598279886848">ഈ APN പ്രവർത്തനരഹിതമാക്കാനോ നീക്കം ചെയ്യാനോ കഴിയില്ല. പ്രവർത്തനക്ഷമമാക്കിയ, അറ്റാച്ച് ചെയ്ത APN-കൾ പ്രവർത്തനരഹിതമാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> കീ പരിശോധിച്ചു</translation>
 <translation id="5620281292257375798">ആന്തരികം മാത്രം</translation>
 <translation id="5649768706273821470">കേൾക്കുക</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ഡിഫോൾട്ട് വാൾപേപ്പർ</translation>
-<translation id="6001235009374883388">APN തരം അറ്റാച്ച് ആണ്.</translation>
 <translation id="6017514345406065928">പച്ച</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">സ്വയമേവയുള്ള പ്രതിമാസ റീസെറ്റ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">ഡെവലപ്പര്‍ ടൂളുകൾ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="8206859287963243715">സെല്ലുലാര്‍‌</translation>
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>

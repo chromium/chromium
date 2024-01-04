@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">بارگیری تصویر</translation>
 <translation id="1026959648338730078">‏Windows Hello یا کلید ایمنی خارجی</translation>
 <translation id="1028700151766901954">‏دلیل: LBS به‌طور پیش‌فرض در <ph name="DEFAULT_OPEN_BROWSER" /> باقی می‌ماند.</translation>
+<translation id="102916930470544692">گذرکلید</translation>
 <translation id="1029317248976101138">بزرگ‌نمایی</translation>
 <translation id="1029526375103058355">ضربه به‌جای کلیک</translation>
 <translation id="1031362278801463162">بارگیری پیش‌نمایش</translation>
@@ -2210,7 +2211,6 @@
 <translation id="265748523151262387">اتصال با تلفن را حفظ کنید</translation>
 <translation id="2657612187216250073">تنظیمات دسترس‌پذیری اشاره‌گر</translation>
 <translation id="2658941648214598230">محتوای اصلی نشان داده شود؟</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />ویژگی‌ها براساس دستگاه متفاوت است</translation>
 <translation id="2659971421398561408">‏تغییر اندازه دیسک Crostini</translation>
 <translation id="2660779039299703961">رویداد</translation>
 <translation id="266079277508604648">‏چاپگر متصل نشد. بررسی کنید چاپگر روشن و ازطریق Wi-Fi یا USB به Chromebook متصل باشد.</translation>
@@ -3287,7 +3287,6 @@
 <translation id="3514681096978190000">این فایل بایگانی حاوی فایل‌های دیگری است که ممکن است بدافزار پنهان داشته باشد</translation>
 <translation id="3515983984924808886">برای تأیید بازنشانی، کلید ایمنی‌تان را لمس کنید. همه اطلاعات ذخیره‌شده در کلید ایمنی (ازجمله پین) پاک می‌شود.</translation>
 <translation id="3518866566087677312">برای چیزهایی که می‌خواهید بعداً سراغ آن‌ها بیایید نشانک بگذارید</translation>
-<translation id="3518985090088779359">پذیرش و ادامه</translation>
 <translation id="3519564332031442870">سرویس پایانه چاپ</translation>
 <translation id="3519938335881974273">ذخیره صفحه به‌عنوان…</translation>
 <translation id="3520824492621090923">ثبت‌نام دستگاه کیوسک و تابلوی دیجیتال را تأیید می‌کنید؟</translation>
@@ -5132,7 +5131,6 @@
 <translation id="496185450405387901">این برنامه را سرپرست نصب کرده است.</translation>
 <translation id="4963789650715167449">برداشتن برگه فعلی</translation>
 <translation id="4964455510556214366">ترتیب</translation>
-<translation id="496446150016900060">‏همگام‌سازی شبکه‌های Wi-Fi با تلفن</translation>
 <translation id="4965808351167763748">‏مطمئن هستید می‌خواهید این دستگاه را برای اجرای Hangouts Meet راه‌اندازی کنید؟</translation>
 <translation id="4966972803217407697">در «حالت ناشناس» هستید</translation>
 <translation id="4967227914555989138">افزودن یادداشت</translation>
@@ -8452,7 +8450,6 @@
 <translation id="7629827748548208700">برگه: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و لازم می‌داند هربار به سیستم وارد شوید.</translation>
 <translation id="7631014249255418691">‏از برنامه‌ها و فایل‌های Linux پشتیبان‌گیری شد</translation>
-<translation id="7631205654593498032">وقتی دستگاه‌هایتان را متصل می‌کنید، موافقت می‌کنید که <ph name="DEVICE_TYPE" /> بتواند:</translation>
 <translation id="7631887513477658702">&amp;همیشه این نوع فایل‌ها باز شوند</translation>
 <translation id="7632948528260659758">به‌روزرسانی برنامه‌های کیوسک زیر انجام نشد:</translation>
 <translation id="7633724038415831385">‏فقط همین یک‌بار باید برای به‌روزرسانی صبر کنید. در Chromebook، به‌روزرسانی‌های نرم‌افزار در پس‌زمینه انجام می‌شود.</translation>

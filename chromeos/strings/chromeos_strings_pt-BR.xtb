@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">página inicial do navegador</translation>
 <translation id="1526389707933164996">Animação do protetor de tela</translation>
 <translation id="152892567002884378">Aumentar volume</translation>
-<translation id="1539242642795599947">O APN é do tipo padrão e de anexação.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">cor da retroiluminação</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Digitalizar novamente</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Não é possível desativar ou remover esse APN. Desative ou remova os APNs em anexo.</translation>
 <translation id="5600027863942488546">A tecla <ph name="KEY_NAME" /> foi testada</translation>
 <translation id="5620281292257375798">Somente uso interno</translation>
 <translation id="5649768706273821470">Ouvir</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Sua rede ainda não está conectada. Se a sua operadora de celular recomendar um APN personalizado, insira as informações dele selecionando "+ Novo APN"</translation>
 <translation id="5972388717451707488">Mecanismo de atualização</translation>
 <translation id="5984145644188835034">Plano de fundo padrão</translation>
-<translation id="6001235009374883388">O APN é do tipo de anexação.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Atalhos do teclado</translation>
 <translation id="6034694447310538551">Ativar redefinição mensal automática</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Ferramentas para desenvolvedores</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Entrar</translation>
-<translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8226628635270268143">Escolher seus álbuns e fotos favoritos</translation>

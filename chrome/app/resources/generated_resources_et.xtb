@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Kujutise laadimine</translation>
 <translation id="1026959648338730078">Windows Hello või väline turvavõti</translation>
 <translation id="1028700151766901954">Põhjus: LBS jääb vaikimisi brauserisse <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
+<translation id="102916930470544692">Pääsuvõti</translation>
 <translation id="1029317248976101138">Suumi</translation>
 <translation id="1029526375103058355">Klõpsamiseks puudutamine</translation>
 <translation id="1031362278801463162">Eelvaate laadimine</translation>
@@ -2204,7 +2205,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="265748523151262387">Püsige oma telefoniga ühenduses</translation>
 <translation id="2657612187216250073">Kursori juurdepääsetavuse seaded</translation>
 <translation id="2658941648214598230">Kas näidata originaalsisu?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funktsioonid erinevad seadmeti</translation>
 <translation id="2659971421398561408">Crostini ketta suuruse muutmine</translation>
 <translation id="2660779039299703961">Sündmus</translation>
 <translation id="266079277508604648">Printeriga ei saa ühendada. Kontrollige, kas printer on sisse lülitatud ja teie Chromebookiga WiFi või USB kaudu ühendatud.</translation>
@@ -3281,7 +3281,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3514681096978190000">See arhiivifail sisaldab teisi faile, mis võivad peita pahavara</translation>
 <translation id="3515983984924808886">Lähtestamise kinnitamiseks puudutage turvavõtit. Kogu turvavõtmele salvestatud teave, sh selle PIN-kood, kustutatakse.</translation>
 <translation id="3518866566087677312">Lisage järjehoidjatesse sisu, mida soovite hiljem uuesti vaadata</translation>
-<translation id="3518985090088779359">Nõustu ja jätka</translation>
 <translation id="3519564332031442870">Printimise tagateenus</translation>
 <translation id="3519938335881974273">Salvesta leht nimega …</translation>
 <translation id="3520824492621090923">Kas kinnitada kioski- ja teabeseadmete registreerimine?</translation>
@@ -5125,7 +5124,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="496185450405387901">Selle rakenduse installis administraator.</translation>
 <translation id="4963789650715167449">Eemalda praegune vaheleht</translation>
 <translation id="4964455510556214366">Asetus</translation>
-<translation id="496446150016900060">Sünkroonida WiFi-võrke teie telefoniga</translation>
 <translation id="4965808351167763748">Kas soovite kindlasti selle seadme seadistada, et rakendust Hangouts Meet käitada?</translation>
 <translation id="4966972803217407697">Olete inkognito režiimis</translation>
 <translation id="4967227914555989138">Lisa märkus</translation>
@@ -8443,7 +8441,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7629827748548208700">Vaheleht: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Seda seadet haldab <ph name="MANAGER" /> ja teil tuleb iga kord sisse logida.</translation>
 <translation id="7631014249255418691">Linuxi rakenduste ja failide varundamine õnnestus</translation>
-<translation id="7631205654593498032">Seadmete ühendamisel lubate seadmel <ph name="DEVICE_TYPE" /> teha järgmist.</translation>
 <translation id="7631887513477658702">Ava alati &amp;seda tüüpi failid</translation>
 <translation id="7632948528260659758">Järgmiste kioskirakenduste värskendamine nurjus:</translation>
 <translation id="7633724038415831385">See on ainuke kord, kui peate värskendust ootama. Chromebookides toimuvad tarkvara värskendused taustal.</translation>

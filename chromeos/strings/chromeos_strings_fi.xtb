@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">selain etusivu</translation>
 <translation id="1526389707933164996">Näytönsäästäjän animaatio</translation>
 <translation id="152892567002884378">Lisää äänenvoimakkuutta</translation>
-<translation id="1539242642795599947">APN-tyyppi on oletus ja liite.</translation>
 <translation id="1555130319947370107">Sininen</translation>
 <translation id="155865706765934889">Kosketuslevy</translation>
 <translation id="1561927818299383735">taustavalon väri</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skannaa uudelleen</translation>
 <translation id="5583640892426849032">Askelpalautin</translation>
-<translation id="5584044598279886848">APN:ää ei voi poistaa käytöstä tai kokonaan. Varmista, että liitetyt, käyttöön otetut APN:t on poistettu käytöstä tai kokonaan.</translation>
 <translation id="5600027863942488546">Näppäin testattu: <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Vain sisäinen</translation>
 <translation id="5649768706273821470">Kuuntele</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Yhteyttä ei vielä ole. Jos mobiilioperaattorisi suosittelee muokattua APN:ää, lisää APN-tiedot valitsemalla + Uusi APN.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Oletustaustakuva</translation>
-<translation id="6001235009374883388">APN-tyyppi on liite.</translation>
 <translation id="6017514345406065928">Vihreä</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Ota automaattinen kuukausittainen nollaus käyttöön</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Kehittäjän työkalut</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Liitä</translation>
 <translation id="8206859287963243715">Matkapuhelin</translation>
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>

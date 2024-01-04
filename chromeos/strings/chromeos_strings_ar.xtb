@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">الصفحة الرئيسية للمتصفّح</translation>
 <translation id="1526389707933164996">الصور المتحركة لشاشة الاستراحة</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
-<translation id="1539242642795599947">إنّ اسم نقطة الوصول من النوع التلقائي ومخصّص للإرفاق.</translation>
 <translation id="1555130319947370107">أزرق</translation>
 <translation id="155865706765934889">لوحة اللمس</translation>
 <translation id="1561927818299383735">لون الإضاءة الخلفية</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">إعادة المسح الضوئي</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">‏يتعذّر إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى التأكُّد من إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع attach.</translation>
 <translation id="5600027863942488546">تم اختبار المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="5620281292257375798">داخلي فقط</translation>
 <translation id="5649768706273821470">استماع</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">‏لم يتصل جهازك بالشبكة بعد. إذا اقترح مشغّل شبكة الجوّال اسمًا مخصصًا لنقطة الوصول (APN)، أدخِل معلومات APN من خلال اختيار "إضافة اسم نقطة وصول جديد".</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">خلفية تلقائية</translation>
-<translation id="6001235009374883388">اسم نقطة الوصول مخصّص للإرفاق فقط.</translation>
 <translation id="6017514345406065928">أخضر</translation>
 <translation id="6019566113895157499">اختصارات لوحة المفاتيح</translation>
 <translation id="6034694447310538551">تفعيل ميزة إعادة الضبط التلقائية شهريًا</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">أدوات مطوري البرامج</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">إرفاق</translation>
 <translation id="8206859287963243715">خلوي</translation>
 <translation id="8208861521865154048">المزايا</translation>
 <translation id="8226628635270268143">اختيار صورك وألبوماتك المفضَّلة</translation>

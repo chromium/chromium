@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">domača stran brskalnika</translation>
 <translation id="1526389707933164996">Animacija ohranjevalnika zaslona.</translation>
 <translation id="152892567002884378">Povečanje glasnosti</translation>
-<translation id="1539242642795599947">APN je privzete in pripete vrste.</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="155865706765934889">Sledilna ploščica</translation>
 <translation id="1561927818299383735">barva osvetlitve</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Znova optično preberi</translation>
 <translation id="5583640892426849032">Vračalka</translation>
-<translation id="5584044598279886848">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji morajo biti onemogočeni ali odstranjeni.</translation>
 <translation id="5600027863942488546">Tipka <ph name="KEY_NAME" /> je bila preizkušena.</translation>
 <translation id="5620281292257375798">Samo za interno rabo</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Niste še povezani. Če mobilni operater priporoča APN po meri, vnesite informacije o APN-ju tako, da izberete »+ Nov APN«.</translation>
 <translation id="5972388717451707488">Posodobitev mehanizma</translation>
 <translation id="5984145644188835034">Privzeto ozadje</translation>
-<translation id="6001235009374883388">APN je pripete vrste.</translation>
 <translation id="6017514345406065928">Zelena</translation>
 <translation id="6019566113895157499">Bližnjične tipke</translation>
 <translation id="6034694447310538551">Omogoči samodejno mesečno ponastavitev</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Orodja za razvijalce</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Vpetje</translation>
 <translation id="8206859287963243715">Prenosni</translation>
 <translation id="8208861521865154048">Ugodnosti</translation>
 <translation id="8226628635270268143">Izberite priljubljene fotografije in albume</translation>

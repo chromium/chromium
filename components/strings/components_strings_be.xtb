@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">Сцірка</translation>
 <translation id="1458140305240870199">Нацельная бялізна</translation>
 <translation id="1459693405370120464">Надвор'е</translation>
+<translation id="1461041542809785877">Прадукцыйнасць</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Выкарыстоўваць шрыфты з вашага камп'ютара, каб даць вам магчымасць ствараць змесціва высокай якасці.</translation>
 <translation id="1467432559032391204">Злева</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">Кампакт-дыск</translation>
 <translation id="2235344399760031203">Староннія файлы cookie заблакіраваны</translation>
 <translation id="2239100178324503013">Адправіць</translation>
-<translation id="2239114457614475014">Змяніць уведзеныя даныя</translation>
 <translation id="2241693394036365668">Спампоўваецца файл</translation>
 <translation id="2246264294482514010">10 x 12 цаляў</translation>
 <translation id="2246480341630108201">Твой бацька (твая маці) яшчэ не ўхваліў(-ла) гэты сайт</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">Догляд твару і цела</translation>
 <translation id="2962073860865348475">12 x 18 цаляў</translation>
 <translation id="2968103128155246731">Мікрааўтобусы і мінівэны</translation>
-<translation id="2971483124699139256">Калі націснуць кнопку "Падабаецца", будзе адпраўлены водгук аб тым, што вам спадабаўся згенерыраваны тэкст.</translation>
 <translation id="2972581237482394796">&amp;Узнавіць</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, радок выбраны. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1576,7 +1575,6 @@
 <translation id="4132448310531350254">У спісе "<ph name="POLICY_IDS_LIST" />" праграм зададзена некалькі апрацоўшчыкаў для файлаў з пашырэннем "<ph name="FILE_EXTENSION" />".</translation>
 <translation id="4134123981501319574">Стварыць дакумент</translation>
 <translation id="413544239732274901">Даведацца больш</translation>
-<translation id="4139859738677203214">Калі націснуць кнопку "Не падабаецца", будзе адкрыта форма для адпраўкі падрабязнага водгуку аб тым, чаму вам не спадабаўся згенерыраваны тэкст.</translation>
 <translation id="4140905530744469899">Ідэнтыфікатар профілю:</translation>
 <translation id="4142935452406587478">Латок 10</translation>
 <translation id="4148925816941278100">American Express</translation>

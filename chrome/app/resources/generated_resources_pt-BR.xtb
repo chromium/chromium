@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Carregar Imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
 <translation id="1028700151766901954">Motivo: o LBS fica no <ph name="DEFAULT_OPEN_BROWSER" /> por padrão.</translation>
+<translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
 <translation id="1031362278801463162">Carregando visualização</translation>
@@ -2214,7 +2215,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="265748523151262387">Mantenha a conexão com seu smartphone</translation>
 <translation id="2657612187216250073">Configurações de acessibilidade do ponteiro</translation>
 <translation id="2658941648214598230">Mostrar conteúdo original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Os recursos variam de acordo com o dispositivo</translation>
 <translation id="2659971421398561408">Redimensionamento de disco do Crostini</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Não é possível conectar a impressora. Verifique se ela está ligada e conectada ao seu Chromebook por Wi-Fi ou USB.</translation>
@@ -3291,7 +3291,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3514681096978190000">Este arquivo inclui outros arquivos que podem ocultar malware</translation>
 <translation id="3515983984924808886">Toque na sua chave de segurança novamente para confirmar a redefinição. Todas as informações armazenadas na chave de segurança, inclusive o PIN, serão excluídas.</translation>
 <translation id="3518866566087677312">Adicione itens aos favoritos para consultar depois</translation>
-<translation id="3518985090088779359">Aceitar e continuar</translation>
 <translation id="3519564332031442870">Serviço de back-end para impressão</translation>
 <translation id="3519938335881974273">Salvar página como…</translation>
 <translation id="3520824492621090923">Confirmar o registro do dispositivo com quiosque e sinalização?</translation>
@@ -5136,7 +5135,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="496185450405387901">Este app foi instalado pelo seu administrador.</translation>
 <translation id="4963789650715167449">Remover guia atual</translation>
 <translation id="4964455510556214366">Organização</translation>
-<translation id="496446150016900060">Sincronizar redes Wi-Fi com seu smartphone</translation>
 <translation id="4965808351167763748">Você quer mesmo configurar este dispositivo para executar o Google Meet?</translation>
 <translation id="4966972803217407697">Você está no modo de navegação anônima</translation>
 <translation id="4967227914555989138">Adicionar uma observação</translation>
@@ -8457,7 +8455,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7629827748548208700">Guia: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Este dispositivo é gerenciado por <ph name="MANAGER" /> e requer que o login seja feito todas as vezes.</translation>
 <translation id="7631014249255418691">O backup dos apps e arquivos do Linux foi concluído</translation>
-<translation id="7631205654593498032">Ao conectar os dispositivos, você concorda que seu <ph name="DEVICE_TYPE" /> pode:</translation>
 <translation id="7631887513477658702">&amp;Sempre abrir arquivos deste tipo</translation>
 <translation id="7632948528260659758">Os seguintes aplicativos de quiosque tiveram falha na atualização:</translation>
 <translation id="7633724038415831385">Esta é a única vez em que você precisará esperar uma atualização. No Chromebook, as atualizações de software acontecem em segundo plano.</translation>

@@ -181,7 +181,7 @@
 <translation id="1943478190258551035">「選單」→「設定」</translation>
 <translation id="194449685234099560">你可以在這裡找到所有開啟的分頁。</translation>
 <translation id="1952172573699511566">Chrome 會儘可能以你慣用的語言顯示網站文字。</translation>
-<translation id="1956138802718275401">從主畫面取得密碼</translation>
+<translation id="1956138802718275401">從主畫面快速查詢密碼</translation>
 <translation id="1959441496380398824">按住所需日期。</translation>
 <translation id="1959679933317802873">正在等候內容</translation>
 <translation id="1967461193809857427">{count,plural, =1{要接續使用先前在 Android 上開啟的分頁嗎？}other{要接續使用先前在 Android 上開啟的分頁嗎？}}</translation>
@@ -1303,7 +1303,7 @@
 <translation id="7884694604461143138">在歷史記錄中搜尋 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
 <translation id="7887198238286927132">為保護個人隱私，Chrome 不會自動填入這個欄位。</translation>
-<translation id="7889910613639381518">運用 Google 密碼管理工具小工具，資料存取輕鬆又安全。</translation>
+<translation id="7889910613639381518">運用「Google 密碼管理工具」小工具查詢密碼，方便又安全。</translation>
 <translation id="7911190106180361398">貴機構不允許你同步處理任何內容。</translation>
 <translation id="7920949005883349320">隱私權和安全性</translation>
 <translation id="792357691529995513">未發現任何問題</translation>
@@ -1372,6 +1372,7 @@
 <translation id="8237382152611443140">開啟 [自動填入密碼] 設定</translation>
 <translation id="8248969482078657578">將分頁設為閒置狀態，助你保持專注</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8263336784344783289">為這個群組命名</translation>
 <translation id="8264966119170358612">由於發生第三方 (非 Google) 資料侵害事件，你儲存的某些密碼已外洩。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">你已在重設 iPad 時登出帳戶 (<ph name="USER_NAME" />)，如要重新登入，請輕觸下方的「繼續」。</translation>
 <translation id="8271720166617117963">接受並登入</translation>

@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">domovská stránka prohlížeče</translation>
 <translation id="1526389707933164996">Animace spořiče obrazovky</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
-<translation id="1539242642795599947">APN je typu výchozí a připojení.</translation>
 <translation id="1555130319947370107">Modrá</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">barva podsvícení</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Naskenovat znovu</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit aktivované připojené APN.</translation>
 <translation id="5600027863942488546">Klávesa <ph name="KEY_NAME" /> byla vyzkoušena</translation>
 <translation id="5620281292257375798">Pouze pro interní použití</translation>
 <translation id="5649768706273821470">Poslechnout si</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Ještě nejste připojeni. Pokud váš mobilní operátor doporučuje vlastní APN, zadejte informace o APN výběrem možnost „+ Nový přístupový bod (APN)“</translation>
 <translation id="5972388717451707488">Modul aktualizací</translation>
 <translation id="5984145644188835034">Výchozí tapeta</translation>
-<translation id="6001235009374883388">APN je typu připojení.</translation>
 <translation id="6017514345406065928">Zelená</translation>
 <translation id="6019566113895157499">Klávesové zkratky</translation>
 <translation id="6034694447310538551">Povolit automatické resetování každý měsíc</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Nástroje pro vývojáře</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Připojit</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>

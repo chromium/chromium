@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">Брисач</translation>
 <translation id="1458140305240870199">Доњи веш</translation>
 <translation id="1459693405370120464">Време</translation>
+<translation id="1461041542809785877">Учинак</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Користи фонтове на рачунару да бисте могли да правите садржај високе верности</translation>
 <translation id="1467432559032391204">Улево</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">Компактни диск</translation>
 <translation id="2235344399760031203">Колачићи треће стране су блокирани</translation>
 <translation id="2239100178324503013">Пошаљи одмах</translation>
-<translation id="2239114457614475014">Измените унос</translation>
 <translation id="2241693394036365668">Датотека је преузета</translation>
 <translation id="2246264294482514010">10×12 in</translation>
 <translation id="2246480341630108201">Родитељ још није рекао да је у реду</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">Нега лица и тела</translation>
 <translation id="2962073860865348475">12×18 in</translation>
 <translation id="2968103128155246731">Комби и мини-комби</translation>
-<translation id="2971483124699139256">Опција Свиђа ми се шаље повратне информације да вам се свиђа генерисани текст.</translation>
 <translation id="2972581237482394796">&amp;Понови радњу</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, тренутно изабрано. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4132448310531350254">Дуплирани обрађивачи за екстензију фајла<ph name="FILE_EXTENSION" /> наведени у апликацијама <ph name="POLICY_IDS_LIST" />.</translation>
 <translation id="4134123981501319574">Направите документ</translation>
 <translation id="413544239732274901">Сазнајте више</translation>
-<translation id="4139859738677203214">Опција Не свиђа ми се отвара образац за слање детаљних повратних информација о томе зашто вам се не свиђа генерисани текст.</translation>
 <translation id="4140905530744469899">ИД профила:</translation>
 <translation id="4142935452406587478">10. фиока</translation>
 <translation id="4148925816941278100">American Express</translation>

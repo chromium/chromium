@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ब्राउज़र का होम पेज</translation>
 <translation id="1526389707933164996">स्क्रीन सेवर का ऐनिमेशन</translation>
 <translation id="152892567002884378">वॉल्यूम बढ़ाएं</translation>
-<translation id="1539242642795599947">एपीएन का टाइप डिफ़ॉल्ट और अटैच पर सेट है.</translation>
 <translation id="1555130319947370107">नीला</translation>
 <translation id="155865706765934889">टचपैड</translation>
 <translation id="1561927818299383735">बैकलिट का रंग</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">दोबारा स्कैन करें</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">इस एपीएन को बंद नहीं किया जा सकता और न ही हटाया जा सकता. पक्का करें कि अटैच किए गए जिन एपीएन को चालू किया गया था उन्हें बंद कर दिया गया है या हटा दिया गया है.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की जांच की गई</translation>
 <translation id="5620281292257375798">सिर्फ़ अंदरूनी</translation>
 <translation id="5649768706273821470">सुनें</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">आपका डिवाइस अभी तक नेटवर्क से कनेक्ट नहीं है. अगर आपको मोबाइल और इंटरनेट सेवा देने वाली कंपनी, एक कस्टम एपीएन का सुझाव देती है, तो "नया एपीएन जोड़ें" चुनकर एपीएन की जानकारी दर्ज करें</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">डिफ़ॉल्ट वॉलपेपर</translation>
-<translation id="6001235009374883388">एपीएन का टाइप अटैच पर सेट है.</translation>
 <translation id="6017514345406065928">हरा</translation>
 <translation id="6019566113895157499">Keyboard Shortcuts</translation>
 <translation id="6034694447310538551">हर महीने के लिए, अपने-आप रीसेट होने की सुविधा चालू करें</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">डेवलपर टूल</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">अटैच करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>

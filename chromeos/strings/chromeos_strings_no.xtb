@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">startside for nettleser</translation>
 <translation id="1526389707933164996">Skjermspareranimasjon</translation>
 <translation id="152892567002884378">Volum opp</translation>
-<translation id="1539242642795599947">APN er type standard og vedlegg.</translation>
 <translation id="1555130319947370107">Blå</translation>
 <translation id="155865706765934889">Styreflate</translation>
 <translation id="1561927818299383735">bakgrunnsbelyst farge</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skann på nytt</translation>
 <translation id="5583640892426849032">Tilbake-tasten</translation>
-<translation id="5584044598279886848">Kan ikke slå av eller fjerne dette APN-et. Sørg for å deaktivere eller fjerne aktiverte APN som er tilknyttet.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" />-tasten er testet</translation>
 <translation id="5620281292257375798">Bare internt</translation>
 <translation id="5649768706273821470">Lytt</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Du er ikke koblet til ennå. Hvis mobiloperatøren din anbefaler et egendefinert APN, skriver du inn APN-informasjonen ved å velge «+ Nytt APN».</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Standardbakgrunn</translation>
-<translation id="6001235009374883388">APN er type vedlegg.</translation>
 <translation id="6017514345406065928">Grønn</translation>
 <translation id="6019566113895157499">Hurtigtaster</translation>
 <translation id="6034694447310538551">Slå på automatisk månedlig tilbakestilling</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Utviklerverktøy</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Tilknytt</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordeler</translation>
 <translation id="8226628635270268143">Velg favorittbildene og -albumene dine</translation>

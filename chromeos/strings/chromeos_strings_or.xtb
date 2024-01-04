@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ବ୍ରାଉଜର ହୋମ</translation>
 <translation id="1526389707933164996">ସ୍କ୍ରିନ ସେଭର ଆନିମେସନ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
-<translation id="1539242642795599947">APN ହେଉଛି ଡିଫଲ୍ଟ ଏବଂ ଆଟାଚ ପ୍ରକାର।</translation>
 <translation id="1555130319947370107">ନୀଳ</translation>
 <translation id="155865706765934889">ଟଚ୍‌ପ୍ୟାଡ୍</translation>
 <translation id="1561927818299383735">ବେକଲିଟ ରଙ୍ଗ</translation>
@@ -377,7 +376,7 @@
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3858860766373142691">ନାମ</translation>
 <translation id="3862598938296403232">ବର୍ଣ୍ଣନା ଆବଶ୍ୟକ ଅଟେ</translation>
-<translation id="386280020966669610">ମୋତେ ପ୍ରେରଣା ଦିଅ</translation>
+<translation id="386280020966669610">ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ</translation>
 <translation id="3865289341173661845">ସହାୟତା ବିଷୟବସ୍ତୁ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="3865414814144988605">ରିଜୋଲ୍ୟୁଶନ୍</translation>
 <translation id="3866249974567520381">ବିବରଣୀ</translation>
@@ -445,7 +444,7 @@
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
-<translation id="4305367063258930534">ୱାଲପେପର Google ଦ୍ୱାରା ପରିଚାଳିତ</translation>
+<translation id="4305367063258930534">Google ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="4354430579665871434">କୀ</translation>
 <translation id="4361257691546579041">APN ହେଉଛି ଡିଫଲ୍ଟ ପ୍ରକାର।</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ପୁଣି ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="5583640892426849032">ପଶ୍ଚାତ୍</translation>
-<translation id="5584044598279886848">ଏହି APNକୁ ଅକ୍ଷମ କରାଯାଇପାରିବ ନାହିଁ କିମ୍ବା କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ସକ୍ଷମ କରାଯାଇଥିବା ଆଟାଚ ଥିବା APNଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି କିମ୍ବା କାଢ଼ି ଦିଆଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> କୀ'କୁ ପରୀକ୍ଷା କରାଯାଇଛି</translation>
 <translation id="5620281292257375798">କେବଳ ଇଣ୍ଟର୍ନଲ୍</translation>
 <translation id="5649768706273821470">ଶୁଣନ୍ତୁ</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">ଏପର୍ଯ୍ୟନ୍ତ ଆପଣ କନେକ୍ଟ ନାହାଁନ୍ତି। ଯଦି ଆପଣଙ୍କ ମୋବାଇଲ କେରିଅର ଏକ କଷ୍ଟମ APN ସୁପାରିଶ କରେ, ତେବେ "+ ନୂଆ APN"କୁ ଚୟନ କରି APN ସୂଚନା ଲେଖନ୍ତୁ</translation>
 <translation id="5972388717451707488">ଇଞ୍ଜିନ୍ ଅପଡେଟ୍ କରନ୍ତୁ</translation>
 <translation id="5984145644188835034">ଡିଫଲ୍ଟ ୱାଲପେପର</translation>
-<translation id="6001235009374883388">APN ହେଉଛି ଆଟାଚ ପ୍ରକାର।</translation>
 <translation id="6017514345406065928">ସବୁଜ</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ସ୍ୱଚାଳିତ ମାସିକ ରିସେଟକୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
@@ -706,7 +703,7 @@
 <translation id="6205145102504628069">କ୍ଲାଉଡ ଫ୍ଲୋ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">କୌଣସି ସ୍କାନର୍ ଉପଲବ୍ଧ ନାହିଁ</translation>
-<translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
+<translation id="6232017090690406397">ବେଟେରୀ</translation>
 <translation id="6235460611964961764">ଡାଟା ବ୍ୟବହାରକୁ ମାନୁଆଲୀ ରିସେଟ କରନ୍ତୁ</translation>
 <translation id="6243280677745499710">ବର୍ତ୍ତମାନ ସେଟ୍ ହୋଇଛି</translation>
 <translation id="6275224645089671689">ଡାହାଣ ତୀର</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">ଡେଭେଲପର ଟୁଲଗୁଡ଼ିକ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8179976553408161302">ପ୍ରବେଶ</translation>
-<translation id="8183974620058026102">ଆଟାଚ କରନ୍ତୁ</translation>
 <translation id="8206859287963243715">ସେଲ୍ୟୁଲାର୍</translation>
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>

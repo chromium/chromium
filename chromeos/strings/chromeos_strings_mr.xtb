@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ब्राउझर होम</translation>
 <translation id="1526389707933164996">स्क्रीन सेव्हर अ‍ॅनिमेशन</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
-<translation id="1539242642795599947">APN हे डीफॉल्ट आणि अटॅच या दोन्ही प्रकारचे आहे.</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">बॅकलिटचा रंग</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">पुन्हा स्कॅन करा</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली अटॅच APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> की तपासली</translation>
 <translation id="5620281292257375798">फक्त अंतर्गत</translation>
 <translation id="5649768706273821470">ऐका</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">तुम्ही अद्याप कनेक्ट केलेले नाही. तुमचा मोबाइल वाहक कस्टम APN ची शिफारस करत असल्यास, "+ नवीन APN" निवडून APN ची माहिती एंटर करा</translation>
 <translation id="5972388717451707488">इंजीन अपडेट करा</translation>
 <translation id="5984145644188835034">डीफॉल्ट वॉलपेपर</translation>
-<translation id="6001235009374883388">APN हे अटॅच या प्रकारचे आहे.</translation>
 <translation id="6017514345406065928">हिरवा</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ऑटोमॅटिक मासिक रीसेट सुरू करा</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">डेव्हलपर टूल</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">अटॅच करा</translation>
 <translation id="8206859287963243715">सेल्यूलर</translation>
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>

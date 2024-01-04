@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">ပုံကူးတင်ရန်</translation>
 <translation id="1026959648338730078">Windows Hello (သို့) ပြင်ပလုံခြုံရေးကီး</translation>
 <translation id="1028700151766901954">အကြောင်းရင်း- ပုံမှန်အားဖြင့် LBS သည် <ph name="DEFAULT_OPEN_BROWSER" /> တွင် ရှိသည်။</translation>
+<translation id="102916930470544692">လျှို့ဝှက်ကီး</translation>
 <translation id="1029317248976101138">ဇူးမ်</translation>
 <translation id="1029526375103058355">နှိပ်ရန် တို့ပါ</translation>
 <translation id="1031362278801463162">အစမ်းကြည့် တင်ပေးနေ</translation>
@@ -2211,7 +2212,6 @@
 <translation id="265748523151262387">သင့်ဖုန်းနှင့် ချိတ်ဆက်ထားပါ</translation>
 <translation id="2657612187216250073">ညွှန်မြား သုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="2658941648214598230">မူရင်းအကြောင်းအရာကို ပြရမလား။</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />စက်ပစ္စည်းအလိုက် ဝန်ဆောင်မှုများ ကွဲပြားနိုင်သည်</translation>
 <translation id="2659971421398561408">Crostini ဒစ်ခ်အရွယ်အစား ပြောင်းရန်</translation>
 <translation id="2660779039299703961">ဖြစ်ရပ်</translation>
 <translation id="266079277508604648">ပရင်တာကို ချိတ်ဆက်၍မရပါ။ ပရင်တာကို ဖွင့်ထားပြီး သင့် Chromebook သို့ Wi-Fi သို့မဟုတ် USB မှတစ်ဆင့် ချိတ်ဆက်ထားခြင်းရှိမရှိ စစ်ဆေးပါ။</translation>
@@ -3289,7 +3289,6 @@
 <translation id="3514681096978190000">ဤမှတ်တမ်းဖိုင်တွင် မဲလ်ဝဲကို ဝှက်ထားနိုင်သည့် အခြားဖိုင်များ ပါဝင်သည်</translation>
 <translation id="3515983984924808886">ပြင်ဆင်သတ်မှတ်ခြင်းကို အတည်ပြုရန် သင့်လုံခြုံရေးကီးကို ထပ်ထိပါ။ ပင်နံပါတ်အပါအဝင် လုံခြုံရေးကီးတွင် သိမ်းထားသော အချက်အလက်အားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
 <translation id="3518866566087677312">နောင်တွင်ပြန်လာကြည့်လိုသော အရာများကို လိပ်စာမှတ်နိုင်သည်</translation>
-<translation id="3518985090088779359">လက်ခံရန် &amp; ဆက်ရန်</translation>
 <translation id="3519564332031442870">ဆာဗာပိုင်းဆိုင်ရာ ဝန်ဆောင်မှုကို ပုံနှိပ်ထုတ်ယူရန်</translation>
 <translation id="3519938335881974273">စာမျက်နှာကို ဤအရာအဖြစ် သိမ်းရန်...</translation>
 <translation id="3520824492621090923">kiosk နှင့် သတ်မှတ်စက် စာရင်းသွင်းခြင်းကို အတည်ပြုမလား။</translation>
@@ -5133,7 +5132,6 @@
 <translation id="496185450405387901">ဤအက်ပ်ကို သင်၏စီမံခန့်ခွဲသူက ထည့်သွင်းထားပါသည်။</translation>
 <translation id="4963789650715167449">လက်ရှိတဘ်ကို ဖယ်ရှားရန်</translation>
 <translation id="4964455510556214366">အစီအစဉ်</translation>
-<translation id="496446150016900060">သင့်ဖုန်းဖြင့် Wi-Fi ကွန်ရက်များကို စင့်ခ်လုပ်နိုင်သည်</translation>
 <translation id="4965808351167763748">Hangouts Meet ကို ဖွင့်ရန်အတွက် ဤစက်ပစ္စည်းကို စနစ်ထည့်သွင်းလိုသည်မှာ သေချာပါသလား။</translation>
 <translation id="4966972803217407697">ရုပ်ဖျက်မုဒ် သုံးနေသည်</translation>
 <translation id="4967227914555989138">မှတ်စုထည့်ရန်</translation>
@@ -8448,7 +8446,6 @@
 <translation id="7629827748548208700">တဘ်: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">ဤစက်ကို <ph name="MANAGER" /> က စီမံခန့်ခွဲထားပြီး အကြိမ်တိုင်း လက်မှတ်ထိုးဝင်ရန် လိုအပ်သည်။</translation>
 <translation id="7631014249255418691">Linux အက်ပ်နှင့် ဖိုင်များကို အောင်မြင်စွာ အရန်သိမ်းပြီးပါပြီ</translation>
-<translation id="7631205654593498032">သင့်စက်ပစ္စည်းများကို ချိတ်ဆက်ခြင်းဖြင့် သင်၏ <ph name="DEVICE_TYPE" /> သည် အောက်ပါတို့ကို ပြုလုပ်နိုင်ကြောင်း သဘောတူရာရောက်ပါသည်-</translation>
 <translation id="7631887513477658702">ဤအမျိုးစား ဖိုင်များကို အမြဲဖွင့်မည်</translation>
 <translation id="7632948528260659758">အောက်ပါ kiosk apps များအား အဆင့်မမြှင့်နိုင်ပါ-</translation>
 <translation id="7633724038415831385">အပ်ဒိတ်လုပ်ရန်အတွက် ဤတစ်ကြိမ်တည်းသာလျှင် စောင့်ရပါမည်။ Chromebook များတွင် ဆော့ဖ်ဝဲအပ်ဒိတ်များက နောက်ခံတွင် လုပ်ဆောင်သည်။</translation>
@@ -10611,7 +10608,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - ကင်မရာနှင့် မိုက်ခရိုဖုန်းက မှတ်တမ်းတင်နေသည်</translation>
 <translation id="984275831282074731">ငွေပေးချေ နည်းလမ်းများ</translation>
 <translation id="984705303330760860">စာလုံးပေါင်းစစ်ဆေးမည့် ဘာသာစကားများ ထည့်ပါ</translation>
-<translation id="98515147261107953">ဘေးတိုက်</translation>
+<translation id="98515147261107953">အလျားလိုက်</translation>
 <translation id="987068745968718743">Parallels Desktop - <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">အထွေထွေ</translation>
 <translation id="987475089238841621">ဘာသာစကားအတွဲများကို ‘တိုက်ရိုက်စာတန်း’ အတွက် အသုံးပြုပြီး သင့်စက်တွင် သိမ်းထားသည်</translation>

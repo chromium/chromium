@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">બ્રાઉઝર હોમ</translation>
 <translation id="1526389707933164996">સ્ક્રીન સેવર ઍનિમેશન</translation>
 <translation id="152892567002884378">વૉલ્યૂમ વધારો</translation>
-<translation id="1539242642795599947">APNનો પ્રકાર ડિફૉલ્ટ અને અટૅચ છે.</translation>
 <translation id="1555130319947370107">વાદળી</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">બૅકલિટનો રંગ</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ફરી સ્કૅન કરો</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">આ APNને બંધ કરી કે કાઢી શકતાં નથી. ખાતરી કરો કે જોડેલા APN જે ચાલુ કરેલા છે, તેને બંધ કરવામાં અથવા કાઢી નાખવામાં આવ્યા છે.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> કીનું પરીક્ષણ કર્યું</translation>
 <translation id="5620281292257375798">માત્ર આંતરિક</translation>
 <translation id="5649768706273821470">સાંભળો</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">તમે હજી કનેક્ટ થયેલા નથી. જો તમારા મોબાઇલ ઑપરેટર કસ્ટમ APNની ભલામણ કરે, તો "+ નવું APN" પસંદ કરીને APNની માહિતી દાખલ કરો</translation>
 <translation id="5972388717451707488">એન્જિન અપડેટ કરો</translation>
 <translation id="5984145644188835034">ડિફૉલ્ટ વૉલપેપર</translation>
-<translation id="6001235009374883388">APNનો પ્રકાર અટૅચ છે.</translation>
 <translation id="6017514345406065928">લીલો</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ઑટોમૅટિક રીતે માસિક રીસેટ ચાલુ કરો</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">વિકાસકર્તા સાધનો</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">જોડો</translation>
 <translation id="8206859287963243715">સેલ્યુલર</translation>
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>

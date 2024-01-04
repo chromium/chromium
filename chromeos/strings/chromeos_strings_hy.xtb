@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">դիտարկիչի գլխավոր էջ</translation>
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
-<translation id="1539242642795599947">APN-ը կանխադրված և attach տեսակի է։</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="155865706765934889">Հպահարթակ</translation>
 <translation id="1561927818299383735">ֆոնային լուսավորության գույնը</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Նորից սկանավորել</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Հնարավոր չէ անջատել կամ հեռացնել այս APN-ը։ Համոզվեք, որ միացված և կցված APN-ներն անջատված են կամ հեռացված։</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
 <translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
 <translation id="5649768706273821470">Լսել</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Դուք դեռ չեք միացել։ Եթե ձեր բջջային օպերատորը որոշակի APN է խորհուրդ տալիս, մուտքագրեք այդ APN-ի տվյալները՝ ընտրելով «+ Նոր APN»</translation>
 <translation id="5972388717451707488">UpdateEngine</translation>
 <translation id="5984145644188835034">Կանխադրված պաստառ</translation>
-<translation id="6001235009374883388">APN-ը attach տեսակի է։</translation>
 <translation id="6017514345406065928">Կանաչ</translation>
 <translation id="6019566113895157499">Ստեղնաշարային դյուրանցումներ</translation>
 <translation id="6034694447310538551">Միացնել տեղեկությունների ամենամսյա ավտոմատ զրոյացումը</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Ծրագրավորողի գործիքներ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />։</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Կցել</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>

@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">গৃহ স্ক্ৰীনত ব্ৰাউজ কৰক</translation>
 <translation id="1526389707933164996">স্ক্ৰীন ছেভাৰৰ এনিমেশ্বন</translation>
 <translation id="152892567002884378">ভলিউম বঢ়াওক</translation>
-<translation id="1539242642795599947">এপিএনৰ প্ৰকাৰ ডিফ’ল্ট আৰু সংলগ্নক।</translation>
 <translation id="1555130319947370107">নীলা</translation>
 <translation id="155865706765934889">টাচ্চ্‌পেড</translation>
 <translation id="1561927818299383735">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰৰ ৰং</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">পুনৰ স্কেন কৰক</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
-<translation id="5584044598279886848">এই এপিএনটো অক্ষম কৰিব অথবা আঁতৰাব নোৱাৰি। সক্ষম কৰা সংলগ্ন এপিএনসমূহ অক্ষম কৰা অথবা আঁতৰোৱাটো নিশ্চিত কৰক।</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> কী পৰীক্ষা কৰা হৈছে</translation>
 <translation id="5620281292257375798">কেৱল অভ্যন্তৰীণ</translation>
 <translation id="5649768706273821470">শুনক</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">আপুনি এতিয়ালৈকে সংযুক্ত হোৱা নাই। যদি আপোনাৰ ম'বাইলৰ বাহকে এটা কাষ্টম এপিএন চুপাৰিছ কৰে, "+ নতুন এপিএন" বাছনি কৰি এপিএনৰ তথ্যখিনি দিয়ক</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">ডিফ’ল্ট ৱালপেপাৰ</translation>
-<translation id="6001235009374883388">এপিএন সংলগ্নক প্ৰকাৰৰ।</translation>
 <translation id="6017514345406065928">সেউজীয়া ৰং</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">স্বয়ংক্ৰিয়ভাৱে মাহিলী ৰিছেট হোৱাৰ সুবিধাটো সক্ষম কৰক</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">বিকাশকৰ্তাৰ সঁজুলি</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />।</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">সংলগ্ন কৰক</translation>
 <translation id="8206859287963243715">চেলুলাৰ</translation>
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8226628635270268143">আপোনাৰ প্ৰিয় ফট’ আৰু এলবামসমূহ বাছনি কৰক</translation>

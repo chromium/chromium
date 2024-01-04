@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">početna stranica preglednika</translation>
 <translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačavanje zvuka</translation>
-<translation id="1539242642795599947">APN je zadana vrsta i prilaže se.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna podloga</translation>
 <translation id="1561927818299383735">boja pozadinskog osvjetljenja</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Tipka za brisanje</translation>
-<translation id="5584044598279886848">Nije moguće onemogućiti ili ukloniti APN. Provjerite jesu li omogućeni priloženi APN-ovi onemogućeni ili uklonjeni.</translation>
 <translation id="5600027863942488546">Testirana je tipka <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Poslušajte</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Još uvijek se niste povezali. Ako mobilni operater preporučuje prilagođeni APN, unesite informacije o APN-u odabirom dugmeta "Dodaj novi APN"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Zadana pozadinska slika</translation>
-<translation id="6001235009374883388">APN se prilaže kao vrsta.</translation>
 <translation id="6017514345406065928">Zelena</translation>
 <translation id="6019566113895157499">Prečice tipki</translation>
 <translation id="6034694447310538551">Omogući automatsko mjesečno poništavanje</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Priloži</translation>
 <translation id="8206859287963243715">Mobilna mreža</translation>
 <translation id="8208861521865154048">Privilegije</translation>
 <translation id="8226628635270268143">Odaberite omiljene fotografije i albume</translation>

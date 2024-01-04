@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Carrega la imatge</translation>
 <translation id="1026959648338730078">Windows Hello o una clau de seguretat externa</translation>
 <translation id="1028700151766901954">Motiu: LBS es manté a <ph name="DEFAULT_OPEN_BROWSER" /> de manera predeterminada.</translation>
+<translation id="102916930470544692">Clau d'accés</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Toca per fer clic</translation>
 <translation id="1031362278801463162">S'està carregant la previsualització</translation>
@@ -1393,7 +1394,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2048554637254265991">S'ha produït un error en iniciar el gestor de contenidors. Torna-ho a provar.</translation>
 <translation id="2048653237708779538">Acció no disponible</translation>
 <translation id="204914487372604757">Crea la drecera</translation>
-<translation id="2050339315714019657">Retrat</translation>
+<translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El gestor de contrasenyes de Google ha creat una contrasenya segura per a aquest lloc web</translation>
 <translation id="2051555741181591333">Desactiva automàticament el punt d'accés Wi‐Fi</translation>
 <translation id="2051669996101374349">Utilitza HTTPS sempre que puguis i rep un advertiment abans de carregar llocs web que no admeten aquest protocol. No pots canviar aquesta opció de configuració perquè tens activada la Protecció avançada.</translation>
@@ -2198,7 +2199,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="265748523151262387">Mantén la connexió amb el telèfon</translation>
 <translation id="2657612187216250073">Configuració d'accessibilitat del punter</translation>
 <translation id="2658941648214598230">Vols que es mostri el contingut original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Les funcions varien segons el dispositiu</translation>
 <translation id="2659971421398561408">Canvi de mida del disc de Crostini</translation>
 <translation id="2660779039299703961">Esdeveniment</translation>
 <translation id="266079277508604648">No es pot contactar amb la impressora. Comprova que estigui encesa i connectada al teu Chromebook per Wi-Fi o USB.</translation>
@@ -3275,7 +3275,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3514681096978190000">Aquest fitxer d'arxiu inclou altres fitxers que poden amagar programari maliciós</translation>
 <translation id="3515983984924808886">Torna a tocar la clau de seguretat per confirmar el restabliment. Se suprimirà tota la informació desada a la clau de seguretat, inclòs el PIN.</translation>
 <translation id="3518866566087677312">Afegeix a les adreces d'interès els llocs a què vulguis tornar més endavant</translation>
-<translation id="3518985090088779359">Accepta i continua</translation>
 <translation id="3519564332031442870">Servei d'impressió al processador dorsal</translation>
 <translation id="3519938335881974273">Desa la pàgina com a...</translation>
 <translation id="3520824492621090923">Confirmes la inscripció del dispositiu de quiosc i de cartelleria?</translation>
@@ -5118,7 +5117,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="496185450405387901">L'administrador ha instal·lat aquesta aplicació.</translation>
 <translation id="4963789650715167449">Suprimeix la pestanya actual</translation>
 <translation id="4964455510556214366">Disposició</translation>
-<translation id="496446150016900060">Sincronitzar les xarxes Wi‑Fi amb el teu telèfon.</translation>
 <translation id="4965808351167763748">Confirmes que vols configurar aquest dispositiu perquè executi Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estàs en mode d'incògnit</translation>
 <translation id="4967227914555989138">Afegeix una nota</translation>
@@ -8435,7 +8433,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7629827748548208700">Pestanya: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> gestiona aquest dispositiu i requereix que hi iniciïs la sessió cada vegada.</translation>
 <translation id="7631014249255418691">S'ha creat la còpia de seguretat dels fitxers i de les aplicacions de Linux</translation>
-<translation id="7631205654593498032">En connectar els dispositius, acceptes que <ph name="DEVICE_TYPE" /> pugui fer el següent:</translation>
 <translation id="7631887513477658702">Obre &amp;sempre els fitxers d'aquest tipus</translation>
 <translation id="7632948528260659758">No s'han pogut actualitzar les aplicacions següents del quiosc:</translation>
 <translation id="7633724038415831385">Aquest és l'únic cop que hauràs d'esperar que es completi una actualització. Als Chromebook, les actualitzacions de programari es duen a terme en segon pla.</translation>

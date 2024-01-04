@@ -895,7 +895,7 @@
 <translation id="5793373065989412701">กำลังตรวจสอบสมาชิกในครอบครัว…</translation>
 <translation id="5802829331520313983">ตั้งค่า…</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
-<translation id="5804241973901381774">การอนุญาต</translation>
+<translation id="5804241973901381774">สิทธิ์</translation>
 <translation id="5812974770859303494">เพิ่มใน…</translation>
 <translation id="581659025233126501">เปิดการซิงค์</translation>
 <translation id="5817176759448082654">การตรวจสอบรหัสผ่าน</translation>
@@ -1372,6 +1372,7 @@
 <translation id="8237382152611443140">เปิดการตั้งค่าการป้อนรหัสผ่านอัตโนมัติ</translation>
 <translation id="8248969482078657578">แท็บที่ไม่ได้ใช้งานจะช่วยให้คุณมีสมาธิจดจ่อ</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8263336784344783289">ตั้งชื่อกลุ่มนี้</translation>
 <translation id="8264966119170358612">รหัสผ่านบางส่วนที่คุณบันทึกไว้มีการรั่วไหลจากการละเมิดข้อมูลที่ไม่ใช่ของ Google <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">คุณออกจากระบบบัญชี <ph name="USER_NAME" /> ในขั้นตอนการรีเซ็ต iPad หากต้องการลงชื่อเข้าใช้อีกครั้ง ให้แตะ "ต่อไป" ด้านล่าง</translation>
 <translation id="8271720166617117963">ยอมรับและลงชื่อเข้าใช้</translation>

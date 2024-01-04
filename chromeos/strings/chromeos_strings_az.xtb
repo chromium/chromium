@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">brauzerin əsas səhifəsi</translation>
 <translation id="1526389707933164996">Ekran qoruyucu animasiyası</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
-<translation id="1539242642795599947">APN növü: defolt və qoşma.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Taçped</translation>
 <translation id="1561927818299383735">fon işığı rəngi</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yenidən skan edin</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
-<translation id="5584044598279886848">Bu APN-i deaktiv etmək və ya silmək olmur. Əlavə edilmiş aktiv APN-lər deaktiv edilməli və ya silinməlidir.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> düyməsi test edilib</translation>
 <translation id="5620281292257375798">Yalnız daxili</translation>
 <translation id="5649768706273821470">Dinləyin</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Hələ qoşulmamısınız. Mobil operator fərdi APN tövsiyə edirsə, "+Yeni APN" seçməklə APN məlumatını daxil edin</translation>
 <translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="5984145644188835034">Defolt Divar Kağızı</translation>
-<translation id="6001235009374883388">APN növü: qoşma.</translation>
 <translation id="6017514345406065928">Yaşıl</translation>
 <translation id="6019566113895157499">Düymə qısayolları</translation>
 <translation id="6034694447310538551">Avtomatik aylıq sıfırlamanı aktivləşdirin</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Developer alətləri</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Əlavə edin</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>

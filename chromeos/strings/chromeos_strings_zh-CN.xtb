@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">浏览器主页</translation>
 <translation id="1526389707933164996">屏保动画</translation>
 <translation id="152892567002884378">调高音量</translation>
-<translation id="1539242642795599947">APN 是 default 和 attach 类型。</translation>
 <translation id="1555130319947370107">蓝色</translation>
 <translation id="155865706765934889">触控板</translation>
 <translation id="1561927818299383735">背光颜色</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">重新扫描</translation>
 <translation id="5583640892426849032">退格</translation>
-<translation id="5584044598279886848">无法停用或移除此 APN。请务必先停用或移除已启用的附着 APN。</translation>
 <translation id="5600027863942488546">已测试<ph name="KEY_NAME" />键</translation>
 <translation id="5620281292257375798">仅供内部使用</translation>
 <translation id="5649768706273821470">收听</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">您尚未连接网络。如果您的移动运营商推荐使用自定义 APN，请选择“+ 新建 APN”，然后输入 APN 信息</translation>
 <translation id="5972388717451707488">更新引擎</translation>
 <translation id="5984145644188835034">默认壁纸</translation>
-<translation id="6001235009374883388">APN 是 attach 类型。</translation>
 <translation id="6017514345406065928">绿色</translation>
 <translation id="6019566113895157499">键盘快捷键</translation>
 <translation id="6034694447310538551">启用每月自动重置</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">开发者工具</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />，<ph name="ACCELERATOR_INFO" />。</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">附加</translation>
 <translation id="8206859287963243715">蜂窝网络设备</translation>
 <translation id="8208861521865154048">福利</translation>
 <translation id="8226628635270268143">选择您喜爱的照片和影集</translation>

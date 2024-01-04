@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">బ్రౌజర్ హోమ్</translation>
 <translation id="1526389707933164996">స్క్రీన్ సేవర్ యానిమేషన్</translation>
 <translation id="152892567002884378">వాల్యూమ్ పెంచండి</translation>
-<translation id="1539242642795599947">APN అనే దానిని ఆటోమేటిక్ సెట్టింగ్ అని టైప్ చేసి అటాచ్ చేయండి.</translation>
 <translation id="1555130319947370107">నీలం</translation>
 <translation id="155865706765934889">టచ్‌ప్యాడ్</translation>
 <translation id="1561927818299383735">బ్యాక్‌లైట్ రంగు</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">మళ్లీ స్కాన్ చేయండి</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేసి ఉన్న అటాచ్ చేయబడిన APNలు డిసేబుల్ చేయబడ్డాయని లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> కీని పరీక్షించారు</translation>
 <translation id="5620281292257375798">అంతర్గతం మాత్రమే</translation>
 <translation id="5649768706273821470">వినండి</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">మీ పరికరం ఇంకా నెట్‌వర్క్‌కు కనెక్ట్ చేయబడలేదు. మీ మొబైల్ క్యారియర్ అనుకూల APNను సిఫార్సు చేస్తే, "+ కొత్త APN"ను ఎంచుకోవడం ద్వారా APN సమాచారాన్ని ఎంటర్ చేయండి</translation>
 <translation id="5972388717451707488">ఇంజిన్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="5984145644188835034">ఆటోమేటిక్ వాల్‌పేపర్</translation>
-<translation id="6001235009374883388">APN అనేది అటాచ్ రకం.</translation>
 <translation id="6017514345406065928">ఆకుపచ్చ</translation>
 <translation id="6019566113895157499">కీ షార్ట్‌కట్‌లు</translation>
 <translation id="6034694447310538551">ఆటోమేటిక్ నెలవారీ రీసెట్‌ను ఎనేబుల్ చేయండి</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">డెవలపర్ సాధనాలు</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">అటాచ్ చేయండి</translation>
 <translation id="8206859287963243715">సెల్యులార్</translation>
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>

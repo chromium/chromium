@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">серепчинин башкы бети</translation>
 <translation id="1526389707933164996">Көшөгө анимациясы</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
-<translation id="1539242642795599947">APN түрү – default жана attach.</translation>
 <translation id="1555130319947370107">Көк</translation>
 <translation id="155865706765934889">Тийме такта</translation>
 <translation id="1561927818299383735">баскычтоптун жарыгынын түсү</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Кайра скандоо</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Бул APN'ди өчүрүү же алып салуу мүмкүн эмес. Тиркелип жана иштетилген APN'дер өчүрүлүп же алып салынганын текшериңиз.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> баскычы сыналды</translation>
 <translation id="5620281292257375798">Ички колдонуу үчүн</translation>
 <translation id="5649768706273821470">Угуу</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Туташа элексиз. Эгер мобилдик байланыш операторуңуз жеке APN'ди сунуштаса, "+ Жаңы APN" дегенди тандап, APN маалыматын киргизиңиз</translation>
 <translation id="5972388717451707488">Каражатты жаңыртуу</translation>
 <translation id="5984145644188835034">Демейки тушкагаз</translation>
-<translation id="6001235009374883388">APN түрү – attach.</translation>
 <translation id="6017514345406065928">Жашыл</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Ай сайын автоматтык түрдө баштапкы абалга келтирүүнү иштетүү</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Иштеп чыгуучунун куралдары</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Тиркөө</translation>
 <translation id="8206859287963243715">Уюктук</translation>
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>

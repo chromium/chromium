@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Բեռնել պատկերը</translation>
 <translation id="1026959648338730078">Windows Hello կամ անվտանգության արտաքին բանալի</translation>
 <translation id="1028700151766901954">Պատճառը՝ LBS-ն ըստ կանխադրման մնում է <ph name="DEFAULT_OPEN_BROWSER" /> դիտարկիչում։</translation>
+<translation id="102916930470544692">Անցաբառ</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tap to click</translation>
 <translation id="1031362278801463162">Նախադիտման բեռնում</translation>
@@ -2198,7 +2199,6 @@
 <translation id="265748523151262387">Մնացեք կապի մեջ ձեր հեռախոսի օգնությամբ</translation>
 <translation id="2657612187216250073">Նշորդի հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="2658941648214598230">Ցույց տա՞լ սկզբնական բովանդակությունը</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Տարբեր սարքերում գործառույթները կարող են տարբեր լինել</translation>
 <translation id="2659971421398561408">Սկավառակի չափի փոխում Crostini-ում</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
 <translation id="266079277508604648">Չհաջողվեց միանալ տպիչին: Ստուգեք՝ արդյոք տպիչը սնուցվում է հոսանքից և միացված է Chromebook-ին Wi-Fi-ի կամ USB-ի միջոցով:</translation>
@@ -3273,7 +3273,6 @@
 <translation id="3514681096978190000">Այս արխիվը պարունակում է ֆայլեր, որոնցում կարող են վնասագրեր լինել</translation>
 <translation id="3515983984924808886">Հաստատելու համար նորից հպեք անվտանգության բանալուն: Բանալու վրա պահված բոլոր տվյալները, այդ թվում՝ PIN կոդը, կջնջվեն:</translation>
 <translation id="3518866566087677312">Էջանշեք այն բաները, որոնց ուզում եք ավելի ուշ վերադառնալ</translation>
-<translation id="3518985090088779359">Ընդունել և շարունակել</translation>
 <translation id="3519564332031442870">Տպման սերվերային ծառայություն</translation>
 <translation id="3519938335881974273">Պահել էջը որպես…</translation>
 <translation id="3520824492621090923">Գրանցե՞լ սարքը կրպակի և ցուցանակի ռեժիմում</translation>
@@ -3447,6 +3446,7 @@
 <translation id="3659929705630080526">Դուք չափից շատ անգամ մուտքի սխալ կոդ եք մուտքագրել։ Փորձեք ավելի ուշ։</translation>
 <translation id="3660234220361471169">Անվստահելի</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Գտնվել է գոյություն ունեցող 1 գաղտնաբառ}one{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}other{Գտնվել է գոյություն ունեցող {NUM_PASSWORDS} գաղտնաբառ}}</translation>
+<translation id="3662207097851752847">Հաստատեք ձեր Google հաշիվը ձեր հեռախոսում</translation>
 <translation id="3664511988987167893">Ընդլայնման պատկերակ</translation>
 <translation id="3665100783276035932">Կայքերի մեծ մասը պետք է պատշաճ կերպով աշխատի</translation>
 <translation id="3665301845536101715">Բացել կողային վահանակում</translation>
@@ -5117,7 +5117,6 @@
 <translation id="496185450405387901">Այս հավելվածը տեղադրել է ձեր ադմինիստրատորը։</translation>
 <translation id="4963789650715167449">Հեռացնել ընթացիկ ներդիրը</translation>
 <translation id="4964455510556214366">Դասավորորություն</translation>
-<translation id="496446150016900060">Համաժամացնել Wi-Fi ցանցերը ձեր հեռախոսի հետ</translation>
 <translation id="4965808351167763748">Կարգավորե՞լ Hangouts Meet-ն այս սարքում</translation>
 <translation id="4966972803217407697">Դուք ինկոգնիտո ռեժիմում եք</translation>
 <translation id="4967227914555989138">Ավելացնել նշում</translation>
@@ -8168,6 +8167,7 @@
 <translation id="7416263748877373774">Չհաջողվեց բեռնել օգտագործման պայմանները։ Ստուգեք կապը և նորից փորձեք։</translation>
 <translation id="7416362041876611053">Ցանցի անհայտ սխալ:</translation>
 <translation id="741906494724992817">Այս հավելվածի համար հատուկ թույլտվություններ պետք չեն:</translation>
+<translation id="7419142833919893307">Օգտանուն չի ավելացվել</translation>
 <translation id="7419565702166471774">Միշտ օգտագործել անվտանգ միացումներ</translation>
 <translation id="742130257665691897">Էջանիշները հեռացվեցին</translation>
 <translation id="7421925624202799674">&amp;Դիտել էջի կոդը</translation>
@@ -8432,7 +8432,6 @@
 <translation id="7629827748548208700">Ներդիր` <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Այս սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի/հաշվի կողմից։ Անհրաժեշտ է ամեն անգամ հաշիվ մտնել։</translation>
 <translation id="7631014249255418691">Լինուքսի հավելվածներն ու ֆայլերը պահուստավորվեցին</translation>
-<translation id="7631205654593498032">Միացնելուց հետո <ph name="DEVICE_TYPE" /> սարքը կարող է՝</translation>
 <translation id="7631887513477658702">&amp;Միշտ բացել այս տեսակի ֆայլերը</translation>
 <translation id="7632948528260659758">Չհաջողվեց թարմացնել հետևյալ kiosk հավելվածները՝</translation>
 <translation id="7633724038415831385">Դուք միայն այս անգամ պետք է սպասեք թարմացման։ Chromebook սարքերում ծրագրակազմի թարմացումը տեղի է ունենում ֆոնային ռեժիմում։</translation>
@@ -8478,6 +8477,7 @@
 <translation id="7659154729610375585">Միևնույն է փակե՞լ ինկոգնիտո ռեժիմը։</translation>
 <translation id="7659336857671800422">Ուսումնասիրեք ուղեցույցը</translation>
 <translation id="7659584679870740384">Դուք այս սարքից օգտվելու իրավունք չունեք: Մուտք գործելու թույլտվության համար դիմեք սարքի ադմինիստրատորին:</translation>
+<translation id="7660116474961254898">Հետևեք հրահանգներին ձեր հեռախոսում</translation>
 <translation id="7660146600670077843">Մկնիկի աջ կոճակով սեղմեք ներդիրի վրա և ընտրեք «Ավելացնել ներդիրը նոր խմբում»</translation>
 <translation id="7661259717474717992">Թույլ տալ կայքերին պահել և կարդալ քուքիների տվյալները</translation>
 <translation id="7661451191293163002">Չհաջողվեց ստանալ գրանցման հավաստագիրը:</translation>

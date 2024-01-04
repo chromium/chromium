@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">tarayıcı ana sayfası</translation>
 <translation id="1526389707933164996">Ekran koruyucu animasyon</translation>
 <translation id="152892567002884378">Sesi açar</translation>
-<translation id="1539242642795599947">APN hem varsayılan hem ek erişim noktası adıdır.</translation>
 <translation id="1555130319947370107">Mavi</translation>
 <translation id="155865706765934889">Dokunmatik Tuş Takımı</translation>
 <translation id="1561927818299383735">arkadan aydınlatmalı renk</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Yeniden tara</translation>
 <translation id="5583640892426849032">Geri al tuşu</translation>
-<translation id="5584044598279886848">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki eklenmiş APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> tuşu test edildi</translation>
 <translation id="5620281292257375798">Yalnızca dahili</translation>
 <translation id="5649768706273821470">Dinle</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Henüz bağlanmadınız. Mobil operatörünüz özel bir APN önerirse "+ Yeni APN"yi seçerek APN bilgilerini girin.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Varsayılan Duvar Kağıdı</translation>
-<translation id="6001235009374883388">APN, ek erişim noktası adıdır.</translation>
 <translation id="6017514345406065928">Yeşil</translation>
 <translation id="6019566113895157499">Tuş Kısayolları</translation>
 <translation id="6034694447310538551">Aylık otomatik sıfırlamayı etkinleştir</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Geliştirici araçları</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Ekle</translation>
 <translation id="8206859287963243715">Cep telefonu</translation>
 <translation id="8208861521865154048">Avantajlar</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>

@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Зареждане на изображението</translation>
 <translation id="1026959648338730078">Windows Hello или външен ключ за сигурност</translation>
 <translation id="1028700151766901954">Причина: Услугите, базиращи се на местоположението, остават в(ъв) <ph name="DEFAULT_OPEN_BROWSER" /> по подразбиране.</translation>
+<translation id="102916930470544692">Ключ за достъп</translation>
 <translation id="1029317248976101138">Промяна на мащаба</translation>
 <translation id="1029526375103058355">Кликване с докосване</translation>
 <translation id="1031362278801463162">Визуализацията се зарежда</translation>
@@ -2209,7 +2210,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="265748523151262387">Останете свързани с телефона си</translation>
 <translation id="2657612187216250073">Настройки за достъпност за курсора</translation>
 <translation id="2658941648214598230">Да се покаже ли оригиналното съдържание?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> Функциите варират според устройството</translation>
 <translation id="2659971421398561408">Промяна на размера на диска за Crostini</translation>
 <translation id="2660779039299703961">Събитие</translation>
 <translation id="266079277508604648">Не може да се установи връзка с принтера. Уверете се, че е включен и е свързан с вашия Chromebook чрез Wi-Fi или USB.</translation>
@@ -3286,7 +3286,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3514681096978190000">Този архивен файл съдържа други файлове, които може да крият злонамерен софтуер</translation>
 <translation id="3515983984924808886">Докоснете отново ключа си за сигурност, за да потвърдите нулирането. Цялата съхранявана в ключа информация, включително ПИН кодът му, ще бъде изтрита.</translation>
 <translation id="3518866566087677312">Запазете отметки към нещата, които искате да прегледате по-късно</translation>
-<translation id="3518985090088779359">Приемам и напред</translation>
 <translation id="3519564332031442870">Услуга за отпечатване в задния слой</translation>
 <translation id="3519938335881974273">Запазване на страницата като...</translation>
 <translation id="3520824492621090923">Потвърждавате ли регистрирането на устройството за павилионен режим или режим за дигитални знаци и надписи?</translation>
@@ -5132,7 +5131,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="496185450405387901">Това приложение е инсталирано от администратора ви.</translation>
 <translation id="4963789650715167449">Премахване на текущия раздел</translation>
 <translation id="4964455510556214366">Подредба</translation>
-<translation id="496446150016900060">Синхронизирайте Wi-Fi мрежите с телефона си</translation>
 <translation id="4965808351167763748">Наистина ли искате да настроите това устройство да изпълнява Hangouts Meet?</translation>
 <translation id="4966972803217407697">Сърфирате в режим „инкогнито“</translation>
 <translation id="4967227914555989138">Добавяне на бележка</translation>
@@ -8451,7 +8449,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7629827748548208700">Раздел: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Това устройство се управлява от <ph name="MANAGER" /> и трябва всеки път да влизате в профила си.</translation>
 <translation id="7631014249255418691">Успешно бе създадено резервно копие на приложенията и файловете за Linux</translation>
-<translation id="7631205654593498032">Когато свържете устройствата си, приемате, че вашият <ph name="DEVICE_TYPE" /> може да:</translation>
 <translation id="7631887513477658702">&amp;Файловете от този тип да се отварят винаги</translation>
 <translation id="7632948528260659758">Актуализирането на следните павилионни приложения не бе успешно:</translation>
 <translation id="7633724038415831385">Никога повече няма да чакате актуализация. На Chromebook актуализациите на софтуера се извършват на заден план.</translation>

@@ -259,6 +259,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1455413310270022028">Radirka</translation>
 <translation id="1458140305240870199">Spodnje perilo</translation>
 <translation id="1459693405370120464">Vreme</translation>
+<translation id="1461041542809785877">Učinkovitost delovanja</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">uporabiti pisave v računalniku, da boste lahko ustvarjali vsebino visoke kakovosti.</translation>
 <translation id="1467432559032391204">V levo</translation>
@@ -582,7 +583,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2094704029599359040">Informacije o različici</translation>
 <translation id="2099652385553570808">Trojno spenjanje na levi</translation>
 <translation id="2101225219012730419">Različica:</translation>
-<translation id="2102134110707549001">Predlagaj zapleteno geslo …</translation>
+<translation id="2102134110707549001">Predlagaj močno geslo …</translation>
 <translation id="2102495993840063010">Aplikacije za Android</translation>
 <translation id="2107021941795971877">Podpora za tiskanje</translation>
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
@@ -657,7 +658,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2233745931693710080">Compact Disc</translation>
 <translation id="2235344399760031203">Piškotki drugih spletnih mest so blokirani</translation>
 <translation id="2239100178324503013">Pošlji</translation>
-<translation id="2239114457614475014">Urejanje vnosa</translation>
 <translation id="2241693394036365668">Datoteka je prenesena</translation>
 <translation id="2246264294482514010">10 x 12 palcev</translation>
 <translation id="2246480341630108201">Starš še ni potrdil, da se strinja</translation>
@@ -992,7 +992,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2959113999220720579">Nega obraza in telesa</translation>
 <translation id="2962073860865348475">12 x 18 palcev</translation>
 <translation id="2968103128155246731">Kombiji in enoprostorci</translation>
-<translation id="2971483124699139256">S palcem gor pošljete povratne informacije, da vam je ustvarjeno besedilo všeč.</translation>
 <translation id="2972581237482394796">&amp;Uveljavi</translation>
 <translation id="2977665033722899841">Trenutno izbrano: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1577,7 +1576,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4132448310531350254">Podvojene rutine za obravnavo za pripono datoteke »<ph name="FILE_EXTENSION" />«, navedene v aplikacijah »<ph name="POLICY_IDS_LIST" />«.</translation>
 <translation id="4134123981501319574">Ustvari dokument</translation>
 <translation id="413544239732274901">Več o tem</translation>
-<translation id="4139859738677203214">S palcem dol odprete obrazec za pošiljanje podrobnih povratnih informacij glede tega, zakaj vam ustvarjeno besedilo ni všeč.</translation>
 <translation id="4140905530744469899">ID profila:</translation>
 <translation id="4142935452406587478">Pladenj 10</translation>
 <translation id="4148925816941278100">American Express</translation>
@@ -2364,7 +2362,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5700761515355162635">Piškotki tretjih oseb so dovoljeni</translation>
 <translation id="5701381305118179107">Na sredino</translation>
 <translation id="5707154300732650394">Nadaljevanje poti</translation>
-<translation id="57094364128775171">Predlagaj zapleteno geslo …</translation>
+<translation id="57094364128775171">Predlagaj močno geslo …</translation>
 <translation id="571403275720188526">(arm64)</translation>
 <translation id="571510845185711675">Veterinarji</translation>
 <translation id="5715150588940290235">Želite izbrisati shranjene varnostne kode?</translation>

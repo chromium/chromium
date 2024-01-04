@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ukurasa wa kwanza wa kivinjari</translation>
 <translation id="1526389707933164996">Uhuishaji wa taswira ya skrini</translation>
 <translation id="152892567002884378">Ongeza sauti</translation>
-<translation id="1539242642795599947">APN ni ya chaguomsingi na ya kuambatisha.</translation>
 <translation id="1555130319947370107">Samawati</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">rangi ya mwangaza wa nyuma</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Changanua upya</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Imeshindwa kuzima au kuondoa APN hii. Hakikisha APN ulizowasha ambazo zimeambatishwa zimezimwa au kuondolewa.</translation>
 <translation id="5600027863942488546">Kitufe cha <ph name="KEY_NAME" /> kimejaribishwa</translation>
 <translation id="5620281292257375798">Ndani ya kampuni pekee</translation>
 <translation id="5649768706273821470">Sikiliza</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Bado hujaunganishwa. Ikiwa mtoa huduma za simu anapendekeza APN maalum, weka maelezo ya APN kwa kuchagua "+ APN Mpya"</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Mandhari chaguomsingi</translation>
-<translation id="6001235009374883388">APN ni ya kuambatisha.</translation>
 <translation id="6017514345406065928">Kijani</translation>
 <translation id="6019566113895157499">Njia za Mikato za Kibodi</translation>
 <translation id="6034694447310538551">Washa uwekaji upya wa data kiotomatiki kila mwezi</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Zana za wasanidi programu</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Ambatisha</translation>
 <translation id="8206859287963243715">Simu ya Mkononi</translation>
 <translation id="8208861521865154048">Manufaa</translation>
 <translation id="8226628635270268143">Chagua picha na albamu uzipendazo zaidi</translation>

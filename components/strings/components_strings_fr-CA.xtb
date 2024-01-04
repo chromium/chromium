@@ -258,6 +258,7 @@
 <translation id="1455413310270022028">Gomme</translation>
 <translation id="1458140305240870199">Sous-vêtements</translation>
 <translation id="1459693405370120464">Météo</translation>
+<translation id="1461041542809785877">Performance</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Utiliser les polices de votre ordinateur afin que vous puissiez créer du contenu haute-fidélité</translation>
 <translation id="1467432559032391204">À gauche</translation>
@@ -655,7 +656,6 @@
 <translation id="2233745931693710080">Disque compact</translation>
 <translation id="2235344399760031203">Les témoins tiers sont bloqués</translation>
 <translation id="2239100178324503013">Envoyer maintenant</translation>
-<translation id="2239114457614475014">Modifier l'entrée</translation>
 <translation id="2241693394036365668">Un fichier est téléchargé</translation>
 <translation id="2246264294482514010">10 po x 12 po</translation>
 <translation id="2246480341630108201">Ton parent n'a pas encore indiqué que tu as l'autorisation</translation>
@@ -990,7 +990,6 @@
 <translation id="2959113999220720579">Soins du visage et du corps</translation>
 <translation id="2962073860865348475">12 po x 18 po</translation>
 <translation id="2968103128155246731">Fourgons et fourgonnettes</translation>
-<translation id="2971483124699139256">La mention J'aime indique que vous aimez le texte généré.</translation>
 <translation id="2972581237482394796">&amp;Rétablir</translation>
 <translation id="2977665033722899841">Ligne <ph name="ROW_NAME" /> actuellement sélectionnée. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opéra</translation>
@@ -1575,7 +1574,6 @@
 <translation id="4132448310531350254">Modules de traitement en double pour l'extension de fichier « <ph name="FILE_EXTENSION" /> » référencée par les applications « <ph name="POLICY_IDS_LIST" /> ».</translation>
 <translation id="4134123981501319574">Créer un document</translation>
 <translation id="413544239732274901">En savoir plus</translation>
-<translation id="4139859738677203214">La mention Je n'aime pas ouvre un formulaire permettant de soumettre des commentaires détaillés sur les raisons pour lesquelles vous n'aimez pas le texte généré.</translation>
 <translation id="4140905530744469899">Identifiant de profil :</translation>
 <translation id="4142935452406587478">Bac 10</translation>
 <translation id="4148925816941278100">American Express</translation>

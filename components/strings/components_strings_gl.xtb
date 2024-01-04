@@ -259,6 +259,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1455413310270022028">Borrador</translation>
 <translation id="1458140305240870199">Roupa interior</translation>
 <translation id="1459693405370120464">O tempo</translation>
+<translation id="1461041542809785877">Rendemento</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usar os tipos de letra do teu ordenador para que poidas crear contido de alta fidelidade</translation>
 <translation id="1467432559032391204">Esquerda</translation>
@@ -657,7 +658,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2233745931693710080">Disco compacto</translation>
 <translation id="2235344399760031203">Bloqueáronse as cookies de terceiros</translation>
 <translation id="2239100178324503013">Enviar agora</translation>
-<translation id="2239114457614475014">Modificar a entrada</translation>
 <translation id="2241693394036365668">Descárgase un ficheiro</translation>
 <translation id="2246264294482514010">10 x 12 polgadas</translation>
 <translation id="2246480341630108201">O teu pai ou nai aínda non deu permiso</translation>
@@ -992,7 +992,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2959113999220720579">Coidados faciais e corporais</translation>
 <translation id="2962073860865348475">12 × 18 in</translation>
 <translation id="2968103128155246731">Furgonetas e monovolumes</translation>
-<translation id="2971483124699139256">Coa opción Gústame indicas que che gusta o texto xerado.</translation>
 <translation id="2972581237482394796">&amp;Refacer</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />: opción actualmente seleccionada. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Ópera</translation>
@@ -1577,7 +1576,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4132448310531350254">Controladores duplicados para o parámetro file_extension "<ph name="FILE_EXTENSION" />", ao que fan referencia as aplicacións "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Crear documento</translation>
 <translation id="413544239732274901">Máis información</translation>
-<translation id="4139859738677203214">Ao premer Non me gusta, abrirase un formulario para enviar comentarios detallados sobre o motivo polo que non che gusta o texto xerado.</translation>
 <translation id="4140905530744469899">Código de perfil:</translation>
 <translation id="4142935452406587478">Bandexa 10</translation>
 <translation id="4148925816941278100">American Express</translation>

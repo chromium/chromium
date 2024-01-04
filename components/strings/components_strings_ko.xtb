@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">지우개</translation>
 <translation id="1458140305240870199">속옷</translation>
 <translation id="1459693405370120464">날씨</translation>
+<translation id="1461041542809785877">성능</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">고품질 콘텐츠를 만들기 위해 컴퓨터에 설치된 글꼴을 사용합니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">컴팩트 디스크</translation>
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
-<translation id="2239114457614475014">입력 수정</translation>
 <translation id="2241693394036365668">파일 다운로드됨</translation>
 <translation id="2246264294482514010">10x12인치</translation>
 <translation id="2246480341630108201">아직 부모님이 허락하지 않았습니다.</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">얼굴 및 몸 관리</translation>
 <translation id="2962073860865348475">12x18인치</translation>
 <translation id="2968103128155246731">밴 및 미니밴</translation>
-<translation id="2971483124699139256">좋아요를 누르면 생성된 텍스트가 마음에 든다는 의견이 제출됩니다.</translation>
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />이(가) 현재 선택되어 있습니다. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">오페라</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4132448310531350254">앱 "<ph name="POLICY_IDS_LIST" />"에서 참조하는 파일 확장자(file_extension) "<ph name="FILE_EXTENSION" />"의 핸들러가 중복됩니다.</translation>
 <translation id="4134123981501319574">문서 만들기</translation>
 <translation id="413544239732274901">자세히 알아보기</translation>
-<translation id="4139859738677203214">싫어요를 누르면 생성된 텍스트가 마음에 들지 않는 이유에 관해 자세한 의견을 제출할 수 있는 양식이 열립니다.</translation>
 <translation id="4140905530744469899">프로필 ID:</translation>
 <translation id="4142935452406587478">트레이 10</translation>
 <translation id="4148925816941278100">American Express</translation>

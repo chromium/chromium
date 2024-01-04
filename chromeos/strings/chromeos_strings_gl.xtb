@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">páxina de inicio do navegador</translation>
 <translation id="1526389707933164996">Animación do protector de pantalla</translation>
 <translation id="152892567002884378">Sube o volume</translation>
-<translation id="1539242642795599947">O APN é predeterminado e de conexión.</translation>
 <translation id="1555130319947370107">Azul</translation>
 <translation id="155865706765934889">Panel táctil</translation>
 <translation id="1561927818299383735">cor da retroiluminación</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Volver buscar</translation>
 <translation id="5583640892426849032">Retroceso</translation>
-<translation id="5584044598279886848">Non se pode desactivar nin quitar este APN. Asegúrate de que os APN de conexión estean desactivados ou quitados.</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
 <translation id="5649768706273821470">Escoitar</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fondo de pantalla predeterminado</translation>
-<translation id="6001235009374883388">O APN é de conexión.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Atallos de teclado</translation>
 <translation id="6034694447310538551">Activar restablecemento mensual automático</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Ferramentas para programadores</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Intro</translation>
-<translation id="8183974620058026102">Anexar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>

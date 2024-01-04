@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">головна вкладка веб-переглядача</translation>
 <translation id="1526389707933164996">Анімація для заставки</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
-<translation id="1539242642795599947">Тип точки доступу: APN за умовчанням і APN під час реєстрації.</translation>
 <translation id="1555130319947370107">Синій</translation>
 <translation id="155865706765934889">Сенсорна панель</translation>
 <translation id="1561927818299383735">колір підсвітки</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">Технологія UMTS</translation>
 <translation id="5578519639599103840">Сканувати ще раз</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Не вдалося вимкнути або вилучити цю точку доступу. Переконайтеся, що ввімкнені точки доступу, які підключено, вимкнено або вилучено.</translation>
 <translation id="5600027863942488546">Клавішу "<ph name="KEY_NAME" />" перевірено</translation>
 <translation id="5620281292257375798">Лише для внутрішнього використання</translation>
 <translation id="5649768706273821470">Слухати</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Ви ще не підключилися до мережі. Якщо ваш оператор мобільного зв’язку рекомендує використовувати спеціальну точку доступу, натисніть "+ Нове ім’я точки доступу (APN)" і введіть інформацію про неї.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Фоновий малюнок за умовчанням</translation>
-<translation id="6001235009374883388">Тип точки доступу: APN під час реєстрації.</translation>
 <translation id="6017514345406065928">Зелений</translation>
 <translation id="6019566113895157499">Комбінації клавіш</translation>
 <translation id="6034694447310538551">Увімкнути автоматичне скидання щомісяця</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Інструменти розробника</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Вкласти</translation>
 <translation id="8206859287963243715">Мобільний</translation>
 <translation id="8208861521865154048">Бонуси</translation>
 <translation id="8226628635270268143">Вибрати улюблені фотографії й альбоми</translation>

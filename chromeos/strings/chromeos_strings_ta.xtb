@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">உலாவி முகப்பு</translation>
 <translation id="1526389707933164996">ஸ்கிரீன் சேவர் அனிமேஷன்</translation>
 <translation id="152892567002884378">ஒலியளவை அதிகரிக்கும்</translation>
-<translation id="1539242642795599947">இது ஓர் இயல்பு வகை APN மற்றும் இணைப்பு APN.</translation>
 <translation id="1555130319947370107">நீலம்</translation>
 <translation id="155865706765934889">டச்பேட்</translation>
 <translation id="1561927818299383735">பேக்லிட் வண்ணம்</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">மீண்டும் ஸ்கேன் செய்</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">இந்த APNனை முடக்கவோ அகற்றவோ முடியவில்லை. இணைக்கப்பட்ட APNகள் இயக்கப்பட்டிருந்தால் அவை முடக்கப்பட்டிருப்பதை அல்லது அகற்றப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> பட்டன் சோதனை செய்யப்பட்டது</translation>
 <translation id="5620281292257375798">அகப் பயன்பாட்டிற்கானது</translation>
 <translation id="5649768706273821470">கேள்</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">நீங்கள் இன்னும் இணைக்கப்படவில்லை. உங்கள் மொபைல் நிறுவனம் பிரத்தியேக APNனைப் பரிந்துரைத்தால் "+ புதிய APN" என்பதைத் தேர்ந்தெடுத்து APN தகவல்களை டைப் செய்யவும்</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">இயல்பு வால்பேப்பர்</translation>
-<translation id="6001235009374883388">இந்த APN, இணைப்பு வகையைச் சேர்ந்தது.</translation>
 <translation id="6017514345406065928">பச்சை</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">மாதந்தோறும் தானாக ரீசெட் செய்வதை இயக்கு</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">டெவெலப்பர் கருவிகள்</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">இணை</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>

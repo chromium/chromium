@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">Гума за бришење</translation>
 <translation id="1458140305240870199">Долна облека</translation>
 <translation id="1459693405370120464">Време</translation>
+<translation id="1461041542809785877">Изведба</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Користете ги фонтовите на компјутерот за да создавате содржини со висока верност</translation>
 <translation id="1467432559032391204">Лево</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">Компактен диск</translation>
 <translation id="2235344399760031203">Блокирани се колачиња од трети страни</translation>
 <translation id="2239100178324503013">Испрати сега</translation>
-<translation id="2239114457614475014">Изменете го внесувањето</translation>
 <translation id="2241693394036365668">Преземена е датотека</translation>
 <translation id="2246264294482514010">10 x 12 инчи</translation>
 <translation id="2246480341630108201">Твојот родител не рече дека е во ред сè уште</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">Нега на лице и тело</translation>
 <translation id="2962073860865348475">12 x 18 инчи</translation>
 <translation id="2968103128155246731">Комбиња и мини комбиња</translation>
-<translation id="2971483124699139256">„Ми се допаѓа“ испраќа повратни информации дека ви се допаѓа генерираниот текст.</translation>
 <translation id="2972581237482394796">&amp;Повтори</translation>
 <translation id="2977665033722899841">Моментално избрано: <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Опера</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4132448310531350254">Дупликат ракувачи за наставка на датотека „<ph name="FILE_EXTENSION" />“ како референца од апликациите „<ph name="POLICY_IDS_LIST" />“.</translation>
 <translation id="4134123981501319574">Создај документ</translation>
 <translation id="413544239732274901">Дознајте повеќе</translation>
-<translation id="4139859738677203214">„Не ми се допаѓа“ отвора формулар за испраќање детални повратни информации за тоа зошто не ви се допаѓа генерираниот текст.</translation>
 <translation id="4140905530744469899">ID на профил:</translation>
 <translation id="4142935452406587478">Фиока 10</translation>
 <translation id="4148925816941278100">American Express</translation>

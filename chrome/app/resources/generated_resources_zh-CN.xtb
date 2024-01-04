@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">加载图片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全密钥</translation>
 <translation id="1028700151766901954">原因：LBS 默认留在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
+<translation id="102916930470544692">通行密钥</translation>
 <translation id="1029317248976101138">缩放</translation>
 <translation id="1029526375103058355">点按即点击</translation>
 <translation id="1031362278801463162">正在加载预览</translation>
@@ -2190,7 +2191,6 @@
 <translation id="265748523151262387">保持与手机的连接</translation>
 <translation id="2657612187216250073">指针无障碍设置</translation>
 <translation id="2658941648214598230">显示原始内容？</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能因设备而异</translation>
 <translation id="2659971421398561408">调整为 Crostini 分配的磁盘空间大小</translation>
 <translation id="2660779039299703961">事件</translation>
 <translation id="266079277508604648">无法连接到打印机。请确保该打印机已开机且已通过 Wi-Fi 或 USB 连接到您的 Chromebook。</translation>
@@ -3267,7 +3267,6 @@
 <translation id="3514681096978190000">此归档文件包含可能隐藏恶意软件的其他文件</translation>
 <translation id="3515983984924808886">请再次轻触安全密钥以确认重置。安全密钥上存储的所有信息（包括它的 PIN 码）都会被删除。</translation>
 <translation id="3518866566087677312">为您暂不需要的内容添加书签以备后用</translation>
-<translation id="3518985090088779359">接受并继续</translation>
 <translation id="3519564332031442870">打印后端服务</translation>
 <translation id="3519938335881974273">将页面另存为…</translation>
 <translation id="3520824492621090923">确认进行自助服务终端和数字标牌设备注册？</translation>
@@ -5110,7 +5109,6 @@
 <translation id="496185450405387901">您的管理员已安装此应用。</translation>
 <translation id="4963789650715167449">移除当前标签页</translation>
 <translation id="4964455510556214366">排列方式</translation>
-<translation id="496446150016900060">将 Wi-Fi 网络配置同步到您的手机</translation>
 <translation id="4965808351167763748">确定要将此设备设为运行 Hangouts Meet 吗？</translation>
 <translation id="4966972803217407697">您正在使用无痕模式</translation>
 <translation id="4967227914555989138">添加备注</translation>
@@ -8425,7 +8423,6 @@
 <translation id="7629827748548208700">标签页：<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">此设备由 <ph name="MANAGER" /> 管理，要求您每次使用前必须先登录。</translation>
 <translation id="7631014249255418691">已成功备份 Linux 应用和文件</translation>
-<translation id="7631205654593498032">连接您的设备即表示您同意 <ph name="DEVICE_TYPE" /> 执行以下操作：</translation>
 <translation id="7631887513477658702">总是打开此类文件(&amp;A)</translation>
 <translation id="7632948528260659758">以下自助服务终端应用未能成功更新：</translation>
 <translation id="7633724038415831385">只有这一次，您需要等待系统完成更新。Chromebook 上的软件更新会在后台进行。</translation>

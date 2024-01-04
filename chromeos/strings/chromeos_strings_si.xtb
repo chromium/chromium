@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">බ්‍රව්සර් නිවස</translation>
 <translation id="1526389707933164996">තිර රූ සජීවිකරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
-<translation id="1539242642795599947">APN වර්ග පෙරනිමි කර අමුණන්න</translation>
 <translation id="1555130319947370107">නිල්</translation>
 <translation id="155865706765934889">ස්පර්ශ පුවරුව</translation>
 <translation id="1561927818299383735">පසුආලෝක වර්ණය</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">යළි ස්කෑන් කරන්න</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
-<translation id="5584044598279886848">මෙම APN අබල කිරීමට හෝ ඉවත් කිරීමට නොහැක. සබල කළ අමුණා ඇති APNs අබල කර හෝ ඉවත් කර ඇති බවට වග බලා ගන්න.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> යතුර පරීක්ෂා කරන ලදි</translation>
 <translation id="5620281292257375798">අභ්‍යන්තර පමණයි</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">ඔබ තවම සම්බන්ධ වී නැත. ඔබේ ජංගම වාහකයා අභිරුචි APN නිර්දේශ කරන්නේ නම්, "+ නව APN" තේරීමෙන් APN තොරතුරු ඇතුළු කරන්න</translation>
 <translation id="5972388717451707488">යන්ත්‍රය යාවත්කාලීන කරන්න</translation>
 <translation id="5984145644188835034">පෙරනිමි වෝල්පේපරය</translation>
-<translation id="6001235009374883388">APN වර්ග ඇමුණුම වේ</translation>
 <translation id="6017514345406065928">කොළ</translation>
 <translation id="6019566113895157499">යතුරු කෙටි මං</translation>
 <translation id="6034694447310538551">ස්වයංක්‍රීය මාසික යළි සැකසීම සබල කරන්න</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
-<translation id="8183974620058026102">අමුණන්න</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
 <translation id="8208861521865154048">අමතර වාසි</translation>
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>

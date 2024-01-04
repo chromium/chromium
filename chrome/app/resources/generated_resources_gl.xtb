@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Cargar imaxe</translation>
 <translation id="1026959648338730078">Windows Hello ou unha chave de seguranza externa</translation>
 <translation id="1028700151766901954">Razón: LBS queda en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
+<translation id="102916930470544692">Clave de acceso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para facer clic</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
@@ -2197,7 +2198,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="265748523151262387">Mantén a conexión co teu teléfono</translation>
 <translation id="2657612187216250073">Configuración de accesibilidade do punteiro</translation>
 <translation id="2658941648214598230">Queres mostrar o contido orixinal?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />As funcións varían segundo o dispositivo</translation>
 <translation id="2659971421398561408">Cambio de tamaño de disco de Crostini</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Non se puido conectar coa impresora. Comproba que estea acendida e conectada ao dispositivo Chromebook por wifi ou USB.</translation>
@@ -3274,7 +3274,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3514681096978190000">Este ficheiro de arquivo inclúe outros ficheiros que poden ocultar software malicioso</translation>
 <translation id="3515983984924808886">Toca a chave de seguranza de novo para confirmar o seu restablecemento. Eliminarase toda a información almacenada nela, incluídos os PIN.</translation>
 <translation id="3518866566087677312">Engade aos marcadores os sitios web que queiras consultar de novo máis tarde</translation>
-<translation id="3518985090088779359">Aceptar e continuar</translation>
 <translation id="3519564332031442870">Servizo de impresión do back end</translation>
 <translation id="3519938335881974273">Gardar páxina como...</translation>
 <translation id="3520824492621090923">Queres confirmar a inscrición do dispositivo coa actualización de quiosco e de sinalización?</translation>
@@ -3451,6 +3450,7 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3659929705630080526">Metiches un código de acceso incorrecto demasiadas veces. Téntao de novo máis tarde</translation>
 <translation id="3660234220361471169">Non fiables</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{Atopouse un contrasinal}other{Atopáronse {NUM_PASSWORDS} contrasinais}}</translation>
+<translation id="3662207097851752847">Confirma a túa Conta de Google no teléfono</translation>
 <translation id="3664511988987167893">Icona de extensión</translation>
 <translation id="3665100783276035932">A maioría dos sitios deberían funcionar segundo o previsto</translation>
 <translation id="3665301845536101715">Abrir no panel lateral</translation>
@@ -5120,7 +5120,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="496185450405387901">O teu administrador instalou esta aplicación.</translation>
 <translation id="4963789650715167449">Quitar pestana actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
-<translation id="496446150016900060">Sincroniza as redes wifi co teu teléfono</translation>
 <translation id="4965808351167763748">Seguro que queres configurar este dispositivo para que execute Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estás no modo de incógnito</translation>
 <translation id="4967227914555989138">Engadir unha nota</translation>
@@ -8169,6 +8168,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7416263748877373774">Non se puideron cargar as Condicións de servizo. Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="7416362041876611053">Erro de rede descoñecido.</translation>
 <translation id="741906494724992817">Esta aplicación non require permisos especiais.</translation>
+<translation id="7419142833919893307">Non se engadiu ningún nome de usuario</translation>
 <translation id="7419565702166471774">Usar sempre conexións seguras</translation>
 <translation id="742130257665691897">Quitáronse os marcadores</translation>
 <translation id="7421925624202799674">&amp;Ver fonte da páxina</translation>
@@ -8433,7 +8433,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7629827748548208700">Pestana: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> xestiona este dispositivo e require que inicies sesión cada vez.</translation>
 <translation id="7631014249255418691">Creouse correctamente unha copia de seguranza das aplicacións e dos ficheiros de Linux</translation>
-<translation id="7631205654593498032">Ao conectar os teus dispositivos, aceptas que o teu <ph name="DEVICE_TYPE" /> poida:</translation>
 <translation id="7631887513477658702">&amp;Abrir sempre ficheiros deste tipo</translation>
 <translation id="7632948528260659758">As seguintes aplicacións de quiosco non lograron actualizarse:</translation>
 <translation id="7633724038415831385">Esta é a única ocasión na que deberás agardar para efectuar unha actualización. Nos Chromebooks, as actualizacións realízanse en segundo plano.</translation>
@@ -8479,6 +8478,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7659154729610375585">Queres saír do modo de incógnito de todas formas?</translation>
 <translation id="7659336857671800422">Le a Guía de privacidade</translation>
 <translation id="7659584679870740384">Non estás autorizado a usar este dispositivo. Para obter permisos para iniciar sesión, ponte en contacto co administrador.</translation>
+<translation id="7660116474961254898">Sigue as instrucións indicadas no teléfono</translation>
 <translation id="7660146600670077843">Fai clic co botón dereito nunha pestana e selecciona Engadir pestana ao grupo novo</translation>
 <translation id="7661259717474717992">Permitir que os sitios garden e lean datos de cookies</translation>
 <translation id="7661451191293163002">Non se puido obter un certificado de rexistro.</translation>

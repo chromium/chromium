@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">pagina de pornire a browserului</translation>
 <translation id="1526389707933164996">Animație pentru screensaver</translation>
 <translation id="152892567002884378">Mărește volumul</translation>
-<translation id="1539242642795599947">APN este tipul prestabilit și atașat.</translation>
 <translation id="1555130319947370107">Albastru</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">culoarea iluminării din fundal</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Scanează din nou</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Nu se poate dezactiva sau elimina acest APN. Asigură-te că APN-urile atașate sunt dezactivate sau eliminate.</translation>
 <translation id="5600027863942488546">A fost testată tasta <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Numai intern</translation>
 <translation id="5649768706273821470">Ascultă</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Nu te-ai conectat încă. Dacă operatorul de telefonie mobilă recomandă un APN personalizat, introdu informațiile APN selectând „+ APN nou”</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Imagine de fundal prestabilită</translation>
-<translation id="6001235009374883388">APN este un tip de atașament.</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Activează resetarea lunară automată</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Instrumente dezvoltator</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Atașează</translation>
 <translation id="8206859287963243715">Celular</translation>
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>

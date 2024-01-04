@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">галоўны экран браўзера</translation>
 <translation id="1526389707933164996">Анімацыя застаўкі</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
-<translation id="1539242642795599947">Тып APN: "Стандартна" і "Далучыць".</translation>
 <translation id="1555130319947370107">Сіні</translation>
 <translation id="155865706765934889">Сэнсарная панэль</translation>
 <translation id="1561927818299383735">колер падсветкі</translation>
@@ -619,7 +618,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Сканіраваць паўторна</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Не ўдалося адключыць або выдаліць гэты ідэнтыфікатар APN. Вам трэба адключыць або выдаліць далучаныя APN, якія былі ўключаны.</translation>
 <translation id="5600027863942488546">Клавіша "<ph name="KEY_NAME" />" праверана</translation>
 <translation id="5620281292257375798">Для ўнутранага карыстання</translation>
 <translation id="5649768706273821470">Праслухаць</translation>
@@ -670,7 +668,6 @@
 <translation id="5946538341867151940">Падключэнне не ўстаноўлена. Калі ваш аператар мабільнай сувязі рэкамендуе выкарыстоўваць карыстальніцкую назву пункта доступу, увядзіце неабходную інфармацыю, націснуўшы "+ Новая APN".</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Стандартныя шпалеры</translation>
-<translation id="6001235009374883388">Тып APN: "Далучыць".</translation>
 <translation id="6017514345406065928">Зялёны</translation>
 <translation id="6019566113895157499">Спалучэнні клавіш</translation>
 <translation id="6034694447310538551">Уключыць аўтаматычны штомесячны скід</translation>
@@ -966,7 +963,6 @@
 <translation id="8151185429379586178">Інструменты распрацоўшчыкаў</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />: <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Далучыць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>

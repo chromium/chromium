@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">載入圖片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全金鑰</translation>
 <translation id="1028700151766901954">原因：LBS 預設保存在 <ph name="DEFAULT_OPEN_BROWSER" /> 中。</translation>
+<translation id="102916930470544692">密碼金鑰</translation>
 <translation id="1029317248976101138">縮放</translation>
 <translation id="1029526375103058355">點按</translation>
 <translation id="1031362278801463162">正在載入預覽畫面</translation>
@@ -2198,7 +2199,6 @@
 <translation id="265748523151262387">讓手機保持連線</translation>
 <translation id="2657612187216250073">游標無障礙設定</translation>
 <translation id="2658941648214598230">要顯示原始內容嗎？</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />功能會因裝置而異</translation>
 <translation id="2659971421398561408">調整 Crostini 磁碟大小</translation>
 <translation id="2660779039299703961">活動</translation>
 <translation id="266079277508604648">無法連上印表機。請確認印表機已開啟，且已透過 Wi-Fi 或 USB 連上 Chromebook。</translation>
@@ -3275,7 +3275,6 @@
 <translation id="3514681096978190000">這個封存檔案包含可能隱藏惡意軟體的其他檔案</translation>
 <translation id="3515983984924808886">請再次輕觸安全金鑰以確認重設。這個安全金鑰上儲存的所有資訊 (包括 PIN 碼) 都將遭到刪除。</translation>
 <translation id="3518866566087677312">將日後想回顧的內容加上書籤</translation>
-<translation id="3518985090088779359">接受並繼續</translation>
 <translation id="3519564332031442870">列印後端服務</translation>
 <translation id="3519938335881974273">另存網頁…</translation>
 <translation id="3520824492621090923">確認要註冊資訊站和看板裝置嗎？</translation>
@@ -5118,7 +5117,6 @@
 <translation id="496185450405387901">你的系統管理員已安裝此應用程式。</translation>
 <translation id="4963789650715167449">移除目前的分頁</translation>
 <translation id="4964455510556214366">排列</translation>
-<translation id="496446150016900060">將 Wi-Fi 網路同步至你的手機</translation>
 <translation id="4965808351167763748">你確定要設定這個裝置以執行 Hangouts Meet 嗎？</translation>
 <translation id="4966972803217407697">目前為無痕模式</translation>
 <translation id="4967227914555989138">新增附註</translation>
@@ -8432,7 +8430,6 @@
 <translation id="7629827748548208700">分頁：<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">這部裝置是由 <ph name="MANAGER" /> 所管理，你每次使用時都必須登入。</translation>
 <translation id="7631014249255418691">已成功備份 Linux 應用程式和檔案</translation>
-<translation id="7631205654593498032">連結裝置即表示您同意讓 <ph name="DEVICE_TYPE" /> 執行以下操作：</translation>
 <translation id="7631887513477658702">一律開啟這類檔案(&amp;A)</translation>
 <translation id="7632948528260659758">下列 Kiosk 應用程式更新失敗：</translation>
 <translation id="7633724038415831385">只有這一次需要等待更新。Chromebook 上的軟體更新會在背景中執行。</translation>

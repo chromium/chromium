@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">橡皮擦</translation>
 <translation id="1458140305240870199">内衣</translation>
 <translation id="1459693405370120464">天气</translation>
+<translation id="1461041542809785877">性能</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">使用您计算机上的字体，以便您能够创作高保真内容</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">CD</translation>
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2239100178324503013">立即发送</translation>
-<translation id="2239114457614475014">修改输入</translation>
 <translation id="2241693394036365668">下载文件</translation>
 <translation id="2246264294482514010">10 x 12 英寸</translation>
 <translation id="2246480341630108201">你的家长尚未表示同意</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">面部与身体护理</translation>
 <translation id="2962073860865348475">12 x 18 英寸</translation>
 <translation id="2968103128155246731">货车与小型货车</translation>
-<translation id="2971483124699139256">选择“我喜欢”，会提交表明您喜欢所生成的文本的反馈。</translation>
 <translation id="2972581237482394796">重做(&amp;R)</translation>
 <translation id="2977665033722899841">目前已选择“<ph name="ROW_NAME" />”。<ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">歌剧</translation>
@@ -1573,7 +1572,6 @@
 <translation id="4132448310531350254">“<ph name="POLICY_IDS_LIST" />”政策中指定的应用所引用的文件扩展名“<ph name="FILE_EXTENSION" />”被分配了多个处理程序。</translation>
 <translation id="4134123981501319574">创建文档</translation>
 <translation id="413544239732274901">了解详情</translation>
-<translation id="4139859738677203214">选择“不喜欢”会打开一个表单，您可以通过该表单提供详细的反馈，说明您为什么不喜欢所生成的文本。</translation>
 <translation id="4140905530744469899">个人资料 ID：</translation>
 <translation id="4142935452406587478">纸匣 10</translation>
 <translation id="4148925816941278100">American Express</translation>

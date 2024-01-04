@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
-<translation id="1539242642795599947">APN ಎಂಬುದು ಡೀಫಾಲ್ಟ್ ಮತ್ತು ಲಗತ್ತಿಸುವ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="1555130319947370107">ನೀಲಿ</translation>
 <translation id="155865706765934889">ಟಚ್‌ಪ್ಯಾಡ್</translation>
 <translation id="1561927818299383735">ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಬಣ್ಣ</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">ಪುನಃ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">ಈ APN ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು ಅಥವಾ ತೆಗೆದುಹಾಕಲು ಸಾಧ್ಯವಿಲ್ಲ. ಸಕ್ರಿಯಗೊಳಿಸಲಾದ ಸೇರಿಸಿರುವ APN ಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಅಥವಾ ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> ಕೀ ಪರೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="5620281292257375798">ಆಂತರಿಕ ಮಾತ್ರ</translation>
 <translation id="5649768706273821470">ಆಲಿಸು</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">ನೀವು ಇನ್ನೂ ಕನೆಕ್ಟ್ ಮಾಡಿಲ್ಲ. ನಿಮ್ಮ ಮೊಬೈಲ್ ಕ್ಯಾರಿಯರ್ ಕಸ್ಟಮ್ APN ಅನ್ನು ಶಿಫಾರಸು ಮಾಡಿದರೆ, "+ ಹೊಸ APN" ಅನ್ನು ಆಯ್ಕೆಮಾಡುವ ಮೂಲಕ APN ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="5972388717451707488">ಎಂಜಿನ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="5984145644188835034">ಡೀಫಾಲ್ಟ್ ವಾಲ್‌ಪೇಪರ್</translation>
-<translation id="6001235009374883388">APN ಎಂಬುದು ಲಗತ್ತಿಸುವ ಪ್ರಕಾರವಾಗಿದೆ.</translation>
 <translation id="6017514345406065928">ಹಸಿರು</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">ಸ್ವಯಂಚಾಲಿತ ಮಾಸಿಕ ರೀಸೆಟ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">ಡೆವಲಪರ್ ಟೂಲ್‌ಗಳು</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">ಲಗತ್ತಿಸಿ</translation>
 <translation id="8206859287963243715">ಸೆಲ್ಯುಲಾರ್</translation>
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

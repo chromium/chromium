@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Încarcă imaginea</translation>
 <translation id="1026959648338730078">Windows Hello sau cheie de securitate externă</translation>
 <translation id="1028700151766901954">Motivul: CBV rămâne în <ph name="DEFAULT_OPEN_BROWSER" /> în mod prestabilit.</translation>
+<translation id="102916930470544692">Cheie de acces</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Atinge pentru clic</translation>
 <translation id="1031362278801463162">Se încarcă previzualizarea</translation>
@@ -2199,7 +2200,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="265748523151262387">Menține conexiunea cu telefonul</translation>
 <translation id="2657612187216250073">Setări de accesibilitate pentru cursor</translation>
 <translation id="2658941648214598230">Afișezi conținutul original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funcțiile variază în funcție de dispozitiv</translation>
 <translation id="2659971421398561408">Redimensionarea discului în Crostini</translation>
 <translation id="2660779039299703961">Eveniment</translation>
 <translation id="266079277508604648">Nu se poate conecta imprimanta. Asigură-te că este pornită și conectată la Chromebook prin Wi-Fi sau USB.</translation>
@@ -3276,7 +3276,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3514681096978190000">Acest fișier arhivă include alte fișiere care pot ascunde programe malware</translation>
 <translation id="3515983984924808886">Atinge cheia de securitate din nou pentru a confirma resetarea. Toate informațiile stocate pe cheia de securitate, inclusiv codul său PIN, vor fi șterse.</translation>
 <translation id="3518866566087677312">Marchează elementele la care dorești să revii mai târziu</translation>
-<translation id="3518985090088779359">Acceptă și continuă</translation>
 <translation id="3519564332031442870">Serviciu backend pentru printare</translation>
 <translation id="3519938335881974273">Salvează pagina ca...</translation>
 <translation id="3520824492621090923">Confirmi înregistrarea dispozitivului chioșc și pentru semne?</translation>
@@ -5120,7 +5119,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="496185450405387901">Aplicația a fost instalată de administrator.</translation>
 <translation id="4963789650715167449">Elimină fila actuală</translation>
 <translation id="4964455510556214366">Aranjare</translation>
-<translation id="496446150016900060">să sincronizeze rețele Wi-Fi cu telefonul tău;</translation>
 <translation id="4965808351167763748">Sigur dorești să configurezi acest dispozitiv pentru a rula Hangouts Meet?</translation>
 <translation id="4966972803217407697">Ești în modul incognito</translation>
 <translation id="4967227914555989138">Adaugă o notă</translation>
@@ -8440,7 +8438,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7629827748548208700">Fila: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Dispozitivul este gestionat de <ph name="MANAGER" /> și solicită de fiecare dată conectarea.</translation>
 <translation id="7631014249255418691">S-a făcut backup pentru aplicațiile și fișierele Linux.</translation>
-<translation id="7631205654593498032">Când îți conectezi dispozitivele, ești de acord că dispozitivul <ph name="DEVICE_TYPE" /> poate:</translation>
 <translation id="7631887513477658702">&amp;Deschide întotdeauna fișierele de acest tip</translation>
 <translation id="7632948528260659758">Următoarele aplicații de tip chioșc nu au fost actualizate:</translation>
 <translation id="7633724038415831385">Este singura dată când vei aștepta o actualizare. Pe Chromebookuri, actualizările software au loc în fundal.</translation>

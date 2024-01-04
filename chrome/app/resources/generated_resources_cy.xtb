@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Llwytho llun</translation>
 <translation id="1026959648338730078">Windows Hello neu fysell ddiogelwch allanol</translation>
 <translation id="1028700151766901954">Rheswm: Mae LBS yn aros yn <ph name="DEFAULT_OPEN_BROWSER" /> yn ddiofyn.</translation>
+<translation id="102916930470544692">Cod pas</translation>
 <translation id="1029317248976101138">Chwyddo</translation>
 <translation id="1029526375103058355">Tapiwch i glicio</translation>
 <translation id="1031362278801463162">Wrthi'n llwytho rhagolwg</translation>
@@ -2216,7 +2217,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="265748523151262387">Aros yn gysylltiedig â'ch ffôn</translation>
 <translation id="2657612187216250073">Gosodiadau hygyrchedd pwyntydd</translation>
 <translation id="2658941648214598230">Dangos y cynnwys gwreiddiol?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Mae'r nodweddion yn amrywio yn ôl dyfais</translation>
 <translation id="2659971421398561408">Newid maint disg Crostini</translation>
 <translation id="2660779039299703961">Digwyddiad</translation>
 <translation id="266079277508604648">Methu â chysylltu â'r argraffydd. Gwiriwch fod yr argraffydd wedi'i droi ymlaen a'i fod wedi'i gysylltu â'ch Chromebook gan Wi-Fi neu USB.</translation>
@@ -3293,7 +3293,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3514681096978190000">Mae'r ffeil archif hon yn cynnwys ffeiliau eraill a allai guddio drwgwedd</translation>
 <translation id="3515983984924808886">Cyffyrddwch â'ch allwedd ddiogelwch eto i gadarnhau ailosod. Bydd yr holl wybodaeth sy'n cael ei storio ar yr allwedd ddiogelwch, gan gynnwys ei PIN, yn cael ei dileu.</translation>
 <translation id="3518866566087677312">Rhowch nod tudalen ar y pethau rydych am ddychwelyd atynt yn nes ymlaen</translation>
-<translation id="3518985090088779359">Derbyn a pharhau</translation>
 <translation id="3519564332031442870">Gwasanaeth Ôl-system Argraffu</translation>
 <translation id="3519938335881974273">Cadw'r dudalen fel...</translation>
 <translation id="3520824492621090923">Cadarnhau cofrestru dyfais ciosg neu arwyddion?</translation>
@@ -5138,7 +5137,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="496185450405387901">Mae'r ap hwn wedi'i osod gan eich gweinyddwr.</translation>
 <translation id="4963789650715167449">Tynnu'r tab presennol</translation>
 <translation id="4964455510556214366">Trefniant</translation>
-<translation id="496446150016900060">Cysoni rhwydweithiau Wi-Fi â'ch ffôn</translation>
 <translation id="4965808351167763748">Ydych chi'n siŵr eich bod chi am osod y ddyfais hon i redeg Hangouts Meet?</translation>
 <translation id="4966972803217407697">Rydych yn Anhysbys</translation>
 <translation id="4967227914555989138">Ychwanegu nodyn</translation>
@@ -8463,7 +8461,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Rheolir y ddyfais hon gan <ph name="MANAGER" /> ac mae'n gofyn i chi fewngofnodi bob tro.</translation>
 <translation id="7631014249255418691">Wedi creu copïau wrth gefn o apiau a ffeiliau Linux yn llwyddiannus</translation>
-<translation id="7631205654593498032">Pan fyddwch yn cysylltu'ch dyfeisiau, rydych yn cytuno y gall eich <ph name="DEVICE_TYPE" />:</translation>
 <translation id="7631887513477658702">&amp;Agor Ffeiliau o'r Math Hwn Bob Amser</translation>
 <translation id="7632948528260659758">Methwyd â'r apiau Kiosk canlynol i'w diweddaru:</translation>
 <translation id="7633724038415831385">Dyma'r unig dro y byddwch yn aros am ddiweddariad. Ar Chromebooks, mae diweddariadau meddalwedd yn digwydd yn y cefndir.</translation>

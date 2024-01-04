@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">이미지 로드</translation>
 <translation id="1026959648338730078">Windows Hello 또는 외부 보안 키</translation>
 <translation id="1028700151766901954">이유: LBS는 기본적으로 <ph name="DEFAULT_OPEN_BROWSER" />에 유지됩니다.</translation>
+<translation id="102916930470544692">패스키</translation>
 <translation id="1029317248976101138">확대</translation>
 <translation id="1029526375103058355">탭하여 클릭</translation>
 <translation id="1031362278801463162">미리보기 로드 중</translation>
@@ -2215,7 +2216,6 @@
 <translation id="265748523151262387">휴대전화 연결 상태 유지</translation>
 <translation id="2657612187216250073">포인팅 장치 접근성 설정</translation>
 <translation id="2658941648214598230">원본 콘텐츠를 표시하시겠습니까?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />기기에 따라 기능이 다를 수 있습니다.</translation>
 <translation id="2659971421398561408">Crostini 디스크 크기 조절</translation>
 <translation id="2660779039299703961">이벤트</translation>
 <translation id="266079277508604648">프린터에 연결할 수 없습니다. 프린터가 켜져 있으며 Wi-Fi 또는 USB를 통해 Chromebook에 연결되어 있는지 확인하세요.</translation>
@@ -3292,7 +3292,6 @@
 <translation id="3514681096978190000">이 보관 파일에는 멀웨어를 숨길 수 있는 기타 파일이 포함되어 있습니다.</translation>
 <translation id="3515983984924808886">보안 키를 다시 터치하여 초기화 여부를 확인하세요. PIN을 비롯하여 보안 키에 저장된 모든 정보가 삭제됩니다.</translation>
 <translation id="3518866566087677312">나중에 다시 보고 싶은 항목을 북마크에 추가하세요.</translation>
-<translation id="3518985090088779359">동의하고 계속</translation>
 <translation id="3519564332031442870">인쇄 백엔드 서비스</translation>
 <translation id="3519938335881974273">페이지를 다른 이름으로 저장...</translation>
 <translation id="3520824492621090923">키오스크 및 사이니지 기기를 등록하시겠습니까?</translation>
@@ -5135,7 +5134,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="496185450405387901">이 앱은 관리자가 설치했습니다.</translation>
 <translation id="4963789650715167449">현재 탭 삭제</translation>
 <translation id="4964455510556214366">배열</translation>
-<translation id="496446150016900060">휴대전화와 Wi-Fi 네트워크 동기화</translation>
 <translation id="4965808351167763748">이 기기를 설정하여 행아웃 Meet를 실행하시겠습니까?</translation>
 <translation id="4966972803217407697">시크릿 모드를 사용 중입니다.</translation>
 <translation id="4967227914555989138">메모 추가</translation>
@@ -8452,7 +8450,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7629827748548208700">탭: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">이 기기는 <ph name="MANAGER" />에서 관리하며, 사용할 때마다 로그인해야 합니다.</translation>
 <translation id="7631014249255418691">Linux 앱 및 파일이 성공적으로 백업되었습니다.</translation>
-<translation id="7631205654593498032">기기를 연결하면 <ph name="DEVICE_TYPE" />에서 다음 작업을 처리하는 것에 동의하게 됩니다.</translation>
 <translation id="7631887513477658702">해당 유형의 파일 항상 열기(&amp;A)</translation>
 <translation id="7632948528260659758">다음 키오스크 앱을 업데이트하지 못했습니다.</translation>
 <translation id="7633724038415831385">이번에만 업데이트를 기다리시면 됩니다. Chromebook에서는 소프트웨어 업데이트가 백그라운드에서 이루어집니다.</translation>

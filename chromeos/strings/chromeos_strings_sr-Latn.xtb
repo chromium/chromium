@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">početna stranica pregledača</translation>
 <translation id="1526389707933164996">Animacija čuvara ekrana</translation>
 <translation id="152892567002884378">Pojačajte zvuk</translation>
-<translation id="1539242642795599947">Naziv pristupne tačke je podrazumevanog i priloženog tipa.</translation>
 <translation id="1555130319947370107">Plava</translation>
 <translation id="155865706765934889">Dodirna tabla</translation>
 <translation id="1561927818299383735">boja pozadinskog osvetljenja</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Skeniraj ponovo</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Ne možete da onemogućite ni uklonite ovaj naziv pristupne tačke. Uverite se da su omogućeni priloženi nazivi pristupnih tačaka onemogućeni ili uklonjeni.</translation>
 <translation id="5600027863942488546">Taster <ph name="KEY_NAME" /> je testiran</translation>
 <translation id="5620281292257375798">Samo interno</translation>
 <translation id="5649768706273821470">Slušaj</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Još uvek niste povezani. Ako mobilni operater preporučuje prilagođeni naziv pristupne tačke, unesite ga tako što ćete izabrati „+ Novi naziv pristupne tačke“</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Podrazumevana pozadina</translation>
-<translation id="6001235009374883388">Naziv pristupne tačke je priloženog tipa.</translation>
 <translation id="6017514345406065928">Zelena</translation>
 <translation id="6019566113895157499">Tasterske prečice</translation>
 <translation id="6034694447310538551">Omogući automatsko mesečno resetovanje</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Alatke za programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Prilog</translation>
 <translation id="8206859287963243715">Mobilni uređaj</translation>
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>

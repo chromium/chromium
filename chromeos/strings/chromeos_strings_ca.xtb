@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">pàgina d'inici del navegador</translation>
 <translation id="1526389707933164996">Animació de l'estalvi de pantalla</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
-<translation id="1539242642795599947">L'APN és de tipus predeterminat i adjunt.</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="155865706765934889">Ratolí tàctil</translation>
 <translation id="1561927818299383735">color de la retroil·luminació</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Torna a escanejar</translation>
 <translation id="5583640892426849032">Retrocés</translation>
-<translation id="5584044598279886848">No es pot desactivar ni suprimir aquest punt d'accés. Assegura't de desactivar o suprimir els APN connectats que estiguin activats.</translation>
 <translation id="5600027863942488546">S'ha provat la tecla <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Només intern</translation>
 <translation id="5649768706273821470">Escolta</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Encara no t'has connectat. Si el teu operador de telefonia mòbil et recomana un APN personalitzat, introdueix la informació de l'APN seleccionant l'opció + APN nou.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fons de pantalla predeterminat</translation>
-<translation id="6001235009374883388">L'APN és de tipus adjunt.</translation>
 <translation id="6017514345406065928">Verd</translation>
 <translation id="6019566113895157499">Tecles de drecera</translation>
 <translation id="6034694447310538551">Activa el restabliment mensual automàtic</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Eines per a desenvolupadors</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Retorn</translation>
-<translation id="8183974620058026102">Adjunta</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>

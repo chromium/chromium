@@ -177,7 +177,7 @@
 <translation id="1314311879718644478">ಆಗ್‌ಮೆಂಟೆಡ್ ರಿಯಾಲಿಟಿ ವಿಷಯವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1314509827145471431">ಬಲಗಡೆ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="1316805916535763484">ಆನ್‌ಲೈನ್ ಕೋರ್ಸ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
-<translation id="1318023360584041678">ಟ್ಯಾಬ್ ಗ್ರೂಪ್‌ನಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1318023360584041678">ಟ್ಯಾಬ್ ಗ್ರೂಪ್‌ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1319245136674974084">ಈ ಆ್ಯಪ್‌ಗಾಗಿ ಪುನಃ ಕೇಳಬೇಡಿ</translation>
 <translation id="1322083935398004629">ರಾಜಕೀಯ</translation>
 <translation id="132301787627749051">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ಚಿತ್ರಕ್ಕಾಗಿ ಹುಡುಕಿ</translation>
@@ -218,7 +218,7 @@
 <translation id="1380591466760231819">ಪತ್ರದ ಮಾದರಿಯಲ್ಲಿ ಮಡಿಸಿ</translation>
 <translation id="138218114945450791">ತಿಳಿ ನೀಲಿ</translation>
 <translation id="1382194467192730611">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು USB ಸಾಧನವನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
-<translation id="1382378825779654399">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕುಸಿತವಾದರೆ ನೀವು ಇಮೇಲ್ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ. ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ಗೆ ಉಳಿಸಲಾಗಿದೆ.</translation>
+<translation id="1382378825779654399">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕುಸಿತವಾದರೆ ನೀವು ಇಮೇಲ್ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯುತ್ತೀರಿ. ಈ ಪುಟವನ್ನು <ph name="LAST_BOOKMARKS_FOLDER" /> ಗೆ ಸೇವ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1384725838384960382">ಸುರಕ್ಷಿತ ಪಾವತಿ ರುಜುವಾತು ದೃಢೀಕರಣ ಶೀಟ್</translation>
 <translation id="1386623374109090026">ಟಿಪ್ಪಣಿಗಳು</translation>
 <translation id="1391289752476847787">ಸ್ಟಾಕ್‌ಗಳು ಮತ್ತು ಬಾಂಡ್‌ಗಳು</translation>
@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">ಎರೇಸರ್</translation>
 <translation id="1458140305240870199">ಒಳಉಡುಪುಗಳು</translation>
 <translation id="1459693405370120464">ಹವಾಮಾನ</translation>
+<translation id="1461041542809785877">ಕಾರ್ಯಕ್ಷಮತೆ</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿರುವ ಫಾಂಟ್‌ಗಳನ್ನು ಬಳಸಿ, ಇದರಿಂದ ನೀವು ಹೈ ಫಿಡೆಲಿಟಿ ವಿಷಯವನ್ನು ರಚಿಸಬಹುದು</translation>
 <translation id="1467432559032391204">ಎಡಕ್ಕೆ</translation>
@@ -656,7 +657,6 @@
 <translation id="2233745931693710080">ಕಾಂಪ್ಯಾಕ್ಟ್ ಡಿಸ್ಕ್</translation>
 <translation id="2235344399760031203">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2239100178324503013">ಈಗ ಕಳುಹಿಸಿ</translation>
-<translation id="2239114457614475014">ಇನ್‌ಪುಟ್ ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="2241693394036365668">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಆದಾಗ</translation>
 <translation id="2246264294482514010">10 x 12 ಇಂಚು</translation>
 <translation id="2246480341630108201">ನಿಮ್ಮ ಪೋಷಕರು ಇನ್ನೂ ಸರಿ ಎಂದು ಹೇಳಿಲ್ಲ</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">ಮುಖ ಮತ್ತು ದೇಹದ ಆರೈಕೆ</translation>
 <translation id="2962073860865348475">12 x 18 ಇಂಚು</translation>
 <translation id="2968103128155246731">ವ್ಯಾನ್‌ಗಳು ಮತ್ತು ಮಿನಿವ್ಯಾನ್‌ಗಳು</translation>
-<translation id="2971483124699139256">ಥಂಬ್ಸ್ ಅಪ್, ಜನರೇಟ್ ಆದ ಪಠ್ಯವನ್ನು ನೀವು ಇಷ್ಟಪಡುತ್ತೀರಿ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸುತ್ತದೆ.</translation>
 <translation id="2972581237482394796">&amp;ಮತ್ತೆಮಾಡು</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, ಪ್ರಸ್ತುತವಾಗಿ ಆಯ್ಕೆ ಮಾಡಿರುವುದು. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ಓಪೆರಾ</translation>
@@ -1574,7 +1573,6 @@
 <translation id="4132448310531350254">ಆ್ಯಪ್‌ಗಳ "<ph name="POLICY_IDS_LIST" />" ಮೂಲಕ ಉಲ್ಲೇಖಿಸಲಾದ file_extension "<ph name="FILE_EXTENSION" />" ಗೆ ಸಂಬಂಧಿಸಿದ ನಕಲಿ ಹ್ಯಾಂಡ್ಲರ್‌ಗಳು.</translation>
 <translation id="4134123981501319574">Doc ರಚಿಸಿ</translation>
 <translation id="413544239732274901">ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
-<translation id="4139859738677203214">ಥಂಬ್ಸ್ ಡೌನ್, ಜನರೇಟ್ ಆದ ಪಠ್ಯವನ್ನು ನೀವು ಏಕೆ ಇಷ್ಟಪಡುವುದಿಲ್ಲ ಎಂಬುದರ ಕುರಿತು ವಿವರವಾದ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸಲು ಫಾರ್ಮ್ ಅನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="4140905530744469899">ಪ್ರೊಫೈಲ್ ಐಡಿ:</translation>
 <translation id="4142935452406587478">ಟ್ರೇ 10</translation>
 <translation id="4148925816941278100">American Express</translation>

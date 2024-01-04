@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">የአሳሽ መነሻ</translation>
 <translation id="1526389707933164996">የማያ ገፅ አሳራፊ እነማ</translation>
 <translation id="152892567002884378">ድምፅ ጨምር</translation>
-<translation id="1539242642795599947">ኤፒኤን ነባሪ ዓይነት እና አባሪ ነው።</translation>
 <translation id="1555130319947370107">ሰማያዊ</translation>
 <translation id="155865706765934889">ተችፓድ</translation>
 <translation id="1561927818299383735">የጀርባ ብርሃን ቀለም</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">ዩኤምቲኤስ</translation>
 <translation id="5578519639599103840">ዳግም ቃኝ</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ የተያያዙ ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
 <translation id="5600027863942488546">የ<ph name="KEY_NAME" /> ቁልፍ ተሞክሯል</translation>
 <translation id="5620281292257375798">ውስጣዊ ብቻ</translation>
 <translation id="5649768706273821470">አዳምጥ</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">እስካሁን አልተገናኙም። የእርስዎ የተንቀሳቃሽ ስልክ አገልግሎት አቅራቢ ብጁ የሆነ ኤፒኤን የሚመክር ከሆነ «+ አዲስ ኤፒኤን» የሚለውን በመምረጥ የኤፒኤን መረጃ ያስገቡ</translation>
 <translation id="5972388717451707488">Engine አዘምን</translation>
 <translation id="5984145644188835034">ነባሪ ልጣፍ</translation>
-<translation id="6001235009374883388">ኤፒኤን የአባሪ አይነት ነው።</translation>
 <translation id="6017514345406065928">አረንጓዴ</translation>
 <translation id="6019566113895157499">የቁልፍ አቋራጮች</translation>
 <translation id="6034694447310538551">ራስ-ሰር ወርሃዊ ዳግም ማስጀመርን አንቃ</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">የገንቢ መሳሪያዎች</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />፣ <ph name="ACCELERATOR_INFO" />።</translation>
 <translation id="8179976553408161302">አስገባ</translation>
-<translation id="8183974620058026102">አባሪ አድርግ</translation>
 <translation id="8206859287963243715">ሴሉላር</translation>
 <translation id="8208861521865154048">ጥቅማጥቅሞች</translation>
 <translation id="8226628635270268143">የእርስዎን ተወዳጅ ፎቶዎች እና አልበሞች ይምረጡ</translation>

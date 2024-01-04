@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">почетна страница на прелистувач</translation>
 <translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
-<translation id="1539242642795599947">APN е од стандарден и тип за приложување.</translation>
 <translation id="1555130319947370107">Сина</translation>
 <translation id="155865706765934889">Подлога за допир</translation>
 <translation id="1561927818299383735">боја на заднинско осветлување</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Скенирај пак</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
-<translation id="5584044598279886848">Не може да се оневозможи или отстрани оваа APN. Уверете се дека овозможените приложени APN се оневозможени или отстранети.</translation>
 <translation id="5600027863942488546">Копчето <ph name="KEY_NAME" /> е тестирано</translation>
 <translation id="5620281292257375798">Само интерно</translation>
 <translation id="5649768706273821470">Слушај</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Сѐ уште не сте поврзани. Ако вашиот мобилен оператор препорачува приспособено APN, внесете ги податоците за APN така што ќе изберете „+ Нова APN“</translation>
 <translation id="5972388717451707488">Ажурирајте го софтверот</translation>
 <translation id="5984145644188835034">Стандарден тапет</translation>
-<translation id="6001235009374883388">APN е од тип за приложување.</translation>
 <translation id="6017514345406065928">Зелена</translation>
 <translation id="6019566113895157499">Кратенки од тастатура</translation>
 <translation id="6034694447310538551">Овозможете автоматско месечно ресетирање</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Програмерски алатки</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Прикачи</translation>
 <translation id="8206859287963243715">Мобилен</translation>
 <translation id="8208861521865154048">Поволности</translation>
 <translation id="8226628635270268143">Изберете ги омилените фотографии и албуми</translation>

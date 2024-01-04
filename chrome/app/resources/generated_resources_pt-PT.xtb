@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Carregar imagem</translation>
 <translation id="1026959648338730078">Windows Hello ou chave de segurança externa</translation>
 <translation id="1028700151766901954">Motivo: a LBS permanece no <ph name="DEFAULT_OPEN_BROWSER" /> por predefinição.</translation>
+<translation id="102916930470544692">Chave de acesso</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocar para clicar</translation>
 <translation id="1031362278801463162">A carregar a pré-visualização</translation>
@@ -1393,7 +1394,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2048554637254265991">Erro ao iniciar o gestor de contentores. Tente novamente.</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
 <translation id="204914487372604757">Criar atalho</translation>
-<translation id="2050339315714019657">Retrato</translation>
+<translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">O Gestor de Palavras-passe da Google criou uma palavra-passe forte para este Website</translation>
 <translation id="2051555741181591333">Desativar zona Wi-Fi automaticamente</translation>
 <translation id="2051669996101374349">Use HTTPS sempre que possível e receba um aviso antes de carregar sites que não suportam este protocolo. Não pode alterar esta definição porque tem a Proteção avançada ativada.</translation>
@@ -2198,7 +2199,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="265748523151262387">Mantenha a ligação com o seu telemóvel</translation>
 <translation id="2657612187216250073">Definições de acessibilidade do ponteiro</translation>
 <translation id="2658941648214598230">Quer mostrar o conteúdo original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" /> As funcionalidades variam consoante o dispositivo.</translation>
 <translation id="2659971421398561408">Redimensionamento de disco do Crostini</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Não é possível ligar à impressora. Verifique se a impressora está ligada e associada ao Chromebook por Wi-Fi ou USB.</translation>
@@ -3276,7 +3276,6 @@ Quer pará-lo?</translation>
 <translation id="3514681096978190000">Este ficheiro de arquivo inclui outros ficheiros que podem ocultar software malicioso</translation>
 <translation id="3515983984924808886">Toque novamente na chave de segurança para confirmar a reposição. Todas as informações armazenadas na chave de segurança, incluindo o respetivo PIN, serão eliminadas.</translation>
 <translation id="3518866566087677312">Adicione itens aos marcadores para acedê-los mais tarde</translation>
-<translation id="3518985090088779359">Aceitar e continuar</translation>
 <translation id="3519564332031442870">Imprimir o serviço de back-end</translation>
 <translation id="3519938335881974273">Guardar página como…</translation>
 <translation id="3520824492621090923">Confirmar a inscrição de dispositivo no modo quiosque e sinalização?</translation>
@@ -5120,7 +5119,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="496185450405387901">Esta aplicação foi instalada pelo seu administrador.</translation>
 <translation id="4963789650715167449">Remover separador atual</translation>
 <translation id="4964455510556214366">Disposição</translation>
-<translation id="496446150016900060">Sincronizar redes Wi-Fi com o seu telemóvel.</translation>
 <translation id="4965808351167763748">Tem a certeza de que quer configurar este dispositivo para executar o Hangouts Meet?</translation>
 <translation id="4966972803217407697">Está na Navegação anónima</translation>
 <translation id="4967227914555989138">Adicionar nota</translation>
@@ -8439,7 +8437,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7629827748548208700">Separador: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Este dispositivo é gerido por <ph name="MANAGER" /> e requer que inicie sessão sempre.</translation>
 <translation id="7631014249255418691">Cópia de segurança das aplicações e dos ficheiros do Linux efetuada com êxito</translation>
-<translation id="7631205654593498032">Ao associar os seus dispositivos, concorda que o <ph name="DEVICE_TYPE" /> pode:</translation>
 <translation id="7631887513477658702">&amp;Abrir Sempre Ficheiros Deste Tipo</translation>
 <translation id="7632948528260659758">A atualização das seguintes aplicações quiosque falhou:</translation>
 <translation id="7633724038415831385">Esta é a única altura em que terá de aguardar por uma atualização. Nos Chromebooks, as atualizações de software ocorrem em segundo plano.</translation>

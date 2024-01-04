@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">खोडरबर</translation>
 <translation id="1458140305240870199">अंतर्वस्‍त्रे</translation>
 <translation id="1459693405370120464">हवामान</translation>
+<translation id="1461041542809785877">कार्यप्रदर्शन</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">तुमच्या कॉंप्युटरवरील फॉंट वापरा जेणेकरून, तुम्ही उच्च फायडेलिटी आशय तयार करू शकाल</translation>
 <translation id="1467432559032391204">डावे</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">कॉम्पॅक्ट डिस्क</translation>
 <translation id="2235344399760031203">तृतीय पक्ष कुकी ब्लॉक केल्या आहेत</translation>
 <translation id="2239100178324503013">आता पाठवा</translation>
-<translation id="2239114457614475014">इनपुट संपादित करा</translation>
 <translation id="2241693394036365668">फाइल डाउनलोड केली गेली</translation>
 <translation id="2246264294482514010">१० x १२ इं</translation>
 <translation id="2246480341630108201">तुमच्या पालकांनी अद्याप परवानगी दिलेली नाही</translation>
@@ -992,7 +992,6 @@
 <translation id="2959113999220720579">चेहरा आणि शरीराची निगा</translation>
 <translation id="2962073860865348475">12 x 18 in</translation>
 <translation id="2968103128155246731">व्हॅन आणि मिनीव्हॅन</translation>
-<translation id="2971483124699139256">थंब्स अपवर क्लिक केल्यावर तुम्हाला तयार केलेला मजकूर आवडला आहे असा फीडबॅक सबमिट केला जातो.</translation>
 <translation id="2972581237482394796">&amp;पुन्हा करा</translation>
 <translation id="2977665033722899841">सध्या निवडलेली <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ऑपेरा</translation>
@@ -1576,7 +1575,6 @@
 <translation id="4132448310531350254">"<ph name="POLICY_IDS_LIST" />". अ‍ॅप्सद्वारे संदर्भ दिलेल्या file_extension "<ph name="FILE_EXTENSION" />" साठी डुप्लिकेट हँडलर.</translation>
 <translation id="4134123981501319574">दस्तऐवज तयार करा</translation>
 <translation id="413544239732274901">आणखी जाणून घ्या</translation>
-<translation id="4139859738677203214">थंब्स डाउन प्रेस केल्यावर एक फॉर्म उघडतो, ज्यामध्ये तुम्हाला तयार केलेला मजकूर का आवडला नाही याबद्दल तपशीलवार फीडबॅक सबमिट करता येतो.</translation>
 <translation id="4140905530744469899">प्रोफाइल आयडी:</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
 <translation id="4148925816941278100">American Express</translation>

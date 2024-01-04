@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">böngésző kezdőlapja</translation>
 <translation id="1526389707933164996">Animált képernyőkímélő</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
-<translation id="1539242642795599947">Az APN típusa: alapértelmezett és csatlakoztatás.</translation>
 <translation id="1555130319947370107">Kék</translation>
 <translation id="155865706765934889">Érintőpad</translation>
 <translation id="1561927818299383735">háttérvilágítás színe</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Újbóli beolvasás</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett csatlakoztatott APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
 <translation id="5600027863942488546">A következő gomb tesztelve: <ph name="KEY_NAME" /></translation>
 <translation id="5620281292257375798">Csak belső</translation>
 <translation id="5649768706273821470">Meghallgatás</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Még nem csatlakozott. Ha mobilszolgáltatója egyéni APN-t javasol, adja meg az APN adatait. Ehhez válassza a „+ Új APN” lehetőséget.</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Alapértelmezett háttérkép</translation>
-<translation id="6001235009374883388">Az APN típusa: csatlakoztatás.</translation>
 <translation id="6017514345406065928">Zöld</translation>
 <translation id="6019566113895157499">Billentyűparancsok</translation>
 <translation id="6034694447310538551">Havonta történő automatikus visszaállítás engedélyezése</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Csatolás</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>

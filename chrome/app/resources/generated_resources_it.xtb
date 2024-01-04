@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Carica immagine</translation>
 <translation id="1026959648338730078">Windows Hello o token di sicurezza esterno</translation>
 <translation id="1028700151766901954">Motivo: LBS rimane in <ph name="DEFAULT_OPEN_BROWSER" /> per impostazione predefinita.</translation>
+<translation id="102916930470544692">Passkey</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tocco per fare clic</translation>
 <translation id="1031362278801463162">Caricamento anteprima in corso</translation>
@@ -1393,7 +1394,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2048554637254265991">Errore durante l'avvio del gestore di container. Riprova.</translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
-<translation id="2050339315714019657">Ritratto</translation>
+<translation id="2050339315714019657">Verticale</translation>
 <translation id="2051266530792296582">Gestore delle password di Google ha creato una password efficace per questo sito web</translation>
 <translation id="2051555741181591333">Disabilita automaticamente l'hotspot</translation>
 <translation id="2051669996101374349">Se possibile, utilizza HTTPS e ricevi un avviso prima di caricare i siti che non lo supportano. Non puoi modificare questa impostazione perché hai attivato la protezione avanzata.</translation>
@@ -2198,7 +2199,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="265748523151262387">Rimani connesso con il tuo telefono</translation>
 <translation id="2657612187216250073">Impostazioni di accessibilità del puntatore</translation>
 <translation id="2658941648214598230">Mostrare il contenuto originale?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Le funzionalità variano in base al dispositivo</translation>
 <translation id="2659971421398561408">Ridimensionamento del disco Crostini</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">Impossibile connettere la stampante. Verifica che sia accesa e collegata al Chromebook tramite Wi-Fi o USB.</translation>
@@ -3275,7 +3275,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3514681096978190000">Questo file di archivio include altri file che potrebbero nascondere malware</translation>
 <translation id="3515983984924808886">Tocca nuovamente il token di sicurezza per confermare la reimpostazione. Tutte le informazioni memorizzate sul token di sicurezza, nonché il suo PIN, verranno eliminate.</translation>
 <translation id="3518866566087677312">Aggiungi ai preferiti i contenuti a cui vuoi tornare in un secondo momento</translation>
-<translation id="3518985090088779359">Accetta e continua</translation>
 <translation id="3519564332031442870">Servizio di backend di stampa</translation>
 <translation id="3519938335881974273">Salva pagina come…</translation>
 <translation id="3520824492621090923">Vuoi confermare la registrazione dei dispositivi kiosk e segnaletica?</translation>
@@ -3449,6 +3448,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3659929705630080526">Hai inserito troppe volte un codice di accesso errato. Riprova più tardi.</translation>
 <translation id="3660234220361471169">Non attendibile</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 password esistente trovata}other{{NUM_PASSWORDS} password esistenti trovate}}</translation>
+<translation id="3662207097851752847">Conferma il tuo Account Google sullo smartphone</translation>
 <translation id="3664511988987167893">Icona dell'estensione</translation>
 <translation id="3665100783276035932">La maggior parte dei siti dovrebbe funzionare come previsto</translation>
 <translation id="3665301845536101715">Apri nel riquadro laterale</translation>
@@ -5118,7 +5118,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="496185450405387901">Questa app è stata installata dall'amministratore.</translation>
 <translation id="4963789650715167449">Rimuovi scheda corrente</translation>
 <translation id="4964455510556214366">Disposizione</translation>
-<translation id="496446150016900060">Sincronizzare le reti Wi-Fi con il tuo telefono</translation>
 <translation id="4965808351167763748">Vuoi configurare questo dispositivo in modo da poter eseguire Hangouts Meet?</translation>
 <translation id="4966972803217407697">Stai navigando in incognito</translation>
 <translation id="4967227914555989138">Aggiungi una nota</translation>
@@ -8168,6 +8167,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7416263748877373774">Impossibile caricare i Termini di servizio. Controlla la connessione di rete e riprova.</translation>
 <translation id="7416362041876611053">Errore di rete sconosciuto.</translation>
 <translation id="741906494724992817">Questa app non richiede autorizzazioni speciali.</translation>
+<translation id="7419142833919893307">Nessun nome utente aggiunto</translation>
 <translation id="7419565702166471774">Utilizza sempre connessioni sicure</translation>
 <translation id="742130257665691897">Preferiti rimossi</translation>
 <translation id="7421925624202799674">&amp;Visualizza sorgente pagina</translation>
@@ -8432,7 +8432,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7629827748548208700">Scheda: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Questo dispositivo è gestito da <ph name="MANAGER" /> e richiede l'accesso a ogni utilizzo.</translation>
 <translation id="7631014249255418691">Backup app e file Linux riuscito</translation>
-<translation id="7631205654593498032">Quando connetti i tuoi dispositivi, accetti che il dispositivo <ph name="DEVICE_TYPE" /> possa:</translation>
 <translation id="7631887513477658702">&amp;Apri sempre file di questo tipo</translation>
 <translation id="7632948528260659758">Le seguenti app kiosk non sono state aggiornate:</translation>
 <translation id="7633724038415831385">Questo è il solo aggiornamento che ti richiede di aspettare. Tutti gli altri aggiornamenti software vengono effettuati in background sui Chromebook.</translation>
@@ -8478,6 +8477,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7659154729610375585">Vuoi uscire comunque dalla modalità di navigazione in incognito?</translation>
 <translation id="7659336857671800422">Ottieni la Guida alla privacy</translation>
 <translation id="7659584679870740384">Non sei autorizzato a utilizzare questo dispositivo. Per ottenere l'autorizzazione di accesso contatta l'amministratore.</translation>
+<translation id="7660116474961254898">Segui le istruzioni sullo smartphone</translation>
 <translation id="7660146600670077843">Fai clic con il tasto destro del mouse su una scheda e seleziona "Aggiungi scheda a nuovo gruppo"</translation>
 <translation id="7661259717474717992">Consenti ai siti di salvare e leggere i dati dei cookie</translation>
 <translation id="7661451191293163002">Impossibile ottenere un certificato di registrazione.</translation>

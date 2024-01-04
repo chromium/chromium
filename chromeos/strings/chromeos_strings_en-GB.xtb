@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">browser home</translation>
 <translation id="1526389707933164996">Screen saver animation</translation>
 <translation id="152892567002884378">Volume up</translation>
-<translation id="1539242642795599947">APN is type default and attach.</translation>
 <translation id="1555130319947370107">Blue</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">backlit colour</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescan</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">Can't disable or remove this APN. Make sure that enabled attach APNs are disabled or removed.</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> key tested</translation>
 <translation id="5620281292257375798">Internal only</translation>
 <translation id="5649768706273821470">Listen</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">You are not connected yet. If your mobile operator recommends a custom APN, enter the APN information by selecting '+ New APN'</translation>
 <translation id="5972388717451707488">Update engine</translation>
 <translation id="5984145644188835034">Default wallpaper</translation>
-<translation id="6001235009374883388">APN is type attach.</translation>
 <translation id="6017514345406065928">Green</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
 <translation id="6034694447310538551">Enable automatic monthly reset</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Developer tools</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>

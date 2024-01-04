@@ -259,6 +259,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1455413310270022028">Gomma</translation>
 <translation id="1458140305240870199">Biancheria intima</translation>
 <translation id="1459693405370120464">Meteo</translation>
+<translation id="1461041542809785877">Prestazioni</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Usare i caratteri installati sul computer per consentirti di creare contenuti ad alta fedeltà</translation>
 <translation id="1467432559032391204">Sinistra</translation>
@@ -657,7 +658,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2233745931693710080">Compact disc</translation>
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2239100178324503013">Invia ora</translation>
-<translation id="2239114457614475014">Modifica input</translation>
 <translation id="2241693394036365668">Viene scaricato un file</translation>
 <translation id="2246264294482514010">10 x 12 in</translation>
 <translation id="2246480341630108201">Il tuo genitore non ha ancora detto che va bene</translation>
@@ -992,7 +992,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2959113999220720579">Cura del viso e del corpo</translation>
 <translation id="2962073860865348475">30,4 × 45,7 cm</translation>
 <translation id="2968103128155246731">Furgoni e minivan</translation>
-<translation id="2971483124699139256">Mi piace invia un feedback positivo sul testo generato.</translation>
 <translation id="2972581237482394796">&amp;Ripeti</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, attualmente selezionata. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1016,7 +1015,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab per sfogliare le azioni disponibili, quindi Invio per eseguire l'azione selezionata.</translation>
 <translation id="3013291976881901233">Dispositivi MIDI</translation>
 <translation id="3014553260345122294">Notizie di economia</translation>
-<translation id="301521992641321250">Bloccata automaticamente</translation>
+<translation id="301521992641321250">Autorizzazione bloccata automaticamente</translation>
 <translation id="3016780570757425217">Conoscere la tua posizione</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, premi Tab e poi Invio per rimuovere il suggerimento.</translation>
 <translation id="3023165109041533893">Gli annunci suggeriti dai siti contribuiscono a proteggere la tua cronologia di navigazione e la tua identità, consentendo ai siti di mostrarti annunci pertinenti. In base alla tua attività, un sito che hai visitato può suggerire annunci correlati mentre continui a navigare. Nelle impostazioni puoi vedere un elenco di questi siti e bloccare quelli che non ti interessano.</translation>
@@ -1574,7 +1573,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4132448310531350254">Gestori duplicati per file_extension "<ph name="FILE_EXTENSION" />" indicati dalle app "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">Crea documento</translation>
 <translation id="413544239732274901">Scopri di più</translation>
-<translation id="4139859738677203214">Non mi piace apre un modulo per inviare un feedback dettagliato sul motivo per cui il testo generato non ti piace.</translation>
 <translation id="4140905530744469899">ID profilo:</translation>
 <translation id="4142935452406587478">Vassoio 10</translation>
 <translation id="4148925816941278100">American Express</translation>

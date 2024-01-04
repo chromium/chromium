@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'économiseur d'écran</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
-<translation id="1539242642795599947">Le type d'APN est "par défaut" et "joindre".</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="155865706765934889">Pavé tactile</translation>
 <translation id="1561927818299383735">couleur rétroéclairage</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">Rescanner</translation>
 <translation id="5583640892426849032">Retour</translation>
-<translation id="5584044598279886848">Impossible de désactiver ou de supprimer cet APN. Assurez-vous que les APN connectés sont désactivés ou supprimés.</translation>
 <translation id="5600027863942488546">Touche <ph name="KEY_NAME" /> testée</translation>
 <translation id="5620281292257375798">Interne uniquement</translation>
 <translation id="5649768706273821470">Écouter</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">Vous n'êtes pas encore connecté. Si votre opérateur mobile vous recommande un APN personnalisé, saisissez les informations de l'APN en sélectionnant "Nouvel APN".</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5984145644188835034">Fond d'écran par défaut</translation>
-<translation id="6001235009374883388">L'e type d'APN est "joindre".</translation>
 <translation id="6017514345406065928">Vert</translation>
 <translation id="6019566113895157499">Raccourcis clavier</translation>
 <translation id="6034694447310538551">Activer la réinitialisation mensuelle automatique</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8179976553408161302">Entrée</translation>
-<translation id="8183974620058026102">Joindre</translation>
 <translation id="8206859287963243715">Mobile</translation>
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>

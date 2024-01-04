@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Kargatu irudia</translation>
 <translation id="1026959648338730078">Windows Hello edo kanpoko segurtasun-giltza</translation>
 <translation id="1028700151766901954">Arrazoia: modu lehenetsian, LBS <ph name="DEFAULT_OPEN_BROWSER" /> arakatzailean geratzen da.</translation>
+<translation id="102916930470544692">Sarbide-gakoa</translation>
 <translation id="1029317248976101138">Zooma</translation>
 <translation id="1029526375103058355">Egin klik sakatuta</translation>
 <translation id="1031362278801463162">Aurrebista kargatzen</translation>
@@ -2198,7 +2199,6 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="265748523151262387">Egon konektatuta telefonoaren bidez</translation>
 <translation id="2657612187216250073">Erakuslearen erabilerraztasun-ezarpenak</translation>
 <translation id="2658941648214598230">Jatorrizko edukia ikusi nahi duzu?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Gailuaren araberakoak dira eginbideak</translation>
 <translation id="2659971421398561408">Crostini-ren diskoaren tamaina aldatzea</translation>
 <translation id="2660779039299703961">Gertaera</translation>
 <translation id="266079277508604648">Ezin da konektatu inprimagailura. Egiaztatu piztuta dagoela eta Chromebook-era Wi-Fi edo USB bidez konektatuta dagoela.</translation>
@@ -3275,7 +3275,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3514681096978190000">Artxibo-fitxategi honek beste fitxategi batzuk ditu, eta baliteke haietan malwarea egotea</translation>
 <translation id="3515983984924808886">Berrezarri nahi duzula berresteko, sakatu segurtasun-giltza. Ezabatu egingo da segurtasun-giltzan gordetako informazio guztia (PINa barne).</translation>
 <translation id="3518866566087677312">Ezarri laster-marka geroago ikusi nahi dituzun elementuei</translation>
-<translation id="3518985090088779359">Onartu eta jarraitu</translation>
 <translation id="3519564332031442870">Inprimatzeko backend zerbitzua</translation>
 <translation id="3519938335881974273">Gorde orria honela…</translation>
 <translation id="3520824492621090923">Gailuaren erregistroa (kiosko eta seinaleztatze modua) berretsi nahi duzu?</translation>
@@ -5119,7 +5118,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="496185450405387901">Administratzaileak instalatu du aplikazio hau.</translation>
 <translation id="4963789650715167449">Kendu fitxa hau</translation>
 <translation id="4964455510556214366">Antolakuntza</translation>
-<translation id="496446150016900060">Sinkronizatu wifi-sareak telefonoarekin</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
 <translation id="4966972803217407697">Ezkutuko moduan zaude</translation>
 <translation id="4967227914555989138">Gehitu ohar bat</translation>
@@ -8432,7 +8430,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7629827748548208700">Fitxa: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta saioa hasteko eskatzen du hura erabiltzen duzun bakoitzean.</translation>
 <translation id="7631014249255418691">Egin dira Linux aplikazioen eta fitxategien babeskopiak</translation>
-<translation id="7631205654593498032">Gailuak konektatzen dituzunean, onartu egingo duzu <ph name="DEVICE_TYPE" /> gailuak gaitasuna izango duela hauek egiteko:</translation>
 <translation id="7631887513477658702">Ireki beti &amp;mota honetako fitxategiak</translation>
 <translation id="7632948528260659758">Kiosko-aplikazio hauek ezin izan dira eguneratu:</translation>
 <translation id="7633724038415831385">Hau da eguneratzeen zain egongo zaren aldi bakarra. Izan ere, atzeko planoan eguneratzen da softwarea Chromebook-etan.</translation>

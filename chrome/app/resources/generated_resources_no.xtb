@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Last inn bildet</translation>
 <translation id="1026959648338730078">Windows Hello eller en ekstern sikkerhetsnøkkel</translation>
 <translation id="1028700151766901954">Årsak: Støtte for eldre nettlesere blir værende i <ph name="DEFAULT_OPEN_BROWSER" /> som standard.</translation>
+<translation id="102916930470544692">Passnøkkel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Trykk for å klikke</translation>
 <translation id="1031362278801463162">Laster inn forhåndsvisning</translation>
@@ -919,6 +920,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1695510246756136088">Kan ikke koble til internett. Prøv på nytt.</translation>
 <translation id="1696555181932908973">Du kan prøve å fortsette på <ph name="SITE_ETLD_PLUS_ONE" /> på andre måter.</translation>
 <translation id="169675691788639886">Det er konfigurert en SSH-tjener for enheten. Ikke logg på med sensitive kontoer.</translation>
+<translation id="1697122132646041614">Tommel ned åpner et skjema der du kan gi en detaljert tilbakemelding om hvorfor du ikke liker disse resultatene.</translation>
 <translation id="1697150536837697295">Kunst</translation>
 <translation id="1697686431566694143">Rediger filen</translation>
 <translation id="1698796500103229697">&amp;Betalingsmåter</translation>
@@ -1398,7 +1400,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2048554637254265991">Feil ved oppstart av beholderbehandling. Prøv på nytt.</translation>
 <translation id="2048653237708779538">Handlingen er ikke tilgjengelig</translation>
 <translation id="204914487372604757">Opprett snarvei</translation>
-<translation id="2050339315714019657">Portrett</translation>
+<translation id="2050339315714019657">Stående</translation>
 <translation id="2051266530792296582">Google Passordlagring har opprettet et sterkt passord for dette nettstedet</translation>
 <translation id="2051555741181591333">Deaktiver wifi-sone automatisk</translation>
 <translation id="2051669996101374349">Bruk HTTPS når det er mulig, og bli advart før innlasting av nettsteder som ikke støtter dette. Du kan ikke endre denne innstillingen siden Avansert beskyttelse er slått på.</translation>
@@ -2207,7 +2209,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="265748523151262387">Hold kontakten med telefonen din</translation>
 <translation id="2657612187216250073">Tilgjengelighetsinnstillinger for peker</translation>
 <translation id="2658941648214598230">Vil du at det opprinnelige innholdet skal vises?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Funksjonene varierer fra enhet til enhet</translation>
 <translation id="2659971421398561408">Endre diskstørrelsen for Crostini</translation>
 <translation id="2660779039299703961">Aktivitet</translation>
 <translation id="266079277508604648">Kan ikke koble til skriveren. Kontroller at skriveren er slått på og koblet til Chromebooken din via Wifi eller USB.</translation>
@@ -2312,6 +2313,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2731700343119398978">Vent litt …</translation>
 <translation id="2731971182069536520">Neste gang du starter enheten på nytt, utfører administratoren en engangsoppdatering som sletter de lokale dataene dine.</translation>
 <translation id="2732134891301408122">Ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733248615007838252">Tommel opp sender tilbakemelding om at du liker disse resultatene.</translation>
 <translation id="2733992589856193783">Du har opprettet en passnøkkel for dette nettstedet. Du trenger mobilenheten din for å logge på.</translation>
 <translation id="27349076983469322">Lys bakgrunn</translation>
 <translation id="2735712963799620190">Tidsplan</translation>
@@ -3283,7 +3285,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3514681096978190000">Denne arkivfilen inneholder andre filer som kan skjule skadelig programvare</translation>
 <translation id="3515983984924808886">Berør sikkerhetsnøkkelen en gang til for å bekrefte tilbakestillingen. All informasjon som er lagret på sikkerhetsnøkkelen, inkludert PIN-koden, blir slettet.</translation>
 <translation id="3518866566087677312">Opprett bokmerker for ting du vil komme tilbake til senere</translation>
-<translation id="3518985090088779359">Godta og fortsett</translation>
 <translation id="3519564332031442870">Tjenerdeltjeneste for utskrift</translation>
 <translation id="3519938335881974273">Lagre side som…</translation>
 <translation id="3520824492621090923">Vil du bekrefte registreringen som kiosk- og skiltenhet?</translation>
@@ -5125,7 +5126,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="496185450405387901">Denne appen er installert av administratoren.</translation>
 <translation id="4963789650715167449">Fjern gjeldende fane</translation>
 <translation id="4964455510556214366">Oppsett</translation>
-<translation id="496446150016900060">synkronisere Wifi-nettverk med telefonen din</translation>
 <translation id="4965808351167763748">Er du sikker på at du vil konfigurere Hangouts Meet på denne enheten?</translation>
 <translation id="4966972803217407697">Du er inkognito</translation>
 <translation id="4967227914555989138">Legg til en merknad</translation>
@@ -5688,6 +5688,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5431318178759467895">Farge</translation>
 <translation id="5432145523462851548">Vis <ph name="FILE_NAME" /> i mappen</translation>
 <translation id="5432223177001837288">For å dele lyd, del en fane i stedet</translation>
+<translation id="5432872710261597882">Tommel opp sender tilbakemelding om at du liker dette.</translation>
 <translation id="543338862236136125">Endre passordet</translation>
 <translation id="5434065355175441495">PKCS #1 RSA-kryptering</translation>
 <translation id="5435274640623994081">Slå på loggføring av lydikon</translation>
@@ -5723,6 +5724,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458998536542739734">Notater på låseskjermen</translation>
 <translation id="5459864179070366255">Fortsett installeringen</translation>
+<translation id="5460861858595506978">Inspirasjon</translation>
 <translation id="5461050611724244538">Mistet tilkoblingen til telefonen</translation>
 <translation id="5463275305984126951">Indeks for <ph name="LOCATION" /></translation>
 <translation id="5463450804024056231">Meld deg på e-poster om <ph name="DEVICE_TYPE" /></translation>
@@ -8440,7 +8442,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7629827748548208700">Fane: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Denne enheten administreres av <ph name="MANAGER" /> og krever at du logger deg på hver gang.</translation>
 <translation id="7631014249255418691">Linux-apper og -filer er sikkerhetskopiert</translation>
-<translation id="7631205654593498032">Når du kobler sammen enhetene, godtar du at <ph name="DEVICE_TYPE" /> kan</translation>
 <translation id="7631887513477658702">Åpne &amp;alltid filer av denne typen</translation>
 <translation id="7632948528260659758">Kunne ikke oppdatere de følgende kioskappene:</translation>
 <translation id="7633724038415831385">Dette er den eneste gangen du må vente på en oppdatering. På Chromebook skjer programvareoppdateringer i bakgrunnen.</translation>
@@ -8919,6 +8920,7 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="7970673414865679092">Ethernet-detaljer</translation>
 <translation id="7972714317346275248">PKCS #1 SHA-384 med RSA-kryptering</translation>
+<translation id="7973149423217802477">Tommel ned sender tilbakemelding om at du ikke liker dette.</translation>
 <translation id="7973776233567882054">Hvilket av disse alternativene beskriver nettverket ditt best?</translation>
 <translation id="797394244396603170">Velg enheten du vil dele filer med</translation>
 <translation id="7974566588408714340">Prøv på nytt med <ph name="EXTENSIONNAME" /></translation>

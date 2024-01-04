@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
 <translation id="1028700151766901954">理由: LBS は引き続きデフォルトのブラウザとして <ph name="DEFAULT_OPEN_BROWSER" /> を使用します。</translation>
+<translation id="102916930470544692">パスキー</translation>
 <translation id="1029317248976101138">ズーム</translation>
 <translation id="1029526375103058355">タップによるクリック</translation>
 <translation id="1031362278801463162">プレビューを読み込んでいます</translation>
@@ -2192,7 +2193,6 @@
 <translation id="265748523151262387">スマートフォンと常に接続</translation>
 <translation id="2657612187216250073">ポインタのユーザー補助設定</translation>
 <translation id="2658941648214598230">元のコンテンツを表示しますか？</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />機能はデバイスによって異なります</translation>
 <translation id="2659971421398561408">Crostini のディスクサイズ変更</translation>
 <translation id="2660779039299703961">イベント</translation>
 <translation id="266079277508604648">プリンタに接続できません。プリンタの電源が入っていて、Wi-Fi または USB 経由で Chromebook に接続されていることを確認してください。</translation>
@@ -3269,7 +3269,6 @@
 <translation id="3514681096978190000">このアーカイブ ファイルには、マルウェアが潜んでいる可能性がある別のファイルが含まれています</translation>
 <translation id="3515983984924808886">リセットを確定するには、セキュリティ キーをもう一度タップしてください。セキュリティ キーに保存されているすべての情報（PIN を含む）が削除されます。</translation>
 <translation id="3518866566087677312">後で確認するページをブックマークに登録</translation>
-<translation id="3518985090088779359">同意して続行</translation>
 <translation id="3519564332031442870">バックエンドの印刷サービス</translation>
 <translation id="3519938335881974273">ページを別名で保存...</translation>
 <translation id="3520824492621090923">キオスクとサイネージ デバイスの登録を確認しますか？</translation>
@@ -3442,6 +3441,7 @@
 <translation id="3659929705630080526">間違ったアクセスコードを複数回入力しました。しばらくしてからもう一度お試しください</translation>
 <translation id="3660234220361471169">信頼されていない</translation>
 <translation id="3661297433172569100">{NUM_PASSWORDS,plural, =1{1 件の既存のパスワードが見つかりました}other{{NUM_PASSWORDS} 件の既存のパスワードが見つかりました}}</translation>
+<translation id="3662207097851752847">スマートフォンで Google アカウントを確認してください</translation>
 <translation id="3664511988987167893">拡張機能アイコン</translation>
 <translation id="3665100783276035932">ほとんどのサイトは適切に機能します</translation>
 <translation id="3665301845536101715">サイドパネルで開く</translation>
@@ -5110,7 +5110,6 @@
 <translation id="496185450405387901">このアプリは管理者によってインストールされています。</translation>
 <translation id="4963789650715167449">現在のタブを削除</translation>
 <translation id="4964455510556214366">配置</translation>
-<translation id="496446150016900060">Wi-Fi ネットワークをスマートフォンと同期する</translation>
 <translation id="4965808351167763748">このデバイスでハングアウト Meet を実行するように設定してもよろしいですか？</translation>
 <translation id="4966972803217407697">シークレット モード使用中</translation>
 <translation id="4967227914555989138">メモを追加</translation>
@@ -8158,6 +8157,7 @@
 <translation id="7416263748877373774">利用規約を読み込めません。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="7416362041876611053">不明なネットワーク エラーが発生しました。</translation>
 <translation id="741906494724992817">このアプリの使用に特別な権限は必要ありません。</translation>
+<translation id="7419142833919893307">ユーザー名は追加されていません</translation>
 <translation id="7419565702166471774">常に安全な接続を使用する</translation>
 <translation id="742130257665691897">ブックマークを削除しました</translation>
 <translation id="7421925624202799674">ページのソースを表示(&amp;V)</translation>
@@ -8422,7 +8422,6 @@
 <translation id="7629827748548208700">タブ:<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
 <translation id="7631014249255418691">Linux のアプリとファイルが正常にバックアップされました</translation>
-<translation id="7631205654593498032">デバイスを接続する場合、<ph name="DEVICE_TYPE" /> による次の操作を許可することになります。</translation>
 <translation id="7631887513477658702">この種類のファイルは常に開く(&amp;A)</translation>
 <translation id="7632948528260659758">次のキオスクアプリを更新できませんでした:</translation>
 <translation id="7633724038415831385">アップデートを待つのは今回限りです。Chromebook では、ソフトウェアのアップデートがバックグラウンドで行われます。</translation>
@@ -8468,6 +8467,7 @@
 <translation id="7659154729610375585">シークレット モードを終了してもよろしいですか？</translation>
 <translation id="7659336857671800422">プライバシー ガイドを開始</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
+<translation id="7660116474961254898">スマートフォンに表示される手順に沿ってください</translation>
 <translation id="7660146600670077843">タブを右クリックして、[タブを新しいグループに追加] を選択します</translation>
 <translation id="7661259717474717992">サイトに Cookie データの保存と読み取りを許可する</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>

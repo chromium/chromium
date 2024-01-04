@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Afbeelding laden</translation>
 <translation id="1026959648338730078">Windows Hello of externe beveiligingssleutel</translation>
 <translation id="1028700151766901954">Reden: LBS blijft standaard in <ph name="DEFAULT_OPEN_BROWSER" />.</translation>
+<translation id="102916930470544692">Toegangssleutel</translation>
 <translation id="1029317248976101138">Zoom</translation>
 <translation id="1029526375103058355">Tikken om te klikken</translation>
 <translation id="1031362278801463162">Voorbeeld wordt geladen</translation>
@@ -1393,7 +1394,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048554637254265991">Fout bij starten van containerbeheer. Probeer het opnieuw.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="204914487372604757">Snelle link maken</translation>
-<translation id="2050339315714019657">Portret</translation>
+<translation id="2050339315714019657">Staand</translation>
 <translation id="2051266530792296582">Google Wachtwoordmanager heeft een sterk wachtwoord gemaakt voor deze website</translation>
 <translation id="2051555741181591333">Hotspot automatisch uitzetten</translation>
 <translation id="2051669996101374349">Gebruik waar mogelijk HTTPS en krijg een waarschuwing voordat er sites worden geladen die dit niet ondersteunen. Je kunt deze instelling niet wijzigen, omdat je Geavanceerde beveiliging hebt aangezet.</translation>
@@ -2198,7 +2199,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="265748523151262387">Blijf verbonden met je telefoon</translation>
 <translation id="2657612187216250073">Toegankelijkheidsinstellingen voor aanwijzer</translation>
 <translation id="2658941648214598230">Oorspronkelijke content bekijken?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Functies verschillen per apparaat</translation>
 <translation id="2659971421398561408">Schijfgrootte aanpassen voor Crostini</translation>
 <translation id="2660779039299703961">Gebeurtenis</translation>
 <translation id="266079277508604648">Verbinding met printer niet mogelijk. Controleer of de printer is aangezet en via wifi of USB is verbonden met je Chromebook.</translation>
@@ -3275,7 +3275,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3514681096978190000">Dit archiefbestand heeft andere bestanden die misschien malware verbergen</translation>
 <translation id="3515983984924808886">Tik opnieuw op de beveiligingssleutel om het resetten te bevestigen. Alle informatie die is opgeslagen op de beveiligingssleutel, inclusief de pincode, wordt verwijderd.</translation>
 <translation id="3518866566087677312">Bookmark items die je later wilt bekijken</translation>
-<translation id="3518985090088779359">Accepteren en doorgaan</translation>
 <translation id="3519564332031442870">Backend-service voor afdrukken</translation>
 <translation id="3519938335881974273">Pagina opslaan als...</translation>
 <translation id="3520824492621090923">Apparaatinschrijving voor kiosken en digitale borden bevestigen?</translation>
@@ -5117,7 +5116,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="496185450405387901">Deze app is geïnstalleerd door je beheerder.</translation>
 <translation id="4963789650715167449">Huidig tabblad verwijderen</translation>
 <translation id="4964455510556214366">Indeling</translation>
-<translation id="496446150016900060">Wifi-netwerken synchroniseren met je telefoon</translation>
 <translation id="4965808351167763748">Weet je zeker dat je dit apparaat wilt instellen voor Hangouts Meet?</translation>
 <translation id="4966972803217407697">Je bent incognito</translation>
 <translation id="4967227914555989138">Notitie toevoegen</translation>
@@ -8429,7 +8427,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7629827748548208700">Tabblad: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Dit apparaat wordt beheerd door <ph name="MANAGER" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
-<translation id="7631205654593498032">Door je apparaten te koppelen geef je de <ph name="DEVICE_TYPE" /> toestemming om:</translation>
 <translation id="7631887513477658702">&amp;Altijd bestanden van dit type openen</translation>
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
 <translation id="7633724038415831385">Dit is de enige keer dat je moet wachten op een update. Op Chromebooks vinden software-updates in de achtergrond plaats.</translation>

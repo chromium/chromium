@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">इरेज़र</translation>
 <translation id="1458140305240870199">अंतर्वस्त्र</translation>
 <translation id="1459693405370120464">मौसम</translation>
+<translation id="1461041542809785877">परफ़ॉर्मेंस</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">अपने कंप्यूटर पर मौजूद फ़ॉन्ट इस्तेमाल करें, ताकि आप हाई फ़िडेलिटी कॉन्टेंट बना सकें</translation>
 <translation id="1467432559032391204">बाएं</translation>
@@ -658,7 +659,6 @@
 <translation id="2233745931693710080">कॉम्पैक्ट डिस्क</translation>
 <translation id="2235344399760031203">तीसरे पक्ष की कुकी ब्लॉक हैं</translation>
 <translation id="2239100178324503013">अभी भेजें</translation>
-<translation id="2239114457614475014">इनपुट में बदलाव करें</translation>
 <translation id="2241693394036365668">फ़ाइल डाउनलोड की गई</translation>
 <translation id="2246264294482514010">10 x 12 इंच</translation>
 <translation id="2246480341630108201">आपके अभिभावक ने अब तक इस साइट को ऐक्सेस करने की अनुमति नहीं दी है</translation>
@@ -993,7 +993,6 @@
 <translation id="2959113999220720579">चेहरे और शरीर की देखभाल से जुड़े प्रॉडक्ट और सेवाएं</translation>
 <translation id="2962073860865348475">12 x 18 इंच</translation>
 <translation id="2968103128155246731">वैन और मिनीवैन</translation>
-<translation id="2971483124699139256">'पसंद है' बटन को दबाने से यह राय सबमिट की जाती है कि आपको जनरेट किया गया टेक्स्ट पसंद है.</translation>
 <translation id="2972581237482394796">&amp;फिर से करें</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />, इस समय चुना गया है. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">ऑपरा</translation>
@@ -1577,7 +1576,6 @@
 <translation id="4132448310531350254">ऐप्लिकेशन "<ph name="POLICY_IDS_LIST" />" से जुड़े file_extensions "<ph name="FILE_EXTENSION" />" के लिए डुप्लीकेट हैंडलर.</translation>
 <translation id="4134123981501319574">दस्तावेज़ बनाएं</translation>
 <translation id="413544239732274901">ज़्यादा जानें</translation>
-<translation id="4139859738677203214">'पसंद नहीं है' बटन को दबाने से एक फ़ॉर्म खुलता है. इस फ़ॉर्म में आपको इस बारे में पूरी जानकारी देनी होती है कि आपको जनरेट किया गया टेक्स्ट क्यों पसंद नहीं है.</translation>
 <translation id="4140905530744469899">प्रोफ़ाइल आईडी:</translation>
 <translation id="4142935452406587478">ट्रे 10</translation>
 <translation id="4148925816941278100">American Express</translation>

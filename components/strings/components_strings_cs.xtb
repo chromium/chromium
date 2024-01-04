@@ -259,6 +259,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1455413310270022028">Guma</translation>
 <translation id="1458140305240870199">Spodní prádlo</translation>
 <translation id="1459693405370120464">Počasí</translation>
+<translation id="1461041542809785877">Výkon</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">Použít písma nainstalovaná v počítači, abyste mohli vytvářet obsah ve vysoké kvalitě</translation>
 <translation id="1467432559032391204">Doleva</translation>
@@ -657,7 +658,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2233745931693710080">Kompaktní disk</translation>
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2239100178324503013">Odeslat</translation>
-<translation id="2239114457614475014">Upravit vstup</translation>
 <translation id="2241693394036365668">Stažení souboru</translation>
 <translation id="2246264294482514010">10 × 12″</translation>
 <translation id="2246480341630108201">Tvůj rodič zatím neudělil souhlas</translation>
@@ -992,7 +992,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2959113999220720579">Péče o obličej a tělo</translation>
 <translation id="2962073860865348475">12 × 18 palců</translation>
 <translation id="2968103128155246731">Dodávky a minivany</translation>
-<translation id="2971483124699139256">Palec nahoru odešle zpětnou vazbu, že se vám vygenerovaný text líbí.</translation>
 <translation id="2972581237482394796">&amp;Opakovat</translation>
 <translation id="2977665033722899841">Aktuálně je vybrán řádek <ph name="ROW_NAME" />. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">Opera</translation>
@@ -1573,7 +1572,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4132448310531350254">Aplikace <ph name="POLICY_IDS_LIST" /> odkazují na duplicitní obslužné nástroje pro příponu souboru <ph name="FILE_EXTENSION" />.</translation>
 <translation id="4134123981501319574">Vytvořit dokument</translation>
 <translation id="413544239732274901">Další informace</translation>
-<translation id="4139859738677203214">Palec dolů otevře formulář k odeslání podrobné zpětné vazby o tom, proč se vám vygenerovaný text nelíbí.</translation>
 <translation id="4140905530744469899">ID profilu:</translation>
 <translation id="4142935452406587478">Přihrádka 10</translation>
 <translation id="4148925816941278100">American Express</translation>

@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">تحميل صورة</translation>
 <translation id="1026959648338730078">‏‫Windows Hello أو مفتاح أمان خارجي</translation>
 <translation id="1028700151766901954">‏السبب: تم العثور على ميزة "الوصول إلى المتصفِّحات القديمة" (LBS) في <ph name="DEFAULT_OPEN_BROWSER" /> بشكل تلقائي.</translation>
+<translation id="102916930470544692">مفتاح المرور</translation>
 <translation id="1029317248976101138">تكبير/تصغير</translation>
 <translation id="1029526375103058355">الضغط للنقر</translation>
 <translation id="1031362278801463162">تحميل المعاينة</translation>
@@ -2202,7 +2203,6 @@
 <translation id="265748523151262387">البقاء على اتصال باستخدام هاتفك</translation>
 <translation id="2657612187216250073">إعدادات تسهيل استخدام المؤشر</translation>
 <translation id="2658941648214598230">هل تريد عرض محتوى الصفحة الأصلي؟</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />تختلف الميزات حسب الجهاز</translation>
 <translation id="2659971421398561408">‏تغيير حجم قرص نظام التشغيل Crostini</translation>
 <translation id="2660779039299703961">حدث</translation>
 <translation id="266079277508604648">‏يتعذّر الاتصال بالطابعة. تحقق مما إذا كانت الطابعة مُفعّلة ومتصلة بجهاز Chromebook عن طريق Wi-Fi أو USB.</translation>
@@ -3279,7 +3279,6 @@
 <translation id="3514681096978190000">يتضمّن ملف الأرشيف هذا ملفات أخرى قد تخفي برامج ضارة.</translation>
 <translation id="3515983984924808886">يُرجى لمس مفتاح الأمان مرة أخرى لتأكيد إعادة الضبط. سيتم حذف جميع المعلومات المحفوظة في مفتاح الأمان، بما في ذلك رقم التعريف الشخصي الخاص به.</translation>
 <translation id="3518866566087677312">يمكنك وضع إشارة على العناصر التي تريد الرجوع إليها لاحقًا.</translation>
-<translation id="3518985090088779359">القبول والمتابعة</translation>
 <translation id="3519564332031442870">الخدمة الخلفية للطباعة</translation>
 <translation id="3519938335881974273">حفظ الصفحة باسم...</translation>
 <translation id="3520824492621090923">هل تريد تأكيد تسجيل الجهاز في وضع الكشك واللوحات الرقمية؟</translation>
@@ -5121,7 +5120,6 @@
 <translation id="496185450405387901">لقد ثبّت مشرفك هذا التطبيق.</translation>
 <translation id="4963789650715167449">إزالة علامة التبويب الحالية</translation>
 <translation id="4964455510556214366">الترتيب</translation>
-<translation id="496446150016900060">‏يمكنك مزامنة شبكات Wi-Fi مع هاتفك.</translation>
 <translation id="4965808351167763748">‏هل تريد فعلاً إعداد هذا الجهاز لتشغيل Hangouts Meet؟</translation>
 <translation id="4966972803217407697">يتم استخدام وضع التصفُّح المُتخفي حاليًا.</translation>
 <translation id="4967227914555989138">إضافة ملاحظة</translation>
@@ -8447,7 +8445,6 @@
 <translation id="7629827748548208700">علامة التبويب: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">يتولى <ph name="MANAGER" /> إدارة هذا الجهاز ويتطلّب منك تسجيل الدخول في كل مرة.</translation>
 <translation id="7631014249255418691">‏تم الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux بنجاح</translation>
-<translation id="7631205654593498032">عند ربط أجهزتك، أنت توافق على أن جهاز <ph name="DEVICE_TYPE" /> سيتمكّن من إجراء ما يلي:</translation>
 <translation id="7631887513477658702">فت&amp;ح هذا النوع من الملفات دومًا</translation>
 <translation id="7632948528260659758">‏فشل تحديث تطبيقات kiosk التالية:</translation>
 <translation id="7633724038415831385">‏هذه هي المرة الوحيدة التي ستنتظر فيها إجراء تحديث. في أجهزة Chromebook، تجري تحديثات البرامج في الخلفية.</translation>

@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">इमेज लोड करें</translation>
 <translation id="1026959648338730078">Windows Hello या बाहरी सुरक्षा कुंजी</translation>
 <translation id="1028700151766901954">वजह: एलबीएस <ph name="DEFAULT_OPEN_BROWSER" /> में डिफ़ॉल्ट रूप से मौजूद रहेगा.</translation>
+<translation id="102916930470544692">पासकी</translation>
 <translation id="1029317248976101138">ज़ूम</translation>
 <translation id="1029526375103058355">टैप टू क्लिक</translation>
 <translation id="1031362278801463162">झलक लोड हो रही है</translation>
@@ -2214,7 +2215,6 @@
 <translation id="265748523151262387">अपने फ़ोन के ज़रिए कनेक्ट रहें</translation>
 <translation id="2657612187216250073">पॉइंटर से जुड़ी सुलभता सेटिंग</translation>
 <translation id="2658941648214598230">क्या आप मूल कॉन्टेंट दिखाना चाहते हैं?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />डिवाइस के हिसाब से सुविधाएं अलग-अलग हो सकती हैं</translation>
 <translation id="2659971421398561408">Crostini में डिस्क का साइज़ बदलना</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="266079277508604648">प्रिंटर से कनेक्ट नहीं किया जा सका. जांचें  कि प्रिंटर चालू है और वाई-फ़ाई या यूएसबी के ज़रिए आपके Chromebook से कनेक्ट किया हुआ है.</translation>
@@ -2794,7 +2794,7 @@
 <translation id="3094223846531205616">{COUNT,plural, =0{समयसीमा आज खत्म हो जाएगी}=1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिन में खत्म हो जाएगी}}</translation>
 <translation id="3094521107841754472">कीमत को <ph name="PREVIOUS_PRICE" /> से बदलकर <ph name="CURRENT_PRICE" /> कर दिया गया है.</translation>
 <translation id="3095871294753148861">बुकमार्क, पासवर्ड, और ब्राउज़र का दूसरा डेटा प्राथमिक खाते से जुड़ा होता है.</translation>
-<translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. आप इसे हटा भी सकते हैं.}one{{NUM_EXTENSIONS} ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. आप इसे हटा भी सकते हैं.}other{{NUM_EXTENSIONS} ऐसे एक्सटेंशन बंद किए गए जो शायद नुकसान पहुंचा सकते हैं. आप इन्हें हटा भी सकते हैं.}}</translation>
+<translation id="3099836255427453137">{NUM_EXTENSIONS,plural, =1{1 ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. इसे हटाया भी जा सकता है.}one{{NUM_EXTENSIONS} ऐसा एक्सटेंशन बंद किया गया जो शायद नुकसान पहुंचा सकता है. इसे हटाया भी जा सकता है.}other{{NUM_EXTENSIONS} ऐसे एक्सटेंशन बंद किए गए जो शायद नुकसान पहुंचा सकते हैं. इन्हें हटाया भी जा सकता है.}}</translation>
 <translation id="3101126716313987672">हल्की रोशनी</translation>
 <translation id="3101709781009526431">तारीख और समय</translation>
 <translation id="310297983047869047">पिछली स्लाइड</translation>
@@ -3291,7 +3291,6 @@
 <translation id="3514681096978190000">इस संग्रह फ़ाइल में ऐसी अन्य फ़ाइलें शामिल हैं जिनमें मैलवेयर हो सकता है</translation>
 <translation id="3515983984924808886">रीसेट की पुष्टि करने के लिए, अपनी सुरक्षा कुंजी फिर से छुएं. ऐसा करने से सुरक्षा कुंजी का पिन और उस पर मौजूद पूरी जानकारी मिट जाएगी.</translation>
 <translation id="3518866566087677312">जिन पेज को आपको बाद में देखना हो उन्हें बुकमार्क करें</translation>
-<translation id="3518985090088779359">स्‍वीकार करें और जारी रखें</translation>
 <translation id="3519564332031442870">प्रिंट बैकएंड सर्विस</translation>
 <translation id="3519938335881974273">पेज को इस रूप में सेव करें...</translation>
 <translation id="3520824492621090923">क्या आपको किऑस्क और साइनेज का इस्तेमाल करके, डिवाइस का नाम दर्ज करना है?</translation>
@@ -5135,7 +5134,6 @@
 <translation id="496185450405387901">इस ऐप्लिकेशन को आपके एडमिन ने इंस्टॉल किया है.</translation>
 <translation id="4963789650715167449">मौजूदा टैब हटाएं</translation>
 <translation id="4964455510556214366">व्यवस्था</translation>
-<translation id="496446150016900060">वाई-फ़ाई नेटवर्क को अपने फ़ोन के साथ सिंक करें</translation>
 <translation id="4965808351167763748">क्या आप वाकई Hangouts Meet चलाने के लिए इस डिवाइस को सेट अप करना चाहते हैं?</translation>
 <translation id="4966972803217407697">आप गुप्त मोड में हैं</translation>
 <translation id="4967227914555989138">नोट जोड़ें</translation>
@@ -8454,7 +8452,6 @@
 <translation id="7629827748548208700">टैब: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है. आपको हर बार साइन इन करना होगा.</translation>
 <translation id="7631014249255418691">Linux ऐप्लिकेशन और फ़ाइलों का बैकअप ले लिया गया है</translation>
-<translation id="7631205654593498032">जब आप अपने डिवाइस कनेक्ट करते हैं, तो आप सहमति देते हैं कि आपका <ph name="DEVICE_TYPE" /> ये काम कर सकता है:</translation>
 <translation id="7631887513477658702">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
 <translation id="7632948528260659758">निम्‍न किऑस्क&amp;#0; ऐप्‍स अपडेट होने में विफल रहे:</translation>
 <translation id="7633724038415831385">अपडेट के लिए, आपको सिर्फ़ इस बार इंतज़ार करना होगा. Chromebooks पर सॉफ़्टवेयर, बैकग्राउंड में अपडेट होते हैं.</translation>
@@ -8652,7 +8649,7 @@
 <translation id="7766838926148951335">अनुमतियां स्वीकार करें</translation>
 <translation id="7767554953520855281">स्क्रीन शेयर करने के दौरान सूचना का कॉन्टेंट नहीं दिखता</translation>
 <translation id="7767972280546034736"><ph name="APP_NAME" /> के लिए पासकी सेट करें</translation>
-<translation id="7768507955883790804">जब आप साइटों पर जाते हैं, तो वे अपने-आप इस सेटिंग को फ़ॉलो करती हैं</translation>
+<translation id="7768507955883790804">किसी साइट पर जाने पर, वह अपने-आप इस सेटिंग को फ़ॉलो करती है</translation>
 <translation id="7768526219335215384"><ph name="ORIGIN" />, <ph name="FOLDERNAME" /> के अंदर फ़ाइलें देख पाएंगे</translation>
 <translation id="7768770796815395237">बदलें</translation>
 <translation id="7768784765476638775">चुनें और सुनें</translation>

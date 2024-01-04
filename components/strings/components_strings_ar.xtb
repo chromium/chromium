@@ -259,6 +259,7 @@
 <translation id="1455413310270022028">ممحاة</translation>
 <translation id="1458140305240870199">ملابس داخلية</translation>
 <translation id="1459693405370120464">الطقس</translation>
+<translation id="1461041542809785877">الأداء</translation>
 <translation id="1462245070427461050">JIS B9</translation>
 <translation id="1462951478840426066">استخدام الخطوط المثبَّتة على جهاز الكمبيوتر حتى تتمكّن من إنشاء محتوى عالي الدقة</translation>
 <translation id="1467432559032391204">اليسار</translation>
@@ -657,7 +658,6 @@
 <translation id="2233745931693710080">قرص مضغوط</translation>
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
-<translation id="2239114457614475014">تعديل الإدخال</translation>
 <translation id="2241693394036365668">تم تنزيل ملف</translation>
 <translation id="2246264294482514010">10 × 12 بوصة</translation>
 <translation id="2246480341630108201">لم نحصل على موافقة أحد الوالدَين بعد.</translation>
@@ -993,7 +993,6 @@
 <translation id="2959113999220720579">العناية بالوجه والجسم</translation>
 <translation id="2962073860865348475">12 × 18 بوصة</translation>
 <translation id="2968103128155246731">شاحنات وشاحنات صغيرة</translation>
-<translation id="2971483124699139256">عند النقر على زر "رائع"، يتم إرسال ملاحظات بأنّ النص الذي تم إنشاؤه قد نال إعجابك.</translation>
 <translation id="2972581237482394796">إعا&amp;دة</translation>
 <translation id="2977665033722899841"><ph name="ROW_NAME" />، تم اختياره حاليًا. <ph name="ROW_CONTENT" /></translation>
 <translation id="2978824962390592855">أوبرا</translation>
@@ -1441,7 +1440,7 @@
 <translation id="3823019343150397277">‏رقم الحساب بصيغة IBAN</translation>
 <translation id="3823402221513322552">تتم إدارة متصفِّحك من خلال النطاق <ph name="BROWSER_DOMAIN" /> وملفك الشخصي من خلال النطاق <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="382518646247711829">إذا كنت تستخدم خادمًا وكيلاً...</translation>
-<translation id="3826050100957962900">تسجيل الدخول في الخدمات التابعة لجهات خارجية</translation>
+<translation id="3826050100957962900">تسجيل الدخول باستخدام الخدمات التابعة لجهات خارجية</translation>
 <translation id="3827112369919217609">صيغة مطلقة</translation>
 <translation id="3827666161959873541">أفلام عائلية</translation>
 <translation id="3828924085048779000">غير مسموح باستخدام عبارة مرور فارغة.</translation>
@@ -1579,7 +1578,6 @@
 <translation id="4132448310531350254">تم رصد أكثر من معالج لامتداد الملف "<ph name="FILE_EXTENSION" />" ضِمن التطبيقات التالية: "<ph name="POLICY_IDS_LIST" />".</translation>
 <translation id="4134123981501319574">إنشاء مستند</translation>
 <translation id="413544239732274901">مزيد من المعلومات</translation>
-<translation id="4139859738677203214">عند النقر على زر "لا يعجبني"، يتم فتح نموذج لإرسال ملاحظات مفصّلة حول سبب عدم إعجابك بالنص الذي تم إنشاؤه.</translation>
 <translation id="4140905530744469899">رقم تعريف الملف الشخصي:</translation>
 <translation id="4142935452406587478">الدُرج 10</translation>
 <translation id="4148925816941278100">American Express</translation>

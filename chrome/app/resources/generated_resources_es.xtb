@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">Cargar imagen</translation>
 <translation id="1026959648338730078">Windows Hello o llave de seguridad externa</translation>
 <translation id="1028700151766901954">Motivo: LBS se mantiene en <ph name="DEFAULT_OPEN_BROWSER" /> de forma predeterminada.</translation>
+<translation id="102916930470544692">Llave de acceso</translation>
 <translation id="1029317248976101138">Acercar</translation>
 <translation id="1029526375103058355">Tocar para hacer clic</translation>
 <translation id="1031362278801463162">Cargando vista previa</translation>
@@ -1393,7 +1394,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2048554637254265991">Se ha producido un problema al iniciar el gestor de contenedores. Inténtalo de nuevo.</translation>
 <translation id="2048653237708779538">Acción no disponible</translation>
 <translation id="204914487372604757">Crear acceso directo</translation>
-<translation id="2050339315714019657">Retrato</translation>
+<translation id="2050339315714019657">Vertical</translation>
 <translation id="2051266530792296582">El Gestor de contraseñas de Google ha creado una contraseña segura para este sitio web</translation>
 <translation id="2051555741181591333">Inhabilitar punto de acceso automáticamente</translation>
 <translation id="2051669996101374349">Usa HTTPS siempre que sea posible y recibe advertencias antes de cargar sitios que no sean compatibles con este protocolo. No puedes cambiar este ajuste porque tienes habilitada la Protección Avanzada.</translation>
@@ -2199,7 +2200,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="265748523151262387">Mantén la conexión con tu teléfono</translation>
 <translation id="2657612187216250073">Ajustes de accesibilidad del puntero</translation>
 <translation id="2658941648214598230">¿Mostrar contenido original?</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />Las funciones varían según el dispositivo</translation>
 <translation id="2659971421398561408">Modificar el tamaño del disco de Crostini</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="266079277508604648">No se puede establecer conexión con la impresora. Comprueba que esté encendida y conectada a tu Chromebook por red Wi‑Fi o USB.</translation>
@@ -3276,7 +3276,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3514681096978190000">Este archivo incluye otros archivos que pueden ocultar malware</translation>
 <translation id="3515983984924808886">Vuelve a tocar tu llave de seguridad para confirmar el restablecimiento. Se eliminará toda la información guardada en la llave de seguridad, incluido el PIN.</translation>
 <translation id="3518866566087677312">Añade a marcadores lo que quieras volver a ver más adelante</translation>
-<translation id="3518985090088779359">Aceptar y continuar</translation>
 <translation id="3519564332031442870">Servicio de backend de impresión</translation>
 <translation id="3519938335881974273">Guardar página como...</translation>
 <translation id="3520824492621090923">¿Confirmar el registro de dispositivo de kiosco y señalización?</translation>
@@ -5119,7 +5118,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="496185450405387901">Tu administrador ha instalado esta aplicación.</translation>
 <translation id="4963789650715167449">Quitar pestaña actual</translation>
 <translation id="4964455510556214366">Disposición</translation>
-<translation id="496446150016900060">Sincroniza redes Wi-Fi con tu teléfono</translation>
 <translation id="4965808351167763748">¿Seguro que quieres configurar este dispositivo para que utilice Hangouts Meet?</translation>
 <translation id="4966972803217407697">Estás en incógnito</translation>
 <translation id="4967227914555989138">Añadir una nota</translation>
@@ -8437,7 +8435,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7629827748548208700">Pestaña: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Este dispositivo lo gestiona <ph name="MANAGER" /> y requiere que inicies sesión siempre.</translation>
 <translation id="7631014249255418691">La copia de seguridad de las aplicaciones y archivos de Linux se ha completado correctamente</translation>
-<translation id="7631205654593498032">Al conectar tus dispositivos, aceptas que tu <ph name="DEVICE_TYPE" /> puede hacer lo siguiente:</translation>
 <translation id="7631887513477658702">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="7632948528260659758">No se han podido actualizar las siguientes aplicaciones de kiosco:</translation>
 <translation id="7633724038415831385">Esta es la única vez que tendrás que esperar por una actualización. En los Chromebooks, las actualizaciones de software se realizan en segundo plano.</translation>

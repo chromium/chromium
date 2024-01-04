@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">براؤزر ہوم</translation>
 <translation id="1526389707933164996">اسکرین سیور اینیمیشن</translation>
 <translation id="152892567002884378">والیوم بڑھائیں</translation>
-<translation id="1539242642795599947">‏APN کی قسم ڈیفالٹ اور منسلک پر سیٹ ہے۔</translation>
 <translation id="1555130319947370107">نیلا</translation>
 <translation id="155865706765934889">ٹچ پیڈ</translation>
 <translation id="1561927818299383735">بیک لٹ کا رنگ</translation>
@@ -620,7 +619,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">دوبارہ اسکین کریں</translation>
 <translation id="5583640892426849032">بیک اسپیس</translation>
-<translation id="5584044598279886848">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ منسلکہ APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
 <translation id="5600027863942488546"><ph name="KEY_NAME" /> کلید ٹیسٹ کی گئی</translation>
 <translation id="5620281292257375798">صرف داخلی</translation>
 <translation id="5649768706273821470">سنیں</translation>
@@ -671,7 +669,6 @@
 <translation id="5946538341867151940">‏آپ ابھی تک منسلک نہیں ہیں۔ اگر آپ کا موبائل کیریئر حسب ضرورت APN تجویز کرتا ہے تو "New APN +" کو منتخب کر کے APN کی معلومات درج کریں۔</translation>
 <translation id="5972388717451707488">انجن اپ ڈیٹ کریں</translation>
 <translation id="5984145644188835034">ڈیفالٹ وال پیپر</translation>
-<translation id="6001235009374883388">‏APN کی قسم منسلک پر سیٹ ہے</translation>
 <translation id="6017514345406065928">سبز</translation>
 <translation id="6019566113895157499">کی بورڈ شارٹ کٹس</translation>
 <translation id="6034694447310538551">خودکار ماہانہ ری سیٹ فعال کریں</translation>
@@ -967,7 +964,6 @@
 <translation id="8151185429379586178">ڈویلپر ٹولز</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />، <ph name="ACCELERATOR_INFO" />۔</translation>
 <translation id="8179976553408161302">انٹر</translation>
-<translation id="8183974620058026102">منسلک کریں</translation>
 <translation id="8206859287963243715">سیلولر</translation>
 <translation id="8208861521865154048">فوائد</translation>
 <translation id="8226628635270268143">اپنی پسندیدہ تصاویر اور البمز منتخب کریں</translation>

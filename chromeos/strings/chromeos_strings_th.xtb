@@ -83,7 +83,6 @@
 <translation id="1515129336378114413">หน้าหลักของเบราว์เซอร์</translation>
 <translation id="1526389707933164996">ภาพเคลื่อนไหวของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
-<translation id="1539242642795599947">APN เป็นแบบ Default และ Attach</translation>
 <translation id="1555130319947370107">สีน้ำเงิน</translation>
 <translation id="155865706765934889">ทัชแพด</translation>
 <translation id="1561927818299383735">สีเรืองแสง</translation>
@@ -450,6 +449,7 @@
 <translation id="4354430579665871434">แป้น</translation>
 <translation id="4361257691546579041">APN เป็นแบบ Default</translation>
 <translation id="437294888293595148">รีเซ็ตทางลัดทั้งหมด</translation>
+<translation id="4376423484621194274">ผู้ดูแลระบบไม่อนุญาตให้ปิด <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">ไม่ทำงาน</translation>
 <translation id="4378551569595875038">กำลังเชื่อมต่อ</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -620,7 +620,6 @@
 <translation id="5578477003638479617">UMTS</translation>
 <translation id="5578519639599103840">สแกนอีกครั้ง</translation>
 <translation id="5583640892426849032">Backspace</translation>
-<translation id="5584044598279886848">ปิดใช้หรือนํา APN นี้ออกไม่ได้ ตรวจสอบว่า APN ที่แนบมาและเปิดใช้อยู่ถูกปิดใช้หรือนำออกแล้ว</translation>
 <translation id="5600027863942488546">ทดสอบปุ่ม <ph name="KEY_NAME" /> อยู่</translation>
 <translation id="5620281292257375798">ภายในเท่านั้น</translation>
 <translation id="5649768706273821470">ฟัง</translation>
@@ -671,7 +670,6 @@
 <translation id="5946538341867151940">คุณยังไม่ได้เชื่อมต่อ หากผู้ให้บริการเครือข่ายมือถือของคุณแนะนำ APN ที่กําหนดเอง ให้ป้อนข้อมูล APN ดังกล่าวโดยเลือก "+ APN ใหม่"</translation>
 <translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="5984145644188835034">วอลเปเปอร์เริ่มต้น</translation>
-<translation id="6001235009374883388">APN เป็นแบบ Attach</translation>
 <translation id="6017514345406065928">สีเขียว</translation>
 <translation id="6019566113895157499">แป้นพิมพ์ลัด</translation>
 <translation id="6034694447310538551">เปิดใช้การรีเซ็ตทุกเดือนโดยอัตโนมัติ</translation>
@@ -967,7 +965,6 @@
 <translation id="8151185429379586178">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" /></translation>
 <translation id="8179976553408161302">Enter</translation>
-<translation id="8183974620058026102">แนบ</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>

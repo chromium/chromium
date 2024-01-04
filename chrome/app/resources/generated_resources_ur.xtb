@@ -35,6 +35,7 @@
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
 <translation id="1026959648338730078">‏Windows Hello یا بیرونی سیکیورٹی کلید</translation>
 <translation id="1028700151766901954">‏وجہ: LBS بطور ڈیفالٹ <ph name="DEFAULT_OPEN_BROWSER" /> میں رہتا ہے۔</translation>
+<translation id="102916930470544692">پاس کی</translation>
 <translation id="1029317248976101138">زوم کریں</translation>
 <translation id="1029526375103058355">کلک کرنے کیلئے تھپتھپائیں</translation>
 <translation id="1031362278801463162">پیش منظر لوڈ کیا جا رہا ہے</translation>
@@ -2200,7 +2201,6 @@
 <translation id="265748523151262387">اپنے فون کے ساتھ منسلک رہیں</translation>
 <translation id="2657612187216250073">پوائنٹر کی ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="2658941648214598230">اصل مواد دکھائیں؟</translation>
-<translation id="2659381484350128933"><ph name="FOOTNOTE_POINTER" />خصوصیات آلہ کے لحاظ سے مختلف ہوتی ہیں</translation>
 <translation id="2659971421398561408">‏Crostini کی ڈسک کی سائز تبدیل کریں</translation>
 <translation id="2660779039299703961">ایونٹ</translation>
 <translation id="266079277508604648">‏پرنٹر سے منسلک نہیں ہو سکا۔ چیک کریں کہ پرنٹر آن ہے اور Wi-Fi یا USB کے ذریعے آپ کے Chromebook سے منسلک ہے۔</translation>
@@ -3277,7 +3277,6 @@
 <translation id="3514681096978190000">اس آرکائیو فائل میں دوسری فائلیں شامل ہیں جو میلوئیر کو چھپا سکتی ہیں</translation>
 <translation id="3515983984924808886">‏دوبارہ ترتیب دینے کی تصدیق کرنے کے لیے اپنی سیکیورٹی کلید کو دوبارہ ٹچ کریں۔ سیکیورٹی کلید کے PIN سمیت اس میں اسٹور کردہ سبھی معلومات کو حذف کر دیا جائے گا۔</translation>
 <translation id="3518866566087677312">ان چیزوں کو بک مارکس کریں جن پر آپ بعد میں واپس آنا چاہتے ہیں</translation>
-<translation id="3518985090088779359">قبول کرکے جاری رکھیں</translation>
 <translation id="3519564332031442870">پرنٹ بیک اینڈ سروس</translation>
 <translation id="3519938335881974273">صفحہ محفوظ کریں بطور…</translation>
 <translation id="3520824492621090923">کیوسک اور سائنیج آلہ کے اندراج کی تصدیق کریں؟</translation>
@@ -5121,7 +5120,6 @@
 <translation id="496185450405387901">یہ ایپ آپ کے منتظم نے انسٹال کی ہے۔</translation>
 <translation id="4963789650715167449">موجودہ ٹیب ہٹائیں</translation>
 <translation id="4964455510556214366">انتظام</translation>
-<translation id="496446150016900060">‏اپنے فون کے ساتھ Wi-Fi نیٹ ورکس کو سنک کریں</translation>
 <translation id="4965808351167763748">‏کیا آپ واقعی Hangouts Meet چلانے کیلئے اس آلہ کو سیٹ اپ کرنا چاہتے ہیں؟</translation>
 <translation id="4966972803217407697">آپ پوشیدگی وضع میں ہیں</translation>
 <translation id="4967227914555989138">ایک نوٹ شامل کریں</translation>
@@ -8437,7 +8435,6 @@
 <translation id="7629827748548208700">ٹیب: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">یہ آلہ <ph name="MANAGER" /> کے زیر انتظام ہے اور آپ کو ہر بار سائن ان کرنے کی ضرورت ہے۔</translation>
 <translation id="7631014249255418691">‏Linux کی ایپس اور فائلز کا کامیابی کے ساتھ بیک اپ لے لیا گیا ہے</translation>
-<translation id="7631205654593498032">جب آپ اپنے آلات کو منسلک کرتے ہیں تو آپ اس بات سے اتفاق کرتے ہیں کہ آپ کا <ph name="DEVICE_TYPE" /> درج ذيل چیزیں کر سکتا ہے:</translation>
 <translation id="7631887513477658702">اس قسم کی فائلیں &amp;ہمیشہ کھولیں</translation>
 <translation id="7632948528260659758">درج ذیل کیوسک ایپس اپ ڈیٹنگ کیلئے ناکام ہو گئی ہیں:</translation>
 <translation id="7633724038415831385">‏صرف یہ ہی وہ وقت ہے جب آپ کسی اپ ڈیٹ کا انتظار کریں گے۔ Chromebooks پر سافٹ ویئر اپ ڈیٹ پس منظر میں ہوتے ہیں۔</translation>
