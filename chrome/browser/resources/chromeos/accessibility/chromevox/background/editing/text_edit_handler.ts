@@ -14,7 +14,7 @@ import {AutomationEditableText} from './editable_text.js';
 import {AutomationRichEditableText} from './rich_editable_text.js';
 
 import AutomationIntent = chrome.automation.AutomationIntent;
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 import Dir = constants.Dir;
 import IntentCommandType = chrome.automation.IntentCommandType;
 import RoleType = chrome.automation.RoleType;

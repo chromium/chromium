@@ -63,12 +63,12 @@ export interface AutomationTreeWalkerRestriction {
  */
 export class AutomationTreeWalker {
   // TODO(b/314204374): Convert from null to undefined.
-  private node_: chrome.automation.AutomationNode|null;
+  private node_: AutomationNode|null;
   private phase_: string;
   private dir_: constants.Dir;
-  private initialNode_: chrome.automation.AutomationNode;
+  private initialNode_: AutomationNode;
   // TODO(b/314204374): Convert from null to undefined.
-  private backwardAncestor_: chrome.automation.AutomationNode|null;
+  private backwardAncestor_: AutomationNode|null;
   private visitPred_: (node: any) => any;
   private skipInitialAncestry_: boolean;
   private skipInitialSubtree_: boolean;
@@ -124,7 +124,7 @@ export class AutomationTreeWalker {
     return false;
   }
 
-  get node(): chrome.automation.AutomationNode|null {
+  get node(): AutomationNode|null {
     return this.node_;
   }
 
@@ -168,7 +168,7 @@ export class AutomationTreeWalker {
       }
     }
 
-    let searchNode: chrome.automation.AutomationNode|undefined = node;
+    let searchNode: AutomationNode|undefined = node;
     while (searchNode) {
       // We have crossed out of the initial node's subtree for either a
       // sibling or parent move.

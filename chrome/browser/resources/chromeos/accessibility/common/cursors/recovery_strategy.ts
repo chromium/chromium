@@ -6,7 +6,7 @@
  * @fileoverview Defines various strategies for recovering automation nodes.
  */
 
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;
 
 export abstract class RecoveryStrategy {

@@ -17,7 +17,7 @@ import {SelectToSpeakConstants} from './select_to_speak_constants.js';
 import {TtsManager} from './tts_manager.js';
 import {SelectToSpeakUiListener, UiManager} from './ui_manager.js';
 
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 import AutomationEvent = chrome.automation.AutomationEvent;
 import EventType = chrome.automation.EventType;
 import RoleType = chrome.automation.RoleType;
@@ -60,7 +60,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   private currentNodeGroupItemIndex_: number;
   private currentNodeGroups_: ParagraphUtils.NodeGroup[];
   private currentNodeWord_: {start: number, end: number}|null;
-  private desktop_: chrome.automation.AutomationNode|undefined;
+  private desktop_: AutomationNode|undefined;
   private inputHandler_: InputHandler|null;
   private intervalId_: number|undefined;
   private nullSelectionTone_: HTMLAudioElement;
@@ -243,7 +243,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     }
 
     var rect = this.inputHandler_!.getMouseRect();
-    var nodes: chrome.automation.AutomationNode[] = [];
+    var nodes: AutomationNode[] = [];
     chrome.automation.getFocus(focusedNode => {
       // In some cases, e.g. ARC++, the window received in the hit test request,
       // which is computed based on which window is the event handler for the
@@ -293,7 +293,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    */
   private requestSpeakSelectedText_(
       method: MetricsUtils.StartSpeechMethod,
-      focusedNode: chrome.automation.AutomationNode): void {
+      focusedNode: AutomationNode): void {
     // If nothing is selected, return early. Check if the focused node has
     // textSelStart and textSelEnd. For native UI like the omnibox, the root
     // might not have a selectionStartObject and selectionEndObject. Therefore

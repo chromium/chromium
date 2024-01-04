@@ -13,7 +13,7 @@ import {constants} from '../constants.js';
 
 import {Cursor, CURSOR_NODE_INDEX, CursorMovement, CursorUnit, WrappingCursor} from './cursor.js';
 
-import AutomationNode = chrome.automation.AutomationNode;
+type AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
