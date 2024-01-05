@@ -46,12 +46,12 @@ public final class CronetManifest {
     @VisibleForTesting
     static final String ENABLE_TELEMETRY_META_DATA_KEY = "android.net.http.EnableTelemetry";
 
-    // DO NOT ENABLE this manifest flag in production apps. The code gated behind this flag is not
-    // ready yet.
-    // TODO: remove the "Experimental" prefix once the code for reading HTTP flags is ready.
+    // Guarded by a "prerelease" prefix to make sure that we don't use the final name for something
+    // that we have not confirmed is working in production.
+    // TODO: remove the "prerelease" prefix once we confirm this works in production.
     @VisibleForTesting
     public static final String READ_HTTP_FLAGS_META_DATA_KEY =
-            "android.net.http.EXPERIMENTAL_ReadHttpFlags";
+            "android.net.http.PRERELEASE_ReadHttpFlags";
 
     /**
      * @return True if telemetry should be enabled, based on the {@link
