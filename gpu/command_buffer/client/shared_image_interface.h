@@ -82,6 +82,7 @@ class GPU_EXPORT SharedImageInterface {
   // which is used to populate the SharedImage.  |pixel_data| should have the
   // same format which would be passed to glTexImage2D to populate a similarly
   // specified texture.
+  // May return null if |pixel_data| is too big for IPC.
   // TODO(crbug.com/1447106): Have the caller specify a row span for
   // |pixel_data| explicitly. Some backings have different row alignment
   // requirements which the caller has to match exactly or it won't work.
@@ -100,6 +101,7 @@ class GPU_EXPORT SharedImageInterface {
   // native buffer (if supported) or shared memory which are CPU mappable.
   // We are currently passing BufferUsage to this method for simplicity since
   // as of now we dont have a clear way to map BufferUsage to SharedImageUsage.
+  // May return null if GPU memory buffer creation fails.
   // TODO(crbug.com/1467584): Merge this method to above existing methods once
   // we figure out mapping between BufferUsage and SharedImageUsage and
   // eliminate all usages of BufferUsage.
