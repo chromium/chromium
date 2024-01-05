@@ -13982,7 +13982,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_AGSA",
+                    "params": {
+                        "app-id": "com.google.android.googlequicksearchbox"
+                    },
                     "enable_features": [
                         "PrivacySandboxAdsNoticeCCT"
                     ]
