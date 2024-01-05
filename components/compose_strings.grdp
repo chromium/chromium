@@ -111,28 +111,25 @@
   </message>
 
   <!-- Errors -->
-  <message name="IDS_COMPOSE_CONFIGURATION_ERROR" desc="The error text shown when Compose is not available due to an internal configuration error." translateable="false">
-    Configuration error. Try again later.
-  </message>
-  <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short.">
     This is too short. Write at least 3 words.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TOO_LONG" desc="Error that the input was too long.">
     This is too long. Shorten and try again.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN" desc="Error indicating that the request should be tried again.">
     Something went wrong. Try again.
   </message>
-  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_TRY_AGAIN_LATER" desc="Error indicating that the request should be tried again later.">
     Something went wrong. Try again later.
   </message>
-  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL" desc="Error that the request was not able to be fulfilled.">
     Your request wasn't understood. Try a different request.
   </message>
-  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_PERMISSION_DENIED" desc="Error that the request failed by denied permission.">
     Something went wrong. Are you signed in?
   </message>
-  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details." translateable="false">
+  <message name="IDS_COMPOSE_ERROR_GENERIC" desc="Error without further details.">
     Something went wrong.
   </message>
 

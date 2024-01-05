@@ -64,7 +64,7 @@ ComposeUI::ComposeUI(content::WebUI* web_ui)
       {"errorTryAgain", IDS_COMPOSE_ERROR_TRY_AGAIN},
       {"errorTryAgainLater", IDS_COMPOSE_ERROR_TRY_AGAIN_LATER},
       {"errorRequestNotSuccessful", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
-      {"errorPermissionDenied", IDS_COMPOSE_ERROR_REQUEST_NOT_SUCCESSFUL},
+      {"errorPermissionDenied", IDS_COMPOSE_ERROR_PERMISSION_DENIED},
       {"errorGeneric", IDS_COMPOSE_ERROR_GENERIC},
       {"editButton", IDS_COMPOSE_EDIT},
       {"editCancelButton", IDS_CANCEL},
