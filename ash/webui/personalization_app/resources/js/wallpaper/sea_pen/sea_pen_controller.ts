@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -37,10 +37,11 @@ export async function searchSeaPenThumbnails(
     query: SeaPenQuery, provider: SeaPenProviderInterface,
     store: SeaPenStoreInterface): Promise<void> {
   store.dispatch(seaPenAction.beginSearchSeaPenThumbnailsAction(query));
-  const {images} = await provider.searchWallpaper(query);
-  if (!isNonEmptyArray(images)) {
-    console.warn('Failed to generate thumbnails.');
+  const {images, statusCode} = await provider.searchWallpaper(query);
+  if (!isNonEmptyArray(images) || statusCode !== MantaStatusCode.kOk) {
+    console.warn('Error generating thumbnails. Status code: ', statusCode);
   }
+  store.dispatch(seaPenAction.setThumbnailResponseStatusCodeAction(statusCode));
   store.dispatch(seaPenAction.setSeaPenThumbnailsAction(query, images));
 }
 

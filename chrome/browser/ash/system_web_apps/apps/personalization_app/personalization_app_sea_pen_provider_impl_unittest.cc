@@ -26,6 +26,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/manta/features.h"
+#include "components/manta/manta_status.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -144,25 +145,32 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 };
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
-  base::test::TestFuture<std::optional<
-      std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>>
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
       search_wallpaper_future;
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTextQuery("search_query");
+
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
+
   EXPECT_THAT(
-      search_wallpaper_future.Take().value(),
+      search_wallpaper_future.Get<0>().value(),
       testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1"sv, 1),
                            MatchesSeaPenImage("fake_sea_pen_image_2"sv, 2),
                            MatchesSeaPenImage("fake_sea_pen_image_3"sv, 3),
                            MatchesSeaPenImage("fake_sea_pen_image_4"sv, 4)));
+  EXPECT_EQ(search_wallpaper_future.Get<1>(), manta::MantaStatusCode::kOk);
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        TemplateSearchReturnsThumbnails) {
-  base::test::TestFuture<std::optional<
-      std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>>
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
       search_wallpaper_future;
   base::flat_map<mojom::SeaPenTemplateChip, mojom::SeaPenTemplateOption>
       options({{mojom::SeaPenTemplateChip::kFlowerColor,
@@ -175,12 +183,15 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(search_query), search_wallpaper_future.GetCallback());
+
   EXPECT_THAT(
-      search_wallpaper_future.Take().value(),
+      search_wallpaper_future.Get<0>().value(),
       testing::ElementsAre(MatchesSeaPenImage("fake_sea_pen_image_1"sv, 1),
                            MatchesSeaPenImage("fake_sea_pen_image_2"sv, 2),
                            MatchesSeaPenImage("fake_sea_pen_image_3"sv, 3),
                            MatchesSeaPenImage("fake_sea_pen_image_4"sv, 4)));
+  EXPECT_THAT(search_wallpaper_future.Get<1>(),
+              testing::Eq(manta::MantaStatusCode::kOk));
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
@@ -194,26 +205,35 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
   ASSERT_EQ(mojom::kMaximumSearchWallpaperTextBytes / 3,
             base::UTF8ToUTF16(long_unicode_string).size());
 
-  base::test::TestFuture<std::optional<
-      std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>>
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
       search_wallpaper_future;
   mojom::SeaPenQueryPtr long_query =
       mojom::SeaPenQuery::NewTextQuery(long_unicode_string);
+
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(long_query), search_wallpaper_future.GetCallback());
-  EXPECT_EQ(4u, search_wallpaper_future.Take().value().size())
-      << "SearchWallpaper succeeds if text is exactly max length";
 
-  mojo::test::BadMessageObserver bad_message_observer;
+  EXPECT_EQ(4u, search_wallpaper_future.Get<0>().value().size())
+      << "SearchWallpaper succeeds if text is exactly max length";
+}
+
+TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
+  std::string max_length_unicode_string =
+      RepeatToSize("\uFFFF", mojom::kMaximumSearchWallpaperTextBytes);
   mojom::SeaPenQueryPtr bad_long_query =
-      mojom::SeaPenQuery::NewTextQuery(long_unicode_string + "a");
+      mojom::SeaPenQuery::NewTextQuery(max_length_unicode_string + 'a');
+  mojo::test::BadMessageObserver bad_message_observer;
+
   sea_pen_provider_remote()->SearchWallpaper(
       std::move(bad_long_query),
       base::BindLambdaForTesting(
           [](std::optional<std::vector<
-                 ash::personalization_app::mojom::SeaPenThumbnailPtr>>) {
-            NOTREACHED();
-          }));
+                 ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+             manta::MantaStatusCode) { NOTREACHED(); }));
+
   EXPECT_EQ("SearchWallpaper exceeded maximum text length",
             bad_message_observer.WaitForBadMessage())
       << "SearchWallpaper fails if text is longer than max length";
@@ -222,8 +242,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        SelectThumbnailSetsSeaPenWallpaper) {
   // Store some test images in the provider so that one can be selected.
-  base::test::TestFuture<std::optional<
-      std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>>
+  base::test::TestFuture<
+      std::optional<
+          std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
+      manta::MantaStatusCode>
       search_wallpaper_future;
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTextQuery("search_query");
@@ -236,7 +258,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   // Select the first returned thumbnail.
   base::test::TestFuture<bool> select_wallpaper_future;
   sea_pen_provider_remote()->SelectSeaPenThumbnail(
-      search_wallpaper_future.Take()->front()->id,
+      search_wallpaper_future.Get<0>().value().front()->id,
       select_wallpaper_future.GetCallback());
 
   ASSERT_TRUE(select_wallpaper_future.Take());

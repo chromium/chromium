@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {RecentSeaPenData} from 'chrome://personalization/js/personalization_app.js';
-import {SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -62,7 +62,10 @@ export class TestSeaPenProvider extends TestBrowserProxy implements
 
   searchWallpaper(query: SeaPenQuery) {
     this.methodCalled('searchWallpaper', query);
-    return Promise.resolve({images: this.images});
+    return Promise.resolve({
+      images: this.images,
+      statusCode: MantaStatusCode.kOk,
+    });
   }
 
   selectSeaPenThumbnail(id: number) {

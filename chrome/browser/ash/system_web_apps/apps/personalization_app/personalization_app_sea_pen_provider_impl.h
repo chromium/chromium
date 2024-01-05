@@ -5,15 +5,15 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_PERSONALIZATION_APP_SEA_PEN_PROVIDER_IMPL_H_
 
-#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
-
 #include <map>
 #include <memory>
 
 #include "ash/public/cpp/wallpaper/sea_pen_image.h"
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
+#include "ash/webui/personalization_app/personalization_app_sea_pen_provider.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "components/manta/manta_status.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -72,7 +72,8 @@ class PersonalizationAppSeaPenProviderImpl
   wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
   void OnFetchThumbnailsDone(SearchWallpaperCallback callback,
-                             std::optional<std::vector<SeaPenImage>> images);
+                             std::optional<std::vector<SeaPenImage>> images,
+                             manta::MantaStatusCode status_code);
 
   void OnFetchWallpaperDone(SelectSeaPenThumbnailCallback callback,
                             std::optional<SeaPenImage> image);

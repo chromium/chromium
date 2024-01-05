@@ -87,6 +87,9 @@
   }
 </style>
 <h2 class="wallpaper-collections-heading">$i18n{seaPenWallpaperPoweredByGoogle}</h2>
+<template is="dom-if" if="[[showError_]]" restamp>
+  <div id="error">error message</div>
+</template>
 <template is="dom-if" if="[[thumbnailsLoading_]]" restamp>
   <iron-list class="thumbnail-placeholder-list" items="[[getPlaceholders_(4)]]" grid>
     <template>

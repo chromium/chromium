@@ -160,6 +160,22 @@ union SeaPenQuery {
 // UTF-16 (Javascript) length and UTF-8 length.
 const uint32 kMaximumSearchWallpaperTextBytes = 3000;
 
+// Should match the associated enum in components/manta/manta_status.h
+enum MantaStatusCode {
+  kOk = 0,
+  kGenericError = 1,
+  kInvalidInput = 2,
+  kResourceExhausted = 3,
+  kBackendFailure = 4,
+  kMalformedResponse = 5,
+  kNoInternetConnection = 6,
+  kUnsupportedLanguage = 7,
+  kBlockedOutputs = 8,
+  kRestrictedCountry = 9,
+  kNoIdentityManager = 10,
+  kMax = kNoIdentityManager,
+};
+
 // Provides APIs to perform wallpaper searches. Uses APIs in
 // `manta.proto` to send search requests to a server.
 // Implemented in the browser process, and called by the ChromeOS
@@ -172,7 +188,8 @@ interface SeaPenProvider {
     // `images` will be empty array when the request succeeded, but no matching
     // images were returned.
     // `text` must be smaller than `kMaximumSearchWallpaperTextBytes` bytes.
-    SearchWallpaper(SeaPenQuery query) => (array<SeaPenThumbnail>? images);
+    SearchWallpaper(SeaPenQuery query) =>
+        (array<SeaPenThumbnail>? images, MantaStatusCode statusCode);
 
     // Select a thumbnail and set as the system wallpaper for the current user.
     SelectSeaPenThumbnail(uint32 id) => (bool success);

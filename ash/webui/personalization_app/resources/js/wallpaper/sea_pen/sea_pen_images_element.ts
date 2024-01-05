@@ -14,7 +14,7 @@ import '../../../css/common.css.js';
 import '../../../css/sea_pen.css.js';
 import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 
-import {SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 
 import {selectSeaPenWallpaper} from './sea_pen_controller.js';
@@ -42,6 +42,17 @@ export class SeaPenImagesElement extends WithSeaPenStore {
       // The pending selected image. Not persisted in store as it is only
       // temporarily available in this element.
       pendingSelected_: Object,
+
+      thumbnailResponseStatusCode_: {
+        type: Object,
+        value: null,
+      },
+
+      showError_: {
+        type: Boolean,
+        computed:
+            'computeShowError_(thumbnailResponseStatusCode_, thumbnailsLoading_)',
+      },
     };
   }
 
@@ -49,6 +60,9 @@ export class SeaPenImagesElement extends WithSeaPenStore {
   private thumbnails_: SeaPenThumbnail[]|null;
   private thumbnailsLoading_: boolean;
   private pendingSelected_: SeaPenThumbnail|null;
+  private thumbnailResponseStatusCode_: MantaStatusCode|null;
+  private showError_: boolean;
+
 
   override connectedCallback() {
     super.connectedCallback();
@@ -56,6 +70,9 @@ export class SeaPenImagesElement extends WithSeaPenStore {
         'thumbnails_', state => state.thumbnails);
     this.watch<SeaPenImagesElement['thumbnailsLoading_']>(
         'thumbnailsLoading_', state => state.loading.thumbnails);
+    this.watch<SeaPenImagesElement['thumbnailResponseStatusCode_']>(
+        'thumbnailResponseStatusCode_',
+        state => state.thumbnailResponseStatusCode);
     this.updateFromStore();
   }
 
@@ -64,6 +81,10 @@ export class SeaPenImagesElement extends WithSeaPenStore {
     // loading effect style.
     return thumbnailsLoading ? 'thumbnail-placeholder placeholder' :
                                'thumbnail-placeholder';
+  }
+  private computeShowError_(
+      statusCode: MantaStatusCode|null, thumbnailsLoading: boolean): boolean {
+    return !!statusCode && !thumbnailsLoading;
   }
 
   private shouldShowThumbnailPlaceholders_(

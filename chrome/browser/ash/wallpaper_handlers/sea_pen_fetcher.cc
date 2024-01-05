@@ -127,7 +127,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
       OnFetchThumbnailsComplete callback) override {
     if (!snapper_provider_) {
       LOG(WARNING) << "SnapperProvider not available";
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(absl::nullopt,
+                              manta::MantaStatusCode::kGenericError);
       return;
     }
     if (query->is_text_query() &&
@@ -135,12 +136,14 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
             ash::personalization_app::mojom::kMaximumSearchWallpaperTextBytes) {
       LOG(WARNING) << "Query too long. Size received: "
                    << query->get_text_query().size();
-      std::move(callback).Run(absl::nullopt);
+      std::move(callback).Run(absl::nullopt,
+                              manta::MantaStatusCode::kInvalidInput);
       return;
     }
     weak_ptr_factory_.InvalidateWeakPtrs();
     if (pending_fetch_thumbnails_callback_) {
-      std::move(pending_fetch_thumbnails_callback_).Run(absl::nullopt);
+      std::move(pending_fetch_thumbnails_callback_)
+          .Run(absl::nullopt, manta::MantaStatusCode::kOk);
     }
     pending_fetch_thumbnails_callback_ = std::move(callback);
     auto target_resolution = manta::proto::ImageResolution::RESOLUTION_1024;
@@ -160,7 +163,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     DCHECK(pending_fetch_thumbnails_callback_);
     if (status.status_code != manta::MantaStatusCode::kOk || !response) {
       LOG(WARNING) << "Failed to fetch manta response: " << status.message;
-      std::move(pending_fetch_thumbnails_callback_).Run(absl::nullopt);
+      std::move(pending_fetch_thumbnails_callback_)
+          .Run(absl::nullopt, status.status_code);
       return;
     }
 
@@ -173,7 +177,8 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
           std::move(*data.mutable_image()->mutable_serialized_bytes()),
           data.generation_seed(), resolution);
     }
-    std::move(pending_fetch_thumbnails_callback_).Run(std::move(images));
+    std::move(pending_fetch_thumbnails_callback_)
+        .Run(std::move(images), status.status_code);
   }
 
   void FetchWallpaper(

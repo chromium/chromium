@@ -6,6 +6,7 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {SeaPenImagesElement, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
+import {MantaStatusCode} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SparklePlaceholderElement} from 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -117,5 +118,29 @@ suite('SeaPenImagesElementTest', function() {
     assertEquals(
         8, feedbackButtons!.length,
         'should be 2 feedback buttons per thumbnail');
+  });
+
+  test('display error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kGenericError;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage =
+        seaPenImagesElement.shadowRoot!.querySelector('#error');
+    assertTrue(!!errorMessage);
+  });
+
+  test('hide error state', async () => {
+    personalizationStore.data.wallpaper.seaPen.thumbnailResponseStatusCode =
+        MantaStatusCode.kOk;
+
+    seaPenImagesElement = initElement(SeaPenImagesElement);
+    await waitAfterNextRender(seaPenImagesElement);
+
+    const errorMessage =
+        seaPenImagesElement.shadowRoot!.querySelector('#error');
+    assertFalse(!!errorMessage);
   });
 });

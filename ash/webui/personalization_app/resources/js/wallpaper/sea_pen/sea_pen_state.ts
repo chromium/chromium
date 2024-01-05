@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
 import {RecentSeaPenData} from './constants.js';
@@ -22,6 +22,7 @@ export interface SeaPenState {
   thumbnails: SeaPenThumbnail[]|null;
   currentSelected: string|null;
   pendingSelected: FilePath|null;
+  thumbnailResponseStatusCode: MantaStatusCode|null;
 }
 
 export function emptyState(): SeaPenState {
@@ -35,6 +36,7 @@ export function emptyState(): SeaPenState {
     },
     recentImageData: {},
     recentImages: null,
+    thumbnailResponseStatusCode: null,
     thumbnails: null,
     currentSelected: null,
     pendingSelected: null,

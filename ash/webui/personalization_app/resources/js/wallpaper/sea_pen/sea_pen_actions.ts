@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenQuery, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {Action} from 'chrome://resources/js/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -18,6 +18,7 @@ export enum SeaPenActionName {
   BEGIN_LOAD_RECENT_SEA_PEN_IMAGE_DATA = 'begin_load_recent_sea_pen_image_data',
   BEGIN_LOAD_SELECTED_RECENT_SEA_PEN_IMAGE =
       'begin_load_selected_recent_sea_pen_image',
+  SET_THUMBNAIL_RESPONSE_STATUS_CODE = 'set_thumbnail_response_status_code',
   BEGIN_SELECT_RECENT_SEA_PEN_IMAGE = 'begin_select_recent_sea_pen_image',
   END_SELECT_RECENT_SEA_PEN_IMAGE = 'end_select_recent_sea_pen_image',
   SET_SEA_PEN_THUMBNAILS = 'set_sea_pen_thumbnails',
@@ -29,9 +30,9 @@ export enum SeaPenActionName {
 export type SeaPenActions = BeginSearchSeaPenThumbnailsAction|
     BeginLoadRecentSeaPenImagesAction|BeginLoadRecentSeaPenImageDataAction|
     BeginLoadSelectedRecentSeaPenImageAction|BeginSelectRecentSeaPenImageAction|
-    EndSelectRecentSeaPenImageAction|SetSeaPenThumbnailsAction|
-    SetRecentSeaPenImagesAction|SetRecentSeaPenImageDataAction|
-    SetSelectedRecentSeaPenImageAction;
+    EndSelectRecentSeaPenImageAction|SetThumbnailResponseStatusCodeAction|
+    SetSeaPenThumbnailsAction|SetRecentSeaPenImagesAction|
+    SetRecentSeaPenImageDataAction|SetSelectedRecentSeaPenImageAction;
 
 export interface BeginSearchSeaPenThumbnailsAction extends Action {
   name: SeaPenActionName.BEGIN_SEARCH_SEA_PEN_THUMBNAILS;
@@ -185,5 +186,20 @@ export function setSelectedRecentSeaPenImageAction(key: string|null):
   return {
     name: SeaPenActionName.SET_SELECTED_RECENT_SEA_PEN_IMAGE,
     key: key,
+  };
+}
+
+/** Sets the Sea Pen thumbnail response status code. */
+export interface SetThumbnailResponseStatusCodeAction extends Action {
+  name: SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE;
+  thumbnailResponseStatusCode: MantaStatusCode|null;
+}
+
+export function setThumbnailResponseStatusCodeAction(
+    thumbnailResponseStatusCode: MantaStatusCode|
+    null): SetThumbnailResponseStatusCodeAction {
+  return {
+    name: SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE,
+    thumbnailResponseStatusCode,
   };
 }

@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/manta/features.h"
+#include "components/manta/manta_status.h"
 #include "components/manta/proto/manta.pb.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/abseil-cpp/absl/utility/utility.h"
@@ -234,9 +235,10 @@ PersonalizationAppSeaPenProviderImpl::GetOrCreateSeaPenFetcher() {
 
 void PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone(
     SearchWallpaperCallback callback,
-    std::optional<std::vector<SeaPenImage>> images) {
+    std::optional<std::vector<SeaPenImage>> images,
+    manta::MantaStatusCode status_code) {
   if (!images) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(std::nullopt, status_code);
     return;
   }
   sea_pen_images_.clear();
@@ -248,7 +250,7 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchThumbnailsDone(
     result.emplace_back(absl::in_place, GetJpegDataUrl(it->second.jpg_bytes),
                         image_id);
   }
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(std::move(result), status_code);
 }
 
 void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone(

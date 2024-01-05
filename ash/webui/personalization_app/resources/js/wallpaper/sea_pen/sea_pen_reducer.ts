@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
@@ -81,6 +81,16 @@ function loadingReducer(
         ...state,
         currentSelected: false,
       };
+    default:
+      return state;
+  }
+}
+
+function thumbnailResponseStatusCodeReducer(
+    state: MantaStatusCode|null, action: SeaPenActions): MantaStatusCode|null {
+  switch (action.name) {
+    case SeaPenActionName.SET_THUMBNAIL_RESPONSE_STATUS_CODE:
+      return action.thumbnailResponseStatusCode;
     default:
       return state;
   }
@@ -184,6 +194,8 @@ export function seaPenReducer(
     loading: loadingReducer(state.loading, action),
     recentImageData: recentImageDataReducer(state.recentImageData, action),
     recentImages: recentImagesReducer(state.recentImages, action),
+    thumbnailResponseStatusCode: thumbnailResponseStatusCodeReducer(
+        state.thumbnailResponseStatusCode, action),
     thumbnails: thumbnailsReducer(state.thumbnails, action),
     currentSelected: currentSelectedReducer(state.currentSelected, action),
     pendingSelected:
