@@ -1717,6 +1717,9 @@ void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
     views::InkDrop::Get(assistant_button())
         ->GetInkDrop()
         ->HostSizeChanged(assistant_button()->size());
+
+    // Update the focus ring.
+    views::FocusRing::Get(assistant_button())->SchedulePaint();
   } else {
     DeleteIphView();
     assistant_button()->SetBackground(nullptr);
