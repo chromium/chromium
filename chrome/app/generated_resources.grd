@@ -10741,8 +10741,11 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_ORGANIZATION_LEARN_MORE" desc="The actionable text in the tab organization UI results state for getting more information" translateable="false">
         Learn more
       </message>
-      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB" desc="The accessible label in the tab organization UI results state for removing a tab" translateable="false" is_accessibility_with_no_ui="true">
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_ARIA_LABEL" desc="The accessible label in the tab organization UI results state for removing a tab" translateable="false" is_accessibility_with_no_ui="true">
         Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph> from tab group
+      </message>
+      <message name="IDS_TAB_ORGANIZATION_CLOSE_TAB_TOOLTIP" desc="Tooltip on the button in the tab organization UI results state for removing a tab" translateable="false">
+        Exclude tab from suggested group
       </message>
       <message name="IDS_TAB_ORGANIZATION_REJECT_SUGGESTION" desc="The button text in the tab organization UI results state for rejecting the current suggestion" translateable="false">
         Refresh

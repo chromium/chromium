@@ -211,6 +211,7 @@ void TabStripControlButton::UpdateColors() {
     return;
   }
 
+  SetEnabledTextColorIds(foreground_frame_active_color_id_);
   UpdateBackground();
   UpdateInkDrop();
   UpdateIcon();
