@@ -215,6 +215,10 @@ std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
       nullptr);
 }
 
+bool IsSystemFontName(const AtomicString& font_name) {
+  return !font_name.empty() && font_name[0] == '.';
+}
+
 }  // namespace
 
 const char kColorEmojiFontMac[] = "Apple Color Emoji";
@@ -415,6 +419,12 @@ std::unique_ptr<FontPlatformData> FontCache::CreateFontPlatformData(
     const FontFaceCreationParams& creation_params,
     float size,
     AlternateFontName alternate_name) {
+  // CoreText restricts the access to the system dot prefixed fonts, so return
+  // nullptr to use fallback font instead.
+  if (IsSystemFontName(creation_params.Family())) {
+    return nullptr;
+  }
+
   NSFontTraitMask traits = font_description.Style() ? NSFontItalicTrait : 0;
 
   ScopedCFTypeRef<CTFontRef> matched_font;
