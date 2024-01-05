@@ -81,9 +81,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
       willUpdateSnapshotForWebState:_webState.get()];
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
-  CGRect snapshotFrameInWebView =
-      [_webState->GetView() convertRect:snapshotInfo.snapshotFrameInBaseView
-                               fromView:snapshotInfo.baseView];
   auto wrappedCompletion =
       ^(__weak SnapshotGenerator* generator, const gfx::Image& image) {
         if (!generator) {
@@ -101,7 +98,7 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
       };
 
   __weak SnapshotGenerator* weakSelf = self;
-  _webState->TakeSnapshot(gfx::RectF(snapshotFrameInWebView),
+  _webState->TakeSnapshot(gfx::RectF(snapshotInfo.snapshotFrameInBaseView),
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
