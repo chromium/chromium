@@ -53,6 +53,20 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="OS Notification permission prompt shown"/>
 </enum>
 
+<enum name="ContentNotificationTopOfFeedPromoAction">
+  <int value="0" label="Accept OS Prompt"/>
+  <int value="1" label="Declined OS Prompt"/>
+  <int value="2" label="Main button tapped, to show OS prompt"/>
+  <int value="3" label="Dismissed Promo from close button"/>
+  <int value="4" label="Dismissed Promo from secondary button"/>
+</enum>
+
+<enum name="ContentNotificationTopOfFeedPromoEvent">
+  <int value="0" label="OS prompt was shown to user"/>
+  <int value="1" label="Promo shown when OS notifications are active"/>
+  <int value="2" label="Error displaying the OS prompt"/>
+</enum>
+
 <enum name="ContentSettingBubbleAction">
   <int value="1" label="kOpened"/>
   <int value="2" label="kPermissionAllowed"/>

@@ -94,6 +94,25 @@ chromium-metrics-reviews@google.com.
   <summary>Log the Set Up List Content Notification promo events.</summary>
 </histogram>
 
+<histogram name="ContentNotifications.Promo.TopOfFeed.Action"
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2024-06-20">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    The action taken by the user in response to the Top of Feed Content
+    Notifications promo.
+  </summary>
+</histogram>
+
+<histogram name="ContentNotifications.Promo.TopOfFeed.Event"
+    enum="ContentNotificationTopOfFeedPromoAction" expires_after="2024-06-20">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <summary>
+    An event from the the Top of Feed Content Notifications promo.
+  </summary>
+</histogram>
+
 <histogram
     name="ContentSettings.ActiveExpiry.{ProviderType}.ContentSettingsType"
     enum="PermissionType" expires_after="2024-07-10">

@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
 #import "base/feature_list.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -25,6 +28,10 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
+
+using base::RecordAction;
+using base::UmaHistogramEnumeration;
+using base::UserMetricsAction;
 
 @interface FeedTopSectionMediator () <IdentityManagerObserverBridgeDelegate> {
   // Observes changes in identity.
@@ -129,7 +136,8 @@
 
 #pragma mark - FeedTopSectionMutator
 
-- (void)notificationsPromoViewCloseButtonWasTapped {
+- (void)notificationsPromoViewDismissedFromButton:
+    (NotificationsPromoButtonType)buttonType {
   [self updateFeedTopSectionWhenClosed];
   // Update prefs that save the dismissed times if the promo conditions are not
   // being overriden.
@@ -141,16 +149,37 @@
     self.prefService->SetInteger(prefs::kNotificationsPromoTimesDismissed,
                                  notificationsPromoTimesDismissed + 1);
   }
+  switch (buttonType) {
+    case NotificationsPromoButtonTypeClose:
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromCloseButton];
+      break;
+    case NotificationsPromoButtonTypeSecondary:
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDismissedFromSecondaryButton];
+      break;
+    case NotificationsPromoButtonTypePrimary:
+      // This should never be executed as the primary button does not close the
+      // promo.
+      DCHECK(false);
+      break;
+  }
 }
 
 - (void)notificationsPromoViewMainButtonWasTapped {
   // Show the Notifications promo alert.
+  RecordAction(UserMetricsAction(
+      "ContentNotifications.Promo.TopOfFeed.MainButtonTapped"));
+  [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                  kMainButtonTapped];
   __weak FeedTopSectionMediator* weakSelf = self;
   // Request displaying the OS notifications permission prompt.
   [PushNotificationUtil requestPushNotificationPermission:^(
                             BOOL granted, BOOL promptShown, NSError* error) {
     if (error) {
       [self closeNotificationPromoAndEnablePref:NO];
+      [self
+          logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::kError];
       return;
     }
     if (!promptShown && !granted) {
@@ -161,6 +190,8 @@
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf
                 .notificationsPresenter presentPushNotificationPermissionAlert];
+        [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
+                                       kPromptShown];
       });
       return;
     }
@@ -168,18 +199,28 @@
       // If the OS prompt is shown and the user granted notifications access,
       // save the preference and close the promo.
       [self closeNotificationPromoAndEnablePref:YES];
-      return;
-    }
-    if (!promptShown && granted) {
-      // If the OS prompt has been previously shown but notifications are not
-      // active on Chrome activate the notifications. This is an edge case.
-      [self closeNotificationPromoAndEnablePref:YES];
+      RecordAction(UserMetricsAction(
+          "ContentNotifications.Promo.TopOfFeed.Permission.Accepted"));
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kAccept];
       return;
     }
     if (promptShown && !granted) {
       // If the OS prompt is shown and the user denied notifications access,
       // close the promo.
       [self closeNotificationPromoAndEnablePref:NO];
+      RecordAction(UserMetricsAction(
+          "ContentNotifications.Promo.TopOfFeed.Permission.Declined"));
+      [self logHistogramForAction:ContentNotificationTopOfFeedPromoAction::
+                                      kDecline];
+      return;
+    }
+    if (!promptShown && granted) {
+      // If the OS prompt has been previously shown but notifications are not
+      // active on Chrome activate the notifications. This is an edge case.
+      [self closeNotificationPromoAndEnablePref:YES];
+      [self logHistogramForEvent:ContentNotificationTopOfFeedPromoEvent::
+                                     kNotifActive];
       return;
     }
   }];
@@ -322,6 +363,17 @@
     [self.consumer showPromo];
     return;
   }
+}
+
+#pragma mark - Metrics
+
+- (void)logHistogramForAction:(ContentNotificationTopOfFeedPromoAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Action",
+                          action);
+}
+
+- (void)logHistogramForEvent:(ContentNotificationTopOfFeedPromoEvent)event {
+  UmaHistogramEnumeration("ContentNotifications.Promo.TopOfFeed.Event", event);
 }
 
 @end

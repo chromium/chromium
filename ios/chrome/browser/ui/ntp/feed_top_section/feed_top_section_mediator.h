@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mutator.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/notifications_promo_view_constants.h"
 
 class AuthenticationService;
 @protocol NotificationsAlertPresenter;
@@ -20,6 +21,34 @@ class PrefService;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+
+// Enum actions for content notification promo UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationTopOfFeedPromoAction enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationTopOfFeedPromoAction {
+  kAccept = 0,
+  kDecline = 1,
+  kMainButtonTapped = 2,
+  kDismissedFromCloseButton = 3,
+  kDismissedFromSecondaryButton = 4,
+  kMaxValue = kDismissedFromSecondaryButton,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
+// Enum events for content notification promo UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationTopOfFeedPromoEvent enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationTopOfFeedPromoEvent {
+  kPromptShown = 0,
+  kNotifActive = 1,
+  kError = 2,
+  kMaxValue = kError,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
 // Mediator for the NTP Feed top section, handling the interactions.
 @interface FeedTopSectionMediator

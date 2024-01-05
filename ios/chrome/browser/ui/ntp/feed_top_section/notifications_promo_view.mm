@@ -90,17 +90,18 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
     _promoStackView = [self
         createStackViewFromViewArray:@[ _imageView, _textAndButtonStackView ]
                          withSpacing:kStackViewSubViewSpacing];
-    _closeButton = [self createCloseButton];
+    _closeButton = [self createButtonOfType:NotificationsPromoButtonTypeClose
+                                   withText:nil];
     [self addSubview:_promoStackView];
     [self addSubview:_closeButton];
-    [self activateSubViewConstraints];
+    [self activateMainStackViewConstraints];
   }
   return self;
 }
 
 #pragma mark - Private
 
-- (void)activateSubViewConstraints {
+- (void)activateMainStackViewConstraints {
   [NSLayoutConstraint activateConstraints:@[
     // Stack View Constraints.
     [self.promoStackView.leadingAnchor
@@ -183,6 +184,11 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
       // Button text.
       font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
           fontWithSize:kButtonTextFontSize];
+      NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+          initWithString:text
+              attributes:@{NSFontAttributeName : font}];
+      buttonConfiguration.attributedTitle = attributedTitle;
+      button.configuration = buttonConfiguration;
       break;
     }
     case NotificationsPromoButtonTypeSecondary: {
@@ -194,14 +200,28 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
           forControlEvents:UIControlEventTouchUpInside];
       font = [[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
           fontWithSize:kButtonTextFontSize];
+      NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+          initWithString:text
+              attributes:@{NSFontAttributeName : font}];
+      buttonConfiguration.attributedTitle = attributedTitle;
+      button.configuration = buttonConfiguration;
+      break;
+    }
+    case NotificationsPromoButtonTypeClose: {
+      button.accessibilityIdentifier = kNotificationsPromoCloseButtonId;
+      [button addTarget:self
+                    action:@selector(onCloseButtonAction:)
+          forControlEvents:UIControlEventTouchUpInside];
+      UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+          configurationWithPointSize:kCloseButtonWidthHeight
+                              weight:UIImageSymbolWeightSemibold];
+      UIImage* closeButtonImage =
+          DefaultSymbolWithConfiguration(@"xmark", config);
+      [button setImage:closeButtonImage forState:UIControlStateNormal];
+      button.tintColor = [UIColor colorNamed:kTextTertiaryColor];
       break;
     }
   }
-  NSAttributedString* attributedTitle =
-      [[NSAttributedString alloc] initWithString:text
-                                      attributes:@{NSFontAttributeName : font}];
-  buttonConfiguration.attributedTitle = attributedTitle;
-  button.configuration = buttonConfiguration;
   return button;
 }
 
@@ -219,25 +239,6 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
   return textLabel;
 }
 
-// Creates the close button for the Promo.
-- (UIButton*)createCloseButton {
-  UIButton* button = [[UIButton alloc] init];
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.accessibilityIdentifier = kNotificationsPromoCloseButtonId;
-  [button addTarget:self
-                action:@selector(onCloseButtonAction:)
-      forControlEvents:UIControlEventTouchUpInside];
-  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
-      configurationWithPointSize:kCloseButtonWidthHeight
-                          weight:UIImageSymbolWeightSemibold];
-  UIImage* closeButtonImage = DefaultSymbolWithConfiguration(@"xmark", config);
-  [button setImage:closeButtonImage forState:UIControlStateNormal];
-  button.tintColor = [UIColor colorNamed:kTextTertiaryColor];
-  button.hidden = NO;
-  button.pointerInteractionEnabled = YES;
-  return button;
-}
-
 - (void)accessibilityCloseAction:(id)unused {
   DCHECK(self.closeButton.enabled);
   [self.closeButton sendActionsForControlEvents:UIControlEventTouchUpInside];
@@ -250,12 +251,14 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
 
 // Handles the secondary button action.
 - (void)onSecondaryButtonAction:(id)unused {
-  [self.mutator notificationsPromoViewCloseButtonWasTapped];
+  [self.mutator notificationsPromoViewDismissedFromButton:
+                    NotificationsPromoButtonTypeSecondary];
 }
 
 // Handles close button action.
 - (void)onCloseButtonAction:(id)unused {
-  [self.mutator notificationsPromoViewCloseButtonWasTapped];
+  [self.mutator notificationsPromoViewDismissedFromButton:
+                    NotificationsPromoButtonTypeClose];
 }
 
 @end

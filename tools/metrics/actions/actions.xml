@@ -7192,6 +7192,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentNotifications.Promo.TopOfFeed.MainButtonTapped">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has tapped on the main button to enable notifications from the Top
+    Of Feed Notifications Promo.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.TopOfFeed.Permission.Accepted">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has accepted the OS prompt to enable notifications from the Top Of
+    Feed Notifications Promo.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.TopOfFeed.Permission.Declined">
+  <owner>guiperez@google.com</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user has declined on the OS prompt to disable notifications from the Top
+    Of Feed Notifications Promo.
+  </description>
+</action>
+
 <action name="ContentSettings.Geolocation.BlockedIconShown">
   <owner>corising@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
