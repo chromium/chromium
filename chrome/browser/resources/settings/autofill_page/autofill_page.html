@@ -10,10 +10,10 @@
     <settings-animated-pages id="pages" section="autofill"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
+        <cr-link-row id="passwordManagerButton"
             label="$i18n{localPasswordManager}" on-click="onPasswordsClick_"
             role-description="$i18n{subpageArrowRoleDescription}"
-            external>
+            start-icon="cr20:password" external>
         </cr-link-row>
         <template is="dom-if" if="[[isPlusAddressSettingEnabled_]]">
           <cr-link-row id="plusAddressManagerButton"
