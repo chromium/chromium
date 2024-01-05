@@ -5052,13 +5052,6 @@ const char kCalculateNativeWinOcclusionDescription[] =
     "Calculate window occlusion on Windows will be used in the future "
     "to throttle and potentially unload foreground tabs in occluded windows";
 
-const char kCloudApAuthAttachAsHeaderName[] =
-    "CloudAP authentication data headers";
-const char kCloudApAuthAttachAsHeaderDescription[] =
-    "Allows certain ambient authentication data to be added to HTTP requests "
-    "as separate headers instead of being appended to the cookie "
-    "header.";
-
 const char kEnableMediaFoundationVideoCaptureName[] =
     "MediaFoundation Video Capture";
 const char kEnableMediaFoundationVideoCaptureDescription[] =

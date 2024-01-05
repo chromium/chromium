@@ -9837,13 +9837,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kEnablePasswordsAccountStorage)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_WIN)
-    {"cloud-ap-auth-attach-as-header",
-     flag_descriptions::kCloudApAuthAttachAsHeaderName,
-     flag_descriptions::kCloudApAuthAttachAsHeaderDescription, kOsWin,
-     FEATURE_VALUE_TYPE(enterprise_auth::kCloudApAuthAttachAsHeader)},
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-per-desk-z-order", flag_descriptions::kEnablePerDeskZOrderName,
      flag_descriptions::kEnablePerDeskZOrderDescription, kOsCrOS,

@@ -1265,11 +1265,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "cloud-ap-auth-attach-as-header",
-    "owners": [ "igorruvinov@chromium.org", "zmin@chromium.org" ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "cloud-gaming-device",
     "owners": [
       "dgrebenyuk@chromium.org",
