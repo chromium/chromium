@@ -29,21 +29,11 @@ TEST_F(DOVIDecoderConfigurationRecordTest, Profile0Level1ELTrackTest) {
   EXPECT_EQ(dv_config.dv_bl_signal_compatibility_id, 0);
 }
 
-TEST_F(DOVIDecoderConfigurationRecordTest, Profile4Level2ELTrackWithBLTest) {
+TEST_F(DOVIDecoderConfigurationRecordTest, Profile4Test) {
   DOVIDecoderConfigurationRecord dv_config;
   uint8_t data[] = {0x00, 0x00, 0x08, 0x16, 0x20};
 
-  dv_config.ParseForTesting(data, sizeof(data));
-
-  EXPECT_EQ(dv_config.dv_version_major, 0);
-  EXPECT_EQ(dv_config.dv_version_minor, 0);
-  EXPECT_EQ(dv_config.codec_profile, DOLBYVISION_PROFILE4);
-  EXPECT_EQ(dv_config.dv_profile, 4);
-  EXPECT_EQ(dv_config.dv_level, 2);
-  EXPECT_EQ(dv_config.rpu_present_flag, 1);
-  EXPECT_EQ(dv_config.el_present_flag, 1);
-  EXPECT_EQ(dv_config.bl_present_flag, 0);
-  EXPECT_EQ(dv_config.dv_bl_signal_compatibility_id, 2);
+  EXPECT_FALSE(dv_config.ParseForTesting(data, sizeof(data)));
 }
 
 TEST_F(DOVIDecoderConfigurationRecordTest, Profile5Test) {

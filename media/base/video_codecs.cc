@@ -136,8 +136,6 @@ std::string GetProfileName(VideoCodecProfile profile) {
       return "vp9 profile3";
     case DOLBYVISION_PROFILE0:
       return "dolby vision profile 0";
-    case DOLBYVISION_PROFILE4:
-      return "dolby vision profile 4";
     case DOLBYVISION_PROFILE5:
       return "dolby vision profile 5";
     case DOLBYVISION_PROFILE7:
@@ -1107,7 +1105,6 @@ bool ParseDolbyVisionCodecId(base::StringPiece codec_id,
         *profile = DOLBYVISION_PROFILE9;
       break;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-    case 4:
     case 5:
     case 7:
     case 8:
@@ -1116,14 +1113,13 @@ bool ParseDolbyVisionCodecId(base::StringPiece codec_id,
                  << ": codec id is mismatched with profile_id=" << profile_id;
         return false;
       }
-      if (profile_id == 4)
-        *profile = DOLBYVISION_PROFILE4;
-      else if (profile_id == 5)
+      if (profile_id == 5) {
         *profile = DOLBYVISION_PROFILE5;
-      else if (profile_id == 7)
+      } else if (profile_id == 7) {
         *profile = DOLBYVISION_PROFILE7;
-      else if (profile_id == 8)
+      } else if (profile_id == 8) {
         *profile = DOLBYVISION_PROFILE8;
+      }
       break;
 #endif
     default:
@@ -1250,7 +1246,6 @@ VideoCodec VideoCodecProfileToVideoCodec(VideoCodecProfile profile) {
     case VP9PROFILE_PROFILE3:
       return VideoCodec::kVP9;
     case DOLBYVISION_PROFILE0:
-    case DOLBYVISION_PROFILE4:
     case DOLBYVISION_PROFILE5:
     case DOLBYVISION_PROFILE7:
     case DOLBYVISION_PROFILE8:

@@ -68,7 +68,8 @@ enum VideoCodecProfile {
   kHEVCProfileMainStillPicture = 18,
   kHEVCProfileMax = kHEVCProfileMainStillPicture,
   kDolbyVisionProfile0 = 19,
-  kDolbyVisionProfile4 = 20,
+  // DO NOT USE: Deprecated since DV Profile 4 not used anymore (b/292554162).
+  kDeprecatedDolbyVisionProfile4 = 20,
   kDolbyVisionProfile5 = 21,
   kDolbyVisionProfile7 = 22,
   kTheoraProfileMin = 23,

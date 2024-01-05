@@ -136,9 +136,6 @@ SupportedCodecs GetDolbyVisionCodecs(
       case media::DOLBYVISION_PROFILE0:
         supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE0;
         break;
-      case media::DOLBYVISION_PROFILE4:
-        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE4;
-        break;
       case media::DOLBYVISION_PROFILE5:
         supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE5;
         break;

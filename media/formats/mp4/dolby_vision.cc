@@ -62,9 +62,6 @@ bool DOVIDecoderConfigurationRecord::Parse(BufferReader* reader,
     case 0:
       codec_profile = DOLBYVISION_PROFILE0;
       break;
-    case 4:
-      codec_profile = DOLBYVISION_PROFILE4;
-      break;
     case 5:
       codec_profile = DOLBYVISION_PROFILE5;
       break;
