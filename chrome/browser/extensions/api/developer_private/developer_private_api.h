@@ -995,6 +995,28 @@ class DeveloperPrivateRemoveMultipleExtensionsFunction
   absl::optional<bool> accept_bubble_for_testing_;
 };
 
+class DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction
+    : public DeveloperPrivateAPIFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION(
+      "developerPrivate.dismissSafetyHubExtensionsMenuNotification",
+      DEVELOPERPRIVATE_DISMISSSAFETYHUBEXTENSIONSMENUNOTIFICATION)
+  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction();
+
+  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction(
+      const DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction&) =
+      delete;
+  DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction& operator=(
+      const DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction&) =
+      delete;
+
+  ResponseAction Run() override;
+
+ private:
+  ~DeveloperPrivateDismissSafetyHubExtensionsMenuNotificationFunction()
+      override;
+};
+
 }  // namespace api
 
 }  // namespace extensions
