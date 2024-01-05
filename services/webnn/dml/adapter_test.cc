@@ -8,6 +8,7 @@
 
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/test_base.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_angle_util_win.h"
 
@@ -97,9 +98,9 @@ TEST_F(WebNNAdapterTest,
   // Currently, DML_FEATURE_LEVEL_5_0 is not supported.
   auto adapter_creation_result = Adapter::GetInstance(DML_FEATURE_LEVEL_5_0);
   EXPECT_FALSE(adapter_creation_result.has_value());
-  EXPECT_EQ(adapter_creation_result.error()->error_code,
+  EXPECT_EQ(adapter_creation_result.error()->code,
             mojom::Error::Code::kNotSupportedError);
-  EXPECT_EQ(adapter_creation_result.error()->error_message,
+  EXPECT_EQ(adapter_creation_result.error()->message,
             "DirectML: The DirectML feature level on this platform is lower "
             "than the minimum required one.");
 }

@@ -8,12 +8,14 @@
 #include <DirectML.h>
 #include <d3d12.h>
 #include <wrl.h>
+#include <string>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 
 namespace webnn::dml {
 
@@ -64,7 +66,7 @@ void COMPONENT_EXPORT(WEBNN_SERVICE)
                               size_t buffer_size);
 
 mojom::ErrorPtr CreateError(mojom::Error::Code error_code,
-                            std::string error_messages);
+                            const std::string& error_message);
 
 }  // namespace webnn::dml
 

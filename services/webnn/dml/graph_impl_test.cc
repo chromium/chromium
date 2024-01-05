@@ -111,17 +111,13 @@ void BuildAndCompute(
   was_callback_called = false;
   webnn_graph_remote->Compute(
       std::move(named_inputs),
-      base::BindLambdaForTesting(
-          [&](mojom::ComputeResult result,
-              absl::optional<base::flat_map<std::string, mojo_base::BigBuffer>>
-                  named_results) {
-            EXPECT_EQ(result, mojom::ComputeResult::kOk);
-            EXPECT_TRUE(named_results.has_value() &&
-                        !named_results.value().empty());
-            was_callback_called = true;
-            named_outputs = std::move(named_results.value());
-            run_loop_graph_compute.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+        EXPECT_TRUE(result->is_named_outputs());
+        EXPECT_FALSE(result->get_named_outputs().empty());
+        was_callback_called = true;
+        named_outputs = std::move(result->get_named_outputs());
+        run_loop_graph_compute.Quit();
+      }));
   run_loop_graph_compute.Run();
   EXPECT_TRUE(was_callback_called);
 
@@ -4516,17 +4512,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 
@@ -4543,17 +4535,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 
@@ -4570,17 +4558,13 @@ TEST_F(WebNNGraphDMLImplTest, BuildOneGraphToComputeMultipleTimes) {
     was_callback_called = false;
     webnn_graph_remote->Compute(
         std::move(named_inputs),
-        base::BindLambdaForTesting(
-            [&](mojom::ComputeResult result,
-                absl::optional<base::flat_map<
-                    std::string, mojo_base::BigBuffer>> named_results) {
-              EXPECT_EQ(result, mojom::ComputeResult::kOk);
-              EXPECT_TRUE(named_results.has_value() &&
-                          !named_results.value().empty());
-              was_callback_called = true;
-              named_outputs = std::move(named_results.value());
-              run_loop_graph_compute.Quit();
-            }));
+        base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+          EXPECT_TRUE(result->is_named_outputs());
+          EXPECT_FALSE(result->get_named_outputs().empty());
+          was_callback_called = true;
+          named_outputs = std::move(result->get_named_outputs());
+          run_loop_graph_compute.Quit();
+        }));
     run_loop_graph_compute.Run();
     EXPECT_TRUE(was_callback_called);
 

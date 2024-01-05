@@ -67,8 +67,7 @@ class MODULES_EXPORT MLGraphMojo final : public MLGraph {
           inputs_info,
       std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
           outputs_info,
-      webnn::mojom::blink::ComputeResult mojo_result,
-      const absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs);
+      webnn::mojom::blink::ComputeResultPtr mojo_result);
 
   void ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                        const MLNamedArrayBufferViews& outputs,

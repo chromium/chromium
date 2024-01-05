@@ -11,6 +11,7 @@
 #include "components/ml/webnn/features.mojom-features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace webnn {
@@ -57,9 +58,9 @@ TEST_F(WebNNContextProviderImplTest, CreateWebNNContextTest) {
       base::BindLambdaForTesting([&](mojom::CreateContextResultPtr result) {
         ASSERT_TRUE(result->is_error());
         const auto& create_context_error = result->get_error();
-        EXPECT_EQ(create_context_error->error_code,
+        EXPECT_EQ(create_context_error->code,
                   mojom::Error::Code::kNotSupportedError);
-        EXPECT_EQ(create_context_error->error_message,
+        EXPECT_EQ(create_context_error->message,
                   "WebNN Service is not supported on this platform.");
         is_callback_called = true;
         run_loop_create_context.Quit();

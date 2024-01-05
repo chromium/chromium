@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/dml/test_base.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_test_utils.h"
 
@@ -47,7 +48,7 @@ TEST_F(WebNNContextDMLImplTest, CreateGraphImplTest) {
                   std::move(create_context_result->get_context_remote()));
             } else {
               is_platform_supported =
-                  create_context_result->get_error()->error_code !=
+                  create_context_result->get_error()->code !=
                   mojom::Error::Code::kNotSupportedError;
             }
             is_callback_called = true;

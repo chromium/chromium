@@ -190,8 +190,8 @@ MLGraph* MLGraphMojo::BuildSyncImpl(ScriptState* script_state,
   if (result->is_error()) {
     const auto& create_graph_error = result->get_error();
     exception_state.ThrowDOMException(
-        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->error_code),
-        create_graph_error->error_message);
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
+        create_graph_error->message);
     return nullptr;
   }
 
@@ -248,21 +248,22 @@ void MLGraphMojo::OnDidCompute(
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>> inputs_info,
     std::unique_ptr<Vector<std::pair<String, ArrayBufferViewInfo>>>
         outputs_info,
-    blink_mojom::ComputeResult mojo_result,
-    const absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs) {
-  if (mojo_result != blink_mojom::ComputeResult::kOk ||
-      !mojo_outputs.has_value()) {
+    blink_mojom::ComputeResultPtr mojo_result) {
+  if (mojo_result->is_error()) {
+    const auto& compute_error = mojo_result->get_error();
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kOperationError,
-        "Failed to obtain the computation result."));
+        ConvertWebNNErrorCodeToDOMExceptionCode(compute_error->code),
+        compute_error->message));
     return;
   }
+
+  const auto& mojo_outputs = mojo_result->get_named_outputs();
   for (const auto& [output_name, output_view_info] : *outputs_info) {
     // The verification before computing ensures the `ml_outputs` match graph's
     // expectation, so we only need to verify the result `mojo_outputs` from
     // WebNN Service here.
-    auto output_buffer_iter = mojo_outputs->find(output_name);
-    if (output_buffer_iter == mojo_outputs->end()) {
+    auto output_buffer_iter = mojo_outputs.find(output_name);
+    if (output_buffer_iter == mojo_outputs.end()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kOperationError,
           "There is an unknown output tensor in the computation result: " +
@@ -299,23 +300,31 @@ void MLGraphMojo::ComputeSyncImpl(const MLNamedArrayBufferViews& inputs,
                   static_cast<const uint8_t*>(array_buffer_view->BaseAddress()),
                   array_buffer_view->byteLength()));
   }
-  blink_mojom::ComputeResult mojo_result;
-  absl::optional<HashMap<String, mojo_base::BigBuffer>> mojo_outputs;
-  bool call_result = remote_graph_->Compute(std::move(input_name_to_buffer_map),
-                                            &mojo_result, &mojo_outputs);
-  if (!call_result || mojo_result != blink_mojom::ComputeResult::kOk ||
-      !mojo_outputs.has_value()) {
+  blink_mojom::ComputeResultPtr mojo_result;
+  bool call_result =
+      remote_graph_->Compute(std::move(input_name_to_buffer_map), &mojo_result);
+  if (!call_result) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
         "Failed to obtain the computation result.");
     return;
   }
+
+  if (mojo_result->is_error()) {
+    const auto& compute_error = mojo_result->get_error();
+    exception_state.ThrowDOMException(
+        ConvertWebNNErrorCodeToDOMExceptionCode(compute_error->code),
+        compute_error->message);
+    return;
+  }
+
+  const auto& mojo_outputs = mojo_result->get_named_outputs();
   for (const auto& [output_name, output_buffer_view] : outputs) {
     // The verification before computing ensures the `ml_outputs` match graph's
     // expectation, so we only need to verify the result `mojo_outputs` from
     // WebNN Service here.
-    auto output_buffer_iter = mojo_outputs->find(output_name);
-    if (output_buffer_iter == mojo_outputs->end()) {
+    auto output_buffer_iter = mojo_outputs.find(output_name);
+    if (output_buffer_iter == mojo_outputs.end()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kOperationError,
           "There is an unknown output tensor in the computation result: " +
@@ -342,8 +351,8 @@ void MLGraphMojo::OnCreateWebNNGraph(ScopedMLTrace scoped_trace,
   if (result->is_error()) {
     const auto& create_graph_error = result->get_error();
     resolver->Reject(MakeGarbageCollected<DOMException>(
-        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->error_code),
-        create_graph_error->error_message));
+        ConvertWebNNErrorCodeToDOMExceptionCode(create_graph_error->code),
+        create_graph_error->message));
     return;
   }
 

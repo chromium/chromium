@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_error.mojom";
 
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
@@ -844,12 +845,11 @@ struct GraphInfo {
   map<uint64, mojo_base.mojom.BigBuffer> constant_id_to_buffer_map;
 };
 
-enum ComputeResult {
-  kOk,
-  // The input for inference is invalid.
-  kInvalidInputs,
-  // Something has gone wrong during execution of the graph.
-  kUnknownError,
+// Represents the return value of `WebNNGraph::Compute()`. Let it be
+// `named_outputs` if the computation was successful and `error` otherwise.
+union ComputeResult {
+  map<string, mojo_base.mojom.BigBuffer> named_outputs;
+  Error error;
 };
 
 // WebNNGraph runs in the GPU process and is called by the renderer process to
@@ -865,7 +865,6 @@ interface WebNNGraph {
   // TODO(crbug.com/1488162): Remove [Sync] the standard groups decides that
   // the WebNN sync APIs are not required.
   [Sync]
-  Compute(map<string, mojo_base.mojom.BigBuffer>  named_inputs)
-      => (ComputeResult result,
-          map<string, mojo_base.mojom.BigBuffer>? named_outputs);
+  Compute(map<string, mojo_base.mojom.BigBuffer> named_inputs)
+      => (ComputeResult result);
 };

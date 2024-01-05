@@ -26,6 +26,7 @@
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -3047,24 +3048,22 @@ void GraphImpl::CreateAndBuild(
 }
 
 void GraphImpl::HandleComputationFailure(
+    const std::string& error_message,
     mojom::WebNNGraph::ComputeCallback callback) {
+  DLOG(ERROR) << error_message;
   command_recorder_.reset();
-  std::move(callback).Run(ComputeResult::kUnknownError, absl::nullopt);
+  std::move(callback).Run(ComputeResult::NewError(
+      CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
 
 void GraphImpl::HandleComputationFailure(
-    const char* error,
-    mojom::WebNNGraph::ComputeCallback callback) {
-  DLOG(ERROR) << error;
-  HandleComputationFailure(std::move(callback));
-}
-
-void GraphImpl::HandleComputationFailure(
-    const char* error,
+    const std::string& error_message,
     HRESULT hr,
     mojom::WebNNGraph::ComputeCallback callback) {
-  DLOG(ERROR) << error << " " << logging::SystemErrorCodeToString(hr);
-  HandleComputationFailure(std::move(callback));
+  DLOG(ERROR) << error_message << " " << logging::SystemErrorCodeToString(hr);
+  command_recorder_.reset();
+  std::move(callback).Run(ComputeResult::NewError(
+      CreateError(mojom::Error::Code::kUnknownError, error_message)));
 }
 
 void GraphImpl::ComputeImpl(
@@ -3203,7 +3202,8 @@ void GraphImpl::OnComputationComplete(
   }
 
   command_queue_->ReleaseCompletedResources();
-  std::move(callback).Run(ComputeResult::kOk, std::move(named_outputs));
+  std::move(callback).Run(
+      ComputeResult::NewNamedOutputs(std::move(named_outputs)));
 }
 
 }  // namespace webnn::dml

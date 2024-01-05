@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -1358,6 +1359,21 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
   NOTREACHED_NORETURN();
 }
 
+// Return false if the named inputs for computation don't match the built
+// graph's expectation.
+bool ValidateInputsForComputation(
+    const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
+    const base::flat_map<std::string, size_t>& input_name_to_byte_length_map) {
+  return base::ranges::equal(
+      named_inputs, input_name_to_byte_length_map,
+      [](const auto& input, const auto& input_spec) {
+        const auto& [input_name, input_buffer] = input;
+        const auto& [input_spec_name, input_spec_byte_length] = input_spec;
+        return input_name == input_spec_name &&
+               input_buffer.size() == input_spec_byte_length;
+      });
+}
+
 }  // namespace
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
@@ -1473,17 +1489,18 @@ bool WebNNGraphImpl::ValidateGraph(const mojom::GraphInfoPtr& graph_info) {
 void WebNNGraphImpl::Compute(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
-  // Validate the inputs for computation match the built graph's expectation.
-  if (!base::ranges::equal(named_inputs,
-                           compute_resource_info_.input_name_to_byte_length_map,
-                           [](const auto& iter_a, const auto& iter_b) {
-                             // Compare the input name with the key of map and
-                             // the byte length of buffer with value of map.
-                             return iter_a.first == iter_b.first &&
-                                    iter_a.second.size() == iter_b.second;
-                           })) {
-    std::move(callback).Run(mojom::ComputeResult::kInvalidInputs,
-                            absl::nullopt);
+  if (!ValidateInputsForComputation(
+          named_inputs, compute_resource_info_.input_name_to_byte_length_map)) {
+    mojo::ReportBadMessage(
+        "The inputs for computation don't match the built graph's "
+        "expectation.");
+
+    // `mojo::ReportBadMessage()` will kill the renderer process, but Mojo
+    // complains if the callback is not run. Just run it with nonsense
+    // arguments.
+    std::move(callback).Run(mojom::ComputeResult::NewError(
+        mojom::Error::New(mojom::Error::Code::kUnknownError,
+                          "Unexpected inputs received from the caller.")));
     return;
   }
 

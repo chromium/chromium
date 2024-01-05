@@ -17,6 +17,7 @@
 #include "components/ml/webnn/graph_validation_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -54,7 +55,9 @@ class FakeWebNNGraphImpl final : public WebNNGraphImpl {
   // `WebNNGraphImpl::Compute()` function.
   void ComputeImpl(base::flat_map<std::string, mojo_base::BigBuffer> inputs,
                    mojom::WebNNGraph::ComputeCallback callback) override {
-    std::move(callback).Run(mojom::ComputeResult::kOk, absl::nullopt);
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    std::move(callback).Run(
+        mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs)));
   }
 };
 
@@ -137,20 +140,26 @@ bool ValidateInputsForComputing(
   // Validate the inputs in the `Compute` function.
   base::RunLoop run_loop_compute;
   is_callback_called = false;
-  bool valid = false;
+  bool valid = true;
+  // Set up the error handler for bad mojo messages.
+  mojo::SetDefaultProcessErrorHandler(
+      base::BindLambdaForTesting([&](const std::string& error_message) {
+        EXPECT_EQ(error_message,
+                  "The inputs for computation don't match the built graph's "
+                  "expectation.");
+        valid = false;
+      }));
+
   webnn_graph->Compute(
       std::move(inputs),
-      base::BindLambdaForTesting(
-          [&](mojom::ComputeResult result,
-              absl::optional<base::flat_map<std::string, mojo_base::BigBuffer>>
-                  ouputs) {
-            valid =
-                result == mojom::ComputeResult::kInvalidInputs ? false : true;
-            is_callback_called = true;
-            run_loop_compute.Quit();
-          }));
+      base::BindLambdaForTesting([&](mojom::ComputeResultPtr result) {
+        is_callback_called = true;
+        run_loop_compute.Quit();
+      }));
   run_loop_compute.Run();
   EXPECT_TRUE(is_callback_called);
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   return valid;
 }
 

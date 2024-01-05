@@ -34,7 +34,6 @@ namespace webnn_features = webnn::mojom::features;
 
 // Helper struct to create faked mojom result of inference.
 struct ComputeResult {
-  blink_mojom::ComputeResult result;
   WTF::HashMap<WTF::String, WTF::Vector<uint8_t>> output;
 };
 
@@ -86,7 +85,8 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
       mojo_outputs.insert(
           name, base::make_span(output_data.data(), output_data.size()));
     }
-    std::move(callback).Run(compute_result.result, std::move(mojo_outputs));
+    std::move(callback).Run(
+        blink_mojom::ComputeResult::NewNamedOutputs(std::move(mojo_outputs)));
   }
 
   const raw_ref<MLGraphTestMojo, DanglingUntriaged> helper_;
@@ -5586,7 +5586,6 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   {
     // Compute successfully.
     SetComputeResult(ComputeResult{
-        .result = blink_mojom::ComputeResult::kOk,
         .output = {{"output", Vector<uint8_t>(number_of_elements, 2)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
@@ -5595,7 +5594,6 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
 
     // Compute again successfully.
     SetComputeResult(ComputeResult{
-        .result = blink_mojom::ComputeResult::kOk,
         .output = {{"output", Vector<uint8_t>(number_of_elements, 7)}}});
     compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_EQ(compute_exception, nullptr);
@@ -5613,13 +5611,13 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
   }
   {
     // Unknown error.
-    SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kUnknownError});
+    SetComputeResult(ComputeResult{});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
     EXPECT_EQ(compute_exception->name(), "OperationError");
-    EXPECT_EQ(compute_exception->message(),
-              "Failed to obtain the computation result.");
+    EXPECT_EQ(
+        compute_exception->message(),
+        "There is an unknown output tensor in the computation result: output");
   }
   {
     // Reset the inputs which are detached in above failed tests.
@@ -5628,8 +5626,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
     // Output name in computation result isn't expected.
     SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
-                      .output = {{"a_different_out_name",
+        ComputeResult{.output = {{"a_different_out_name",
                                   Vector<uint8_t>(number_of_elements)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
@@ -5645,8 +5642,7 @@ TEST_P(MLGraphTestMojo, WebNNGraphComputeTest) {
     outputs[0].second = CreateArrayBufferViewForOperand(output_operand);
     // The size of output in computation result isn't expected.
     SetComputeResult(
-        ComputeResult{.result = blink_mojom::ComputeResult::kOk,
-                      .output = {{"output", Vector<uint8_t>(20)}}});
+        ComputeResult{.output = {{"output", Vector<uint8_t>(20)}}});
     auto* compute_exception = ComputeGraph(scope, graph, inputs, outputs);
     EXPECT_NE(compute_exception, nullptr);
     EXPECT_EQ(compute_exception->name(), "UnknownError");

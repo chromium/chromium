@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_ERROR_MOJO_H_
 
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
+#include "services/webnn/public/mojom/webnn_error.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 
 namespace blink {
