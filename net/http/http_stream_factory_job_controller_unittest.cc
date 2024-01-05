@@ -130,18 +130,19 @@ class MockPrefDelegate : public HttpServerProperties::PrefDelegate {
 // `OnResolveProxy()`.
 class TestProxyDelegateForIpProtection : public TestProxyDelegate {
  public:
+  TestProxyDelegateForIpProtection() {
+    set_proxy_chain(net::ProxyChain::FromSchemeHostAndPort(
+                        ProxyServer::SCHEME_HTTPS, "ip-pro", 443)
+                        .ForIpProtection());
+    set_extra_header_name(net::HttpRequestHeaders::kAuthorization);
+  }
   void OnResolveProxy(const GURL& url,
                       const NetworkAnonymizationKey& network_anonymization_key,
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
-    auto ip_protection_proxy_chain =
-        net::ProxyChain::FromSchemeHostAndPort(ProxyServer::SCHEME_HTTPS,
-                                               "ip-pro", 443)
-            .ForIpProtection();
-
     net::ProxyList proxy_list;
-    proxy_list.AddProxyChain(ip_protection_proxy_chain);
+    proxy_list.AddProxyChain(proxy_chain());
     proxy_list.AddProxyChain(net::ProxyChain::Direct());
     result->UseProxyList(proxy_list);
   }
@@ -672,6 +673,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                   "PROXY badproxy:99; PROXY badfallbackproxy:98; DIRECT",
                   TRAFFIC_ANNOTATION_FOR_TESTS);
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+      test_proxy_delegate->set_extra_header_name("Foo");
 
       // Before starting the test, verify that there are no proxies marked as
       // bad.
@@ -876,6 +878,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                 "HTTPS badproxy:99; DIRECT", TRAFFIC_ANNOTATION_FOR_TESTS);
       }
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+      test_proxy_delegate->set_extra_header_name("Foo");
 
       // Before starting the test, verify that there are no proxies marked as
       // bad.
@@ -1131,25 +1134,35 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                           TRAFFIC_ANNOTATION_FOR_TESTS));
       }
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+      test_proxy_delegate->set_extra_header_name("Foo");
 
       // Before starting the test, verify that there are no proxies marked as
       // bad.
       ASSERT_TRUE(proxy_resolution_service->proxy_retry_info().empty());
 
-      constexpr char kTunnelRequest[] =
+      constexpr char kBadProxyServer1TunnelRequest[] =
           "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
           "Host: goodproxyserver:100\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n";
-      const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://badproxyserver:99\r\n\r\n";
+      constexpr char kBadProxyServer2TunnelRequest[] =
+          "CONNECT goodproxyserver:100 HTTP/1.1\r\n"
+          "Host: goodproxyserver:100\r\n"
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://badfallbackproxyserver:98\r\n\r\n";
+      const MockWrite kBadProxyServer1TunnelWrites[] = {
+          MockWrite(ASYNC, 0, kBadProxyServer1TunnelRequest)};
+      const MockWrite kBadProxyServer2TunnelWrites[] = {
+          MockWrite(ASYNC, 0, kBadProxyServer2TunnelRequest)};
       std::vector<MockRead> reads;
 
       // Generate identical errors for the first proxy server in both the main
       // proxy chain and the fallback proxy chain. No alternative job is created
       // for either, so only need one data provider for each, when the request
       // makes it to the socket layer.
-      std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job;
+      std::unique_ptr<SequencedSocketData> socket_data_proxy_main_job;
       std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job;
-      std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job2;
+      std::unique_ptr<SequencedSocketData> socket_data_proxy_main_job2;
       std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job2;
       switch (mock_error.phase) {
         case ErrorPhase::kHostResolution:
@@ -1162,22 +1175,18 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
               "badfallbackproxyserver");
           break;
         case ErrorPhase::kTcpConnect:
-          socket_data_proxy_main_job =
-              std::make_unique<StaticSocketDataProvider>();
+          socket_data_proxy_main_job = std::make_unique<SequencedSocketData>();
           socket_data_proxy_main_job->set_connect_data(
               MockConnect(ASYNC, mock_error.error));
-          socket_data_proxy_main_job2 =
-              std::make_unique<StaticSocketDataProvider>();
+          socket_data_proxy_main_job2 = std::make_unique<SequencedSocketData>();
           socket_data_proxy_main_job2->set_connect_data(
               MockConnect(ASYNC, mock_error.error));
           break;
         case ErrorPhase::kProxySslHandshake:
-          socket_data_proxy_main_job =
-              std::make_unique<StaticSocketDataProvider>();
+          socket_data_proxy_main_job = std::make_unique<SequencedSocketData>();
           ssl_data_proxy_main_job =
               std::make_unique<SSLSocketDataProvider>(ASYNC, mock_error.error);
-          socket_data_proxy_main_job2 =
-              std::make_unique<StaticSocketDataProvider>();
+          socket_data_proxy_main_job2 = std::make_unique<SequencedSocketData>();
           ssl_data_proxy_main_job2 =
               std::make_unique<SSLSocketDataProvider>(ASYNC, mock_error.error);
           break;
@@ -1185,13 +1194,13 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
           // Note: Unlike for single-proxy chains, tunnels are established for
           // HTTP destinations when multi-proxy chains are in use, so simulate
           // tunnel read failures in all cases.
-          reads.emplace_back(ASYNC, mock_error.error);
-          socket_data_proxy_main_job =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+          reads.emplace_back(MockRead(ASYNC, mock_error.error, 1));
+          socket_data_proxy_main_job = std::make_unique<SequencedSocketData>(
+              reads, kBadProxyServer1TunnelWrites);
           ssl_data_proxy_main_job =
               std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
-          socket_data_proxy_main_job2 =
-              std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
+          socket_data_proxy_main_job2 = std::make_unique<SequencedSocketData>(
+              reads, kBadProxyServer2TunnelWrites);
           ssl_data_proxy_main_job2 =
               std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
           break;
@@ -1238,8 +1247,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       request_info.method = "GET";
       request_info.url = dest_url;
 
-      proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-      Initialize(std::move(proxy_resolution_service));
+      Initialize(std::move(proxy_resolution_service),
+                 std::move(test_proxy_delegate));
 
       // Start two requests. The first request should consume data from
       // `socket_data_proxy_main_job` and `socket_data_direct_first_request`.
@@ -1361,6 +1370,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
                                           TRAFFIC_ANNOTATION_FOR_TESTS));
       }
       auto test_proxy_delegate = std::make_unique<TestProxyDelegate>();
+      test_proxy_delegate->set_extra_header_name("Foo");
 
       // Before starting the test, verify that there are no proxies marked as
       // bad.
@@ -1369,23 +1379,35 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       constexpr char kBadProxyServer1TunnelRequest[] =
           "CONNECT badproxyserver:99 HTTP/1.1\r\n"
           "Host: badproxyserver:99\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n";
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://goodproxyserver:100\r\n\r\n";
       constexpr char kBadProxyServer2TunnelRequest[] =
           "CONNECT badfallbackproxyserver:98 HTTP/1.1\r\n"
           "Host: badfallbackproxyserver:98\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n";
-      const std::string kEndpointTunnelRequest = base::StringPrintf(
-          "CONNECT %s HTTP/1.1\r\n"
-          "Host: %s\r\n"
-          "Proxy-Connection: keep-alive\r\n\r\n",
-          HostPortPair::FromURL(dest_url).ToString().c_str(),
-          HostPortPair::FromURL(dest_url).ToString().c_str());
+          "Proxy-Connection: keep-alive\r\n"
+          "Foo: https://goodproxyserver:100\r\n\r\n";
+      const std::string kBadProxyServer1EndpointTunnelRequest =
+          base::StringPrintf(
+              "CONNECT %s HTTP/1.1\r\n"
+              "Host: %s\r\n"
+              "Proxy-Connection: keep-alive\r\n"
+              "Foo: https://badproxyserver:99\r\n\r\n",
+              HostPortPair::FromURL(dest_url).ToString().c_str(),
+              HostPortPair::FromURL(dest_url).ToString().c_str());
+      const std::string kBadProxyServer2EndpointTunnelRequest =
+          base::StringPrintf(
+              "CONNECT %s HTTP/1.1\r\n"
+              "Host: %s\r\n"
+              "Proxy-Connection: keep-alive\r\n"
+              "Foo: https://badfallbackproxyserver:98\r\n\r\n",
+              HostPortPair::FromURL(dest_url).ToString().c_str(),
+              HostPortPair::FromURL(dest_url).ToString().c_str());
       const MockWrite kNestedProxyChain1TunnelWrites[] = {
           {ASYNC, kBadProxyServer1TunnelRequest},
-          {ASYNC, kEndpointTunnelRequest.c_str()}};
+          {ASYNC, kBadProxyServer1EndpointTunnelRequest.c_str()}};
       const MockWrite kNestedProxyChain2TunnelWrites[] = {
           {ASYNC, kBadProxyServer2TunnelRequest},
-          {ASYNC, kEndpointTunnelRequest.c_str()}};
+          {ASYNC, kBadProxyServer2EndpointTunnelRequest.c_str()}};
 
       std::vector<MockRead> reads = {
           MockRead(ASYNC, 1, "HTTP/1.1 200 Connection Established\r\n\r\n"),
@@ -1474,8 +1496,8 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       request_info.method = "GET";
       request_info.url = dest_url;
 
-      proxy_resolution_service->SetProxyDelegate(test_proxy_delegate.get());
-      Initialize(std::move(proxy_resolution_service));
+      Initialize(std::move(proxy_resolution_service),
+                 std::move(test_proxy_delegate));
 
       // Start two requests. The first request should consume data from
       // `socket_data_proxy_main_job` and `socket_data_direct_first_request`.
@@ -1542,7 +1564,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
       "CONNECT www.example.com:443 HTTP/1.1\r\n"
       "Host: www.example.com:443\r\n"
       "Proxy-Connection: keep-alive\r\n"
-      "Foo: https://ip-pro:443\r\n\r\n";
+      "Authorization: https://ip-pro:443\r\n\r\n";
   const MockWrite kTunnelWrites[] = {{ASYNC, kTunnelRequest}};
   std::vector<MockRead> reads;
 

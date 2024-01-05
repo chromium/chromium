@@ -98,6 +98,11 @@ static const int kLen333 = kLen3 + kLen3 + kLen3;
 static constexpr int k0ByteConnectionId = 0;
 static constexpr int k8ByteConnectionId = 8;
 
+constexpr char kTestHeaderName[] = "Foo";
+// Note: `kTestQuicHeaderName` should be a lowercase version of
+// `kTestHeaderName`.
+constexpr char kTestQuicHeaderName[] = "foo";
+
 }  // anonymous namespace
 
 class QuicProxyClientSocketTest
@@ -651,6 +656,7 @@ TEST_P(QuicProxyClientSocketTest, ConnectSendsCorrectRequest) {
 TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
   // TODO(https://crbug.com/1491092): Add a version of this test for multi-hop.
   proxy_delegate_ = std::make_unique<TestProxyDelegate>();
+  proxy_delegate_->set_extra_header_name(kTestHeaderName);
   // TODO(crbug.com/1206799) Construct `proxy_chain` with plain
   // `proxy_endpoint_` once it supports `url::SchemeHostPort`.
   ProxyChain proxy_chain(ProxyServer::SCHEME_HTTPS,
@@ -666,7 +672,7 @@ TEST_P(QuicProxyClientSocketTest, ProxyDelegateExtraHeaders) {
       SYNCHRONOUS, ConstructConnectRequestPacketWithExtraHeaders(
                        packet_number++,
                        // Order matters! Keep these alphabetical.
-                       {{TestProxyDelegate::kTestSpdyHeaderName,
+                       {{kTestQuicHeaderName,
                          ProxyServerToProxyUri(
                              proxy_chain.GetProxyServer(/*chain_index=*/0))},
                         {"user-agent", kUserAgent}}));

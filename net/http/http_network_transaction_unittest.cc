@@ -369,45 +369,6 @@ class FailingProxyResolverFactory : public ProxyResolverFactory {
   }
 };
 
-class SingleProxyDelegate : public ProxyDelegate {
- public:
-  void set_proxy(const ProxyChain& proxy_chain) { proxy_chain_ = proxy_chain; }
-
-  // ProxyDelegate implementation:
-  void OnResolveProxy(const GURL& url,
-                      const NetworkAnonymizationKey& network_anonymization_key,
-                      const std::string& method,
-                      const ProxyRetryInfoMap& proxy_retry_info,
-                      ProxyInfo* result) override {
-    if (proxy_chain_.IsValid()) {
-      result->UseProxyChain(proxy_chain_);
-    }
-  }
-  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
-  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             HttpRequestHeaders* extra_headers) override {
-    EXPECT_EQ(proxy_chain, proxy_chain_);
-    on_before_tunnel_request_call_count_++;
-  }
-  Error OnTunnelHeadersReceived(
-      const ProxyChain& proxy_chain,
-      size_t chain_index,
-      const HttpResponseHeaders& response_headers) override {
-    return OK;
-  }
-  void SetProxyResolutionService(
-      ProxyResolutionService* proxy_resolution_service) override {}
-
-  size_t on_before_tunnel_request_call_count() const {
-    return on_before_tunnel_request_call_count_;
-  }
-
- private:
-  ProxyChain proxy_chain_;
-  size_t on_before_tunnel_request_call_count_ = 0;
-};
-
 // A default minimal HttpRequestInfo for use in tests, targeting HTTP.
 HttpRequestInfo DefaultRequestInfo() {
   HttpRequestInfo info;
@@ -8762,10 +8723,10 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
     const net::ProxyChain& chain2) {
   ASSERT_NE(chain1, chain2);
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(chain1);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(chain1);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -8856,7 +8817,7 @@ void HttpNetworkTransactionTestBase::HttpsNestedProxyNoSocketReuseHelper(
   // socket, so to test this we will create a new socket data provider and
   // expect that this gets used instead of the one created above for the
   // first transaction.
-  proxy_delegate->set_proxy(chain2);
+  proxy_delegate->set_proxy_chain(chain2);
 
   std::vector<MockWrite> data_writes2;
   std::vector<MockRead> data_reads2;
@@ -8993,10 +8954,10 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
   const ProxyChain kFirstHopOnlyChain{{kProxyServer1}};
   const ProxyChain kSecondHopOnlyChain{{kProxyServer1}};
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(kNestedProxyChain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kNestedProxyChain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -9142,7 +9103,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
   // will re-use the existing socket to the proxy, so we will look for the reads
   // and writes associated with this in the same SocketDataProvider used by the
   // first transaction.
-  proxy_delegate->set_proxy(kFirstHopOnlyChain);
+  proxy_delegate->set_proxy_chain(kFirstHopOnlyChain);
 
   SSLSocketDataProvider ssl4(ASYNC, OK);
   session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl4);
@@ -9169,7 +9130,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsNestedProxySpdySocketReuse) {
   // Now use a proxy chain consisting of only the second proxy. We expect that
   // it will not re-use the existing socket to the first proxy, so we will look
   // for the reads and writes associated with this in a new SocketDataProvider.
-  proxy_delegate->set_proxy(kSecondHopOnlyChain);
+  proxy_delegate->set_proxy_chain(kSecondHopOnlyChain);
 
   // CONNECT to www.example.org:443 via SPDY.
   SpdyTestUtil third_spdy_util;
@@ -10466,10 +10427,10 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   const auto proxy_chain1 = PacResultElementToProxyChain("HTTPS myproxy:70");
   const auto proxy_chain2 = PacResultElementToProxyChain("HTTPS myproxy2:70");
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(proxy_chain1);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(proxy_chain1);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -10559,7 +10520,7 @@ TEST_P(HttpNetworkTransactionTest, HttpsProxyAuthRetryNoKeepAliveChangeProxy) {
   TestCompletionCallback callback2;
 
   // Configure against https proxy server "myproxy2:70".
-  proxy_delegate->set_proxy(proxy_chain2);
+  proxy_delegate->set_proxy_chain(proxy_chain2);
 
   rv = trans.RestartWithAuth(AuthCredentials(kFoo, kBar), callback2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -10594,10 +10555,10 @@ TEST_P(HttpNetworkTransactionTest,
   const auto proxy_chain = PacResultElementToProxyChain("HTTPS myproxy:70");
   const auto direct = ProxyChain::Direct();
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(proxy_chain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(proxy_chain);
 
   HttpRequestInfo request;
   request.method = "GET";
@@ -10686,7 +10647,7 @@ TEST_P(HttpNetworkTransactionTest,
   TestCompletionCallback callback2;
 
   // Configure to use a direct connection.
-  proxy_delegate->set_proxy(direct);
+  proxy_delegate->set_proxy_chain(direct);
 
   rv = trans.RestartWithAuth(AuthCredentials(kFoo, kBar), callback2.callback());
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
@@ -19818,10 +19779,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
       kProxyServer1,
   }};
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(kProxyServer1Chain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -19908,7 +19869,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostSpdy) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy(ProxyChain::Direct());
+  proxy_delegate->set_proxy_chain(ProxyChain::Direct());
 
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req2(
@@ -19971,10 +19932,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
       kProxyServer1,
   }};
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(kProxyServer1Chain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20031,7 +19992,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForProxyAndHostHttp) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy(ProxyChain::Direct());
+  proxy_delegate->set_proxy_chain(ProxyChain::Direct());
 
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req2(
@@ -20100,10 +20061,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
       kProxyServer2,
   }};
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(kProxyServer1Chain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20191,7 +20152,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesSpdy) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy(kProxyServer2Chain);
+  proxy_delegate->set_proxy_chain(kProxyServer2Chain);
 
   // CONNECT to request2.test:443 via SPDY.
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
@@ -20289,10 +20250,10 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
       kProxyServer2,
   }};
 
-  session_deps_.proxy_delegate = std::make_unique<SingleProxyDelegate>();
+  session_deps_.proxy_delegate = std::make_unique<TestProxyDelegate>();
   auto* proxy_delegate =
-      static_cast<SingleProxyDelegate*>(session_deps_.proxy_delegate.get());
-  proxy_delegate->set_proxy(kProxyServer1Chain);
+      static_cast<TestProxyDelegate*>(session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kProxyServer1Chain);
 
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -20348,7 +20309,7 @@ TEST_P(HttpNetworkTransactionTest, NoIPConnectionPoolingForTwoProxiesHttp) {
   ASSERT_THAT(ReadTransaction(&trans1, &response_data), IsOk());
   EXPECT_EQ(kUploadData, response_data);
 
-  proxy_delegate->set_proxy(kProxyServer2Chain);
+  proxy_delegate->set_proxy_chain(kProxyServer2Chain);
 
   SpdyTestUtil req2_spdy_util(/*use_priority_header=*/true);
   spdy::SpdySerializedFrame req2(
@@ -27155,10 +27116,11 @@ TEST_P(HttpNetworkTransactionTest, SetProxyInfoInResponse_IpProtection) {
   EXPECT_EQ(response_info.proxy_chain, ip_protection_proxy_chain);
 }
 
-class IpProtectionProxyDelegate : public ProxyDelegate {
+class IpProtectionProxyDelegate : public TestProxyDelegate {
  public:
-  explicit IpProtectionProxyDelegate(const ProxyChain& proxy_chain)
-      : proxy_chain_(proxy_chain) {}
+  IpProtectionProxyDelegate() {
+    set_extra_header_name(net::HttpRequestHeaders::kAuthorization);
+  }
 
   // ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
@@ -27166,41 +27128,23 @@ class IpProtectionProxyDelegate : public ProxyDelegate {
                       const std::string& method,
                       const ProxyRetryInfoMap& proxy_retry_info,
                       ProxyInfo* result) override {
-    CHECK(proxy_chain_.IsValid());
-
     ProxyList proxy_list;
-    proxy_list.AddProxyChain(proxy_chain_);
+    proxy_list.AddProxyChain(proxy_chain());
 
-    if (!proxy_chain_.is_direct()) {
+    // For IP Protection we always want to fallback to direct, so emulate the
+    // behavior of NetworkServiceProxyDelegate where a direct chain will always
+    // be added as the last ProxyList entry.
+    if (!proxy_chain().is_direct()) {
       proxy_list.AddProxyChain(ProxyChain::Direct());
     }
 
     result->UseProxyList(proxy_list);
   }
-  void OnFallback(const ProxyChain& bad_chain, int net_error) override {}
-  void OnBeforeTunnelRequest(const ProxyChain& proxy_chain,
-                             size_t chain_index,
-                             HttpRequestHeaders* extra_headers) override {
-    extra_headers->SetHeader(
-        net::HttpRequestHeaders::kAuthorization,
-        GetAuthorizationHeaderValue(proxy_chain.GetProxyServer(chain_index)));
-  }
-  Error OnTunnelHeadersReceived(
-      const ProxyChain& proxy_chain,
-      size_t chain_index,
-      const HttpResponseHeaders& response_headers) override {
-    return OK;
-  }
-  void SetProxyResolutionService(
-      ProxyResolutionService* proxy_resolution_service) override {}
 
   static std::string GetAuthorizationHeaderValue(
       const ProxyServer& proxy_server) {
-    return base::StrCat({"Auth token for ", proxy_server.GetHost()});
+    return GetExtraHeaderValue(proxy_server);
   }
-
- private:
-  ProxyChain proxy_chain_;
 };
 
 // Test that for requests sent through an IP Protection proxy, the
@@ -27228,10 +27172,11 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_delegate =
-      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -27320,10 +27265,11 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_delegate =
-      std::make_unique<IpProtectionProxyDelegate>(kIpProtectionDirectChain);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kIpProtectionDirectChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -27386,10 +27332,11 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_delegate =
-      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
@@ -27480,10 +27427,11 @@ TEST_P(HttpNetworkTransactionTest,
   session_deps_.proxy_resolution_service =
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "https://not-used:70", TRAFFIC_ANNOTATION_FOR_TESTS);
-  session_deps_.proxy_delegate =
-      std::make_unique<IpProtectionProxyDelegate>(kNestedProxyChain);
-  session_deps_.proxy_resolution_service->SetProxyDelegate(
+  session_deps_.proxy_delegate = std::make_unique<IpProtectionProxyDelegate>();
+  auto* proxy_delegate = static_cast<IpProtectionProxyDelegate*>(
       session_deps_.proxy_delegate.get());
+  proxy_delegate->set_proxy_chain(kNestedProxyChain);
+  session_deps_.proxy_resolution_service->SetProxyDelegate(proxy_delegate);
   session_deps_.net_log = NetLog::Get();
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
