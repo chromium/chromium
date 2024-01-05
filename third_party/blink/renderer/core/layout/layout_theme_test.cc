@@ -67,7 +67,6 @@ TEST_F(LayoutThemeTest, ChangeFocusRingColor) {
 
   // Change focus ring color.
   LayoutTheme::GetTheme().SetCustomFocusRingColor(custom_color);
-  Page::PlatformColorsChanged();
   UpdateAllLifecyclePhasesForTest();
 
   // Check that the focus ring color is updated.

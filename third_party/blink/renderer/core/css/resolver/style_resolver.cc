@@ -259,9 +259,6 @@ String ComputeBaseComputedStyleDiff(const ComputedStyle* base_computed_style,
     exclusions.insert(DebugField::font_);
   }
 
-  // See crbug.com/1515486. (This is a real bug, which we're hiding here.)
-  exclusions.insert(DebugField::outline_color_);
-
   // Images use instance equality rather than value equality (see
   // crbug.com/781461).
   if (!CSSPropertyEquality::PropertiesEqual(

@@ -814,6 +814,7 @@ Color LayoutTheme::TapHighlightColor() {
 void LayoutTheme::SetCustomFocusRingColor(const Color& c) {
   custom_focus_ring_color_ = c;
   has_custom_focus_ring_color_ = true;
+  Page::PlatformColorsChanged();
 }
 
 Color LayoutTheme::FocusRingColor(
