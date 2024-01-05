@@ -16,7 +16,7 @@
   :host(.changed-state) tab-organization-failure[shown] {
     animation: fadeIn 100ms linear 100ms forwards,
                displayIn 200ms linear forwards,
-               paddingIn 250ms var(--standard-curve) forwards;
+               slideIn 250ms var(--standard-curve) forwards;
   }
 
   tab-organization-not-started:not([shown]),
@@ -38,7 +38,7 @@
   tab-organization-failure:not([shown]) {
     animation: fadeOut 100ms linear forwards,
                displayOut 200ms linear forwards,
-               marginOut 250ms var(--standard-curve) forwards;
+               slideOut 250ms var(--standard-curve) forwards;
   }
 
   #body {

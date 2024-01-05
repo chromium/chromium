@@ -415,7 +415,7 @@ suite('TabOrganizationPageTest', () => {
       syncingHistory: false,
       paused: false,
     };
-    webUIListenerCallback('sync-info-changed');
+    webUIListenerCallback('sync-info-changed', testSyncProxy.syncInfo);
     await testSyncProxy.whenCalled('getSyncInfo');
 
     const accountRowUnsynced =
