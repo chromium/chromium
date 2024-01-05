@@ -346,8 +346,7 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     at indexPath: IndexPath
   ) -> [UIDragItem] {
     guard let item = diffableDataSource?.itemIdentifier(for: indexPath),
-      let dragItem = dragDropHandler?.dragItem(for: item),
-      let draggedCell = (collectionView.cellForItem(at: indexPath) as? TabStripCell)
+      let dragItem = dragDropHandler?.dragItem(for: item)
     else {
       return []
     }
