@@ -244,6 +244,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // collectionView contentInset manually to fit in the safe area instead.
   collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
+  collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeOnDrag;
   self.collectionView = collectionView;
   self.view = collectionView;
 
