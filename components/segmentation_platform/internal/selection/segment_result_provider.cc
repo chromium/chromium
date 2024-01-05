@@ -54,7 +54,9 @@ class SegmentResultProviderImpl : public SegmentResultProvider {
 
  private:
   struct RequestState {
-    std::unordered_map<ModelSource, raw_ptr<ModelProvider>> model_providers;
+    std::unordered_map<ModelSource,
+                       raw_ptr<ModelProvider, AcrossTasksDanglingUntriaged>>
+        model_providers;
     std::unique_ptr<GetResultOptions> options;
   };
 
