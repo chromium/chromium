@@ -4709,6 +4709,7 @@
     },
 
     'optimization_guide_gtests': {
+      'chrome_ml_unittests': {},
       'optimization_guide_browser_tests': {
         'test': 'browser_tests',
         'args': [

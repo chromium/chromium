@@ -408,6 +408,11 @@ targets.binaries.generated_script(
     label = "//chrome/android:chrome_junit_tests",
 )
 
+targets.binaries.console_test_launcher(
+    name = "chrome_ml_unittests",
+    label = "//components/optimization_guide/internal:chrome_ml_unittests",
+)
+
 targets.binaries.generated_script(
     name = "chrome_private_code_test",
     label = "//chrome:chrome_private_code_test",

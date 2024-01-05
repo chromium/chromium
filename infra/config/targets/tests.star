@@ -488,6 +488,10 @@ targets.tests.isolated_script_test(
     name = "chrome_junit_tests",
 )
 
+targets.tests.gtest_test(
+    name = "chrome_ml_unittests",
+)
+
 targets.tests.isolated_script_test(
     name = "chrome_private_code_test",
 )
