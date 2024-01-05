@@ -744,7 +744,14 @@ void WaylandToplevelWindow::SetWindowGeometry(gfx::Size size_dip) {
 }
 
 void WaylandToplevelWindow::AckConfigure(uint32_t serial) {
-  shell_toplevel()->AckConfigure(serial);
+  // We cannot assume the top level wrapper is non-NULL because of a corner case
+  // in drag n' drop. There could be times when the tab strip change is detected
+  // while processing a configure event received from the compositor and hence
+  // destroy the top level wrapper before an ACK is sent.
+  // See crbug.com/1512046 for details.
+  if (shell_toplevel()) {
+    shell_toplevel()->AckConfigure(serial);
+  }
 }
 
 void WaylandToplevelWindow::PropagateBufferScale(float new_scale) {
