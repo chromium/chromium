@@ -13993,6 +13993,21 @@
             ]
         }
     ],
+    "PrivacySandboxAttestationsSentinel": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DisablePrivacySandboxAttestationsSentinel",
+                    "disable_features": [
+                        "PrivacySandboxAttestationsSentinel"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacySandboxEnrollment": [
         {
             "platforms": [
