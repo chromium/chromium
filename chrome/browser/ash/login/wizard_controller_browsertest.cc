@@ -518,10 +518,6 @@ class WizardControllerTest : public OobeBaseTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WizardControllerTest, OobeSkipSwitchDisabled) {
-  EXPECT_FALSE(WizardController::IsZeroTouchHandsOffOobeFlow());
-}
-
 IN_PROC_BROWSER_TEST_F(WizardControllerTest, SwitchLanguage) {
   ASSERT_TRUE(WizardController::default_controller() != nullptr);
   WizardController::default_controller()->AdvanceToScreen(
@@ -581,29 +577,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerTest, VolumeIsAdjustedForChromeVox) {
   ASSERT_FALSE(cras->IsOutputMuted());
   ASSERT_EQ(WizardController::kMinAudibleOutputVolumePercent,
             cras->GetOutputVolumePercent());
-}
-
-class WizardControllerOobeSwitchTest : public WizardControllerTest {
- public:
-  WizardControllerOobeSwitchTest(const WizardControllerOobeSwitchTest&) =
-      delete;
-  WizardControllerOobeSwitchTest& operator=(
-      const WizardControllerOobeSwitchTest&) = delete;
-
- protected:
-  WizardControllerOobeSwitchTest() = default;
-  ~WizardControllerOobeSwitchTest() override = default;
-
-  // WizardControllerTest::
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WizardControllerTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WizardControllerOobeSwitchTest, OobeSkipSwitchEnabled) {
-  EXPECT_TRUE(WizardController::IsZeroTouchHandsOffOobeFlow());
 }
 
 class WizardControllerFlowTest : public WizardControllerTest {

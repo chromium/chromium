@@ -3170,12 +3170,6 @@ void WizardController::SkipEnrollmentPromptsForTesting() {
 }
 
 // static
-bool WizardController::IsZeroTouchHandsOffOobeFlow() {
-  return policy::DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() ==
-         policy::ZeroTouchEnrollmentMode::HANDS_OFF;
-}
-
-// static
 bool WizardController::IsSigninScreen(OobeScreenId screen_id) {
   return screen_id == UserCreationView::kScreenId ||
          screen_id == GaiaView::kScreenId ||

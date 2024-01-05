@@ -149,10 +149,6 @@ class WizardController : public OobeUI::Observer {
   // Skips any enrollment prompts that may be normally shown.
   static void SkipEnrollmentPromptsForTesting();
 
-  // Returns true if OOBE is operating under the Zero-Touch Hands-Off
-  // Enrollment flow.
-  static bool IsZeroTouchHandsOffOobeFlow();
-
   // Returns true if the onboarding flow can be resumed from `screen_id`.
   static bool IsResumablePostLoginScreen(OobeScreenId screen_id);
 
