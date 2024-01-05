@@ -341,10 +341,6 @@ void DeskButton::StateChanged(ButtonState old_state) {
     return;
   }
 
-  if (!force_expanded_state_ && !is_focused_) {
-    desk_button_widget_->SetExpanded(GetHovered());
-  }
-
   MaybeUpdateDeskSwitchButtonVisibility(
       SwitchButtonUpdateSource::kDeskButtonUpdate);
 }

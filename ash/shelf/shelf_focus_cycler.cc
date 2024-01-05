@@ -84,10 +84,6 @@ void ShelfFocusCycler::FocusNavigation(bool last_element) {
 void ShelfFocusCycler::FocusDeskButton(bool last_element) {
   DeskButtonWidget* desk_button_widget = shelf_->desk_button_widget();
   if (desk_button_widget && desk_button_widget->ShouldBeVisible()) {
-    // Update the desk button and desk switch buttons before focus change.
-    if (!shelf_->IsHorizontalAlignment()) {
-      desk_button_widget->SetExpanded(true);
-    }
     desk_button_widget->GetDeskButton()->SetFocused(true);
 
     // Focus `default_child_to_focus` within the desk button widget.
