@@ -430,8 +430,13 @@ base::flat_set<FieldGlobalId> AutofillDriverRouter::ApplyFormAction(
                     ? internal::FormForest::SecurityOptions::TrustAllOrigins()
                     : internal::FormForest::SecurityOptions(&triggered_origin,
                                                             &field_type_map));
-  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
+  for (FormData& renderer_form : renderer_forms.renderer_forms) {
     if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
+      // Remove unsafe fields from the list to be sent to the renderer.
+      std::erase_if(
+          renderer_form.fields, [&renderer_forms](const FormFieldData& field) {
+            return !renderer_forms.safe_fields.contains(field.global_id());
+          });
       callback(target, action_type, action_persistence,
                renderer_form.unique_renderer_id, renderer_form.fields);
     }
