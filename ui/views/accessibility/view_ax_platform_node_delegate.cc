@@ -494,6 +494,22 @@ bool ViewAXPlatformNodeDelegate::IsChildOfLeaf() const {
   return AXPlatformNodeDelegate::IsChildOfLeaf();
 }
 
+const ui::AXSelection ViewAXPlatformNodeDelegate::GetUnignoredSelection()
+    const {
+  const ui::AXNodeData& data = GetData();
+  ui::AXSelection selection;
+  selection.is_backward = false;
+  selection.anchor_object_id = GetUniqueId();
+  selection.anchor_offset =
+      data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart);
+  selection.anchor_affinity = ax::mojom::TextAffinity::kDownstream;
+  selection.focus_object_id = GetUniqueId();
+  selection.focus_offset =
+      data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelEnd);
+  selection.focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  return selection;
+}
+
 // Since AtomicViewAXTreeManager only ever contains a single node, we can be
 // sure that we are in a leaf node and only need to return a text position.
 ui::AXNodePosition::AXPositionInstance
