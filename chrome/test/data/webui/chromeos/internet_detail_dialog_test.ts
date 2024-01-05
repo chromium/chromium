@@ -297,79 +297,103 @@ suite('internet-detail-dialog', () => {
         'network-siminfo'));
   });
 
-  test('Dialog disabled when inhibited', async () => {
-    // Start uninhibited.
-    await setupCellularNetwork(/*isPrimary=*/ true, /*isInhibited=*/ false);
-    await init();
+  // Syntactic sugar for running test twice with different values for the
+  // apnRevamp feature flag.
+  [true, false].forEach(isApnRevampEnabled => {
+    test(
+        `Dialog disabled when inhibited, ApnRevamp enabled is: ${
+            isApnRevampEnabled}`,
+        async () => {
+          loadTimeData.overrideValues({
+            apnRevamp: isApnRevampEnabled,
+          });
 
-    const connectDisconnectButton =
-        getElement<CrButtonElement>('#connectDisconnect');
-    const networkSimInfo = getElement<NetworkSiminfoElement>('network-siminfo');
-    const networkChooseMobile =
-        getElement<NetworkChooseMobileElement>('network-choose-mobile');
-    const networkApnlist = getElement<NetworkApnListElement>('network-apnlist');
-    const networkProxy = getElement<NetworkProxyElement>('network-proxy');
-    const networkIpConfig =
-        getElement<NetworkIpConfigElement>('network-ip-config');
-    const networkNameservers =
-        getElement<NetworkNameserversElement>('network-nameservers');
-    const infoFields = getElement<NetworkPropertyListMojoElement>(
-        'network-property-list-mojo');
+          // Start uninhibited.
+          await setupCellularNetwork(
+              /*isPrimary=*/ true, /*isInhibited=*/ false);
+          await init();
 
-    assertFalse(connectDisconnectButton.disabled);
-    assertFalse(networkSimInfo.disabled);
-    assertFalse(networkChooseMobile.disabled);
-    assertFalse(networkApnlist.disabled);
-    assertTrue(networkProxy.editable);
-    assertFalse(networkIpConfig.disabled);
-    assertFalse(networkNameservers.disabled);
-    assertFalse(infoFields.disabled);
+          const connectDisconnectButton =
+              getElement<CrButtonElement>('#connectDisconnect');
+          const networkSimInfo =
+              getElement<NetworkSiminfoElement>('network-siminfo');
+          const networkChooseMobile =
+              getElement<NetworkChooseMobileElement>('network-choose-mobile');
+          let apnList: NetworkApnListElement|null = null;
+          if (isApnRevampEnabled) {
+            // TODO(b/318561207): Get <apn-list> element.
+          } else {
+            apnList = getElement<NetworkApnListElement>('network-apnlist');
+          }
+          const networkProxy = getElement<NetworkProxyElement>('network-proxy');
+          const networkIpConfig =
+              getElement<NetworkIpConfigElement>('network-ip-config');
+          const networkNameservers =
+              getElement<NetworkNameserversElement>('network-nameservers');
+          const infoFields = getElement<NetworkPropertyListMojoElement>(
+              'network-property-list-mojo');
 
-    // Mock device being inhibited.
-    setDeviceState(
-        NetworkType.kCellular,
-        DeviceStateType.kEnabled,
-        InhibitReason.kInstallingProfile,
-        [{
-          iccid: testIccid,
-          isPrimary: true,
-          slotId: 1,
-          eid: 'eid',
-        }],
-    );
-    await flushAsync();
+          assertFalse(connectDisconnectButton.disabled);
+          assertFalse(networkSimInfo.disabled);
+          assertFalse(networkChooseMobile.disabled);
+          if (apnList) {
+            assertFalse(apnList.disabled);
+          }
+          assertTrue(networkProxy.editable);
+          assertFalse(networkIpConfig.disabled);
+          assertFalse(networkNameservers.disabled);
+          assertFalse(infoFields.disabled);
 
-    assertTrue(connectDisconnectButton.disabled);
-    assertTrue(networkSimInfo.disabled);
-    assertTrue(networkChooseMobile.disabled);
-    assertTrue(networkApnlist.disabled);
-    assertFalse(networkProxy.editable);
-    assertTrue(networkIpConfig.disabled);
-    assertTrue(networkNameservers.disabled);
-    assertTrue(infoFields.disabled);
+          // Mock device being inhibited.
+          setDeviceState(
+              NetworkType.kCellular,
+              DeviceStateType.kEnabled,
+              InhibitReason.kInstallingProfile,
+              [{
+                iccid: testIccid,
+                isPrimary: true,
+                slotId: 1,
+                eid: 'eid',
+              }],
+          );
+          await flushAsync();
 
-    // Uninhibit.
-    setDeviceState(
-        NetworkType.kCellular,
-        DeviceStateType.kEnabled,
-        InhibitReason.kNotInhibited,
-        [{
-          iccid: testIccid,
-          isPrimary: true,
-          slotId: 1,
-          eid: 'eid',
-        }],
-    );
-    await flushAsync();
+          assertTrue(connectDisconnectButton.disabled);
+          assertTrue(networkSimInfo.disabled);
+          assertTrue(networkChooseMobile.disabled);
+          if (apnList) {
+            assertTrue(apnList.disabled);
+          }
+          assertFalse(networkProxy.editable);
+          assertTrue(networkIpConfig.disabled);
+          assertTrue(networkNameservers.disabled);
+          assertTrue(infoFields.disabled);
 
-    assertFalse(connectDisconnectButton.disabled);
-    assertFalse(networkSimInfo.disabled);
-    assertFalse(networkChooseMobile.disabled);
-    assertFalse(networkApnlist.disabled);
-    assertTrue(networkProxy.editable);
-    assertFalse(networkIpConfig.disabled);
-    assertFalse(networkNameservers.disabled);
-    assertFalse(infoFields.disabled);
+          // Uninhibit.
+          setDeviceState(
+              NetworkType.kCellular,
+              DeviceStateType.kEnabled,
+              InhibitReason.kNotInhibited,
+              [{
+                iccid: testIccid,
+                isPrimary: true,
+                slotId: 1,
+                eid: 'eid',
+              }],
+          );
+          await flushAsync();
+
+          assertFalse(connectDisconnectButton.disabled);
+          assertFalse(networkSimInfo.disabled);
+          assertFalse(networkChooseMobile.disabled);
+          if (apnList) {
+            assertFalse(apnList.disabled);
+          }
+          assertTrue(networkProxy.editable);
+          assertFalse(networkIpConfig.disabled);
+          assertFalse(networkNameservers.disabled);
+          assertFalse(infoFields.disabled);
+        });
   });
 
   // Syntactic sugar for running test twice with different values for the
