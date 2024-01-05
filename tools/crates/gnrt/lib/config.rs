@@ -15,6 +15,8 @@ pub struct BuildConfig {
     pub resolve: ResolveConfig,
     #[serde(rename = "gn")]
     pub gn_config: GnConfig,
+    #[serde(rename = "vet")]
+    pub vet_config: VetConfig,
     /// Configuration that applies to all crates
     #[serde(rename = "all-crates")]
     pub all_config: CrateConfig,
@@ -58,6 +60,17 @@ pub struct GnConfig {
     /// don't want to vendor. This is the src/lib.rs file.
     #[serde(default)]
     pub removed_librs_template: std::path::PathBuf,
+}
+
+/// Configures Cargo Vet output for this session.
+#[derive(Clone, Debug, Default, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct VetConfig {
+    /// Path to a handlebars template for writing Cargo Vet's config.toml file.
+    /// The path is relative to the config file. Only used for
+    /// //third_party/rust crates.
+    #[serde(default)]
+    pub config_template: std::path::PathBuf,
 }
 
 /// Influences dependency resolution for a session.

@@ -77,7 +77,29 @@ To use a third-party crate "bar" version 3 from first party code:
    * `vpython3 ./tools/crates/run_gnrt.py gen`
    * Or, directly through (nightly) cargo:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
-1. Upload the CL, mark any `unsafe` usage with `TODO` code review comments,
+1. Verify if all new dependencies are already audited by running `cargo vet`:
+   * To install and use `cargo vet`, you need nightly cargo in your `PATH`, which can be
+     found in `//third_party/rust-toolchain/bin` (except [on Mac Arm](https://crbug.com/1515913),
+     where it will need to be installed separately with
+     [`rustup install nightly`](https://rustup.rs/)).
+      * `cargo install --git https://github.com/mozilla/cargo-vet cargo-vet`
+      * We use `--git` to install cargo-vet from HEAD in order to use the `--cargo-arg` argument
+        which is not released yet.
+   * `cargo -Zunstable-options -C third_party/rust/chromium_crates_io/ vet check --cargo-arg=-Zbindeps --no-registry-suggestions`
+   * If `check` fails, then there are missing audits, which need to be added to
+     `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
+      * See [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md)
+        for the criteria for audits.
+      * See [Cargo Vet documentation](https://mozilla.github.io/cargo-vet/recording-audits.html)
+        for how to record the audit in `audits.toml`.
+      * Some audits can be done by any engineer ("ub-risk-0" and "safe-to-run")
+        while others will require specialists from the Security team. These are
+        explained in the
+        [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md).
+   * Audit updates in `audit.toml` should be part of the submitted CL so that
+     `cargo vet` will continue to pass after the CL lands.
+1. Upload the CL. If there is any `unsafe` usage then Security experts will need to
+   audit the "ub-risk" level. Mark any `unsafe` usage with `TODO` code review comments,
    and include a link to it in the request for third-party and security review.
 
 ### Cargo features

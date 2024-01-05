@@ -133,10 +133,10 @@ pub fn run_cargo_command(
         command.env("RUSTC", rustc_path);
     }
 
-    command.arg(subcommand);
-    command.args(extra_options);
     // Allow the binary dependency on cxxbridge-cmd.
     command.arg("-Zbindeps");
+    command.arg(subcommand);
+    command.args(extra_options);
 
     for (k, v) in extra_env.into_iter() {
         command.env(k, v);
@@ -165,7 +165,7 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+pub fn init_handlebars<'a>(template_path: &'a Path) -> Result<handlebars::Handlebars> {
     let mut handlebars = handlebars::Handlebars::new();
 
     // Don't escape output strings; the default is to escape for HTML output. Do
