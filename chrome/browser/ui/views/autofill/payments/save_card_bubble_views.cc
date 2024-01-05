@@ -78,6 +78,12 @@ void SaveCardBubbleViews::OnDialogAccepted() {
   }
 }
 
+void SaveCardBubbleViews::OnBeforeBubbleWidgetInit(
+    views::Widget::InitParams* params,
+    views::Widget* widget) const {
+  params->name = "SaveCardBubble";
+}
+
 void SaveCardBubbleViews::AddedToWidget() {
   // Use a custom title container if offering to upload a server card.
   // Done when this view is added to the widget, so the bubble frame

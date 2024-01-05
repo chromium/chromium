@@ -37,14 +37,6 @@ class SaveCardBubbleControllerImpl
       public SavePaymentIconController,
       public content::WebContentsUserData<SaveCardBubbleControllerImpl> {
  public:
-  // An observer class used by browsertests that gets notified whenever
-  // particular actions occur.
-  class ObserverForTest {
-   public:
-    virtual void OnBubbleShown() = 0;
-    virtual void OnIconShown() = 0;
-  };
-
   SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
   SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
       delete;
@@ -157,11 +149,6 @@ class SaveCardBubbleControllerImpl
 
   void OpenUrl(const GURL& url);
 
-  // For testing.
-  void SetEventObserverForTesting(ObserverForTest* observer) {
-    observer_for_testing_ = observer;
-  }
-
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 
@@ -219,9 +206,6 @@ class SaveCardBubbleControllerImpl
 
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
-
-  // Observer for when a bubble is created. Initialized only during tests.
-  raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

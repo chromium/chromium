@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_loading_indicator_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view_observer.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -95,6 +96,7 @@
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/url_constants.h"
@@ -140,7 +142,7 @@ namespace autofill {
 class SaveCardBubbleViewsFullFormBrowserTest
     : public SyncTest,
       public CreditCardSaveManager::ObserverForTest,
-      public SaveCardBubbleControllerImpl::ObserverForTest,
+      public PageActionIconViewObserver,
       public testing::WithParamInterface<bool> {
  public:
   SaveCardBubbleViewsFullFormBrowserTest(
@@ -223,12 +225,30 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
     // Set up this class as the ObserverForTest implementation.
     credit_card_save_manager()->SetEventObserverForTesting(this);
-    AddEventObserverToController();
+    GetSaveCardIconView()->AddPageIconViewObserver(this);
+
+    any_widget_observer_ = std::make_unique<views::AnyWidgetObserver>(
+        views::test::AnyWidgetTestPasskey{});
+    any_widget_observer_->set_shown_callback(base::BindRepeating(
+        &SaveCardBubbleViewsFullFormBrowserTest::OnWidgetShown,
+        base::Unretained(this)));
 
     // Set up the fake geolocation data.
     geolocation_overrider_ =
         std::make_unique<device::ScopedGeolocationOverrider>(
             kFakeGeolocationLatitude, kFakeGeolocationLongitude);
+  }
+
+  void TearDownOnMainThread() override {
+     if (!closed_all_tabs_) {
+       GetSaveCardIconView()->RemovePageIconViewObserver(this);
+       // credit_card_save_manager() will be null if the active web contents
+       // have changed since the test began.
+       if (credit_card_save_manager()) {
+         credit_card_save_manager()->SetEventObserverForTesting(nullptr);
+       }
+    }
+    SyncTest::TearDownOnMainThread();
   }
 
   // The primary main frame's AutofillManager.
@@ -237,10 +257,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   CreditCardSaveManager* credit_card_save_manager() {
-    return autofill_manager()
-        ->client()
-        .GetFormDataImporter()
-        ->GetCreditCardSaveManager();
+    return autofill_manager() ? autofill_manager()
+                                    ->client()
+                                    .GetFormDataImporter()
+                                    ->GetCreditCardSaveManager()
+                              : nullptr;
   }
 
   // CreditCardSaveManager::ObserverForTest:
@@ -291,14 +312,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
       event_waiter_->OnEvent(DialogEvent::STRIKE_CHANGE_COMPLETE);
   }
 
-  // SaveCardBubbleControllerImpl::ObserverForTest:
-  void OnBubbleShown() override {
-    if (event_waiter_)
+  void OnWidgetShown(views::Widget* widget) {
+    if (widget->GetName() == "SaveCardBubble" && event_waiter_) {
       event_waiter_->OnEvent(DialogEvent::BUBBLE_SHOWN);
+    }
   }
 
-  // SaveCardBubbleControllerImpl::ObserverForTest:
-  void OnIconShown() override {
+  // PageActionIconViewObserver:
+  void OnPageActionIconViewShown(PageActionIconView* view) override {
     if (event_waiter_)
       event_waiter_->OnEvent(DialogEvent::ICON_SHOWN);
   }
@@ -335,6 +356,11 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(SetupSync());
   }
 
+  void CloseAllTabs() {
+    closed_all_tabs_ = true;
+    GetBrowser(0)->tab_strip_model()->CloseAllTabs();
+  }
+
   void NavigateToAndWaitForForm(const std::string& file_path) {
     if (file_path.find("data:") == 0U) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(0), GURL(file_path)));
@@ -363,8 +389,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void SubmitFormAndWaitForCardLocalSaveBubble() {
-    ResetEventWaiterForSequence(
-        {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
+    // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
+    ResetEventWaiterForSequence({DialogEvent::OFFERED_LOCAL_SAVE,
+                                 DialogEvent::ICON_SHOWN,
+                                 DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
@@ -374,10 +402,12 @@ class SaveCardBubbleViewsFullFormBrowserTest
   void SubmitFormAndWaitForCardUploadSaveBubble() {
     // Set up the Payments RPC.
     SetUploadDetailsRpcPaymentsAccepts();
+    // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
     ResetEventWaiterForSequence(
         {DialogEvent::REQUESTED_UPLOAD_SAVE,
          DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-         DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
+         DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::ICON_SHOWN,
+         DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     ASSERT_TRUE(WaitForObservedEvent());
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
@@ -713,14 +743,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
     return GetBrowser(0)->tab_strip_model()->GetActiveWebContents();
   }
 
-  void AddEventObserverToController() {
-    SaveCardBubbleControllerImpl* save_card_bubble_controller_impl =
-        static_cast<SaveCardBubbleControllerImpl*>(
-            SaveCardBubbleController::GetOrCreate(GetActiveWebContents()));
-    CHECK(save_card_bubble_controller_impl);
-    save_card_bubble_controller_impl->SetEventObserverForTesting(this);
-  }
-
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence) {
     event_waiter_ =
         std::make_unique<EventWaiter<DialogEvent>>(std::move(event_sequence));
@@ -737,7 +759,10 @@ class SaveCardBubbleViewsFullFormBrowserTest
   bool should_move_legal_terms_param() const { return GetParam(); }
 
  private:
+  bool closed_all_tabs_ = false;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
+  std::unique_ptr<views::AnyWidgetObserver> any_widget_observer_;
+
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   TestAutofillManagerInjector<TestAutofillManager> autofill_manager_injector_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
@@ -913,7 +938,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
   // |bubble| and |bubble_widget| now point to deleted objects.
 
   // Simulate closing the browser window.
-  GetBrowser(0)->tab_strip_model()->CloseAllTabs();
+  CloseAllTabs();
 
   // Process the asynchronous close (which should do nothing).
   base::RunLoop().RunUntilIdle();
@@ -1052,10 +1077,12 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsSyncTransportFullFormBrowserTest,
 
   // Declining upload save will fall back to local save.
   SetUploadDetailsRpcPaymentsDeclines();
+  // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN,
+       DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
@@ -1424,10 +1451,12 @@ IN_PROC_BROWSER_TEST_P(
   // Submitting the form and having Payments decline offering to save should
   // show the local save bubble.
   // (Must wait for response from Payments before accessing the controller.)
+  // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN,
+       DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
@@ -1450,10 +1479,12 @@ IN_PROC_BROWSER_TEST_P(
   // Submitting the form and having the call to Payments fail should show the
   // local save bubble.
   // (Must wait for response from Payments before accessing the controller.)
+  // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
+       DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::ICON_SHOWN,
+       DialogEvent::BUBBLE_SHOWN});
   NavigateToAndWaitForForm(kCreditCardAndAddressUploadForm);
   FillForm();
   SubmitForm();
@@ -1491,11 +1522,13 @@ IN_PROC_BROWSER_TEST_P(
 
   // Submitting the the dynamic change form, offer to save bubble should be
   // shown.
+  // Relative order of ICON_SHOWN and BUBBLE_SHOWN does not matter.
   FillAndChangeForm();
   ResetEventWaiterForSequence(
       {DialogEvent::REQUESTED_UPLOAD_SAVE,
        DialogEvent::RECEIVED_GET_UPLOAD_DETAILS_RESPONSE,
-       DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
+       DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::ICON_SHOWN,
+       DialogEvent::BUBBLE_SHOWN});
   SubmitForm();
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(GetSaveCardBubbleViews());

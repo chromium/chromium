@@ -629,10 +629,6 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
-
-  if (observer_for_testing_) {
-    observer_for_testing_->OnBubbleShown();
-  }
 }
 
 void SaveCardBubbleControllerImpl::ShowBubble() {
@@ -691,9 +687,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
-
-  if (observer_for_testing_)
-    observer_for_testing_->OnIconShown();
 }
 
 void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {

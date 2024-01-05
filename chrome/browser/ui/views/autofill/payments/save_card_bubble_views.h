@@ -43,6 +43,8 @@ class SaveCardBubbleViews : public AutofillBubbleBase,
   void Hide() override;
 
   // LocationBarBubbleDelegateView:
+  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
+                                views::Widget* widget) const override;
   void AddedToWidget() override;
   std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
