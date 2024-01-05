@@ -25,8 +25,8 @@ WORD SeverityToEventLogType(logging::LogSeverity severity) {
   switch (severity) {
     case logging::LOGGING_WARNING:
       return EVENTLOG_WARNING_TYPE;
-    case logging::LOG_FATAL:
     case logging::LOGGING_ERROR:
+    case logging::LOGGING_FATAL:
       // Fatal or Error event.
       return EVENTLOG_ERROR_TYPE;
     case logging::LOGGING_INFO:

@@ -298,7 +298,7 @@ TEST(ScopedAlsaMixerDeathTest, MixerElementRegisterFailure) {
                                   /*line=*/_,
                                   /*message_start=*/_, /*str=*/_));
         EXPECT_CALL(alsa, StrError(kFailure)).WillOnce(Return(""));
-        EXPECT_CALL(mock_log, Log(logging::LOG_FATAL,
+        EXPECT_CALL(mock_log, Log(logging::LOGGING_FATAL,
                                   ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                                   /*line=*/_,
                                   /*message_start=*/_,
@@ -335,7 +335,7 @@ TEST(ScopedAlsaMixerDeathTest, MixerSelemIdMallocFailure) {
                                   /*line=*/_,
                                   /*message_start=*/_, /*str=*/_));
         EXPECT_CALL(alsa, StrError(kFailure)).WillOnce(Return(""));
-        EXPECT_CALL(mock_log, Log(logging::LOG_FATAL,
+        EXPECT_CALL(mock_log, Log(logging::LOGGING_FATAL,
                                   ::testing::EndsWith("/scoped_alsa_mixer.cc"),
                                   /*line=*/_,
                                   /*message_start=*/_,

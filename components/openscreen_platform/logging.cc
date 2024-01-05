@@ -26,7 +26,7 @@ namespace {
     case LogLevel::kError:
       return ::logging::LOGGING_ERROR;
     case LogLevel::kFatal:
-      return ::logging::LOG_FATAL;
+      return ::logging::LOGGING_FATAL;
   }
 }
 

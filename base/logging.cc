@@ -460,6 +460,8 @@ void SetLogFatalCrashKey(LogMessage* log_message) {
 
   base::AutoReset<bool> guard(&guarded, true);
 
+  // Note that we intentionally use LOG_FATAL here (old name for LOGGING_FATAL)
+  // as that's understood and used by the crash backend.
   static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "LOG_FATAL", base::debug::CrashKeySize::Size1024);
   base::debug::SetCrashKeyString(crash_key, log_message->BuildCrashString());

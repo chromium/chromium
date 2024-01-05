@@ -28,7 +28,7 @@ logging::LogSeverity EventTraceLevelToSeverity(uint8_t level) {
       NOTREACHED();
       return logging::LOGGING_ERROR;
     case TRACE_LEVEL_FATAL:
-      return logging::LOG_FATAL;
+      return logging::LOGGING_FATAL;
     case TRACE_LEVEL_ERROR:
       return logging::LOGGING_ERROR;
     case TRACE_LEVEL_WARNING:
@@ -116,7 +116,7 @@ std::string EventTraceData::SeverityToString(logging::LogSeverity severity) {
       return kWarningSeverity;
     case logging::LOGGING_ERROR:
       return kErrorSeverity;
-    case logging::LOG_FATAL:
+    case logging::LOGGING_FATAL:
       return kFatalSeverity;
     default:
       if (severity < 0) {

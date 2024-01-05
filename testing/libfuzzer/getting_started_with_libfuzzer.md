@@ -330,7 +330,7 @@ the environment used for logging in your fuzz target:
 ```cpp
 struct Environment {
   Environment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

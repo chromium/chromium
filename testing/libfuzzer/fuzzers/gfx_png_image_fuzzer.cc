@@ -12,7 +12,7 @@
 struct Environment {
   Environment() {
     // Disable noisy logging.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

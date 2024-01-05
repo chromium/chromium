@@ -28,7 +28,7 @@ struct Environment {
   Environment() {
     base::CommandLine::Init(0, nullptr);
     base::i18n::InitializeICU();
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

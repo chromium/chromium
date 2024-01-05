@@ -18,7 +18,7 @@ namespace url_matcher {
 class Environment {
  public:
   Environment() {
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
     CHECK(base::i18n::InitializeICU());
   }
   base::AtExitManager at_exit_manager;

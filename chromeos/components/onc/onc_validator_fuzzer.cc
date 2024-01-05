@@ -23,7 +23,7 @@ namespace {
 struct Environment {
   Environment() {
     // Prevent spamming stdout with ONC validation errors.
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 };
 

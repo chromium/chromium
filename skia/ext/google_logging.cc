@@ -30,7 +30,7 @@ void SkDebugf_FileLine(const char* file, int line, const char* format, ...) {
 }
 
 void SkAbort_FileLine(const char* file, int line, const char* format, ...) {
-  int severity = logging::LOG_FATAL;
+  int severity = logging::LOGGING_FATAL;
 
   va_list ap;
   va_start(ap, format);

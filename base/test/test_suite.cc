@@ -535,7 +535,7 @@ void TestSuite::Initialize() {
   // FeatureList::SetInstance() when/if OnTestStart() TestEventListeners
   // are fixed to be invoked in the child process as expected.
   if (command_line->HasSwitch("gtest_internal_run_death_test"))
-    logging::LOGGING_DCHECK = logging::LOG_FATAL;
+    logging::LOGGING_DCHECK = logging::LOGGING_FATAL;
 #endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 #if BUILDFLAG(IS_IOS)

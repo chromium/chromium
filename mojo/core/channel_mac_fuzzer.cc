@@ -24,7 +24,7 @@ class ChannelMacFuzzer {
   ChannelMacFuzzer() {
     mojo::core::InitializeCore();
 
-    logging::SetMinLogLevel(logging::LOG_FATAL);
+    logging::SetMinLogLevel(logging::LOGGING_FATAL);
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner() {

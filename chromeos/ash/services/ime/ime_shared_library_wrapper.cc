@@ -38,7 +38,7 @@ void ImeLoggerBridge(int severity, const char* message) {
     case logging::LOGGING_ERROR:
       LOG(ERROR) << message;
       break;
-    case logging::LOG_FATAL:
+    case logging::LOGGING_FATAL:
       LOG(FATAL) << message;
       break;
     default:
