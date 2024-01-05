@@ -180,8 +180,23 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithFallback) {
       auth_response, signed_data,
       cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
       now);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_CRL_OK_FALLBACK_CRL, result.error_type);
+  EXPECT_TRUE(result.success());
+  EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
+            result.channel_policies);
+  EXPECT_EQ(kFlagsAcceptedByFallbackCRL, result.flags);
+}
+
+TEST_F(CastAuthUtilTest, VerifyCrlOptionalWithFallback) {
+  std::string signed_data;
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  base::Time now = base::Time::Now();
+  AuthResult result = VerifyCredentialsForTest(
+      auth_response, signed_data,
+      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, nullptr,
+      now);
+  EXPECT_TRUE(result.success());
+  EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
+            result.channel_policies);
   EXPECT_EQ(kFlagsAcceptedByFallbackCRL, result.flags);
 }
 
@@ -206,8 +221,9 @@ TEST_F(CastAuthUtilTest, VerifyCrlRequiredWithNotExpiredFallback) {
       auth_response, signed_data,
       cast_certificate::CRLPolicy::CRL_REQUIRED_WITH_FALLBACK, nullptr, nullptr,
       now);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_CRL_OK_FALLBACK_CRL, result.error_type);
+  EXPECT_TRUE(result.success());
+  EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
+            result.channel_policies);
   EXPECT_EQ(kFlagsAcceptedByFallbackCRL, result.flags);
 }
 
@@ -218,8 +234,9 @@ TEST_F(CastAuthUtilTest, FeatureFlagVerifyCrlRequiredWithFallbackCRL) {
   std::string signed_data;
   AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
   AuthResult result = VerifyCredentials(auth_response, signed_data);
-  EXPECT_FALSE(result.success());
-  EXPECT_EQ(AuthResult::ERROR_CRL_OK_FALLBACK_CRL, result.error_type);
+  EXPECT_TRUE(result.success());
+  EXPECT_EQ(static_cast<unsigned>(AuthResult::POLICY_NONE),
+            result.channel_policies);
   EXPECT_EQ(kFlagsAcceptedByFallbackCRL, result.flags);
 }
 
@@ -287,6 +304,19 @@ TEST_F(CastAuthUtilTest,
   // will NOT early return if the flag is off
   EXPECT_EQ(AuthResult::ERROR_CERT_PARSING_FAILED, result.error_type);
   EXPECT_EQ(kFlagsCRLMissing, result.flags);
+}
+
+TEST_F(CastAuthUtilTest, VerifyCrlOptionalWithInvalidFallbackCRL) {
+  std::string signed_data;
+  AuthResponse auth_response = CreateAuthResponse(&signed_data, SHA256);
+  base::Time now = base::Time::Now() + base::Hours(100000000);
+  AuthResult result = VerifyCredentialsForTest(
+      auth_response, signed_data,
+      cast_certificate::CRLPolicy::CRL_OPTIONAL_WITH_FALLBACK, nullptr, nullptr,
+      now);
+  EXPECT_FALSE(result.success());
+  EXPECT_EQ(AuthResult::ERROR_CERT_NOT_SIGNED_BY_TRUSTED_CA, result.error_type);
+  EXPECT_EQ(kFlagsInvalidFallbackCRL, result.flags);
 }
 
 TEST_F(CastAuthUtilTest, VerifyBadPeerCert) {

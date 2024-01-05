@@ -78,7 +78,9 @@ struct AuthResult {
 
   void set_flag(CastChannelFlag flag) { flags |= static_cast<uint16_t>(flag); }
 
-  bool success() const { return error_type == ERROR_NONE; }
+  bool success() const {
+    return error_type == ERROR_NONE || error_type == ERROR_CRL_OK_FALLBACK_CRL;
+  }
 
   // Copies any flags set in `source` to this object's flags.
   void CopyFlagsFrom(const AuthResult& source);
