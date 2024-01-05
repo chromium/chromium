@@ -12,10 +12,10 @@
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_test_base.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/protocol/sync_enums.pb.h"
-#include "components/sync_device_info/device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -67,10 +67,10 @@ TEST_F(SharedClipboardMessageHandlerTest, NotificationWithoutDeviceName) {
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
-        .WillOnce(
-            [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
-              return nullptr;
-            });
+        .WillOnce([](const std::string& guid)
+                      -> std::unique_ptr<SharingTargetDeviceInfo> {
+          return nullptr;
+        });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);
     message_handler_->OnMessage(CreateMessage(guid, kEmptyDeviceName, kText),
@@ -89,7 +89,8 @@ TEST_F(SharedClipboardMessageHandlerTest,
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce(
-            [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
+            [](const std::string& guid)
+                -> std::unique_ptr<SharingTargetDeviceInfo> {
               return CreateFakeDeviceInfo(
                   base::Uuid::GenerateRandomV4().AsLowercaseString(),
                   kDeviceNameInDeviceInfo);
@@ -111,10 +112,10 @@ TEST_F(SharedClipboardMessageHandlerTest,
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
   {
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
-        .WillOnce(
-            [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
-              return nullptr;
-            });
+        .WillOnce([](const std::string& guid)
+                      -> std::unique_ptr<SharingTargetDeviceInfo> {
+          return nullptr;
+        });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);
     message_handler_->OnMessage(

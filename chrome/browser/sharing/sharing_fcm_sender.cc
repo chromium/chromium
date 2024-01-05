@@ -38,10 +38,11 @@ SharingFCMSender::SharingFCMSender(
 
 SharingFCMSender::~SharingFCMSender() = default;
 
-void SharingFCMSender::DoSendMessageToDevice(const syncer::DeviceInfo& device,
-                                             base::TimeDelta time_to_live,
-                                             SharingMessage message,
-                                             SendMessageCallback callback) {
+void SharingFCMSender::DoSendMessageToDevice(
+    const SharingTargetDeviceInfo& device,
+    base::TimeDelta time_to_live,
+    SharingMessage message,
+    SendMessageCallback callback) {
   TRACE_EVENT0("sharing", "SharingFCMSender::DoSendMessageToDevice");
 
   auto fcm_configuration = GetFCMChannel(device);

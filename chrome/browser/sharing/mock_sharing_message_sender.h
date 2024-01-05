@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
-#include "components/sync_device_info/device_info.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockSharingMessageSender : public SharingMessageSender {
@@ -23,7 +23,7 @@ class MockSharingMessageSender : public SharingMessageSender {
   ~MockSharingMessageSender() override;
 
   MOCK_METHOD5(SendMessageToDevice,
-               base::OnceClosure(const syncer::DeviceInfo&,
+               base::OnceClosure(const SharingTargetDeviceInfo&,
                                  base::TimeDelta,
                                  chrome_browser_sharing::SharingMessage,
                                  DelegateType,

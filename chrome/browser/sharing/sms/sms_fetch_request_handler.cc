@@ -15,7 +15,7 @@
 #include "chrome/android/chrome_jni_headers/SmsFetcherMessageHandler_jni.h"
 #include "chrome/browser/sharing/proto/sms_fetch_message_test_proto3_optional.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
-#include "components/sync_device_info/device_info.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -62,7 +62,7 @@ void SmsFetchRequestHandler::OnMessage(
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_sms_fetch_request());
 
-  std::unique_ptr<syncer::DeviceInfo> device =
+  std::unique_ptr<SharingTargetDeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
   const std::string& client_name =
       device ? device->client_name() : message.sender_device_name();

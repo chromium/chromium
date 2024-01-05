@@ -88,7 +88,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate {
 
  protected:
   // SharingMessageSender::SendMessageDelegate:
-  void DoSendMessageToDevice(const syncer::DeviceInfo& device,
+  void DoSendMessageToDevice(const SharingTargetDeviceInfo& device,
                              base::TimeDelta time_to_live,
                              SharingMessage message,
                              SendMessageCallback callback) override;

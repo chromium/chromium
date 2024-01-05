@@ -12,12 +12,12 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sms/sms_remote_fetcher_metrics.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/web_contents.h"
@@ -58,7 +58,7 @@ void SmsRemoteFetcherUiController::DoUpdateApps(UpdateAppsCallback callback) {
 }
 
 void SmsRemoteFetcherUiController::OnDeviceChosen(
-    const syncer::DeviceInfo& device) {}
+    const SharingTargetDeviceInfo& device) {}
 
 void SmsRemoteFetcherUiController::OnAppChosen(const SharingApp& app) {}
 
@@ -144,7 +144,7 @@ base::OnceClosure SmsRemoteFetcherUiController::FetchRemoteSms(
 
   // Sends to the first device that has the capability enabled. User cannot
   // select device because the site sends out the SMS asynchronously.
-  const std::unique_ptr<syncer::DeviceInfo>& device = devices.front();
+  const std::unique_ptr<SharingTargetDeviceInfo>& device = devices.front();
   last_device_name_ = device->client_name();
   chrome_browser_sharing::SharingMessage request;
 

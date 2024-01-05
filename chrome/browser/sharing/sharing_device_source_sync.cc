@@ -16,6 +16,7 @@
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_constants.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/sharing/sharing_utils.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/service/sync_service.h"
@@ -46,10 +47,10 @@ bool IsStale(const syncer::DeviceInfo& device) {
 
 // TODO(b/316374607): Avoid deep copies once signatures adhere to raw pointers
 // instead of returning ownership of copies.
-std::vector<std::unique_ptr<syncer::DeviceInfo>> CloneDevices(
-    const std::vector<const syncer::DeviceInfo*> devices) {
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> result;
-  for (const syncer::DeviceInfo* device : devices) {
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>> CloneDevices(
+    const std::vector<const SharingTargetDeviceInfo*> devices) {
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> result;
+  for (const SharingTargetDeviceInfo* device : devices) {
     result.push_back(device->Clone());
   }
   return result;
@@ -88,8 +89,8 @@ SharingDeviceSourceSync::~SharingDeviceSourceSync() {
   device_info_tracker_->RemoveObserver(this);
 }
 
-std::unique_ptr<syncer::DeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
-    const std::string& guid) {
+std::unique_ptr<SharingTargetDeviceInfo>
+SharingDeviceSourceSync::GetDeviceByGuid(const std::string& guid) {
   if (!IsSyncEnabledForSharing(sync_service_))
     return nullptr;
 
@@ -98,13 +99,14 @@ std::unique_ptr<syncer::DeviceInfo> SharingDeviceSourceSync::GetDeviceByGuid(
   if (!device_info)
     return nullptr;
 
-  std::unique_ptr<syncer::DeviceInfo> device_info_copy = device_info->Clone();
+  std::unique_ptr<SharingTargetDeviceInfo> device_info_copy =
+      device_info->Clone();
   device_info_copy->set_client_name(
       send_tab_to_self::GetSharingDeviceNames(device_info).full_name);
   return device_info_copy;
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
 SharingDeviceSourceSync::GetDeviceCandidates(
     SharingSpecificFields::EnabledFeatures required_feature) {
   if (!IsSyncEnabledForSharing(sync_service_) || !IsReady())
@@ -168,7 +170,7 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
 
   base::EraseIf(devices, [accepted_features, can_send_via_vapid,
                           can_send_via_sender_id](
-                             const syncer::DeviceInfo* device) {
+                             const SharingTargetDeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
     if (IsStale(*device)) {
       return true;
@@ -201,7 +203,7 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
   return devices;
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
 SharingDeviceSourceSync::RenameAndDeduplicateDevices(
     std::vector<std::unique_ptr<syncer::DeviceInfo>> devices) const {
   // Sort the devices so the most recently modified devices are first.
@@ -211,7 +213,8 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
                      device2->last_updated_timestamp();
             });
 
-  std::unordered_map<syncer::DeviceInfo*, send_tab_to_self::SharingDeviceNames>
+  std::unordered_map<const syncer::DeviceInfo*,
+                     send_tab_to_self::SharingDeviceNames>
       device_names_map;
   std::unordered_set<std::string> full_names;
   std::unordered_map<std::string, int> short_names_counter;

@@ -12,12 +12,12 @@
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
-#include "components/sync_device_info/device_info.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -136,7 +136,7 @@ void SharingUiController::UpdateAndShowDialog(
                               initiating_origin));
 }
 
-std::vector<std::unique_ptr<syncer::DeviceInfo>>
+std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
 SharingUiController::GetDevices() const {
   return sharing_service_->GetDeviceCandidates(GetRequiredFeature());
 }
@@ -179,7 +179,7 @@ bool SharingUiController::HasAccessibleUi() const {
 }
 
 base::OnceClosure SharingUiController::SendMessageToDevice(
-    const syncer::DeviceInfo& device,
+    const SharingTargetDeviceInfo& device,
     absl::optional<base::TimeDelta> response_timeout,
     chrome_browser_sharing::SharingMessage sharing_message,
     absl::optional<SharingMessageSender::ResponseCallback> custom_callback) {

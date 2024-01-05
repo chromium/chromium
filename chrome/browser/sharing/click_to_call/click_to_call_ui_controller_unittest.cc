@@ -82,7 +82,7 @@ MATCHER_P(ProtoEquals, message, "") {
 
 // Check the call to sharing service when a device is chosen.
 TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
-  std::unique_ptr<syncer::DeviceInfo> device_info =
+  std::unique_ptr<SharingTargetDeviceInfo> device_info =
       CreateFakeDeviceInfo(kReceiverGuid, kReceiverName);
 
   chrome_browser_sharing::SharingMessage sharing_message;
@@ -90,9 +90,9 @@ TEST_F(ClickToCallUiControllerTest, OnDeviceChosen) {
       kPhoneNumber);
   EXPECT_CALL(
       *service(),
-      SendMessageToDevice(Property(&syncer::DeviceInfo::guid, kReceiverGuid),
-                          Eq(kSharingMessageTTL), ProtoEquals(sharing_message),
-                          testing::_));
+      SendMessageToDevice(
+          Property(&SharingTargetDeviceInfo::guid, kReceiverGuid),
+          Eq(kSharingMessageTTL), ProtoEquals(sharing_message), testing::_));
   controller_->OnDeviceChosen(*device_info.get());
 }
 

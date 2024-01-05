@@ -12,7 +12,7 @@
 #include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
-#include "components/sync_device_info/device_info.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
@@ -31,7 +31,7 @@ void SharedClipboardMessageHandler::OnMessage(
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(base::UTF8ToUTF16(message.shared_clipboard_message().text()));
 
-  std::unique_ptr<syncer::DeviceInfo> device =
+  std::unique_ptr<SharingTargetDeviceInfo> device =
       device_source_->GetDeviceByGuid(message.sender_guid());
   const std::string& device_name =
       device ? device->client_name() : message.sender_device_name();

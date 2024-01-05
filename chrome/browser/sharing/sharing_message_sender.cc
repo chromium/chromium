@@ -22,7 +22,7 @@ SharingMessageSender::SharingMessageSender(
 SharingMessageSender::~SharingMessageSender() = default;
 
 base::OnceClosure SharingMessageSender::SendMessageToDevice(
-    const syncer::DeviceInfo& device,
+    const SharingTargetDeviceInfo& device,
     base::TimeDelta response_timeout,
     chrome_browser_sharing::SharingMessage message,
     DelegateType delegate_type,

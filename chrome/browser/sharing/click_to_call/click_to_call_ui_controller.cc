@@ -13,11 +13,11 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
@@ -63,7 +63,7 @@ ClickToCallUiController::~ClickToCallUiController() = default;
 
 void ClickToCallUiController::OnDeviceSelected(
     const std::string& phone_number,
-    const syncer::DeviceInfo& device,
+    const SharingTargetDeviceInfo& device,
     SharingClickToCallEntryPoint entry_point) {
   LogClickToCallUKM(web_contents(), entry_point,
                     /*has_devices=*/true, /*has_apps=*/false,
@@ -131,7 +131,8 @@ void ClickToCallUiController::DoUpdateApps(UpdateAppsCallback callback) {
   std::move(callback).Run(std::move(apps));
 }
 
-void ClickToCallUiController::OnDeviceChosen(const syncer::DeviceInfo& device) {
+void ClickToCallUiController::OnDeviceChosen(
+    const SharingTargetDeviceInfo& device) {
   if (ukm_recorder_)
     std::move(ukm_recorder_).Run(SharingClickToCallSelection::kDevice);
 
@@ -140,7 +141,7 @@ void ClickToCallUiController::OnDeviceChosen(const syncer::DeviceInfo& device) {
 }
 
 void ClickToCallUiController::SendNumberToDevice(
-    const syncer::DeviceInfo& device,
+    const SharingTargetDeviceInfo& device,
     const std::string& phone_number,
     SharingClickToCallEntryPoint entry_point) {
   SharingMessage sharing_message;

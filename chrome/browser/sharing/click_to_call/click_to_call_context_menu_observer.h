@@ -12,13 +12,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
-
-namespace syncer {
-class DeviceInfo;
-}  // namespace syncer
 
 class RenderViewContextMenuProxy;
 
@@ -76,7 +73,7 @@ class ClickToCallContextMenuObserver : public RenderViewContextMenuObserver {
 
   raw_ptr<ClickToCallUiController> controller_ = nullptr;
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices_;
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices_;
 
   SubMenuDelegate sub_menu_delegate_{this};
 
