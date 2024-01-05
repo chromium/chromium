@@ -276,6 +276,8 @@ class X11Window : public PlatformWindow,
   // Called when |xwindow_|'s _NET_WM_STATE property is updated.
   void OnWMStateUpdated();
 
+  WindowTiledEdges GetTiledState() const;
+
   // Called when |xwindow_|'s _NET_FRAME_EXTENTS property is updated.
   void OnFrameExtentsUpdated();
 
@@ -321,6 +323,8 @@ class X11Window : public PlatformWindow,
 
   // Stores current state of this window.
   PlatformWindowState state_ = PlatformWindowState::kUnknown;
+
+  WindowTiledEdges tiled_state_;
 
   const raw_ptr<PlatformWindowDelegate> platform_window_delegate_;
 

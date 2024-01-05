@@ -1506,6 +1506,14 @@ void X11Window::OnXWindowStateChanged() {
     state_ = new_state;
     platform_window_delegate_->OnWindowStateChanged(old_state, state_);
   }
+
+  WindowTiledEdges tiled_state = GetTiledState();
+  if (tiled_state != tiled_state_) {
+    tiled_state_ = tiled_state;
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    platform_window_delegate_->OnWindowTiledStateChanged(tiled_state);
+#endif
+  }
 }
 
 void X11Window::OnXWindowDamageEvent(const gfx::Rect& damage_rect) {
@@ -2508,6 +2516,14 @@ void X11Window::OnWMStateUpdated() {
     UpdateWindowProperties(
         base::flat_set<x11::Atom>(std::begin(atom_list), std::end(atom_list)));
   }
+}
+
+WindowTiledEdges X11Window::GetTiledState() const {
+  const bool vert = HasWMSpecProperty(
+      window_properties_, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_VERT"));
+  const bool horz = HasWMSpecProperty(
+      window_properties_, x11::GetAtom("_NET_WM_STATE_MAXIMIZED_HORZ"));
+  return WindowTiledEdges{vert, vert, horz, horz};
 }
 
 void X11Window::UpdateWindowProperties(
