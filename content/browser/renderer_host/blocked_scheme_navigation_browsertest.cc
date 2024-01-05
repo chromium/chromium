@@ -957,8 +957,16 @@ IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
 
 // Tests navigation of the main frame to a filesystem URL with a binary mimetype
 // from a subframe. Navigations to filesystem URLs never end up as downloads.
+// TODO(crbug.com/1503148): Enable the flaky test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
+  DISABLED_FilesystemUrl_OctetStream_NavigationFromFrame
+#else
+#define MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame \
+  FilesystemUrl_OctetStream_NavigationFromFrame
+#endif
 IN_PROC_BROWSER_TEST_F(BlockedSchemeNavigationBrowserTest,
-                       FilesystemUrl_OctetStream_NavigationFromFrame) {
+                       MAYBE_FilesystemUrl_OctetStream_NavigationFromFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/simple_page.html")));
   AddIFrame(shell()->web_contents()->GetPrimaryMainFrame(),
