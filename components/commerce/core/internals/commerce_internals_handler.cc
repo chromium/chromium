@@ -19,6 +19,9 @@ CommerceInternalsHandler::CommerceInternalsHandler(
     : page_(std::move(page)),
       receiver_(this, std::move(receiver)),
       shopping_service_(shopping_service) {
+  if (!shopping_service_) {
+    return;
+  }
   shopping_service_->WaitForReady(base::BindOnce(
       [](base::WeakPtr<CommerceInternalsHandler> handler,
          ShoppingService* service) {
