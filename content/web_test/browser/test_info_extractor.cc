@@ -60,7 +60,8 @@ std::unique_ptr<TestInfo> GetTestInfoFromWebTestName(
 #else
     base::FilePath local_file(path_or_url);
 #endif
-    if (!base::PathExists(local_file)) {
+    if (!base::PathExists(local_file) &&
+        !base::FilePath(local_file).IsAbsolute()) {
       base::FilePath base_path;
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path);
       local_file = base_path.Append(FILE_PATH_LITERAL("third_party"))
