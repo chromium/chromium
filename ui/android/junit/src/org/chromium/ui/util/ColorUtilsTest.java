@@ -63,30 +63,42 @@ public class ColorUtilsTest {
         }
     }
 
+    @Test
+    public void testOverlayTransparentColor() {
+        // Hard coded solved expected color to avoid just duplicating impl in the test.
+        @ColorInt int expected = Color.parseColor("#FF143658");
+        @ColorInt int base = Color.parseColor("#FF123456");
+        @ColorInt int overlay = Color.parseColor("#12345678");
+        @ColorInt int actual = ColorUtils.overlayColor(base, overlay);
+        assertColorsExactlyEqual("", expected, actual);
+    }
+
+    @Test
+    public void testOverlayTransparentColorWithFraction() {
+        // Hard coded solved expected color to avoid just duplicating impl in the test.
+        @ColorInt int expected = Color.parseColor("#FF133557");
+        @ColorInt int base = Color.parseColor("#FF123456");
+        @ColorInt int overlay = Color.parseColor("#12345678");
+        @ColorInt int actual = ColorUtils.overlayColor(base, overlay, .63f);
+        assertColorsExactlyEqual("", expected, actual);
+    }
+
     private void testBlendColorsMultiplyHelper(
             @ColorInt int background, @ColorInt int from, @ColorInt int to) {
         String sharedMessage = formatColors("background:%s from:%s to:%s", background, from, to);
         // Calculates an expected color by pre-flattening everything onto the background and an
         // actual value by using the pre multiply blend mechanism that combines two colors with
         // alpha values. These two approaches should return the same color.
-        @ColorInt int fromFlat = flatten(background, from);
-        @ColorInt int toFlat = flatten(background, to);
+        @ColorInt int fromFlat = ColorUtils.overlayColor(background, from);
+        @ColorInt int toFlat = ColorUtils.overlayColor(background, to);
         for (@FloatRange(from = 0f, to = 1f) float fraction : FRACTIONS) {
             @ColorInt int flatBlend = ColorUtils.getColorWithOverlay(fromFlat, toFlat, fraction);
             @ColorInt int blend = ColorUtils.blendColorsMultiply(from, to, fraction);
-            @ColorInt int blendOnBackground = flatten(background, blend);
+            @ColorInt int blendOnBackground = ColorUtils.overlayColor(background, blend);
             String fractionMessage = String.format("%s fraction:%s", sharedMessage, fraction);
             // Use a delta to allow rounding errors where things are off by 1.
             assertColorsNearlyEqual(fractionMessage, flatBlend, blendOnBackground, /* delta= */ 1);
         }
-    }
-
-    private @ColorInt int flatten(@ColorInt int background, @ColorInt int overlay) {
-        assert Color.alpha(background) == 255;
-        @ColorInt int opaqueOverlay = ColorUtils.setAlphaComponent(overlay, 255);
-        @FloatRange(from = 0f, to = 1f)
-        float fraction = Color.alpha(overlay) / 255f;
-        return ColorUtils.getColorWithOverlay(background, opaqueOverlay, fraction);
     }
 
     private void assertRbgExactlyEqual(
@@ -99,6 +111,11 @@ public class ColorUtilsTest {
         assertEquals(compareMessage, Color.red(expected), Color.red(actual));
         assertEquals(compareMessage, Color.green(expected), Color.green(actual));
         assertEquals(compareMessage, Color.blue(expected), Color.blue(actual));
+    }
+
+    private void assertColorsExactlyEqual(
+            String testMessage, @ColorInt int expected, @ColorInt int actual) {
+        assertColorsNearlyEqual(testMessage, expected, actual, /* delta= */ 0);
     }
 
     private void assertColorsNearlyEqual(

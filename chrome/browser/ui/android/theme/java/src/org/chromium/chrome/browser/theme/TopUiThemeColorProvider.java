@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.theme;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
+import androidx.annotation.ColorInt;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -106,11 +108,12 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
     /**
      * Calculate theme color to be used for a given tab.
+     *
      * @param tab Tab to get the theme color for.
      * @param themeColor Initial color to calculate the theme color with.
      * @return Final theme color for a given tab, with other signals taken into account.
      */
-    public int calculateColor(Tab tab, int themeColor) {
+    public @ColorInt int calculateColor(Tab tab, @ColorInt int themeColor) {
         // This method is used not only for the current tab but also for
         // any given tab. Therefore it should not alter any class state.
         if (!isUsingTabThemeColor(tab, themeColor)) {
@@ -125,7 +128,7 @@ public class TopUiThemeColorProvider extends ThemeColorProvider {
 
         // Ensure there is no alpha component to the theme color as that is not supported in the
         // dependent UI.
-        return themeColor | 0xFF000000;
+        return ColorUtils.getOpaqueColor(themeColor);
     }
 
     private boolean isUsingDefaultColor(Tab tab, int themeColor) {

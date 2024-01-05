@@ -63,6 +63,40 @@ public class ColorUtils {
     }
 
     /**
+     * @see ColorUtils#overlayColor(int, int, float). Use this when not in an animation.
+     */
+    public static @ColorInt int overlayColor(@ColorInt int baseColor, @ColorInt int overlayColor) {
+        return overlayColor(baseColor, overlayColor, /* fraction= */ 1f);
+    }
+
+    /**
+     * Overlays a likely transparent color with the amount that it is transparent. This effectively
+     * flattens the two colors together into a new opaque color.
+     *
+     * @param baseColor The base, opaque, color that is beneath the overlay.
+     * @param overlayColor The partially transparent color, whose alpha will be used to decide how
+     *     much of an effect it will have when blending.
+     * @param fraction Extra 0 to 1 multiplier for alpha overlay, useful for animations that want to
+     *     animate into a full overlay.
+     * @return A fully opaque color that's the result of blending the two.
+     */
+    public static @ColorInt int overlayColor(
+            @ColorInt int baseColor,
+            @ColorInt int overlayColor,
+            @FloatRange(from = 0f, to = 1f) float fraction) {
+        // Similar to #getColorWithOverlay, this math isn't great for transparent base colors.
+        // Consider using #blendColorsMultiply instead.
+        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // color that's partially transparent.
+        // assert Color.alpha(baseColor) == 255;
+
+        @FloatRange(from = 0f, to = 1f)
+        float alphaAdjustedFraction = Color.alpha(overlayColor) / 255f * fraction;
+        @ColorInt int opaqueOverlayColor = getOpaqueColor(overlayColor);
+        return getColorWithOverlay(baseColor, opaqueOverlayColor, alphaAdjustedFraction);
+    }
+
+    /**
      * Get a color when overlaid with a different color. Input and output colors should be fully
      * opaque, as this approach does not work well with transparency.
      *

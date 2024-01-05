@@ -434,25 +434,18 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
     @Override
     public void setScrimFraction(float scrimFraction) {
         @ColorInt int scrimColor = mActivity.getColor(R.color.default_scrim_color);
-        float scrimColorAlpha = (scrimColor >>> 24) / 255f;
-        @ColorInt int scrimColorOpaque = scrimColor | 0xFF000000;
-        @ColorInt
-        int color =
-                ColorUtils.getColorWithOverlay(
-                        mToolbarColor, scrimColorOpaque, scrimFraction * scrimColorAlpha);
 
-        // Drag handle view is not part of CoordinatorLayout. As the root UI scrim changes,
-        // the handle view color needs updating to match it. This is a better way than running
-        // PCCT's own scrim coordinator since it can apply shape-aware scrim to the handle view
-        // that has the rounded corner.
-        getDragBarBackground().setColor(color);
+        // Drag handle view is not part of CoordinatorLayout. As the root UI scrim changes, the
+        // handle view color needs updating to match it. This is a better way than running PCCT's
+        // own scrim coordinator since it can apply shape-aware scrim to the handle view that has
+        // the rounded corner.
+        getDragBarBackground()
+                .setColor(ColorUtils.overlayColor(mToolbarColor, scrimColor, scrimFraction));
 
         ImageView handle = (ImageView) mActivity.findViewById(R.id.drag_handle);
         @ColorInt int handleColor = mActivity.getColor(R.color.drag_handlebar_color_baseline);
         if (scrimFraction > 0.f) {
-            handle.setColorFilter(
-                    ColorUtils.getColorWithOverlay(
-                            handleColor, scrimColorOpaque, scrimFraction * scrimColorAlpha));
+            handle.setColorFilter(ColorUtils.overlayColor(handleColor, scrimColor, scrimFraction));
         } else {
             handle.clearColorFilter();
         }

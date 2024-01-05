@@ -548,10 +548,7 @@ public class StatusBarColorController
             mScrimColor = context.getColor(R.color.default_scrim_color);
         }
         // Apply a color overlay if the scrim is showing.
-        float scrimColorAlpha = (mScrimColor >>> 24) / 255f;
-        int scrimColorOpaque = mScrimColor | 0xFF000000;
-        return ColorUtils.getColorWithOverlay(
-                color, scrimColorOpaque, mStatusBarScrimFraction * scrimColorAlpha);
+        return ColorUtils.overlayColor(color, mScrimColor, mStatusBarScrimFraction);
     }
 
     /**
