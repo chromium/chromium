@@ -842,11 +842,14 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
 }
 
 bool EnrollmentScreen::ShouldAutoRetryOnError() const {
-  return WizardController::IsZeroTouchHandsOffOobeFlow();
+  // Currently there is no use-case for the retry logic. But error
+  // classification may bring one. If not, the whole retry stack can be removed.
+  // TODO(b/314130124): Remove if retry logic is not needed.
+  return false;
 }
 
 bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
-  return WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
+  return is_rollback_flow_;
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {

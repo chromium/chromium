@@ -775,35 +775,6 @@ INSTANTIATE_TEST_SUITE_P(
         {policy::EnrollmentConfig::MODE_ATTESTATION,
          policy::EnrollmentConfig::AUTH_MECHANISM_BEST_AVAILABLE}}));
 
-class EnrollmentScreenHandsOffTest : public EnrollmentScreenTest {
- public:
-  EnrollmentScreenHandsOffTest() = default;
-  ~EnrollmentScreenHandsOffTest() override = default;
-
-  EnrollmentScreenHandsOffTest(const EnrollmentScreenHandsOffTest&) = delete;
-  EnrollmentScreenHandsOffTest& operator=(const EnrollmentScreenHandsOffTest&) =
-      delete;
-
-  // EnrollmentScreenTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentScreenTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-  }
-};
-
-// TODO(crbug.com/1344492): Consistent failures, unable to cleanly revert
-// culprit CL.
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenHandsOffTest,
-                       DISABLED_SkipEnrollmentCompleteScreen) {
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
-
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
-
 // Class to test TPM pre-enrollment check that happens only with
 // --tpm-is-dynamic switch enabled. Test parameter represents take TPM
 // ownership reply possible statuses.
