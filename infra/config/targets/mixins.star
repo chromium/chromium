@@ -1604,8 +1604,7 @@ targets.mixin(
     name = "win_arm64",
     swarming = targets.swarming(
         dimensions = {
-            # TODO(https://crbug.com/1422826): Update the right cpu value.
-            "cpu": None,
+            "cpu": "arm64",
             "os": "Windows-11",
             "pool": "chrome.tests.arm64",
             # Currently used to limit testing to the homogenous fleet. Can be
