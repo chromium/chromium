@@ -342,7 +342,7 @@ static void RunCallbackOnUI(
 
 void OnGpuProcessHostDestroyedOnUI(int host_id, const std::string& message) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
-  GpuDataManagerImpl::GetInstance()->AddLogMessage(logging::LOG_ERROR,
+  GpuDataManagerImpl::GetInstance()->AddLogMessage(logging::LOGGING_ERROR,
                                                    "GpuProcessHost", message);
 #if BUILDFLAG(IS_OZONE)
   ui::OzonePlatform::GetInstance()

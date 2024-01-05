@@ -21,7 +21,7 @@ void HandleLibraryLogging(int severity, const char* message) {
     case logging::LOGGING_WARNING:
       VLOG(1) << message;
       break;
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
     case logging::LOG_FATAL:
       VLOG(0) << message;
       break;

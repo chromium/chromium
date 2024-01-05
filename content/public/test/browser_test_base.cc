@@ -173,7 +173,7 @@ void SignalHandler(int signal) {
     std::string message("BrowserTestBase received signal: ");
     message += strsignal(signal);
     message += ". Backtrace:\n";
-    logging::RawLog(logging::LOG_ERROR, message.c_str());
+    logging::RawLog(logging::LOGGING_ERROR, message.c_str());
     auto stack_trace = base::debug::StackTrace();
     stack_trace.OutputToStream(&std::cerr);
 #if BUILDFLAG(IS_ANDROID)

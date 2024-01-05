@@ -22,7 +22,7 @@ logging::LogSeverity ConsoleMessageLevelToLogSeverity(
       log_severity = logging::LOGGING_WARNING;
       break;
     case blink::mojom::ConsoleMessageLevel::kError:
-      log_severity = logging::LOG_ERROR;
+      log_severity = logging::LOGGING_ERROR;
       break;
   }
 

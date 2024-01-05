@@ -109,7 +109,7 @@ bool ReplayProcess::Initialize(int argc, const char** argv) {
   }
 
   // Log to both stderr and file destinations.
-  logging::SetMinLogLevel(logging::LOG_ERROR);
+  logging::SetMinLogLevel(logging::LOGGING_ERROR);
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_ALL;
   settings.log_file_path = FILE_PATH_LITERAL("ipc_replay.log");

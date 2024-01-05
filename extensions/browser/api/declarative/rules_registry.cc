@@ -331,7 +331,7 @@ void RulesRegistry::DeserializeAndAddRules(const std::string& extension_id,
 void RulesRegistry::ReportInternalError(const std::string& extension_id,
                                         const std::string& error) {
   std::unique_ptr<ExtensionError> error_instance(new InternalError(
-      extension_id, base::ASCIIToUTF16(error), logging::LOG_ERROR));
+      extension_id, base::ASCIIToUTF16(error), logging::LOGGING_ERROR));
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));
 }

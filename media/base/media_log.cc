@@ -140,7 +140,8 @@ LogHelper::~LogHelper() {
     switch (level_) {
       case MediaLogMessageLevel::kERROR:
         if (DLOG_IS_ON(ERROR)) {
-          logging::LogMessage(file_, line_, logging::LOG_ERROR).stream() << log;
+          logging::LogMessage(file_, line_, logging::LOGGING_ERROR).stream()
+              << log;
         }
         break;
       case MediaLogMessageLevel::kWARNING:

@@ -1412,7 +1412,7 @@ TEST_F(SiteInstanceTest, IsolatedOriginsWithPort) {
     base::test::MockLog mock_log;
     EXPECT_CALL(
         mock_log,
-        Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
+        Log(::logging::LOGGING_ERROR, testing::_, testing::_, testing::_,
             ::testing::HasSubstr("Ignoring port number in isolated origin: "
                                  "http://isolated.foo.com:12345")))
         .Times(1);

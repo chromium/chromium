@@ -36,8 +36,8 @@ void Logger::LogMessage(
     // LOG this unless logging is turned off as any chromium code that
     // generates these errors probably has a bug.
     if (log_synthesized_gl_errors_) {
-      ::logging::LogMessage(
-          filename, line, ::logging::LOG_ERROR).stream() << prefixed_msg;
+      ::logging::LogMessage(filename, line, ::logging::LOGGING_ERROR).stream()
+          << prefixed_msg;
     }
     log_message_callback_.Run(prefixed_msg);
   } else {

@@ -113,7 +113,7 @@ void LogMessageHandler::SendLogMessageToClient(logging::LogSeverity severity,
       severity_string = "warn";
       break;
     case logging::LOG_FATAL:
-    case logging::LOG_ERROR:
+    case logging::LOGGING_ERROR:
       severity_string = "error";
       break;
   }

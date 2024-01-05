@@ -1827,8 +1827,8 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   {
     base::test::MockLog mock_log;
     EXPECT_CALL(mock_log,
-                Log(::logging::LOG_ERROR, testing::_, testing::_, testing::_,
-                    testing::HasSubstr(invalid_etld.Serialize())))
+                Log(::logging::LOGGING_ERROR, testing::_, testing::_,
+                    testing::_, testing::HasSubstr(invalid_etld.Serialize())))
         .Times(1);
 
     mock_log.StartCapturingLogs();
@@ -1845,7 +1845,7 @@ TEST_P(ChildProcessSecurityPolicyTest, AddFutureIsolatedOrigins) {
   // AddFutureIsolatedOrigins() logs a warning.
   {
     base::test::MockLog mock_log;
-    EXPECT_CALL(mock_log, Log(::logging::LOG_ERROR, testing::_, testing::_,
+    EXPECT_CALL(mock_log, Log(::logging::LOGGING_ERROR, testing::_, testing::_,
                               testing::_, testing::HasSubstr("about:blank")))
         .Times(1);
 
