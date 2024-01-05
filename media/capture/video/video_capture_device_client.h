@@ -53,13 +53,11 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
  public:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VideoCaptureDeviceClient(
-      VideoCaptureBufferType target_buffer_type,
       std::unique_ptr<VideoFrameReceiver> receiver,
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       VideoCaptureJpegDecoderFactoryCB jpeg_decoder_factory_callback);
 #else
   VideoCaptureDeviceClient(
-      VideoCaptureBufferType target_buffer_type,
       std::unique_ptr<VideoFrameReceiver> receiver,
       scoped_refptr<VideoCaptureBufferPool> buffer_pool,
       mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>
@@ -137,8 +135,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceClient
                                  base::TimeTicks reference_time,
                                  base::TimeDelta timestamp,
                                  int frame_feedback_id);
-
-  const VideoCaptureBufferType target_buffer_type_;
 
   // The receiver to which we post events.
   const std::unique_ptr<VideoFrameReceiver> receiver_;

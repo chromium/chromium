@@ -4,6 +4,7 @@
 
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
+#include "media/capture/video_capture_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -94,15 +95,14 @@ V4L2GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
   NOTREACHED_NORETURN() << "Unsupported operation";
 }
 
-mojo::ScopedSharedBufferHandle
-V4L2GpuMemoryBufferTracker::DuplicateAsMojoBuffer() {
-  NOTREACHED_NORETURN() << "Unsupported operation";
-}
-
 gfx::GpuMemoryBufferHandle
 V4L2GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   DCHECK(buffer_);
   return buffer_->CloneHandle();
+}
+
+VideoCaptureBufferType V4L2GpuMemoryBufferTracker::GetBufferType() {
+  return VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 
 uint32_t V4L2GpuMemoryBufferTracker::GetMemorySizeInBytes() {

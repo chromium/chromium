@@ -33,11 +33,16 @@ class CAPTURE_EXPORT GpuMemoryBufferTrackerApple final
   bool IsReusableForFormat(const gfx::Size& dimensions,
                            VideoPixelFormat format,
                            const mojom::PlaneStridesPtr& strides) override;
+
   uint32_t GetMemorySizeInBytes() override;
+
   std::unique_ptr<VideoCaptureBufferHandle> GetMemoryMappedAccess() override;
+
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override;
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override;
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override;
+
+  VideoCaptureBufferType GetBufferType() override;
+
   void OnHeldByConsumersChanged(bool is_held_by_consumers) override;
 
  private:

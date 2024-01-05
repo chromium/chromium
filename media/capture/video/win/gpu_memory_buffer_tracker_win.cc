@@ -214,12 +214,6 @@ GpuMemoryBufferTrackerWin::DuplicateAsUnsafeRegion() {
   return region_.Duplicate();
 }
 
-mojo::ScopedSharedBufferHandle
-GpuMemoryBufferTrackerWin::DuplicateAsMojoBuffer() {
-  NOTREACHED() << "Unsupported operation";
-  return mojo::ScopedSharedBufferHandle();
-}
-
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
   if (IsD3DDeviceChanged()) {
@@ -228,6 +222,10 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
   auto handle = buffer_->CloneHandle();
   handle.region = region_.Duplicate();
   return handle;
+}
+
+VideoCaptureBufferType GpuMemoryBufferTrackerWin::GetBufferType() {
+  return VideoCaptureBufferType::kGpuMemoryBuffer;
 }
 
 void GpuMemoryBufferTrackerWin::OnHeldByConsumersChanged(

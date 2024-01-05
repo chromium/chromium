@@ -58,8 +58,14 @@ class CAPTURE_EXPORT VideoCaptureBufferTracker {
   virtual std::unique_ptr<VideoCaptureBufferHandle> GetMemoryMappedAccess() = 0;
 
   virtual base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() = 0;
-  virtual mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() = 0;
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() = 0;
+
+  // Returns buffer type of the underlying resource. If the result of calling
+  // this method is `kGpuMemoryBuffer`, attempting to call
+  // `GetGpuMemoryBufferHandle()` on this tracker is allowed. If the result of
+  // calling this method is `kSharedMemory`, attempting to call
+  // `DuplicateAsUnsafeRegion()` is allowed.
+  virtual VideoCaptureBufferType GetBufferType() = 0;
 
   // This is called when the number of consumers goes from zero to non-zero (in
   // which case |is_held_by_consumers| is true) or from non-zero to zero (in

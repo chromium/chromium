@@ -417,7 +417,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<media::VideoCaptureDeviceClient>(
-      requested_buffer_type, std::move(receiver), std::move(buffer_pool),
+      std::move(receiver), std::move(buffer_pool),
       base::BindRepeating(
           &CreateGpuJpegDecoder,
           base::BindRepeating(&media::VideoFrameReceiver::OnFrameReadyInBuffer,
@@ -426,7 +426,7 @@ InProcessVideoCaptureDeviceLauncher::CreateDeviceClient(
                               receiver_on_io_thread)));
 #else
   return std::make_unique<media::VideoCaptureDeviceClient>(
-      requested_buffer_type, std::move(receiver), std::move(buffer_pool),
+      std::move(receiver), std::move(buffer_pool),
       mojo::PendingRemote<video_capture::mojom::VideoEffectsManager>{});
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
