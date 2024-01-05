@@ -389,36 +389,6 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         Assert.assertEquals(1.0f, mActivityTestRule.getScaleOnUiThread(awContents), 0);
     }
 
-    // background shorthand property must not override background-size when
-    // it's already set.
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView", "Preferences"})
-    public void testUseLegacyBackgroundSizeShorthandBehavior() throws Throwable {
-        final TestAwContentsClient contentClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                createAwTestContainerViewOnMainSyncInQuirksMode(contentClient);
-        final AwContents awContents = testContainerView.getAwContents();
-        AwSettings settings = mActivityTestRule.getAwSettingsOnUiThread(awContents);
-        CallbackHelper onPageFinishedHelper = contentClient.getOnPageFinishedHelper();
-        final String expectedBackgroundSize = "cover";
-        final String page =
-                "<html><head>"
-                        + "<script>"
-                        + "function getBackgroundSize() {"
-                        + "  var e = document.getElementById('test'); "
-                        + "  e.style.backgroundSize = '"
-                        + expectedBackgroundSize
-                        + "';  e.style.background = 'center red url(dummy://test.png) no-repeat"
-                        + " border-box';   return e.style.backgroundSize; }</script></head><body"
-                        + " onload='document.title=getBackgroundSize()'>  <div id='test'> </div>"
-                        + "</body></html>";
-        settings.setJavaScriptEnabled(true);
-        mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
-        String actualBackgroundSize = mActivityTestRule.getTitleOnUiThread(awContents);
-        Assert.assertEquals(expectedBackgroundSize, actualBackgroundSize);
-    }
-
     private AwTestContainerView createAwTestContainerViewOnMainSyncInQuirksMode(
             final AwContentsClient client) {
         return mActivityTestRule.createAwTestContainerViewOnMainSync(client, true);

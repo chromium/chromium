@@ -4558,11 +4558,6 @@ bool ParseBackgroundOrMask(bool important,
 
   for (unsigned i = 0; i < longhand_count; ++i) {
     const CSSProperty& property = *shorthand.properties()[i];
-    if (property.IDEquals(CSSPropertyID::kBackgroundSize) &&
-        !longhands[i].empty() &&
-        context.UseLegacyBackgroundSizeShorthandBehavior()) {
-      continue;
-    }
 
     // To conserve memory we don't wrap a single value in a list.
     const CSSValue* longhand = GetSingleValueOrMakeList(

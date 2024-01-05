@@ -1707,8 +1707,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
       WebString::FromASCII(prefs.default_video_poster_url.spec()));
   settings->SetSupportDeprecatedTargetDensityDPI(
       prefs.support_deprecated_target_density_dpi);
-  settings->SetUseLegacyBackgroundSizeShorthandBehavior(
-      prefs.use_legacy_background_size_shorthand_behavior);
   settings->SetWideViewportQuirkEnabled(prefs.wide_viewport_quirk);
   settings->SetUseWideViewport(prefs.use_wide_viewport);
   settings->SetForceZeroLayoutHeight(prefs.force_zero_layout_height);

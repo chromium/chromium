@@ -74,7 +74,6 @@ class CORE_EXPORT CSSParserContext final
                    CSSParserMode,
                    const Referrer& referrer,
                    bool is_html_document,
-                   bool use_legacy_background_size_shorthand_behavior,
                    SecureContextMode,
                    scoped_refptr<const DOMWrapperWorld> world,
                    const Document* use_counter_document,
@@ -97,13 +96,6 @@ class CORE_EXPORT CSSParserContext final
 
   bool IsOriginClean() const;
   bool IsSecureContext() const;
-
-  // This quirk is to maintain compatibility with Android apps built on
-  // the Android SDK prior to and including version 18. Presumably, this
-  // can be removed any time after 2015. See http://crbug.com/277157.
-  bool UseLegacyBackgroundSizeShorthandBehavior() const {
-    return use_legacy_background_size_shorthand_behavior_;
-  }
 
   // FIXME: This setter shouldn't exist, however the current lifetime of
   // CSSParserContext is not well understood and thus we sometimes need to
@@ -179,7 +171,6 @@ class CORE_EXPORT CSSParserContext final
   // stack at stylesheet creation. Not set for presentation attributes.
   bool is_ad_related_ = false;
   bool is_html_document_;
-  bool use_legacy_background_size_shorthand_behavior_;
   SecureContextMode secure_context_mode_;
 
   WTF::TextEncoding charset_;

@@ -245,7 +245,6 @@ class WebSettings {
   virtual void SetTouchDragDropEnabled(bool) = 0;
   virtual void SetTouchDragEndContextMenu(bool) = 0;
   virtual void SetBarrelButtonForDragEnabled(bool) = 0;
-  virtual void SetUseLegacyBackgroundSizeShorthandBehavior(bool) = 0;
   virtual void SetViewportStyle(mojom::ViewportStyle) = 0;
   virtual void SetUseWideViewport(bool) = 0;
   virtual void SetV8CacheOptions(mojom::V8CacheOptions) = 0;

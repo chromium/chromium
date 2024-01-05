@@ -185,7 +185,6 @@ class CORE_EXPORT WebSettingsImpl final : public WebSettings {
   void SetTouchDragDropEnabled(bool) override;
   void SetTouchDragEndContextMenu(bool) override;
   void SetBarrelButtonForDragEnabled(bool) override;
-  void SetUseLegacyBackgroundSizeShorthandBehavior(bool) override;
   void SetViewportStyle(mojom::blink::ViewportStyle) override;
   void SetUseWideViewport(bool) override;
   void SetV8CacheOptions(mojom::blink::V8CacheOptions) override;

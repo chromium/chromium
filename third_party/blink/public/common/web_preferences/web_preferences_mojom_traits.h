@@ -567,11 +567,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.support_deprecated_target_density_dpi;
   }
 
-  static bool use_legacy_background_size_shorthand_behavior(
-      const blink::web_pref::WebPreferences& r) {
-    return r.use_legacy_background_size_shorthand_behavior;
-  }
-
   static bool wide_viewport_quirk(const blink::web_pref::WebPreferences& r) {
     return r.wide_viewport_quirk;
   }

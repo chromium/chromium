@@ -168,7 +168,6 @@ WebPreferences::WebPreferences()
       device_scale_adjustment(1.0f),
       force_enable_zoom(false),
       support_deprecated_target_density_dpi(false),
-      use_legacy_background_size_shorthand_behavior(false),
       wide_viewport_quirk(false),
       use_wide_viewport(true),
       force_zero_layout_height(false),
