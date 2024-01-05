@@ -235,7 +235,8 @@ bool PpapiPluginProcessHost::Init(const ContentPluginInfo& info) {
   BrowserChildProcessHostImpl::CopyTraceStartupFlags(cmd_line.get());
 
 #if BUILDFLAG(IS_WIN)
-  cmd_line->AppendArg(switches::kPrefetchArgumentPpapi);
+  cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+      AppLaunchPrefetchType::kPpapi));
 #endif  // BUILDFLAG(IS_WIN)
 
   // These switches are forwarded to plugin pocesses.

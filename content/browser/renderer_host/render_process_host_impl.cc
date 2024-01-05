@@ -260,9 +260,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
+#include "content/browser/child_process_launcher_helper.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -324,6 +326,13 @@ const char kSiteProcessMapKeyName[] = "content_site_process_map";
 
 RenderProcessHost::AnalyzeHungRendererFunction g_analyze_hung_renderer =
     nullptr;
+
+#if BUILDFLAG(IS_WIN)
+// This is from extensions/common/switches.cc
+// Marks a renderer as extension process.
+// TODO(joel@microsoft.com): Replace this with a layer-respecting alternative.
+const char kExtensionProcess[] = "extension-process";
+#endif
 
 // the global list of all renderer processes
 base::IDMap<RenderProcessHost*>& GetAllHosts() {
@@ -3291,7 +3300,15 @@ void RenderProcessHostImpl::AppendRendererCommandLine(
     command_line->AppendSwitch(switches::kPdfRenderer);
 
 #if BUILDFLAG(IS_WIN)
-  command_line->AppendArg(switches::kPrefetchArgumentRenderer);
+  if (command_line->HasSwitch(kExtensionProcess)) {
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kExtension));
+  } else {
+    command_line->AppendArg(
+        internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+            AppLaunchPrefetchType::kRenderer));
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   // Now send any options from our own command line we want to propagate.

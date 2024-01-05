@@ -98,6 +98,8 @@
 #include "base/win/access_token.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/win_util.h"
+#include "content/browser/child_process_launcher_helper.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "sandbox/policy/win/sandbox_win.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/window.h"
@@ -1221,9 +1223,11 @@ bool GpuProcessHost::LaunchGpuProcess() {
   if (kind_ == GPU_PROCESS_KIND_INFO_COLLECTION &&
       base::FeatureList::IsEnabled(
           features::kGpuInfoCollectionSeparatePrefetch)) {
-    cmd_line->AppendArg(switches::kPrefetchArgumentOther);
+    cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+        AppLaunchPrefetchType::kGPUInfo));
   } else {
-    cmd_line->AppendArg(switches::kPrefetchArgumentGpu);
+    cmd_line->AppendArg(internal::ChildProcessLauncherHelper::GetPrefetchSwitch(
+        AppLaunchPrefetchType::kGPU));
   }
 #endif  // BUILDFLAG(IS_WIN)
 

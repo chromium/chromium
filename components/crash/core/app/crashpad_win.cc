@@ -119,9 +119,9 @@ bool PlatformCrashpadInitialization(
                                   user_data_dir);
       }
       // The prefetch argument added here has to be documented in
-      // chrome_switches.cc, below the kPrefetchArgument* constants. A constant
-      // can't be used here because crashpad can't depend on Chrome.
-      start_arguments.push_back("/prefetch:7");
+      // prefetch_type_win.h. A constant can't be used here because crashpad
+      // can't depend on Chrome.
+      start_arguments.push_back("/prefetch:4");
     } else {
       base::FilePath exe_dir = exe_file.DirName();
       exe_file = exe_dir.Append(FILE_PATH_LITERAL("crashpad_handler.exe"));

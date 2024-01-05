@@ -220,6 +220,7 @@ source_set("common_sources") {
   if (is_win) {
     sources += [
       "font_cache_dispatcher_win.h",
+      "prefetch_type_win.h",
       "sandbox_init_win.h",
     ]
   }

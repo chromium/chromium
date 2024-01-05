@@ -815,12 +815,8 @@ const char kNotificationInlineReply[] = "notification-inline-reply";
 const char kNotificationLaunchId[] = "notification-launch-id";
 
 // /prefetch:# arguments for the browser process launched in background mode and
-// for the watcher process. Use profiles 5, 6 and 7 as documented on
-// kPrefetchArgument* in content_switches.cc.
+// as documented in prefetch_type_win.h.
 const char kPrefetchArgumentBrowserBackground[] = "/prefetch:5";
-// /prefetch:6 was formerly used by the watcher but is no longer used.
-// /prefetch:7 is used by crashpad, which can't depend on constants defined
-// here. See crashpad_win.cc for more details.
 
 // See kHideIcons.
 const char kShowIcons[] = "show-icons";

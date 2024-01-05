@@ -35,6 +35,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
+#include "content/public/common/prefetch_type_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #else
 #include "content/public/browser/posix_file_descriptor_info.h"
@@ -143,6 +144,12 @@ class ChildProcessLauncherHelper
   // Platform specific.
   std::unique_ptr<FileMappedForLaunch> GetFilesToMap();
 
+#if BUILDFLAG(IS_WIN)
+  // Returns the Prefetch string for the process type on the OS in use.
+  static std::string_view GetPrefetchSwitch(
+      const AppLaunchPrefetchType prefetch_type);
+#endif
+
   // Returns true if the process will be launched using base::LaunchOptions.
   // If false, all of the base::LaunchOptions* below will be nullptr.
   // Platform specific.
@@ -157,13 +164,13 @@ class ChildProcessLauncherHelper
 
   // Does the actual starting of the process.
   // If IsUsingLaunchOptions() returned false, |options| will be null. In this
-  // case base::LaunchProcess() will not be used, but another platform specific
-  // mechanism for process launching, like Linux's zygote or Android's app
-  // zygote.
-  // |is_synchronous_launch| is set to false if the starting of the process is
-  // asynchonous (this is the case on Android), in which case the returned
-  // Process is not valid (and PostLaunchOnLauncherThread() will provide the
-  // process once it is available). Platform specific.
+  // case base::LaunchProcess() will not be used, but another platform
+  // specific mechanism for process launching, like Linux's zygote or
+  // Android's app zygote. |is_synchronous_launch| is set to false if the
+  // starting of the process is asynchronous (this is the case on Android), in
+  // which case the returned Process is not valid (and
+  // PostLaunchOnLauncherThread() will provide the process once it is
+  // available). Platform specific.
   ChildProcessLauncherHelper::Process LaunchProcessOnLauncherThread(
       const base::LaunchOptions* options,
       std::unique_ptr<FileMappedForLaunch> files_to_register,

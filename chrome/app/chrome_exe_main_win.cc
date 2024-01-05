@@ -115,18 +115,27 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
   return chrome::AttemptToNotifyRunningChrome(chrome) == chrome::NOTIFY_SUCCESS;
 }
 
-// Returns true if |command_line| contains a /prefetch:# argument where # is in
-// [1, 8].
+// Returns true if the child process |command_line| contains a /prefetch:#
+// argument where # is in [1, 8] prior to Win11 and [1,16] for it and later.
+// The intent of the function is to ensure that all child processes have a
+// /prefetch:N cmd line arg in the required range.
+// No child process shall have /prefetch:0 or it will interefere with the main
+// browser process prefetch. This includes things like /prefetch:simians where
+// simians will evalate to 0. Absence of a /prefetch:N argument is the same as
+// /prefetch:0 and is also excluded.
+// The function assumes only one /prefetch:N argument for child processes.
 bool HasValidWindowsPrefetchArgument(const base::CommandLine& command_line) {
-  const wchar_t kPrefetchArgumentPrefix[] = L"/prefetch:";
+  static constexpr std::wstring_view kPrefetchArgumentPrefix(L"/prefetch:");
 
   for (const auto& arg : command_line.argv()) {
-    if (arg.size() == std::size(kPrefetchArgumentPrefix) &&
-        base::StartsWith(arg, kPrefetchArgumentPrefix,
-                         base::CompareCase::SENSITIVE)) {
-      return arg[std::size(kPrefetchArgumentPrefix) - 1] >= L'1' &&
-             arg[std::size(kPrefetchArgumentPrefix) - 1] <= L'8';
+    if (!base::StartsWith(arg, kPrefetchArgumentPrefix)) {
+      continue;  // Ignore arguments that don't start with "/prefetch:".
     }
+    auto value = std::wstring_view(arg).substr(kPrefetchArgumentPrefix.size());
+    int profile = 0;
+    return base::StringToInt(value, &profile) && profile >= 1 &&
+           profile <=
+               (base::win::GetVersion() < base::win::Version::WIN11 ? 8 : 16);
   }
   return false;
 }
