@@ -4,6 +4,8 @@
 
 #include "ash/login/ui/local_authentication_request_view.h"
 
+#include <string>
+
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
@@ -86,6 +88,17 @@ LocalAuthenticationRequestView::TestApi::TestApi(
 
 LocalAuthenticationRequestView::TestApi::~TestApi() {
   view_ = nullptr;
+}
+
+void LocalAuthenticationRequestView::TestApi::Close() {
+  view_->OnClose();
+}
+
+void LocalAuthenticationRequestView::TestApi::SubmitPassword(
+    const std::string& password) {
+  LoginPasswordView::TestApi login_password_view_test_api(
+      login_password_view());
+  login_password_view_test_api.SubmitPassword(password);
 }
 
 LoginButton* LocalAuthenticationRequestView::TestApi::close_button() {

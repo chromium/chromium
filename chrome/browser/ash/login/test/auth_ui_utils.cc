@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
+#include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
@@ -113,6 +114,12 @@ class LoginScreenAuthSurface : public FullScreenAuthSurface {
 
   void AddNewUser() override {
     ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
+  }
+
+  std::unique_ptr<LocalAuthenticationDialogActor>
+  WaitLocalAuthenticationDialog() override {
+    LocalAuthenticationDialogWaiter()->Wait();
+    return std::make_unique<LocalAuthenticationDialogActor>();
   }
 };
 
@@ -293,6 +300,26 @@ std::unique_ptr<PasswordUpdatedPageActor> AwaitPasswordUpdatedUI() {
       std::make_unique<PasswordUpdatedPageActor>();
   result->UntilShown()->Wait();
   return result;
+}
+
+// ----------------------------------------------------------
+
+LocalAuthenticationDialogActor::LocalAuthenticationDialogActor() = default;
+LocalAuthenticationDialogActor::~LocalAuthenticationDialogActor() = default;
+
+bool LocalAuthenticationDialogActor::IsVisible() {
+  return LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
+}
+
+void LocalAuthenticationDialogActor::CancelDialog() {
+  EXPECT_TRUE(IsVisible());
+  LoginScreenTestApi::CancelLocalAuthenticationDialog();
+}
+
+void LocalAuthenticationDialogActor::SubmitPassword(
+    const std::string& password) {
+  EXPECT_TRUE(IsVisible());
+  LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(password);
 }
 
 // ----------------------------------------------------------
@@ -481,6 +508,12 @@ std::unique_ptr<test::TestConditionWaiter> UserOnboardingWaiter() {
   return std::make_unique<CompositeWaiter>(
       std::make_unique<OobeWindowVisibilityWaiter>(true),
       OobeJS().CreateVisibilityWaiter(true, kFirstOnboardingScreen));
+}
+
+std::unique_ptr<test::TestConditionWaiter> LocalAuthenticationDialogWaiter() {
+  return std::make_unique<test::TestPredicateWaiter>(base::BindRepeating([]() {
+    return LoginScreenTestApi::IsLocalAuthenticationDialogVisible();
+  }));
 }
 
 }  // namespace ash::test

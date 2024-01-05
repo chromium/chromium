@@ -58,6 +58,9 @@ class ASH_EXPORT LocalAuthenticationRequestView
     explicit TestApi(LocalAuthenticationRequestView* view);
     ~TestApi();
 
+    void SubmitPassword(const std::string& password);
+    void Close();
+
     LoginButton* close_button();
     views::Label* title_label();
     views::Label* description_label();

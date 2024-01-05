@@ -30,6 +30,46 @@ LocalAuthenticationRequestWidget* g_instance = nullptr;
 }  // namespace
 
 // static
+LocalAuthenticationRequestView*
+LocalAuthenticationRequestWidget::TestApi::GetView() {
+  LocalAuthenticationRequestWidget* widget =
+      LocalAuthenticationRequestWidget::Get();
+  return widget ? widget->GetView() : nullptr;
+}
+
+// static
+bool LocalAuthenticationRequestWidget::TestApi::IsVisible() {
+  LocalAuthenticationRequestView* lad_view = GetView();
+  if (lad_view == nullptr) {
+    return false;
+  }
+  return lad_view->GetVisible();
+}
+
+// static
+bool LocalAuthenticationRequestWidget::TestApi::CancelDialog() {
+  LocalAuthenticationRequestView* lad_view = GetView();
+  if (lad_view == nullptr) {
+    return false;
+  }
+  LocalAuthenticationRequestView::TestApi lad_test_api(lad_view);
+  lad_test_api.Close();
+  return true;
+}
+
+// static
+bool LocalAuthenticationRequestWidget::TestApi::SubmitPassword(
+    const std::string& password) {
+  LocalAuthenticationRequestView* lad_view = GetView();
+  if (lad_view == nullptr) {
+    return false;
+  }
+  LocalAuthenticationRequestView::TestApi lad_test_api(lad_view);
+  lad_test_api.SubmitPassword(password);
+  return true;
+}
+
+// static
 void LocalAuthenticationRequestWidget::Show(
     LocalAuthenticationCallback local_authentication_callback,
     const std::u16string& title,

@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/auto_reset.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -87,7 +89,9 @@ class AuthFlowsLoginTestBase : public LoginManagerTest {
 class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
  public:
   AuthFlowsLoginReauthTest()
-      : AuthFlowsLoginTestBase(/* require_reauth */ true) {}
+      : AuthFlowsLoginTestBase(/* require_reauth */ true) {
+    feature_list_.InitAndEnableFeature(features::kLocalPasswordForConsumers);
+  }
   ~AuthFlowsLoginReauthTest() override = default;
 
   void TriggerUserOnlineAuth(const LoginManagerMixin::TestUserInfo user,
@@ -101,6 +105,9 @@ class AuthFlowsLoginReauthTest : public AuthFlowsLoginTestBase {
     gaia->TypePassword(password);
     gaia->ContinueLogin();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, GaiaPasswordNotChanged) {
@@ -239,9 +246,8 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginAddExistingUserTest,
   login_mixin_.WaitForActiveSession();
 }
 
-// TODO(crbug.com/1515643): Test failing on linux-chromeos-rel
 IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
-                       DISABLED_LocalPasswordChangedRecovery) {
+                       GaiaPasswordChangedWithRecoveryLocalPassword) {
   const auto& user = with_local_pw_recovery_;
 
   test::OnLoginScreen()->SelectUserPod(user.account_id);
@@ -251,13 +257,26 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
   gaia->TypePassword(test::kNewPassword);
   gaia->ContinueLogin();
 
-  test::LocalDataLossWarningPageWaiter()->Wait();
+  auto lad = test::OnLoginScreen()->WaitLocalAuthenticationDialog();
 
-  // Click "Proceed anyway".
-  test::LocalDataLossWarningPageRemoveAction();
+  lad->SubmitPassword(test::kLocalPassword);
+  login_mixin_.WaitForActiveSession();
+}
 
-  // With cryptohome recovery we re-create session and re-run onboarding.
-  test::UserOnboardingWaiter()->Wait();
+IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, LocalPasswordCorrectPassword) {
+  const auto& user = with_local_pw_;
+
+  test::OnLoginScreen()->SelectUserPod(user.account_id);
+  auto gaia = test::AwaitGaiaSigninUI();
+
+  gaia->ReauthConfirmEmail(user.account_id);
+  gaia->TypePassword(test::kLocalPassword);
+  gaia->ContinueLogin();
+
+  auto lad = test::OnLoginScreen()->WaitLocalAuthenticationDialog();
+
+  lad->SubmitPassword(test::kLocalPassword);
+  login_mixin_.WaitForActiveSession();
 }
 
 }  // namespace ash

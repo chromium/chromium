@@ -10,6 +10,8 @@
 
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/kiosk_app_default_message.h"
+#include "ash/login/ui/local_authentication_request_view.h"
+#include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/lock_contents_view_test_api.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_auth_user_view.h"
@@ -906,6 +908,30 @@ void LoginScreenTestApi::CancelPinRequestWidget() {
   event_generator->MoveMouseTo(
       pin_view_test.back_button()->GetBoundsInScreen().CenterPoint());
   event_generator->ClickLeftButton();
+}
+
+// static
+bool LoginScreenTestApi::IsLocalAuthenticationDialogVisible() {
+  return LocalAuthenticationRequestWidget::TestApi::IsVisible();
+}
+
+// static
+void LoginScreenTestApi::CancelLocalAuthenticationDialog() {
+  bool dialog_exists =
+      LocalAuthenticationRequestWidget::TestApi::CancelDialog();
+  if (!dialog_exists) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
+}
+
+// static
+void LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(
+    const std::string& password) {
+  bool dialog_exists =
+      LocalAuthenticationRequestWidget::TestApi::SubmitPassword(password);
+  if (!dialog_exists) {
+    FAIL() << "Local Authentication dialog is not shown";
+  }
 }
 
 }  // namespace ash
