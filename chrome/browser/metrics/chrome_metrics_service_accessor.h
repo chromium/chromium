@@ -17,6 +17,7 @@
 #include "ppapi/buildflags/buildflags.h"
 
 class BrowserProcessImpl;
+class CampaignsManagerClientImpl;
 class ChromeMetricsServiceClient;
 class ChromePasswordManagerClient;
 class ChromeProcessSingleton;
@@ -171,6 +172,8 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class feed::WebFeedSubscriptionCoordinator;
   friend class HttpsFirstModeService;
   friend class ash::DemoSession;
+  // Used to register synthetic trials for ongoing growth experiments.
+  friend class CampaignsManagerClientImpl;
   friend class tpcd::experiment::ExperimentManagerImpl;
   friend class readaloud::SyntheticTrial;
 

@@ -54,6 +54,10 @@ class CampaignsManagerClient {
   // Get the implementations for the various Actions on the growth
   // framework.
   virtual ActionMap GetCampaignsActions() const = 0;
+
+  // Register sythetical trial for current session.
+  virtual void RegisterSyntheticFieldTrial(std::optional<int> study_id,
+                                           int campaign_id) const = 0;
 };
 
 }  // namespace growth

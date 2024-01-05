@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 
 #include <memory>
+#include <optional>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
@@ -44,6 +45,7 @@ constexpr char kValidCampaignsFileTemplate[] = R"(
           "Invalid campaign",
           {
             "id": 3,
+            "studyId":1,
             "targetings": [
               {
                 %s
@@ -264,6 +266,8 @@ TEST_F(CampaignsManagerTest, LoadAndGetDemoModeCampaign) {
       /*retailer_id=*/"bby",
       /*country=*/"US");
 
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 
@@ -296,7 +300,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargeting) {
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
       /*country=*/"US");
-
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   // Verify that the campaign is selected if there is no demo mode targeting.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -313,7 +318,8 @@ TEST_F(CampaignsManagerTest, GetCampaignNoTargetingNotInDemoMode) {
       /*store_id=*/"2",
       /*retailer_id=*/"bby",
       /*country=*/"US");
-
+  EXPECT_CALL(mock_client_,
+              RegisterSyntheticFieldTrial(std::optional<int>(1), 3));
   // Verify that the campaign is selected if there is not in demo mode.
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));

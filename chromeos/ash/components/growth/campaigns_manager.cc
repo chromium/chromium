@@ -102,6 +102,8 @@ const Campaign* CampaignsManager::GetCampaignBySlot(Slot slot) const {
     RecordGetCampaignBySlot(slot);
   }
   RecordCampaignMatchDuration(base::TimeTicks::Now() - match_start);
+
+  RegisterTrialForCampaign(match_result);
   return match_result;
 }
 
@@ -148,6 +150,24 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::RegisterTrialForCampaign(
+    const Campaign* campaign) const {
+  if (!campaign) {
+    return;
+  }
+
+  std::optional<int> id = growth::GetCampaignId(campaign);
+  if (!id) {
+    // TODO(b/308684443): Add error metrics in a second CL.
+    LOG(ERROR) << "Growth campaign id not found";
+    return;
+  }
+
+  client_->RegisterSyntheticFieldTrial(
+      /*study_id=*/growth::GetStudyId(campaign),
+      /*campaign_id=*/*id);
 }
 
 }  // namespace growth

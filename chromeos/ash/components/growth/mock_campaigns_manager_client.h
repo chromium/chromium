@@ -33,6 +33,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               (),
               (const, override));
   MOCK_METHOD(ActionMap, GetCampaignsActions, (), (const, override));
+  MOCK_METHOD(void,
+              RegisterSyntheticFieldTrial,
+              (const std::optional<int> study_id, const int campaign_id),
+              (const, override));
 };
 
 }  // namespace growth

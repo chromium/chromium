@@ -51,6 +51,7 @@ using Payload = base::Value::Dict;
 // Dictionary of Campaign. For example:
 // {
 //    "id": 1,
+//    "studyId":1,
 //    "targetings": {...}
 //    "payload": {...}
 // }
@@ -93,6 +94,12 @@ const Targetings* GetTargetings(const Campaign* campaign);
 
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<int> GetCampaignId(const Campaign* campaign);
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
+std::optional<int> GetStudyId(const Campaign* campaign);
 
 // Lists of campaigns keyed by the targeted slot. The key is the slot ID in
 // string. For example:
