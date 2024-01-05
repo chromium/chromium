@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_reader_registry_factory.h"
 
-#include "base/at_exit.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "content/public/common/content_features.h"
@@ -18,9 +17,6 @@ class IsolatedWebAppReaderRegistryFactoryTest
  public:
   IsolatedWebAppReaderRegistryFactoryTest()
       : base::test::WithFeatureOverride(features::kIsolatedWebApps) {}
-
- protected:
-  base::ShadowingAtExitManager exit_manager_;
 };
 
 TEST_P(IsolatedWebAppReaderRegistryFactoryTest, GuardedBehindFeatureFlag) {
