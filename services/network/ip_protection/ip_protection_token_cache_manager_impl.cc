@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection_token_cache_manager_impl.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"

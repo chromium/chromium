@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
-#define SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
+#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
+#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
 
 #include <deque>
 
@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/ip_protection_token_cache_manager.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -128,4 +128,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManagerImpl
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_
+#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_IMPL_H_

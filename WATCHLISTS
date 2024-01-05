@@ -1374,7 +1374,7 @@
     },
     'ip_protection': {
       'filepath': 'chrome/browser/ip_protection/' \
-                  '|services/network/ip_protection_' \
+                  '|services/network/ip_protection/' \
                   '|services/network/network_service_proxy_delegate',
     },
     'kiosk': {

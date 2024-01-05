@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_
-#define SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_
+#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_H_
+#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_H_
 
 #include "base/component_export.h"
-#include "services/network/ip_protection_proxy_list_manager.h"
-#include "services/network/ip_protection_token_cache_manager.h"
+#include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -74,4 +74,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionConfigCache {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_CONFIG_CACHE_H_
+#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_CONFIG_CACHE_H_

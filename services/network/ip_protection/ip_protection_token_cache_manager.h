@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
-#define SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
+#ifndef SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
+#define SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
 
 #include "base/component_export.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -39,4 +39,4 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) IpProtectionTokenCacheManager {
 
 }  // namespace network
 
-#endif  // SERVICES_NETWORK_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_
+#endif  // SERVICES_NETWORK_IP_PROTECTION_IP_PROTECTION_TOKEN_CACHE_MANAGER_H_

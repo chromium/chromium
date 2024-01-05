@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection_proxy_list_manager_impl.h"
+#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"

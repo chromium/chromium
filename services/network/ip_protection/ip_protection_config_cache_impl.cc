@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/ip_protection_config_cache_impl.h"
+#include "services/network/ip_protection/ip_protection_config_cache_impl.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
@@ -10,10 +10,10 @@
 #include "base/time/time.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
-#include "services/network/ip_protection_proxy_list_manager.h"
-#include "services/network/ip_protection_proxy_list_manager_impl.h"
-#include "services/network/ip_protection_token_cache_manager.h"
-#include "services/network/ip_protection_token_cache_manager_impl.h"
+#include "services/network/ip_protection/ip_protection_proxy_list_manager.h"
+#include "services/network/ip_protection/ip_protection_proxy_list_manager_impl.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager.h"
+#include "services/network/ip_protection/ip_protection_token_cache_manager_impl.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
