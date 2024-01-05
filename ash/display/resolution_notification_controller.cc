@@ -234,9 +234,12 @@ void ResolutionNotificationController::OnDisplayRemoved(
     const display::Display& old_display) {
   if (change_info_ && change_info_->display_id == old_display.id()) {
     if (confirmation_dialog_) {
-      confirmation_dialog_->GetWidget()->CloseNow();
+      // Use CloseWithReason rather than CloseNow to make sure the screen
+      // doesn't stay dimmed after the widget is closed. b/288485093.
+      confirmation_dialog_->GetWidget()->CloseWithReason(
+          views::Widget::ClosedReason::kLostFocus);
     }
-    RevertResolutionChange(true /* display_was_removed */);
+    RevertResolutionChange(/*display_was_removed=*/true);
   }
 }
 
