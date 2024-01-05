@@ -226,4 +226,105 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DateTimePageTimezoneSubpage) {
   RunTest("settings/chromeos/date_time_page/timezone_subpage_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageAudioPage) {
+  RunTest("settings/chromeos/device_page/audio_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       DevicePageCustomizeButtonDropdownItem) {
+  RunTest(
+      "settings/chromeos/device_page/customize_button_dropdown_item_test.js",
+      "mocha.run()");
+}
+
+class OSSettingsDevicePeripheralAndInputEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDevicePeripheralAndInputEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageCustomizeButtonRow) {
+  RunTest("settings/chromeos/device_page/customize_button_row_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageCustomizeButtonSelect) {
+  RunTest("settings/chromeos/device_page/customize_button_select_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageCustomizeButtonsSubsection) {
+  RunTest("settings/chromeos/device_page/customize_buttons_subsection_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageCustomizeMouseButtonsSubpage) {
+  RunTest(
+      "settings/chromeos/device_page/customize_mouse_buttons_subpage_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageCustomizePenButtonsSubpage) {
+  RunTest("settings/chromeos/device_page/customize_pen_buttons_subpage_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageCustomizeTabletButtonsSubpage) {
+  RunTest(
+      "settings/chromeos/device_page/customize_tablet_buttons_subpage_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled,
+                       DevicePageDisplayPage) {
+  RunTest("settings/chromeos/device_page/display_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       DevicePageDisplayPageRevamp) {
+  RunTest("settings/chromeos/device_page/display_page_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       DevicePageDisplaySettingsMojoInterfaceProvider) {
+  RunTest(
+      "settings/chromeos/device_page/"
+      "display_settings_mojo_interface_provider_test.js",
+      "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+                       DevicePageDragAndDropManager) {
+  RunTest("settings/chromeos/device_page/drag_and_drop_manager_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageFakeCrosAudioConfig) {
+  RunTest("settings/chromeos/device_page/fake_cros_audio_config_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
+                       DevicePageFakeInputDeviceSettingsProvider) {
+  RunTest(
+      "settings/chromeos/device_page/"
+      "fake_input_device_settings_provider_test.js",
+      "mocha.run()");
+}
 }  // namespace ash::settings
