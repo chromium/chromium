@@ -27,12 +27,12 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedFetchInfo;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
 
 import java.net.HttpURLConnection;
 import java.util.Date;

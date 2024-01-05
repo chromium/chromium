@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/version_info/version_string.h"
+#include "base/version_info/version_string.h"
 
-#include "components/version_info/version_info.h"
+#include "base/version_info/version_info.h"
 
 namespace version_info {
 
@@ -18,8 +18,9 @@ std::string GetVersionStringWithModifier(const std::string& modifier) {
   current_version += GetOSType();
   current_version += ")";
 #endif  // USE_UNOFFICIAL_VERSION_NUMBER
-  if (!modifier.empty())
+  if (!modifier.empty()) {
     current_version += " " + modifier;
+  }
   return current_version;
 }
 

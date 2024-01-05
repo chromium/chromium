@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/version_info/version_info.h"
+#include "base/version_info/version_info.h"
 
 #include <string>
 

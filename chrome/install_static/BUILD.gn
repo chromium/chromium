@@ -20,9 +20,9 @@ if (is_win) {
   # Please don't add dependencies on other system libraries.
   static_library("install_static_util") {
     deps = [
+      "//base/version_info:channel",
+      "//base/version_info:generate_version_info",
       "//components/nacl/common:buildflags",
-      "//components/version_info:channel",
-      "//components/version_info:generate_version_info",
     ]
 
     public_deps = [
@@ -106,10 +106,10 @@ if (is_win) {
       "//base",
       "//base/test:run_all_unittests",
       "//base/test:test_support",
+      "//base/version_info",
       "//build:branding_buildflags",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
-      "//components/version_info",
       "//testing/gmock",
       "//testing/gtest",
     ]

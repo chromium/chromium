@@ -9,10 +9,10 @@
 
 #include <type_traits>
 
+#include "base/version_info/version_info_values.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/install_util.h"
-#include "components/version_info/version_info_values.h"
 
 namespace install_static {
 

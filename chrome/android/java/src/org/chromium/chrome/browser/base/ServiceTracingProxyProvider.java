@@ -22,8 +22,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;

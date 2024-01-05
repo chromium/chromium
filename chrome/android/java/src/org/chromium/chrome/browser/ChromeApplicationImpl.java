@@ -10,6 +10,8 @@ import android.content.res.Configuration;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.version_info.Channel;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.accessibility.hierarchysnapshotter.HierarchySnapshotter;
 import org.chromium.chrome.browser.app.notifications.ContextualNotificationPermissionRequesterImpl;
@@ -29,8 +31,6 @@ import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.browser_context.PartitionResolverSupplier;
 import org.chromium.components.module_installer.util.ModuleUtil;
-import org.chromium.components.version_info.Channel;
-import org.chromium.components.version_info.VersionConstants;
 import org.chromium.url.GURL;
 
 /**

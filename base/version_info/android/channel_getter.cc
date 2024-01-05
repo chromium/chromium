@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/version_info/android/channel_getter.h"
+#include "base/version_info/android/channel_getter.h"
 
-#include "components/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h"
+#include "base/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h"
 
 namespace version_info {
 namespace android {
