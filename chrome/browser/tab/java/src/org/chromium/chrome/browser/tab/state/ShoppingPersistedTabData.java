@@ -507,9 +507,10 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     private static void fromWithoutDelayedInit(
             Tab tab, Callback<ShoppingPersistedTabData> callback) {
-        // Shopping related data is not available for incognito or Custom Tabs. For example,
-        // for incognito Tabs it is not possible to call a backend service with the user's URL.
-        if (tab.isIncognito() || tab.isCustomTab()) {
+        // Shopping related data is not available for incognito, Custom or Destroyed Tabs. For
+        // example, for incognito Tabs it is not possible to call a backend service with the user's
+        // URL.
+        if (tab == null || tab.isDestroyed() || tab.isIncognito() || tab.isCustomTab()) {
             PostTask.postTask(
                     TaskTraits.UI_DEFAULT,
                     () -> {
