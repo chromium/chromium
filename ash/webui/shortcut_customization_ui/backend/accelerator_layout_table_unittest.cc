@@ -141,9 +141,9 @@ TEST_F(AcceleratorLayoutMetadataTest,
 // Test that modifying Ash accelerator should update kAcceleratorLayouts.
 // 1. If you are adding/deleting/modifying shortcuts, please also
 //    add/delete/modify the corresponding item in kAcceleratorLayouts.
-// 2. Please update the number and hash value of Ash accelerators (these
-//    available on Chrome OS) on the top of this file. The new number and hash
-//    value will be provided in the test output.
+// 2. Please update the number and hash value of Ash accelerators on the top of
+//    this file. The new number and hash value will be provided in the test
+//    output.
 TEST_F(AcceleratorLayoutMetadataTest, ModifyAcceleratorShouldUpdateLayout) {
   std::vector<ash::AcceleratorData> ash_accelerators;
   for (size_t i = 0; i < ash::kAcceleratorDataLength; ++i) {

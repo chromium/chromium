@@ -22,7 +22,7 @@
 
 // IMPORTANT -
 // If you plan on adding a new accelerator and want it to be displayed in the
-// Shortcuts app, please follow the instructions below:
+// Key Shortcuts app, please follow the instructions below:
 //    1.    Determine the correct category and subcategory the accelerator
 //          belongs to. You can view the categories at `accelerator_info.mojom`.
 //          Reach out to cros-peripherals@ if you are unsure about which
@@ -31,14 +31,13 @@
 //          enum to `NonConfigurableActions`. Then add an entry to
 //          `GetNonConfigurableActionsMap` in `accelerator_layout_table.cc`.
 //    3.    If the new accelerator does not have a layout and will not appear in
-//          the Shortcuts app, add it to `kAcceleratorsWithoutLayout` and skip
-//          step 4 & 5.
-//    4.    Add a new entry to `kAcceleratorLayouts` below. Please check that
-//          you are adding the accelerator to the correct category determined
-//          from step 1. The ordering of the accelerators is reflected in the
-//          app, so place the accelerator where it would most logically fit.
-//    5.    If the accelerator can be modified, ensure that the
-//          `kAcceleratorLayouts` entry has its `locked` field set to `false`.
+//          the Shortcuts app, add it to `kAshAcceleratorsWithoutLayout` and
+//          skip step 4 & 5.
+//    4.    Add a new entry to `kAcceleratorLayouts` below. The ordering of the
+//          accelerators is reflected in the app, so place the accelerator where
+//          it would most logically fit.
+//    5.    Add a new entry to `acceleratorLayoutMap` in
+//          `accelerator_layout_table.cc`.
 //
 //   [1]: An "ambient" accelerator is a non-modifiable miscellaneous accelerator
 //        that may contain a special set of instructions and/or does not
