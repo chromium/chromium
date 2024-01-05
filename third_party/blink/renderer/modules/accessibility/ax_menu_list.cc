@@ -146,6 +146,12 @@ void AXMenuList::AddChildren() {
   if (ChildrenNeedToUpdateCachedValues()) {
     popup_->InvalidateCachedValues();
   }
+  // Update cached values preemptively, where we can control the
+  // notify_parent_of_ignored_changes parameter, so that we do not try to notify
+  // a parent of children changes (which would be redundant as we are already
+  // processing children changed on the parent).
+  popup_->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
   popup_->UpdateChildrenIfNecessary();
 }
 

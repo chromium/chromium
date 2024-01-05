@@ -3235,8 +3235,15 @@ void AXObject::OnInheritedCachedValuesChanged() const {
   // all descendants need to recompute its value. We do this by ensuring
   // that UpdateTreeIfNeeded() will visit all descendants and recompute
   // cached values.
-  if (!CanHaveChildren() || children_dirty_) {
+  if (!CanHaveChildren()) {
     return;  // Nothing to do.
+  }
+
+  // This flag is checked and cleared when children are added.
+  child_cached_values_need_update_ = true;
+
+  if (children_dirty_) {
+    return;
   }
 
   if (AXObjectCache().UpdatingTree()) {
@@ -3263,9 +3270,6 @@ void AXObject::OnInheritedCachedValuesChanged() const {
       parent->SetNeedsToUpdateChildren();
     }
   }
-
-  // This flag is checked and cleared when children are added.
-  child_cached_values_need_update_ = true;
 }
 
 bool AXObject::ComputeAccessibilityIsIgnored(

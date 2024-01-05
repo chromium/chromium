@@ -3978,18 +3978,6 @@ void AXObjectCacheImpl::HandleAttributeChanged(const QualifiedName& attr_name,
       DeferTreeUpdate(TreeUpdateReason::kAriaSelectedChanged, element);
     } else if (attr_name == html_names::kAriaExpandedAttr) {
       DeferTreeUpdate(TreeUpdateReason::kAriaExpandedChanged, element);
-    } else if (attr_name == html_names::kAriaHiddenAttr) {
-      // Removing the subtree will also notify its parent that children changed,
-      // causing the subtree to recursively be rebuilt with correct cached
-      // values. This is much simpler than attempting to invalidate cached
-      // values in every node in the subtree, especially when cached values
-      // can depend on ancestor cached values, aria-owns and other markup
-      // can significantly complicate the code paths.
-      // TODO(accessibility) Replace RemoveSubtreeWhenSafe() with an
-      // implementation that only calls MarkElementDirty(). It is no longer
-      // necessary to remove the subtree for a changed cached value, because
-      // OnInheritedCachedValuesChanged() ensures that descendants are updated.
-      RemoveSubtreeWhenSafe(element);
     } else if (attr_name == html_names::kAriaOwnsAttr) {
       if (relation_cache_) {
         relation_cache_->UpdateReverseOwnsRelations(*element);

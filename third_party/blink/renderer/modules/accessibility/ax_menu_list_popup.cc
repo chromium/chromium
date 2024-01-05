@@ -86,6 +86,12 @@ AXMenuListOption* AXMenuListPopup::MenuListOptionAXObject(
   if (ChildrenNeedToUpdateCachedValues()) {
     ax_object->InvalidateCachedValues();
   }
+  // Update cached values preemptively, where we can control the
+  // notify_parent_of_ignored_changes parameter, so that we do not try to notify
+  // a parent of children changes (which would be redundant as we are already
+  // processing children changed on the parent).
+  ax_object->UpdateCachedAttributeValuesIfNeeded(
+      /*notify_parent_of_ignored_changes*/ false);
 
   return DynamicTo<AXMenuListOption>(ax_object);
 }
