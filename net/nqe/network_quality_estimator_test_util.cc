@@ -80,7 +80,7 @@ void TestNetworkQualityEstimator::RunOneRequest() {
                              TRAFFIC_ANNOTATION_FOR_TESTS));
   request->SetLoadFlags(request->load_flags() | LOAD_MAIN_FRAME_DEPRECATED);
   request->Start();
-  base::RunLoop().Run();
+  test_delegate.RunUntilComplete();
 }
 
 void TestNetworkQualityEstimator::SimulateNetworkChange(

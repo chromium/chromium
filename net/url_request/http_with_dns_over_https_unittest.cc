@@ -321,7 +321,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEnd) {
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
-  base::RunLoop().Run();
+  d.RunUntilComplete();
   EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(http_server.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
@@ -349,7 +349,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, EndToEndFail) {
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
-  base::RunLoop().Run();
+  d.RunUntilComplete();
   EXPECT_TRUE(https_server_.ShutdownAndWaitUntilComplete());
   EXPECT_TRUE(doh_server_.ShutdownAndWaitUntilComplete());
 
@@ -398,7 +398,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsUpgrade) {
     std::unique_ptr<URLRequest> req(context()->CreateRequest(
         http_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
     req->Start();
-    base::RunLoop().Run();
+    d.RunUntilComplete();
     ASSERT_THAT(d.request_status(), IsOk());
 
     // The request should have been redirected to https.
@@ -437,7 +437,7 @@ TEST_F(HttpsWithDnsOverHttpsTest, HttpsMetadata) {
   std::unique_ptr<URLRequest> req(context()->CreateRequest(
       main_url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS));
   req->Start();
-  base::RunLoop().Run();
+  d.RunUntilComplete();
   ASSERT_THAT(d.request_status(), IsOk());
 
   // There should be three DoH lookups for kHostname (A, AAAA, and HTTPS).

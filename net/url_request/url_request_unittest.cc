@@ -11806,7 +11806,7 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
 
   req->Start();
   req->Cancel();
-  base::RunLoop().RunUntilIdle();
+  d.RunUntilComplete();
   EXPECT_EQ(ERR_ABORTED, d.request_status());
   EXPECT_EQ(0, d.received_redirect_count());
 }
@@ -11838,8 +11838,7 @@ TEST_F(URLRequestTestHTTP, MAYBE_HeadersCallbacks) {
         base::Unretained(&raw_resp_headers)));
     r->set_isolation_info(isolation_info1_);
     r->Start();
-    while (!delegate.response_started_count())
-      base::RunLoop().RunUntilIdle();
+    delegate.RunUntilComplete();
     EXPECT_FALSE(raw_req_headers.headers().empty());
     std::string value;
     EXPECT_TRUE(raw_req_headers.FindHeaderForTest("X-Foo", &value));
@@ -12295,7 +12294,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12333,7 +12332,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12362,7 +12361,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataPOSTTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12389,7 +12388,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataPOSTTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12420,7 +12419,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataIdempotentPOSTTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12448,7 +12447,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataIdempotentPOSTTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12477,7 +12476,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataNonIdempotentRequestTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 
@@ -12505,7 +12504,7 @@ TEST_F(HTTPSEarlyDataTest, TLSEarlyDataNonIdempotentRequestTest) {
     r->Start();
     EXPECT_TRUE(r->is_pending());
 
-    base::RunLoop().Run();
+    d.RunUntilComplete();
 
     EXPECT_EQ(1, d.response_started_count());
 

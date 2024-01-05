@@ -480,6 +480,7 @@ class MDnsTest : public TestWithTaskEnvironment {
   std::unique_ptr<MDnsTransaction> transaction_;
   std::unique_ptr<MDnsListener> listener1_;
   std::unique_ptr<MDnsListener> listener2_;
+  base::RunLoop loop_;
 };
 
 class MockListenerDelegate : public MDnsListener::Delegate {
@@ -520,12 +521,12 @@ void MDnsTest::RunFor(base::TimeDelta time_period) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, callback.callback(), time_period);
 
-  base::RunLoop().Run();
+  loop_.Run();
   callback.Cancel();
 }
 
 void MDnsTest::Stop() {
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  loop_.QuitWhenIdle();
 }
 
 TEST_F(MDnsTest, PassiveListeners) {

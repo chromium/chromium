@@ -42,7 +42,7 @@ TEST(TrafficStatsAndroidTest, BasicsTest) {
       context->CreateRequest(embedded_test_server.GetURL("/echo.html"),
                              DEFAULT_PRIORITY, &test_delegate));
   request->Start();
-  base::RunLoop().Run();
+  test_delegate.RunUntilComplete();
 
   // Bytes should increase because of the network traffic.
   int64_t tx_bytes_after_request = -1;
@@ -78,7 +78,7 @@ TEST(TrafficStatsAndroidTest, UIDBasicsTest) {
       context->CreateRequest(embedded_test_server.GetURL("/echo.html"),
                              DEFAULT_PRIORITY, &test_delegate));
   request->Start();
-  base::RunLoop().Run();
+  test_delegate.RunUntilComplete();
 
   // Bytes should increase because of the network traffic.
   int64_t tx_bytes_after_request = -1;

@@ -125,7 +125,7 @@ TEST_F(URLRequestContextBuilderTest, DefaultSettings) {
   request->set_method("GET");
   request->SetExtraRequestHeaderByName("Foo", "Bar", false);
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
@@ -140,7 +140,7 @@ TEST_F(URLRequestContextBuilderTest, UserAgent) {
       &delegate, TRAFFIC_ANNOTATION_FOR_TESTS));
   request->set_method("GET");
   request->Start();
-  base::RunLoop().Run();
+  delegate.RunUntilComplete();
   EXPECT_EQ("Bar", delegate.data_received());
 }
 
