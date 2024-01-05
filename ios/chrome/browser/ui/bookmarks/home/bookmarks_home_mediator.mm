@@ -747,6 +747,8 @@ bool IsABookmarkNodeSectionForIdentifier(
     return NO;
   }
   // Do not show if sync is disabled or is paused.
+  // This implicitly covers the case when Bookmarks are disabled by
+  // SyncTypesListDisabled.
   if (!self.syncService || self.syncService->GetAccountInfo().IsEmpty() ||
       !self.syncService->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kBookmarks) ||
@@ -755,10 +757,18 @@ bool IsABookmarkNodeSectionForIdentifier(
     return NO;
   }
   // Do not show if last syncing account is different from the current one.
+  // This implicitly covers the case when SyncDisabled policy is enabled, as
+  // kGoogleServicesLastSyncingGaiaId will be empty.
   ChromeBrowserState* browserState = [self originalBrowserState];
   const std::string lastSyncingGaiaId = browserState->GetPrefs()->GetString(
       prefs::kGoogleServicesLastSyncingGaiaId);
   if (lastSyncingGaiaId != self.syncService->GetAccountInfo().gaia) {
+    return NO;
+  }
+  // Do not show if the user is in an error state that makes data upload
+  // impossible.
+  if (self.syncService->GetUserActionableError() !=
+      syncer::SyncService::UserActionableError::kNone) {
     return NO;
   }
   return YES;

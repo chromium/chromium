@@ -30,7 +30,12 @@
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::SettingsAccountButton;
+using chrome_test_util::SettingsDoneButton;
+
 namespace {
+
+NSString* const kPassphrase = @"hello";
 
 // Expects a batch upload dialog item on the current screen with message
 // formatted for `count` local bookmarks and `email` user email.
@@ -278,6 +283,63 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   // Verify that the batch upload section is not visible.
   ExpectNoBatchUploadDialog();
+}
+
+// Tests that no batch upload dialog is shown if the user is signed-in with an
+// error state that prevents uploading, but the batch upload dialog is shown
+// after the error gets resolved.
+- (void)testNoBatchUploadDialogIfAccountInErrorState {
+  // Add passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+
+  // Add one local bookmark.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:@"example1"
+                       URL:@"https://www.example1.com"
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Adds and signs in with `fakeIdentity`.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify that the batch upload section is not visible.
+  ExpectNoBatchUploadDialog();
+
+  // Close the bookamrks manager.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kBookmarksHomeNavigationBarDoneButtonIdentifier)]
+      performAction:grey_tap()];
+
+  // Resolve the passphrase error from Account settings.
+  // Open settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+  // Verify the error section is showing.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Tap "Enter Passphrase" button.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+      performAction:grey_tap()];
+  // Enter the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+  // Close settings.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  [BookmarkEarlGreyUI openBookmarks];
+
+  // Verify that the batch upload section is visible.
+  ExpectBatchUploadSection(1, fakeIdentity.userEmail);
 }
 
 // Tests that no batch upload dialog is shown if there are no local bookmarks.
