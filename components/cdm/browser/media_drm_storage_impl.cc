@@ -8,6 +8,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
@@ -406,9 +407,11 @@ void ClearMediaDrmLicensesBlocking(
             media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT,
             base::NullCallback());
 
-    DCHECK(media_drm_bridge);
-
-    media_drm_bridge->Unprovision();
+    if (media_drm_bridge) {
+      media_drm_bridge->Unprovision();
+    } else {
+      base::debug::DumpWithoutCrashing();
+    }
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
