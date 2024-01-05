@@ -51,6 +51,15 @@ std::vector<Rule> ExtractRedactRules(const proto::RedactRules& proto_rules) {
         if (rule.has_replacement_string()) {
           rules.back().replacement_string = rule.replacement_string();
         }
+        if (rule.has_min_pattern_length()) {
+          rules.back().min_pattern_length = rule.min_pattern_length();
+        }
+        if (rule.has_max_pattern_length()) {
+          rules.back().max_pattern_length = rule.max_pattern_length();
+        }
+        if (rule.has_group_index()) {
+          rules.back().matching_group = rule.group_index();
+        }
       }
     }
   }

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_config_interpreter.h"
@@ -362,8 +363,15 @@ void SessionImpl::SendResponse(ResponseType response_type) {
     auto redact_string_input =
         on_device_state_->config_interpreter->GetStringToCheckForRedacting(
             feature_, *last_message_);
-    if (redactor->Redact(redact_string_input, current_response) ==
-        RedactResult::kReject) {
+    base::ElapsedTimer elapsed_timer;
+    auto redact_result =
+        redactor->Redact(redact_string_input, current_response);
+    base::UmaHistogramMicrosecondsTimes(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.TimeToProcessRedactions.",
+             GetStringNameForModelExecutionFeature(feature_)}),
+        elapsed_timer.Elapsed());
+    if (redact_result == RedactResult::kReject) {
       if (on_device_state_->histogram_logger) {
         on_device_state_->histogram_logger->set_result(
             ExecuteModelResult::kContainedPII);
