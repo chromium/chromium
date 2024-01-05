@@ -5,6 +5,7 @@
 #include "ash/system/power/battery_image_source.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "ash/constants/ash_features.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -67,9 +68,17 @@ void BatteryImageSource::Draw(gfx::Canvas* canvas) {
   // |charge_level| is a value between 0 and the visual height of the icon
   // representing the number of device pixels the battery image should be
   // shown charged. The exception is when |charge_level| is very low; in this
-  // case, still draw 1dip of charge.
-  float charge_level =
-      std::floor(info_.charge_percent / 100.0 * icon_bounds.height());
+  // case, still draw 1 dip of charge. There are only 10 dips to indicate charge
+  // level. If the level is always floor rounded (as was the historical
+  // behavior) 25% charge looks very low. Similarly, always rounding normally
+  // makes 75% look abnormally high. To help mitigate this, UX prefers floor
+  // rounding above 50%, and normal rounding below 50%.
+  const float unrounded_charge_level =
+      info_.charge_percent / 100.0 * icon_bounds.height();
+  float charge_level = info_.charge_percent <= 50
+                           ? std::round(unrounded_charge_level)
+                           : std::floor(unrounded_charge_level);
+
   const float min_charge_level = dsf * kMinVisualChargeLevel;
   charge_level =
       std::clamp(charge_level, min_charge_level, icon_bounds.height());
