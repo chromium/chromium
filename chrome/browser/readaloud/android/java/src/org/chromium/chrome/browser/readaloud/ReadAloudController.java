@@ -770,10 +770,6 @@ public class ReadAloudController
         if (mCurrentlyPlayingTab == null) {
             return;
         }
-        // Already on playing tab
-        if (mCurrentlyPlayingTab.getId() == mTabModel.getTabAt(mTabModel.index()).getId()) {
-            return;
-        }
         if (mTabModel.indexOf(mCurrentlyPlayingTab) != TabModel.INVALID_TAB_INDEX) {
             mTabModel.setIndex(
                     mTabModel.indexOf(mCurrentlyPlayingTab), TabSelectionType.FROM_USER, false);

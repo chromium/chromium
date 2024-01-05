@@ -1300,6 +1300,12 @@ public class ReadAloudControllerUnitTest {
 
         // should switch back to original one
         assertEquals(mTabModelSelector.getCurrentTab(), mTab);
+
+        // navigate
+        mController.navigateToPlayingTab();
+
+        // should still be on the playing tab
+        assertEquals(mTabModelSelector.getCurrentTab(), mTab);
     }
 
     @Test
