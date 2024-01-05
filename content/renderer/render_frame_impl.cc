@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -6261,7 +6262,7 @@ bool RenderFrameImpl::IsRequestingNavigation() {
   return is_requesting_navigation_;
 }
 
-void RenderFrameImpl::LoadHTMLStringForTesting(const std::string& html,
+void RenderFrameImpl::LoadHTMLStringForTesting(std::string_view html,
                                                const GURL& base_url,
                                                const std::string& text_encoding,
                                                const GURL& unreachable_url,

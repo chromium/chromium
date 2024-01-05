@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -402,7 +403,7 @@ class CONTENT_EXPORT RenderFrameImpl
                            const std::string& message) override;
   bool IsPasting() override;
   bool IsRequestingNavigation() override;
-  void LoadHTMLStringForTesting(const std::string& html,
+  void LoadHTMLStringForTesting(std::string_view html,
                                 const GURL& base_url,
                                 const std::string& text_encoding,
                                 const GURL& unreachable_url,

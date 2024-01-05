@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
@@ -198,7 +199,7 @@ class CONTENT_EXPORT RenderFrame :
   //
   // This should be used only for testing. Real code should follow the
   // navigation code path and inherit the correct security properties
-  virtual void LoadHTMLStringForTesting(const std::string& html,
+  virtual void LoadHTMLStringForTesting(std::string_view html,
                                         const GURL& base_url,
                                         const std::string& text_encoding,
                                         const GURL& unreachable_url,

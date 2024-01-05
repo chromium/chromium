@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -300,7 +301,7 @@ v8::Isolate* RenderViewTest::Isolate() {
   return GetMainFrame()->GetAgentGroupScheduler()->Isolate();
 }
 
-void RenderViewTest::ExecuteJavaScriptForTests(const char* js) {
+void RenderViewTest::ExecuteJavaScriptForTests(std::string_view js) {
   GetMainFrame()->ExecuteScript(WebScriptSource(WebString::FromUTF8(js)));
 }
 
@@ -334,13 +335,13 @@ bool RenderViewTest::ExecuteJavaScriptAndReturnNumberValue(
   return true;
 }
 
-void RenderViewTest::LoadHTML(const char* html) {
+void RenderViewTest::LoadHTML(std::string_view html) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   std::string url_string = "data:text/html;charset=utf-8,";
   url_string.append(base::EscapeQueryParamValue(html, false));
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_string), "UTF-8", GURL(),
-                                 false /* replace_current_item */);
+                                 /*replace_current_item=*/false);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
@@ -348,12 +349,12 @@ void RenderViewTest::LoadHTML(const char* html) {
       blink::DocumentUpdateReason::kTest);
 }
 
-void RenderViewTest::LoadHTMLWithUrlOverride(const char* html,
-                                             const char* url_override) {
+void RenderViewTest::LoadHTMLWithUrlOverride(std::string_view html,
+                                             std::string_view url_override) {
   FrameLoadWaiter waiter(GetMainRenderFrame());
   RenderFrame::FromWebFrame(GetMainFrame())
       ->LoadHTMLStringForTesting(html, GURL(url_override), "UTF-8", GURL(),
-                                 false /* replace_current_item */);
+                                 /*replace_current_item=*/false);
   // The load may happen asynchronously, so we pump messages to process
   // the pending continuation.
   waiter.Wait();
