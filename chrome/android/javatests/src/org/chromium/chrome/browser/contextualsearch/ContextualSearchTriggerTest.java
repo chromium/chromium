@@ -216,7 +216,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "crbug.com/1071080, crbug.com/1362185")
     public void testLongPressGestureFollowedByScrollMaintainsSelection() throws Exception {
         longPressNode("intelligence");
         waitForPanelToPeek();
