@@ -9,25 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
-namespace {
-
-void GotHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback,
-                      bool has_gpu) {
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), has_gpu));
-}
-
-void GetHasGpuProcess(RenderMessageFilter::HasGpuProcessCallback callback) {
-  GpuProcessHost::GetHasGpuProcess(
-      base::BindOnce(GotHasGpuProcess, std::move(callback)));
-}
-
-}  // namespace
 
 RenderMessageFilter::RenderMessageFilter(
     int render_process_id,
@@ -63,11 +48,6 @@ void RenderMessageFilter::GenerateFrameRoutingID(
       routing_id, frame_token, devtools_frame_token, document_token);
   std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
                           document_token);
-}
-
-void RenderMessageFilter::HasGpuProcess(HasGpuProcessCallback callback) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(GetHasGpuProcess, std::move(callback)));
 }
 
 }  // namespace content

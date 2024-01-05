@@ -33,7 +33,6 @@ namespace mojom {
 class CreateNewWindowParams;
 class CreateNewWindowReply;
 class Frame;
-class RenderMessageFilter;
 }
 
 // This class is a very simple mock of RenderThread. It simulates an IPC channel
@@ -168,8 +167,6 @@ class MockRenderThread : public RenderThread {
 
   // Observers to notify.
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;
-
-  std::unique_ptr<mojom::RenderMessageFilter> mock_render_message_filter_;
 };
 
 }  // namespace content

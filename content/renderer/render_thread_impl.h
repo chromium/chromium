@@ -266,8 +266,6 @@ class CONTENT_EXPORT RenderThreadImpl
     return vc_manager_.get();
   }
 
-  mojom::RenderMessageFilter* render_message_filter();
-
   // Get the GPU channel. Returns NULL if the channel is not established or
   // has been lost.
   gpu::GpuChannelHost* GetGpuChannel();
@@ -464,6 +462,8 @@ class CONTENT_EXPORT RenderThreadImpl
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
       bool enable_video_decode_accelerator,
       bool enable_video_encode_accelerator);
+
+  mojom::RenderMessageFilter* render_message_filter();
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_memory_allocator_;

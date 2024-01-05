@@ -1364,7 +1364,7 @@ bool GpuBenchmarking::HasGpuChannel() {
 
 bool GpuBenchmarking::HasGpuProcess() {
   bool has_gpu_process = false;
-  if (!RenderThreadImpl::current()->render_message_filter()->HasGpuProcess(
+  if (!RenderThreadImpl::current()->GetRendererHost()->HasGpuProcess(
           &has_gpu_process)) {
     return false;
   }

@@ -98,6 +98,7 @@
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_disk_cache_factory.h"
+#include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
@@ -5047,6 +5048,10 @@ void RenderProcessHostImpl::SetPrivateMemoryFootprint(
   private_memory_footprint_bytes_ = private_memory_footprint_bytes;
 }
 #endif
+
+void RenderProcessHostImpl::HasGpuProcess(HasGpuProcessCallback callback) {
+  GpuProcessHost::GetHasGpuProcess(std::move(callback));
+}
 
 void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
   int32_t new_visible_widgets_count = 0;

@@ -46,7 +46,6 @@ class RenderMessageFilter
 
   // mojom::RenderMessageFilter:
   void GenerateFrameRoutingID(GenerateFrameRoutingIDCallback callback) override;
-  void HasGpuProcess(HasGpuProcessCallback callback) override;
 
   scoped_refptr<RenderWidgetHelper> render_widget_helper_;
 

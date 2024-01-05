@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "content/common/associated_interfaces.mojom.h"
 #include "content/common/frame.mojom.h"
-#include "content/common/render_message_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/test/test_render_frame.h"
@@ -37,34 +36,10 @@ constexpr int32_t kFirstGeneratedRoutingId = 313337000;
 
 static const blink::UserAgentMetadata kUserAgentMetadata;
 
-class MockRenderMessageFilterImpl : public mojom::RenderMessageFilter {
- public:
-  MockRenderMessageFilterImpl() = default;
-  ~MockRenderMessageFilterImpl() override = default;
-
-  void GenerateFrameRoutingID(
-      GenerateFrameRoutingIDCallback callback) override {
-    int routing_id;
-    blink::LocalFrameToken frame_token;
-    base::UnguessableToken devtools_frame_token;
-    blink::DocumentToken document_token;
-    RenderThread::Get()->GenerateFrameRoutingID(
-        routing_id, frame_token, devtools_frame_token, document_token);
-    std::move(callback).Run(routing_id, frame_token, devtools_frame_token,
-                            document_token);
-  }
-
-  void HasGpuProcess(HasGpuProcessCallback callback) override {
-    std::move(callback).Run(false);
-  }
-};
-
 }  // namespace
 
 MockRenderThread::MockRenderThread()
-    : next_routing_id_(kFirstGeneratedRoutingId),
-      mock_render_message_filter_(new MockRenderMessageFilterImpl()) {
-}
+    : next_routing_id_(kFirstGeneratedRoutingId) {}
 
 MockRenderThread::~MockRenderThread() {
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
