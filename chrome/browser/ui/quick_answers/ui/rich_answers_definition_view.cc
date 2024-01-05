@@ -72,9 +72,9 @@ void RichAnswersDefinitionView::AddHeaderViews() {
   // - header_view (flex=1): resize (either shrink or expand as necessary)
   // - settings_button_view (flex=0): no resize
   views::BoxLayoutView* box_layout_view =
-      content_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
+      content_view_->AddChildView(CreateHorizontalBoxLayoutView());
   views::FlexLayoutView* header_view =
-      box_layout_view->AddChildView(CreateHorizontalLayoutView());
+      box_layout_view->AddChildView(CreateHorizontalFlexLayoutView());
 
   QuickAnswersTextLabel* word_label =
       header_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
@@ -187,10 +187,9 @@ void RichAnswersDefinitionView::MaybeAddSynonyms() {
   // - similar_label (flex=0): no resize
   // - synonyms_label (flex=1): resize (either shrink or expand as necessary)
   views::BoxLayoutView* box_layout_view =
-      content_view_->AddChildView(std::make_unique<views::BoxLayoutView>());
+      content_view_->AddChildView(CreateHorizontalBoxLayoutView());
   box_layout_view->SetCrossAxisAlignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  box_layout_view->SetBetweenChildSpacing(kContentSingleSpacing);
 
   QuickAnswersTextLabel* similar_label =
       box_layout_view->AddChildView(QuickAnswersTextLabel::CreateLabelWithStyle(
