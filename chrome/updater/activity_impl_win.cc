@@ -44,6 +44,8 @@ bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   return false;
 }
 
+// Always returns false to avoid the short circuit in ProcessActiveBit and
+// the early return in ProcessSystemActiveBit.
 bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
   if (key.Open(rootkey, key_name.c_str(),
@@ -53,14 +55,14 @@ bool ClearActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   }
 
   if (!key.HasValue(kDidRun)) {
-    return true;
+    return false;
   }
 
   // We always clear the value as a string "0".
   const LONG result = key.WriteValue(kDidRun, L"0");
   VLOG_IF(2, result) << "Failed to clear activity key for " << key_name << ": "
                      << result;
-  return !result;
+  return false;
 }
 
 bool ProcessActiveBit(ProcessActiveBitUnderKeyCallback callback,
