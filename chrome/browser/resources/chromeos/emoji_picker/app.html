@@ -335,8 +335,9 @@
     category-metadata="[[getCategoryMetadata(gifSupport, category)]]"
     gif-support$="[[gifSupport]]"
     close-gif-nudge-overlay="[[closeGifNudgeOverlay]]"
-    global-tone="[[getGlobalTone()]]"
-    global-gender="[[getGlobalGender()]]">
+    use-grouped-preference="[[shouldUseGroupedPreference(false)]]"
+    global-tone="[[globalTone]]"
+    global-gender="[[globalGender]]">
   </emoji-search>
 
 <div id="list-container" class$="[[computeListContainerClass(category, status)]]">
@@ -451,10 +452,11 @@
         <emoji-group data="[[item.emoji]]"
           gif-support$="[[gifSupport]]"
           group="[[item.name]]"
-          global-tone="[[getGlobalTone()]]"
-          global-gender="[[getGlobalGender()]]"
+          global-tone="[[globalTone]]"
+          global-gender="[[globalGender]]"
           preferred="[[item.preferences]]"
           clearable$="[[item.isHistory]]"
+          use-grouped-preference="[[shouldUseGroupedPreference(item.isHistory)]]"
           category$="[[item.category]]"
           class$="[[getEmojiGroupClassNames(item.emoji,item,category,activeInfiniteGroupId)]]">
         </emoji-group>

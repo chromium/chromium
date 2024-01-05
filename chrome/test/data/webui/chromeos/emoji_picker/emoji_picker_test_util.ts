@@ -43,7 +43,8 @@ export function deepQuerySelector(root: Element, path: string[]): HTMLElement|
  * evaluates to a truthy value.
  */
 export async function waitForCondition<T>(
-    condition: () => T, message: string, maxWait = 5000): Promise<T> {
+    condition: () => T, message: string,
+    maxWait = 5000): Promise<NonNullable<T>> {
   const interval = 10;
   let waiting = 0;
 
@@ -136,9 +137,13 @@ export function isGroupButtonActive(element: Element|null): boolean {
  */
 export function initialiseEmojiPickerForTest(
     incognito = false, localStorage: Array<{key: string, value: string}> = []) {
+  const setIncognito = (incognito: boolean) => {
+    EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = async () =>
+        ({incognito});
+  };
+
   // Set default incognito state to False.
-  EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = async () =>
-      ({incognito: incognito});
+  setIncognito(incognito);
   EmojiPickerApp.configs = () => ({
     dataUrls: {
       emoji: [
@@ -160,7 +165,8 @@ export function initialiseEmojiPickerForTest(
     window.localStorage.setItem(key, value);
   }
 
-  const emojiPicker = document.createElement('emoji-picker-app');
+  let emojiPicker =
+      document.createElement('emoji-picker-app') as EmojiPickerApp;
 
   const findInEmojiPicker = (...path: string[]) =>
       deepQuerySelector(emojiPicker, path);
@@ -177,6 +183,18 @@ export function initialiseEmojiPickerForTest(
     const emojiElement = findInEmojiPicker(...path);
     return (emojiElement as EmojiGroupComponent | null)?.firstEmojiButton();
   };
+
+  const findEmojiButtonByText = (text: string, group: HTMLElement) => {
+    const buttons = Array.from(
+        group.shadowRoot!.querySelectorAll<HTMLElement>('.emoji-button'));
+    return buttons.find(button => button.innerText === text) ?? null;
+  };
+
+  const findGroup = (groupId: string) =>
+      findInEmojiPicker(`[data-group="${groupId}"] > emoji-group`);
+
+  const findSearchGroup = (category: string) =>
+      findInEmojiPicker('emoji-search', `emoji-group[category="${category}"]`);
 
   const scrollDown = (height: number) => {
     const thisRect = emojiPicker.$.groups;
@@ -198,19 +216,31 @@ export function initialiseEmojiPickerForTest(
   };
 
   // Wait until emoji data is loaded before executing tests.
-  const readyPromise = new Promise<void>((resolve) => {
+  const createReadyPromise = () => new Promise<void>((resolve) => {
     emojiPicker.addEventListener(EMOJI_PICKER_READY, () => {
       flush();
       resolve();
     });
     document.body.appendChild(emojiPicker);
   });
+
+  const reload = async () => {
+    emojiPicker.remove();
+    emojiPicker = document.createElement('emoji-picker-app');
+    await createReadyPromise();
+  };
+
   return {
     emojiPicker,
     findInEmojiPicker,
     waitUntilFindInEmojiPicker,
     findEmojiFirstButton,
-    readyPromise,
+    findEmojiButtonByText,
+    findGroup,
+    findSearchGroup,
+    readyPromise: createReadyPromise(),
+    reload,
+    setIncognito,
     scrollDown,
     scrollToBottom,
   };

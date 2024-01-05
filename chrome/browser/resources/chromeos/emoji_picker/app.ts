@@ -87,6 +87,8 @@ export class EmojiPickerApp extends PolymerElement {
       categoriesGroupElements: {type: Array, value: () => ([])},
       activeInfiniteGroupId: {type: String, value: null},
       categoriesHistory: {type: Object, value: () => ({})},
+      globalTone: {type: Number, value: null},
+      globalGender: {type: Number, value: null},
       pagination: {type: Number, value: 1, observer: 'onPaginationChanged'},
       searchLazyIndexing: {type: Boolean, value: true},
       textSubcategoryBarEnabled: {
@@ -114,7 +116,9 @@ export class EmojiPickerApp extends PolymerElement {
   categoriesGroupElements: EmojiGroupElement[];
   activeInfiniteGroupId: string|null; // null before Trending GIFs are fetched
   private categoriesHistory: {[index in CategoryEnum]: RecentlyUsedStore|null};
-  private emojiPreferences = new EmojiPreferencesStore();
+  private emojiPreferences: EmojiPreferencesStore|null = null;
+  private globalTone: Tone|null = null;
+  private globalGender: Gender|null = null;
   private pagination: number;
   private searchLazyIndexing: boolean;
   private textSubcategoryBarEnabled: boolean;
@@ -1110,20 +1114,6 @@ export class EmojiPickerApp extends PolymerElement {
   }
 
   /**
-   * Gets the global emoji skin tone preference.
-   */
-  private getGlobalTone() {
-    return this.emojiPreferences.getTone();
-  }
-
-  /**
-   * Gets the global emoji gender preference.
-   */
-  private getGlobalGender() {
-    return this.emojiPreferences.getGender();
-  }
-
-  /**
    * Handles the event where history or preferences are modified for a
    * category.
    *
@@ -1159,6 +1149,10 @@ export class EmojiPickerApp extends PolymerElement {
    */
   updateIncognitoState(incognito: boolean) {
     this.incognito = incognito;
+    this.emojiPreferences = incognito ? null : new EmojiPreferencesStore();
+    this.globalTone = this.emojiPreferences?.getTone() ?? null;
+    this.globalGender = this.emojiPreferences?.getGender() ?? null;
+
     // Load the history item for each category.
     for (const category of Object.values(CategoryEnum)) {
       this.categoriesHistory[category] =
@@ -1210,11 +1204,11 @@ export class EmojiPickerApp extends PolymerElement {
     }
 
     if (tone !== undefined) {
-      this.emojiPreferences.setTone(tone);
+      this.emojiPreferences?.setTone(tone);
     }
 
     if (gender !== undefined) {
-      this.emojiPreferences.setGender(gender);
+      this.emojiPreferences?.setGender(gender);
     }
   }
 
@@ -1261,6 +1255,14 @@ export class EmojiPickerApp extends PolymerElement {
    */
   private isCategoryHistoryEmpty(category: CategoryEnum) {
     return this.incognito || this.categoriesHistory[category]?.isHistoryEmpty();
+  }
+
+  /**
+   * @returns True if the emoji should use the global variant preference, or
+   * false if it should revert to the individual preference.
+   */
+  private shouldUseGroupedPreference(isHistory: boolean): boolean {
+    return this.variantGroupingSupport && !isHistory;
   }
 
   /**
