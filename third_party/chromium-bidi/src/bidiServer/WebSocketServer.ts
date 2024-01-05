@@ -21,7 +21,7 @@ import debug from 'debug';
 import * as websocket from 'websocket';
 
 import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import {ErrorCode} from '../protocol/webdriver-bidi.js';
+import {ErrorCode} from '../protocol/protocol.js';
 import {uuidv4} from '../utils/uuid.js';
 
 import {BrowserInstance} from './BrowserInstance.js';

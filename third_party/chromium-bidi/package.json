@@ -9,7 +9,7 @@
     "e2e-headful": "wireit",
     "e2e-headless": "wireit",
     "e2e": "npm run e2e-headless --",
-    "eslint": "wireit",
+    "eslint": "eslint --ext js --ext mjs --ext ts --fix .",
     "flake8": "flake8 examples/ tests/",
     "format": "npm run pre-commit --",
     "pre-commit": "pre-commit run --hook-stage manual --all-files",
@@ -35,7 +35,8 @@
     "bidi-types": {
       "command": "tools/generate-bidi-types.mjs",
       "output": [
-        "src/protocol/webdriver-bidi.ts"
+        "src/protocol/generated/webdriver-bidi.ts",
+        "src/protocol-parser/generated/webdriver-bidi.ts"
       ]
     },
     "build": {
@@ -62,20 +63,6 @@
       "files": [
         "pytest.ini",
         "tests/**/*.py"
-      ]
-    },
-    "eslint": {
-      "command": "eslint --cache --ext .js,.ts --fix .",
-      "files": [
-        ".eslintignore",
-        ".eslintrc.js",
-        "src/**/*.ts"
-      ],
-      "output": [
-        ".eslintcache"
-      ],
-      "dependencies": [
-        "tsc"
       ]
     },
     "prepare": {

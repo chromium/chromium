@@ -24,13 +24,18 @@ import {join} from 'path';
 import {packageDirectorySync} from 'pkg-dir';
 import * as prettier from 'prettier';
 
-// Changing the current work directory to the package directory.
+if (!process.argv.slice(2)[0]) {
+  // eslint-disable-next-line no-console
+  console.error(`Please provide a cddl file as an argument.`);
+  process.exit(1);
+}
 
+// Changing the current work directory to the package directory.
 const ROOT_DIR = packageDirectorySync();
 process.chdir(ROOT_DIR);
 
-const TYPES_FILE = 'src/protocol/webdriver-bidi.ts';
-const ZOD_FILE = 'src/protocol-parser/webdriver-bidi.ts';
+const TYPES_FILE = 'src/protocol/generated/webdriver-bidi.ts';
+const ZOD_FILE = 'src/protocol-parser/generated/webdriver-bidi.ts';
 const FILE_HEADER = `
 /**
  * Copyright 2024 Google LLC.

@@ -14,8 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {Input, InvalidArgumentException} from '../../../protocol/protocol.js';
-import type {EmptyResult} from '../../../protocol/webdriver-bidi';
+import {
+  Input,
+  InvalidArgumentException,
+  type EmptyResult,
+} from '../../../protocol/protocol.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import {ActionDispatcher} from '../input/ActionDispatcher.js';
 import type {ActionOption} from '../input/ActionOption.js';

@@ -1,14 +1,14 @@
 __pycache__
 .build
 .cache
-.eslintrc.js
 .idea
 chromium-bidi-*
 chromium-bidi.iml
+*.py.ini
 lib
 logs/
 node_modules/
 wptreport*.json
 ./wpt/
-/src/protocol/webdriver-bidi.ts
-/src/protocol-parser/webdriver-bidi.ts
+/src/protocol/generated/
+/src/protocol-parser/generated/

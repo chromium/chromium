@@ -24,7 +24,7 @@ import {z, type ZodType} from 'zod';
 import type * as Protocol from '../protocol/protocol.js';
 import {InvalidArgumentException} from '../protocol/protocol.js';
 
-import * as WebDriverBidi from './webdriver-bidi.js';
+import * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export function parseObject<T extends ZodType>(
   obj: unknown,

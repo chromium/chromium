@@ -16,5 +16,5 @@
  */
 export * as Cdp from './cdp.js';
 export * as ChromiumBidi from './chromium-bidi.js';
-export * from './webdriver-bidi.js';
+export * from './generated/webdriver-bidi.js';
 export * from './ErrorResponse.js';

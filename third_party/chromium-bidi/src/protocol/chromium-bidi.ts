@@ -16,7 +16,7 @@
  */
 
 import type * as Cdp from './cdp.js';
-import type * as WebDriverBidi from './webdriver-bidi.js';
+import type * as WebDriverBidi from './generated/webdriver-bidi.js';
 
 export type EventNames =
   // keep-sorted start

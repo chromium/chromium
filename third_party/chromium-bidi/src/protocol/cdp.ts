@@ -17,7 +17,7 @@
 import type {Protocol} from 'devtools-protocol';
 import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js';
 
-import type {BrowsingContext, JsUint} from './webdriver-bidi.js';
+import type {BrowsingContext, JsUint} from './generated/webdriver-bidi.js';
 
 export type EventNames = Event['method'];
 

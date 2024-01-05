@@ -27,21 +27,7 @@ module.exports = {
     globalThis: false,
   },
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: [
-      // keep-sorted start
-      'src/bidiMapper/tsconfig.json',
-      'src/bidiServer/tsconfig.json',
-      'src/bidiTab/tsconfig.json',
-      'src/cdp/tsconfig.json',
-      'src/protocol-parser/tsconfig.json',
-      'src/protocol/tsconfig.json',
-      'src/tsconfig.json',
-      'src/utils/tsconfig.json',
-      'tsconfig.base.json',
-      // keep-sorted end
-    ],
-  },
+
   settings: {
     'import/resolver': {
       typescript: true,
@@ -51,10 +37,6 @@ module.exports = {
   extends: [
     // keep-sorted start
     'eslint:recommended',
-    'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:import/recommended',
     'plugin:import/typescript',
     'plugin:mocha/recommended',
     'plugin:prettier/recommended',
@@ -65,40 +47,9 @@ module.exports = {
     // https://denar90.github.io/eslint.github.io/docs/rules/
     // Some rules use 'warn' in order to ease local development iteration.
     // keep-sorted start block=yes sticky_comments=yes
-    '@typescript-eslint/array-type': 'warn',
-    '@typescript-eslint/consistent-generic-constructors': 'warn',
-    '@typescript-eslint/consistent-type-imports': [
-      'warn',
-      {fixStyle: 'inline-type-imports'},
-    ],
-    '@typescript-eslint/explicit-member-accessibility': [
-      'warn',
-      {accessibility: 'no-public'},
-    ],
-    '@typescript-eslint/no-empty-function': 'warn',
-    '@typescript-eslint/no-explicit-any': 'off',
-    '@typescript-eslint/no-extraneous-class': 'warn',
-    '@typescript-eslint/no-import-type-side-effects': 'error',
-    '@typescript-eslint/no-misused-promises': 'off',
-    '@typescript-eslint/no-namespace': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/no-unsafe-argument': 'off',
-    '@typescript-eslint/no-unsafe-assignment': 'off',
-    '@typescript-eslint/no-unsafe-call': 'off',
-    '@typescript-eslint/no-unsafe-enum-comparison': 'warn',
-    '@typescript-eslint/no-unsafe-member-access': 'off',
-    '@typescript-eslint/no-unsafe-return': 'off',
-    '@typescript-eslint/no-unused-vars': ['error', {argsIgnorePattern: '^_'}],
-    '@typescript-eslint/no-useless-template-literals': 'error',
-    '@typescript-eslint/prefer-return-this-type': 'warn',
-    '@typescript-eslint/require-await': 'warn',
-    '@typescript-eslint/restrict-template-expressions': 'off',
-    // This is more performant; see https://v8.dev/blog/fast-async.
-    '@typescript-eslint/return-await': ['error', 'always'],
-    '@typescript-eslint/switch-exhaustiveness-check': 'error',
     'func-names': 'error',
     'import/first': 'error',
-    'import/newline-after-import': 'warn',
+    'import/newline-after-import': 'error',
     'import/no-cycle': ['error', {maxDepth: Infinity}],
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
@@ -127,4 +78,55 @@ module.exports = {
     eqeqeq: 'error',
     // keep-sorted end
   },
+  overrides: [
+    {
+      files: ['*.ts'],
+      extends: [
+        'plugin:@typescript-eslint/eslint-recommended',
+        'plugin:@typescript-eslint/recommended',
+        'plugin:@typescript-eslint/recommended-requiring-type-checking',
+      ],
+      parserOptions: {
+        project: './tsconfig.base.json',
+      },
+      rules: {
+        // keep-sorted start block=yes sticky_comments=yes
+        '@typescript-eslint/array-type': 'warn',
+        '@typescript-eslint/consistent-generic-constructors': 'warn',
+        '@typescript-eslint/consistent-type-imports': [
+          'warn',
+          {fixStyle: 'inline-type-imports'},
+        ],
+        '@typescript-eslint/explicit-member-accessibility': [
+          'warn',
+          {accessibility: 'no-public'},
+        ],
+        '@typescript-eslint/no-empty-function': 'warn',
+        '@typescript-eslint/no-explicit-any': 'off',
+        '@typescript-eslint/no-extraneous-class': 'warn',
+        '@typescript-eslint/no-import-type-side-effects': 'error',
+        '@typescript-eslint/no-misused-promises': 'off',
+        '@typescript-eslint/no-namespace': 'off',
+        '@typescript-eslint/no-non-null-assertion': 'off',
+        '@typescript-eslint/no-unsafe-argument': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
+        '@typescript-eslint/no-unsafe-call': 'off',
+        '@typescript-eslint/no-unsafe-enum-comparison': 'warn',
+        '@typescript-eslint/no-unsafe-member-access': 'off',
+        '@typescript-eslint/no-unsafe-return': 'off',
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {argsIgnorePattern: '^_'},
+        ],
+        '@typescript-eslint/no-useless-template-literals': 'error',
+        '@typescript-eslint/prefer-return-this-type': 'warn',
+        '@typescript-eslint/require-await': 'warn',
+        '@typescript-eslint/restrict-template-expressions': 'off',
+        // This is more performant; see https://v8.dev/blog/fast-async.
+        '@typescript-eslint/return-await': ['error', 'always'],
+        '@typescript-eslint/switch-exhaustiveness-check': 'error',
+        // keep-sorted end
+      },
+    },
+  ],
 };
