@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 #define CHROME_BROWSER_DEVICE_API_DEVICE_SERVICE_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/functional/callback_forward.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "content/public/browser/document_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/device/device.mojom.h"
 
 namespace content {

@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/device_api/device_service_impl.h"
 
-#include <memory>
-
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "build/chromeos_buildflags.h"
@@ -12,7 +10,6 @@
 #include "chrome/browser/device_api/device_attribute_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,7 +21,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
-#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -114,9 +110,9 @@ bool IsTrustedContext(content::RenderFrameHost& host,
 
   if (chrome::IsRunningInAppMode()) {
     return IsEqualToKioskOrigin(origin);
-  } else {
-    return IsForceInstalledOrigin(GetPrefs(host), origin);
   }
+
+  return IsForceInstalledOrigin(GetPrefs(host), origin);
 }
 
 }  // namespace

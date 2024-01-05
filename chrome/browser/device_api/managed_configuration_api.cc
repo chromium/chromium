@@ -5,7 +5,6 @@
 #include "chrome/browser/device_api/managed_configuration_api.h"
 
 #include <memory>
-#include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -21,9 +20,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "extensions/browser/extension_file_task_runner.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,7 +28,7 @@
 
 namespace {
 
-const char kManagedConfigurationDirectoryName[] = "Managed Configuration";
+constexpr char kManagedConfigurationDirectoryName[] = "Managed Configuration";
 // Maximum configuration size is 5MB.
 constexpr int kMaxConfigurationFileSize = 5 * 1024 * 1024;
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -85,6 +82,10 @@ class ManagedConfigurationAPI::ManagedConfigurationDownloader {
   explicit ManagedConfigurationDownloader(const std::string& data_hash)
       : data_hash_(data_hash) {}
   ~ManagedConfigurationDownloader() = default;
+  ManagedConfigurationDownloader(const ManagedConfigurationDownloader&) =
+      delete;
+  ManagedConfigurationDownloader& operator=(
+      const ManagedConfigurationDownloader&) = delete;
 
   void Fetch(const std::string& data_url,
              base::OnceCallback<void(std::unique_ptr<std::string>)> callback) {
@@ -149,12 +150,13 @@ void ManagedConfigurationAPI::GetOriginPolicyConfiguration(
     return std::move(callback).Run(absl::nullopt);
   }
 
-  if (!base::Contains(store_map_, origin))
+  if (!base::Contains(store_map_, origin)) {
     return std::move(callback).Run(absl::nullopt);
+  }
 
   store_map_[origin]
       .AsyncCall(&ManagedConfigurationStore::Get)
-      .WithArgs(std::move(keys))
+      .WithArgs(keys)
       .Then(std::move(callback));
 }
 
@@ -169,9 +171,9 @@ void ManagedConfigurationAPI::AddObserver(Observer* observer) {
 }
 
 void ManagedConfigurationAPI::RemoveObserver(Observer* observer) {
-  auto it = unmanaged_observers_.find(observer);
-  if (it != unmanaged_observers_.end()) {
-    unmanaged_observers_.erase(it);
+  auto iter = unmanaged_observers_.find(observer);
+  if (iter != unmanaged_observers_.end()) {
+    unmanaged_observers_.erase(iter);
     return;
   }
 
@@ -196,11 +198,13 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   for (const auto& entry : managed_configurations) {
     const auto& entry_dict = entry.GetDict();
     const std::string* url = entry_dict.FindString(kOriginKey);
-    if (!url)
+    if (!url) {
       continue;
+    }
     const url::Origin origin = url::Origin::Create(GURL(*url));
-    if (origin.opaque())
+    if (origin.opaque()) {
       continue;
+    }
 
     const std::string* configuration_url =
         entry_dict.FindString(kManagedConfigurationUrlKey);
@@ -208,8 +212,9 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
         entry_dict.FindString(kManagedConfigurationHashKey);
     current_origins.insert(origin);
 
-    if (!configuration_url || !configuration_hash)
+    if (!configuration_url || !configuration_hash) {
       continue;
+    }
     UpdateStoredDataForOrigin(origin, *configuration_url, *configuration_hash);
   }
 
@@ -227,8 +232,9 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
 
 void ManagedConfigurationAPI::MaybeCreateStoreForOrigin(
     const url::Origin& origin) {
-  if (base::Contains(store_map_, origin))
+  if (base::Contains(store_map_, origin)) {
     return;
+  }
 
   // Create the store now, and serve the cached policy until the PolicyService
   // sends updated values.
@@ -253,8 +259,9 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
           .FindString(GetOriginEncoded(origin));
 
   // Nothing to be stored here, the hash value is the same.
-  if (last_hash_value && *last_hash_value == configuration_hash)
+  if (last_hash_value && *last_hash_value == configuration_hash) {
     return;
+  }
 
   if (configuration_url.empty()) {
     PostStoreConfiguration(origin, base::Value::Dict());
@@ -264,8 +271,9 @@ void ManagedConfigurationAPI::UpdateStoredDataForOrigin(
   // Check whether there is already a downloader.
   if (downloaders_[origin]) {
     // If it downloads the same data already, do nothing.
-    if (downloaders_[origin]->hash() == configuration_hash)
+    if (downloaders_[origin]->hash() == configuration_hash) {
       return;
+    }
     // Cancel it otherwise.
     downloaders_[origin].reset();
   }
@@ -282,8 +290,9 @@ void ManagedConfigurationAPI::DecodeData(const url::Origin& origin,
                                          const std::string& url_hash,
                                          std::unique_ptr<std::string> data) {
   downloaders_[origin].reset();
-  if (!data)
+  if (!data) {
     return;
+  }
 
   // First, we have to parse JSON file in an isolated sandbox so that we don't
   // have to worry about potentially risky values.
@@ -334,8 +343,9 @@ void ManagedConfigurationAPI::PostStoreConfiguration(
 void ManagedConfigurationAPI::InformObserversIfConfigurationChanged(
     const url::Origin& origin,
     bool has_changed) {
-  if (!has_changed || !base::Contains(observers_, origin))
+  if (!has_changed || !base::Contains(observers_, origin)) {
     return;
+  }
 
   for (auto& observer : observers_[origin]) {
     observer.OnManagedConfigurationChanged();

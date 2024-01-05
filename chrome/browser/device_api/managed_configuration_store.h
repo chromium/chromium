@@ -5,9 +5,13 @@
 #ifndef CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_STORE_H_
 #define CHROME_BROWSER_DEVICE_API_MANAGED_CONFIGURATION_STORE_H_
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/values.h"
-#include "components/value_store/leveldb_value_store.h"
+#include "components/value_store/value_store.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -22,6 +26,9 @@ class ManagedConfigurationStore {
   ManagedConfigurationStore(const url::Origin& origin,
                             const base::FilePath& path);
   ~ManagedConfigurationStore();
+  ManagedConfigurationStore(const ManagedConfigurationStore&) = delete;
+  ManagedConfigurationStore& operator=(const ManagedConfigurationStore&) =
+      delete;
 
   // Returns |true| if the new policy is different from the previously set
   // policy.
