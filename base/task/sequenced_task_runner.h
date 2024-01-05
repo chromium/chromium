@@ -42,6 +42,7 @@ class DelayedTaskManager;
 }
 class DeadlineTimer;
 class MetronomeTimer;
+class PreFreezeBackgroundMemoryTrimmer;
 class TimeDelta;
 class TimeTicks;
 
@@ -66,6 +67,9 @@ class PostDelayedTaskPassKey {
   friend class media::AlsaPcmOutputStream;
   friend class media::AlsaPcmInputStream;
   friend class media::FakeAudioWorker;
+#if BUILDFLAG(IS_ANDROID)
+  friend class base::PreFreezeBackgroundMemoryTrimmer;
+#endif
 };
 
 // Restricts access to RunOrPostTask() to authorized callers.
