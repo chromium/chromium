@@ -1122,3 +1122,15 @@ function keyboardScroll(key, scroller) {
   const scrollPromise = waitForScrollendEvent(scroller);
   return Promise.all([ keyPress(key), scrollPromise ]);
 }
+
+/**
+ * Trigger a gesture that results in a scroll and wait for scroll
+ * completion. Where possible, use a specialized test-driver compatible
+ * method. This is a catch all for cases not explicitly addressed by
+ * a specialized method.
+ */
+function gestureScroll(gesturePromiseCallback, scroller) {
+  const scrollPromise =
+      waitForScrollendEvent(scrollendEventTarget(scroller));
+  return Promise.all([ gesturePromiseCallback(), scrollPromise ]);
+}
