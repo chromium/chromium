@@ -705,7 +705,8 @@ void GameDashboardMainMenuView::VisibilityChanged(views::View* starting_from,
                                        /*enable_flag=*/is_visible));
 
   if (is_visible) {
-    MaybeDecorateSetupButton();
+    MaybeDecorateSetupButton(
+        game_dashboard_utils::IsFlagSet(*flags, ArcGameControlsFlag::kO4C));
   }
 }
 
@@ -733,8 +734,8 @@ void GameDashboardMainMenuView::UpdateRecordGameTile(
   record_game_tile_->SetToggled(is_recording_game_window);
 }
 
-void GameDashboardMainMenuView::MaybeDecorateSetupButton() {
-  if (!game_controls_setup_button_) {
+void GameDashboardMainMenuView::MaybeDecorateSetupButton(bool is_o4c) {
+  if (!game_controls_setup_button_ || is_o4c) {
     return;
   }
   PerformPulseAnimationForSetupButton(/*pulse_count=*/0);

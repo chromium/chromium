@@ -508,6 +508,7 @@ TEST_F(GameDashboardContextTest, GameControlsMenuState) {
 TEST_F(GameDashboardContextTest, GameControlsSetupNudge) {
   CreateGameWindow(/*is_arc_window=*/true);
 
+  // Test setup nudge for non-O4C games.
   game_window_->SetProperty(
       kArcGameControlsFlagsKey,
       static_cast<ArcGameControlsFlag>(
@@ -518,6 +519,17 @@ TEST_F(GameDashboardContextTest, GameControlsSetupNudge) {
   EXPECT_TRUE(test_api_->GetGameControlsSetupNudge());
   task_environment()->FastForwardBy(
       AnchoredNudgeManagerImpl::kNudgeMediumDuration);
+  EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
+  test_api_->CloseTheMainMenu();
+
+  // Test setup nudge for O4C games.
+  game_window_->SetProperty(
+      kArcGameControlsFlagsKey,
+      static_cast<ArcGameControlsFlag>(
+          ArcGameControlsFlag::kKnown | ArcGameControlsFlag::kAvailable |
+          ArcGameControlsFlag::kEmpty | ArcGameControlsFlag::kEnabled |
+          ArcGameControlsFlag::kO4C));
+  test_api_->OpenTheMainMenu();
   EXPECT_FALSE(test_api_->GetGameControlsSetupNudge());
 }
 
