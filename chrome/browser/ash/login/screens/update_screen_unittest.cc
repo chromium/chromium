@@ -69,10 +69,6 @@ class UpdateScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Configure the browser to use Hands-Off Enrollment.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     chromeos::PowerManagerClient::InitializeFake();
