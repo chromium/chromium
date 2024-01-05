@@ -733,13 +733,18 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     // Mark the frame as used this aggregation so it persists.
     resolved_frame.MarkAsUsedInAggregation();
 
-    // If there is a new CompositorFrame for `surface` compute resolved frame
-    // data for the new resolved CompositorFrame.
     if (resolved_frame.previous_frame_index() !=
         surface->GetActiveFrameIndex()) {
+      // If there is a new CompositorFrame for `surface` compute resolved frame
+      // data.
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
+    } else if (resolved_frame.is_valid()) {
+      // The same `CompositorFrame` since last aggregation. Set the
+      // `CompositorRenderPass` pointer back to `ResolvedPassData`. Only
+      // applicable to valid `ResolvedFrameData`.
+      resolved_frame.SetRenderPassPointers();
     }
   }
 
