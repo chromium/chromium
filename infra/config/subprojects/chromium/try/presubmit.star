@@ -177,6 +177,8 @@ presubmit_builder(
     executable = "recipe:presubmit",
     builderless = True,
     os = os.WINDOWS_DEFAULT,
+    # TODO(crbug.com/1459405): Move to SSDs once bot pool has switched over.
+    ssd = None,
     execution_timeout = 40 * time.minute,
     properties = {
         "$depot_tools/presubmit": {
