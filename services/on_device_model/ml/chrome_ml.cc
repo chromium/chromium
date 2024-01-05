@@ -17,6 +17,7 @@
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/process/process.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "gpu/config/gpu_info_collector.h"
@@ -80,7 +81,7 @@ void FatalErrorFn(const char* msg) {
     // Collect crash reports on unknown errors.
     CHECK(false) << "ChromeML Error: " << msg;
   } else {
-    exit(0);
+    base::Process::TerminateCurrentProcessImmediately(0);
   }
 }
 
