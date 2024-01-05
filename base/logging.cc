@@ -1047,14 +1047,17 @@ SystemErrorCode GetLastSystemErrorCode() {
 
 BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 #if BUILDFLAG(IS_WIN)
-  const int kErrorMessageBufferSize = 256;
-  char msgbuf[kErrorMessageBufferSize];
-  DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
-  DWORD len = FormatMessageA(flags, nullptr, error_code, 0, msgbuf,
-                             std::size(msgbuf), nullptr);
+  LPWSTR msgbuf = nullptr;
+  DWORD len = ::FormatMessageW(
+      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+          FORMAT_MESSAGE_IGNORE_INSERTS,
+      nullptr, error_code, 0, reinterpret_cast<LPWSTR>(&msgbuf), 0, nullptr);
   if (len) {
+    std::u16string message = base::WideToUTF16(msgbuf);
+    ::LocalFree(msgbuf);
+    msgbuf = nullptr;
     // Messages returned by system end with line breaks.
-    return base::CollapseWhitespaceASCII(msgbuf, true) +
+    return base::UTF16ToUTF8(base::CollapseWhitespace(message, true)) +
            base::StringPrintf(" (0x%lX)", error_code);
   }
   return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
