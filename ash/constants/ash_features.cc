@@ -2660,6 +2660,11 @@ BASE_FEATURE(kTerminalAlternativeEmulator,
 // Only works in dev and canary channels.
 BASE_FEATURE(kTerminalDev, "TerminalDev", base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables experimental feature for resizing tiling windows.
+BASE_FEATURE(kTilingWindowResize,
+             "TilingWindowResize",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables time of day screen saver.
 BASE_FEATURE(kTimeOfDayScreenSaver,
              "TimeOfDayScreenSaver",
@@ -4253,6 +4258,10 @@ bool IsStylusBatteryStatusEnabled() {
 
 bool IsTetheringExperimentalFunctionalityEnabled() {
   return base::FeatureList::IsEnabled(kTetheringExperimentalFunctionality);
+}
+
+bool IsTilingWindowResizeEnabled() {
+  return base::FeatureList::IsEnabled(kTilingWindowResize);
 }
 
 bool IsTimeOfDayScreenSaverEnabled() {
