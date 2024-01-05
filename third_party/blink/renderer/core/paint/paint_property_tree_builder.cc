@@ -2169,8 +2169,12 @@ static bool NeedsInnerBorderRadiusClip(const LayoutObject& object) {
     return false;
   }
 
+  // The check for overflowing both axes is due to this spec line:
+  //   However, when one of overflow-x or overflow-y computes to clip and the
+  //   other computes to visible, the clipping region is not rounded.
+  // (https://drafts.csswg.org/css-overflow/#corner-clipping).
   return object.StyleRef().HasBorderRadius() && object.IsBox() &&
-         NeedsOverflowClip(object);
+         NeedsOverflowClip(object) && object.ShouldClipOverflowAlongBothAxis();
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
