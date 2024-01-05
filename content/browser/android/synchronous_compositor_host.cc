@@ -222,6 +222,7 @@ SynchronousCompositorHost::DemandDrawHwAsync(
     const gfx::Size& viewport_size,
     const gfx::Rect& viewport_rect_for_tile_priority,
     const gfx::Transform& transform_for_tile_priority) {
+  draw_hw_called_ = true;
   invalidate_needs_draw_ = false;
   num_invalidates_since_last_draw_ = 0u;
   scoped_refptr<FrameFuture> frame_future = new FrameFuture();
@@ -704,6 +705,19 @@ void SynchronousCompositorHost::OnBeginFrame(const viz::BeginFrameArgs& args) {
 
   if (on_compute_scroll_called_ || !rwhva_->is_currently_scrolling_viewport()) {
     rwhva_->host()->ProgressFlingIfNeeded(args.frame_time);
+  } else if (base::FeatureList::IsEnabled(
+                 features::kWebViewSuppressTapDuringFling)) {
+    // Normally, `OnComputeScroll` is called after `OnBeginFrame`, but before
+    // `DemandDrawHwAsync`. So `OnBeginFrame` calls before the first draw will
+    // end up here regardless of whether `OnComputeScroll` will be called. If
+    // these frames contain fling, then don't cancel fling prematurely. Note
+    // normally fling cannot happen from user interaction this way because touch
+    // scroll happens before fling.
+    if (draw_hw_called_) {
+      // If we are not ticking flings ourselves, also reset the tracking state
+      // for fling so the first tap during / after fling is not suppressed.
+      rwhva_->host()->StopFling();
+    }
   }
 
   if (needs_begin_frame) {

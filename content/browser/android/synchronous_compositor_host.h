@@ -186,6 +186,9 @@ class CONTENT_EXPORT SynchronousCompositorHost
   // overridden.
   bool on_compute_scroll_called_ = false;
 
+  // Whether `DemandDrawHwAsync` has ever been called.
+  bool draw_hw_called_ = false;
+
   // From renderer.
   uint32_t renderer_param_version_;
   uint32_t need_invalidate_count_;
