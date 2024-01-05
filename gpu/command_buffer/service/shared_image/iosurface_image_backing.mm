@@ -651,7 +651,9 @@ wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
   begin_access_desc.signaledValues = signaled_values.data();
 
   texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
-  CHECK(shared_texture_memory_.BeginAccess(texture_, &begin_access_desc));
+  if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+    texture_ = {};
+  }
   return texture_.Get();
 }
 
