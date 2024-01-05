@@ -42,11 +42,8 @@ bool GameDashboardController::IsGameWindow(aura::Window* window) {
 
 // static
 bool GameDashboardController::ReadyForAccelerator(aura::Window* window) {
-  if (!IsGameWindow(window)) {
-    return false;
-  }
-
-  return game_dashboard_utils::ShouldEnableGameDashboardButton(window);
+  return IsGameWindow(window) &&
+             game_dashboard_utils::ShouldEnableGameDashboardButton(window);
 }
 
 GameDashboardController::GameDashboardController(
@@ -103,8 +100,8 @@ void GameDashboardController::ShowResizeToggleMenu(aura::Window* window) {
 }
 
 void GameDashboardController::OnWindowInitialized(aura::Window* new_window) {
-  auto* top_level_window = new_window->GetToplevelWindow();
-  if (!top_level_window ||
+  if (const auto* top_level_window = new_window->GetToplevelWindow();
+      !top_level_window ||
       top_level_window->GetType() != aura::client::WINDOW_TYPE_NORMAL) {
     // Ignore non-NORMAL window types.
     return;
@@ -189,8 +186,7 @@ void GameDashboardController::OnOverviewModeEnded() {
 }
 
 void GameDashboardController::GetWindowGameState(aura::Window* window) {
-  const auto* app_id = window->GetProperty(kAppIDKey);
-  if (!app_id) {
+  if (const auto* app_id = window->GetProperty(kAppIDKey); !app_id) {
     RefreshWindowTracking(window, WindowGameState::kNotYetKnown);
   } else if (IsArcWindow(window)) {
     // For ARC apps, the "app_id" is equivalent to its package name.
@@ -211,12 +207,10 @@ void GameDashboardController::GetWindowGameState(aura::Window* window) {
 void GameDashboardController::OnArcWindowIsGame(
     std::unique_ptr<aura::WindowTracker> window_tracker,
     bool is_game) {
-  const auto windows = window_tracker->windows();
-  if (windows.empty()) {
-    return;
+  if (const auto windows = window_tracker->windows(); !windows.empty()) {
+    RefreshWindowTracking(windows[0], is_game ? WindowGameState::kGame
+                                              : WindowGameState::kNotGame);
   }
-  RefreshWindowTracking(
-      windows[0], is_game ? WindowGameState::kGame : WindowGameState::kNotGame);
 }
 
 void GameDashboardController::RefreshWindowTracking(aura::Window* window,
