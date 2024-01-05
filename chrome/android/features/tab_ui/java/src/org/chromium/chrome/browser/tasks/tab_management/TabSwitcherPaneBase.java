@@ -74,6 +74,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
 
+    private boolean mIsVisible;
     private boolean mNativeInitialized;
     private OnClickListener mNewTabButtonClickListener;
 
@@ -123,7 +124,9 @@ public abstract class TabSwitcherPaneBase implements Pane {
         // WARM/COLD signals being posted this can lead to multiple HOT panes for a brief period.
         // In this case multiple HOT panes might listen for the same menu event leading to a
         // collision.
-        if (loadHint == LoadHint.HOT) {
+        mIsVisible = loadHint == LoadHint.HOT;
+
+        if (mIsVisible) {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     mMenuOrKeyboardActionHandler);
         } else {
@@ -218,6 +221,10 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     protected @TabListMode int getTabListMode() {
         return mFactory.getTabListMode();
+    }
+
+    protected boolean isVisible() {
+        return mIsVisible;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)

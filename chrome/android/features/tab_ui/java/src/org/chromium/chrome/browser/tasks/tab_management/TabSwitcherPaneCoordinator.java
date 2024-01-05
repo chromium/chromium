@@ -44,6 +44,19 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         assert false : "Not implemented.";
     }
 
+    /**
+     * Scrolls so that the selected tab in the current model is in the middle of the screen or as
+     * close as possible if at the start/end of the recycler view.
+     */
+    public void setInitialScrollIndexOffset() {
+        assert false : "Not implemented.";
+    }
+
+    /** Requests accessibility focus on the current tab. */
+    public void requestAccessibilityFocusOnCurrentTab() {
+        assert false : "Not implemented.";
+    }
+
     /** Returns a {@link Supplier} that provides dialog visibility information. */
     public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
         assert false : "Not implemented.";

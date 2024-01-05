@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -156,7 +155,7 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull ScrimCoordinator rootUiScrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthController,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
@@ -177,13 +176,16 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                         modalDialogManager);
         TabSwitcherPaneBase pane;
         if (isIncognito) {
+            Supplier<TabModelFilter> incongitorTabModelFilterSupplier =
+                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(true);
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
                             factory,
-                            () -> (IncognitoTabModel) tabModelSelector.getModel(true),
+                            incongitorTabModelFilterSupplier,
                             newTabButtonOnClickListener,
-                            menuOrKeyboardActionController);
+                            menuOrKeyboardActionController,
+                            incognitoReauthControllerSupplier);
         } else {
             Supplier<TabModelFilter> tabModelFilterSupplier =
                     () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);

@@ -15,7 +15,6 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
-import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
@@ -33,7 +32,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
 
     private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
-    private boolean mIsVisible;
 
     /**
      * @param context The activity context.
@@ -90,12 +88,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         return PaneId.TAB_SWITCHER;
     }
 
-    @Override
-    public void notifyLoadHint(@LoadHint int loadHint) {
-        super.notifyLoadHint(loadHint);
-        mIsVisible = loadHint == LoadHint.HOT;
-    }
-
     private void onProfileProviderAvailable(@NonNull ProfileProvider profileProvider) {
         if (!PriceTrackingFeatures.isPriceTrackingEnabled(profileProvider.getOriginalProfile())
                 && getTabListMode() == TabListMode.GRID) {
@@ -103,7 +95,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         }
         mPriceAnnotationsPrefListener =
                 (sharedPrefs, key) -> {
-                    if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key) || !mIsVisible) {
+                    if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key) || !isVisible()) {
                         return;
                     }
                     TabModelFilter filter = mTabModelFilterSupplier.get();

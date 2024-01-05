@@ -176,7 +176,7 @@ public interface TabManagementDelegate {
      *     unused as the root UI's scrim coordinator is used for the show/hide animation.
      * @param snackbarManager The activity level snackbar manager.
      * @param modalDialogManager The modal dialog manager for the activity.
-     * @param incognitoReauthController The incognito reauth controller.
+     * @param incognitoReauthControllerSupplier The incognito reauth controller supplier.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
      * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether this is an incognito pane.
@@ -193,7 +193,7 @@ public interface TabManagementDelegate {
             @NonNull ScrimCoordinator rootUiScrimCoordinator,
             @NonNull SnackbarManager snackbarManager,
             @NonNull ModalDialogManager modalDialogManager,
-            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthController,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull OnClickListener newTabButtonOnClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito);
