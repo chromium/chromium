@@ -374,15 +374,6 @@ void WelcomeScreen::ShowImpl() {
     }
   }
 
-  // Skip this screen if this is an automatic enrollment as part of Zero-Touch
-  // hands off flow.
-  // TODO(crbug.com/1295708): Move this check to an implementation of
-  // BaseScreen:MaybeSkip().
-  if (WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnContinueButtonPressed();
-    return;
-  }
-
   // TODO(crbug.com/1105387): Part of initial screen logic.
   PrefService* prefs = g_browser_process->local_state();
   if (prefs->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {

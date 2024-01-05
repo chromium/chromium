@@ -723,23 +723,6 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
   test::OobeJS().ClickOnPath({"debugging", "removeProtectionCancelButton"});
 }
 
-class WelcomeScreenHandsOffBrowserTest : public WelcomeScreenBrowserTest {
- public:
-  WelcomeScreenHandsOffBrowserTest() = default;
-  ~WelcomeScreenHandsOffBrowserTest() override = default;
-
-  // WelcomeScreenBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WelcomeScreenHandsOffBrowserTest, SkipScreen) {
-  WaitForScreenExit();
-}
-
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenTimezone() {
