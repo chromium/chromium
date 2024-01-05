@@ -52,6 +52,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/base/url_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
@@ -1320,6 +1321,14 @@ PasswordFormManager::FindBestPossibleUsernameCandidate(
 void PasswordFormManager::UpdatePredictionsForObservedForm(
     const std::map<FormSignature, FormPredictions>& predictions) {
   CHECK(observed_form());
+  if (net::IsLocalhost(observed_form()->url)) {
+    // Avoid relying on crowdsourcing on localhost to avoid aggregating multiple
+    // unrelated form together. Set empty predictions instead to avoid delaying
+    // filling.
+    parser_.set_predictions(FormPredictions());
+    return;
+  }
+
   FormSignature observed_form_signature =
       CalculateFormSignature(*observed_form());
   auto it = predictions.find(observed_form_signature);

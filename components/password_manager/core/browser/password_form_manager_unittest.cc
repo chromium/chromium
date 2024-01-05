@@ -4114,6 +4114,39 @@ TEST_P(PasswordFormManagerTest,
   EXPECT_EQ(u"", form_manager_->GetPendingCredentials().username_value);
 }
 
+// Tests that PasswordManager does not use server precictions to parse
+// localhost forms.
+TEST_P(PasswordFormManagerTest, ServerPredictionsIgnoredOnLocalhost) {
+  // Observe a single text field form on localhost.
+  FormData observed_form;
+  const std::string kLocalHostUrl = "http://localhost";
+  observed_form.url = GURL(kLocalHostUrl);
+  observed_form.unique_renderer_id = FormRendererId(1);
+  FormFieldData field;
+  field.form_control_type = autofill::FormControlType::kInputText;
+  field.unique_renderer_id = kSingleUsernameFieldRendererId;
+  observed_form.fields.push_back(field);
+  CreateFormManager(observed_form);
+
+  // Expect no filling on receiving saved matches, because single username
+  // field cannot be filled without server predictions.
+  PasswordForm localhost_match = saved_match_;
+  localhost_match.url = GURL(kLocalHostUrl);
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+  Mock::VerifyAndClearExpectations(&driver_);
+
+  // Receive single username predictions.
+  const FormSignature kFormSignature = CalculateFormSignature(observed_form);
+  FormPredictions predictions = MakeSingleUsernamePredictions(
+      kFormSignature, kSingleUsernameFieldRendererId,
+      kSingleUsernameFieldSignature);
+
+  // Expect no filling on receiving predictions.
+  EXPECT_CALL(driver_, SetPasswordFillData).Times(0);
+  form_manager_->ProcessServerPredictions({{kFormSignature, predictions}});
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {
