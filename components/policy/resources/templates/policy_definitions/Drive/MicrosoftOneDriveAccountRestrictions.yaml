@@ -1,6 +1,6 @@
 caption: Restricts accounts that can use the <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> integration
 desc: |-
-  This policy allows admins to restrict which accounts are allowed to sign-in for <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> when the <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME">MicrosoftOneDriveMount</ph> is enabled.
+  This policy allows admins to restrict which accounts are allowed to sign-in for <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> when the <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME">MicrosoftOneDriveMount</ph> policy is enabled.
 
   If this policy contains a value of '<ph name="COMMON_NAME">common</ph>', any account can be used to sign-in.
 
@@ -12,7 +12,9 @@ desc: |-
 
   If this policy is unset or only contains an empty value, it behaves as if '<ph name="COMMON_NAME">common</ph>' was specified for regular users; for enterprise users it behaves as if '<ph name="ORGANIZATIONS_NAME">organizations</ph>' was specified.
 
-  Changing the restriction might lead to users being signed out of their <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> account if it does not adhere to the new restrictions.
+  Changing restrictions might lead to users being signed out of their <ph name="MICROSOFT_ONE_DRIVE_NAME">Microsoft OneDrive</ph> account if it does not adhere to the new restrictions.
+
+  Note: At this time only the first entry will be taken into account. Later extensions will support multiple entries.
 example_value:
 - domain.com
 default: ["common"]
@@ -28,7 +30,7 @@ schema:
   items:
     type: string
   type: array
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:122-
 tags: []
 type: list
