@@ -5520,6 +5520,16 @@ chromium-metrics-reviews@google.com.
   <summary>The time spent in closesocket call in UDPSocketWin::Close.</summary>
 </histogram>
 
+<histogram name="Net.URLLoaderThrottle.OnReceiveResponseTime" units="ms"
+    expires_after="2024-03-27">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent on the callback called when the response head is received. Logged
+    every time a throttle receives a response.
+  </summary>
+</histogram>
+
 <histogram name="Net.URLLoaderThrottleDeferTime.WillProcessResponse.{Throttle}"
     units="ms" expires_after="2023-02-13">
   <owner>cduvall@chromium.org</owner>

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
@@ -705,6 +706,7 @@ void ThrottlingURLLoader::OnReceiveResponse(
     base::UmaHistogramBoolean("FetchKeepAlive.Renderer.Total.ReceivedResponse",
                               true);
   }
+  base::ElapsedTimer timer;
   did_receive_response_ = true;
   body_ = std::move(body);
   cached_metadata_ = std::move(cached_metadata);
@@ -763,6 +765,8 @@ void ThrottlingURLLoader::OnReceiveResponse(
 
   forwarding_client_->OnReceiveResponse(
       std::move(response_head), std::move(body_), std::move(cached_metadata_));
+  base::UmaHistogramTimes("Net.URLLoaderThrottle.OnReceiveResponseTime",
+                          timer.Elapsed());
 }
 
 void ThrottlingURLLoader::OnReceiveRedirect(
