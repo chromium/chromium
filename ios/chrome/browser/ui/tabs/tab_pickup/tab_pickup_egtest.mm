@@ -84,9 +84,6 @@ id<GREYMatcher> TabPickupSwitchItem(bool is_toggled_on, bool enabled) {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kTabPickupThreshold);
 
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
-
   // In order to present banners on the NTP, the tab resumption feature must be
   // disabled.
   if ([self isRunningTest:@selector

@@ -20,10 +20,13 @@ enum class SafeBrowsingSafetyCheckState;
 
 namespace experimental_flags {
 
-// Whether the First Run UI will be always be displayed.
+// Whether the First Run UI will always be displayed.
 bool AlwaysDisplayFirstRun();
 
-// Whether the Upgrade Promo UI will be always be displayed.
+// Whether the search engine choice UI will always be displayed.
+bool AlwaysDisplaySearchEngineChoice();
+
+// Whether the Upgrade Promo UI will always be displayed.
 bool AlwaysDisplayUpgradePromo();
 
 // Returns the host name for an alternative Origin Server host for use by

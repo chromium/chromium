@@ -57,6 +57,12 @@ bool DisableGeolocation();
 // on app startup to allow tests to run unimpeded.
 bool DisablePromoManagerFullScreenPromos();
 
+// Returns true if the search engine choice view, which would interfere with
+// many tests, should by default be skipped. Note that even in a target where
+// this function returns `false`, that's just a default, and individual tests
+// may still enable this view.
+bool DisableDefaultSearchEngineChoice();
+
 // Returns a token service that can be installed as a fake identity management
 // service that bridges iOS SSO library and Chrome account info when testing.
 // May return nullptr.

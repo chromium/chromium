@@ -56,6 +56,7 @@
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/ui/first_run/first_run_screen_provider.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/unified_consent/model/unified_consent_service_factory.h"
@@ -1528,7 +1529,7 @@ int watchRunNumber = 0;
 #pragma mark - Default Search Engine Choice Screen Utilities
 
 + (BOOL)IsSearchEngineChoiceScreenEnabledFre {
-  return ios::provider::IsSearchEngineChoiceScreenEnabledFre();
+  return ios::first_run::IsSearchEngineChoiceScreenEnabledFre();
 }
 
 #pragma mark - First Run Utilities

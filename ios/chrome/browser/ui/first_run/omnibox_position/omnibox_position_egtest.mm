@@ -103,11 +103,6 @@ void SkipScreensBeforeOmniboxPositionChoice() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Disable the search engine choice at the end of FRE.
-  // TODO(b/289998773): Re-enable it. Update EG test so that they
-  // close this view if they need to interact more after the FRE.
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
   config.additional_args.push_back(std::string("-") +
                                    test_switches::kSignInAtStartup);
   config.additional_args.push_back("-FirstRunForceEnabled");

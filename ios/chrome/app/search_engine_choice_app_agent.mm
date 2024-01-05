@@ -9,6 +9,7 @@
 #import "base/check.h"
 #import "components/search_engines/search_engine_choice_utils.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
@@ -19,9 +20,29 @@
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "ios/chrome/browser/ui/search_engine_choice/search_engine_choice_coordinator.h"
 #import "ios/public/provider/chrome/browser/signin/choice_api.h"
+
+namespace {
+bool IsChoiceEnabledInNormalRun() {
+  if (experimental_flags::AlwaysDisplaySearchEngineChoice()) {
+    // This branch is only selected in tests that are related to choice screen.
+    return true;
+  }
+  if (tests_hook::DisableDefaultSearchEngineChoice()) {
+    // This branch is taken in every other tests.
+    return false;
+  }
+  if (!search_engines::IsChoiceScreenFlagEnabled(
+          search_engines::ChoicePromo::kDialog)) {
+    // Outside of tests, do not show the view if flags disable it.
+    return false;
+  }
+  return ios::provider::IsChoiceEnabled();
+}
+}  // namespace
 
 @interface SearchEngineChoiceAppAgent () <SearchEngineChoiceCoordinatorDelegate>
 @end
@@ -83,7 +104,7 @@
 }
 
 - (BOOL)shouldShowChoiceScreen {
-  if (!ios::provider::IsChoiceEnabled()) {
+  if (!IsChoiceEnabledInNormalRun()) {
     return NO;
   }
   if (self.appState.initStage == InitStageFirstRun) {

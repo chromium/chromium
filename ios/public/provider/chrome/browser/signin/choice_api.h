@@ -25,6 +25,12 @@ bool IsChoiceEnabled();
 // Whether the feature flag is enabled for the first run.
 bool IsSearchEngineChoiceScreenEnabledFre();
 
+// Returns true if the search engine choice view
+// should by default be skipped. Note that even in a target where this function
+// returns `false`, that's just a default, and individual tests may still enable
+// this view.
+bool DisableDefaultSearchEngineChoice();
+
 }  // namespace provider
 }  // namespace ios
 

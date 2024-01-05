@@ -24,6 +24,9 @@ bool DisableDiscoverFeed() {
 bool DisableDefaultFirstRun() {
   return false;
 }
+bool DisableDefaultSearchEngineChoice() {
+  return false;
+}
 bool DisableGeolocation() {
   return false;
 }

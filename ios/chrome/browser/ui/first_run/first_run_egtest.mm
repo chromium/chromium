@@ -518,8 +518,6 @@ void DismissScreensAfterSigninAndSync() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  config.additional_args.push_back(std::string("--") +
-                                   switches::kDisableSearchEngineChoiceScreen);
   if ([self isRunningTest:@selector(testSignInWithNoAccount)] ||
       [self isRunningTest:@selector(testHistorySyncSkipIfNoSignIn)] ||
       [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)] ||
@@ -1567,6 +1565,7 @@ void DismissScreensAfterSigninAndSync() {
   // case, France).
   config.additional_args.push_back("--search-engine-choice-country=FR");
   config.features_enabled.push_back(switches::kSearchEngineChoiceFre);
+  config.additional_args.push_back(std::string("-SearchEngineForceEnabled"));
   return config;
 }
 

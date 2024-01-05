@@ -370,6 +370,7 @@ source_set("search_engine_choice_app_agent") {
     "search_engine_choice_app_agent.mm",
   ]
   deps = [
+    ":tests_hook",
     "//base",
     "//components/search_engines",
     "//ios/chrome/app/application_delegate:app_state_header",
@@ -382,6 +383,7 @@ source_set("search_engine_choice_app_agent") {
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/ui/search_engine_choice",
     "//ios/public/provider/chrome/browser/signin:choice_api",
   ]

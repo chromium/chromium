@@ -34,6 +34,10 @@ bool DisableDefaultFirstRun() {
   // Always disable FRE for perf tests.
   return true;
 }
+bool DisableDefaultSearchEngineChoice() {
+  // Always disable search engine selection for perf tests.
+  return true;
+}
 bool DisableGeolocation() {
   return false;
 }

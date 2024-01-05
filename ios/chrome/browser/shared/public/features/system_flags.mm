@@ -28,6 +28,7 @@ NSString* const kAlternateDiscoverFeedServerURL =
     @"AlternateDiscoverFeedServerURL";
 NSString* const kEnableStartupCrash = @"EnableStartupCrash";
 NSString* const kFirstRunForceEnabled = @"FirstRunForceEnabled";
+NSString* const kSearchEngineForceEnabled = @"SearchEngineForceEnabled";
 NSString* const kUpgradePromoForceEnabled = @"UpgradePromoForceEnabled";
 NSString* const kOriginServerHost = @"AlternateOriginServerHost";
 NSString* const kWhatsNewPromoStatus = @"WhatsNewPromoStatus";
@@ -61,6 +62,11 @@ namespace experimental_flags {
 bool AlwaysDisplayFirstRun() {
   return
       [[NSUserDefaults standardUserDefaults] boolForKey:kFirstRunForceEnabled];
+}
+
+bool AlwaysDisplaySearchEngineChoice() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kSearchEngineForceEnabled];
 }
 
 bool AlwaysDisplayUpgradePromo() {

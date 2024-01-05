@@ -44,6 +44,10 @@ bool DisableDefaultFirstRun() {
   return true;
 }
 
+bool DisableDefaultSearchEngineChoice() {
+  return true;
+}
+
 bool DisableGeolocation() {
   return true;
 }
