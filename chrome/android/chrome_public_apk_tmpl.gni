@@ -494,7 +494,9 @@ template("chrome_common_apk_or_module_tmpl") {
       }
     }
 
-    # https://crbug.com/1415351
+    # Chrome uses the window APIs directly instead of going through the
+    # androidx middleware.
+    # See //third_party/android_sdk/window_extensions/README.md
     assert_no_deps = [
       "//third_party/androidx:androidx_window_extensions_core_core_java",
       "//third_party/androidx:androidx_window_sidecar_sidecar_java",
