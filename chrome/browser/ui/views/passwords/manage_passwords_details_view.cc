@@ -552,7 +552,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       static_cast<int>(ManagePasswordsViewIDs::kPasswordLabel));
   if (!password_form.federation_origin.opaque()) {
     // Federated credentials, there is no note and no copy password button.
-    AddChildView(CreateDetailsRow(kKeyIcon, std::move(password_label)));
+    AddChildView(CreateDetailsRow(vector_icons::kPasswordManagerIcon,
+                                  std::move(password_label)));
     return;
   }
   auto copy_password_button_callback =
@@ -565,7 +566,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
               PasswordManagementBubbleInteractions::
                   kPasswordCopyButtonClicked));
   AddChildView(CreateDetailsRowWithActionButton(
-      kKeyIcon,
+      vector_icons::kPasswordManagerIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
       kCopyIcon,
