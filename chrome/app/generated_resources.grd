@@ -7962,6 +7962,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER"  desc="Header for the wallpaper search section for showing example results.">
         Inspiration
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_LOADING_A11Y_MESSAGE"  desc="Accessibility string read to screen reader users that images are being created.">
+        Generating...
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE"  desc="Accessibility string read to screen reader users that images are being created.">
+        Generated <ph name="COUNT">$1<ex>2</ex></ph> images
+      </message>
 
       <!-- NTP Modules -->
       <message name="IDS_NTP_MODULES_INFO_BUTTON_TITLE" desc="Text shown in tooltip of info button of an NTP module.">

@@ -554,6 +554,40 @@ suite('WallpaperSearchTest', () => {
       assertEquals('Image 1 of Label A1, Label C', getAriaLabelOfTile(0));
       assertEquals('Image 2 of Label A1, Label C', getAriaLabelOfTile(1));
     });
+
+    test('announces results', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchLoadingA11yMessage': 'Generating...',
+        'wallpaperSearchSuccessA11yMessage': 'Generated $1 images',
+      });
+      const resultsResolver = new PromiseResolver();
+      handler.setResultFor(
+          'getWallpaperSearchResults', resultsResolver.promise);
+      createWallpaperSearchElement({
+        descriptorA: [{category: 'category', labels: ['Label A1', 'Label A2']}],
+        descriptorB: [{label: 'Label B', imagePath: 'bar.png'}],
+        descriptorC: ['Label C'],
+      });
+      await flushTasks();
+
+      const loadingEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      wallpaperSearchElement.$.submitButton.click();
+      const loadingEvent = await loadingEventPromise;
+      assertTrue(loadingEvent.detail.messages.includes('Generating...'));
+
+      const successEventPromise =
+          eventToPromise('cr-a11y-announcer-messages-sent', document.body);
+      resultsResolver.resolve({
+        status: WallpaperSearchStatus.kOk,
+        results: [
+          {image: '123', id: {high: 10, low: 1}},
+          {image: '123', id: {high: 10, low: 1}},
+        ],
+      });
+      const successEvent = await successEventPromise;
+      assertTrue(successEvent.detail.messages.includes('Generated 2 images'));
+    });
   });
 
   suite('History', () => {

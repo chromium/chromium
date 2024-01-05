@@ -184,7 +184,11 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchPageHeader", IDS_NTP_WALLPAPER_SEARCH_PAGE_HEADER},
       {"wallpaperSearchTileLabel", IDS_NTP_WALLPAPER_SEARCH_TILE_LABEL},
       {"wallpaperSearchInspirationHeader",
-       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER}};
+       IDS_NTP_WALLPAPER_SEARCH_INSPIRATION_HEADER},
+      {"wallpaperSearchLoadingA11yMessage",
+       IDS_NTP_WALLPAPER_SEARCH_LOADING_A11Y_MESSAGE},
+      {"wallpaperSearchSuccessA11yMessage",
+       IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(

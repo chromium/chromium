@@ -21,6 +21,7 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 
 import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import {CrA11yAnnouncerElement, getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrFeedbackButtonsElement, CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
@@ -540,6 +541,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       return;
     }
 
+    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_PROMPT_SUBMITTED);
 
@@ -551,6 +553,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.loading_ = true;
     this.results_ = [];
     this.emptyResultContainers_ = [];
+    announcer.announce(this.i18n('wallpaperSearchLoadingA11yMessage'));
     const {status, results} =
         await this.wallpaperSearchHandler_.getWallpaperSearchResults(
             this.selectedDescriptorA_, this.selectedDescriptorB_,
@@ -563,6 +566,10 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
       c: this.selectedDescriptorC_,
     };
     this.status_ = status;
+    if (this.status_ === WallpaperSearchStatus.kOk) {
+      announcer.announce(
+          this.i18n('wallpaperSearchSuccessA11yMessage', results.length));
+    }
     recordStatusChange(status);
     this.selectedFeedbackOption_ = CrFeedbackOption.UNSPECIFIED;
     this.emptyResultContainers_ = this.calculateEmptyTiles(results);
