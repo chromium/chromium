@@ -12,11 +12,13 @@
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/request_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_sensitivity_cache.h"
 #include "chrome/browser/ui/tabs/organization/trigger_policies.h"
+#include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
@@ -115,7 +117,37 @@ void TabOrganizationService::OnUserInvokedFeature(const Browser* browser) {
   }
 }
 
+bool TabOrganizationService::CanStartRequest() const {
+  const syncer::SyncService* const sync_service =
+      SyncServiceFactory::GetForProfile(profile_);
+  if (!sync_service) {
+    return false;
+  }
+
+  // Sync must be enabled.
+  if (!sync_service->IsSyncFeatureEnabled()) {
+    return false;
+  }
+
+  // Sync must not be paused.
+  if (!sync_service->IsSyncFeatureActive()) {
+    return false;
+  }
+
+  // History Sync must be enabled.
+  if (!sync_service->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kHistory)) {
+    return false;
+  }
+
+  return true;
+}
+
 void TabOrganizationService::StartRequest(const Browser* browser) {
+  if (!CanStartRequest()) {
+    return;
+  }
+
   TabOrganizationSession* session = GetSessionForBrowser(browser);
   if (!session || session->IsComplete()) {
     session = ResetSessionForBrowser(browser);
