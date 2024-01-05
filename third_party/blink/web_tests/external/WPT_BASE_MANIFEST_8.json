@@ -165915,6 +165915,32 @@
        {}
       ]
      ],
+     "rounded-overflow-clip-visible.html": [
+      "65e7f055a3907da79701f1f8d68f6527d7c69181",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/rounded-overflow-clip-visible-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "rounded-overflow-visible-clip.html": [
+      "8bd727e1cfd6fd62674bdeb1fdf08af0b6b0b1c4",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/rounded-overflow-visible-clip-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scrollable-overflow-input-001.html": [
       "1b58803079f8b60b68eb1c57a0c522962e0a8019",
       [
@@ -310682,7 +310708,7 @@
       []
      ],
      "META.yml": [
-      "0bcad0b51f759e6ea9a05e2fee919677bc790dd3",
+      "503fc08f57614916ba42660b1dbf5acbe0f267ee",
       []
      ],
      "OWNERS": [
@@ -320540,7 +320566,7 @@
       []
      ],
      "META.yml": [
-      "e49946f4f7012e2aefbc2fb01573a2e01a903e55",
+      "55f9d72fa50fc5b9378511c74b84873da740b15b",
       []
      ],
      "OWNERS": [
@@ -326771,6 +326797,14 @@
        []
       ]
      },
+     "rounded-overflow-clip-visible-ref.html": [
+      "3a25b794d8d4136c2a7c8c94e5d9eb80daceedc7",
+      []
+     ],
+     "rounded-overflow-visible-clip-ref.html": [
+      "a97633ed3bd7c094d06743534789226165ca8a05",
+      []
+     ],
      "scrollable-overflow-input-001-ref.html": [
       "151843a72c00616dfb7ad723be6b1d3435cde65b",
       []
@@ -338568,7 +338602,7 @@
       []
      ],
      "META.yml": [
-      "7ce4b54a22c78576dc2318ebd651dfd1cce374ad",
+      "81011208b5f9813225354369c533174728fd500e",
       []
      ],
      "OWNERS": [
