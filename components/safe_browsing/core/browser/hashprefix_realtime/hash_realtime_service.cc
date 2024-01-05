@@ -308,7 +308,8 @@ void HashRealTimeService::StartLookupInternal(
     LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
                       /*is_source_local_cache=*/true);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/true,
-                                     sb_threat_info.threat_type);
+                                     sb_threat_info.threat_type,
+                                     OperationOutcome::kResultInLocalCache);
     return;
   }
 
@@ -317,7 +318,8 @@ void HashRealTimeService::StartLookupInternal(
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.BackoffState", in_backoff);
   if (in_backoff) {
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
-                                     /*sb_threat_type=*/absl::nullopt);
+                                     /*sb_threat_type=*/absl::nullopt,
+                                     OperationOutcome::kServiceInBackoffMode);
     return;
   }
 
@@ -351,7 +353,8 @@ void HashRealTimeService::OnGetOhttpKey(
     base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
                                   BackoffReportErrorReason::kInvalidKey);
     lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
-                                     /*sb_threat_type=*/absl::nullopt);
+                                     /*sb_threat_type=*/absl::nullopt,
+                                     OperationOutcome::kOhttpKeyFetchFailed);
     return;
   }
   // Construct OHTTP request.
@@ -442,7 +445,7 @@ void HashRealTimeService::OnURLLoaderComplete(
         ohttp_client_destructed_early);
   }
 
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
       response = ParseResponseAndUpdateBackoff(net_error, response_code,
                                                std::move(response_body),
                                                hash_prefixes_in_request);
@@ -468,7 +471,9 @@ void HashRealTimeService::OnURLLoaderComplete(
                       /*is_source_local_cache=*/false);
   }
 
-  lookup_completer->CompleteLookup(is_lookup_successful, sb_threat_type);
+  lookup_completer->CompleteLookup(
+      is_lookup_successful, sb_threat_type,
+      response.error_or(OperationOutcome::kSuccess));
   if (webui_delegate_ && is_lookup_successful &&
       webui_delegate_token.has_value()) {
     // The following |webui_delegate_| call is to log this HPRT lookup response
@@ -479,7 +484,7 @@ void HashRealTimeService::OnURLLoaderComplete(
 }
 
 base::expected<std::unique_ptr<V5::SearchHashesResponse>,
-               HashRealTimeService::OperationResult>
+               HashRealTimeService::OperationOutcome>
 HashRealTimeService::ParseResponseAndUpdateBackoff(
     int net_error,
     int response_code,
@@ -488,11 +493,9 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   auto response =
       ParseResponse(net_error, response_code, std::move(response_body),
                     requested_hash_prefixes);
-  base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationResult",
-                                response.error_or(OperationResult::kSuccess));
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
-  } else if (response.error() != OperationResult::kRetriableError) {
+  } else if (response.error() != OperationOutcome::kRetriableError) {
     bool newly_in_backoff_mode = backoff_operator_->ReportError();
     if (newly_in_backoff_mode) {
       RecordHttpResponseOrErrorCode(
@@ -550,7 +553,7 @@ void HashRealTimeService::RemoveFullHashDetailsWithInvalidEnums(
 }
 
 base::expected<std::unique_ptr<V5::SearchHashesResponse>,
-               HashRealTimeService::OperationResult>
+               HashRealTimeService::OperationOutcome>
 HashRealTimeService::ParseResponse(
     int net_error,
     int response_code,
@@ -559,24 +562,24 @@ HashRealTimeService::ParseResponse(
   if (net_error != net::OK &&
       net_error != net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
     return base::unexpected(ErrorIsRetriable(net_error, response_code)
-                                ? OperationResult::kRetriableError
-                                : OperationResult::kNetworkError);
+                                ? OperationOutcome::kRetriableError
+                                : OperationOutcome::kNetworkError);
   }
   if (response_code != net::HTTP_OK) {
-    return base::unexpected(OperationResult::kHttpError);
+    return base::unexpected(OperationOutcome::kHttpError);
   }
   CHECK_EQ(net::OK, net_error);
   auto response = std::make_unique<V5::SearchHashesResponse>();
   if (!response->ParseFromString(*response_body)) {
-    return base::unexpected(OperationResult::kParseError);
+    return base::unexpected(OperationOutcome::kParseError);
   }
   if (!response->has_cache_duration()) {
-    return base::unexpected(OperationResult::kNoCacheDurationError);
+    return base::unexpected(OperationOutcome::kNoCacheDurationError);
   }
   for (const auto& full_hash : response->full_hashes()) {
     if (full_hash.full_hash().length() !=
         hash_realtime_utils::kFullHashLength) {
-      return base::unexpected(OperationResult::kIncorrectFullHashLengthError);
+      return base::unexpected(OperationOutcome::kIncorrectFullHashLengthError);
     }
   }
   RemoveUnmatchedFullHashes(response, requested_hash_prefixes);
@@ -692,9 +695,12 @@ HashRealTimeService::LookupCompleter::~LookupCompleter() = default;
 
 void HashRealTimeService::LookupCompleter::CompleteLookup(
     bool is_lookup_successful,
-    absl::optional<SBThreatType> sb_threat_type) {
+    absl::optional<SBThreatType> sb_threat_type,
+    OperationOutcome operation_outcome) {
   CHECK(!is_call_complete_);
   is_call_complete_ = true;
+  base::UmaHistogramEnumeration("SafeBrowsing.HPRT.OperationOutcome",
+                                operation_outcome);
   response_callback_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(response_callback_),
                                 is_lookup_successful, sb_threat_type));

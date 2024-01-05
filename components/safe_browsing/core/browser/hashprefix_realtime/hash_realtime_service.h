@@ -138,7 +138,7 @@ class HashRealTimeService : public KeyedService {
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
-  enum class OperationResult {
+  enum class OperationOutcome {
     // The lookup was successful.
     kSuccess = 0,
     // Parsing the response to a string failed.
@@ -155,7 +155,14 @@ class HashRealTimeService : public KeyedService {
     kHttpError = 6,
     // There is a bug in the code leading to a NOTREACHED branch.
     kNotReached = 7,
-    kMaxValue = kNotReached,
+    // The result was found in the local cache.
+    kResultInLocalCache = 8,
+    // The service is in backoff mode and therefore cannot perform the request.
+    kServiceInBackoffMode = 9,
+    // Fetching the OHTTP key needed for the HPRT network request was
+    // unsuccessful.
+    kOhttpKeyFetchFailed = 10,
+    kMaxValue = kOhttpKeyFetchFailed,
   };
 
   // The reason why ReportError is called on backoff operator.
@@ -186,7 +193,8 @@ class HashRealTimeService : public KeyedService {
     // Sends |is_lookup_successful| and |sb_threat_type| back to the lookup
     // initiator.
     void CompleteLookup(bool is_lookup_successful,
-                        absl::optional<SBThreatType> sb_threat_type);
+                        absl::optional<SBThreatType> sb_threat_type,
+                        OperationOutcome operation_outcome);
 
    private:
     // Used to assert that |CompleteLookup| is only called once.
@@ -298,7 +306,7 @@ class HashRealTimeService : public KeyedService {
   // In addition to attempting to parse the |response_body| as described in the
   // |ParseResponse| function comments, this updates the backoff state depending
   // on the lookup success.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
   ParseResponseAndUpdateBackoff(
       int net_error,
       int http_error,
@@ -306,10 +314,10 @@ class HashRealTimeService : public KeyedService {
       const std::vector<std::string>& requested_hash_prefixes) const;
 
   // Tries to parse the |response_body| into a |SearchHashesResponse|, and
-  // returns either the response proto or an |OperationResult| with details on
+  // returns either the response proto or an |OperationOutcome| with details on
   // why the parsing was unsuccessful. |requested_hash_prefixes| is used for a
   // sanitization call into |RemoveUnmatchedFullHashes|.
-  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationResult>
+  base::expected<std::unique_ptr<V5::SearchHashesResponse>, OperationOutcome>
   ParseResponse(int net_error,
                 int http_error,
                 std::unique_ptr<std::string> response_body,

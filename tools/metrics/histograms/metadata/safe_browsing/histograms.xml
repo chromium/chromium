@@ -1441,13 +1441,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.HPRT.OperationResult"
-    enum="SafeBrowsingHPRTOperationResult" expires_after="2024-06-30">
+<histogram name="SafeBrowsing.HPRT.OperationOutcome"
+    enum="SafeBrowsingHPRTOperationOutcome" expires_after="2024-06-30">
   <owner>thefrog@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the return status for hash-prefix real-time lookups. This is logged
-    after network request for the lookup returns.
+    when the service is returning a response, which can be: if the result is
+    found in the local cache, if the lookup doesn't run because the service is
+    in backoff mode, if the lookup doesn't run because the OHTTP key can't be
+    fetched, or after the lookup network request returns.
   </summary>
 </histogram>
 

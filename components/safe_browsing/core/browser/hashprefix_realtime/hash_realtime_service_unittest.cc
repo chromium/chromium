@@ -339,11 +339,17 @@ class HashRealTimeServiceTest : public PlatformTest {
     histogram_tester_->ExpectTotalCount(
         /*name=*/"SafeBrowsing.HPRT.ThreatInfoSize", /*expected_count=*/0);
   }
+  void CheckOperationOutcomeMetric(
+      HashRealTimeService::OperationOutcome expected_operation_outcome) {
+    histogram_tester_->ExpectUniqueSample(
+        /*name=*/"SafeBrowsing.HPRT.OperationOutcome",
+        /*sample=*/expected_operation_outcome,
+        /*expected_bucket_count=*/1);
+  }
   void CheckRequestMetrics(
       int expected_prefix_count,
       int expected_network_result,
       const absl::optional<std::string>& expected_network_result_suffix,
-      HashRealTimeService::OperationResult expected_operation_result,
       absl::optional<bool> expected_found_unmatched_full_hashes,
       absl::optional<bool> expected_ohttp_client_destructed_early) {
     histogram_tester_->ExpectUniqueSample(
@@ -376,10 +382,6 @@ class HashRealTimeServiceTest : public PlatformTest {
           /*sample=*/expected_network_result,
           /*expected_bucket_count=*/1);
     }
-    histogram_tester_->ExpectUniqueSample(
-        /*name=*/"SafeBrowsing.HPRT.OperationResult",
-        /*sample=*/expected_operation_result,
-        /*expected_bucket_count=*/1);
     if (expected_found_unmatched_full_hashes.has_value()) {
       histogram_tester_->ExpectUniqueSample(
           /*name=*/"SafeBrowsing.HPRT.FoundUnmatchedFullHashes",
@@ -512,13 +514,13 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_prefix_count=*/expected_prefix_count,
         /*expected_network_result=*/200,
         /*expected_network_result_suffix=*/"InnerResponseResult",
-        /*expected_operation_result=*/
-        HashRealTimeService::OperationResult::kSuccess,
         /*expected_found_unmatched_full_hashes=*/
         expected_found_unmatched_full_hashes,
         /*expected_ohttp_client_destructed_early=*/false);
     CheckPostSuccessfulRequestMetrics(/*made_network_request=*/true,
                                       expected_threat_info_size);
+    CheckOperationOutcomeMetric(
+        HashRealTimeService::OperationOutcome::kSuccess);
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests + 1u);
@@ -539,7 +541,7 @@ class HashRealTimeServiceTest : public PlatformTest {
       int expected_prefix_count,
       int expected_network_result,
       const std::string& expected_network_result_suffix,
-      HashRealTimeService::OperationResult expected_operation_result,
+      HashRealTimeService::OperationOutcome expected_operation_outcome,
       absl::optional<HashRealTimeService::BackoffReportErrorReason>
           expected_backoff_error_reason) {
     EXPECT_CALL(
@@ -580,11 +582,10 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*expected_prefix_count=*/expected_prefix_count,
         /*expected_network_result=*/expected_network_result,
         /*expected_network_result_suffix=*/expected_network_result_suffix,
-        /*expected_operation_result=*/
-        expected_operation_result,
         /*expected_found_unmatched_full_hashes=*/absl::nullopt,
         /*expected_ohttp_client_destructed_early=*/false);
     CheckNoPostSuccessfulRequestMetrics();
+    CheckOperationOutcomeMetric(expected_operation_outcome);
     if (expected_backoff_error_reason.has_value()) {
       histogram_tester_->ExpectUniqueSample(
           /*name=*/"SafeBrowsing.HPRT.BackoffReportErrorReason",
@@ -628,6 +629,8 @@ class HashRealTimeServiceTest : public PlatformTest {
     CheckPostSuccessfulRequestMetrics(
         /*made_network_request=*/false,
         /*expected_threat_info_size=*/expected_threat_info_size);
+    CheckOperationOutcomeMetric(
+        HashRealTimeService::OperationOutcome::kResultInLocalCache);
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests);
@@ -654,6 +657,8 @@ class HashRealTimeServiceTest : public PlatformTest {
                            /*expected_backoff_mode_status=*/true);
     CheckNoNetworkRequestMetric();
     CheckNoPostSuccessfulRequestMetrics();
+    CheckOperationOutcomeMetric(
+        HashRealTimeService::OperationOutcome::kServiceInBackoffMode);
     ResetMetrics();
 
     EXPECT_EQ(network_context_.total_requests(), num_requests);
@@ -1143,8 +1148,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_FAILED,
       /*expected_network_result_suffix=*/"NetErrorResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNetworkError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kNetworkError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1159,8 +1164,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_RetriableNetError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED,
       /*expected_network_result_suffix=*/"NetErrorResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kRetriableError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kRetriableError,
       /*expected_backoff_error_reason=*/absl::nullopt);
 }
 TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
@@ -1174,8 +1179,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_NetErrorHttpCodeFailure) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/0,
       /*expected_network_result_suffix=*/"NetErrorResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kHttpError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1190,8 +1195,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_OuterResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_NOT_FOUND,
       /*expected_network_result_suffix=*/"OuterResponseResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kHttpError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1205,8 +1210,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_InnerResponseCodeError) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_UNAUTHORIZED,
       /*expected_network_result_suffix=*/"InnerResponseResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kHttpError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kHttpError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1219,8 +1224,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_ParseResponse) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kParseError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kParseError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1236,8 +1241,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_IncorrectFullHashLength) {
       /*inner_response_code=*/absl::nullopt, /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kIncorrectFullHashLengthError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kIncorrectFullHashLengthError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1255,8 +1260,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingCacheDuration) {
       /*expected_prefix_count=*/1,
       /*expected_network_result=*/net::HTTP_OK,
       /*expected_network_result_suffix=*/"InnerResponseResult",
-      /*expected_operation_result=*/
-      HashRealTimeService::OperationResult::kNoCacheDurationError,
+      /*expected_operation_outcome=*/
+      HashRealTimeService::OperationOutcome::kNoCacheDurationError,
       /*expected_backoff_error_reason=*/
       HashRealTimeService::BackoffReportErrorReason::kResponseError);
 }
@@ -1275,6 +1280,8 @@ TEST_F(HashRealTimeServiceTest, TestLookupFailure_MissingOhttpKey) {
   task_environment_.RunUntilIdle();
 
   CheckNoNetworkRequestMetric();
+  CheckOperationOutcomeMetric(
+      HashRealTimeService::OperationOutcome::kOhttpKeyFetchFailed);
   histogram_tester_->ExpectUniqueSample(
       /*name=*/"SafeBrowsing.HPRT.BackoffReportErrorReason",
       /*sample=*/HashRealTimeService::BackoffReportErrorReason::kInvalidKey,
