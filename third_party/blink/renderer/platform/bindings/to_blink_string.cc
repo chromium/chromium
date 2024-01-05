@@ -158,14 +158,14 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
   *was_externalized = false;
   if (LIKELY(can_externalize)) {
     if (result.Is8Bit()) {
-      StringResource8* string_resource = new StringResource8(isolate, result);
+      StringResource8* string_resource = new StringResource8(result);
       if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
         delete string_resource;
       } else {
         *was_externalized = true;
       }
     } else {
-      StringResource16* string_resource = new StringResource16(isolate, result);
+      StringResource16* string_resource = new StringResource16(result);
       if (UNLIKELY(!v8_string->MakeExternal(string_resource))) {
         delete string_resource;
       } else {
