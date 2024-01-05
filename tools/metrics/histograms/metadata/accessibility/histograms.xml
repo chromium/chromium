@@ -1492,6 +1492,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveCaption.LanguageCount" units="count"
+    expires_after="2024-09-30">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The number of languages used to initialize the Speech On-Device API (SODA).
+    This is logged each time SODA is reset.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveCaption.LiveCaptionPinBubbleEvent"
     enum="LiveCaptionPinBubbleEvent" expires_after="2024-09-30">
   <owner>abigailbklein@google.com</owner>
