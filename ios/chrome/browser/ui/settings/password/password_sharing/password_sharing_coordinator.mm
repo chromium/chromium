@@ -208,32 +208,44 @@ using password_manager::FetchFamilyMembersRequestStatus;
                   withStatus:(const FetchFamilyMembersRequestStatus&)status {
   self.recipients = familyMembers;
 
+  __weak __typeof(self) weakSelf = self;
   switch (status) {
-    case FetchFamilyMembersRequestStatus::kSuccess:
+    case FetchFamilyMembersRequestStatus::kSuccess: {
       if (_credentials.size() == 1) {
         [self startFamilyPickerCoordinator];
       } else {
         [self startPasswordPickerCoordinator];
       }
       break;
-    case FetchFamilyMembersRequestStatus::kNoFamily:
-      [self startFamilyPromoCoordinatorWithType:FamilyPromoType::
-                                                    kUserNotInFamilyGroup];
+    }
+    case FetchFamilyMembersRequestStatus::kNoFamily: {
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:^() {
+                               [weakSelf
+                                   startFamilyPromoCoordinatorWithType:
+                                       FamilyPromoType::kUserNotInFamilyGroup];
+                             }];
       break;
-    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers:
-      [self startFamilyPromoCoordinatorWithType:
-                FamilyPromoType::kUserWithNoOtherFamilyMembers];
+    }
+    case FetchFamilyMembersRequestStatus::kNoOtherFamilyMembers: {
+      [self.viewController.presentingViewController
+          dismissViewControllerAnimated:YES
+                             completion:^() {
+                               [weakSelf startFamilyPromoCoordinatorWithType:
+                                             FamilyPromoType::
+                                                 kUserWithNoOtherFamilyMembers];
+                             }];
       break;
-    case FetchFamilyMembersRequestStatus::kUnknown:
-    case FetchFamilyMembersRequestStatus::kNetworkError:
-    case FetchFamilyMembersRequestStatus::kPendingRequest:
-      __weak __typeof(self) weakSelf = self;
+    }
+    default: {
       [self.viewController.presentingViewController
           dismissViewControllerAnimated:YES
                              completion:^() {
                                [weakSelf startAlertCoordinator];
                              }];
       break;
+    }
   }
 }
 
@@ -275,7 +287,7 @@ using password_manager::FetchFamilyMembersRequestStatus;
   [self.familyPromoCoordinator stop];
   self.familyPromoCoordinator = [[FamilyPromoCoordinator alloc]
       initWithFamilyPromoType:type
-           baseViewController:self.viewController
+           baseViewController:self.baseViewController
                       browser:self.browser];
   self.familyPromoCoordinator.delegate = self;
   [self.familyPromoCoordinator start];
