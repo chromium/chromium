@@ -174,6 +174,34 @@ class HashRealTimeService : public KeyedService {
     int num_full_hash_matches;
   };
 
+  // The purpose of this class is to have a single funnel that all calls back
+  // to the lookup initiator use.
+  class LookupCompleter {
+   public:
+    LookupCompleter(
+        HPRTLookupResponseCallback response_callback,
+        scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner);
+    ~LookupCompleter();
+
+    // Sends |is_lookup_successful| and |sb_threat_type| back to the lookup
+    // initiator.
+    void CompleteLookup(bool is_lookup_successful,
+                        absl::optional<SBThreatType> sb_threat_type);
+
+   private:
+    // Used to assert that |CompleteLookup| is only called once.
+    bool is_call_complete_ = false;
+    // The callback provided by the lookup initiator.
+    HPRTLookupResponseCallback response_callback_;
+    // Task runner to be used for |response_callback_|.
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner_;
+  };
+
+  // Helper function for |StartLookup|. Starts the lookup for |url| and calls
+  // the callback within |lookup_completer| when a response is received.
+  void StartLookupInternal(const GURL& url,
+                           std::unique_ptr<LookupCompleter> lookup_completer);
+
   // Returns the traffic annotation tag that is attached in the Oblivious HTTP
   // request when an OHTTP request is sent.
   net::NetworkTrafficAnnotationTag GetTrafficAnnotationTagForOhttp() const;
@@ -184,35 +212,31 @@ class HashRealTimeService : public KeyedService {
   // Callback for getting the OHTTP key. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
   // details. |key| is returned from |ohttp_key_service_|.
-  void OnGetOhttpKey(
-      std::unique_ptr<V5::SearchHashesRequest> request,
-      const GURL& url,
-      const std::vector<std::string>& hash_prefixes_in_request,
-      std::vector<V5::FullHash> result_full_hashes,
-      base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      absl::optional<std::string> key);
+  void OnGetOhttpKey(std::unique_ptr<V5::SearchHashesRequest> request,
+                     const GURL& url,
+                     const std::vector<std::string>& hash_prefixes_in_request,
+                     std::vector<V5::FullHash> result_full_hashes,
+                     base::TimeTicks request_start_time,
+                     std::unique_ptr<LookupCompleter> lookup_completer,
+                     absl::optional<std::string> key);
 
   // Callback for requests sent via OHTTP. Most parameters are used by
   // |OnURLLoaderComplete|, see the description above |OnURLLoaderComplete| for
   // details. |response_body|, |net_error|, |response_code|, |headers|, and
   // |ohttp_client_destructed_early| are returned from the OHTTP client.
   // |ohttp_key| is sent to the key service.
-  void OnOhttpComplete(
-      const GURL& url,
-      const std::vector<std::string>& hash_prefixes_in_request,
-      std::vector<V5::FullHash> result_full_hashes,
-      base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
-      std::string ohttp_key,
-      absl::optional<int> webui_delegate_token,
-      const absl::optional<std::string>& response_body,
-      int net_error,
-      int response_code,
-      scoped_refptr<net::HttpResponseHeaders> headers,
-      bool ohttp_client_destructed_early);
+  void OnOhttpComplete(const GURL& url,
+                       const std::vector<std::string>& hash_prefixes_in_request,
+                       std::vector<V5::FullHash> result_full_hashes,
+                       base::TimeTicks request_start_time,
+                       std::unique_ptr<LookupCompleter> lookup_completer,
+                       std::string ohttp_key,
+                       absl::optional<int> webui_delegate_token,
+                       const absl::optional<std::string>& response_body,
+                       int net_error,
+                       int response_code,
+                       scoped_refptr<net::HttpResponseHeaders> headers,
+                       bool ohttp_client_destructed_early);
 
   // Called when the response from the Safe Browsing V5 remote endpoint is
   // received. This is responsible for parsing the response, determining if
@@ -228,9 +252,8 @@ class HashRealTimeService : public KeyedService {
   //    the most severe threat type.
   //  - |request_start_time| represents when the request was sent, and is used
   //    for logging.
-  //  - |response_callback_task_runner| is the callback the original caller
-  //    passed through that will be called when the method completes.
-  //  - |response_callback| is the callback the original caller passed through.
+  //  - |lookup_completer| will be called when the method completes and will
+  //    respond to the lookup initiator.
   //  - |response_body| is the unparsed response from the server.
   //  - |net_error| is the net error code from the server.
   //  - |response_code| is the HTTP status code from the server.
@@ -244,8 +267,7 @@ class HashRealTimeService : public KeyedService {
       const std::vector<std::string>& hash_prefixes_in_request,
       std::vector<V5::FullHash> result_full_hashes,
       base::TimeTicks request_start_time,
-      scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-      HPRTLookupResponseCallback response_callback,
+      std::unique_ptr<LookupCompleter> lookup_completer,
       std::unique_ptr<std::string> response_body,
       int net_error,
       int response_code,

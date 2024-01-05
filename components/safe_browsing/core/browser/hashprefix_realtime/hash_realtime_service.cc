@@ -278,6 +278,14 @@ void HashRealTimeService::StartLookup(
     HPRTLookupResponseCallback response_callback,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  StartLookupInternal(
+      url, std::make_unique<LookupCompleter>(std::move(response_callback),
+                                             std::move(callback_task_runner)));
+}
+
+void HashRealTimeService::StartLookupInternal(
+    const GURL& url,
+    std::unique_ptr<LookupCompleter> lookup_completer) {
   DCHECK(url.is_valid());
 
   // If |Shutdown| has been called, return early.
@@ -299,10 +307,8 @@ void HashRealTimeService::StartLookup(
         DetermineSBThreatInfo(url, cached_full_hashes);
     LogThreatInfoSize(sb_threat_info.num_full_hash_matches,
                       /*is_source_local_cache=*/true);
-    callback_task_runner->PostTask(FROM_HERE,
-                                   base::BindOnce(std::move(response_callback),
-                                                  /*is_lookup_successful=*/true,
-                                                  sb_threat_info.threat_type));
+    lookup_completer->CompleteLookup(/*is_lookup_successful=*/true,
+                                     sb_threat_info.threat_type);
     return;
   }
 
@@ -310,10 +316,8 @@ void HashRealTimeService::StartLookup(
   bool in_backoff = backoff_operator_->IsInBackoffMode();
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.BackoffState", in_backoff);
   if (in_backoff) {
-    callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(response_callback),
-                                  /*is_lookup_successful=*/false,
-                                  /*sb_threat_type=*/absl::nullopt));
+    lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
+                                     /*sb_threat_type=*/absl::nullopt);
     return;
   }
 
@@ -330,7 +334,7 @@ void HashRealTimeService::StartLookup(
       &HashRealTimeService::OnGetOhttpKey, weak_factory_.GetWeakPtr(),
       std::move(request), url, std::move(hash_prefixes_to_request),
       std::move(cached_full_hashes), base::TimeTicks::Now(),
-      std::move(callback_task_runner), std::move(response_callback)));
+      std::move(lookup_completer)));
 }
 
 void HashRealTimeService::OnGetOhttpKey(
@@ -339,18 +343,15 @@ void HashRealTimeService::OnGetOhttpKey(
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     base::TimeTicks request_start_time,
-    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-    HPRTLookupResponseCallback response_callback,
+    std::unique_ptr<LookupCompleter> lookup_completer,
     absl::optional<std::string> key) {
   base::UmaHistogramBoolean("SafeBrowsing.HPRT.HasOhttpKey", key.has_value());
   if (!key.has_value()) {
     backoff_operator_->ReportError();
     base::UmaHistogramEnumeration("SafeBrowsing.HPRT.BackoffReportErrorReason",
                                   BackoffReportErrorReason::kInvalidKey);
-    response_callback_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(response_callback),
-                                  /*is_lookup_successful=*/false,
-                                  /*sb_threat_type=*/absl::nullopt));
+    lookup_completer->CompleteLookup(/*is_lookup_successful=*/false,
+                                     /*sb_threat_type=*/absl::nullopt);
     return;
   }
   // Construct OHTTP request.
@@ -381,8 +382,7 @@ void HashRealTimeService::OnGetOhttpKey(
           &HashRealTimeService::OnOhttpComplete, weak_factory_.GetWeakPtr(),
           url, std::move(hash_prefixes_in_request),
           std::move(result_full_hashes), request_start_time,
-          std::move(response_callback_task_runner),
-          std::move(response_callback), key.value(), webui_delegate_token)),
+          std::move(lookup_completer), key.value(), webui_delegate_token)),
       std::move(pending_receiver));
 }
 
@@ -391,8 +391,7 @@ void HashRealTimeService::OnOhttpComplete(
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     base::TimeTicks request_start_time,
-    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-    HPRTLookupResponseCallback response_callback,
+    std::unique_ptr<LookupCompleter> lookup_completer,
     std::string ohttp_key,
     absl::optional<int> webui_delegate_token,
     const absl::optional<std::string>& response_body,
@@ -404,11 +403,11 @@ void HashRealTimeService::OnOhttpComplete(
 
   auto response_body_ptr =
       std::make_unique<std::string>(response_body.value_or(""));
-  OnURLLoaderComplete(
-      url, std::move(hash_prefixes_in_request), std::move(result_full_hashes),
-      request_start_time, std::move(response_callback_task_runner),
-      std::move(response_callback), std::move(response_body_ptr), net_error,
-      response_code, webui_delegate_token, ohttp_client_destructed_early);
+  OnURLLoaderComplete(url, std::move(hash_prefixes_in_request),
+                      std::move(result_full_hashes), request_start_time,
+                      std::move(lookup_completer), std::move(response_body_ptr),
+                      net_error, response_code, webui_delegate_token,
+                      ohttp_client_destructed_early);
 }
 
 void HashRealTimeService::OnURLLoaderComplete(
@@ -416,8 +415,7 @@ void HashRealTimeService::OnURLLoaderComplete(
     const std::vector<std::string>& hash_prefixes_in_request,
     std::vector<V5::FullHash> result_full_hashes,
     base::TimeTicks request_start_time,
-    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner,
-    HPRTLookupResponseCallback response_callback,
+    std::unique_ptr<LookupCompleter> lookup_completer,
     std::unique_ptr<std::string> response_body,
     int net_error,
     int response_code,
@@ -470,9 +468,7 @@ void HashRealTimeService::OnURLLoaderComplete(
                       /*is_source_local_cache=*/false);
   }
 
-  response_callback_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(response_callback),
-                                is_lookup_successful, sb_threat_type));
+  lookup_completer->CompleteLookup(is_lookup_successful, sb_threat_type);
   if (webui_delegate_ && is_lookup_successful &&
       webui_delegate_token.has_value()) {
     // The following |webui_delegate_| call is to log this HPRT lookup response
@@ -683,6 +679,25 @@ HashRealTimeService::GetTrafficAnnotationTagForOhttp() const {
     }
     deprecated_policies: "SafeBrowsingEnabled"
   })");
+}
+
+HashRealTimeService::LookupCompleter::LookupCompleter(
+    HPRTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> response_callback_task_runner)
+    : response_callback_(std::move(response_callback)),
+      response_callback_task_runner_(std::move(response_callback_task_runner)) {
+}
+
+HashRealTimeService::LookupCompleter::~LookupCompleter() = default;
+
+void HashRealTimeService::LookupCompleter::CompleteLookup(
+    bool is_lookup_successful,
+    absl::optional<SBThreatType> sb_threat_type) {
+  CHECK(!is_call_complete_);
+  is_call_complete_ = true;
+  response_callback_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(response_callback_),
+                                is_lookup_successful, sb_threat_type));
 }
 
 }  // namespace safe_browsing
