@@ -243,9 +243,14 @@ void SignedWebBundleReader::OnFileClosed(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(state_ == State::kClosed || state_ == State::kError)
       << base::to_underlying(state_);
-  connection_->Close(base::BindOnce(&SignedWebBundleReader::OnParserClosed,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    std::move(callback)));
+  // Connection might not exist is the file can not be opened.
+  if (connection_) {
+    connection_->Close(base::BindOnce(&SignedWebBundleReader::OnParserClosed,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback)));
+  } else {
+    OnParserClosed(std::move(callback));
+  }
 }
 
 void SignedWebBundleReader::OnParserClosed(base::OnceClosure callback) {
@@ -605,9 +610,6 @@ void SignedWebBundleReader::OnResponseBodyRead(mojo::DataPipeProducer* producer,
 
 void SignedWebBundleReader::ReplyClosedIfNecessary() {
   if (active_response_body_producers_.empty() && !close_callback_.is_null()) {
-    // This is an irrecoverable state, thus we can safely delete
-    // `connection_` here to free up resources.
-    connection_.reset();
     std::move(close_callback_).Run();
   }
 }
