@@ -830,14 +830,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
 // Test that the webRequest events are dispatched with the expected details when
 // a frame or tab is immediately removed after starting a request.
-// Flaky on Linux/Mac. See crbug.com/780369 for detail.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WebRequestUnloadImmediately DISABLED_WebRequestUnloadImmediately
-#else
-#define MAYBE_WebRequestUnloadImmediately WebRequestUnloadImmediately
-#endif
+// Flaky on all platforms. See crbug.com/780369 for detail.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       MAYBE_WebRequestUnloadImmediately) {
+                       DISABLED_WebRequestUnloadImmediately) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
       RunExtensionTest("webrequest", {.extension_url = "test_unload.html?5"}))
