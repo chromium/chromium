@@ -231,12 +231,6 @@ class PLATFORM_EXPORT ScriptState : public GarbageCollected<ScriptState> {
   // DOMWrapperWorld holds are weak.
   scoped_refptr<DOMWrapperWorld> world_;
 
-  // This std::unique_ptr causes a cycle:
-  // V8PerContextData --(Persistent)--> v8::Context --(RefPtr)--> ScriptState
-  //     --(std::unique_ptr)--> V8PerContextData
-  // So you must explicitly clear the std::unique_ptr by calling
-  // disposePerContextData() once you no longer need V8PerContextData.
-  // Otherwise, the v8::Context will leak.
   Member<V8PerContextData> per_context_data_;
 
   // v8::Context has an internal field to this ScriptState* as a raw pointer,
