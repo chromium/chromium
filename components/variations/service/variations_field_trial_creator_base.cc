@@ -661,8 +661,8 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   // Register group membership for the limited entropy synthetic trial if the
   // required parameters are non null, and a LIMITED entropy layer is in the
   // seed.
-  if (IsLimitedEntropyModeEnabled() && limited_entropy_synthetic_trial_ &&
-      ContainsLimitedEntropyLayer(seed)) {
+  if (IsLimitedEntropyModeEnabled(client_->GetChannelForVariations()) &&
+      limited_entropy_synthetic_trial_ && ContainsLimitedEntropyLayer(seed)) {
     client_->RegisterLimitedEntropySyntheticTrial(
         limited_entropy_synthetic_trial_->GetGroupName());
   }
