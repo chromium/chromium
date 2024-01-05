@@ -5,6 +5,7 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -306,18 +307,17 @@ absl::optional<base::FilePath> CreateComponentDirectory(
     return absl::nullopt;
   }
 
-  if (!base::WriteFile(component_dir.AppendASCII("manifest.json"),
-                       base::StringPrintf(R"({
-        "name": "%s",
-        "version": "%s",
-        "min_env_version": "%s"
-    })",
-                                          name.c_str(), version.c_str(),
-                                          min_env_version.c_str()))) {
-    return absl::nullopt;
-  }
-
-  return absl::make_optional(component_dir);
+  static constexpr std::string_view kManifestData = R"({
+    "name": "%s",
+    "version": "%s",
+    "min_env_version": "%s"
+  })";
+  return base::WriteFile(
+             component_dir.AppendASCII("manifest.json"),
+             base::StringPrintf(kManifestData.data(), name.c_str(),
+                                version.c_str(), min_env_version.c_str()))
+             ? absl::make_optional(component_dir)
+             : absl::nullopt;
 }
 
 // Tests that the component metadata is propagated from the component installer
