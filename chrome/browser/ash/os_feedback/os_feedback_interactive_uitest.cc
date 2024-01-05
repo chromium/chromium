@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
@@ -19,8 +20,15 @@ namespace ash {
 namespace {
 
 constexpr char kOsFeedbackUrl[] = "chrome://os-feedback";
+constexpr char kBlankUrl[] = "about:blank";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kAboutChromeOsUrl[] = "chrome://os-settings/help";
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAboutChromeOsWebContentsId);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
  public:
@@ -52,6 +60,12 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
     return Do([&]() { CreateBrowserWindow(GURL(kOsFeedbackUrl)); });
   }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  auto LaunchAboutChromeOsPage() {
+    return Do([&]() { CreateBrowserWindow(GURL(kAboutChromeOsUrl)); });
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
   // Clicks on an element in the DOM.
   auto ClickElement(const ui::ElementIdentifier& element_id,
                     const DeepQuery& element) {
@@ -79,10 +93,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
   ui::Accelerator open_feedback_accelerator(
       ui::VKEY_I, ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN);
 
-  GURL blank_url("about:blank");
-  ASSERT_TRUE(CreateBrowserWindow(blank_url));
-
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
+  ASSERT_TRUE(CreateBrowserWindow(GURL(kBlankUrl)));
 
   RunTestSequence(
       InstrumentTab(kNewTabWebContentsId),
@@ -112,10 +123,7 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
   const DeepQuery kDoneButtonQuery = {"feedback-flow", "confirmation-page",
                                       "cr-button#buttonDone"};
 
-  GURL blank_url("about:blank");
-  ASSERT_TRUE(CreateBrowserWindow(blank_url));
-
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
+  ASSERT_TRUE(CreateBrowserWindow(GURL(kBlankUrl)));
 
   RunTestSequence(
       InstrumentTab(kNewTabWebContentsId),
@@ -142,6 +150,35 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
       Log("Waiting for the feedback app to exit"),
       WaitForHide(kOsFeedbackWebContentsId));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// The send report link shows on the About ChromeOS page only for Google brands.
+IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, OpenFromAboutChromeOsPage) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-3f028d06-0100-4b5b-b1f3-99ceeaf3d62b");
+
+  ASSERT_TRUE(CreateBrowserWindow(GURL(kBlankUrl)));
+  // Query to pierce through Shadow DOM to find the send feedback link.
+  const DeepQuery kReportIssueMenuItemQuery = {
+      "os-settings-ui", "os-settings-main", "main-page-container",
+      "os-about-page",  "#reportIssue",
+  };
+
+  RunTestSequence(
+      InstrumentTab(kNewTabWebContentsId),
+      InstrumentNextTab(kAboutChromeOsWebContentsId, AnyBrowser()),
+      Log("Opening the about ChromeOS page"), LaunchAboutChromeOsPage(),
+      WaitForWebContentsReady(kAboutChromeOsWebContentsId,
+                              GURL(kAboutChromeOsUrl)),
+      Log("Waiting for the send feedback link ready"),
+      WaitForElementExists(kAboutChromeOsWebContentsId,
+                           kReportIssueMenuItemQuery),
+      InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
+      Log("Clicking the send feedback link"),
+      ClickElement(kAboutChromeOsWebContentsId, kReportIssueMenuItemQuery),
+      FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 }  // namespace ash
