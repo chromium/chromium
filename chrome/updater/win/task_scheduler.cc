@@ -7,10 +7,10 @@
 #include <mstask.h>
 #include <oleauto.h>
 #include <security.h>
-#include <stdint.h>
 #include <taskschd.h>
 #include <wrl/client.h>
 
+#include <cstdint>
 #include <memory>
 #include <ostream>
 #include <string>
@@ -117,6 +117,13 @@ void PinModule(const wchar_t* module_name) {
                             &module_handle)) {
     PLOG(ERROR) << "Failed to pin '" << module_name << "'.";
   }
+}
+
+// Returns the XML serialization of a task definition.
+[[nodiscard]] std::wstring GetTaskXml(ITaskDefinition* task) {
+  base::win::ScopedBstr task_xml;
+  task->get_XmlText(task_xml.Receive());
+  return std::wstring(task_xml.Get());
 }
 
 // A task scheduler class uses the V2 API of the task scheduler.
@@ -680,9 +687,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    base::win::ScopedBstr task_xml;
-    task->get_XmlText(task_xml.Receive());
-    VLOG(2) << "Registering Task with XML: " << task_xml.Get();
+    DVLOG(2) << "Registering Task with XML: " << GetTaskXml(task.Get());
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
     base::win::ScopedVariant user(user_name.Get());
@@ -698,7 +703,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       if (FAILED(hr)) {
         LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
                    << ": " << logging::SystemErrorCodeToString(hr)
-                   << ": Task XML: " << task_xml.Get();
+                   << ": Task XML: " << GetTaskXml(task.Get());
         return false;
       }
     }
