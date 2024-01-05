@@ -1909,13 +1909,6 @@ Unknown properties are collapsed to zero. -->
   <int value="50" label="Unrecognized"/>
 </enum>
 
-<enum name="AutocompleteValueForStructuredAddressPredictedFields">
-  <int value="0" label="Address Line 1 or 2"/>
-  <int value="1" label="Other Recognized Autocomplete Attributes"/>
-  <int value="2" label="Unrecognized"/>
-  <int value="3" label="Unspecified"/>
-</enum>
-
 <enum name="AutofillAddressProfileImportCountrySpecificFieldRequirement">
   <int value="0" label="All required fields present"/>
   <int value="1" label="Missing: ZIP"/>

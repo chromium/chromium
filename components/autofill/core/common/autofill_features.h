@@ -129,22 +129,6 @@ extern const base::FeatureParam<bool> kAutofillConvergeToLonger;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete);
-// Records the values of HtmlFieldType that the server or heuristic predictions
-// will be able to override when the feature
-// `kAutofillStreetNameOrHouseNumberPrecedenceOverAutocomplete` is enabled.
-enum class PrecedenceOverAutocompleteScope {
-  kNone = 0,
-  kAddressLine1And2 = 1,
-  kRecognized = 2,
-  kSpecified = 3,
-  kMaxValue = kSpecified
-};
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<PrecedenceOverAutocompleteScope>
-    kAutofillHeuristicPrecedenceScopeOverAutocomplete;
-COMPONENT_EXPORT(AUTOFILL)
-extern const base::FeatureParam<PrecedenceOverAutocompleteScope>
-    kAutofillServerPrecedenceScopeOverAutocomplete;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillIgnoreUnmappableAutocompleteValues);
 COMPONENT_EXPORT(AUTOFILL)
