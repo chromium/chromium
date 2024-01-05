@@ -30067,6 +30067,7 @@ from previous Chrome versions.
   <int value="-52483823" label="disable-new-video-renderer"/>
   <int value="-52241456" label="enable-single-click-autofill"/>
   <int value="-51567065" label="EnableFeedbackPanel:disabled"/>
+  <int value="-51041111" label="OpenXrExtendedFeatureSupport:disabled"/>
   <int value="-50628385"
       label="ContentSuggestionsThumbnailDominantColor:enabled"/>
   <int value="-50050190" label="PaintHoldingCrossOrigin:enabled"/>
@@ -30676,6 +30677,7 @@ from previous Chrome versions.
       label="AutofillEnableMerchantDomainInUnmaskCardRequest:disabled"/>
   <int value="244697230" label="enable-theme-color-in-tabbed-mode"/>
   <int value="245100553" label="PcieBillboardNotification:enabled"/>
+  <int value="245338502" label="OpenXrExtendedFeatureSupport:enabled"/>
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
   <int value="246451316" label="NotificationInteractionHistory:enabled"/>

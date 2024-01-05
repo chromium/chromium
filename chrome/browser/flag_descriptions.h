@@ -2635,6 +2635,9 @@ extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 
 #if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
+extern const char kOpenXRExtendedFeaturesName[];
+extern const char kOpenXRExtendedFeaturesDescription[];
+
 extern const char kOpenXRName[];
 extern const char kOpenXRDescription[];
 #endif

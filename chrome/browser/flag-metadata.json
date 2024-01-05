@@ -3186,6 +3186,11 @@
     "expiry_milestone": 127
   },
   {
+    "name": "enable-openxr-extended",
+    "owners": [ "alcooper@chromium.org", "bajones@chromium.org", "bialpio@chromium.org", "xr-dev@chromium.org" ],
+    "expiry_milestone": 127
+  },
+  {
     "name": "enable-os-integration-sub-managers",
     "owners": [ "dibyapal@chromium.org", "desktop-pwas-team@google.com" ],
     "expiry_milestone": 124

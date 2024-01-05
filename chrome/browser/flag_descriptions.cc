@@ -4565,6 +4565,12 @@ const char kEnableAndroidGamepadVibrationDescription[] =
     "Enables the ability to play vibration effects on supported gamepads.";
 
 #if BUILDFLAG(ENABLE_VR) && BUILDFLAG(ENABLE_OPENXR)
+const char kOpenXRExtendedFeaturesName[] =
+    "WebXR OpenXR Runtime Extended Features";
+const char kOpenXRExtendedFeaturesDescription[] =
+    "Enables the use of the OpenXR runtime to create WebXR sessions with a "
+    "broader feature set (e.g. features not currently supported on Desktop).";
+
 const char kOpenXRName[] = "Enable OpenXR WebXR Runtime";
 const char kOpenXRDescription[] =
     "Enables the use of the OpenXR runtime to create WebXR sessions.";
