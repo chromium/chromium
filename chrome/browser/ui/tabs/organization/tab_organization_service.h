@@ -125,8 +125,8 @@ class TabOrganizationService
   base::ObserverList<TabOrganizationObserver>::Unchecked observers_;
 
   std::unique_ptr<TabSensitivityCache> tab_sensitivity_cache_;
+  std::unique_ptr<BackoffLevelProvider> trigger_backoff_;
   std::unique_ptr<TabOrganizationTriggerObserver> trigger_observer_;
-  raw_ptr<BackoffLevelProvider> trigger_backoff_;
 
   raw_ptr<Profile> profile_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;

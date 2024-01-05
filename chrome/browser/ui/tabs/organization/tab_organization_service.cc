@@ -39,13 +39,12 @@ TabOrganizationService::TabOrganizationService(
   }
   tab_sensitivity_cache_ = std::make_unique<TabSensitivityCache>(
       Profile::FromBrowserContext(browser_context));
-  auto trigger_backoff =
+  trigger_backoff_ =
       std::make_unique<ProfilePrefBackoffLevelProvider>(browser_context);
-  trigger_backoff_ = trigger_backoff.get();
   trigger_observer_ = std::make_unique<TabOrganizationTriggerObserver>(
       base::BindRepeating(&TabOrganizationService::OnTriggerOccured,
                           base::Unretained(this)),
-      browser_context, MakeTrigger(std::move(trigger_backoff)));
+      browser_context, MakeTrigger(trigger_backoff_.get()));
 }
 TabOrganizationService::~TabOrganizationService() = default;
 

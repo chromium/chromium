@@ -59,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest, RemembersScore) {
       url1, optimization_guide::PageContentAnnotationsResult::
                 CreateContentVisibilityScoreResult(1.0f));
 
-  EXPECT_EQ(cache()->GetScore(url1), 1.0f);
+  EXPECT_EQ(cache()->GetScore(url1), 0.0f);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest,
@@ -83,14 +83,14 @@ IN_PROC_BROWSER_TEST_F(TabSensitivityCacheBrowserTest,
       url3, optimization_guide::PageContentAnnotationsResult::
                 CreateContentVisibilityScoreResult(1.0f));
   RemoveTab(initial_tab);
-  ASSERT_EQ(cache()->GetScore(url1), 1.0f);
+  ASSERT_EQ(cache()->GetScore(url1), 0.0f);
 
   // Remove one tab. The cache does not trim yet as it would not shrink by 1/2.
   RemoveTab(tab1);
   cache()->OnPageContentAnnotated(
       url3, optimization_guide::PageContentAnnotationsResult::
                 CreateContentVisibilityScoreResult(1.0f));
-  EXPECT_EQ(cache()->GetScore(url1), 1.0f);
+  EXPECT_EQ(cache()->GetScore(url1), 0.0f);
 
   // Remove one more tab. The cache trims now as it can shrink by at least 1/2.
   RemoveTab(tab2);

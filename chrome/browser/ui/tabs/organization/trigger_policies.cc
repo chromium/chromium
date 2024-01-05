@@ -83,11 +83,11 @@ TargetFrequencyTriggerPolicy::TargetFrequencyTriggerPolicy(
     std::unique_ptr<base::TickClock> clock,
     base::TimeDelta base_period,
     float backoff_base,
-    std::unique_ptr<BackoffLevelProvider> backoff_level_provider)
+    BackoffLevelProvider* backoff_level_provider)
     : clock_(std::move(clock)),
       base_period_(base_period),
       backoff_base_(backoff_base),
-      backoff_level_provider_(std::move(backoff_level_provider)),
+      backoff_level_provider_(backoff_level_provider),
       cycle_start_time_(clock_->NowTicks()) {}
 
 TargetFrequencyTriggerPolicy::~TargetFrequencyTriggerPolicy() = default;

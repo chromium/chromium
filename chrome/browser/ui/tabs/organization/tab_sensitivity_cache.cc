@@ -35,7 +35,9 @@ void TabSensitivityCache::OnPageContentAnnotated(
     const optimization_guide::PageContentAnnotationsResult& result) {
   CHECK(result.GetType() ==
         optimization_guide::AnnotationType::kContentVisibility);
-  sensitivy_scores_[url] = result.GetContentVisibilityScore();
+
+  // Invert the visibility score to get a sensitivity score.
+  sensitivy_scores_[url] = 1.0 - result.GetContentVisibilityScore();
   MaybeTrimCacheKeys();
 }
 

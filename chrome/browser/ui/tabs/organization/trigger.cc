@@ -77,7 +77,7 @@ float GetSensitivityThreshold() {
 }
 
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
-    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
+    BackoffLevelProvider* backoff_level_provider) {
   if (features::KTabOrganizationTriggerDemoMode.Get()) {
     return std::make_unique<DemoTriggerPolicy>();
   }
@@ -90,8 +90,8 @@ std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
 }
 
 std::unique_ptr<TabOrganizationTrigger> MakeTrigger(
-    std::unique_ptr<BackoffLevelProvider> backoff_level_provider) {
+    BackoffLevelProvider* backoff_level_provider) {
   return std::make_unique<TabOrganizationTrigger>(
       GetTriggerScoringFunction(), GetTriggerScoreThreshold(),
-      GetTriggerPolicy(std::move(backoff_level_provider)));
+      GetTriggerPolicy(backoff_level_provider));
 }

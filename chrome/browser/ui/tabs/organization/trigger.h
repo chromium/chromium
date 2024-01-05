@@ -49,9 +49,9 @@ TriggerScoringFunction GetTriggerScoringFunction();
 float GetTriggerScoreThreshold();
 float GetSensitivityThreshold();
 std::unique_ptr<TriggerPolicy> GetTriggerPolicy(
-    std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
+    BackoffLevelProvider* backoff_level_provider);
 
 std::unique_ptr<TabOrganizationTrigger> MakeTrigger(
-    std::unique_ptr<BackoffLevelProvider> backoff_level_provider);
+    BackoffLevelProvider* backoff_level_provider);
 
 #endif  // CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_H_
