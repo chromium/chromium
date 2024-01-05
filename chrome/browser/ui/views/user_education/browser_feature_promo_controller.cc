@@ -16,8 +16,8 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
@@ -155,10 +155,11 @@ bool BrowserFeaturePromoController::CanShowPromoForElement(
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kDialog)) {
     Browser& browser = *browser_view_->browser();
-    SearchEngineChoiceService* search_engine_choice_service =
-        SearchEngineChoiceServiceFactory::GetForProfile(browser.profile());
-    if (search_engine_choice_service &&
-        search_engine_choice_service->HasPendingDialog(browser)) {
+    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+        SearchEngineChoiceDialogServiceFactory::GetForProfile(
+            browser.profile());
+    if (search_engine_choice_dialog_service &&
+        search_engine_choice_dialog_service->HasPendingDialog(browser)) {
       return false;
     }
   }

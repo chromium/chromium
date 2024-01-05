@@ -270,7 +270,7 @@
 #include "chrome/browser/performance_manager/persistence/site_data/site_data_cache_facade_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/storage/storage_notification_service_factory.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
@@ -1118,7 +1118,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   search_resumption_module::StartSuggestServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  SearchEngineChoiceServiceFactory::GetInstance();
+  SearchEngineChoiceDialogServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(IS_ANDROID)
   SearchPermissionsService::Factory::GetInstance();

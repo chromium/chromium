@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
-#define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
+#ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_FACTORY_H_
+#define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_FACTORY_H_
 
 #include "base/auto_reset.h"
 #include "base/no_destructor.h"
@@ -13,19 +13,20 @@ namespace search_engines {
 enum class SearchEngineChoiceScreenConditions;
 }
 
-class SearchEngineChoiceService;
+class SearchEngineChoiceDialogService;
 class KeyedService;
 
-class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
+class SearchEngineChoiceDialogServiceFactory
+    : public ProfileKeyedServiceFactory {
  public:
-  SearchEngineChoiceServiceFactory(const SearchEngineChoiceServiceFactory&) =
-      delete;
-  SearchEngineChoiceServiceFactory& operator=(
-      const SearchEngineChoiceServiceFactory&) = delete;
+  SearchEngineChoiceDialogServiceFactory(
+      const SearchEngineChoiceDialogServiceFactory&) = delete;
+  SearchEngineChoiceDialogServiceFactory& operator=(
+      const SearchEngineChoiceDialogServiceFactory&) = delete;
 
-  static SearchEngineChoiceService* GetForProfile(Profile* profile);
+  static SearchEngineChoiceDialogService* GetForProfile(Profile* profile);
 
-  static SearchEngineChoiceServiceFactory* GetInstance();
+  static SearchEngineChoiceDialogServiceFactory* GetInstance();
 
   // Checks that the profile is the chosen one to display the choice dialog.
   // If none is chosen yet and `try_claim` is `true`, then `profile` will be
@@ -43,14 +44,14 @@ class SearchEngineChoiceServiceFactory : public ProfileKeyedServiceFactory {
   static bool IsProfileEligibleForChoiceScreenForTesting(Profile& profile);
 
  private:
-  friend class base::NoDestructor<SearchEngineChoiceServiceFactory>;
+  friend class base::NoDestructor<SearchEngineChoiceDialogServiceFactory>;
 
-  SearchEngineChoiceServiceFactory();
-  ~SearchEngineChoiceServiceFactory() override;
+  SearchEngineChoiceDialogServiceFactory();
+  ~SearchEngineChoiceDialogServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
-#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_FACTORY_H_
+#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_FACTORY_H_

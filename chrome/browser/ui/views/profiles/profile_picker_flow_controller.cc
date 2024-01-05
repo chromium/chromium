@@ -18,8 +18,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_window.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -557,14 +557,16 @@ ProfilePickerFlowController::RegisterPostIdentitySteps() {
         base::Unretained(this));
     // TODO(crbug.com/1501785): Find a way to get the web contents without
     // relying on the weak ptr.
-    SearchEngineChoiceService* search_engine_choice_service =
-        SearchEngineChoiceServiceFactory::GetForProfile(created_profile_.get());
-    RegisterStep(Step::kSearchEngineChoice,
-                 ProfileManagementStepController::CreateForSearchEngineChoice(
-                     host(), search_engine_choice_service,
-                     weak_signed_in_flow_controller_->contents(),
-                     SearchEngineChoiceService::EntryPoint::kProfileCreation,
-                     std::move(search_engine_choice_step_completed)));
+    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+        SearchEngineChoiceDialogServiceFactory::GetForProfile(
+            created_profile_.get());
+    RegisterStep(
+        Step::kSearchEngineChoice,
+        ProfileManagementStepController::CreateForSearchEngineChoice(
+            host(), search_engine_choice_dialog_service,
+            weak_signed_in_flow_controller_->contents(),
+            SearchEngineChoiceDialogService::EntryPoint::kProfileCreation,
+            std::move(search_engine_choice_step_completed)));
     post_identity_steps.emplace(
         ProfileManagementFlowController::Step::kSearchEngineChoice);
   }

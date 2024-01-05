@@ -23,7 +23,7 @@ interface PageHandler {
   // `chrome/browser/resources/search_engine_choice/app.ts`
   HandleSearchEngineChoiceSelected(int32 prepopulate_id);
 
-  // Notifies the `SearchEngineChoiceService` that the learn more link was
+  // Notifies the `SearchEngineChoiceDialogService` that the learn more link was
   // clicked.
   HandleLearnMoreLinkClicked();
 };

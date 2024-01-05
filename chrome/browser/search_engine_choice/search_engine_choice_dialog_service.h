@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
-#define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
+#ifndef CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_H_
+#define CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_H_
 
 #include <string>
 
@@ -39,7 +39,7 @@ struct ChoiceData {
 }  // namespace search_engines
 
 // Service handling the Search Engine Choice dialog.
-class SearchEngineChoiceService : public KeyedService {
+class SearchEngineChoiceDialogService : public KeyedService {
  public:
   // Specifies the view in which the choice screen UI is rendered.
   enum class EntryPoint {
@@ -48,9 +48,9 @@ class SearchEngineChoiceService : public KeyedService {
     kDialog,
   };
 
-  SearchEngineChoiceService(Profile& profile,
-                            TemplateURLService& template_url_service);
-  ~SearchEngineChoiceService() override;
+  SearchEngineChoiceDialogService(Profile& profile,
+                                  TemplateURLService& template_url_service);
+  ~SearchEngineChoiceDialogService() override;
 
   // Informs the service that a Search Engine Choice dialog has been opened
   // for `browser`.
@@ -133,17 +133,18 @@ class SearchEngineChoiceService : public KeyedService {
   // dangling pointers.
   class BrowserObserver : public BrowserListObserver {
    public:
-    explicit BrowserObserver(SearchEngineChoiceService& service);
+    explicit BrowserObserver(SearchEngineChoiceDialogService& service);
     ~BrowserObserver() override;
 
     void OnBrowserRemoved(Browser* browser) override;
 
    private:
-    raw_ref<SearchEngineChoiceService> search_engine_choice_service_;
+    raw_ref<SearchEngineChoiceDialogService>
+        search_engine_choice_dialog_service_;
     base::ScopedObservation<BrowserList, BrowserListObserver> observation_{
         this};
   };
-  friend class SearchEngineChoiceServiceFactory;
+  friend class SearchEngineChoiceDialogServiceFactory;
 
   search_engines::SearchEngineChoiceScreenConditions ComputeDialogConditions(
       Browser& browser);
@@ -161,7 +162,7 @@ class SearchEngineChoiceService : public KeyedService {
   // The `KeyedService` lifetime is expected to exceed the profile's.
   const raw_ref<Profile> profile_;
   const raw_ref<TemplateURLService> template_url_service_;
-  base::WeakPtrFactory<SearchEngineChoiceService> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SearchEngineChoiceDialogService> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_SERVICE_H_
+#endif  // CHROME_BROWSER_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_DIALOG_SERVICE_H_

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -18,17 +18,18 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class SearchEngineChoiceServiceTest : public BrowserWithTestWindowTest {
+class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
  public:
-  SearchEngineChoiceServiceTest() {
+  SearchEngineChoiceDialogServiceTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{switches::kSearchEngineChoice,
                               switches::kSearchEngineChoiceFre},
         /*disabled_features=*/{});
 
     scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
-        SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
-            /*force_chrome_build=*/true));
+        SearchEngineChoiceDialogServiceFactory::
+            ScopedChromeBuildOverrideForTesting(
+                /*force_chrome_build=*/true));
   }
 
   void SetUp() override {
@@ -59,26 +60,26 @@ class SearchEngineChoiceServiceTest : public BrowserWithTestWindowTest {
 };
 
 #if !BUILDFLAG(CHROME_FOR_TESTING)
-TEST_F(SearchEngineChoiceServiceTest, HandleLearnMoreLinkClicked) {
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+TEST_F(SearchEngineChoiceDialogServiceTest, HandleLearnMoreLinkClicked) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
 
-  search_engine_choice_service->NotifyLearnMoreLinkClicked(
-      SearchEngineChoiceService::EntryPoint::kDialog);
+  search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kLearnMoreWasDisplayed,
       1);
 
-  search_engine_choice_service->NotifyLearnMoreLinkClicked(
-      SearchEngineChoiceService::EntryPoint::kFirstRunExperience);
+  search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreLearnMoreWasDisplayed,
       1);
 
-  search_engine_choice_service->NotifyLearnMoreLinkClicked(
-      SearchEngineChoiceService::EntryPoint::kProfileCreation);
+  search_engine_choice_dialog_service->NotifyLearnMoreLinkClicked(
+      SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
@@ -86,43 +87,43 @@ TEST_F(SearchEngineChoiceServiceTest, HandleLearnMoreLinkClicked) {
       1);
 }
 
-TEST_F(SearchEngineChoiceServiceTest, CanShowDialog) {
+TEST_F(SearchEngineChoiceDialogServiceTest, CanShowDialog) {
   feature_list().Reset();
   feature_list().InitWithFeatures(
       /*enabled_features=*/{switches::kSearchEngineChoiceFre},
       /*disabled_features=*/{switches::kSearchEngineChoice});
 
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
 
-  EXPECT_FALSE(search_engine_choice_service->CanShowDialog(*browser()));
+  EXPECT_FALSE(search_engine_choice_dialog_service->CanShowDialog(*browser()));
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenNavigationConditionsHistogram,
       search_engines::SearchEngineChoiceScreenConditions::kFeatureSuppressed,
       1);
 }
 
-TEST_F(SearchEngineChoiceServiceTest, NotifyChoiceMade) {
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(profile());
+TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
 
-  search_engine_choice_service->NotifyChoiceMade(
+  search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
-      SearchEngineChoiceService::EntryPoint::kDialog);
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kDefaultWasSet, 1);
 
-  search_engine_choice_service->NotifyChoiceMade(
+  search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
-      SearchEngineChoiceService::EntryPoint::kFirstRunExperience);
+      SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::kFreDefaultWasSet, 1);
 
-  search_engine_choice_service->NotifyChoiceMade(
+  search_engine_choice_dialog_service->NotifyChoiceMade(
       TemplateURLPrepopulateData::google.id,
-      SearchEngineChoiceService::EntryPoint::kProfileCreation);
+      SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
   histogram_tester().ExpectBucketCount(
       search_engines::kSearchEngineChoiceScreenEventsHistogram,
       search_engines::SearchEngineChoiceScreenEvents::
@@ -130,9 +131,10 @@ TEST_F(SearchEngineChoiceServiceTest, NotifyChoiceMade) {
       1);
 }
 #else
-TEST_F(SearchEngineChoiceServiceTest, ServiceNotInitializedInChromeForTesting) {
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(profile());
-  ASSERT_EQ(search_engine_choice_service, nullptr);
+TEST_F(SearchEngineChoiceDialogServiceTest,
+       ServiceNotInitializedInChromeForTesting) {
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
+  ASSERT_EQ(search_engine_choice_dialog_service, nullptr);
 }
 #endif

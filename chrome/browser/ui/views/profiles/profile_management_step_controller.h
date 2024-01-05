@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
@@ -65,9 +65,9 @@ class ProfileManagementStepController {
   static std::unique_ptr<ProfileManagementStepController>
   CreateForSearchEngineChoice(
       ProfilePickerWebContentsHost* host,
-      SearchEngineChoiceService* search_engine_choice_service,
+      SearchEngineChoiceDialogService* search_engine_choice_dialog_service,
       content::WebContents* web_contents,
-      SearchEngineChoiceService::EntryPoint entry_point,
+      SearchEngineChoiceDialogService::EntryPoint entry_point,
       base::OnceClosure callback);
 
   // Creates the step that will finish the flow and launch the browser.

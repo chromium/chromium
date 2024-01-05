@@ -113,7 +113,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #endif
@@ -636,7 +636,7 @@ void InProcessBrowserTest::SetUp() {
   // expect this can allow the prompt as desired.
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kDialog)) {
-    SearchEngineChoiceService::SetDialogDisabledForTests(
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/true);
   }
 #endif

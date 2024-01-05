@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -11,7 +11,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -39,7 +39,7 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
         kFeatureSuppressed;
   }
 
-  if (!SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(
+  if (!SearchEngineChoiceDialogServiceFactory::IsSelectedChoiceProfile(
           profile, /*try_claim=*/false)) {
     return search_engines::SearchEngineChoiceScreenConditions::
         kProfileOutOfScope;
@@ -77,9 +77,9 @@ bool IsProfileEligibleForChoiceScreen(Profile& profile) {
 
 }  // namespace
 
-SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
+SearchEngineChoiceDialogServiceFactory::SearchEngineChoiceDialogServiceFactory()
     : ProfileKeyedServiceFactory(
-          "SearchEngineChoiceServiceFactory",
+          "SearchEngineChoiceDialogServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .WithAshInternals(ProfileSelection::kNone)
@@ -88,47 +88,49 @@ SearchEngineChoiceServiceFactory::SearchEngineChoiceServiceFactory()
   DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
-SearchEngineChoiceServiceFactory::~SearchEngineChoiceServiceFactory() = default;
+SearchEngineChoiceDialogServiceFactory::
+    ~SearchEngineChoiceDialogServiceFactory() = default;
 
 // static
-SearchEngineChoiceServiceFactory*
-SearchEngineChoiceServiceFactory::GetInstance() {
-  static base::NoDestructor<SearchEngineChoiceServiceFactory> factory;
+SearchEngineChoiceDialogServiceFactory*
+SearchEngineChoiceDialogServiceFactory::GetInstance() {
+  static base::NoDestructor<SearchEngineChoiceDialogServiceFactory> factory;
   return factory.get();
 }
 
 // static
-SearchEngineChoiceService* SearchEngineChoiceServiceFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<SearchEngineChoiceService*>(
+SearchEngineChoiceDialogService*
+SearchEngineChoiceDialogServiceFactory::GetForProfile(Profile* profile) {
+  return static_cast<SearchEngineChoiceDialogService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
 base::AutoReset<bool>
-SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
+SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting(
     bool force_chrome_build) {
   CHECK_IS_TEST();
   return base::AutoReset<bool>(&g_is_chrome_build, force_chrome_build);
 }
 
 // static
-bool SearchEngineChoiceServiceFactory::IsSelectedChoiceProfile(Profile& profile,
-                                                               bool try_claim) {
+bool SearchEngineChoiceDialogServiceFactory::IsSelectedChoiceProfile(
+    Profile& profile,
+    bool try_claim) {
   // TODO(b/309936758): Remove this method and deprecate
   // prefs::kSearchEnginesChoiceProfile
   return true;
 }
 
 // static
-bool SearchEngineChoiceServiceFactory::
+bool SearchEngineChoiceDialogServiceFactory::
     IsProfileEligibleForChoiceScreenForTesting(Profile& profile) {
   CHECK_IS_TEST();
   return IsProfileEligibleForChoiceScreen(profile);
 }
 
 std::unique_ptr<KeyedService>
-SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
+SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_FOR_TESTING)
   return nullptr;
@@ -149,7 +151,7 @@ SearchEngineChoiceServiceFactory::BuildServiceInstanceForBrowserContext(
 
   TemplateURLService& template_url_service =
       CHECK_DEREF(TemplateURLServiceFactory::GetForProfile(&profile));
-  return std::make_unique<SearchEngineChoiceService>(profile,
-                                                     template_url_service);
+  return std::make_unique<SearchEngineChoiceDialogService>(
+      profile, template_url_service);
 #endif
 }

@@ -9,8 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search_engine_choice/search_engine_choice_tab_helper.h"
@@ -38,11 +38,12 @@ namespace {
 // This is the maximum dialog height for pixel tests on Windows.
 constexpr int kMaximumHeight = 620;
 
-// Class that mocks `SearchEngineChoiceService`.
-class MockSearchEngineChoiceService : public SearchEngineChoiceService {
+// Class that mocks `SearchEngineChoiceDialogService`.
+class MockSearchEngineChoiceDialogService
+    : public SearchEngineChoiceDialogService {
  public:
-  explicit MockSearchEngineChoiceService(Profile* profile)
-      : SearchEngineChoiceService(
+  explicit MockSearchEngineChoiceDialogService(Profile* profile)
+      : SearchEngineChoiceDialogService(
             *profile,
             *TemplateURLServiceFactory::GetForProfile(profile)) {
     ON_CALL(*this, GetSearchEngines).WillByDefault([]() {
@@ -60,11 +61,12 @@ class MockSearchEngineChoiceService : public SearchEngineChoiceService {
       return choices;
     });
   }
-  ~MockSearchEngineChoiceService() override = default;
+  ~MockSearchEngineChoiceDialogService() override = default;
 
   static std::unique_ptr<KeyedService> Create(
       content::BrowserContext* context) {
-    return std::make_unique<testing::NiceMock<MockSearchEngineChoiceService>>(
+    return std::make_unique<
+        testing::NiceMock<MockSearchEngineChoiceDialogService>>(
         Profile::FromBrowserContext(context));
   }
 
@@ -140,7 +142,7 @@ class SearchEngineChoiceUIPixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   SearchEngineChoiceUIPixelTest()
-      : scoped_chrome_build_override_(SearchEngineChoiceServiceFactory::
+      : scoped_chrome_build_override_(SearchEngineChoiceDialogServiceFactory::
                                           ScopedChromeBuildOverrideForTesting(
                                               /*force_chrome_build=*/true)),
         pixel_test_mixin_(&mixin_host_,
@@ -158,10 +160,11 @@ class SearchEngineChoiceUIPixelTest
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
                 base::BindRepeating([](content::BrowserContext* context) {
-                  SearchEngineChoiceServiceFactory::GetInstance()
+                  SearchEngineChoiceDialogServiceFactory::GetInstance()
                       ->SetTestingFactoryAndUse(
-                          context, base::BindRepeating(
-                                       &MockSearchEngineChoiceService::Create));
+                          context,
+                          base::BindRepeating(
+                              &MockSearchEngineChoiceDialogService::Create));
                 }));
   }
 
@@ -169,7 +172,7 @@ class SearchEngineChoiceUIPixelTest
   void ShowUi(const std::string& name) override {
     ui::ScopedAnimationDurationScaleMode disable_animation(
         ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    SearchEngineChoiceService::SetDialogDisabledForTests(
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
 
     GURL url = GURL(chrome::kChromeUISearchEngineChoiceURL);

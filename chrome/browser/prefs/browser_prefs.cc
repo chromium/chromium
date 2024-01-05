@@ -285,7 +285,7 @@
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_client_side_trial.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -1453,7 +1453,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   metrics::TabStatsTracker::RegisterPrefs(registry);
   performance_manager::user_tuning::prefs::RegisterLocalStatePrefs(registry);
   RegisterBrowserPrefs(registry);
-  SearchEngineChoiceService::RegisterLocalStatePrefs(registry);
+  SearchEngineChoiceDialogService::RegisterLocalStatePrefs(registry);
   SearchEngineChoiceClientSideTrial::RegisterLocalStatePrefs(registry);
   speech::SodaInstaller::RegisterLocalStatePrefs(registry);
   StartupBrowserCreator::RegisterLocalStatePrefs(registry);

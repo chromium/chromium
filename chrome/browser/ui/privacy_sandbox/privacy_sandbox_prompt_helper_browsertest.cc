@@ -8,8 +8,8 @@
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
@@ -148,8 +148,8 @@ class PrivacySandboxPromptHelperTestWithParam
  public:
   void SetUpInProcessBrowserTestFixture() override {
     // Not setting
-    // `SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting`
-    // will not initialize the `SearchEngineChoiceService` in
+    // `SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting`
+    // will not initialize the `SearchEngineChoiceDialogService` in
     // tests thus simulating the fact that the user is not eligible for the
     // search engine choice or has already made a choice in a previous Chrome
     // run.
@@ -662,7 +662,7 @@ class PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled
  public:
   void SetUpOnMainThread() override {
     PrivacySandboxPromptHelperTestWithParam::SetUpOnMainThread();
-    SearchEngineChoiceService::SetDialogDisabledForTests(
+    SearchEngineChoiceDialogService::SetDialogDisabledForTests(
         /*dialog_disabled=*/false);
   }
 
@@ -674,8 +674,9 @@ class PrivacySandboxPromptHelperTestWithSearchEngineChoiceEnabled
 
  private:
   base::AutoReset<bool> scoped_chrome_build_override_ =
-      SearchEngineChoiceServiceFactory::ScopedChromeBuildOverrideForTesting(
-          /*force_chrome_build=*/true);
+      SearchEngineChoiceDialogServiceFactory::
+          ScopedChromeBuildOverrideForTesting(
+              /*force_chrome_build=*/true);
 };
 
 IN_PROC_BROWSER_TEST_P(
@@ -705,10 +706,12 @@ IN_PROC_BROWSER_TEST_P(
         1}});
 
   // Make a search engine choice to close the dialog.
-  SearchEngineChoiceService* search_engine_choice_service =
-      SearchEngineChoiceServiceFactory::GetForProfile(browser()->profile());
-  search_engine_choice_service->NotifyChoiceMade(
-      /*prepopulate_id=*/1, SearchEngineChoiceService::EntryPoint::kDialog);
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          browser()->profile());
+  search_engine_choice_dialog_service->NotifyChoiceMade(
+      /*prepopulate_id=*/1,
+      SearchEngineChoiceDialogService::EntryPoint::kDialog);
 
   // Make sure that the Privacy Sandbox prompt doesn't get displayed on the next
   // navigation.

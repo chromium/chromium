@@ -2895,9 +2895,7 @@ if (!is_android && !is_fuchsia) {
     ]
 
     if (!is_chrome_for_testing) {
-      sources += [
-        "../browser/search_engine_choice/search_engine_choice_browsertest.cc",
-      ]
+      sources += [ "../browser/search_engine_choice/search_engine_choice_dialog_browsertest.cc" ]
     }
 
     if (enable_compose) {
@@ -6541,7 +6539,7 @@ if (!is_fuchsia) {
         "../browser/picture_in_picture/picture_in_picture_occlusion_tracker_unittest.cc",
         "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
         "../browser/search_engine_choice/search_engine_choice_client_side_trial_unittest.cc",
-        "../browser/search_engine_choice/search_engine_choice_service_unittest.cc",
+        "../browser/search_engine_choice/search_engine_choice_dialog_service_unittest.cc",
         "../browser/segmentation_platform/client_util/local_tab_handler_unittest.cc",
         "../browser/ssl/generated_https_first_mode_pref_unittest.cc",
         "../browser/ui/download/download_bubble_row_list_view_info_unittest.cc",

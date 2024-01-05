@@ -33,7 +33,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
-#include "chrome/browser/search_engine_choice/search_engine_choice_service.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/dice_intercepted_session_startup_helper.h"
 #include "chrome/browser/signin/dice_signed_in_profile_creator.h"
@@ -974,7 +974,7 @@ void DiceWebSigninInterceptor::OnProfileCreationChoice(
   if (search_engines::IsChoiceScreenFlagEnabled(
           search_engines::ChoicePromo::kAny)) {
     profile_presets.search_engine_choice_data =
-        SearchEngineChoiceService::GetChoiceDataFromProfile(*profile_);
+        SearchEngineChoiceDialogService::GetChoiceDataFromProfile(*profile_);
   }
 
   DCHECK(!state_->dice_signed_in_profile_creator_);
@@ -1078,7 +1078,7 @@ void DiceWebSigninInterceptor::OnNewSignedInProfileCreated(
       // engine choice timestamp from the previous profile.
       if (search_engines::IsChoiceScreenFlagEnabled(
               search_engines::ChoicePromo::kAny)) {
-        SearchEngineChoiceService::UpdateProfileFromChoiceData(
+        SearchEngineChoiceDialogService::UpdateProfileFromChoiceData(
             *new_profile, profile_presets->search_engine_choice_data);
       }
     }
