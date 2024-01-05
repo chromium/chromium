@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"

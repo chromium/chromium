@@ -20,7 +20,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_paths.h"

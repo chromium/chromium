@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -138,13 +139,13 @@ bool UserScriptSet::UpdateUserScripts(
       const char* body = nullptr;
       size_t body_length = 0;
       CHECK(iter.ReadData(&body, &body_length));
-      js_script->set_external_content(base::StringPiece(body, body_length));
+      js_script->set_external_content(std::string_view(body, body_length));
     }
     for (const auto& css_script : script->css_scripts()) {
       const char* body = nullptr;
       size_t body_length = 0;
       CHECK(iter.ReadData(&body, &body_length));
-      css_script->set_external_content(base::StringPiece(body, body_length));
+      css_script->set_external_content(std::string_view(body, body_length));
     }
 
     if (only_inject_incognito && !script->is_incognito_enabled())
@@ -250,7 +251,7 @@ blink::WebString UserScriptSet::GetJsSource(const UserScript::Content& file,
   if (iter != script_sources_.end())
     return iter->second;
 
-  base::StringPiece script_content = file.GetContent();
+  std::string_view script_content = file.GetContent();
   blink::WebString source;
   if (emulate_greasemonkey) {
     // We add this dumb function wrapper for user scripts to emulate what
@@ -272,7 +273,7 @@ blink::WebString UserScriptSet::GetCssSource(const UserScript::Content& file) {
   if (iter != script_sources_.end())
     return iter->second;
 
-  base::StringPiece script_content = file.GetContent();
+  std::string_view script_content = file.GetContent();
   return script_sources_
       .insert(std::make_pair(url, blink::WebString::FromUTF8(script_content)))
       .first->second;

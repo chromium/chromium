@@ -9,8 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/strings/string_piece.h"
-
 // A collection of error-related strings and utilities for parsing API
 // invocations.
 namespace extensions {

@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/native_extension_bindings_system.h"
 
+#include <string_view>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/values.h"
@@ -30,8 +32,7 @@ namespace {
 
 // Returns true if the value specified by |property| exists in the given
 // context.
-bool PropertyExists(v8::Local<v8::Context> context,
-                    base::StringPiece property) {
+bool PropertyExists(v8::Local<v8::Context> context, std::string_view property) {
   v8::Local<v8::Value> value = V8ValueFromScriptSource(context, property);
   EXPECT_FALSE(value.IsEmpty());
   return !value->IsUndefined();
@@ -639,7 +640,7 @@ TEST_F(NativeExtensionBindingsSystemUnittest,
 
   auto check_properties_inequal = [](v8::Local<v8::Context> context_a,
                                      v8::Local<v8::Context> context_b,
-                                     base::StringPiece property) {
+                                     std::string_view property) {
     v8::Local<v8::Value> value_a = V8ValueFromScriptSource(context_a, property);
     v8::Local<v8::Value> value_b = V8ValueFromScriptSource(context_b, property);
     EXPECT_FALSE(value_a.IsEmpty()) << property;

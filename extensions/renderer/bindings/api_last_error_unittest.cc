@@ -5,6 +5,8 @@
 #include "extensions/renderer/bindings/api_last_error.h"
 
 #include <optional>
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
@@ -220,7 +222,7 @@ TEST_F(APILastErrorTest, NonLastErrorObject) {
                           base::DoNothing());
 
   auto checked_set = [context](v8::Local<v8::Object> object,
-                               base::StringPiece key,
+                               std::string_view key,
                                v8::Local<v8::Value> value) {
     v8::Maybe<bool> success = object->Set(
         context, gin::StringToSymbol(context->GetIsolate(), key), value);

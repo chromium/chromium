@@ -5,6 +5,7 @@
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -28,8 +29,8 @@ namespace extensions {
 namespace {
 
 void CallAPIAndExpectError(v8::Local<v8::Context> context,
-                           base::StringPiece method_name,
-                           base::StringPiece args) {
+                           std::string_view method_name,
+                           std::string_view args) {
   SCOPED_TRACE(base::StringPrintf("Args: `%s`", args.data()));
   constexpr char kTemplate[] = "(function() { chrome.runtime.%s(%s); })";
 
@@ -293,7 +294,7 @@ TEST_F(RuntimeHooksDelegateTest, SendMessageErrors) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
-  auto send_message = [context](base::StringPiece args) {
+  auto send_message = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendMessage", args);
   };
 
@@ -391,7 +392,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, ConnectNative) {
   run_connect_native("'native_app'", "native_app");
   run_connect_native("'some_other_native_app'", "some_other_native_app");
 
-  auto connect_native_error = [context](base::StringPiece args) {
+  auto connect_native_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "connectNative", args);
   };
   connect_native_error("'native_app', {name: 'name'}");
@@ -410,7 +411,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingTest, SendNativeMessage) {
       "'another_native_app', {alpha: 2}, function() {}", R"({"alpha":2})",
       "another_native_app");
 
-  auto send_native_message_error = [context](base::StringPiece args) {
+  auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
   };
 
@@ -594,7 +595,7 @@ TEST_F(RuntimeHooksDelegateNativeMessagingMV3Test, SendNativeMessage) {
     EXPECT_TRUE(result->IsUndefined());
   }
 
-  auto send_native_message_error = [context](base::StringPiece args) {
+  auto send_native_message_error = [context](std::string_view args) {
     CallAPIAndExpectError(context, "sendNativeMessage", args);
   };
 

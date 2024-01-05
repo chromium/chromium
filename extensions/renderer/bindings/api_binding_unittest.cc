@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/bindings/api_binding.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/auto_reset.h"
@@ -1640,7 +1641,7 @@ TEST_F(APIBindingUnittest, FilteredEvents) {
   ASSERT_FALSE(function.IsEmpty());
 
   auto check_supports_filters = [context, binding_object, function](
-                                    base::StringPiece name,
+                                    std::string_view name,
                                     bool expect_supports) {
     SCOPED_TRACE(name);
     v8::Local<v8::Value> event =
@@ -1853,8 +1854,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
   auto call_api_method = [binding_object, context](
-                             base::StringPiece name,
-                             base::StringPiece string_args) {
+                             std::string_view name,
+                             std::string_view string_args) {
     v8::Local<v8::Function> call = FunctionFromString(
         context, base::StringPrintf("(function(binding) { binding.%s(%s); })",
                                     name.data(), string_args.data()));

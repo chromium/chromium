@@ -5,6 +5,7 @@
 #include "extensions/renderer/api/messaging/one_time_message_handler.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -75,7 +76,7 @@ class OneTimeMessageHandlerTest : public NativeExtensionBindingsSystemUnittest {
   bool UseStrictIPCMessageSender() override { return true; }
 
   std::string GetGlobalProperty(v8::Local<v8::Context> context,
-                                base::StringPiece property) {
+                                std::string_view property) {
     return GetStringPropertyFromObject(context->Global(), context, property);
   }
 

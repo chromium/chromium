@@ -4,9 +4,10 @@
 
 #include "extensions/renderer/api/runtime_hooks_delegate.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -197,7 +198,7 @@ RequestResult RuntimeHooksDelegate::HandleRequest(
       ScriptContext*, const APISignature::V8ParseResult&);
   static const struct {
     Handler handler;
-    base::StringPiece method;
+    std::string_view method;
   } kHandlers[] = {
       {&RuntimeHooksDelegate::HandleSendMessage, kSendMessage},
       {&RuntimeHooksDelegate::HandleConnect, kConnect},
