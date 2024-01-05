@@ -54,17 +54,17 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
     bool observed_submission);
 
 // Encodes the list of `forms` and their fields that are valid into an
-// AutofillPageQueryRequest proto. The queried FormSignatures and
+// `AutofillPageQueryRequest` proto. The queried FormSignatures and
 // FieldSignatures are also returned in the same order as in `query`. In case
 // multiple FormStructures have the same FormSignature, only the first one is
-// included in AutofillPageQueryRequest and the returned queried form
+// included in `AutofillPageQueryRequest` and the returned queried form
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
-// ProcessServerPredictionsQueryResponse.
+// `ProcessServerPredictionsQueryResponse`.
 void ParseServerPredictionsQueryResponse(
     std::string_view payload,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,

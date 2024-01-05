@@ -118,7 +118,7 @@ std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
 
   // Pack the types in `available_field_types` into `bit_field`.
   std::vector<uint8_t> bit_field(kNumBytes, 0);
-  for (auto field_type : available_field_types) {
+  for (const auto field_type : available_field_types) {
     // Set the appropriate bit in the field.  The bit we set is the one
     // `field_type` % 8 from the left of the byte.
     const size_t byte = field_type / 8;
@@ -130,7 +130,8 @@ std::string EncodeFieldTypes(const FieldTypeSet& available_field_types) {
   // Discard any trailing zeroes.
   // If there are no available types, we return the empty string.
   size_t data_end = bit_field.size();
-  for (; data_end > 0 && !bit_field[data_end - 1]; --data_end) {
+  while (data_end > 0 && !bit_field[data_end - 1]) {
+    --data_end;
   }
 
   // Print all meaningful bytes into a string.
@@ -303,12 +304,10 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
     if (IsCheckable(field->check_status)) {
       continue;
     }
-
     //  Add the same field elements as the query and a few more below.
     if (IsCheckable(field->check_status)) {
       continue;
     }
-
     // Do not upload fields that were filled with a fallback type, as this would
     // introduce unnecessary noise in the field votes.
     if (field->WasAutofilledWithFallback()) {
@@ -316,7 +315,6 @@ void EncodeFormFieldsForUpload(const FormStructure& form,
     }
 
     auto* added_field = upload->add_field();
-
     for (auto field_type : field->possible_types()) {
       added_field->add_autofill_type(field_type);
     }
@@ -563,10 +561,11 @@ GetSuggestionsMapFromResponse(
   std::map<std::pair<FormSignature, FieldSignature>,
            std::deque<FieldSuggestion>>
       fields_suggestions;
-  for (int form_idx = 0;
-       form_idx < std::min(response.form_suggestions_size(),
-                           static_cast<int>(queried_form_signatures.size()));
-       ++form_idx) {
+  const int num_of_forms =
+      std::min(response.form_suggestions_size(),
+               base::checked_cast<int>(queried_form_signatures.size()));
+
+  for (int form_idx = 0; form_idx < num_of_forms; ++form_idx) {
     FormSignature form_signature = queried_form_signatures[form_idx];
     for (const auto& field :
          response.form_suggestions(form_idx).field_suggestions()) {
@@ -709,7 +708,6 @@ EncodeAutofillPageQueryRequest(
   AutofillPageQueryRequest query;
   std::vector<FormSignature> queried_form_signatures;
   queried_form_signatures.reserve(forms.size());
-
   query.set_client_version(
       std::string(version_info::GetProductNameAndVersionForUserAgent()));
 
