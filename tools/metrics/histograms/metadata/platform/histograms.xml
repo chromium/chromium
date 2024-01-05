@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="PartitionTypes">
+  <variant name="EncStateful"/>
+  <variant name="Stateful"/>
+  <variant name="UserData"/>
+</variants>
+
 <histogram name="Platform.AsvGroup" units="units" expires_after="2018-08-30">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
@@ -539,7 +545,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.FileSystem.{Partition}.ErrorCount" units="errors"
+<histogram name="Platform.FileSystem.{Partition}.fsckResult" units="FsckResult"
+    expires_after="2024-08-07">
+  <owner>gwendal@google.com</owner>
+  <owner>chromeos-storage@google.com</owner>
+  <summary>
+    Reports fsck result on {Partition}. Reported once per filesystem mount.
+  </summary>
+  <token key="Partition" variants="PartitionTypes"/>
+</histogram>
+
+<histogram name="Platform.FileSystem.{Partition}_ErrorCount" units="errors"
     expires_after="2024-08-07">
   <owner>gwendal@google.com</owner>
   <owner>chromeos-storage@google.com</owner>
@@ -547,10 +563,7 @@ chromium-metrics-reviews@google.com.
     Number of error in file system {Partition}, as reported by dumpe2fs &quot;FS
     Error count&quot; field. Reported once per boot.
   </summary>
-  <token key="Partition">
-    <variant name="EncStateful"/>
-    <variant name="Stateful"/>
-  </token>
+  <token key="Partition" variants="PartitionTypes"/>
 </histogram>
 
 <histogram name="Platform.FileSystem.{Partition}_{MountResult}" enum="Boolean"
@@ -561,10 +574,7 @@ chromium-metrics-reviews@google.com.
     {MountResult} is true when kernel reports that file system {Partition}
     is/was needed.
   </summary>
-  <token key="Partition">
-    <variant name="EncStateful"/>
-    <variant name="Stateful"/>
-  </token>
+  <token key="Partition" variants="PartitionTypes"/>
   <token key="MountResult">
     <variant name="FsckNeeded"/>
     <variant name="RecoveryNeeded"/>
