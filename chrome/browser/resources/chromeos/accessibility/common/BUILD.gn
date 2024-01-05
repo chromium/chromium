@@ -31,8 +31,6 @@ js_sources = [
   "browser_util.js",
   "gdocs_script.js",
   "key_code.js",
-  "rect_util.js",
-  "sentence_utils.js",
   "testing/accessibility_test_base.js",
   "testing/test_node_generator.js",
 ]
@@ -56,8 +54,10 @@ ts_modules = [
   "node_utils.ts",
   "tree_walker.ts",
   "word_utils.ts",
+  "rect_util.ts",
   "repeated_event_handler.ts",
   "repeated_tree_change_handler.ts",
+  "sentence_utils.ts",
   "settings.ts",
   "string_util.ts",
 ]

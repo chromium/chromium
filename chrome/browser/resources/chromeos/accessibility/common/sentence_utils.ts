@@ -33,7 +33,9 @@ export class SentenceUtils {
    * @return {?number} the next sentence start after |startCharIndex|, returns
    *     null if nothing found.
    */
-  static getSentenceStart(nodeGroup, startCharIndex, direction) {
+  static getSentenceStart(
+      nodeGroup: ParagraphUtils.NodeGroup, startCharIndex: number,
+      direction: constants.Dir): number|null {
     if (!nodeGroup) {
       return null;
     }
@@ -78,13 +80,14 @@ export class SentenceUtils {
    *     null if nothing found.
    */
   static getSentenceStartInNodeGroupItem(
-      nodeGroupItem, startCharIndex, direction) {
+      nodeGroupItem: ParagraphUtils.NodeGroupItem, startCharIndex: number,
+      direction: constants.Dir): number|null {
     if (!nodeGroupItem) {
       return null;
     }
     // Check if this nodeGroupItem has a non-empty static text node.
     if (nodeGroupItem.node.role !== RoleType.STATIC_TEXT ||
-        nodeGroupItem.node.name.length === 0) {
+        nodeGroupItem.node.name!.length === 0) {
       return null;
     }
 
@@ -95,7 +98,7 @@ export class SentenceUtils {
       // If the corresponding char of |startCharIndex| is after this static text
       // node, skip this text node.
       if (startCharIndex >
-          staticTextStartChar + staticTextNode.name.length - 1) {
+          staticTextStartChar + staticTextNode.name!.length - 1) {
         return null;
       }
       // If the corresponding char of |startCharIndex| is within this static
@@ -107,11 +110,11 @@ export class SentenceUtils {
 
       // Iterate over all sentenceStarts to find the one that is bigger than
       // |searchIndexInStaticText|.
-      for (let i = 0; i < staticTextNode.sentenceStarts.length; i++) {
-        if (staticTextNode.sentenceStarts[i] <= searchIndexInStaticText) {
+      for (let i = 0; i < staticTextNode.sentenceStarts!.length; i++) {
+        if (staticTextNode.sentenceStarts![i] <= searchIndexInStaticText) {
           continue;
         }
-        return staticTextNode.sentenceStarts[i] + staticTextStartChar;
+        return staticTextNode.sentenceStarts![i] + staticTextStartChar;
       }
     } else if (direction === constants.Dir.BACKWARD) {
       // If the corresponding char of |startCharIndex| is before this static
@@ -124,15 +127,15 @@ export class SentenceUtils {
       // the start char is after this static text node, and any sentence start
       // in this static text node is valid.
       const searchIndexInStaticText = Math.min(
-          startCharIndex - staticTextStartChar, staticTextNode.name.length);
+          startCharIndex - staticTextStartChar, staticTextNode.name!.length);
 
       // Iterate over all sentenceStarts to find the one that is smaller than
       // |searchIndexInStaticText|.
-      for (let i = staticTextNode.sentenceStarts.length - 1; i >= 0; i--) {
-        if (staticTextNode.sentenceStarts[i] >= searchIndexInStaticText) {
+      for (let i = staticTextNode.sentenceStarts!.length - 1; i >= 0; i--) {
+        if (staticTextNode.sentenceStarts![i] >= searchIndexInStaticText) {
           continue;
         }
-        return staticTextNode.sentenceStarts[i] + staticTextStartChar;
+        return staticTextNode.sentenceStarts![i] + staticTextStartChar;
       }
     }
     // We are off the edge of this static text node, return null.
@@ -147,7 +150,8 @@ export class SentenceUtils {
    *     This is relative to the text content of the node group.
    * @return {boolean} Whether the current position is a start of a sentence.
    */
-  static isSentenceStart(nodeGroup, currentCharIndex) {
+  static isSentenceStart(
+      nodeGroup: ParagraphUtils.NodeGroup, currentCharIndex: number): boolean {
     if (!nodeGroup) {
       return false;
     }
@@ -161,7 +165,7 @@ export class SentenceUtils {
       const nodeGroupItem = nodeGroup.nodes[i];
       // Check if this nodeGroupItem has a non-empty static text node.
       if (nodeGroupItem.node.role !== RoleType.STATIC_TEXT ||
-          nodeGroupItem.node.name.length === 0) {
+          nodeGroupItem.node.name!.length === 0) {
         continue;
       }
 
@@ -170,7 +174,7 @@ export class SentenceUtils {
       const staticTextStartChar = nodeGroupItem.startChar;
       const staticTextNode = nodeGroupItem.node;
       if (currentCharIndex >
-              staticTextStartChar + staticTextNode.name.length - 1 ||
+              staticTextStartChar + staticTextNode.name!.length - 1 ||
           currentCharIndex < staticTextStartChar) {
         continue;
       }
@@ -179,8 +183,8 @@ export class SentenceUtils {
 
       // Iterate over all sentenceStarts in the staticTextNode to see if we
       // have |searchIndexInStaticText|.
-      for (let j = 0; j < staticTextNode.sentenceStarts.length; j++) {
-        if (staticTextNode.sentenceStarts[j] === searchIndexInStaticText) {
+      for (let j = 0; j < staticTextNode.sentenceStarts!.length; j++) {
+        if (staticTextNode.sentenceStarts![j] === searchIndexInStaticText) {
           return true;
         }
       }

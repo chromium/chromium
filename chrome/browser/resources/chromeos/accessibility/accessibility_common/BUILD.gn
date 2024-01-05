@@ -222,7 +222,6 @@ js2gtest("accessibility_common_extjs_tests") {
   }
 
   gen_include_files = [
-    "../common/rect_util.js",
     "../common/testing/accessibility_test_base.js",
     "../common/testing/callback_helper.js",
     "../common/testing/common_e2e_test_base.js",

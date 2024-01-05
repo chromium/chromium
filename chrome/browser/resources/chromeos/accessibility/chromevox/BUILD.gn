@@ -46,7 +46,6 @@ chromevox_es6_modules = [
   "../common/async_util.js",
   "../common/browser_util.js",
   "../common/key_code.js",
-  "../common/rect_util.js",
   "background/abstract_earcons.js",
   "background/abstract_tts.js",
   "background/automation_object_constructor_installer.js",
