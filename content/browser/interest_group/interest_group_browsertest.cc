@@ -34,6 +34,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -5387,11 +5388,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), https_server_->GetURL("a.test", "/echo")));
   AttachInterestGroupObserver();
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(nullptr, RunAuctionAndWait(R"({
       seller: 'https://test.com',
       decisionLogicURL: 'https://test.com',
   })"));
   WaitForAccessObserved({});
+  content::FetchHistogramsFromChildProcesses();
+  // Make sure the right histogram was logged (the histogram for on-device
+  // auctions).
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeToResolve", 0);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
+                                    1);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -5421,6 +5430,8 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
       "'NavigatorAuction': auctionSignals for AuctionAdConfig with seller "
       "'https://a.test:*' must be a JSON-serializable object.");
 
+  base::HistogramTester histogram_tester;
+  content::FetchHistogramsFromChildProcesses();
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Promise "
       "argument rejected or resolved to invalid value.",
@@ -5432,6 +5443,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   })",
                                   test_origin, decision_url)));
   EXPECT_TRUE(console_observer.Wait());
+  // Make sure the metrics reflect that this promise failed to resolve.
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeToResolve", 0);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
+                                    0);
 }
 
 // Exercise rejection path in the renderer for promise-delivered auction
@@ -17315,8 +17331,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
   url::Origin test_origin = url::Origin::Create(test_url);
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
+  base::HistogramTester histogram_tester;
   EXPECT_EQ("|", GetInterestGroupAdAuctionData(test_origin, absl::nullopt));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -17326,12 +17345,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(
       "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
       "'Navigator': seller 'null' for AdAuctionDataConfig must be a valid "
       "https origin.",
       GetInterestGroupAdAuctionData(
           url::Origin(), kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -17341,11 +17364,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(
       "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on "
       "'Navigator': coordinatorOrigin 'foo' for AdAuctionDataConfig must be "
       "a valid https origin.",
       GetInterestGroupAdAuctionData(test_origin, "foo"));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -17385,6 +17412,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       same_origin_iframe_in_cross_origin_iframe,
       same_origin_iframe_in_cross_origin_iframe2};
 
+  base::HistogramTester histogram_tester;
   for (auto* execution_target : execution_targets) {
     SCOPED_TRACE(execution_target->GetLastCommittedURL().spec());
     WebContentsConsoleObserver console_observer(shell()->web_contents());
@@ -17409,6 +17437,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       EXPECT_TRUE(console_observer.messages().empty());
     }
   }
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve", 6);
 }
 
 // Check that the renderer doesn't crash if we don't have a decision logic URL.
@@ -17425,7 +17456,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(nullptr, RunAuctionAndWait(auction_config));
+  content::FetchHistogramsFromChildProcesses();
+  // Make sure the right histogram was logged (not the on-device histogram).
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeToResolve", 1);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
@@ -17450,11 +17488,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
       https_server_->GetURL("a.test", "/interest_group/decision_logic.js"));
 
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
-
+  base::HistogramTester histogram_tester;
   EXPECT_EQ(
       "TypeError: Failed to execute 'runAdAuction' on 'Navigator': Missing "
       "required field ad auction config decisionLogicURL or serverResponse",
       RunAuctionAndWait(auction_config));
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectTotalCount(
+      "Ads.InterestGroup.ServerAuction.TimeToResolve", 0);
+  histogram_tester.ExpectTotalCount("Ads.InterestGroup.Auction.TimeToResolve",
+                                    0);
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,

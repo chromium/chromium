@@ -929,6 +929,22 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ads.InterestGroup.GetInterestGroupAdAuctionData.TimeToResolve"
+    units="ms" expires_after="2024-06-20">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to resolve a
+    navigator.getInterestGroupAdAuctionData request; only recorded if there was
+    no error in getting the data.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Net.DownloadTime.{Type}" units="ms"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>
@@ -1497,6 +1513,29 @@ chromium-metrics-reviews@google.com.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services">
+      <owner>behamilton@google.com</owner>
+      <owner>pauljensen@chromium.org</owner>
+      <owner>privacy-sandbox-dev@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.TimeToResolve" units="ms"
+    expires_after="2024-06-20">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to resolve a navigator.runAdAuction request; only
+    recorded when the request is successfully resolved.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
   </summary>
   <token key="AuctionType">
     <variant name="Auction" summary="FLEDGE"/>
