@@ -103,6 +103,22 @@ class TfLiteOpResolver : public tflite::MutableOpResolver {
                /* max_version = */ 3);
     AddBuiltin(tflite::BuiltinOperator_RESHAPE,
                tflite::ops::builtin::Register_RESHAPE());
+    AddBuiltin(tflite::BuiltinOperator_AVERAGE_POOL_2D,
+               tflite::ops::builtin::Register_AVERAGE_POOL_2D(),
+               /* min_version */ 1,
+               /* max_version */ 3);
+    AddBuiltin(tflite::BuiltinOperator_MAX_POOL_2D,
+               tflite::ops::builtin::Register_MAX_POOL_2D(),
+               /* min_version */ 1,
+               /* max_version */ 3);
+    AddBuiltin(tflite::BuiltinOperator_CONV_2D,
+               tflite::ops::builtin::Register_CONV_2D(),
+               /* min_version = */ 1,
+               /* max_version = */ 4);
+    AddBuiltin(tflite::BuiltinOperator_DEPTHWISE_CONV_2D,
+               tflite::ops::builtin::Register_DEPTHWISE_CONV_2D(),
+               /* min_version = */ 1,
+               /* max_version = */ 5);
   }
 };
 

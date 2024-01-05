@@ -6,6 +6,11 @@
 
 #include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pool_2d_options.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_activation.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
 namespace blink {
@@ -22,6 +27,7 @@ using OperandToIndexMap = HeapHashMap<Member<const MLOperand>, int32_t>;
 using OperatorCodeOffset = flatbuffers::Offset<tflite::OperatorCode>;
 using OperatorOffset = flatbuffers::Offset<tflite::Operator>;
 using BufferOffset = flatbuffers::Offset<tflite::Buffer>;
+using TensorOffset = flatbuffers::Offset<tflite::Tensor>;
 
 int32_t GetOperatorInputIndex(const MLOperator* op,
                               const OperandToIndexMap& operand_to_index_map,
@@ -86,6 +92,259 @@ uint32_t GetOperatorCodeIndex(tflite::BuiltinOperator code,
   return operator_code_index;
 }
 
+// Helper to get tflite padding mode for convolution 2d or pooling 2d.
+template <typename OptionsType>
+base::expected<tflite::Padding, String> GetTfLitePaddingMode(
+    const OptionsType* options,
+    const webnn::Size2d<uint32_t>& input,
+    const webnn::Size2d<uint32_t>& filter,
+    const webnn::Size2d<uint32_t>& stride,
+    const webnn::Size2d<uint32_t>& dilation) {
+  CHECK(options);
+  switch (options->autoPad().AsEnum()) {
+    case V8MLAutoPad::Enum::kExplicit: {
+      // Valid padding means there are no padding to be used as described here
+      // https://www.tensorflow.org/api_docs/python/tf/nn#valid_padding.
+      const Vector<uint32_t> no_padding = {0, 0, 0, 0};
+      const auto explicit_padding = options->getPaddingOr(no_padding);
+      CHECK_EQ(explicit_padding.size(), 4u);
+      if (explicit_padding == no_padding) {
+        return tflite::Padding_VALID;
+      } else {
+        // Convert the explicit padding to tflite same padding mode, throw
+        // exception if the calculated padding with kSameUpper are not the same
+        // as explicit padding.
+        const auto padding_height = webnn::CalculateConv2dPadding(
+            webnn::AutoPad::kSameUpper, input.height, filter.height,
+            stride.height, dilation.height);
+        const auto padding_width = webnn::CalculateConv2dPadding(
+            webnn::AutoPad::kSameUpper, input.width, filter.width, stride.width,
+            dilation.width);
+        // WebNN explicit padding is in [beginning_height, ending_height,
+        // beginning_width, ending_width] sequence.
+        const Vector<uint32_t> upper_padding = {
+            padding_height->begin, padding_height->end, padding_width->begin,
+            padding_width->end};
+        if (explicit_padding == upper_padding) {
+          return tflite::Padding_SAME;
+        } else {
+          return base::unexpected(
+              "The explicit padding are not supported in tflite.");
+        }
+      }
+    }
+    case V8MLAutoPad::Enum::kSameUpper:
+      // Tflite same padding is the additional ending padding of the spatial
+      // input dimensions by default.
+      // https://www.tensorflow.org/api_docs/python/tf/nn#same_padding
+      return tflite::Padding_SAME;
+    case V8MLAutoPad::Enum::kSameLower:
+      // The values in the padding array are ignored, so we don't need to
+      // calculate if it's tflite same padding.
+      return base::unexpected(
+          "Same lower padding mode is not supported in tflite schema.");
+  }
+
+  NOTREACHED_NORETURN();
+}
+
+base::expected<tflite::ActivationFunctionType, String>
+GetActivationFunctionType(const MLActivation* ml_activation) {
+  CHECK(ml_activation);
+  const MLOperator* op = ml_activation->Operator();
+  CHECK(op);
+  tflite::ActivationFunctionType activation =
+      tflite::ActivationFunctionType_NONE;
+  switch (op->Kind()) {
+    case MLOperator::OperatorKind::kClamp: {
+      const MLClampOptions* clamp_options =
+          static_cast<const MLClampOptions*>(op->Options());
+      CHECK(clamp_options);
+      const float min =
+          clamp_options->getMinValueOr(-std::numeric_limits<float>::infinity());
+      const float max =
+          clamp_options->getMaxValueOr(+std::numeric_limits<float>::infinity());
+      if (min == 0.0f && max == 6.0f) {
+        activation = tflite::ActivationFunctionType_RELU6;
+      } else {
+        return base::unexpected("Clamp activation is not supported.");
+      }
+      break;
+    }
+    case MLOperator::OperatorKind::kRelu:
+      activation = tflite::ActivationFunctionType_RELU;
+      break;
+    default:
+      return base::unexpected(MLOperator::OperatorKindToString(op->Kind()) +
+                              " activation is not supported.");
+  }
+
+  return activation;
+}
+
+template <typename DataType>
+uint32_t SerializeZeroBiasBuffer(V8MLOperandDataType::Enum data_type,
+                                 uint32_t output_channels,
+                                 flatbuffers::FlatBufferBuilder& builder,
+                                 Vector<BufferOffset>& buffers,
+                                 Vector<TensorOffset>& tensors) {
+  // Create `tflite::Buffer` for the empty tensors.
+  const auto buffer_index = base::checked_cast<uint32_t>(buffers.size());
+  const std::vector<DataType> empty_data(output_channels);
+  buffers.emplace_back(tflite::CreateBuffer(
+      builder,
+      builder.CreateVector(reinterpret_cast<const uint8_t*>(empty_data.data()),
+                           empty_data.size() * sizeof(DataType))));
+
+  // Create `tflite::Tensor` with the output channels and the index of buffer.
+  const int32_t tensor_index = base::checked_cast<int32_t>(tensors.size());
+  const auto dimensions = builder.CreateVector<int32_t>(
+      {base::checked_cast<int32_t>(output_channels)});
+  const auto operand_type = BlinkOperandTypeToTFLite(data_type);
+  tensors.emplace_back(tflite::CreateTensor(builder, std::move(dimensions),
+                                            operand_type, buffer_index));
+
+  return tensor_index;
+}
+
+base::expected<OperatorOffset, String> SerializeConv2d(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* conv2d,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes,
+    Vector<BufferOffset>& buffers,
+    Vector<TensorOffset>& tensors) {
+  const int32_t input_index =
+      GetOperatorInputIndex(conv2d, operand_to_index_map, 0);
+  const int32_t filter_index =
+      GetOperatorInputIndex(conv2d, operand_to_index_map, 1);
+  const int32_t output_index =
+      GetOperatorOutputIndex(conv2d, operand_to_index_map);
+
+  const MLConv2dOptions* options =
+      static_cast<const MLConv2dOptions*>(conv2d->Options());
+  CHECK(options);
+  // TODO(crbug.com/1273291): Transpose input operand to support other layouts
+  // because tflite only support nhwc layout.
+  if (options->inputLayout().AsEnum() != V8MLInputOperandLayout::Enum::kNhwc) {
+    return base::unexpected(
+        String::Format("The input layout %s is not supported.",
+                       options->inputLayout().AsCStr()));
+  }
+
+  // Depthwise conv2d is "options.groups == input_channels == output_channels".
+  const auto* const input = conv2d->Inputs()[0].Get();
+  CHECK(input);
+  const auto& input_shape = input->Dimensions();
+  CHECK_EQ(input_shape.size(), 4u);
+  const uint32_t input_channels = input_shape[3];
+  const auto* const output = conv2d->Outputs()[0].Get();
+  CHECK(output);
+  const auto& output_shape = output->Dimensions();
+  CHECK_EQ(output_shape.size(), 4u);
+  const uint32_t output_channels = output_shape[3];
+  const uint32_t groups = base::checked_cast<uint32_t>(options->groups());
+  const bool depthwise =
+      IsDepthwiseConv2d(input_channels, output_channels, groups);
+
+  // Validate filter layout for nhwc input layout that is being discussed to
+  // simplify other variants in WebNN working group
+  // https://github.com/webmachinelearning/webnn/issues/324.
+  const auto validation_result = ValidateFilterLayout(
+      depthwise, options->inputLayout(), options->filterLayout());
+  if (!validation_result.has_value()) {
+    return base::unexpected(validation_result.error());
+  }
+
+  // Validate activation operator that is partial support in tflite schema and
+  // convert to tflite function type.
+  tflite::ActivationFunctionType activation =
+      tflite::ActivationFunctionType_NONE;
+  if (options->hasActivation()) {
+    const auto activation_result =
+        GetActivationFunctionType(options->activation());
+    if (!activation_result.has_value()) {
+      return base::unexpected(validation_result.error());
+    }
+    activation = activation_result.value();
+  }
+
+  // Get tflite padding mode with the size2d of input, filter, dilation.
+  const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
+                                                .width = input_shape[2]};
+  const auto* const filter = conv2d->Inputs()[1].Get();
+  CHECK(filter);
+  const auto& filter_shape = filter->Dimensions();
+  CHECK_EQ(filter_shape.size(), 4u);
+  const webnn::Size2d<uint32_t> filter_size2d = {.height = filter_shape[1],
+                                                 .width = filter_shape[2]};
+
+  // If strides is not present, the values are assumed to be [1,1].
+  const auto strides = options->getStridesOr({1, 1});
+  CHECK_EQ(strides.size(), 2u);
+  const webnn::Size2d<uint32_t> stride_size2d = {.height = strides[0],
+                                                 .width = strides[1]};
+
+  // If dilations is not present, the values are assumed to be [1,1].
+  const auto dilations = options->getDilationsOr({1, 1});
+  CHECK_EQ(dilations.size(), 2u);
+  const webnn::Size2d<uint32_t> dilation_size2d = {.height = dilations[0],
+                                                   .width = dilations[1]};
+  const auto padding_mode = GetTfLitePaddingMode(
+      options, input_size2d, filter_size2d, stride_size2d, dilation_size2d);
+  if (!padding_mode.has_value()) {
+    return base::unexpected(padding_mode.error());
+  }
+
+  tflite::BuiltinOperator operator_kind;
+  tflite::BuiltinOptions builtin_options_type = tflite::BuiltinOptions_NONE;
+  flatbuffers::Offset<void> builtin_options = 0;
+  if (depthwise) {
+    const uint32_t depth_multiplier = 1;
+    operator_kind = tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
+    builtin_options = tflite::CreateDepthwiseConv2DOptions(
+                          builder, padding_mode.value(), stride_size2d.width,
+                          stride_size2d.height, depth_multiplier, activation,
+                          dilation_size2d.width, dilation_size2d.height)
+                          .Union();
+    builtin_options_type = tflite::BuiltinOptions_DepthwiseConv2DOptions;
+  } else {
+    operator_kind = tflite::BuiltinOperator_CONV_2D;
+    builtin_options = tflite::CreateConv2DOptions(
+                          builder, padding_mode.value(), stride_size2d.width,
+                          stride_size2d.height, activation,
+                          dilation_size2d.width, dilation_size2d.height)
+                          .Union();
+    builtin_options_type = tflite::BuiltinOptions_Conv2DOptions;
+  }
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(operator_kind, builder, operator_codes);
+  // If there is no bias operand, serialize a empty buffer with the size of
+  // output channel.
+  int32_t bias_index = 0;
+  if (options->hasBias()) {
+    bias_index = GetOperatorInputIndex(conv2d, operand_to_index_map, 2);
+  } else {
+    // TODO(crbug.com/1273291): Support other tensor data type.
+    if (input->DataType() != V8MLOperandDataType::Enum::kFloat32) {
+      return base::unexpected("The data type of input is not supported.");
+    }
+    bias_index = SerializeZeroBiasBuffer<float>(
+        input->DataType(), output_channels, builder, buffers, tensors);
+  }
+  const std::vector<int32_t> op_inputs = {input_index, filter_index,
+                                          bias_index};
+  const std::vector<int32_t> op_outputs = {output_index};
+  return tflite::CreateOperator(builder, operator_code_index,
+                                builder.CreateVector<int32_t>(op_inputs),
+                                builder.CreateVector<int32_t>(op_outputs),
+                                builtin_options_type, builtin_options);
+}
+
 OperatorOffset SerializeElementWiseBinary(
     const OperandToIndexMap& operand_to_index_map,
     const MLOperator* binary,
@@ -135,6 +394,103 @@ OperatorOffset SerializeElementWiseBinary(
       builder, operator_code_index,
       builder.CreateVector<int32_t>(operator_inputs),
       builder.CreateVector<int32_t>(operator_outputs));
+}
+
+base::expected<OperatorOffset, String> SerializePool2d(
+    const OperandToIndexMap& operand_to_index_map,
+    const MLOperator* pool2d,
+    flatbuffers::FlatBufferBuilder& builder,
+    Vector<OperatorCodeOffset>& operator_codes) {
+  const int32_t input_index =
+      GetOperatorInputIndex(pool2d, operand_to_index_map);
+  const int32_t output_index =
+      GetOperatorOutputIndex(pool2d, operand_to_index_map);
+
+  // TODO(crbug.com/1273291): Transpose input operand to support other layouts
+  // because tflite only support nhwc layout.
+  const MLPool2dOptions* options =
+      static_cast<const MLPool2dOptions*>(pool2d->Options());
+  CHECK(options);
+  if (options->layout().AsEnum() != V8MLInputOperandLayout::Enum::kNhwc) {
+    return base::unexpected(String::Format(
+        "The input layout %s is not supported.", options->layout().AsCStr()));
+  }
+
+  // If dilations is not present, the values are assumed to be [1,1].
+  const Vector<uint32_t> default_strides = {1, 1};
+  const auto dilations = options->getDilationsOr(default_strides);
+  CHECK_EQ(dilations.size(), 2u);
+  if (dilations != default_strides) {
+    return base::unexpected("Pool2d in tflite doesn't support dilations.");
+  }
+  const webnn::Size2d<uint32_t> dilation_size2d = {.height = dilations[0],
+                                                   .width = dilations[1]};
+
+  // If strides is not present, the values are assumed to be [1,1].
+  const auto strides = options->getStridesOr({1, 1});
+  CHECK_EQ(strides.size(), 2u);
+  const webnn::Size2d<uint32_t> stride_size2d = {.height = strides[0],
+                                                 .width = strides[1]};
+
+  const auto* const input = pool2d->Inputs()[0].Get();
+  CHECK(input);
+  const auto& input_shape = input->Dimensions();
+  CHECK_EQ(input_shape.size(), 4u);
+  const auto input_height = input_shape[1];
+  const auto input_width = input_shape[2];
+  const webnn::Size2d<uint32_t> input_size2d = {.height = input_height,
+                                                .width = input_width};
+
+  // According to WebNN pool2d spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-pool2d, if the window
+  // dimensions are not present, the window dimensions are assumed to be
+  // the height and width dimensions of the input shape that could be
+  // mapped to the global pooling operation.
+  webnn::Size2d<uint32_t> filter_size2d;
+  if (options->hasWindowDimensions()) {
+    const auto& window_dimensions = options->windowDimensions();
+    CHECK_EQ(window_dimensions.size(), 2u);
+    filter_size2d.height = window_dimensions[0];
+    filter_size2d.width = window_dimensions[1];
+  } else {
+    filter_size2d.height = input_height;
+    filter_size2d.width = input_width;
+  }
+
+  const auto padding_mode = GetTfLitePaddingMode(
+      options, input_size2d, filter_size2d, stride_size2d, dilation_size2d);
+  if (!padding_mode.has_value()) {
+    return base::unexpected(padding_mode.error());
+  }
+
+  tflite::BuiltinOperator operator_kind;
+  switch (pool2d->Kind()) {
+    case MLOperator::OperatorKind::kAveragePool2d:
+      operator_kind = tflite::BuiltinOperator_AVERAGE_POOL_2D;
+      break;
+    case MLOperator::OperatorKind::kMaxPool2d:
+      operator_kind = tflite::BuiltinOperator_MAX_POOL_2D;
+      break;
+    default:
+      NOTREACHED_NORETURN() << "The operator is not pool2d.";
+  }
+
+  const auto pool_2d_options = CreatePool2DOptions(
+      builder, padding_mode.value(), stride_size2d.width, stride_size2d.height,
+      filter_size2d.width, filter_size2d.height,
+      tflite::ActivationFunctionType_NONE);
+
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index =
+      GetOperatorCodeIndex(operator_kind, builder, operator_codes);
+  const std::vector<int32_t> op_inputs = {input_index};
+  const std::vector<int32_t> op_outputs = {output_index};
+  return tflite::CreateOperator(
+      builder, operator_code_index, builder.CreateVector<int32_t>(op_inputs),
+      builder.CreateVector<int32_t>(op_outputs),
+      tflite::BuiltinOptions_Pool2DOptions, pool_2d_options.Union());
 }
 
 OperatorOffset SerializeRelu(const OperandToIndexMap& operand_to_index_map,
@@ -291,6 +647,17 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
     const MLOperator* op) {
   OperatorOffset operator_offset;
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kConv2d: {
+      const auto conv2d_result =
+          SerializeConv2d(operand_to_index_map, op, builder_, operator_codes_,
+                          buffers_, tensors_);
+      // Some conv2d attributes are not supported in tflite schema.
+      if (!conv2d_result.has_value()) {
+        return base::unexpected(conv2d_result.error());
+      }
+      operator_offset = conv2d_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kAdd:
     case MLOperator::OperatorKind::kSub:
     case MLOperator::OperatorKind::kMul:
@@ -301,6 +668,18 @@ base::expected<void, String> MLGraphTfLiteConverter::SerializeOperation(
       operator_offset = SerializeElementWiseBinary(operand_to_index_map, op,
                                                    builder_, operator_codes_);
       break;
+    case MLOperator::OperatorKind::kAveragePool2d:
+      [[fallthrough]];
+    case MLOperator::OperatorKind::kMaxPool2d: {
+      const auto pool2d_result =
+          SerializePool2d(operand_to_index_map, op, builder_, operator_codes_);
+      // Some pool2d attributes are not supported in tflite schema.
+      if (!pool2d_result.has_value()) {
+        return base::unexpected(pool2d_result.error());
+      }
+      operator_offset = pool2d_result.value();
+      break;
+    }
     case MLOperator::OperatorKind::kRelu:
       operator_offset =
           SerializeRelu(operand_to_index_map, op, builder_, operator_codes_);
