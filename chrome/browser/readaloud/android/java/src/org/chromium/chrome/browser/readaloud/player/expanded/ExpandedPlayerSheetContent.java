@@ -326,6 +326,12 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
         return R.string.readaloud_player_minimized;
     }
 
+    @Override
+    public boolean canSuppressInAnyState() {
+        // Always immediately hide if a higher-priority sheet content wants to show.
+        return true;
+    }
+
     private void setOnClickListener(int id, Runnable onClick) {
         mContentView
                 .findViewById(id)

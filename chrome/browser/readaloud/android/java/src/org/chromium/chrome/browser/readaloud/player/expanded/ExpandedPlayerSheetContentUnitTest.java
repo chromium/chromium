@@ -259,4 +259,9 @@ public class ExpandedPlayerSheetContentUnitTest {
         verify(mOptionsMenu).notifySheetClosed(eq(mContent));
         verify(mSpeedMenu).notifySheetClosed(eq(mContent));
     }
+
+    @Test
+    public void testCanSuppressInAnyState() {
+        assertTrue(mContent.canSuppressInAnyState());
+    }
 }

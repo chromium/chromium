@@ -150,4 +150,9 @@ public class MenuSheetContentUnitTest {
         ObservableSupplierImpl<Boolean> supplier = mContent.getBackPressStateChangedSupplier();
         assertTrue(supplier.get());
     }
+
+    @Test
+    public void testCanSuppressInAnyState() {
+        assertTrue(mContent.canSuppressInAnyState());
+    }
 }
