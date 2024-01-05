@@ -354,7 +354,9 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, SessionStartup) {
   login_manager_mixin_.WaitForActiveSession();
 }
 
-IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest, DemoSWALaunchesOnSessionStartup) {
+// TODO(b/1513575): Flaky.
+IN_PROC_BROWSER_TEST_F(DemoSessionLoginTest,
+                       DISABLED_DemoSWALaunchesOnSessionStartup) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   login_manager_mixin_.WaitForActiveSession();
