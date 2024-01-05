@@ -371,11 +371,6 @@ extern const char kFeedDisableHotStartRefreshDescription[];
 extern const char kFeedExperimentTaggingName[];
 extern const char kFeedExperimentTaggingDescription[];
 
-// Title and description for the flag to enable feed invisible foreground
-// refresh.
-extern const char kFeedInvisibleForegroundRefreshName[];
-extern const char kFeedInvisibleForegroundRefreshDescription[];
-
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
