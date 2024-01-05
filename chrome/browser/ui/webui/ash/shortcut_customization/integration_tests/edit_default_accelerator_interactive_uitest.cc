@@ -19,7 +19,8 @@ namespace {
 
 IN_PROC_BROWSER_TEST_F(ShortcutCustomizationInteractiveUiTestBase,
                        EditDefaultAccelerator) {
-  ui::Accelerator default_accel(ui::VKEY_C, ui::EF_COMMAND_DOWN);
+  ui::Accelerator default_accel =
+      GetDefaultAcceleratorForAction(AcceleratorAction::kToggleCalendar);
   ui::Accelerator new_accel(ui::VKEY_N,
                             ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
 
