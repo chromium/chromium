@@ -362,11 +362,6 @@ extern const char kEnableWebChannelsDescription[];
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
-// Title and description for the flag to disable Discover-controlled
-// foregrounding refresh.
-extern const char kFeedDisableHotStartRefreshName[];
-extern const char kFeedDisableHotStartRefreshDescription[];
-
 // Title and description for the flag to enable feed experiment tagging.
 extern const char kFeedExperimentTaggingName[];
 extern const char kFeedExperimentTaggingDescription[];
