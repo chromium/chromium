@@ -92,7 +92,7 @@ void WebTestWebFrameWidgetImpl::WillBeginMainFrame() {
   // WillBeginMainFrame occurs before we run BeginMainFrame() in the base
   // class, which will change states. TestFinished() wants to grab the current
   // state.
-  GetTestRunner()->FinishTestIfReady();
+  GetTestRunner()->FinishTestIfReady(*LocalRootImpl());
 
   WebFrameWidgetImpl::WillBeginMainFrame();
 }

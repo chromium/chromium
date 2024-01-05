@@ -136,7 +136,7 @@ class EventSender {
   void SetTouchCancelable(bool cancelable);
   void ThrowTouchPointError();
 
-  void DumpFilenameBeingDragged();
+  void DumpFilenameBeingDragged(blink::WebLocalFrame* frame);
 
   void TouchStart(gin::Arguments* args);
   void TouchMove(gin::Arguments* args);
@@ -147,9 +147,12 @@ class EventSender {
   void LeapForward(int milliseconds);
 
   void BeginDragWithItems(
+      blink::WebLocalFrame* frame,
       const blink::WebVector<blink::WebDragData::Item>& items);
-  void BeginDragWithFiles(const std::vector<std::string>& files);
-  void BeginDragWithStringData(const std::string& data,
+  void BeginDragWithFiles(blink::WebLocalFrame* frame,
+                          const std::vector<std::string>& files);
+  void BeginDragWithStringData(blink::WebLocalFrame* frame,
+                               const std::string& data,
                                const std::string& mime_type);
 
   void AddTouchPoint(float x, float y, gin::Arguments* args);

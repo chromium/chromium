@@ -12,7 +12,7 @@
 
 namespace content {
 
-class WebTestRenderThreadObserver;
+class TestRunner;
 
 class WebTestContentRendererClient : public ShellContentRendererClient {
  public:
@@ -29,9 +29,11 @@ class WebTestContentRendererClient : public ShellContentRendererClient {
   void SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() override;
   bool IsIdleMediaSuspendEnabled() override;
 
+  TestRunner* test_runner() { return test_runner_.get(); }
+
  private:
   blink::CreateWebFrameWidgetCallback create_widget_callback_;
-  std::unique_ptr<WebTestRenderThreadObserver> render_thread_observer_;
+  std::unique_ptr<TestRunner> test_runner_;
 };
 
 }  // namespace content

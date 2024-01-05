@@ -307,10 +307,7 @@ class WebTestControlHost : public WebContentsObserver,
 
   mojo::AssociatedRemote<mojom::WebTestRenderFrame>&
   GetWebTestRenderFrameRemote(RenderFrameHost* frame);
-  mojo::AssociatedRemote<mojom::WebTestRenderThread>&
-  GetWebTestRenderThreadRemote(RenderProcessHost* process);
   void HandleWebTestRenderFrameRemoteError(const GlobalRenderFrameHostId& key);
-  void HandleWebTestRenderThreadRemoteError(RenderProcessHost* key);
 
   // CompositeAllFramesThen() first builds a frame tree based on
   // frame->GetParent(). Then, it builds a queue of frames in depth-first order,
@@ -428,10 +425,6 @@ class WebTestControlHost : public WebContentsObserver,
   std::map<GlobalRenderFrameHostId,
            mojo::AssociatedRemote<mojom::WebTestRenderFrame>>
       web_test_render_frame_map_;
-
-  std::map<RenderProcessHost*,
-           mojo::AssociatedRemote<mojom::WebTestRenderThread>>
-      web_test_render_thread_map_;
 
   // The set of bindings that receive messages on the mojom::WebTestControlHost
   // interface from renderer processes. There should be one per renderer

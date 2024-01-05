@@ -18,9 +18,9 @@
 #include "content/shell/renderer/shell_render_frame_observer.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "content/web_test/renderer/blink_test_helpers.h"
+#include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/test_websocket_handshake_throttle_provider.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "content/web_test/renderer/web_test_render_thread_observer.h"
 #include "media/base/audio_latency.h"
 #include "media/base/mime_util.h"
 #include "media/media_buildflags.h"
@@ -44,10 +44,10 @@ namespace content {
 
 namespace {
 
+static WebTestContentRendererClient* g_client = nullptr;
+
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
-  return new WebFrameTestProxy(
-      std::move(params),
-      WebTestRenderThreadObserver::GetInstance()->test_runner());
+  return new WebFrameTestProxy(std::move(params), g_client->test_runner());
 }
 
 blink::WebFrameWidget* CreateWebTestWebFrameWidget(
@@ -72,12 +72,15 @@ blink::WebFrameWidget* CreateWebTestWebFrameWidget(
       std::move(frame_widget), std::move(widget_host), std::move(widget),
       std::move(task_runner), frame_sink_id, hidden, never_composited,
       is_for_child_local_root, is_for_nested_main_frame, is_for_scalable_page,
-      WebTestRenderThreadObserver::GetInstance()->test_runner());
+      g_client->test_runner());
 }
 
 }  // namespace
 
 WebTestContentRendererClient::WebTestContentRendererClient() {
+  blink::SetWebTestMode(true);
+  g_client = this;
+
   // Web tests subclass these types, so we inject factory methods to replace
   // the creation of the production type with the subclasses.
   RenderFrameImpl::InstallCreateHook(CreateWebFrameTestProxy);
@@ -91,12 +94,13 @@ WebTestContentRendererClient::WebTestContentRendererClient() {
 
 WebTestContentRendererClient::~WebTestContentRendererClient() {
   blink::InstallCreateWebFrameWidgetHook(nullptr);
+  g_client = nullptr;
 }
 
 void WebTestContentRendererClient::RenderThreadStarted() {
   ShellContentRendererClient::RenderThreadStarted();
 
-  render_thread_observer_ = std::make_unique<WebTestRenderThreadObserver>();
+  test_runner_ = std::make_unique<TestRunner>();
 
 #if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
   // On these platforms, fonts are set up in the renderer process. Other
