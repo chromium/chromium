@@ -2992,6 +2992,17 @@ TEST_F(TabStripModelTest, CloseSelectedTabs) {
   strip.CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, FirstTabIsActive) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+
+  // Add the first tab as a background tab.
+  strip.AppendWebContents(CreateWebContents(), /*foreground=*/false);
+
+  // The tab is still added as active, because it is the first tab.
+  EXPECT_EQ(0, strip.active_index());
+}
+
 TEST_F(TabStripModelTest, MultipleSelection) {
   typedef MockTabStripModelObserver::State State;
 
@@ -3011,10 +3022,13 @@ TEST_F(TabStripModelTest, MultipleSelection) {
   // Selection and active tab change.
   strip.ActivateTabAt(3, TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
-  ASSERT_EQ(2, observer.GetStateCount());
-  ASSERT_EQ(observer.GetStateAt(0).action, MockTabStripModelObserver::ACTIVATE);
+  ASSERT_EQ(3, observer.GetStateCount());
+  ASSERT_EQ(observer.GetStateAt(0).action,
+            MockTabStripModelObserver::DEACTIVATE);
+  ASSERT_EQ(observer.GetStateAt(1).action, MockTabStripModelObserver::ACTIVATE);
   State s1(raw_contents3, 3, MockTabStripModelObserver::SELECT);
-  observer.ExpectStateEquals(1, s1);
+  s1.src_index = 0;
+  observer.ExpectStateEquals(2, s1);
   observer.ClearStates();
 
   // Adding all tabs to selection, active tab is now at 0.

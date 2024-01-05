@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
@@ -468,13 +469,15 @@ std::unique_ptr<DetachedWebContents> TabStripModel::DetachWebContentsImpl(
             *selection_model_.selected_indices().begin());
         selection_model_.set_anchor(selection_model_.active());
       } else {
-        DCHECK(next_selected_index.has_value());
         // The active tab was removed and nothing is selected. Reset the
         // selection and send out notification.
         selection_model_.SetSelectedIndex(next_selected_index.value());
       }
     }
   }
+
+  CHECK(empty() || selection_model_.active().has_value(),
+        base::NotFatalUntil::M124);
 
   auto owned_contents = old_data->ReplaceContents(nullptr);
   auto* contents = owned_contents.get();
@@ -1844,8 +1847,8 @@ int TabStripModel::InsertWebContentsAtImpl(
     std::optional<tab_groups::TabGroupId> group) {
   delegate()->WillAddWebContents(contents.get());
 
-  bool active = (add_types & ADD_ACTIVE) != 0;
-  bool pin = (add_types & ADD_PINNED) != 0;
+  const bool active = (add_types & ADD_ACTIVE) != 0 || empty();
+  const bool pin = (add_types & ADD_PINNED) != 0;
   index = ConstrainInsertionIndex(index, pin);
 
   // Have to get the active contents before we monkey with the contents
@@ -1891,6 +1894,9 @@ int TabStripModel::InsertWebContentsAtImpl(
                              TabStripModelObserver::CHANGE_REASON_NONE,
                              /*triggered_by_other_operation=*/true);
   }
+
+  CHECK(empty() || selection_model_.active().has_value(),
+        base::NotFatalUntil::M124);
 
   TabStripModelChange::Insert insert;
   insert.contents.push_back({raw_contents, index});
@@ -2057,14 +2063,13 @@ TabStripSelectionChange TabStripModel::SetSelection(
   selection.new_model = new_model;
   selection.reason = reason;
 
-#if DCHECK_IS_ON()
   // Validate that |new_model| only selects tabs that actually exist.
-  DCHECK(new_model.active().has_value());
-  DCHECK(ContainsIndex(new_model.active().value()));
+  CHECK(empty() || new_model.active().has_value(), base::NotFatalUntil::M124);
+  CHECK(empty() || ContainsIndex(new_model.active().value()),
+        base::NotFatalUntil::M124);
   for (size_t selected_index : new_model.selected_indices()) {
-    DCHECK(ContainsIndex(selected_index));
+    CHECK(ContainsIndex(selected_index), base::NotFatalUntil::M124);
   }
-#endif
 
   // This is done after notifying TabDeactivated() because caller can assume
   // that TabStripModel::active_index() would return the index for
@@ -2192,8 +2197,12 @@ void TabStripModel::MoveWebContentsAtImpl(int index,
                         std::move(moved_data));
 
   selection_model_.Move(index, to_position, 1);
-  if (!selection_model_.IsSelected(to_position) && select_after_move)
+  if (!selection_model_.IsSelected(to_position) && select_after_move) {
     selection_model_.SetSelectedIndex(to_position);
+  }
+  CHECK(empty() || selection_model_.active().has_value(),
+        base::NotFatalUntil::M124);
+
   selection.new_model = selection_model_;
 
   TabStripModelChange::Move move;
