@@ -66,7 +66,7 @@ HttpResponse MockConnectionManager::PostBuffer(const std::string& buffer_in,
   }
 
   requests_.push_back(post);
-  client_stuck_ = post.sync_problem_detected();
+
   sync_pb::ClientToServerResponse client_to_server_response;
   client_to_server_response.Clear();
 
