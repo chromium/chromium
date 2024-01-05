@@ -5803,6 +5803,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlanceablesV2CalendarViewName,
      flag_descriptions::kGlanceablesV2CalendarViewDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kGlanceablesV2CalendarView)},
+    {"vc-dlc-ui", flag_descriptions::kVcDlcUiName,
+     flag_descriptions::kVcDlcUiDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kVcDlcUi)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_ANDROID)

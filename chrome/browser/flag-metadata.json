@@ -8132,6 +8132,14 @@
     "expiry_milestone": 126
   },
   {
+    "name": "vc-dlc-ui",
+    "owners": [
+      "etuck@google.com",
+      "cros-status-area-eng@google.com"
+    ],
+    "expiry_milestone": 126
+  },
+  {
     "name": "vc-light-intensity",
     "owners": [ "ardoerlemans@chromium.org", "jmpollock@chromium.org", "nbowe@chromium.org" ],
     "expiry_milestone": 120

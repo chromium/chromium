@@ -26776,6 +26776,7 @@ from previous Chrome versions.
   <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
   <int value="-1300934428" label="ExternalNavigationDebugLogs:enabled"/>
   <int value="-1300692087" label="SplitTabStrip:enabled"/>
+  <int value="-1299599424" label="VcDlcUi:disabled"/>
   <int value="-1298884037"
       label="WebAuthenticationAndroidCredManAndGmsCore:disabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
@@ -29817,6 +29818,7 @@ from previous Chrome versions.
   <int value="132907995" label="DownloadProgressMessage:enabled"/>
   <int value="133482330" label="AppNotificationStatusMessaging:enabled"/>
   <int value="134009318" label="FastPairSavedDevices:enabled"/>
+  <int value="134136822" label="VcDlcUi:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
   <int value="137866995" label="ImeKoreanModeSwitchDebug:enabled"/>
   <int value="138020994" label="LacrosProfileMigrationForAnyUser:enabled"/>

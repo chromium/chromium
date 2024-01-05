@@ -7067,6 +7067,12 @@ const char kUiDevToolsDescription[] =
 const char kUiSlowAnimationsName[] = "Slow UI animations";
 const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 
+const char kVcDlcUiName[] = "VC DLC UI";
+const char kVcDlcUiDescription[] =
+    "Enable UI for video conference effect toggle tiles in the video "
+    "conference controls bubble that indicates when required DLC is "
+    "downloading.";
+
 const char kVirtualKeyboardName[] = "Virtual Keyboard";
 const char kVirtualKeyboardDescription[] =
     "Always show virtual keyboard regardless of having a physical keyboard "

@@ -4061,6 +4061,9 @@ extern const char kUpstreamTrustedReportsFirmwareDescription[];
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 
+extern const char kVcDlcUiName[];
+extern const char kVcDlcUiDescription[];
+
 extern const char kVirtualKeyboardName[];
 extern const char kVirtualKeyboardDescription[];
 
