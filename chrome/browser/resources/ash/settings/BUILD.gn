@@ -61,6 +61,7 @@ build_webui("build") {
     "common/app_language_selection_dialog/app_language_selection_dialog.ts",
     "common/app_language_selection_dialog/app_language_selection_item.ts",
     "common/lacros_extension_controlled_indicator.ts",
+    "common/password_prompt_dialog/password_prompt_dialog.ts",
     "crostini_page/bruschetta_subpage.ts",
     "crostini_page/crostini_arc_adb.ts",
     "crostini_page/crostini_arc_adb_confirmation_dialog.ts",

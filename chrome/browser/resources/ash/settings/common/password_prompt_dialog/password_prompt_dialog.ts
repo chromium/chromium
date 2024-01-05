@@ -19,18 +19,15 @@
  * </settings-password-prompt-dialog>
  */
 
-import '//resources/cr_elements/cr_button/cr_button.js';
-import '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import '//resources/cr_elements/cr_input/cr_input.js';
-import '//resources/cr_elements/cr_shared_style.css.js';
-// <if expr='chromeos_ash'>
-import '//resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
-// </if>
-
-import {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.js';
-import {CrInputElement} from '//resources/cr_elements/cr_input/cr_input.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './password_prompt_dialog.html.js';
 
@@ -42,7 +39,7 @@ interface SettingsPasswordPromptDialogElement {
 
 class SettingsPasswordPromptDialogElement extends PolymerElement {
   static get is() {
-    return 'settings-password-prompt-dialog';
+    return 'settings-password-prompt-dialog' as const;
   }
 
   static get template() {
@@ -79,7 +76,10 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
        * Interface for chrome.quickUnlockPrivate calls. May be overridden by
        * tests.
        */
-      quickUnlockPrivate: {type: Object, value: chrome.quickUnlockPrivate},
+      quickUnlockPrivate: {
+        type: Object,
+        value: chrome.quickUnlockPrivate,
+      },
 
       waitingForPasswordCheck_: {
         type: Boolean,
@@ -89,16 +89,16 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
   }
 
   passwordPromptText: string;
+  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   private inputValue_: string;
   private passwordInvalid_: boolean;
-  quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   private waitingForPasswordCheck_: boolean;
 
   get passwordInput(): CrInputElement {
     return this.shadowRoot!.querySelector('cr-input')!;
   }
 
-  override connectedCallback() {
+  override connectedCallback(): void {
     super.connectedCallback();
 
     this.$.dialog.showModal();
@@ -111,7 +111,7 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     }, 1);
   }
 
-  private onCancelClick_() {
+  private onCancelClick_(): void {
     if (this.$.dialog.open) {
       this.$.dialog.close();
     }
@@ -120,7 +120,7 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
   /**
    * Run the account password check.
    */
-  private submitPassword_() {
+  private submitPassword_(): void {
     this.waitingForPasswordCheck_ = true;
 
     const password = this.passwordInput.value;
@@ -152,13 +152,19 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     });
   }
 
-  private onInputValueChange_() {
+  private onInputValueChange_(): void {
     this.passwordInvalid_ = false;
   }
 
   private isConfirmEnabled_(): boolean {
     return !this.waitingForPasswordCheck_ && !this.passwordInvalid_ &&
         !!this.inputValue_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [SettingsPasswordPromptDialogElement.is]: SettingsPasswordPromptDialogElement;
   }
 }
 

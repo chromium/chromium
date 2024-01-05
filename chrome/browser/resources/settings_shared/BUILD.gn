@@ -26,10 +26,6 @@ build_webui("build") {
     web_component_files += [ "privacy_page/secure_dns_dialog.ts" ]
   }
 
-  if (is_chromeos) {
-    web_component_files += [ "controls/password_prompt_dialog.ts" ]
-  }
-
   non_web_component_files = [
     "extension_control_browser_proxy.ts",
     "lifetime_browser_proxy.ts",
