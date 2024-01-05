@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
 #include "content/public/browser/media_keys_listener_manager.h"
@@ -200,7 +201,8 @@ class MediaKeysListenerManagerImpl
   // Tests that friend this class will use this mechanism to be notified of
   // certain events that are otherwise difficult to wait for.
   raw_ptr<MediaKeysListenerManagerImplTestObserver> test_observer_ = nullptr;
-  void SetTestObserver(MediaKeysListenerManagerImplTestObserver* observer) {
+  void SetObserverForTesting(
+      MediaKeysListenerManagerImplTestObserver* observer) {
     test_observer_ = observer;
   }
 

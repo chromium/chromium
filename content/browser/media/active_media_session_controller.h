@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,9 +18,6 @@
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-namespace base {
-class UnguessableToken;
-}
 namespace content {
 
 // Intakes media events (such as media key presses) and controls the active
@@ -115,9 +113,8 @@ class CONTENT_EXPORT ActiveMediaSessionController
   absl::optional<media_session::MediaPosition> position_;
 
   // Stores the media session (if any specific one) this active media session
-  // controller is associated with. If this is null, this AMSC follows
-  // around the active media session automatically and will receive events for
-  // it.
+  // controller is associated with. If this is null, this AMSC follows around
+  // the active media session automatically and will receive events for it.
   base::UnguessableToken request_id_;
 };
 

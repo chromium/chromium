@@ -87,8 +87,9 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
 
   // Stop listening to any keys that are currently being watched, but aren't in
   // |actions|.
-  // This loop is what tells SMTC to stop watching next/previous when a new tab
-  // is active because next/previous are in actions_ but NOT in actions
+  // This loop is what tells the media keys listener manager to stop watching
+  // next/previous when a new tab is active because next/previous are in
+  // actions_ but NOT in |actions|.
   for (const MediaSessionAction& action : actions_) {
     absl::optional<ui::KeyboardCode> action_key_code =
         MediaSessionActionToKeyCode(action);
