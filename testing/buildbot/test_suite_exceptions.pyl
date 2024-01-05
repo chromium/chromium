@@ -4430,7 +4430,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 2,
+          'shards': 4,
         },
       },
       'linux-chromeos-rel': {
