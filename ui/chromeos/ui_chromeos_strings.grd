@@ -1836,7 +1836,7 @@
         An incorrect PIN was entered too many times.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_MANAGED_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
-        To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier. 
+        To use this network, you need to enter the 8-digit Personal Unblocking Key (PUK) provided by the carrier.
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_SIM_LOCKED_PUK_WARNING_NO_FAILURES" desc="Settings > Internet > Network details > Lock/unlock SIM card: Warning shown to the user indicating that the network cannot be used until a new PIN is set up.">
         You won't be able to use this network until you set up a new PIN
@@ -1962,6 +1962,14 @@
       </message>
       <message name="IDS_SETTINGS_INTERNET_NETWORK_AUTO_CONNECT" desc="Settings > Internet > Network details: Label for the checkbox determining whether to automatically connect to the network.">
         Automatically connect to this network
+      </message>
+
+      <!-- ChromeOS commercial reporting nudge strings -->
+      <message name="IDS_CHROMEOS_WEBSITE_TELEMETRY_REPORTING_NUDGE_TEXT" desc="Message shown in a system nudge when website telemetry reporting is enabled for affiliated users.">
+        Websites you visit are visible to your administrator. You can view the list of visible websites.
+      </message>
+      <message name="IDS_CHROMEOS_WEBSITE_TELEMETRY_REPORTING_NUDGE_PRIMARY_BUTTON" desc="Primary button text for the nudge shown when website telemetry reporting is enabled so users can refer to the helpdesk article.">
+        Learn more
       </message>
     </messages>
   </release>

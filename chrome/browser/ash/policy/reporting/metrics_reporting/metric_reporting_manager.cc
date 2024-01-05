@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_telemetry_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/usb/usb_events_observer.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/website_telemetry_reporting_nudge_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
@@ -274,6 +275,7 @@ MetricReportingManager::MetricReportingManager(
 void MetricReportingManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  website_telemetry_reporting_nudge_controller_.reset();
   website_usage_observer_.reset();
   app_usage_observer_.reset();
   delegate_.reset();
@@ -680,6 +682,9 @@ void MetricReportingManager::InitWebsiteMetricCollectors(Profile* profile) {
       /*init_delay=*/base::TimeDelta());
 
   // Website telemetry.
+  website_telemetry_reporting_nudge_controller_ =
+      std::make_unique<WebsiteTelemetryReportingNudgeController>(
+          profile_weak_ptr, user_reporting_settings_.get());
   website_usage_observer_ = std::make_unique<WebsiteUsageObserver>(
       profile_weak_ptr, user_reporting_settings_.get(),
       std::make_unique<WebsiteMetricsRetrieverAsh>(profile_weak_ptr));

@@ -43,6 +43,7 @@
 #include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/rate_limiter_interface.h"
 #include "components/reporting/util/rate_limiter_slide_window.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -421,6 +422,10 @@ class MetricReportingManagerTest
       crash_event_queue_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
+
+  // Session manager instance needed for downstream initialization of the
+  // `WebsiteTelemetryReportingNudgeController` component.
+  const ::session_manager::SessionManager session_manager_;
 };
 
 TEST_F(MetricReportingManagerTest, InitiallyDeprovisioned) {

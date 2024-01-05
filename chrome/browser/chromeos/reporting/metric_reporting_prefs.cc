@@ -25,6 +25,8 @@ void RegisterProfilePrefs(::user_prefs::PrefRegistrySyncable* registry) {
       ::reporting::metrics::kDefaultWebsiteTelemetryCollectionRate
           .InMilliseconds());
   registry->RegisterDictionaryPref(kWebsiteUsage);
+  registry->RegisterBooleanPref(kReportWebsiteTelemetryPreviouslyEnabled,
+                                false);
 }
 
 bool IsWebsiteUrlAllowlisted(const GURL& url,

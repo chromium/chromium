@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_usage_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_sampler_handlers/cros_healthd_sampler_handler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/website_telemetry_reporting_nudge_controller.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_delegate_base.h"
@@ -350,6 +351,12 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
   // from the `WebsiteMetrics` component.
   std::unique_ptr<WebsiteUsageObserver> website_usage_observer_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Nudge controller that displays a system nudge when website telemetry
+  // reporting is enabled.
+  std::unique_ptr<WebsiteTelemetryReportingNudgeController>
+      website_telemetry_reporting_nudge_controller_
+          GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<Delegate> delegate_;
 };

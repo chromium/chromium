@@ -28,6 +28,13 @@ constexpr char kReportWebsiteTelemetryAllowlist[] =
 // A list pref that controls website telemetry data types being reported.
 constexpr char kReportWebsiteTelemetry[] = "reporting.report_website_telemetry";
 
+// A boolean pref used to track whether website telemetry reporting was
+// previously enabled based on the `ReportWebsiteTelemetry` policy value. This
+// is primarily used to determine when nudge notifications should be shown for
+// the current user profile.
+constexpr char kReportWebsiteTelemetryPreviouslyEnabled[] =
+    "reporting.report_website_telemetry_previously_enabled";
+
 // An integer pref that controls the collection frequency of website telemetry
 // data.
 constexpr char kReportWebsiteTelemetryCollectionRateMs[] =
