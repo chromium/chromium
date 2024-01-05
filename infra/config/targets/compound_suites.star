@@ -944,23 +944,14 @@ targets.legacy_compound_suite(
     ],
 )
 
-# TODO(crbug.com/1080424): Merge with an existing set of tests such as
-# gpu_fyi_linux_release_telemetry_tests once all CrOS tests
-# have been enabled.
 targets.legacy_compound_suite(
     name = "gpu_fyi_chromeos_release_telemetry_tests",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-        # Large amounts of WebGL/WebGL2 tests are failing due to issues that are
-        # possibly related to other CrOS issues that are already reported.
-        # TODO(crbug.com/1080424): Try enabling these again once some of the
-        # existing CrOS WebGL issues are resolved.
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webcodecs_telemetry_test",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-        # "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
     ],
 )
 
