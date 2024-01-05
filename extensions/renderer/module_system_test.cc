@@ -243,9 +243,9 @@ void ModuleSystemTestEnvironment::ShutdownModuleSystem() {
   CHECK(context_->is_valid());
   context_->v8_context()->Exit();
   context_set_->Remove(context_);
-  base::RunLoop().RunUntilIdle();
   context_ = nullptr;
   assert_natives_ = nullptr;
+  base::RunLoop().RunUntilIdle();
 }
 
 v8::Local<v8::Object> ModuleSystemTestEnvironment::CreateGlobal(
