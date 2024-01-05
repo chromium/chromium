@@ -8,7 +8,7 @@
 
 namespace manta::features {
 
-BASE_FEATURE(kMantaService, "MantaService", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kMantaService, "MantaService", base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsMantaServiceEnabled() {
   return base::FeatureList::IsEnabled(kMantaService);
