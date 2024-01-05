@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_content_notification_promo_view_controller.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -108,6 +109,7 @@ using base::UserMetricsAction;
       GetApplicationContext()->GetPushNotificationService();
   service->SetPreference(identity.gaiaID, PushNotificationClientId::kContent,
                          true);
+  _markItemComplete = YES;
 
   __weak SetUpListContentNotificationPromoCoordinator* weakSelf = self;
   [PushNotificationUtil requestPushNotificationPermission:^(
@@ -120,14 +122,17 @@ using base::UserMetricsAction;
         [weakSelf logHistogramForEvent:ContentNotificationSetUpListPromoEvent::
                                            kPromptShown];
       });
+    } else if (!error && granted) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf.messagePresenter presentNotificationsConfirmationMessage];
+        [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
+      });
     } else {
       dispatch_async(dispatch_get_main_queue(), ^{
         [weakSelf.delegate setUpListContentNotificationPromoDidFinish];
       });
     }
   }];
-
-  _markItemComplete = YES;
 }
 
 - (void)didTapSecondaryActionButton {

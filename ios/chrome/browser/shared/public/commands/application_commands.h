@@ -114,6 +114,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 - (void)showContentsSettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the Notifications Settings page in the settings.
+- (void)showNotificationsSettings;
+
 @end
 
 // Protocol for commands that will generally be handled by the application,

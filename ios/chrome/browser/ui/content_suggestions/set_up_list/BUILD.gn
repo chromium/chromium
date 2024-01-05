@@ -80,6 +80,7 @@ source_set("content_notification_promo") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/ui/push_notification:confirmation_presenter",
     "//ios/chrome/browser/ui/settings/notifications:notifications_ui",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",

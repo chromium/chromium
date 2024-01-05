@@ -2402,7 +2402,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
                          completion:nil];
 }
 
-#pragma mark - NotificationsDelegate
+#pragma mark - NotificationsCoordinatorDelegate
 
 - (void)notificationsCoordinatorDidRemove:
     (NotificationsCoordinator*)coordinator {

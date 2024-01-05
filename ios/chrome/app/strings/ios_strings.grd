@@ -942,6 +942,12 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
         Copy Image
       </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
+        Manage
+      </message>
+      <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE" desc="Title for the Chrome content notifications confirmation snackbar.">
+        You'll now receive content notifications
+      </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN" desc="The iOS menu item for opening a link. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open
       </message>

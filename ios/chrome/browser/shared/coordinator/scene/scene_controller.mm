@@ -2319,6 +2319,22 @@ void InjectNTP(Browser* browser) {
                                  completion:nil];
 }
 
+- (void)showNotificationsSettings {
+  UIViewController* baseViewController = self.currentInterface.viewController;
+  if (self.settingsNavigationController) {
+    [self.settingsNavigationController showNotificationsSettings];
+    return;
+  }
+
+  Browser* browser = self.mainInterface.browser;
+  self.settingsNavigationController = [SettingsNavigationController
+      notificationsSettingsControllerForBrowser:browser
+                                       delegate:self];
+  [baseViewController presentViewController:self.settingsNavigationController
+                                   animated:YES
+                                 completion:nil];
+}
+
 #pragma mark - SettingsNavigationControllerDelegate
 
 - (void)closeSettings {

@@ -141,6 +141,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/ntp/metrics",
     "//ios/chrome/browser/ui/ntp/metrics:home_metrics",
     "//ios/chrome/browser/ui/overscroll_actions",
+    "//ios/chrome/browser/ui/push_notification:confirmation_presenter",
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/settings/safety_check:constants",
     "//ios/chrome/browser/ui/sharing",

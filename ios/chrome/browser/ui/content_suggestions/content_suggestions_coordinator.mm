@@ -97,6 +97,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
+#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
@@ -113,10 +114,11 @@
     ContentSuggestionsMenuProvider,
     ContentSuggestionsViewControllerAudience,
     MagicStackHalfSheetTableViewControllerDelegate,
+    MagicStackParcelListHalfSheetTableViewControllerDelegate,
+    NotificationsConfirmationPresenter,
     SafetyCheckViewDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
-    MagicStackParcelListHalfSheetTableViewControllerDelegate,
     SetUpListViewDelegate>
 
 @property(nonatomic, strong)
@@ -799,6 +801,7 @@
                              browser:self.browser
                          application:[UIApplication sharedApplication]];
   _contentNotificationCoordinator.delegate = self;
+  _contentNotificationCoordinator.messagePresenter = self;
   [_contentNotificationCoordinator start];
 }
 
@@ -814,6 +817,24 @@
 - (void)setUpListContentNotificationPromoDidFinish {
   [_contentNotificationCoordinator stop];
   _contentNotificationCoordinator = nil;
+}
+
+#pragma mark - NotificationsConfirmationPresenter
+
+- (void)presentNotificationsConfirmationMessage {
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  __weak __typeof(self) weakSelf = self;
+  [snackbarHandler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE)
+                   buttonText:
+                       l10n_util::GetNSString(
+                           IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
+                messageAction:^{
+                  [weakSelf showNotificationSettings];
+                }
+             completionAction:nil];
 }
 
 #pragma mark - Helpers
@@ -900,6 +921,12 @@
                  style:UIAlertActionStyleCancel];
 
   [_parcelTrackingAlertCoordinator start];
+}
+
+// Display the notification settings.
+- (void)showNotificationSettings {
+  [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                      ApplicationSettingsCommands) showNotificationsSettings];
 }
 
 // Dismisses the parcel tracking alert modal.
