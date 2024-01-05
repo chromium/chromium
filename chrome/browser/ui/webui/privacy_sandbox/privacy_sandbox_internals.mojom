@@ -19,6 +19,16 @@ interface PageHandler {
   GetTpcdMetadataGrants() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
+  // Return a list of TPCD_HEURISTICS_GRANTS ContentSettings for the current
+  // profile.
+  GetTpcdHeuristicsGrants() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
+  // Return a list of TPCD_SUPPORT ContentSettings for the current
+  // profile.
+  GetTpcdSupport() => (
+    array<content_settings.mojom.ContentSettingPatternSource> content_settings);
+
   // Convert PatternParts into a string representation.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);

@@ -36,6 +36,22 @@ void PrivacySandboxInternalsHandler::GetTpcdMetadataGrants(
   std::move(callback).Run(cookie_settings->GetTpcdMetadataGrants());
 }
 
+void PrivacySandboxInternalsHandler::GetTpcdHeuristicsGrants(
+    GetTpcdMetadataGrantsCallback callback) {
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  std::move(callback).Run(
+      map->GetSettingsForOneType(ContentSettingsType::TPCD_HEURISTICS_GRANTS));
+}
+
+void PrivacySandboxInternalsHandler::GetTpcdSupport(
+    GetTpcdMetadataGrantsCallback callback) {
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  std::move(callback).Run(
+      map->GetSettingsForOneType(ContentSettingsType::TPCD_SUPPORT));
+}
+
 void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(
     const ContentSettingsPattern& pattern,
     ContentSettingsPatternToStringCallback callback) {

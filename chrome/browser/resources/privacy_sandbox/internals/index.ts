@@ -33,6 +33,27 @@ class DataLoader {
       item.configure(this.pageHandler, cs);
       item.setAttribute('collapsed', 'true');
     });
+
+    const tpcdHeuristicsParent =
+        document.querySelector<HTMLElement>('#tpcd-heuristics-grants')!;
+    const tpcdHeuristicsGrants =
+        await this.pageHandler.getTpcdHeuristicsGrants();
+    tpcdHeuristicsGrants.contentSettings.forEach((cs) => {
+      const item = document.createElement('content-setting-pattern-source');
+      tpcdHeuristicsParent.appendChild(item);
+      item.configure(this.pageHandler, cs);
+      item.setAttribute('collapsed', 'true');
+    });
+
+    const tpcdSupportParent =
+        document.querySelector<HTMLElement>('#tpcd-support')!;
+    const tpcdSupport = await this.pageHandler.getTpcdSupport();
+    tpcdSupport.contentSettings.forEach((cs) => {
+      const item = document.createElement('content-setting-pattern-source');
+      tpcdSupportParent.appendChild(item);
+      item.configure(this.pageHandler, cs);
+      item.setAttribute('collapsed', 'true');
+    });
   }
 }
 
