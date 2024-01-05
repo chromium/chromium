@@ -385,9 +385,10 @@ async function buildChromiumSymbols(options) {
       throw new Error("NYI");
   }
 
+  const releaseDir = options.useARM ? "Release-ARM" : "Release";
   const archiveFile = await buildSymbolsArchive(
     `${buildId}`,
-    path.join("out", "Release"),
+    path.join("out", releaseDir),
     libraries,
     options.useARM,
     pdbs
