@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -97,12 +97,12 @@ class TouchToFillProperties {
         static final PropertyModel.WritableObjectPropertyKey<FaviconOrFallback>
                 WEBAUTHN_FAVICON_OR_FALLBACK =
                         new PropertyModel.WritableObjectPropertyKey<>("favicon");
-        static final PropertyModel.ReadableObjectPropertyKey<WebAuthnCredential>
+        static final PropertyModel.ReadableObjectPropertyKey<WebauthnCredential>
                 WEBAUTHN_CREDENTIAL =
                         new PropertyModel.ReadableObjectPropertyKey<>("webauthn_credential");
         static final PropertyModel.ReadableObjectPropertyKey<Boolean> SHOW_WEBAUTHN_SUBMIT_BUTTON =
                 new PropertyModel.ReadableObjectPropertyKey<>("submit_credential");
-        static final PropertyModel.ReadableObjectPropertyKey<Callback<WebAuthnCredential>>
+        static final PropertyModel.ReadableObjectPropertyKey<Callback<WebauthnCredential>>
                 ON_WEBAUTHN_CLICK_LISTENER =
                         new PropertyModel.ReadableObjectPropertyKey<>("on_webauthn_click_listener");
         static final PropertyModel.ReadableObjectPropertyKey<FillableItemCollectionInfo>
@@ -199,6 +199,7 @@ class TouchToFillProperties {
 
     /**
      * Returns the sheet item type for a given item.
+     *
      * @param item An {@link MVCListAdapter.ListItem}.
      * @return The {@link ItemType} of the given list item.
      */

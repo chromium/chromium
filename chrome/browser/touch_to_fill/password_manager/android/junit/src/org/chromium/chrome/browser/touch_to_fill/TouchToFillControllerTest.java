@@ -70,7 +70,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.MorePasskeysProperties;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -130,8 +130,8 @@ public class TouchToFillControllerTest {
                     "example.xyz",
                     GetLoginMatchType.EXACT,
                     0);
-    private static final WebAuthnCredential DINO =
-            new WebAuthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
+    private static final WebauthnCredential DINO =
+            new WebauthnCredential("dinos.com", new byte[] {1}, new byte[] {2}, "dino@example.com");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
     private Bitmap mBitmapFromImageFetcher =
             Bitmap.createBitmap(/* width= */ 1, /* height= */ 1, Bitmap.Config.ARGB_8888);

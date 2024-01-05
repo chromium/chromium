@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/touch_to_fill/password_manager/android/touch_to_fill_view_impl.h"
+
 #include <jni.h>
 
 #include <memory>
@@ -14,7 +15,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/internal/jni/TouchToFillBridge_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/Credential_jni.h"
-#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebAuthnCredential_jni.h"
+#include "chrome/browser/touch_to_fill/password_manager/android/jni_headers/WebauthnCredential_jni.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
@@ -53,26 +54,26 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
           Java_Credential_lastUsedMsSinceEpoch(env, credential)));
 }
 
-PasskeyCredential ConvertJavaWebAuthnCredential(
+PasskeyCredential ConvertJavaWebauthnCredential(
     JNIEnv* env,
     const JavaParamRef<jobject>& credential) {
   std::vector<uint8_t> credential_id;
   base::android::JavaByteArrayToByteVector(
-      env, Java_WebAuthnCredential_getCredentialId(env, credential),
+      env, Java_WebauthnCredential_getCredentialId(env, credential),
       &credential_id);
 
   std::vector<uint8_t> user_id;
   base::android::JavaByteArrayToByteVector(
-      env, Java_WebAuthnCredential_getUserId(env, credential), &user_id);
+      env, Java_WebauthnCredential_getUserId(env, credential), &user_id);
 
   return PasskeyCredential(
       PasskeyCredential::Source::kAndroidPhone,
       PasskeyCredential::RpId(ConvertJavaStringToUTF8(
-          Java_WebAuthnCredential_getRpId(env, credential))),
+          Java_WebauthnCredential_getRpId(env, credential))),
       PasskeyCredential::CredentialId(std::move(credential_id)),
       PasskeyCredential::UserId(std::move(user_id)),
       PasskeyCredential::Username(ConvertJavaStringToUTF8(
-          Java_WebAuthnCredential_getUsername(env, credential))));
+          Java_WebauthnCredential_getUsername(env, credential))));
 }
 
 }  // namespace
@@ -166,7 +167,7 @@ void TouchToFillViewImpl::OnWebAuthnCredentialSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& credential) {
   controller_->OnPasskeyCredentialSelected(
-      ConvertJavaWebAuthnCredential(env, credential));
+      ConvertJavaWebauthnCredential(env, credential));
 }
 
 void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env,

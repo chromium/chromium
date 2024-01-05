@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -66,7 +66,7 @@ public class TouchToFillIntegrationTest {
     private static final String MOBILE_URL = "https://m.example.xyz";
     private static Credential sAna;
     private static Credential sBob;
-    private static WebAuthnCredential sCam;
+    private static WebauthnCredential sCam;
 
     private TouchToFillComponent mTouchToFill;
 
@@ -106,7 +106,7 @@ public class TouchToFillIntegrationTest {
                         GetLoginMatchType.PSL,
                         0);
         sCam =
-                new WebAuthnCredential(
+                new WebauthnCredential(
                         "example.net", new byte[] {1}, new byte[] {2}, "cam@example.net");
 
         mActivityTestRule.startMainActivityOnBlankPage();

@@ -10,7 +10,7 @@ import org.jni_zero.CalledByNative;
  * This class holds the data used to represent a selectable Web Authentication credential in the
  * Touch To Fill sheet.
  */
-public class WebAuthnCredential {
+public class WebauthnCredential {
     private final String mRpId;
     private final byte[] mCredentialId;
     private final byte[] mUserId;
@@ -22,7 +22,7 @@ public class WebAuthnCredential {
      * @param userId User handle
      * @param username Username shown to the user.
      */
-    public WebAuthnCredential(String rpId, byte[] credentialId, byte[] userId, String username) {
+    public WebauthnCredential(String rpId, byte[] credentialId, byte[] userId, String username) {
         mRpId = rpId;
         mCredentialId = credentialId;
         mUserId = userId;

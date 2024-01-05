@@ -46,7 +46,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnC
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
@@ -82,7 +82,7 @@ class TouchToFillMediator {
     private PropertyModel mModel;
     private LargeIconBridge mLargeIconBridge;
     private @Px int mDesiredIconSize;
-    private List<WebAuthnCredential> mWebAuthnCredentials;
+    private List<WebauthnCredential> mWebAuthnCredentials;
     private List<Credential> mCredentials;
     private boolean mManagePasskeysHidesPasswords;
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
@@ -114,7 +114,7 @@ class TouchToFillMediator {
     void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebAuthnCredential> webAuthnCredentials,
+            List<WebauthnCredential> webAuthnCredentials,
             List<Credential> credentials,
             boolean showMorePasskeys,
             boolean triggerSubmission,
@@ -156,7 +156,7 @@ class TouchToFillMediator {
         int fillableItemPosition = 0;
 
         mWebAuthnCredentials = webAuthnCredentials;
-        for (WebAuthnCredential credential : webAuthnCredentials) {
+        for (WebauthnCredential credential : webAuthnCredentials) {
             final PropertyModel model =
                     createWebAuthnModel(
                             credential,
@@ -219,7 +219,7 @@ class TouchToFillMediator {
     }
 
     private String getTitle(
-            List<WebAuthnCredential> webAuthnCredentials, List<Credential> credentials) {
+            List<WebauthnCredential> webAuthnCredentials, List<Credential> credentials) {
         int sharedPasswordsRequireNotificationCount =
                 getSharedPasswordsThatRequireNotification(credentials).size();
         if (sharedPasswordsRequireNotificationCount > 0) {
@@ -277,7 +277,7 @@ class TouchToFillMediator {
     }
 
     private String getManageButtonText(
-            List<Credential> credentials, List<WebAuthnCredential> webAuthnCredentials) {
+            List<Credential> credentials, List<WebauthnCredential> webAuthnCredentials) {
         if (webAuthnCredentials.size() == 0) {
             return mContext.getString(R.string.manage_passwords);
         }
@@ -385,7 +385,7 @@ class TouchToFillMediator {
         mDelegate.onCredentialSelected(credential);
     }
 
-    private void onSelectedWebAuthnCredential(WebAuthnCredential credential) {
+    private void onSelectedWebAuthnCredential(WebauthnCredential credential) {
         mModel.set(VISIBLE, false);
         // The index assumes WebAuthn credentials are listed after password credentials.
         reportCredentialSelection(
@@ -427,7 +427,7 @@ class TouchToFillMediator {
      */
     private boolean shouldCreateConfirmationButton(
             List<Credential> credentials,
-            List<WebAuthnCredential> webauthnCredentials,
+            List<WebauthnCredential> webauthnCredentials,
             boolean shouldShowMorePasskeys) {
         if (shouldShowMorePasskeys) return false;
         return credentials.size() + webauthnCredentials.size() == 1;
@@ -447,7 +447,7 @@ class TouchToFillMediator {
     }
 
     private PropertyModel createWebAuthnModel(
-            WebAuthnCredential credential, FillableItemCollectionInfo itemCollectionInfo) {
+            WebauthnCredential credential, FillableItemCollectionInfo itemCollectionInfo) {
         return new PropertyModel.Builder(WebAuthnCredentialProperties.ALL_KEYS)
                 .with(WEBAUTHN_CREDENTIAL, credential)
                 .with(ON_WEBAUTHN_CLICK_LISTENER, this::onSelectedWebAuthnCredential)
