@@ -96,11 +96,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   virtual void HandleEnableBenchmarkingCountdownAsync();
 
  private:
-#if BUILDFLAG(IS_MAC)
-  // Records Mac specific metrics.
-  void RecordMacMetrics();
-#endif  // BUILDFLAG(IS_MAC)
-
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;

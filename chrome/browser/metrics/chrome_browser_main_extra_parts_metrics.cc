@@ -1077,10 +1077,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
                              base::BindOnce(&RecordLinuxDistro));
 #endif
 
-#if BUILDFLAG(IS_MAC)
-  RecordMacMetrics();
-#endif  // BUILDFLAG(IS_MAC)
-
 #if BUILDFLAG(IS_WIN)
   // RecordStartupMetrics calls into shell_integration::GetDefaultBrowser(),
   // which requires a COM thread on Windows.

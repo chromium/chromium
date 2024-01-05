@@ -7655,15 +7655,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSX.Settings.ScreensHaveSeparateSpaces"
-    enum="OSXScreensHaveSeparateSpaces" expires_after="M85">
-  <owner>erikchen@chromium.org</owner>
-  <summary>
-    The configuration of the setting &quot;Screens Have Separate Spaces&quot;
-    available in OSX 10.9+.
-  </summary>
-</histogram>
-
 <histogram name="Ozone.NeuralStylusReport.ActivePalmTouchCount"
     units="touch event count" expires_after="2023-06-30">
   <owner>napper@chromium.org</owner>

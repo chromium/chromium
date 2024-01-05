@@ -19,12 +19,3 @@ enum ScreenSpacesConfiguration {
 };
 
 }  // namespace
-
-void ChromeBrowserMainExtraPartsMetrics::RecordMacMetrics() {
-  ScreenSpacesConfiguration separate_spaces =
-      [NSScreen screensHaveSeparateSpaces] ? SCREENS_HAVE_SEPARATE_SPACES
-                                           : SCREENS_HAVE_SHARED_SPACES;
-  UMA_HISTOGRAM_ENUMERATION("OSX.Settings.ScreensHaveSeparateSpaces",
-                            separate_spaces,
-                            SCREEN_SPACES_CONFIGURATION_COUNT);
-}
