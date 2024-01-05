@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
+import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {waitForElementUpdate} from '../common/js/unittest_util.js';
 import {customElement, html, XfBase} from '../widgets/xf_base.js';
 
 import {BaseStore, Slice} from './base_store.js';
 import type {TestState} from './for_tests.js';
-import {combine2Selectors, SelectorEmitter, SelectorNode} from './selector.js';
+import {combine1Selector, combine2Selectors, SelectorEmitter, SelectorNode, shallowEqual, strictlyEqual} from './selector.js';
 
 // Test that DAG nodes only emit if at least one of their parents also emits a
 // new value and if their value has changed.
@@ -262,4 +262,77 @@ export function testSelectorEmitterTraversal() {
   // root, child1 has a depth of 1, child2 of 2, and child3 of 3 - because the
   // root node isn't their only parent.
   assertEquals(order, '0123');
+}
+
+// Test that strictlyEqual and shallowEqual works in different ways.
+export function testCustomCompare() {
+  const obj1 = {a: 'aaa', b: 123};
+  const obj2 = {a: 'aaa', b: 123};
+
+  assertTrue(shallowEqual(obj1, obj2));
+  assertFalse(strictlyEqual(obj1, obj2));
+
+  // shallowEqual only compares the first level, it doesn't go deeper.
+  const b = {b: 'bbb'};
+  const obj3 = {a: b};
+  const obj4 = {a: {b: 'bbb'}};
+  const obj5 = {a: b};
+
+  assertTrue(shallowEqual(obj3, obj5));
+  assertFalse(shallowEqual(obj3, obj4));
+  assertFalse(strictlyEqual(obj3, obj4));
+  assertFalse(strictlyEqual(obj3, obj5));
+
+  // shallowEqual can't be called with non-object.
+  try {
+    shallowEqual('aaa' as any, 'bbb' as any);
+    assertNotReached();
+  } catch (e: unknown) {
+    assertTrue(e instanceof Error);
+  }
+}
+
+// Test that selector can accepts a custom isEqual function which will be used
+// when checking changes.
+export function testSelectorCustomEqual() {
+  const slice1 = new Slice<TestState, TestState['numVisitors']>('numVisitors');
+  const slice2 =
+      new Slice<TestState, TestState['latestPayload']>('latestPayload');
+
+  const increaseBy = slice1.addReducer(
+      'increase-by',
+      (state: TestState, payload: number) =>
+          ({...state, numVisitors: state.numVisitors! + payload}));
+
+  const store = new BaseStore<TestState>({}, [slice1, slice2]);
+  store.init({numVisitors: 0, latestPayload: 'aaa'});
+
+  // Construct 2 selectors which returns a plain object (whose reference will
+  // change every time the selector runs) contains "latestPayload" only.
+  const selectorWithStrictEqual = combine1Selector(
+      (state: TestState) => ({a: state.latestPayload}), store.selector,
+      'strictly-equal');
+  const selectorWithShallowEqual = combine1Selector(
+      (state: TestState) => ({a: state.latestPayload}), store.selector,
+      'shallow-equal', shallowEqual);
+
+  let counter1 = 0;
+  let counter2 = 0;
+  selectorWithStrictEqual.subscribe(() => {
+    counter1++;
+  });
+  selectorWithShallowEqual.subscribe(() => {
+    counter2++;
+  });
+
+  // Change "numVisitors" twice.
+  store.dispatch(increaseBy(1));
+  store.dispatch(increaseBy(2));
+
+  // Expect the selector calls its callback twice because its returned object
+  // changes its reference every time (strict equal).
+  assertEquals(2, counter1);
+  // Expect the selector never calls its callback because its returned object
+  // never changes its content (shallow equal).
+  assertEquals(0, counter2);
 }

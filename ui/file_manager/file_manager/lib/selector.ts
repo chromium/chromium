@@ -132,10 +132,14 @@ export class SelectorNode<T> implements Selector<T> {
    * @param name An optional human-readable name used for debugging purposes.
    *     Named selectors will log to the console when DEBUG_STORE is set,
    *     whenever they emit a new value.
+   * @param isEqual_ An optional comparison function which will be used
+   *     when compare the old value and the new value form the selector. By
+   *     default it will use triple equal.
    */
   constructor(
       parents: Array<SelectorNode<any>|Selector<any>>,
-      public select: (...values: any[]) => T, public name?: string) {
+      public select: (...values: any[]) => T, public name?: string,
+      private isEqual_: (oldValue: T, newValue: T) => boolean = strictlyEqual) {
     this.parents = parents as Array<SelectorNode<any>>;
   }
 
@@ -218,7 +222,7 @@ export class SelectorNode<T> implements Selector<T> {
     const parentValues = this.parents.map(p => p.get());
     const newValue = this.select(...parentValues);
 
-    if (newValue === this.value_) {
+    if (this.isEqual_(this.value_, newValue)) {
       return false;
     }
 
@@ -267,8 +271,9 @@ export function combine1Selector<O, I1>(
     combineFunction: (i1: I1) => O,
     s1: Selector<I1>,
     name?: string,
+    isEqual: (oldValue: O, newValue: O) => boolean = strictlyEqual,
     ): Selector<O> {
-  return new SelectorNode<O>([s1], combineFunction as any, name);
+  return new SelectorNode<O>([s1], combineFunction as any, name, isEqual);
 }
 /** Create a selector whose value derives from 2 Selectors. */
 export function combine2Selectors<O, I1, I2>(
@@ -276,8 +281,9 @@ export function combine2Selectors<O, I1, I2>(
     s1: Selector<I1>,
     s2: Selector<I2>,
     name?: string,
+    isEqual: (oldValue: O, newValue: O) => boolean = strictlyEqual,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2], combineFunction as any, name);
+  return new SelectorNode<O>([s1, s2], combineFunction as any, name, isEqual);
 }
 /** Create a selector whose value derives from 3 Selectors. */
 export function combine3Selectors<O, I1, I2, I3>(
@@ -286,8 +292,10 @@ export function combine3Selectors<O, I1, I2, I3>(
     s2: Selector<I2>,
     s3: Selector<I3>,
     name?: string,
+    isEqual: (oldValue: O, newValue: O) => boolean = strictlyEqual,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2, s3], combineFunction as any, name);
+  return new SelectorNode<O>(
+      [s1, s2, s3], combineFunction as any, name, isEqual);
 }
 /** Create a selector whose value derives from 4 Selectors. */
 export function combine4Selectors<O, I1, I2, I3, I4>(
@@ -297,8 +305,10 @@ export function combine4Selectors<O, I1, I2, I3, I4>(
     s3: Selector<I3>,
     s4: Selector<I4>,
     name?: string,
+    isEqual: (oldValue: O, newValue: O) => boolean = strictlyEqual,
     ): Selector<O> {
-  return new SelectorNode<O>([s1, s2, s3, s4], combineFunction as any, name);
+  return new SelectorNode<O>(
+      [s1, s2, s3, s4], combineFunction as any, name, isEqual);
 }
 
 /**
@@ -345,4 +355,34 @@ export class SelectorEmitter {
       }
     }
   }
+}
+
+// Comparison functions can be passed to selectors when initialized.
+
+/** strictlyEqual use triple equal to compare values. */
+export function strictlyEqual(oldValue: unknown, newValue: unknown): boolean {
+  return oldValue === newValue;
+}
+
+/** shallowEqual compares the immediate property of the passed objects. */
+export function shallowEqual(
+    oldValue: Record<string, unknown>,
+    newValue: Record<string, unknown>): boolean {
+  // Only throw error when `newValue` is not an object because `oldValue` could
+  // be `undefined` initially.
+  if (!(newValue && typeof newValue === 'object')) {
+    throw new Error('Can not use shallowEqual for non object comparison');
+  }
+  if (typeof oldValue !== 'object') {
+    return false;
+  }
+
+  const keys = Object.keys(newValue);
+  for (const key of keys) {
+    if (oldValue[key] !== newValue[key]) {
+      return false;
+    }
+  }
+
+  return true;
 }
