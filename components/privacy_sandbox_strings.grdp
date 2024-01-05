@@ -233,6 +233,24 @@
   <message name="IDS_SETTINGS_TOPICS_PAGE_EXPLANATION_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
     Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less interesting.
   </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW" desc="" formatter_data="android_java" translateable="false">
+    Blocked topics
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW" desc="" formatter_data="android_java" translateable="false">
+    When a topic is blocked, it won’t be used to personalize ads
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_HEADING" desc="" formatter_data="android_java" translateable="false">
+    Manage topics
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_MANAGE_TOPICS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
+    Choose which broad categories of topics can be used to personalize ads
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING" desc="" formatter_data="android_java" translateable="false">
+    Active topics
+  </message>
+  <message name="IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION" desc="" formatter_data="android_java" translateable="false">
+    Topics older than 4 weeks get auto-deleted
+  </message>
 
   <!-- Privacy Sandbox v4 - Topics Consent Details -->
   <!-- TODO(crbug.com/1378703) - Update and mark translateable. -->
