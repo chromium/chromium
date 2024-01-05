@@ -127,8 +127,9 @@
   }
 
   #bodyAndFooter {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-areas: "body" "footer";
+    grid-auto-columns: 100%;
     gap: var(--gap-between-sections_);
     position: relative;
   }
@@ -137,6 +138,7 @@
     --results-background_: rgb(234, 240, 249);
     --scrollbar-width_: 4px;
     box-sizing: border-box;
+    grid-area: body;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -193,11 +195,27 @@
     background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
+  :host([loading_]) #bodyAndFooter {
+    /* There is no footer in the loading screen. */
+    grid-template-areas: "body";
+    height: 136px;
+  }
+
+  :host([loading_]) #body {
+    /* When loading, the heights of contents within #body are in flux due to
+     * animations. Force the entire #body to be visible to prevent scrollbars
+     * from flickering, and remove scrollbar width from padding. */
+    overflow: visible;
+    padding-inline-end: 20px;
+  }
+
   #loading {
     display: flex;
     border: solid 1px var(--results-background_);
     border-radius: 8px;
-    padding: 16px;
+    padding: 15px;
+    box-sizing: border-box;
+    height: 80px;
   }
 
   .result-container {
@@ -257,6 +275,7 @@
   }
 
   .footer {
+    grid-area: footer;
     align-items: center;
     display: flex;
     padding: 0 var(--padding_);
@@ -414,11 +433,11 @@
       <div id="loading"
           hidden="[[!loadingIndictorShown_(loading_, partialResponse_)]]">
         <cr-loading-gradient>
-          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="43">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="51">
             <clipPath>
               <rect x="0" y="0" width="100%" height="11" rx="4"></rect>
-              <rect x="0" y="16" width="100%" height="10.8333" rx="4"></rect>
-              <rect x="0" y="32" width="75%" height="11" rx="4"></rect>
+              <rect x="0" y="20" width="100%" height="10.8333" rx="4"></rect>
+              <rect x="0" y="40" width="75%" height="11" rx="4"></rect>
             </clipPath>
           </svg>
         </cr-loading-gradient>

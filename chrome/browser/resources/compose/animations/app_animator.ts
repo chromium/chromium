@@ -5,6 +5,20 @@
 import {Animator, STANDARD_EASING} from './animator.js';
 
 export class ComposeAppAnimator extends Animator {
+  transitionOutSubmitFooter(bodyHeight: number, footerHeight: number):
+      Animation[] {
+    return [
+      /* Freeze dialog heights while footer fade out finishes. */
+      this.maintainStyles(
+          '#bodyAndFooter', {
+            gridTemplateAreas: '"body" "footer"',
+            gridTemplateRows: `${bodyHeight}px ${footerHeight}px`,
+          },
+          {duration: 50}),
+      this.fadeOutAndHide('#submitFooter', 'flex', {duration: 50}),
+    ].flat();
+  }
+
   transitionToFirstRun(): Animation[] {
     const firstRunScreenText = '#firstRunHeading h1, #firstRunContainer';
     const firstRunScreenButtons = '#firstRunCloseButton, #firstRunFooter';
@@ -46,5 +60,9 @@ export class ComposeAppAnimator extends Animator {
       this.fadeIn(inputScreenText, {delay: 100, duration: 100}),
       this.fadeIn('#submitButton', {delay: 100, duration: 100}),
     ].flat();
+  }
+
+  transitionInLoading(): Animation[] {
+    return this.fadeIn('#loading', {delay: 100, duration: 100});
   }
 }

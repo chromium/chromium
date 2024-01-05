@@ -73,6 +73,15 @@ export class Animator {
         Object.assign({easing: 'linear'}, options));
   }
 
+  /* Maintains a style for a duration on an element. This is useful for
+   * animations that require a fixed state (such as fixed heights). */
+  maintainStyles(
+      selector: string, styles: Keyframe, options: KeyframeAnimationOptions) {
+    return this.animate(
+        selector, [styles, styles],
+        Object.assign({fill: 'backwards'}, options));
+  }
+
   scaleIn(selector: string, options: KeyframeAnimationOptions): Animation[] {
     return this.animate(
         selector,

@@ -60,6 +60,7 @@ export interface ComposeAppElement {
     partialResultText: HTMLElement,
     submitButton: CrButtonElement,
     submitEditButton: CrButtonElement,
+    submitFooter: HTMLElement,
     textarea: ComposeTextareaElement,
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
@@ -113,6 +114,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
       loading_: {
         type: Boolean,
         value: false,
+        reflectToAttribute: true,
       },
       response_: {
         type: Object,
@@ -390,7 +392,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     this.$.textarea.scrollInputToTop();
+    const bodyHeight = this.$.body.offsetHeight;
+    const footerHeight = this.$.submitFooter.offsetHeight;
     this.submitted_ = true;
+    this.animator_.transitionOutSubmitFooter(bodyHeight, footerHeight);
     this.$.textarea.transitionToReadonly();
     this.compose_();
   }
@@ -459,6 +464,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     assert(this.$.textarea.validate());
     assert(this.submitted_);
     this.loading_ = true;
+    this.animator_.transitionInLoading();
     this.response_ = undefined;
     this.partialResponse_ = undefined;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
