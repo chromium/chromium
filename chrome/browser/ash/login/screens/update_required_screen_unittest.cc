@@ -54,10 +54,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Configure the browser to use Hands-Off Enrollment.
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
-
     // Initialize objects needed by `UpdateRequiredScreen`.
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
