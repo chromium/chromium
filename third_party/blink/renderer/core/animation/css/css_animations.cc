@@ -1866,8 +1866,9 @@ void UpdateAnimationFlagsForAnimation(const Animation& animation,
                                       ComputedStyleBuilder& builder) {
   const AnimationEffect& effect = *animation.effect();
 
-  if (!effect.IsCurrent())
+  if (!effect.IsCurrent() && !effect.IsInEffect()) {
     return;
+  }
 
   UpdateAnimationFlagsForEffect(effect, builder);
 
