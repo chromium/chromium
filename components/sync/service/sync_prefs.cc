@@ -26,6 +26,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
@@ -939,6 +940,18 @@ void SyncPrefs::MigrateGlobalDataTypePrefsToAccount(
                         history_and_tabs_enabled);
   account_settings->Set(GetPrefNameForType(UserSelectableType::kTabs),
                         history_and_tabs_enabled);
+
+  // Another special case: For custom passphrase users, "Addresses and more"
+  // gets disabled by default. The reason is that for syncing custom passphrase
+  // users, this toggle mapped to the legacy AUTOFILL_PROFILE type (which
+  // supported custom passphrase), but for migrated users it maps to
+  // CONTACT_INFO (which does not).
+  absl::optional<PassphraseType> passphrase_type = ProtoPassphraseInt32ToEnum(
+      pref_service->GetInteger(prefs::internal::kSyncCachedPassphraseType));
+  if (passphrase_type.has_value() && IsExplicitPassphrase(*passphrase_type)) {
+    account_settings->Set(GetPrefNameForType(UserSelectableType::kAutofill),
+                          false);
+  }
 
   // Usually, the "SyncToSignin" migration (aka phase 2) will have completed
   // previously. But just in case it hasn't, make sure it doesn't run in the
