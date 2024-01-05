@@ -5,9 +5,9 @@
 #include "components/component_updater/android/component_loader_policy.h"
 
 #include <jni.h>
+#include <stddef.h>
 #include <stdio.h>
 
-#include <stddef.h>
 #include <map>
 #include <memory>
 #include <string>
@@ -51,8 +51,9 @@ absl::optional<base::Value::Dict> ReadManifest(
   JSONStringValueDeserializer deserializer(manifest_content);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (root && root->is_dict())
+  if (root && root->is_dict()) {
     return std::move(*root).TakeDict();
+  }
 
   return absl::nullopt;
 }
@@ -165,8 +166,9 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
   }
   std::string version_ascii;
   if (const std::string* ptr = manifest->FindString("version")) {
-    if (base::IsStringASCII(*ptr))
+    if (base::IsStringASCII(*ptr)) {
       version_ascii = *ptr;
+    }
   }
   base::Version version(version_ascii);
   if (!version.IsValid()) {

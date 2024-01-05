@@ -39,24 +39,19 @@ class MockComponentUpdateService : public ComponentUpdateService {
     return base::Version(kNullVersion);
   }
 
-  MOCK_METHOD1(AddObserver,
-      void(Observer* observer));
-  MOCK_METHOD1(RemoveObserver,
-      void(Observer* observer));
+  MOCK_METHOD1(AddObserver, void(Observer* observer));
+  MOCK_METHOD1(RemoveObserver, void(Observer* observer));
   MOCK_METHOD1(RegisterComponent, bool(const ComponentRegistration& component));
-  MOCK_METHOD1(UnregisterComponent,
-      bool(const std::string& id));
-  MOCK_CONST_METHOD0(GetComponentIDs,
-      std::vector<std::string>());
+  MOCK_METHOD1(UnregisterComponent, bool(const std::string& id));
+  MOCK_CONST_METHOD0(GetComponentIDs, std::vector<std::string>());
   MOCK_CONST_METHOD0(GetComponents, std::vector<ComponentInfo>());
-  MOCK_METHOD0(GetOnDemandUpdater,
-      OnDemandUpdater&());
+  MOCK_METHOD0(GetOnDemandUpdater, OnDemandUpdater&());
   MOCK_METHOD2(DoMaybeThrottle,
                void(const std::string& id, const base::OnceClosure& callback));
   MOCK_METHOD0(GetSequencedTaskRunner,
-      scoped_refptr<base::SequencedTaskRunner>());
+               scoped_refptr<base::SequencedTaskRunner>());
   MOCK_CONST_METHOD2(GetComponentDetails,
-      bool(const std::string& id, CrxUpdateItem* item));
+                     bool(const std::string& id, CrxUpdateItem* item));
 };
 
 }  // namespace component_updater

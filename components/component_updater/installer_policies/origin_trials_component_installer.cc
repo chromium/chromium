@@ -52,8 +52,9 @@ const uint8_t kOriginTrialSha2Hash[] = {
 // static
 void OriginTrialsComponentInstallerPolicy::GetComponentHash(
     std::vector<uint8_t>* hash) {
-  if (!hash)
+  if (!hash) {
     return;
+  }
   hash->assign(std::begin(kOriginTrialSha2Hash),
                std::end(kOriginTrialSha2Hash));
 }

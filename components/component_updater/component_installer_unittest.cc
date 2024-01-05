@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/component_updater/component_installer.h"
+
 #include <iterator>
 #include <memory>
 #include <string>
@@ -29,7 +31,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_service_internal.h"

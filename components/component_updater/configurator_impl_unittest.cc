@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/component_updater/configurator_impl.h"
+
 #include <memory>
 
 #include "base/command_line.h"
@@ -10,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
-#include "components/component_updater/configurator_impl.h"
 #include "components/update_client/command_line_config_policy.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_change_notifier.h"

@@ -41,8 +41,9 @@ const char kTrustTokenKeyCommitmentsManifestName[] =
 // returning the loaded commitments on success and nullopt on failure.
 absl::optional<std::string> LoadKeyCommitmentsFromDisk(
     const base::FilePath& path) {
-  if (path.empty())
+  if (path.empty()) {
     return absl::nullopt;
+  }
 
   VLOG(1) << "Reading trust token key commitments from file: " << path.value();
 

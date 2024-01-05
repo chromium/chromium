@@ -25,8 +25,9 @@ bool PathProvider(int key, base::FilePath* result) {
 
   // Early exit here to prevent a potential infinite loop when we retrieve
   // the path for g_components_*_root_key.
-  if (key < PATH_START || key > PATH_END)
+  if (key < PATH_START || key > PATH_END) {
     return false;
+  }
 
   switch (key) {
     case DIR_COMPONENT_PREINSTALLED:
@@ -39,8 +40,9 @@ bool PathProvider(int key, base::FilePath* result) {
   }
 
   base::FilePath cur;
-  if (!base::PathService::Get(g_components_user_root_key, &cur))
+  if (!base::PathService::Get(g_components_user_root_key, &cur)) {
     return false;
+  }
 
   switch (key) {
     case DIR_COMPONENT_CLD2:
