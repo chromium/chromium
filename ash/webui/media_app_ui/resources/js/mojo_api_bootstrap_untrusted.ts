@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './geometry.mojom-lite.js';
-import './media_app_ui_untrusted.mojom-lite.js';
+import {OcrUntrustedPageCallbackRouter, UntrustedPageHandlerFactory, OcrUntrustedPageHandlerRemote} from './media_app_ui_untrusted.mojom-webui.js';
 
 // Used to make calls on the remote OcrUntrustedPageHandler interface. Singleton
 // that client modules can use directly.
 // TODO(b/316239558): The client should use the result of connectToOcrHandler()
 // directly instead of us exporting this.
-export let ocrUntrustedPageHandler;
+export let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
 
 // Use this subscribe to events e.g.
 // `ocrCallbackRouter.onEventOccurred.addListener(handleEvent)`.
-export const ocrCallbackRouter =
-    new ash.mediaAppUi.mojom.OcrUntrustedPageCallbackRouter();
+export const ocrCallbackRouter = new OcrUntrustedPageCallbackRouter();
 
 // Used to create a connection to OcrUntrustedPageHandler.
-const factoryRemote =
-    ash.mediaAppUi.mojom.UntrustedPageHandlerFactory.getRemote();
+const factoryRemote = UntrustedPageHandlerFactory.getRemote();
 
 // Called when a new file that may require OCR is loaded. Closes the existing
 // pipe and establishes a new one.
@@ -26,8 +23,7 @@ export function connectToOcrHandler() {
   if (ocrUntrustedPageHandler) {
     ocrUntrustedPageHandler.$.close();
   }
-  ocrUntrustedPageHandler =
-      new ash.mediaAppUi.mojom.OcrUntrustedPageHandlerRemote();
+  ocrUntrustedPageHandler = new OcrUntrustedPageHandlerRemote();
   factoryRemote.createOcrUntrustedPageHandler(
       ocrUntrustedPageHandler.$.bindNewPipeAndPassReceiver(),
       ocrCallbackRouter.$.bindNewPipeAndPassRemote());
