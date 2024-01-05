@@ -10,4 +10,9 @@ MockWebAuthnCredentialsDelegate::MockWebAuthnCredentialsDelegate() = default;
 
 MockWebAuthnCredentialsDelegate::~MockWebAuthnCredentialsDelegate() = default;
 
+base::WeakPtr<WebAuthnCredentialsDelegate>
+MockWebAuthnCredentialsDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace password_manager
