@@ -25,7 +25,7 @@ build_webui_tests("build") {
     "cellular_roaming_toggle_button_test.js",
     "esim_remove_profile_dialog_test.js",
     "fake_canvas_context.ts",
-    "fake_input_method_private.js",
+    "fake_input_method_private.ts",
     "fake_language_settings_private.js",
     "fake_media_devices.ts",
     "fake_metrics_private.ts",
