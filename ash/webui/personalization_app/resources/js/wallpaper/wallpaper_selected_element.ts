@@ -7,7 +7,7 @@
  * wallpaper.
  */
 
-import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';

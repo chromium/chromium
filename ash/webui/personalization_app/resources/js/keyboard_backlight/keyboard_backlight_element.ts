@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
+import 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import './google_photos_albums_element.js';
 import './google_photos_collection_element.js';
 import './google_photos_photos_by_album_id_element.js';

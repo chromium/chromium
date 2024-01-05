@@ -56,6 +56,7 @@ import {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
  * `chrome://personalization/js/personalization_app.js`. These exports are
  * necessary so they can be imported in tests.
  */
+export {WallpaperGridItemElement} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 export {AlbumListElement} from './ambient/album_list_element.js';
 export {AlbumsSubpageElement} from './ambient/albums_subpage_element.js';
 export {AmbientActionName, AmbientActions, SetAlbumsAction, setAlbumsAction, SetAlbumSelectedAction, setAlbumSelectedAction, SetAmbientModeEnabledAction, setAmbientModeEnabledAction, SetAmbientThemeAction, setAmbientThemeAction, SetPreviewsAction, setPreviewsAction, SetScreenSaverDurationAction, setScreenSaverDurationAction, SetShouldShowTimeOfDayBannerAction, SetTemperatureUnitAction, setTemperatureUnitAction, SetTopicSourceAction, setTopicSourceAction} from './ambient/ambient_actions.js';
@@ -134,7 +135,6 @@ export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_ele
 export {selectGooglePhotosAlbum, cancelPreviewWallpaper, confirmPreviewWallpaper, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, fetchGooglePhotosSharedAlbums, fetchLocalData, getDefaultImageThumbnail, getLocalImages, initializeBackdropData, fetchGooglePhotosEnabled, selectWallpaper, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper/wallpaper_controller.js';
 export {WallpaperErrorElement} from './wallpaper/wallpaper_error_element.js';
 export {WallpaperFullscreenElement} from './wallpaper/wallpaper_fullscreen_element.js';
-export {WallpaperGridItemElement} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 export {getImageTiles, WallpaperImagesElement} from './wallpaper/wallpaper_images_element.js';
 export {setWallpaperProviderForTesting} from './wallpaper/wallpaper_interface_provider.js';
 export {WallpaperObserver} from './wallpaper/wallpaper_observer.js';

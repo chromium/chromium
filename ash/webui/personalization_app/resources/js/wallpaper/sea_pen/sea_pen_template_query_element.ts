@@ -7,7 +7,7 @@
  * SeaPen wallpapers.
  */
 
-import 'chrome://resources/ash/common/personalization_shared_icons.html.js';
+import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
 import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';

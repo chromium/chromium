@@ -12,8 +12,8 @@ import '../../../css/common.css.js';
 import '../../../css/wallpaper.css.js';
 import '../../../css/sea_pen.css.js';
 
+import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
-import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/wallpaper_grid_item_element.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
