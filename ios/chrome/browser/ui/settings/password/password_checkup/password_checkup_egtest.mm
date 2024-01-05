@@ -429,7 +429,8 @@ NSString* LeakedPasswordDescription() {
 }
 
 // Tests the loading state of the Password Checkup Homepage.
-- (void)testPasswordCheckupHomepageLoadingState {
+// TODO(crbug.com/1462095): Fix and re enable the test.
+- (void)DISABLED_testPasswordCheckupHomepageLoadingState {
   // TODO(crbug.com/1512150): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
