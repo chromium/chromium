@@ -30,9 +30,9 @@
 namespace {
 
 bool CanUseOptimizationGuide(Profile* profile) {
-  return OptimizationGuideKeyedServiceFactory::GetForProfile(profile) &&
-         base::FeatureList::IsEnabled(
-             optimization_guide::features::kOptimizationGuideModelExecution);
+  return base::FeatureList::IsEnabled(
+             optimization_guide::features::kOptimizationGuideModelExecution) &&
+         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
 }
 
 void OnLogResults(Profile* profile,
