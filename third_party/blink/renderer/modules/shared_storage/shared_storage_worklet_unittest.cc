@@ -205,7 +205,8 @@ class TestClient : public blink::mojom::SharedStorageWorkletServiceClient {
                             remaining_budget_result_.bits);
   }
 
-  void ConsoleLog(const std::string& message) override {
+  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                              const std::string& message) override {
     observed_console_log_messages_.push_back(message);
   }
 

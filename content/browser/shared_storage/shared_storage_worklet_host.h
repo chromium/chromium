@@ -125,7 +125,8 @@ class CONTENT_EXPORT SharedStorageWorkletHost
   void SharedStorageLength(SharedStorageLengthCallback callback) override;
   void SharedStorageRemainingBudget(
       SharedStorageRemainingBudgetCallback callback) override;
-  void ConsoleLog(const std::string& message) override;
+  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                              const std::string& message) override;
   void RecordUseCounters(
       const std::vector<blink::mojom::WebFeature>& features) override;
 

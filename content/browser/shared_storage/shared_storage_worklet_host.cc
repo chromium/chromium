@@ -877,15 +877,20 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
       shared_storage_site_, std::move(operation_completed_callback));
 }
 
-void SharedStorageWorkletHost::ConsoleLog(const std::string& message) {
+void SharedStorageWorkletHost::DidAddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    const std::string& message) {
   if (!document_service_) {
     DCHECK(IsInKeepAlivePhase());
     return;
   }
 
-  devtools_instrumentation::LogWorkletMessage(
-      static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host()),
-      blink::mojom::ConsoleMessageLevel::kInfo, message);
+  // Mimic what's being done for console outputs from Window context, which
+  // manually triggers the observer method.
+  static_cast<RenderFrameHostImpl&>(document_service_->render_frame_host())
+      .DidAddMessageToConsole(level, base::UTF8ToUTF16(message),
+                              /*line_no=*/0, /*source_id=*/{},
+                              /*untrusted_stack_trace=*/{});
 }
 
 void SharedStorageWorkletHost::RecordUseCounters(

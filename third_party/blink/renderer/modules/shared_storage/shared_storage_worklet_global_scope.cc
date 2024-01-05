@@ -307,9 +307,9 @@ void SharedStorageWorkletGlobalScope::OnConsoleApiMessage(
     mojom::ConsoleMessageLevel level,
     const String& message,
     SourceLocation* location) {
-  client_->ConsoleLog(message);
-
   WorkerOrWorkletGlobalScope::OnConsoleApiMessage(level, message, location);
+
+  client_->DidAddMessageToConsole(level, message);
 }
 
 void SharedStorageWorkletGlobalScope::NotifyContextDestroyed() {

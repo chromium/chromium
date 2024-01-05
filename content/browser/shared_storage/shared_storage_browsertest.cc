@@ -300,19 +300,23 @@ class TestSharedStorageWorkletHost : public SharedStorageWorkletHost {
     return pending_worklet_messages_;
   }
 
-  void ConsoleLog(const std::string& message) override {
-    ConsoleLogHelper(message, /*initial_message=*/true);
+  void DidAddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                              const std::string& message) override {
+    DidAddMessageToConsoleHelper(level, message, /*initial_message=*/true);
   }
 
-  void ConsoleLogHelper(const std::string& message, bool initial_message) {
+  void DidAddMessageToConsoleHelper(blink::mojom::ConsoleMessageLevel level,
+                                    const std::string& message,
+                                    bool initial_message) {
     if (should_defer_worklet_messages_ && initial_message) {
       pending_worklet_messages_.push_back(base::BindOnce(
-          &TestSharedStorageWorkletHost::ConsoleLogHelper,
-          weak_ptr_factory_.GetWeakPtr(), message, /*initial_message=*/false));
+          &TestSharedStorageWorkletHost::DidAddMessageToConsoleHelper,
+          weak_ptr_factory_.GetWeakPtr(), level, message,
+          /*initial_message=*/false));
       return;
     }
 
-    SharedStorageWorkletHost::ConsoleLog(message);
+    SharedStorageWorkletHost::DidAddMessageToConsole(level, message);
   }
 
   void FireKeepAliveTimerNow() {
@@ -4181,6 +4185,25 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ConsoleErrorInWorklet) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      console.error('error0');
+    )",
+                         &out_script_url);
+
+  EXPECT_EQ(1u, console_observer.messages().size());
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kError,
+            console_observer.messages()[0].log_level);
+  EXPECT_EQ("error0",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
