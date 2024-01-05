@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -205,7 +204,7 @@ public class TabDragSource implements View.OnDragListener {
                 if (isCurrYInTabStrip) {
                     if (mLastAction == DragEvent.ACTION_DRAG_ENTERED || !isLastYInTabStrip) {
                         // dragged onto strip from outside controls OR from toolbar.
-                        res = onDragEnter();
+                        res = onDragEnter(dragEvent.getX());
                     } else {
                         // drag moved within strip.
                         res = onDragLocation(dragEvent.getX(), dragEvent.getY());
@@ -250,23 +249,18 @@ public class TabDragSource implements View.OnDragListener {
         return true;
     }
 
-    private boolean onDragEnter() {
-        if (!isDragSource()) {
-            if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
-                showDragShadow(false);
-                return true;
-            }
-            return false;
+    private boolean onDragEnter(float xPx) {
+        if (isDragSource() || TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+            showDragShadow(false);
         }
         mStripLayoutHelperSupplier
                 .get()
-                .dragActiveClickedTabOntoStrip(LayoutManagerImpl.time(), mLastXDp);
-        showDragShadow(false);
+                .prepareForTabDrop(
+                        LayoutManagerImpl.time(), xPx * mPxToDp, mLastXDp, isDragSource());
         return true;
     }
 
     private boolean onDragLocation(float xPx, float yPx) {
-        if (!isDragSource()) return false;
         float xDp = xPx * mPxToDp;
         float yDp = yPx * mPxToDp;
         mStripLayoutHelperSupplier.get().drag(LayoutManagerImpl.time(), xDp, yDp, xDp - mLastXDp);
@@ -274,10 +268,9 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     private boolean onDrop(float xPx, ClipData clipData) {
-        if (isDragSource()) {
-            mStripLayoutHelperSupplier.get().onUpOrCancel(LayoutManagerImpl.time());
-            return true;
-        }
+        mStripLayoutHelperSupplier.get().onUpOrCancel(LayoutManagerImpl.time());
+
+        if (isDragSource()) return true;
 
         Tab tabBeingDragged = DragDropGlobalState.getInstance().tabBeingDragged;
         if (!doesBelongToCurrentModel(tabBeingDragged)
@@ -285,8 +278,8 @@ public class TabDragSource implements View.OnDragListener {
             // Disallow dropping into another model when param enabled.
             return false;
         }
-        // If the event is received by a non source chrome window then accept the drop
-        // in the destination chrome window.
+        // If the event is received by a non source chrome window then move the dragged tab to the
+        // destination window.
         for (int i = 0; i < clipData.getItemCount(); i++) {
             int sourceTabId = getTabIdFromClipData(clipData.getItemAt(i));
             // Ignore the drop if the dropped tab id does not match the id of tab being
@@ -337,11 +330,7 @@ public class TabDragSource implements View.OnDragListener {
     private boolean onDragExit() {
         // Show drag shadow when drag exits strip.
         showDragShadow(true);
-        if (isDragSource()) {
-            mStripLayoutHelperSupplier
-                    .get()
-                    .dragActiveClickedTabOutOfStrip(LayoutManagerImpl.time());
-        }
+        mStripLayoutHelperSupplier.get().clearForTabDrop(LayoutManagerImpl.time(), isDragSource());
         return true;
     }
 
@@ -371,27 +360,7 @@ public class TabDragSource implements View.OnDragListener {
             TabModel model = mTabModelSelector.getModel(tabBeingDragged.isIncognito());
             return model.getCount();
         }
-        // Based on the location of the drop determine the position index where the tab will be
-        // placed.
-        StripLayoutTab droppedOn = activeStripHelper.getTabAtPosition(dropXDp);
-        int tabPositionIndex = mTabModelSelector.getCurrentModel().getCount();
-        // If not dropped on any existing tabs then simply add it at the end.
-        if (droppedOn != null) {
-            tabPositionIndex = activeStripHelper.findIndexForTab(droppedOn.getId());
-            // Check if the tab being moved needs to be added before or after the tab it was
-            // dropped on based on the layout direction of tabs.
-            float droppedTabCenterX = droppedOn.getDrawX() + droppedOn.getWidth() / 2.f;
-            if (LocalizationUtils.isLayoutRtl()) {
-                if (dropXDp <= droppedTabCenterX) {
-                    tabPositionIndex++;
-                }
-            } else {
-                if (dropXDp > droppedTabCenterX) {
-                    tabPositionIndex++;
-                }
-            }
-        }
-        return tabPositionIndex;
+        return activeStripHelper.getTabIndexForTabDrop(dropXDp);
     }
 
     private boolean doesBelongToCurrentModel(Tab tabBeingDragged) {
