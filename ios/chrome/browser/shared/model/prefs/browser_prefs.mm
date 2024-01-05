@@ -265,21 +265,6 @@ void MigrateNSDatePreferenceFromUserDefaults(std::string_view pref_name,
   [defaults removeObjectForKey:key];
 }
 
-// Helper function migrating the preference `pref_name` of type "Boolean" from
-// `defaults` to `pref_service`.
-void MigrateBooleanPreferenceFromUserDefaults(std::string_view pref_name,
-                                              PrefService* pref_service,
-                                              NSUserDefaults* defaults) {
-  NSString* key = @(pref_name.data());
-  NSNumber* value =
-      base::apple::ObjCCastStrict<NSNumber>([defaults objectForKey:key]);
-  if (!value) {
-    return;
-  }
-  pref_service->SetBoolean(pref_name.data(), value.boolValue);
-  [defaults removeObjectForKey:key];
-}
-
 // Helper function migrating the preference `pref_name` of type Array of NSDate
 // from `defaults` to `pref_service`.
 void MigrateArrayOfDatesPreferenceFromUserDefaults(std::string_view pref_name,
@@ -492,7 +477,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterStringPref(kIOSChromeNextVersionKey, std::string());
   registry->RegisterStringPref(kIOSChromeUpgradeURLKey, std::string());
-  registry->RegisterBooleanPref(kIOSChromeUpToDateKey, false);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -791,10 +775,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // Added 01/2024.
   MigrateNSStringPreferenceFromUserDefaults(kIOSChromeUpgradeURLKey, prefs,
                                             defaults);
-
-  // Added 01/2024.
-  MigrateBooleanPreferenceFromUserDefaults(kIOSChromeUpToDateKey, prefs,
-                                           defaults);
 }
 
 // This method should be periodically pruned of year+ old migrations.

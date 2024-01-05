@@ -6,5 +6,5 @@
 
 const char kIOSChromeNextVersionKey[] = "UpdateInfobarUpgradeURL";
 const char kIOSChromeUpgradeURLKey[] = "UpdateInfobarNextVersion";
-const char kIOSChromeUpToDateKey[] = "UpdateInfobarIsUpToDate";
+NSString* const kIOSChromeUpToDateKey = @"UpdateInfobarIsUpToDate";
 NSString* const kLastInfobarDisplayTimeKey = @"UpdateInfobarLastDisplayTime";

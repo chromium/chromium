@@ -15,7 +15,6 @@
 #import "base/time/time.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
-#import "components/prefs/pref_service.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
@@ -279,8 +278,9 @@ TEST_F(OmahaServiceTest, PingUpToDateUpdatesUserDefaults) {
   auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), GetResponseSuccess());
-  PrefService* pref_service = GetApplicationContext()->GetLocalState();
-  EXPECT_TRUE(pref_service->GetBoolean(kIOSChromeUpToDateKey));
+
+  EXPECT_TRUE(
+      [[NSUserDefaults standardUserDefaults] boolForKey:kIOSChromeUpToDateKey]);
   EXPECT_FALSE(NeedUpdate());
   EXPECT_FALSE(ScheduledCallbackUsed());
 }
@@ -319,8 +319,8 @@ TEST_F(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults) {
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       pending_request->request.url.spec(), response);
 
-  PrefService* pref_service = GetApplicationContext()->GetLocalState();
-  EXPECT_FALSE(pref_service->GetBoolean(kIOSChromeUpToDateKey));
+  EXPECT_FALSE(
+      [[NSUserDefaults standardUserDefaults] boolForKey:kIOSChromeUpToDateKey]);
   EXPECT_TRUE(NeedUpdate());
   EXPECT_TRUE(ScheduledCallbackUsed());
 }
