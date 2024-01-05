@@ -76,7 +76,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
-#include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/common/buildflags.h"
@@ -113,6 +112,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_service.h"
@@ -743,7 +743,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
 
     // Discard exceptions weren't stored with timestamps, so they all must be
     // cleared.
-    memory_saver::ClearSiteExceptionsList(prefs);
+    performance_manager::user_tuning::prefs::ClearTabDiscardExceptionsList(
+        prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 

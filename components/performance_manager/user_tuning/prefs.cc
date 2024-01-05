@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/public/user_tuning/prefs.h"
 
+#include "base/containers/contains.h"
 #include "components/performance_manager/public/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -93,6 +94,29 @@ void MigrateMemorySaverModePref(PrefService* pref_service) {
     // Clear the old pref because it won't be used anymore.
     pref_service->ClearPref(kMemorySaverModeEnabled);
   }
+}
+
+bool IsSiteInTabDiscardExceptionsList(PrefService* pref_service,
+                                      const std::string& site) {
+  const base::Value::List& discard_exception_list =
+      pref_service->GetList(kTabDiscardingExceptions);
+  return base::Contains(discard_exception_list, site);
+}
+
+void AddSiteToTabDiscardExceptionsList(PrefService* pref_service,
+                                       const std::string& site) {
+  base::Value::List discard_exception_list =
+      pref_service->GetList(kTabDiscardingExceptions).Clone();
+  if (!base::Contains(discard_exception_list, site)) {
+    discard_exception_list.Append(site);
+    pref_service->SetList(kTabDiscardingExceptions,
+                          std::move(discard_exception_list));
+  }
+}
+
+void ClearTabDiscardExceptionsList(PrefService* pref_service) {
+  pref_service->SetList(
+      performance_manager::user_tuning::prefs::kTabDiscardingExceptions, {});
 }
 
 }  // namespace performance_manager::user_tuning::prefs

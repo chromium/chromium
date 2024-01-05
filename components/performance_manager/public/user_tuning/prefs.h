@@ -76,6 +76,17 @@ BatterySaverModeState GetCurrentBatterySaverModeState(
 // is done once at startup.
 void MigrateMemorySaverModePref(PrefService* pref_service);
 
+// Returns if the given site is in the discard exception list
+bool IsSiteInTabDiscardExceptionsList(PrefService* pref_service,
+                                      const std::string& site);
+
+// Adds the given site to the discard exception list
+void AddSiteToTabDiscardExceptionsList(PrefService* pref_service,
+                                       const std::string& site);
+
+// Clears all discard exception prefs.
+void ClearTabDiscardExceptionsList(PrefService* pref_service);
+
 }  // namespace performance_manager::user_tuning::prefs
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_PREFS_H_
