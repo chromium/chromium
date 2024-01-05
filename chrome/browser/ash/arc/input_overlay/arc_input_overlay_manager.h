@@ -122,9 +122,6 @@ class ArcInputOverlayManager : public KeyedService,
                              arc::mojom::AppCategory app_category);
   // Checks if it is O4C app.
   void CheckO4C(std::unique_ptr<TouchInjector> touch_injector);
-  // Called after checking if it is an O4C game.
-  void OnDidCheckO4C(std::unique_ptr<TouchInjector> touch_injector,
-                     bool is_o4c);
 
   void NotifyTextInputState();
   void AddObserverToInputMethod();
@@ -142,8 +139,9 @@ class ArcInputOverlayManager : public KeyedService,
   void ResetForPendingTouchInjector(
       std::unique_ptr<TouchInjector> touch_injector);
   // Called when data loading finished from files or mojom calls for
-  // `touch_injector`.
-  void OnLoadingFinished(std::unique_ptr<TouchInjector> touch_injector);
+  // `touch_injector`. `is_o4c` is true if the game is optimized for ChromeOS.
+  void OnLoadingFinished(std::unique_ptr<TouchInjector> touch_injector,
+                         bool is_o4c = false);
   // Once there is an error when checking Android side, reset `TouchInjector` if
   // it has empty actions. Otherwise, finish data loading. This is called for
   // mojom connection error. Once the mojom connection failed, it considers GIO

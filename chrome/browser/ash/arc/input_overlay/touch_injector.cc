@@ -275,7 +275,7 @@ void TouchInjector::ParseActions(const base::Value::Dict& root) {
   }
 }
 
-void TouchInjector::UpdateFlags() {
+void TouchInjector::UpdateFlags(bool is_o4c) {
   if (!IsBeta() && !IsGameDashboardFlagOn()) {
     return;
   }
@@ -283,6 +283,7 @@ void TouchInjector::UpdateFlags() {
   ash::ArcGameControlsFlag flags = static_cast<ash::ArcGameControlsFlag>(
       ash::ArcGameControlsFlag::kKnown | ash::ArcGameControlsFlag::kAvailable |
       (GetActiveActionsSize() == 0u ? ash::ArcGameControlsFlag::kEmpty : 0) |
+      (is_o4c ? ash::ArcGameControlsFlag::kO4C : 0) |
       (touch_injector_enable_ ? ash::ArcGameControlsFlag::kEnabled : 0) |
       (touch_injector_enable_ && input_mapping_visible_
            ? ash::ArcGameControlsFlag::kHint

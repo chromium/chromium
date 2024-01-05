@@ -554,31 +554,9 @@ void ArcInputOverlayManager::CheckO4C(
   VLOG(2) << "Check if pkg: " << package_name << " is an O4C app.";
 
   instance->IsOptimizedForCrosApp(
-      package_name, base::BindOnce(&ArcInputOverlayManager::OnDidCheckO4C,
+      package_name, base::BindOnce(&ArcInputOverlayManager::OnLoadingFinished,
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(touch_injector)));
-}
-
-void ArcInputOverlayManager::OnDidCheckO4C(
-    std::unique_ptr<TouchInjector> touch_injector,
-    bool is_o4c) {
-  bool remove_touch_injector = false;
-  if (is_o4c) {
-    if (touch_injector->actions().empty()) {
-      remove_touch_injector = true;
-    } else {
-      // Game Controls is still available but disabled if it is o4c because
-      // there is mapping set up before.
-      touch_injector->store_touch_injector_enable(false);
-      touch_injector->store_input_mapping_visible(false);
-    }
-  }
-
-  if (remove_touch_injector) {
-    ResetForPendingTouchInjector(std::move(touch_injector));
-  } else {
-    OnLoadingFinished(std::move(touch_injector));
-  }
 }
 
 void ArcInputOverlayManager::NotifyTextInputState() {
@@ -721,7 +699,8 @@ void ArcInputOverlayManager::ResetForPendingTouchInjector(
 }
 
 void ArcInputOverlayManager::OnLoadingFinished(
-    std::unique_ptr<TouchInjector> touch_injector) {
+    std::unique_ptr<TouchInjector> touch_injector,
+    bool is_o4c) {
   auto* window = touch_injector->window();
   DCHECK(window);
   // Check if `window` is destroyed or destroying when calling this function.
@@ -730,7 +709,7 @@ void ArcInputOverlayManager::OnLoadingFinished(
     return;
   }
 
-  touch_injector->UpdateFlags();
+  touch_injector->UpdateFlags(is_o4c);
 
   // Record the menu state when there is at least one action.
   if (!touch_injector->actions().empty()) {
