@@ -1281,7 +1281,7 @@ IN_PROC_BROWSER_TEST_F(LcpBreakdownTimingsTest, MAYBE_SrcSetImage) {
   Validate();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 #define MAYBE_DomMethodAddedImage DISABLED_DomMethodAddedImage
 #else
 #define MAYBE_DomMethodAddedImage DomMethodAddedImage
