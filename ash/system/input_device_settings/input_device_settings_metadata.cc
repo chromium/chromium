@@ -18,22 +18,27 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
       mouse_metadata_list({
           // Fake data for testing.
           {{0xffff, 0xfffe},
-           {mojom::CustomizationRestriction::kAllowCustomizations}},
+           {mojom::CustomizationRestriction::kAllowCustomizations,
+            mojom::MouseButtonConfig::kLogitechSixKey}},
           // Fake data for testing.
           {{0xffff, 0xffff},
-           {mojom::CustomizationRestriction::kDisallowCustomizations}},
+           {mojom::CustomizationRestriction::kDisallowCustomizations,
+            mojom::MouseButtonConfig::kNoConfig}},
           // Razer Naga Pro (USB Dongle)
           {{0x1532, 0x0090},
            {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites}},
+                kAllowAlphabetOrNumberKeyEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // Razer Naga Pro (Bluetooth)
           {{0x1532, 0x0092},
            {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites}},
+                kAllowAlphabetOrNumberKeyEventRewrites,
+            mojom::MouseButtonConfig::kNoConfig}},
           // HP 690/695 Mouse
           {{0x3f0, 0x804a},
            {mojom::CustomizationRestriction::
-                kAllowAlphabetOrNumberKeyEventRewrites}},
+                kAllowAlphabetOrNumberKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey}},
       });
   return *mouse_metadata_list;
 }
@@ -172,6 +177,89 @@ DeviceType GetDeviceType(const ui::InputDevice& device) {
   }
 
   return DeviceType::kUnknown;
+}
+
+std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
+  return {};
+}
+
+std::vector<mojom::ButtonRemappingPtr> GetFiveKeyButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Middle button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Back button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Forward button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Left button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Right button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      /*remapping_action=*/nullptr));
+
+  return array;
+}
+
+std::vector<mojom::ButtonRemappingPtr> GetLogicTechSixKeyButtonRemappingList() {
+  std::vector<mojom::ButtonRemappingPtr> array;
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Middle button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kMiddle),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Back button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kBack),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Forward button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kForward),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Left button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kLeft),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Right button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kRight),
+      /*remapping_action=*/nullptr));
+  array.push_back(mojom::ButtonRemapping::New(
+      /*name=*/"Side button",
+      /*button=*/
+      mojom::Button::NewCustomizableButton(mojom::CustomizableButton::kSide),
+      /*remapping_action=*/nullptr));
+
+  return array;
+}
+
+std::vector<mojom::ButtonRemappingPtr> GetButtonRemappingListForConfig(
+    mojom::MouseButtonConfig mouse_button_config) {
+  switch (mouse_button_config) {
+    case mojom::MouseButtonConfig::kNoConfig:
+      return GetDefaultButtonRemappingList();
+    case mojom::MouseButtonConfig::kFiveKey:
+      return GetFiveKeyButtonRemappingList();
+    case mojom::MouseButtonConfig::kLogitechSixKey:
+      return GetLogicTechSixKeyButtonRemappingList();
+  }
 }
 
 }  // namespace ash

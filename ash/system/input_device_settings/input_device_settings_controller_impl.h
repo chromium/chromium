@@ -207,6 +207,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // current input method.
   void RefreshKeyDisplay();
 
+  // Get the mouse button config based on the mouse metadata. Return
+  // kDefault by default if there is no mouse metadata.
+  mojom::MouseButtonConfig GetMouseButtonConfig(const ui::InputDevice& mouse);
+
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);
   mojom::Keyboard* FindKeyboard(DeviceId id);

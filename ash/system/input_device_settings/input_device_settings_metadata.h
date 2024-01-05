@@ -23,6 +23,7 @@ enum class DeviceType {
 
 struct ASH_EXPORT MouseMetadata {
   mojom::CustomizationRestriction customization_restriction;
+  mojom::MouseButtonConfig mouse_button_config;
   bool operator==(const MouseMetadata& other) const;
 };
 
@@ -61,6 +62,10 @@ GetKeyboardMouseComboMetadataList();
 // This function returns the keyboard metadata list.
 ASH_EXPORT const base::flat_map<VendorProductId, KeyboardMetadata>&
 GetKeyboardMetadataList();
+
+// This function returns the button remapping list from the peripherals.
+ASH_EXPORT std::vector<mojom::ButtonRemappingPtr>
+GetButtonRemappingListForConfig(mojom::MouseButtonConfig mouse_button_config);
 
 }  // namespace ash
 

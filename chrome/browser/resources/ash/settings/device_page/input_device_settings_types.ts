@@ -158,6 +158,9 @@ export type CustomizationRestriction =
 export const CustomizationRestriction =
     InputDeviceSettingsTypes.CustomizationRestriction;
 
+export type MouseButtonConfig = InputDeviceSettingsTypes.MouseButtonConfig;
+export const MouseButtonConfig = InputDeviceSettingsTypes.MouseButtonConfig;
+
 export interface KeyboardObserverInterface {
   // Fired when the keyboard list is updated.
   onKeyboardListUpdated(keyboards: Keyboard[]): void;

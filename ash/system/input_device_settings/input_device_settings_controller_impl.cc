@@ -188,11 +188,13 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
 
 mojom::MousePtr BuildMojomMouse(
     const ui::InputDevice& mouse,
-    mojom::CustomizationRestriction customization_restriction) {
+    mojom::CustomizationRestriction customization_restriction,
+    mojom::MouseButtonConfig mouse_button_config) {
   mojom::MousePtr mojom_mouse = mojom::Mouse::New();
   mojom_mouse->id = mouse.id;
   mojom_mouse->name = mouse.name;
   mojom_mouse->customization_restriction = customization_restriction;
+  mojom_mouse->mouse_button_config = mouse_button_config;
   mojom_mouse->device_key =
       Shell::Get()->input_device_key_alias_manager()->GetAliasedDeviceKey(
           mouse);
@@ -1484,6 +1486,17 @@ InputDeviceSettingsControllerImpl::GetMouseCustomizationRestriction(
   return mojom::CustomizationRestriction::kDisableKeyEventRewrites;
 }
 
+mojom::MouseButtonConfig
+InputDeviceSettingsControllerImpl::GetMouseButtonConfig(
+    const ui::InputDevice& mouse) {
+  const auto* mouse_metadata = GetMouseMetadata(mouse);
+  if (mouse_metadata) {
+    return mouse_metadata->mouse_button_config;
+  }
+
+  return mojom::MouseButtonConfig::kNoConfig;
+}
+
 void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
     std::vector<ui::KeyboardDevice> keyboards_to_add,
     std::vector<DeviceId> keyboard_ids_to_remove) {
@@ -1525,7 +1538,8 @@ void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
     std::vector<DeviceId> mouse_ids_to_remove) {
   for (const auto& mouse : mice_to_add) {
     auto mojom_mouse =
-        BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse));
+        BuildMojomMouse(mouse, GetMouseCustomizationRestriction(mouse),
+                        GetMouseButtonConfig(mouse));
     if (features::IsPeripheralNotificationEnabled()) {
       notification_controller_->NotifyMouseFirstTimeConnected(*mojom_mouse);
     }

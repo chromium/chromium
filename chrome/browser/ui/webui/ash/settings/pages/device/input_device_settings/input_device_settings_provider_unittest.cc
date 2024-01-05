@@ -88,6 +88,7 @@ const ::ash::mojom::Mouse kMouse1 = ::ash::mojom::Mouse(
     /*device_key=*/"fake-device-key7",
     /*customization_restriction=*/
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+    /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
     ::ash::mojom::MouseSettings::New());
 const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
     /*name=*/"MX Anywhere 2S",
@@ -96,6 +97,7 @@ const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
     /*device_key=*/"fake-device-key8",
     /*customization_restriction=*/
     ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+    /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
     ::ash::mojom::MouseSettings::New());
 const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
     ::ash::mojom::GraphicsTablet(
