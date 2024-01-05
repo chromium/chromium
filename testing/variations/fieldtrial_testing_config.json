@@ -486,21 +486,6 @@
             ]
         }
     ],
-    "AndroidRdsWindow": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230918",
-                    "enable_features": [
-                        "RequestDesktopSiteWindowSetting"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSandboxRendererProcessPolicy": [
         {
             "platforms": [
