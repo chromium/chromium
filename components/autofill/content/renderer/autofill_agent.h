@@ -81,6 +81,8 @@ class AutofillAgent : public content::RenderFrameObserver,
                       public blink::WebAutofillClient,
                       public mojom::AutofillAgent {
  public:
+  static constexpr base::TimeDelta kFormsSeenThrottle = base::Milliseconds(100);
+
   // PasswordAutofillAgent is guaranteed to outlive AutofillAgent.
   // PasswordGenerationAgent and AutofillAssistantAgent may be nullptr. If they
   // are not, then they are also guaranteed to outlive AutofillAgent.

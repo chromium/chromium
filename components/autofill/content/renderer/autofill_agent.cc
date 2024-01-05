@@ -112,7 +112,7 @@ namespace {
 
 // Time to wait in ms to ensure that only a single select or datalist change
 // will be acted upon, instead of multiple in close succession (debounce time).
-size_t kWaitTimeForOptionsChangesMs = 50;
+constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, FormFieldData>;
 
@@ -625,10 +625,10 @@ void AutofillAgent::OpenTextDataListChooser(const WebInputElement& element) {
 // Notifies the AutofillDriver about changes in the <datalist> options in
 // batches.
 //
-// A batch ends if no event occurred for `kWaitTimeForOptionsChangesMs`
-// milliseconds. For a given batch, the AutofillDriver is informed only about
-// the last field. That is, if within one batch the options of different
-// fields changed, all but one of these events will be lost.
+// A batch ends if no event occurred for `kWaitTimeForOptionsChanges`.
+// For a given batch, the AutofillDriver is informed only about the last field.
+// That is, if within one batch the options of different fields changed, all but
+// one of these events will be lost.
 void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
 
@@ -642,7 +642,7 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   }
 
   datalist_option_change_batch_timer_.Start(
-      FROM_HERE, base::Milliseconds(kWaitTimeForOptionsChangesMs),
+      FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchDataListOptionChange,
                           weak_ptr_factory_.GetWeakPtr(), element));
 }
@@ -1210,26 +1210,24 @@ AutofillAgent::ProccessFormsAndReturnIssues() {
 
 void AutofillAgent::ExtractForms(base::OneShotTimer& timer,
                                  base::OnceCallback<void(bool)> callback) {
-  static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
   if (!is_dom_content_loaded_ || timer.IsRunning()) {
     if (!callback.is_null()) {
       std::move(callback).Run(/*success=*/false);
     }
     return;
   }
-  timer.Start(FROM_HERE, kThrottle,
+  timer.Start(FROM_HERE, kFormsSeenThrottle,
               base::BindOnce(&AutofillAgent::ExtractFormsUnthrottled,
                              base::Unretained(this), std::move(callback)));
 }
 
 void AutofillAgent::ExtractFormsForPasswordAutofillAgent(
     base::OneShotTimer& timer) {
-  static constexpr base::TimeDelta kThrottle = base::Milliseconds(100);
   if (!is_dom_content_loaded_ || timer.IsRunning()) {
     return;
   }
   timer.Start(
-      FROM_HERE, kThrottle,
+      FROM_HERE, kFormsSeenThrottle,
       base::BindOnce(
           &AutofillAgent::ExtractFormsUnthrottled, base::Unretained(this),
           base::BindOnce(
@@ -1340,10 +1338,10 @@ void AutofillAgent::SelectControlDidChange(
 // Notifies the AutofillDriver about changes in the <select> or <selectlist>
 // options in batches.
 //
-// A batch ends if no event occurred for `kWaitTimeForOptionsChangesMs`
-// milliseconds. For a given batch, the AutofillDriver is informed only about
-// the last FormData. That is, if within one batch the options of different
-// forms changed, all but one of these events will be lost.
+// A batch ends if no event occurred for `kWaitTimeForOptionsChanges`. For a
+// given batch, the AutofillDriver is informed only about the last FormData.
+// That is, if within one batch the options of different forms changed, all but
+// one of these events will be lost.
 void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
     const blink::WebFormControlElement& element) {
   DCHECK(MaybeWasOwnedByFrame(element, unsafe_render_frame()));
@@ -1357,7 +1355,7 @@ void AutofillAgent::SelectOrSelectListFieldOptionsChanged(
   }
 
   select_or_selectlist_option_change_batch_timer_.Start(
-      FROM_HERE, base::Milliseconds(kWaitTimeForOptionsChangesMs),
+      FROM_HERE, kWaitTimeForOptionsChanges,
       base::BindRepeating(&AutofillAgent::BatchSelectOrSelectListOptionChange,
                           weak_ptr_factory_.GetWeakPtr(), element));
 }
