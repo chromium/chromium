@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
+#include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
+#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
 #include "chrome/test/base/chromeos/crosier/interactive_ash_test.h"
+#include "components/feedback/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -12,10 +18,18 @@ namespace ash {
 
 namespace {
 
+constexpr char kOsFeedbackUrl[] = "chrome://os-feedback";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
 
 class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
  public:
+  OsFeedbackInteractiveUiTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features =*/
+        {::feedback::features::kSkipSendingFeedbackReportInTastTests},
+        /*disabled_features =*/{});
+  }
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
     InteractiveAshTest::SetUpOnMainThread();
@@ -34,12 +48,15 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
       "h1.page-title",
   };
 
+  auto LaunchOsFeedbackApp() {
+    return Do([&]() { CreateBrowserWindow(GURL(kOsFeedbackUrl)); });
+  }
+
   // Clicks on an element in the DOM.
   auto ClickElement(const ui::ElementIdentifier& element_id,
                     const DeepQuery& element) {
     return Steps(MoveMouseTo(element_id, element), ClickMouse());
   }
-
   // Wait for the Feedback SWA to be present.
   auto WaitForFeedbackSWAReady(const ui::ElementIdentifier& element_id) {
     return Steps(
@@ -49,6 +66,9 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
         WaitForElementTextContains(element_id, kFeedbackSearchPageTitleQuery,
                                    "Send feedback"));
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
@@ -70,6 +90,57 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
       Log("Pressing Alt+Shift+I"),
       SendAccelerator(kNewTabWebContentsId, open_feedback_accelerator),
       FlushEvents(), WaitForFeedbackSWAReady(kOsFeedbackWebContentsId));
+}
+
+IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest, SubmitFeedbackThenExit) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-3f028d06-0100-4b5b-b1f3-99ceeaf3d62b");
+  // Query to pierce through Shadow DOM to find the description element on the
+  // search page.
+  const DeepQuery kDescriptionTextQuery = {"feedback-flow", "search-page",
+                                           "textarea#descriptionText"};
+  // Query to pierce through Shadow DOM to find the continue button on the
+  // search page.
+  const DeepQuery kContinueButtonQuery = {"feedback-flow", "search-page",
+                                          "cr-button#buttonContinue"};
+  // Query to pierce through Shadow DOM to find the send button on the share
+  // data page.
+  const DeepQuery kSendReportButtonQuery = {"feedback-flow", "share-data-page",
+                                            "cr-button#buttonSend"};
+  // Query to pierce through Shadow DOM to find the dont button on the
+  // confirmation page.
+  const DeepQuery kDoneButtonQuery = {"feedback-flow", "confirmation-page",
+                                      "cr-button#buttonDone"};
+
+  GURL blank_url("about:blank");
+  ASSERT_TRUE(CreateBrowserWindow(blank_url));
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
+
+  RunTestSequence(
+      InstrumentTab(kNewTabWebContentsId),
+      InstrumentNextTab(kOsFeedbackWebContentsId, AnyBrowser()),
+      Log("Launching the os feedback app"), LaunchOsFeedbackApp(),
+      WaitForWebContentsReady(kOsFeedbackWebContentsId, GURL(kOsFeedbackUrl)),
+      Log("Entering fake description"),
+      ExecuteJsAt(kOsFeedbackWebContentsId, kDescriptionTextQuery,
+                  " el => el.value = 'Testing only - please ignore'"),
+      FlushEvents(),
+      WaitForElementTextContains(kOsFeedbackWebContentsId, kContinueButtonQuery,
+                                 "Continue"),
+      Log("Clicking the continue button"),
+      ClickElement(kOsFeedbackWebContentsId, kContinueButtonQuery),
+      FlushEvents(), Log("Clicking the send button"),
+      WaitForElementTextContains(kOsFeedbackWebContentsId,
+                                 kSendReportButtonQuery, "Send"),
+      ClickElement(kOsFeedbackWebContentsId, kSendReportButtonQuery),
+      FlushEvents(),
+      WaitForElementTextContains(kOsFeedbackWebContentsId, kDoneButtonQuery,
+                                 "Done"),
+      Log("Clicking the done button"),
+      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery), FlushEvents(),
+      Log("Waiting for the feedback app to exit"),
+      WaitForHide(kOsFeedbackWebContentsId));
 }
 
 }  // namespace
