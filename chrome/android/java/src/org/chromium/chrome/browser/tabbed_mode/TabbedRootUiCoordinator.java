@@ -990,10 +990,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void initCommerceSubscriptionsService() {
-        CommerceSubscriptionsServiceFactory factory = new CommerceSubscriptionsServiceFactory();
-        mCommerceSubscriptionsService = factory.getForLastUsedProfile();
-        mCommerceSubscriptionsService.initDeferredStartupForActivity(
-                mTabModelSelectorSupplier.get(), mActivityLifecycleDispatcher);
+        SupplierUtils.waitForAll(
+                mCallbackController.makeCancelable(
+                        () -> {
+                            mCommerceSubscriptionsService =
+                                    CommerceSubscriptionsServiceFactory.getInstance()
+                                            .getForProfile(mProfileSupplier.get());
+                            mCommerceSubscriptionsService.initDeferredStartupForActivity(
+                                    mTabModelSelectorSupplier.get(), mActivityLifecycleDispatcher);
+                        }),
+                mTabModelSelectorSupplier,
+                mProfileSupplier);
     }
 
     private void initUndoGroupSnackbarController() {
