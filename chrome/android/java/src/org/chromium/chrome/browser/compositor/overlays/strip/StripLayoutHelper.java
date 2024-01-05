@@ -3662,7 +3662,10 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         if (tabBeingDragged != null) {
             dragStarted =
                     mTabDragSource.startTabDragAction(
-                            mToolbarContainerView, tabBeingDragged, dragStartPointF);
+                            mToolbarContainerView,
+                            tabBeingDragged,
+                            dragStartPointF,
+                            clickedTab.getDrawX());
             if (dragStarted) {
                 mActiveClickedTab = clickedTab;
                 mDraggedTabOffStrip = false;

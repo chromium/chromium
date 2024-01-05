@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipData.Item;
 import android.content.ClipDescription;
+import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.os.Build.VERSION_CODES;
@@ -50,6 +51,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -119,7 +121,8 @@ public class TabDragSourceTest {
     private Activity mActivity;
     private ViewGroup mTabsToolbarView;
     private Tab mTabBeingDragged;
-    private static final PointF DRAG_START_POINT = new PointF(0, 0);
+    private static final PointF DRAG_START_POINT = new PointF(250, 0);
+    private static final float TAB_POSITION_X = 200f;
     private int mTabStripHeight;
 
     /** Resets the environment before each test. */
@@ -192,7 +195,7 @@ public class TabDragSourceTest {
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT);
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
         assertTrue("startTabDragAction returned false.", res);
         verify(mDragDropDelegate)
                 .startDragAndDrop(
@@ -222,7 +225,7 @@ public class TabDragSourceTest {
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT);
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
         assertTrue("startTabDragAction returned false.", res);
         verify(mDragDropDelegate)
                 .startDragAndDrop(
@@ -245,7 +248,9 @@ public class TabDragSourceTest {
     public void test_startTabDragAction_exceptionForInvalidTab() {
         assertThrows(
                 NullPointerException.class,
-                () -> mSourceInstance.startTabDragAction(mTabsToolbarView, null, DRAG_START_POINT));
+                () ->
+                        mSourceInstance.startTabDragAction(
+                                mTabsToolbarView, null, DRAG_START_POINT, TAB_POSITION_X));
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
@@ -256,7 +261,7 @@ public class TabDragSourceTest {
         assertFalse(
                 "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
-                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT));
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
     }
 
     @Test
@@ -268,10 +273,12 @@ public class TabDragSourceTest {
         final float dragStartYPosition = 45f;
         final PointF dragStartPoint = new PointF(dragStartXPosition, dragStartYPosition);
         // Call startDrag to set class variables.
-        mSourceInstance.startTabDragAction(mTabsToolbarView, mTabBeingDragged, dragStartPoint);
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, dragStartPoint, TAB_POSITION_X);
 
         View.DragShadowBuilder tabDragShadowBuilder =
-                mSourceInstance.createDragShadowBuilder(mTabsToolbarView, dragStartPoint);
+                mSourceInstance.createDragShadowBuilder(
+                        mTabsToolbarView, dragStartPoint, TAB_POSITION_X);
 
         // Perform asking the TabDragShadowBuilder what is the anchor point.
         Point dragSize = new Point(0, 0);
@@ -286,6 +293,37 @@ public class TabDragSourceTest {
         assertEquals(
                 "Drag shadow y position is incorrect.",
                 Math.round(dragStartYPosition),
+                dragAnchor.y);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
+    @DisableFeatures(ChromeFeatureList.TAB_DRAG_DROP_ANDROID)
+    public void test_onProvideShadowMetrics_withTabLinkDragDropFF() {
+        // Call startDrag to set class variables.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
+        TabDragShadowBuilder tabDragShadowBuilder =
+                (TabDragShadowBuilder) DragDropGlobalState.getInstance().dragShadowBuilder;
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+
+        // Perform asking the TabDragShadowBuilder what is the anchor point.
+        Point dragSize = new Point(0, 0);
+        Point dragAnchor = new Point(0, 0);
+        tabDragShadowBuilder.onProvideShadowMetrics(dragSize, dragAnchor);
+
+        // Validate anchor.
+        assertEquals(
+                "Drag shadow x position is incorrect.",
+                Math.round(
+                        DRAG_START_POINT.x
+                                - TAB_POSITION_X * resources.getDisplayMetrics().density),
+                dragAnchor.x);
+        assertEquals(
+                "Drag shadow y position is incorrect.",
+                Math.round(
+                        resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
+                                + resources.getDimension(R.dimen.tab_grid_card_margin)),
                 dragAnchor.y);
     }
 
@@ -575,7 +613,7 @@ public class TabDragSourceTest {
         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.setForTesting(true);
         // Start tab drag action.
         mSourceInstance.startTabDragAction(
-                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY));
+                mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
 
         boolean res =
                 mDestInstance.onDrag(
@@ -606,7 +644,7 @@ public class TabDragSourceTest {
         DragEventInvoker() {
             // Start tab drag action.
             mSourceInstance.startTabDragAction(
-                    mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY));
+                    mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
             // drag invokes DRAG_START and DRAG_ENTER on source and DRAG_START on destination.
             mSourceInstance.onDrag(
                     mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));

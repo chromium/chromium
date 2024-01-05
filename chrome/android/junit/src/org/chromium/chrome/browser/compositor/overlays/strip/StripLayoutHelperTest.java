@@ -1352,7 +1352,7 @@ public class StripLayoutHelperTest {
         setTabDragSourceMock();
         onLongPress_OnTab();
         // Verify drag invoked
-        verify(mTabDragSource).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource).startTabDragAction(any(), any(), any(), anyFloat());
     }
 
     private void onLongPress_OnTab() {
@@ -2604,7 +2604,7 @@ public class StripLayoutHelperTest {
     }
 
     private void setTabDragSourceMock() {
-        when(mTabDragSource.startTabDragAction(any(), any(), any())).thenReturn(true);
+        when(mTabDragSource.startTabDragAction(any(), any(), any(), anyFloat())).thenReturn(true);
         MultiWindowTestUtils.enableMultiInstance();
     }
 
@@ -2631,7 +2631,7 @@ public class StripLayoutHelperTest {
         // Act and verify.
         mStripLayoutHelper.allowMovingTabOutOfStripLayout(theClickedTab, DRAG_START_POINT);
 
-        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any());
+        verify(mTabDragSource, times(1)).startTabDragAction(any(), any(), any(), anyFloat());
         assertTrue(
                 "Tab being dragged should exist during drag action.",
                 mStripLayoutHelper.getActiveClickedTabForTesting() != null);

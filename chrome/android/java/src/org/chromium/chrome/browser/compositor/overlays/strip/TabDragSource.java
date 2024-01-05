@@ -9,6 +9,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -126,11 +127,15 @@ public class TabDragSource implements View.OnDragListener {
      * @param dragSourceView @{link View} used to create the drag shadow.
      * @param tabBeingDragged @{link Tab} is the selected tab being dragged.
      * @param startPoint Position of the drag start point in view coordinates.
+     * @param tabPositionX Horizontal position of the dragged tab in view coordinates. Used to
+     *     calculate the relative position of the touch point in the tab strip.
+     * @return true if the drag action was initiated successfully.
      */
     public boolean startTabDragAction(
             @NonNull View dragSourceView,
             @NonNull Tab tabBeingDragged,
-            @NonNull PointF startPoint) {
+            @NonNull PointF startPoint,
+            float tabPositionX) {
         if (!TabUiFeatureUtilities.isTabDragEnabled()
                 || DragDropGlobalState.getInstance().dragSourceInstanceId
                         != MultiWindowUtils.INVALID_INSTANCE_ID) {
@@ -146,7 +151,8 @@ public class TabDragSource implements View.OnDragListener {
 
         DropDataAndroid dropData =
                 new ChromeDropDataAndroid.Builder().withTab(tabBeingDragged).build();
-        DragShadowBuilder builder = createDragShadowBuilder(dragSourceView, startPoint);
+        DragShadowBuilder builder =
+                createDragShadowBuilder(dragSourceView, startPoint, tabPositionX);
         DragDropGlobalState.getInstance().dragShadowBuilder = builder;
         return mDragAndDropDelegate.startDragAndDrop(dragSourceView, builder, dropData);
     }
@@ -407,10 +413,6 @@ public class TabDragSource implements View.OnDragListener {
             mViewContent = viewContent;
         }
 
-        public TabDragShadowBuilder(View dragSourceView, View shadowView) {
-            this(dragSourceView, shadowView, new PointF(0f, 0f), null);
-        }
-
         public void update(boolean show) {
             if (show == mShowDragShadow) return;
             mShowDragShadow = show;
@@ -458,9 +460,6 @@ public class TabDragSource implements View.OnDragListener {
             // Set the size parameter's width and height values. These get back
             // to the system through the size parameter.
             size.set(width, height);
-
-            // Set the touch point of the drag shadow to be user's hold/touch point within Chrome
-            // Window.
             touch.set(Math.round(mDragShadowOffset.x), Math.round(mDragShadowOffset.y));
             Log.d(TAG, "DnD onProvideShadowMetrics: " + mDragShadowOffset);
         }
@@ -470,14 +469,27 @@ public class TabDragSource implements View.OnDragListener {
         }
     }
 
-    DragShadowBuilder createDragShadowBuilder(View dragSourceView, PointF startPoint) {
+    DragShadowBuilder createDragShadowBuilder(
+            View dragSourceView, PointF startPoint, float tabPositionX) {
+        PointF dragShadowOffset;
         if (!TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
-            return new TabDragShadowBuilder(dragSourceView, mShadowView);
+            // Set the touch point of the drag shadow:
+            // Horizontally matching user's touch point within the tab title;
+            // Vertically centered in the tab title.
+            Resources resources = dragSourceView.getContext().getResources();
+            float dragShadowOffsetY =
+                    resources.getDimension(R.dimen.tab_grid_card_header_height) / 2
+                            + resources.getDimension(R.dimen.tab_grid_card_margin);
+            dragShadowOffset =
+                    new PointF((startPoint.x - tabPositionX) / mPxToDp, dragShadowOffsetY);
+            return new TabDragShadowBuilder(dragSourceView, mShadowView, dragShadowOffset, null);
         }
         ImageView imageView = new ImageView(dragSourceView.getContext());
         View decorView = getDecorView();
         imageView.layout(0, 0, decorView.getWidth(), decorView.getHeight());
-        PointF dragShadowOffset = getPositionOnScreen(dragSourceView, startPoint);
+        // Set the touch point of the drag shadow to be user's hold/touch point within Chrome
+        // Window.
+        dragShadowOffset = getPositionOnScreen(dragSourceView, startPoint);
         return new TabDragShadowBuilder(dragSourceView, imageView, dragShadowOffset, mAppIcon);
     }
 
