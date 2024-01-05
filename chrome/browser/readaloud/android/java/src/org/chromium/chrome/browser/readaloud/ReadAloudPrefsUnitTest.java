@@ -129,4 +129,24 @@ public class ReadAloudPrefsUnitTest {
         ReadAloudPrefs.setSpeed(mPrefService, 3.0f);
         histogram.assertExpected();
     }
+
+    @Test
+    public void testIsHighlightingEnabled_Metric() {
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+
+        final String histogramName = "ReadAloud.HighlightingEnabled";
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, true);
+        histogram.assertExpected();
+
+        histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+        histogram.assertExpected();
+
+        // test a duplicate isn't recorded
+        histogram = HistogramWatcher.newBuilder().expectNoRecords(histogramName).build();
+        ReadAloudPrefs.setHighlightingEnabled(mPrefService, false);
+        histogram.assertExpected();
+    }
 }

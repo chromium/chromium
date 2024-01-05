@@ -97,7 +97,12 @@ public class ReadAloudPrefs {
      * @param enabled True if highlighting should happen if available, false otherwise.
      */
     public static void setHighlightingEnabled(PrefService prefs, boolean enabled) {
-        prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
+        // setHighlightingEnabled is called on every session start. This checks that the value has
+        // changed to prevent redundant metric recording at session start.
+        if (enabled != isHighlightingEnabled(prefs)) {
+            ReadAloudMetrics.recordHighlightingEnabledChanged(enabled);
+            prefs.setBoolean(HIGHLIGHTING_ENABLED_PATH, enabled);
+        }
     }
 
     @NativeMethods

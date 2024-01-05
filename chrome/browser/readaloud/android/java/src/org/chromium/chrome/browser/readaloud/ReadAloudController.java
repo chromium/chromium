@@ -286,6 +286,10 @@ public class ReadAloudController
                         ? sReadabilityHooksForTesting
                         : new ReadAloudReadabilityHooksImpl(mActivity, profile);
         if (mReadabilityHooks.isEnabled()) {
+            mHighlightingEnabled.addObserver(
+                    ReadAloudController.this::onHighlightingEnabledChanged);
+            mHighlightingEnabled.set(ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
+            ReadAloudMetrics.recordHighlightingEnabledOnStartup(mHighlightingEnabled.get());
             mTabObserver =
                     new TabModelTabObserver(mTabModel) {
                         @Override
@@ -452,10 +456,6 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     maybeSetUpHighlighter(playback.getMetadata());
 
-                    mHighlightingEnabled.addObserver(
-                            ReadAloudController.this::onHighlightingEnabledChanged);
-                    mHighlightingEnabled.set(
-                            ReadAloudPrefs.isHighlightingEnabled(getPrefService()));
                     mPlayback = playback;
                     mPlayback.addListener(ReadAloudController.this);
                 },

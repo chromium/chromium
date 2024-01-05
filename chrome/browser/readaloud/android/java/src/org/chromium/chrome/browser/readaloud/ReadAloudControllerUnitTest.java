@@ -134,6 +134,7 @@ public class ReadAloudControllerUnitTest {
     @Mock private TemplateUrl mSearchEngine;
     private GlobalRenderFrameHostId mGlobalRenderFrameHostId = new GlobalRenderFrameHostId(1, 1);
     public UserActionTester mUserActionTester;
+    private HistogramWatcher mHighlightingEnabledOnStartupHistogram;
 
     @Before
     public void setUp() {
@@ -182,6 +183,10 @@ public class ReadAloudControllerUnitTest {
         doReturn(KNOWN_READABLE_TRIAL_PTR)
                 .when(mReadAloudFeaturesNatives)
                 .initSyntheticTrial(eq(ChromeFeatureList.READALOUD), eq("_KnownReadable"));
+
+        mHighlightingEnabledOnStartupHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "ReadAloud.HighlightingEnabled.OnStartup", true);
 
         mController =
                 new ReadAloudController(
@@ -576,7 +581,9 @@ public class ReadAloudControllerUnitTest {
         onPlaybackSuccess(mPlayback);
         verify(mHighlighter).initializeJs(eq(mTab), eq(mMetadata), any(Highlighter.Config.class));
         // Checks that the pref is read to set up highlighter state
-        verify(mPrefService).hasPrefPath(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH));
+        // hasPrefPath is called twice, once during ReadAloudPrefs.isHighlightingEnabled and during
+        // ReadAloudPrefs.setHighlightingEnabled
+        verify(mPrefService, times(2)).hasPrefPath(eq(ReadAloudPrefs.HIGHLIGHTING_ENABLED_PATH));
 
         // trigger highlights
         mController.onPhraseChanged(mPhraseTiming);
@@ -1273,6 +1280,11 @@ public class ReadAloudControllerUnitTest {
         final String actionName = "ReadAloud.PlaybackStarted";
         ReadAloudMetrics.recordPlaybackStarted();
         assertThat(mUserActionTester.getActions(), hasItems(actionName));
+    }
+
+    @Test
+    public void testMetricRecorded_highlightingEnabledOnStartup() {
+        mHighlightingEnabledOnStartupHistogram.assertExpected();
     }
 
     @Test

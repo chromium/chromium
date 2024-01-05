@@ -103,6 +103,14 @@ public class ReadAloudMetrics {
         RecordHistogram.recordBooleanHistogram(IS_USER_ELIGIBLE, eligible);
     }
 
+    public static void recordHighlightingEnabledChanged(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram("ReadAloud.HighlightingEnabled", enabled);
+    }
+
+    public static void recordHighlightingEnabledOnStartup(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram("ReadAloud.HighlightingEnabled.OnStartup", enabled);
+    }
+
     public static void recordIneligibilityReason(@IneligibilityReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 INELIGIBILITY_REASON, reason, IneligibilityReason.COUNT);
