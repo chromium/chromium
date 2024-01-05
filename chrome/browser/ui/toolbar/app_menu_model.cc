@@ -491,8 +491,8 @@ PasswordsAndAutofillSubMenuModel::PasswordsAndAutofillSubMenuModel(
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
       IDC_SHOW_PASSWORD_MANAGER, IDS_VIEW_PASSWORDS,
-      ui::ImageModel::FromVectorIcon(kKeyChromeRefreshIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
   SetElementIdentifierAt(GetIndexOfCommandId(IDC_SHOW_PASSWORD_MANAGER).value(),
                          AppMenuModel::kPasswordManagerMenuItem);
   AddItemWithStringIdAndIcon(
