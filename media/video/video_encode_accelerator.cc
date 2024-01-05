@@ -39,6 +39,10 @@ BitstreamBufferMetadata::BitstreamBufferMetadata(size_t payload_size_bytes,
       timestamp(timestamp) {}
 BitstreamBufferMetadata::~BitstreamBufferMetadata() = default;
 
+bool BitstreamBufferMetadata::dropped_frame() const {
+  return payload_size_bytes == 0;
+}
+
 bool BitstreamBufferMetadata::end_of_picture() const {
   if (vp9) {
     return vp9->end_of_picture;

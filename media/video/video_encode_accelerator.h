@@ -140,6 +140,7 @@ struct MEDIA_EXPORT BitstreamBufferMetadata final {
   base::TimeDelta timestamp;
   int32_t qp = -1;
 
+  bool dropped_frame() const;
   bool end_of_picture() const;
   absl::optional<uint8_t> spatial_idx() const;
 

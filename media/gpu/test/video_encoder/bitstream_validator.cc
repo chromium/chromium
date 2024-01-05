@@ -186,7 +186,7 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
   LOG_ASSERT(frame_index <= last_frame_index_)
       << "frame_index is larger than last frame index, frame_index="
       << frame_index << ", last_frame_index_=" << last_frame_index_;
-  if (bitstream->metadata.payload_size_bytes == 0) {
+  if (bitstream->metadata.dropped_frame()) {
     // Drop frame. Do nothing.
     return;
   }
