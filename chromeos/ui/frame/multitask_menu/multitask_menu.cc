@@ -61,6 +61,7 @@ MultitaskMenu::MultitaskMenu(views::View* anchor,
   multitask_menu_view_ = AddChildView(std::make_unique<MultitaskMenuView>(
       parent_window(),
       base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
+      base::BindRepeating(&MultitaskMenu::HideBubble, base::Unretained(this)),
       buttons, close_on_move_out ? anchor : nullptr));
 
   multitask_menu_view_->SetLayoutManager(std::make_unique<views::TableLayout>())

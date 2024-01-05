@@ -86,7 +86,6 @@ void TabletModeMultitaskMenuController::ShowMultitaskMenu(
 }
 
 void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
-  multitask_cue_controller_->ResetPosition();
   multitask_menu_.reset();
 }
 

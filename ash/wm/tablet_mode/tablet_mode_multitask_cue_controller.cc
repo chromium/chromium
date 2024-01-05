@@ -29,7 +29,6 @@ constexpr float kCornerRadius = 2;
 // Cue timing values.
 constexpr base::TimeDelta kCueDismissTimeout = base::Seconds(6);
 constexpr base::TimeDelta kFadeDuration = base::Milliseconds(100);
-constexpr base::TimeDelta kCueResetDuration = base::Milliseconds(250);
 
 constexpr SkColor kCueColor = SK_ColorGRAY;
 
@@ -147,18 +146,6 @@ void TabletModeMultitaskCueController::DismissCue() {
 
   cue_layer_.reset();
   nudge_controller_.DismissNudge();
-}
-
-void TabletModeMultitaskCueController::ResetPosition() {
-  if (!cue_layer_) {
-    return;
-  }
-
-  views::AnimationBuilder()
-      .Once()
-      .SetDuration(kCueResetDuration)
-      .SetTransform(cue_layer_.get(), gfx::Transform(),
-                    gfx::Tween::ACCEL_20_DECEL_100);
 }
 
 void TabletModeMultitaskCueController::OnMenuOpened(

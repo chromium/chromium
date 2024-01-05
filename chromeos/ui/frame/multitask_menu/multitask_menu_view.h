@@ -42,6 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // when the mouse moves out of the menu or the anchor.
   MultitaskMenuView(aura::Window* window,
                     base::RepeatingClosure close_callback,
+                    base::RepeatingClosure dismiss_callback,
                     uint8_t buttons,
                     views::View* anchor_view);
 
@@ -111,6 +112,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuView
   // example, after any of the buttons are pressed, or a press out of the menu
   // bounds.
   base::RepeatingClosure close_callback_;
+
+  // Run by the `MenuPreTargetHandler` to dismiss the menu when clicking outside
+  // the menu (or anchor) bounds, or after timeout.
+  base::RepeatingClosure dismiss_callback_;
 
   std::unique_ptr<MenuPreTargetHandler> event_handler_;
 

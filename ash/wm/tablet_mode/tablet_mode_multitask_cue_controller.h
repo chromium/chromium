@@ -56,10 +56,6 @@ class ASH_EXPORT TabletModeMultitaskCueController
   // observers related to its parent window.
   void DismissCue();
 
-  // Resets the position of the cue back to the top of `window_` if the cue is
-  // still visible.
-  void ResetPosition();
-
   // If the cue is visible, checks to see if it is on the same window as the
   // multitask menu, and shows it on the correct window if not.
   void OnMenuOpened(aura::Window* active_window);
