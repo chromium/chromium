@@ -403,7 +403,6 @@ crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-le
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=normal [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-line&right-white-space=pre-wrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=normal [ Failure ]
-crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=nowrap [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=forwarddelete&left-white-space=pre-wrap&right-white-space=pre-line [ Failure ]
 crbug.com/1370704 external/wpt/editing/other/join-different-white-space-style-left-paragraph-and-right-line.html?method=select-boundary&left-white-space=normal&right-white-space=nowrap [ Failure ]
@@ -1613,7 +1612,7 @@ crbug.com/411164 [ Win ] http/tests/security/powerfulFeatureRestrictions/service
 
 
 # Flaky tests on Mac after enabling scroll animations in web_tests
-crbug.com/944583 [ Mac ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
+crbug.com/944583 [ Debug Mac13 ] fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html [ Failure Pass ]
 crbug.com/944583 [ Mac12 ] fast/scrolling/percentage-mousewheel-scroll-on-iframe.html [ Failure Pass ]
 # Sheriff: 2020-05-18
 
@@ -3409,14 +3408,11 @@ crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/top.meta/unset/iframe-tag.https.html [ Skip Timeout ]
 
 # Different results on try bots and CQ, skipped to unblock wpt import.
-crbug.com/888443 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scroll-behavior-default-css.html [ Failure Pass ]
 crbug.com/888443 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scroll-behavior-element.html [ Failure Pass ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-main-frame-root.html [ Crash Failure Pass Timeout ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-main-frame-window.html [ Crash Failure Pass Timeout ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-scrollintoview-nested.html [ Crash Failure Pass Timeout ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-smooth-positions.html [ Crash Failure Pass Timeout ]
-crbug.com/888443 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scroll-behavior-subframe-root.html [ Failure Pass ]
-crbug.com/888443 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scroll-behavior-subframe-window.html [ Failure Pass ]
 
 crbug.com/1289222 external/wpt/css/cssom-view/scroll-behavior-smooth-navigation.html [ Skip Timeout ]
 

@@ -327,7 +327,6 @@ crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-s
 crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-pattern.html [ Slow ]
-crbug.com/1081534 [ Debug Mac13-arm64 ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac12 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac12-arm64 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
