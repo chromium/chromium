@@ -781,11 +781,6 @@ void PersonalDataManager::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void PersonalDataManager::MarkObserversInsufficientFormDataForImport() {
-  for (PersonalDataManagerObserver& observer : observers_)
-    observer.OnInsufficientFormData();
-}
-
 void PersonalDataManager::RecordUseOf(
     absl::variant<const AutofillProfile*, const CreditCard*>
         profile_or_credit_card) {

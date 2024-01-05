@@ -70,10 +70,6 @@ class WebViewPersonalDataManagerObserverBridge
     [data_manager_ personalDataDidChange];
   }
 
-  void OnInsufficientFormData() override {
-    // Nop.
-  }
-
  private:
   __weak CWVAutofillDataManager* data_manager_;
 };

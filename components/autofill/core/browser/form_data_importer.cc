@@ -333,11 +333,6 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
     }
   }
 
-  if (!extracted_form_data.extracted_credit_card &&
-      num_complete_address_profiles == 0 &&
-      !extracted_form_data.extracted_iban) {
-    personal_data_manager_->MarkObserversInsufficientFormDataForImport();
-  }
   return extracted_form_data;
 }
 

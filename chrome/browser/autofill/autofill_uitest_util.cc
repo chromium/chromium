@@ -41,10 +41,6 @@ void PdmChangeWaiter::OnPersonalDataChanged() {
   alerted_ = true;
 }
 
-void PdmChangeWaiter::OnInsufficientFormData() {
-  OnPersonalDataChanged();
-}
-
 void PdmChangeWaiter::Wait() {
   if (!alerted_) {
     run_loop_.Run();

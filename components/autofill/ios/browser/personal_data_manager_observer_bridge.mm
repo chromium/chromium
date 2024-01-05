@@ -21,9 +21,4 @@ void PersonalDataManagerObserverBridge::OnPersonalDataChanged() {
   [delegate_ onPersonalDataChanged];
 }
 
-void PersonalDataManagerObserverBridge::OnInsufficientFormData() {
-  if ([delegate_ respondsToSelector:@selector(onInsufficientFormData)])
-    [delegate_ onInsufficientFormData];
-}
-
 }  // namespace autofill

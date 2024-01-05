@@ -30,7 +30,6 @@ class PdmChangeWaiter : public PersonalDataManagerObserver {
 
   // PersonalDataManagerObserver:
   void OnPersonalDataChanged() override;
-  void OnInsufficientFormData() override;
 
   void Wait();
 
