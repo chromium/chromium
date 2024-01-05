@@ -52,15 +52,13 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.ui.listmenu.ListMenuButton;
 
@@ -89,13 +87,6 @@ public class OptionalButtonViewTest {
                         R.style.Theme_BrowserUI_DayNight);
         mMockAnimationChecker = Mockito.mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
-                "action_chip_with_different_color",
-                "false");
-
-        FeatureList.setTestValues(testValues);
 
         mOptionalButtonView =
                 (OptionalButtonView)
@@ -473,13 +464,10 @@ public class OptionalButtonViewTest {
     public void testUpdateButtonWithAnimation_actionChipWithAlternativeColor() {
         ButtonData actionChipButtonData = getDataForReaderModeActionChip();
 
-        // Alternative color is controlled by a field trial param.
-        TestValues testValues = new TestValues();
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
-                "action_chip_with_different_color",
-                "true");
-        FeatureList.setTestValues(testValues);
+        // Outside of tests alternative color is controlled by a field trial param for each button
+        // variant.
+        AdaptiveToolbarFeatures.setAlternativeColorOverrideForTesting(
+                actionChipButtonData.getButtonSpec().getButtonVariant(), true);
 
         // Transition from hidden to action chip
         mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);

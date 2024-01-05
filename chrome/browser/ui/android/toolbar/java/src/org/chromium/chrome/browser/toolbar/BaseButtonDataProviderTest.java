@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -105,11 +106,11 @@ public class BaseButtonDataProviderTest {
     public void testButtonData_QuietVariation() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE, "action_chip", "false");
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
         FeatureList.setTestValues(testValues);
+        AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
+                AdaptiveToolbarButtonVariant.READER_MODE, false);
 
         TestButtonDataProvider testButtonDataProvider =
                 new TestButtonDataProvider(
@@ -130,11 +131,11 @@ public class BaseButtonDataProviderTest {
     public void testButtonData_ActionChipVariation() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS, true);
-        testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE, "action_chip", "true");
         testValues.addFeatureFlagOverride(
                 ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2, true);
         FeatureList.setTestValues(testValues);
+        AdaptiveToolbarFeatures.setActionChipOverrideForTesting(
+                AdaptiveToolbarButtonVariant.READER_MODE, true);
 
         TestButtonDataProvider testButtonDataProvider =
                 new TestButtonDataProvider(

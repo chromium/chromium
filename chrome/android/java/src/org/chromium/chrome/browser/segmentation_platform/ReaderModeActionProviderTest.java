@@ -150,7 +150,7 @@ public class ReaderModeActionProviderTest {
     public void testUsingReaderModeManagerRateLimiting() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
                 "true");
         FeatureList.setTestValues(testValues);
@@ -168,7 +168,7 @@ public class ReaderModeActionProviderTest {
     public void testUsingReaderModeManagerRateLimiting_shouldIgnoreTabsWithNoManager() {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
                 "true");
         FeatureList.setTestValues(testValues);
@@ -187,7 +187,7 @@ public class ReaderModeActionProviderTest {
     public void testProviderDelaysSettingOnShown() throws TimeoutException {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
                 "true");
         FeatureList.setTestValues(testValues);
@@ -207,7 +207,7 @@ public class ReaderModeActionProviderTest {
     public void testProviderSetsOnShownAfterDelay() throws TimeoutException {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
                 "true");
         FeatureList.setTestValues(testValues);
@@ -227,7 +227,7 @@ public class ReaderModeActionProviderTest {
     public void testProviderSetsOnShownAfterDelay_ExceptIfTabIsDestroyed() throws TimeoutException {
         TestValues testValues = new TestValues();
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.CONTEXTUAL_PAGE_ACTIONS,
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_READER_MODE,
                 "reader_mode_session_rate_limiting",
                 "true");
         FeatureList.setTestValues(testValues);
