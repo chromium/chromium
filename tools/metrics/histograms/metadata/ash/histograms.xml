@@ -2297,6 +2297,14 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Desks.DeskProfiles.AvatarView.ButtonPressed"
+    units="BooleanHit" expires_after="2024-12-21">
+  <owner>shidi@chromium.org</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <summary>Records when the desk profiles button is pressed.</summary>
+</histogram>
+
 <histogram name="Ash.Desks.DesksCount3" units="units"
     expires_after="2024-06-30">
   <owner>afakhry@chromium.org</owner>

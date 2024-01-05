@@ -71,6 +71,8 @@ constexpr int kShortcutViewHeight = 20;
 constexpr int kShortcutViewIconSize = 14;
 constexpr int kShortcutViewDistanceFromBottom = 4;
 
+bool g_force_show_desk_profiles_button = false;
+
 gfx::Rect ConvertScreenRect(views::View* view, const gfx::Rect& screen_rect) {
   gfx::Point origin = screen_rect.origin();
   views::View::ConvertPointFromScreen(view, &origin);
@@ -241,8 +243,10 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   // Only show profile avatar button when there is more than one profile logged
   // in.
   auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (chromeos::features::IsDeskProfilesEnabled() && desk_profile_delegate &&
-      desk_profile_delegate->GetProfilesSnapshot().size() > 1) {
+  if (chromeos::features::IsDeskProfilesEnabled() &&
+      (g_force_show_desk_profiles_button ||
+       (desk_profile_delegate &&
+        desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
     desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
         base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
                             base::Unretained(this)),
@@ -441,7 +445,6 @@ void DeskMiniView::MaybeCloseContextMenu() {
 
 void DeskMiniView::OnDeskProfilesButtonPressed() {
   desk_profile_button_->RequestFocus();
-  // TODO(shidi): Implement desk avatar context menu.
 }
 
 void DeskMiniView::OnRemovingDesk(DeskCloseType close_type) {
@@ -744,6 +747,12 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   // Only when the new desk name has been committed is when we can update the
   // desks restore prefs.
   desks_restore_util::UpdatePrimaryUserDeskNamesPrefs();
+}
+
+// static
+base::AutoReset<bool>
+DeskMiniView::SetShouldShowDeskProfilesButtonForTesting() {
+  return base::AutoReset<bool>(&g_force_show_desk_profiles_button, true);
 }
 
 void DeskMiniView::OnContextMenuClosed() {

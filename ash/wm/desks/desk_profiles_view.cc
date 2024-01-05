@@ -14,6 +14,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -186,7 +187,10 @@ class DeskProfilesButton::MenuController : public ui::SimpleMenuModel::Delegate,
   // Builds and saves a default menu model to `context_menu_model_`;
   void BuildMenuModel() {
     auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-    CHECK(delegate);
+    if (!delegate) {
+      // For Ash unit test there is no delegate available.
+      return;
+    }
 
     profiles_ = delegate->GetProfilesSnapshot();
     for (size_t index = 0; index < profiles_.size(); ++index) {
@@ -252,7 +256,10 @@ DeskProfilesButton::~DeskProfilesButton() {
 void DeskProfilesButton::UpdateIcon() {
   CHECK(desk_);
   auto* delegate = Shell::Get()->GetDeskProfilesDelegate();
-  CHECK(delegate);
+  if (!delegate) {
+    // For Ash unit test there is no delegate available.
+    return;
+  }
   // Initialize Desk's Lacros profile id with primary profile id.
   const uint64_t primary_profile_id = delegate->GetPrimaryProfileId();
   if (desk_->lacros_profile_id() == 0 && primary_profile_id != 0) {
@@ -278,6 +285,7 @@ void DeskProfilesButton::OnDeskDestroyed(const Desk* desk) {
 }
 
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
+  base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
   if (event.IsLeftMouseButton()) {
     CreateMenu(event);
   }

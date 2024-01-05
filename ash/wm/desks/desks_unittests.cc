@@ -105,6 +105,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
 #include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
@@ -11707,5 +11708,33 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 }  // namespace
+
+class DeskProfilesTest : public AshTestBase {
+ public:
+  DeskProfilesTest() = default;
+  ~DeskProfilesTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      chromeos::features::kDeskProfiles};
+};
+
+TEST_F(DeskProfilesTest, DeskProfilesButtonClickMetrics) {
+  // Bypass the requirements and show the desk profiles button.
+  auto show_desk_profiles_button =
+      DeskMiniView::SetShouldShowDeskProfilesButtonForTesting();
+  base::HistogramTester histogram_tester;
+  auto* desk_controller = DesksController::Get()->desk_bar_controller();
+  desk_controller->OpenDeskBar(Shell::Get()->GetPrimaryRootWindow());
+  auto* desk_bar_view =
+      desk_controller->GetDeskBarView(Shell::Get()->GetPrimaryRootWindow());
+  ASSERT_EQ(1u, desk_bar_view->mini_views().size());
+  DeskProfilesButton* desk_profile_button =
+      desk_bar_view->mini_views()[0]->desk_profile_button_;
+  ASSERT_NE(desk_profile_button, nullptr);
+  auto* event_generator = GetEventGenerator();
+  ClickOnView(desk_profile_button, event_generator);
+  histogram_tester.ExpectTotalCount(kDeskProfilesPressesHistogramName, 1);
+}
 
 }  // namespace ash

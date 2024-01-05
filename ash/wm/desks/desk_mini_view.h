@@ -11,6 +11,8 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_profiles_view.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "base/auto_reset.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/animation/animation_abort_handle.h"
@@ -23,9 +25,10 @@ namespace ash {
 
 class DeskActionContextMenu;
 class DeskActionView;
+class DeskBarViewBase;
 class DeskNameView;
 class DeskPreviewView;
-class DeskBarViewBase;
+class DeskProfilesTest;
 
 // A view that acts as a mini representation (a.k.a. desk thumbnail) of a
 // virtual desk in the desk bar view when overview mode is active. This view
@@ -164,6 +167,10 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
  private:
   friend class DesksTestApi;
+  FRIEND_TEST_ALL_PREFIXES(DeskProfilesTest, DeskProfilesButtonClickMetrics);
+
+  // Function to force show desk profiles button for testing.
+  static base::AutoReset<bool> SetShouldShowDeskProfilesButtonForTesting();
 
   // Callback for when `context_menu_` is closed. Makes `desk_action_view_`
   // visible.
