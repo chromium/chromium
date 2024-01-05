@@ -29,19 +29,18 @@ NetworkServiceProxyAllowList NetworkServiceProxyAllowList::CreateForTesting(
       network::mojom::IpProtectionProxyBypassPolicy::
           kFirstPartyToTopLevelFrame);
 
-  for (auto const& [domain, properties] : first_party_map) {
-    net::SchemeHostPortMatcher bypass_matcher;
-    for (auto property : properties) {
-      bypass_matcher.AddAsFirstRule(
-          net::SchemeHostPortMatcherRule::FromUntrimmedRawString(property));
-      bypass_matcher.AddAsFirstRule(
-          net::SchemeHostPortMatcherRule::FromUntrimmedRawString("." +
-                                                                 property));
-    }
+  auto mdl = masked_domain_list::MaskedDomainList();
 
-    allow_list.AddDomainWithBypass(domain, std::move(bypass_matcher));
+  for (auto const& [domain, properties] : first_party_map) {
+    auto* resourceOwner = mdl.add_resource_owners();
+    for (auto property : properties) {
+      resourceOwner->add_owned_properties(property);
+    }
+    auto* resource = resourceOwner->add_owned_resources();
+    resource->set_domain(domain);
   }
 
+  allow_list.UseMaskedDomainList(mdl);
   return allow_list;
 }
 
@@ -63,13 +62,6 @@ NetworkServiceProxyAllowList::MakeIpProtectionCustomProxyConfig() {
   custom_proxy_config->rules.restrict_to_network_service_proxy_allow_list =
       true;
   return custom_proxy_config;
-}
-
-void NetworkServiceProxyAllowList::AddDomainWithBypass(
-    const std::string& domain,
-    net::SchemeHostPortMatcher bypass_matcher) {
-  url_matcher_with_bypass_.AddDomainWithBypass(
-      domain, std::move(bypass_matcher), /*include_subdomains=*/true);
 }
 
 size_t NetworkServiceProxyAllowList::EstimateMemoryUsage() const {

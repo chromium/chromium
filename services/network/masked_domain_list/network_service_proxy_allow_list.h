@@ -56,9 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyAllowList {
   void UseMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl);
 
  private:
-  void AddDomainWithBypass(const std::string& domain,
-                           net::SchemeHostPortMatcher bypass_matcher);
-
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
 
