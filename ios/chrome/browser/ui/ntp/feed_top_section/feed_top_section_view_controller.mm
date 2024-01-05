@@ -27,6 +27,10 @@ namespace {
 // Content stack padding.
 const CGFloat kContentStackHorizontalPadding = 18;
 const CGFloat kContentStackVerticalPadding = 9;
+
+// Content stack padding for the notifications promo view.
+const CGFloat kNotificationsContentStackTopPadding = 17;
+const CGFloat kNotificationsContentStackBottomPadding = 1;
 // Border radius of the promo container.
 const CGFloat kPromoViewContainerBorderRadius = 15;
 
@@ -158,14 +162,28 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
   if (!visible) {
     return NSDirectionalEdgeInsetsZero;
   }
-  if (IsFeedContainmentEnabled()) {
-    return NSDirectionalEdgeInsetsMake(
-        kContentStackVerticalPadding, kContentStackVerticalPadding,
-        kContentStackVerticalPadding, kContentStackVerticalPadding);
+  if (self.notificationsPromoView) {
+    if (IsFeedContainmentEnabled()) {
+      return NSDirectionalEdgeInsetsMake(
+          kNotificationsContentStackTopPadding, kContentStackVerticalPadding,
+          kNotificationsContentStackBottomPadding,
+          kContentStackVerticalPadding);
+    } else {
+      return NSDirectionalEdgeInsetsMake(
+          kNotificationsContentStackTopPadding, kContentStackHorizontalPadding,
+          kNotificationsContentStackBottomPadding,
+          kContentStackHorizontalPadding);
+    }
   } else {
-    return NSDirectionalEdgeInsetsMake(
-        kContentStackVerticalPadding, kContentStackHorizontalPadding,
-        kContentStackVerticalPadding, kContentStackHorizontalPadding);
+    if (IsFeedContainmentEnabled()) {
+      return NSDirectionalEdgeInsetsMake(
+          kContentStackVerticalPadding, kContentStackVerticalPadding,
+          kContentStackVerticalPadding, kContentStackVerticalPadding);
+    } else {
+      return NSDirectionalEdgeInsetsMake(
+          kContentStackVerticalPadding, kContentStackHorizontalPadding,
+          kContentStackVerticalPadding, kContentStackHorizontalPadding);
+    }
   }
 }
 

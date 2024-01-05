@@ -21,9 +21,9 @@
 namespace {
 // Horizontal spacing between stackView and cell contentView.
 constexpr CGFloat kStackViewPadding = 16.0;
-constexpr CGFloat kStackViewTopPadding = 24.0;
+constexpr CGFloat kStackViewTopPadding = 16.0;
 constexpr CGFloat kStackViewTrailingMargin = 19.5;
-constexpr CGFloat kStackViewSubViewSpacing = 19.0;
+constexpr CGFloat kStackViewSubViewSpacing = 16.0;
 // Margins for the close button.
 constexpr CGFloat kCloseButtonTrailingMargin = -14.0;
 constexpr CGFloat kCloseButtonTopMargin = 14.0;
