@@ -1262,13 +1262,11 @@ WebstorePrivateGetReferrerChainFunction::Run() {
   request.mutable_referrer_chain_options()->set_recent_navigations_to_collect(
       recent_navigations_to_collect);
 
-  std::string serialized_referrer_proto = request.SerializeAsString();
-  // Base64 encode the proto to avoid issues with base::Value rejecting strings
-  // which are not valid UTF8.
-  base::Base64Encode(serialized_referrer_proto, &serialized_referrer_proto);
+  // Base64 encode the request to avoid issues with base::Value rejecting
+  // strings which are not valid UTF8.
   return RespondNow(
       ArgumentList(api::webstore_private::GetReferrerChain::Results::Create(
-          serialized_referrer_proto)));
+          base::Base64Encode(request.SerializeAsString()))));
 }
 
 WebstorePrivateGetExtensionStatusFunction::

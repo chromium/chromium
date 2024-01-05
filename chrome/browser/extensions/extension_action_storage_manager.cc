@@ -81,14 +81,7 @@ bool StringToSkBitmap(const std::string& str, SkBitmap* bitmap) {
 std::string BitmapToString(const SkBitmap& bitmap) {
   std::vector<unsigned char> data;
   bool success = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &data);
-  if (!success)
-    return std::string();
-
-  base::StringPiece raw_str(
-      reinterpret_cast<const char*>(&data[0]), data.size());
-  std::string base64_str;
-  base::Base64Encode(raw_str, &base64_str);
-  return base64_str;
+  return success ? base::Base64Encode(data) : "";
 }
 
 // Set |action|'s default values to those specified in |dict|.

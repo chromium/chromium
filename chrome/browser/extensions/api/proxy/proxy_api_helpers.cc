@@ -59,8 +59,7 @@ std::string CreateDataURLFromPACScript(const std::string& pac_script) {
       "data:application/x-ns-proxy-autoconfig;base64,";
 
   // Encode pac_script in base64.
-  std::string pac_script_base64_encoded;
-  base::Base64Encode(pac_script, &pac_script_base64_encoded);
+  std::string pac_script_base64_encoded = base::Base64Encode(pac_script);
 
   // Make it a correct data url.
   return kPACDataUrlPrefix + pac_script_base64_encoded;

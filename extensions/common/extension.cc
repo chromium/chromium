@@ -370,7 +370,7 @@ bool Extension::ProducePEM(const std::string& input, std::string* output) {
   DCHECK(output);
   if (input.empty())
     return false;
-  base::Base64Encode(input, output);
+  *output = base::Base64Encode(input);
   return true;
 }
 

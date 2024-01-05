@@ -196,8 +196,7 @@ void DocumentScanAPIHandler::OnSimpleScanCompleted(
     return;
   }
 
-  std::string image_base64;
-  base::Base64Encode(scan_data.value(), &image_base64);
+  std::string image_base64 = base::Base64Encode(scan_data.value());
   api::document_scan::ScanResults scan_results;
   scan_results.data_urls.push_back(kPngImageDataUrlPrefix +
                                    std::move(image_base64));

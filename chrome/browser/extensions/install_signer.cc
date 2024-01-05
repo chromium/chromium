@@ -100,7 +100,7 @@ bool HashWithMachineId(const std::string& salt, std::string* result) {
   std::string result_bytes(crypto::kSHA256Length, 0);
   hash->Finish(std::data(result_bytes), result_bytes.size());
 
-  base::Base64Encode(result_bytes, result);
+  *result = base::Base64Encode(result_bytes);
   return true;
 }
 
@@ -153,12 +153,8 @@ base::Value::Dict InstallSignature::ToDict() const {
   dict.Set(kIdsKey, ExtensionIdSetToList(ids));
   dict.Set(kInvalidIdsKey, ExtensionIdSetToList(invalid_ids));
   dict.Set(kExpireDateKey, expire_date);
-  std::string salt_base64;
-  std::string signature_base64;
-  base::Base64Encode(salt, &salt_base64);
-  base::Base64Encode(signature, &signature_base64);
-  dict.Set(kSaltKey, salt_base64);
-  dict.Set(kSignatureKey, signature_base64);
+  dict.Set(kSaltKey, base::Base64Encode(salt));
+  dict.Set(kSignatureKey, base::Base64Encode(signature));
   dict.Set(kTimestampKey, base::TimeToValue(timestamp));
   return dict;
 }

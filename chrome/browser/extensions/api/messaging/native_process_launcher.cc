@@ -293,9 +293,9 @@ void NativeProcessLauncherImpl::Core::DoLaunchOnThreadPool(
     bool success =
         base::JSONWriter::Write(std::move(args), &encoded_reconnect_command);
     DCHECK(success);
-    base::Base64Encode(encoded_reconnect_command, &encoded_reconnect_command);
     command_line.AppendArg(
-        base::StrCat({"--reconnect-command=", encoded_reconnect_command}));
+        base::StrCat({"--reconnect-command=",
+                      base::Base64Encode(encoded_reconnect_command)}));
   }
 
   if (send_connect_id && !connect_id_.empty()) {

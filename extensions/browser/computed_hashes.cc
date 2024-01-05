@@ -253,9 +253,7 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
     base::Value::List block_hashes;
     block_hashes.reserve(hashes.size());
     for (const auto& hash : hashes) {
-      std::string encoded;
-      base::Base64Encode(hash, &encoded);
-      block_hashes.Append(std::move(encoded));
+      block_hashes.Append(base::Base64Encode(hash));
     }
 
     base::Value::Dict dict;

@@ -235,8 +235,7 @@ class SandboxedUnpackerTest : public ExtensionsTest {
     ASSERT_TRUE(zip::Unzip(crx_path, temp_dir.GetPath()));
 
     std::string fake_id = crx_file::id_util::GenerateId(crx_name);
-    std::string fake_public_key;
-    base::Base64Encode(std::string(2048, 'k'), &fake_public_key);
+    std::string fake_public_key = base::Base64Encode(std::string(2048, 'k'));
 
     base::RunLoop run_loop;
     client_->SetQuitClosure(run_loop.QuitClosure());
