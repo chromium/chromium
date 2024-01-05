@@ -306,12 +306,6 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
   if (UpdateStatusIfConnectedToEthernet()) {
     return;
   }
-
-  // Automatically continue if we are using Zero-Touch Hands-Off Enrollment.
-  if (is_connected && continue_attempts_ == 0 &&
-      WizardController::IsZeroTouchHandsOffOobeFlow()) {
-    OnContinueButtonClicked();
-  }
 }
 
 void NetworkScreen::WaitForConnection(const std::u16string& network_id) {
@@ -333,7 +327,6 @@ void NetworkScreen::OnBackButtonClicked() {
 }
 
 void NetworkScreen::OnContinueButtonClicked() {
-  ++continue_attempts_;
   if (view_) {
     view_->ClearErrors();
   }
