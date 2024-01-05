@@ -6,11 +6,11 @@
 
 #include <objbase.h>
 #include <shlobj_core.h>
+#include <stddef.h>
+#include <stdint.h>
 #include <windows.h>
 #include <winerror.h>
 
-#include <stddef.h>
-#include <stdint.h>
 #include <limits>
 #include <memory>
 #include <utility>

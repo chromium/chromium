@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/update_client/unpacker.h"
+
 #include <iterator>
 #include <utility>
 #include <vector>
@@ -17,7 +19,6 @@
 #include "components/services/unzip/in_process_unzipper.h"
 #include "components/update_client/test_configurator.h"
 #include "components/update_client/test_utils.h"
-#include "components/update_client/unpacker.h"
 #include "components/update_client/unzip/unzip_impl.h"
 #include "components/update_client/unzipper.h"
 #include "testing/gtest/include/gtest/gtest.h"

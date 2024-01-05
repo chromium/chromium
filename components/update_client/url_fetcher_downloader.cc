@@ -5,6 +5,7 @@
 #include "components/update_client/url_fetcher_downloader.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/files/file_util.h"

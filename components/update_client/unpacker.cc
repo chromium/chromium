@@ -5,6 +5,7 @@
 #include "components/update_client/unpacker.h"
 
 #include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>
