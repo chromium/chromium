@@ -30,12 +30,12 @@ bool IsSearchEngineChoiceScreenEnabledFre() {
     // This branch is taken in every other tests.
     return false;
   }
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kFre)) {
-    // Outside of tests, do not show the view if flags disable it.
+  if (ios::provider::DisableDefaultSearchEngineChoice()) {
+    // Outside of tests, this view should be disabled upstream.
     return false;
   }
-  return ios::provider::IsSearchEngineChoiceScreenEnabledFre();
+  return search_engines::IsChoiceScreenFlagEnabled(
+      search_engines::ChoicePromo::kFre);
 }
 }  // namespace first_run
 }  // namespace ios

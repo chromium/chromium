@@ -12,14 +12,10 @@
 namespace ios {
 namespace provider {
 
-bool IsChoiceEnabled() {
-  // The feature is disabled on chromium
-  return false;
-}
-
-bool IsSearchEngineChoiceScreenEnabledFre() {
-  // The feature is disabled on chromium
-  return false;
+bool DisableDefaultSearchEngineChoice() {
+  // The search engine choice should not be automatically displayed in Chromium
+  // except in tests.
+  return true;
 }
 
 }  // namespace provider
