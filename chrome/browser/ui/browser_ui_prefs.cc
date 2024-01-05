@@ -100,14 +100,6 @@ void RegisterBrowserUserPrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kWebRtcLocalIpsAllowedUrls);
   registry->RegisterBooleanPref(prefs::kWebRtcTextLogCollectionAllowed, true);
 
-  // Dictionaries to keep track of default tasks in the file browser.
-  registry->RegisterDictionaryPref(
-      prefs::kDefaultTasksByMimeType,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDictionaryPref(
-      prefs::kDefaultTasksBySuffix,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
   // We need to register the type of these preferences in order to query
   // them even though they're only typically controlled via policy.
   registry->RegisterBooleanPref(policy::policy_prefs::kHideWebStoreIcon, false);

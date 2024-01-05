@@ -490,7 +490,17 @@ ResultingTasks::ResultingTasks() = default;
 ResultingTasks::~ResultingTasks() = default;
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  // Default handlers according to policy.
   registry->RegisterDictionaryPref(prefs::kDefaultHandlersForFileExtensions);
+
+  // Dictionaries to keep track of default tasks in the file browser.
+  registry->RegisterDictionaryPref(
+      prefs::kDefaultTasksByMimeType,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+  registry->RegisterDictionaryPref(
+      prefs::kDefaultTasksBySuffix,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
+
   RegisterOfficeProfilePrefs(registry);
 }
 
