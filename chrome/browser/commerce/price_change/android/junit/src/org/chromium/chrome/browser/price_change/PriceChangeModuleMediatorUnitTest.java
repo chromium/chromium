@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.price_change;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -59,6 +60,7 @@ import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -71,7 +73,9 @@ import java.util.Set;
 
 /** Test relating to {@link PriceChangeModuleMediator} */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {ShadowAppCompatResources.class})
 public class PriceChangeModuleMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -165,27 +169,8 @@ public class PriceChangeModuleMediatorUnitTest {
     @Test
     @SmallTest
     public void testShowModule_ServiceInitialized() {
-        doReturn(true).when(mService).isInitialized();
-        when(mUrlUtilitiesJniMock.getDomainAndRegistry(eq(PRODUCT_URL.getSpec()), anyBoolean()))
-                .then(inv -> PRODUCT_URL_DOMAIN);
-        mTab.setGurlOverrideForTesting(PRODUCT_URL);
-        // Set up ShoppingPersistedTabData to be returned from service.
-        ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);
-        PriceDrop priceDrop = new PriceDrop(CURRENT_PRICE, PREVIOUS_PRICE);
-        when(data.getProductImageUrl()).thenReturn(PRODUCT_IMAGE_URL);
-        when(data.getProductTitle()).thenReturn(PRODUCT_TITLE);
-        when(data.getPriceDrop()).thenReturn(priceDrop);
+        showModuleWithInitializedService();
 
-        mMediator.showModule();
-
-        // Mock return value of ShoppingPersistedTabDataService.
-        ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
-                ArgumentCaptor.forClass(Callback.class);
-        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
-        PriceChangeItem item = new PriceChangeItem(mTab, data);
-        dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
-
-        verify(mService, times(0)).initialize(any(Set.class));
         assertEquals(MODULE_TITLE_SINGULAR, mModel.get(PriceChangeModuleProperties.MODULE_TITLE));
         assertEquals(
                 PRODUCT_TITLE, mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_NAME_STRING));
@@ -219,5 +204,48 @@ public class PriceChangeModuleMediatorUnitTest {
         assertEquals(
                 mProductImageBitmap,
                 mModel.get(PriceChangeModuleProperties.MODULE_PRODUCT_IMAGE_BITMAP));
+    }
+
+    @Test
+    @SmallTest
+    public void testShowModule_UseDefaultFavicon() {
+        showModuleWithInitializedService();
+
+        // Mock return value of FaviconHelper to be null.
+        ArgumentCaptor<FaviconImageCallback> faviconCallbackCaptor =
+                ArgumentCaptor.forClass(FaviconImageCallback.class);
+        verify(mFaviconHelper)
+                .getLocalFaviconImageForURL(
+                        eq(mProfile),
+                        eq(PRODUCT_URL),
+                        eq(FAVICON_SIZE),
+                        faviconCallbackCaptor.capture());
+        faviconCallbackCaptor.getValue().onFaviconAvailable(null, new GURL(""));
+
+        // Favicon should be setup as default bitmap.
+        assertNotNull(mModel.get(PriceChangeModuleProperties.MODULE_FAVICON_BITMAP));
+    }
+
+    public void showModuleWithInitializedService() {
+        doReturn(true).when(mService).isInitialized();
+        when(mUrlUtilitiesJniMock.getDomainAndRegistry(eq(PRODUCT_URL.getSpec()), anyBoolean()))
+                .then(inv -> PRODUCT_URL_DOMAIN);
+        mTab.setGurlOverrideForTesting(PRODUCT_URL);
+        // Set up ShoppingPersistedTabData to be returned from service.
+        ShoppingPersistedTabData data = mock(ShoppingPersistedTabData.class);
+        PriceDrop priceDrop = new PriceDrop(CURRENT_PRICE, PREVIOUS_PRICE);
+        when(data.getProductImageUrl()).thenReturn(PRODUCT_IMAGE_URL);
+        when(data.getProductTitle()).thenReturn(PRODUCT_TITLE);
+        when(data.getPriceDrop()).thenReturn(priceDrop);
+
+        mMediator.showModule();
+
+        // Mock return value of ShoppingPersistedTabDataService.
+        ArgumentCaptor<Callback<List<PriceChangeItem>>> dataCallbackCaptor =
+                ArgumentCaptor.forClass(Callback.class);
+        verify(mService).getAllShoppingPersistedTabDataWithPriceDrop(dataCallbackCaptor.capture());
+        PriceChangeItem item = new PriceChangeItem(mTab, data);
+        dataCallbackCaptor.getValue().onResult(new ArrayList<>(Arrays.asList(item)));
+        verify(mService, times(0)).initialize(any(Set.class));
     }
 }
