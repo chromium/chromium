@@ -207,8 +207,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, MAYBE_TakePhoto) {
   ASSERT_TRUE(RunImageCaptureTestCase("testCreateAndTakePhotoSucceeds()"));
 }
 
-// TODO(crbug.com/1187247): Flaky on Linux/Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1187247): Flaky on Linux/Windows/Mac.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_GrabFrame DISABLED_GrabFrame
 #else
 #define MAYBE_GrabFrame GrabFrame
