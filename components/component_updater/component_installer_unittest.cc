@@ -620,4 +620,29 @@ TEST_F(ComponentInstallerTest, Uninstall) {
   EXPECT_FALSE(base::PathExists(base_dir));
 }
 
+TEST_F(ComponentInstallerTest, UninstallWithoutRegister) {
+  base::RunLoop run_loop;
+  auto installer = base::MakeRefCounted<ComponentInstaller>(
+      std::make_unique<MockInstallerPolicy>(
+          MockInstallerPolicy::ComponentReadyCallback(),
+          base::BindPostTaskToCurrentDefault(run_loop.QuitClosure())));
+
+  base::ScopedPathOverride scoped_path_override(DIR_COMPONENT_USER);
+  base::FilePath base_dir;
+  EXPECT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
+  base_dir = base_dir.Append(relative_install_dir);
+  EXPECT_TRUE(base::CreateDirectory(base_dir));
+  EXPECT_TRUE(base::CreateDirectory(base_dir.AppendASCII("1.0")));
+  EXPECT_TRUE(base::WriteFile(base_dir.AppendASCII("1.0").AppendASCII("data"),
+                              "This is version 1."));
+  EXPECT_TRUE(base::CreateDirectory(base_dir.AppendASCII("2.0")));
+  EXPECT_TRUE(base::WriteFile(base_dir.AppendASCII("2.0").AppendASCII("data"),
+                              "This is version 2."));
+
+  installer->Uninstall();
+  run_loop.Run();
+
+  EXPECT_FALSE(base::PathExists(base_dir));
+}
+
 }  // namespace component_updater

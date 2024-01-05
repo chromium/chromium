@@ -111,8 +111,9 @@ void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
 namespace component_updater {
 
 void FirstPartySetsComponentInstallerPolicy::OnRegistrationComplete() {
-  if (!GetConfigPathInstance().has_value())
+  if (!GetConfigPathInstance().has_value()) {
     GetConfigPathInstance() = std::make_pair(base::FilePath(), base::Version());
+  }
   SetFirstPartySetsConfig(std::move(on_sets_ready_));
 }
 
@@ -152,8 +153,9 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value::Dict manifest) {
-  if (install_dir.empty() || GetConfigPathInstance().has_value())
+  if (install_dir.empty() || GetConfigPathInstance().has_value()) {
     return;
+  }
 
   VLOG(1) << "Related Website Sets Component ready, version "
           << version.GetString() << " in " << install_dir.value();
@@ -215,14 +217,13 @@ void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   // by the ComponentInstaller instance, which owns `policy` (so they have the
   // same lifetime). Therefore if/when the closure is invoked, `policy` is still
   // alive.
-  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
-      ->Register(cus,
-                 base::BindOnce(
-                     [](FirstPartySetsComponentInstallerPolicy* policy) {
-                       policy->OnRegistrationComplete();
-                     },
-                     raw_policy),
-                 GetTaskPriority());
+  base::MakeRefCounted<ComponentInstaller>(
+      std::move(policy), /*action_handler=*/nullptr, GetTaskPriority())
+      ->Register(cus, base::BindOnce(
+                          [](FirstPartySetsComponentInstallerPolicy* policy) {
+                            policy->OnRegistrationComplete();
+                          },
+                          raw_policy));
 }
 
 // static
