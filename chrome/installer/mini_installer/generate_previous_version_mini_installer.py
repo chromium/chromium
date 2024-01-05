@@ -24,7 +24,7 @@ def main():
     assert args.path_7za
 
     cmd = [
-        args.alternate_version_generator,
+        os.path.abspath(args.alternate_version_generator),
         '--force',
         '--previous',
         '--mini_installer=' + args.mini_installer,
@@ -41,27 +41,6 @@ def main():
                         "Exit code: %s\n"
                         "Command output:\n%s" %
                         (e.cmd, e.returncode, e.output))
-    except FileNotFoundError as e:
-        # In https://crbug.com/1515472, we see cases where CreateProcess fails
-        # with ERROR_FILE_NOT_FOUND (2). Add some logging to try to understand
-        # what's going on.
-        cwd = os.getcwd()
-        msg = (
-            e.strerror + '\n  Diagnostics for https://crbug.com/1515472:\n' +
-            '  Filename not found filename: %s, and filename2: %s\n' %
-            (e.filename, e.filename2) + '  Filename should be at path: %s\n' %
-            (os.path.join(cwd, e.filename)) +
-            '    and it %s\n' % ('exists' if os.path.isfile(
-                os.path.join(cwd, e.filename)) else 'does not exist') +
-            '  CreateProcess failed with last error code %d\n' % e.winerror +
-            '  CWD is %s and it %s\n' %
-            (cwd, 'exists' if os.path.isdir(cwd) else 'does not exist') +
-            '  executable is %s and it %s\n' %
-            (args.alternate_version_generator, 'exists' if os.path.isfile(
-                args.alternate_version_generator) else 'does not exist') +
-            '  Files in CWD: %s' % ([f for f in os.listdir(cwd)]))
-
-        raise OSError(e.errno, msg, e.filename, e.winerror, e.filename2) from e
 
 
 if '__main__' == __name__:
