@@ -57,7 +57,7 @@ const char kSimpleFormFileName[] = "autocomplete_simple_form.html";
 
 }  // namespace
 
-class AutofillAutocompleteTest : public InProcessBrowserTest {
+class AutocompleteTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     active_browser_ = browser();
@@ -193,7 +193,7 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
 };
 
 // Tests that a user can save a simple Autocomplete value.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
+IN_PROC_BROWSER_TEST_F(AutocompleteTest, SubmitSimpleValue_Saves) {
   std::string prefix = "Some";
   std::string test_value = "SomeName!";
   NavigateToFile(kSimpleFormFileName);
@@ -204,7 +204,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest, SubmitSimpleValue_Saves) {
 }
 
 // Tests that we don't save new autocomplete entries when in Incognito.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        SubmitSimpleValue_OTR_DoesNotSave) {
   set_active_browser(CreateIncognitoBrowser());
 
@@ -218,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 
 // Tests that we don't save new autocomplete entries when Autocomplete was
 // disabled by the user.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        SubmitSimpleValue_Disabled_DoesNotSave) {
   pref_service()->SetBoolean(prefs::kAutofillProfileEnabled, false);
   std::string prefix = "Some";
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 
 // Tests that initialization of the AutocompleteHistoryManager sets the
 // retention policy last version ran preference when the flag is enabled.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        RetentionPolicy_Init_SavesVersionPref) {
   // Navigate to a file and wait, this will make sure we instantiate
   // AutocompleteHistoryManager.
@@ -249,7 +249,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 }
 
 // Tests that the retention policy cleanup removes an expired entry.
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        RetentionPolicy_RemovesExpiredEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
@@ -273,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
 
 // Tests that the retention policy cleanup does not remove a valid entry (e.g.
 // 20 days old).
-IN_PROC_BROWSER_TEST_F(AutofillAutocompleteTest,
+IN_PROC_BROWSER_TEST_F(AutocompleteTest,
                        RetentionPolicy_DoesNot_RemoveValidEntry) {
   TestAutofillClock test_clock(AutofillClock::Now());
 
