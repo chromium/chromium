@@ -116,6 +116,10 @@ public class ReadAloudMetrics {
                 INELIGIBILITY_REASON, reason, IneligibilityReason.COUNT);
     }
 
+    public static void recordHighlightingSupported(boolean supported) {
+        RecordHistogram.recordBooleanHistogram("ReadAloud.HighlightingSupported", supported);
+    }
+
     public static void recordIsTabPlaybackCreationSuccessful(boolean successful) {
         RecordHistogram.recordBooleanHistogram(IS_TAB_PLAYBACK_CREATION_SUCCESSFUL, successful);
     }

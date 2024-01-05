@@ -525,7 +525,9 @@ public class ReadAloudController
     }
 
     private void maybeSetUpHighlighter(Playback.Metadata metadata) {
-        if (isHighlightingSupported()) {
+        boolean highlightingSupported = isHighlightingSupported();
+        ReadAloudMetrics.recordHighlightingSupported(highlightingSupported);
+        if (highlightingSupported) {
             if (mHighlighter == null) {
                 mHighlighter = mPlaybackHooks.createHighlighter();
             }

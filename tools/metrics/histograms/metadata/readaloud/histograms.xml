@@ -67,6 +67,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.HighlightingSupported" enum="BooleanSupported"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording if highlighting is supported. Emitted when a
+    playback is successfully created.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.IsPageReadabilitySuccessful" enum="BooleanSuccess"
     expires_after="2024-06-02">
   <owner>andreaxg@google.com</owner>

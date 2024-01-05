@@ -1288,6 +1288,40 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testMetricRecorded_highlightingSupported_true() {
+        final String histogramName = "ReadAloud.HighlightingSupported";
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, true);
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), true);
+        onPlaybackSuccess(mPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMetricRecorded_highlightingSupported_false() {
+        final String histogramName = "ReadAloud.HighlightingSupported";
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName, false);
+
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        mFakeTranslateBridge.setIsPageTranslated(false);
+        mController.setTimepointsSupportedForTest(mTab.getUrl().getSpec(), false);
+        onPlaybackSuccess(mPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testNavigateToPlayingTab() {
         // Play tab.
         mFakeTranslateBridge.setCurrentLanguage("en");
