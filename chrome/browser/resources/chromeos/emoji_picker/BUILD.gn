@@ -11,13 +11,7 @@ build_webui("build") {
   grd_prefix = "emoji_picker"
 
   static_files = [
-    "generic_error_dark.svg",
-    "generic_error.svg",
     "index.html",
-    "network_error_dark.svg",
-    "network_error.svg",
-    "no_results_dark.svg",
-    "no_results.svg",
     "nudge_icon.svg",
   ]
 

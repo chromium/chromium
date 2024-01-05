@@ -43,7 +43,6 @@ export class EmojiSearch extends PolymerElement {
       searchResults: {type: Array},
       needIndexing: {type: Boolean, value: false},
       gifSupport: {type: Boolean, value: false},
-      jellySupport: {type: Boolean, value: false},
       status: {type: Status, value: null},
       searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
@@ -437,10 +436,6 @@ export class EmojiSearch extends PolymerElement {
    */
   setSearchQuery(value: string): void {
     this.$.search.setValue(value);
-  }
-
-  computeCrSearchFieldClass(jellySupport: boolean): string {
-    return jellySupport ? 'jelly' : '';
   }
 }
 
