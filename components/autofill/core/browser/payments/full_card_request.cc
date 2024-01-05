@@ -113,10 +113,10 @@ void FullCardRequest::GetFullCardImpl(
 
   // Only one request can be active at a time. If the member variable
   // |result_delegate_| is already set, then immediately reject the new request
-  // through the method parameter |result_delegate_|.
+  // through the method parameter |result_delegate|.
   if (result_delegate_) {
-    result_delegate_->OnFullCardRequestFailed(card_type,
-                                              FailureType::GENERIC_FAILURE);
+    result_delegate->OnFullCardRequestFailed(card_type,
+                                             FailureType::GENERIC_FAILURE);
     return;
   }
   result_delegate_ = result_delegate;
