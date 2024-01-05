@@ -453,7 +453,7 @@ suite('CrActionMenu', function() {
           // Anchored at right-top by default.
           menu.showAt(dots);
           assertTrue(dialog.open);
-          let menuRect = menu.getBoundingClientRect();
+          let menuRect = dialog.getBoundingClientRect();
           assertEquals(
               Math.round(dotsRect.left + dotsRect.width),
               Math.round(menuRect.left + menuRect.width));
@@ -464,7 +464,7 @@ suite('CrActionMenu', function() {
 
           menu.addEventListener('cr-action-menu-repositioned', () => {
             assertTrue(dialog.open);
-            menuRect = menu.getBoundingClientRect();
+            menuRect = dialog.getBoundingClientRect();
             // Test that menu width got larger.
             assertTrue(menuRect.width > lastMenuWidth);
             // Test that menu upper-left moved further left.
