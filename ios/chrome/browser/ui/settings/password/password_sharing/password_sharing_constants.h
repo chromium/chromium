@@ -19,7 +19,8 @@ extern NSString* const kPasswordPickerViewID;
 extern NSString* const kPasswordPickerCancelButtonID;
 extern NSString* const kPasswordPickerNextButtonID;
 
-// The accessibility identifier of the sharing status view.
+// The accessibility identifiers of the sharing status view.
+extern NSString* const kSharingStatusViewID;
 extern NSString* const kSharingStatusDoneButtonID;
 
 // Links for managing Google Family groups.

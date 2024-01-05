@@ -141,6 +141,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   [super viewDidLoad];
 
   UIView* view = self.view;
+  view.accessibilityIdentifier = kSharingStatusViewID;
   view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
 
   // Add vertical stack view for the animation and all labels.

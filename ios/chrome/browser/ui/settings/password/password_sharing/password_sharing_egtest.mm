@@ -52,7 +52,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 // Test case for the Password Sharing flow.
 @interface PasswordSharingTestCase : ChromeTestCase
 
-- (GREYElementInteraction*)saveExamplePasswordToProfilestoreAndOpenDetails;
+- (GREYElementInteraction*)saveExamplePasswordToProfileStoreAndOpenDetails;
 
 - (GREYElementInteraction*)saveExamplePasswordsToProfileStoreAndOpenDetails;
 
@@ -60,7 +60,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 @implementation PasswordSharingTestCase
 
-- (GREYElementInteraction*)saveExamplePasswordToProfilestoreAndOpenDetails {
+- (GREYElementInteraction*)saveExamplePasswordToProfileStoreAndOpenDetails {
   // Mock successful reauth for opening the Password Manager.
   [PasswordSettingsAppInterface setUpMockReauthenticationModule];
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
@@ -162,7 +162,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 - (void)testShareButtonVisibilityWithSharingDisabled {
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -171,7 +171,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 - (void)testShareButtonVisibilityWithSharingEnabled {
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -179,7 +179,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 }
 
 - (void)testShareButtonVisibilityForSignedOutUser {
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -190,7 +190,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fake_identity enableSync:NO];
 
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -203,7 +203,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
        forUserPref:password_manager::prefs::kPasswordSharingEnabled];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   // Share button should be visible and display the policy info popup upon tap.
   [[EarlGrey
@@ -220,7 +220,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 - (void)testFamilyPickerCancelFlow {
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -261,6 +261,24 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testFamilyPickerSwipeToDismissFlow {
+  SignInAndEnableSync();
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewID)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewID)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)testPasswordPickerSwipeToDismissFlow {
   SignInAndEnableSync();
   [self saveExamplePasswordsToProfileStoreAndOpenDetails];
@@ -279,6 +297,31 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       assertWithMatcher:grey_notNil()];
 }
 
+- (void)testSharingStatusSwipeToDismissFlow {
+  SignInAndEnableSync();
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"user1@gmail.com")]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSharingStatusViewID)]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the current view is the password details view.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsTableViewID)]
+      assertWithMatcher:grey_notNil()];
+}
+
 - (void)testFetchingRecipientsNoFamilyStatus {
   // Override family status with `FetchFamilyMembersRequestStatus::kNoFamily`.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
@@ -289,7 +332,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -326,7 +369,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -364,7 +407,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -386,7 +429,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 - (void)testPasswordSharingSuccess {
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -475,7 +518,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
 
 - (void)testTappingLearnMoreInFamilyPickerInfoPopup {
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -512,7 +555,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -543,7 +586,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -585,7 +628,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
@@ -609,7 +652,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
                    forUserPref:prefs::kPasswordSharingFlowHasBeenEntered];
 
   SignInAndEnableSync();
-  [self saveExamplePasswordToProfilestoreAndOpenDetails];
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]

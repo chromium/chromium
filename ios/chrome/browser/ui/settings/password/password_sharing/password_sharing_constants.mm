@@ -14,6 +14,7 @@ NSString* const kPasswordPickerViewID = @"PasswordPickerViewID";
 NSString* const kPasswordPickerCancelButtonID = @"PasswordPickerCancelButtonID";
 NSString* const kPasswordPickerNextButtonID = @"PasswordPickerNextButtonID";
 
+NSString* const kSharingStatusViewID = @"SharingStatusViewID";
 NSString* const kSharingStatusDoneButtonID = @"SharingStatusDoneButtonID";
 
 const char kCreateFamilyGroupURL[] =
