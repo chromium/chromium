@@ -1514,8 +1514,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.DNS.ResolveTimeDiff.AddressRecordBeforeHTTPS.{Bucket}"
-    units="ms" expires_after="2024-01-29">
+<histogram name="Net.Dns.ResolveTimeDiff.AddressRecordBeforeHTTPS.{Bucket}"
+    units="ms" expires_after="2024-07-05">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
@@ -1526,8 +1526,8 @@ chromium-metrics-reviews@google.com.
   <token key="Bucket" variants="DnsResolveTimeDiffBucket"/>
 </histogram>
 
-<histogram name="Net.DNS.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
-    expires_after="2024-01-29">
+<histogram name="Net.Dns.ResolveTimeDiff.{Variant}.{Bucket}" units="ms"
+    expires_after="2024-07-05">
   <owner>bashi@chromium.org</owner>
   <owner>chrome-network-stack@google.com</owner>
   <summary>
