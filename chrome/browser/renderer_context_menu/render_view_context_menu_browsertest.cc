@@ -2792,11 +2792,6 @@ IN_PROC_BROWSER_TEST_F(
 #if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        FullPagePdfHasPageItems) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
 
@@ -2864,11 +2859,6 @@ IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
                        Rotate) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   std::unique_ptr<TestRenderViewContextMenu> menu = SetupAndCreateMenu();
   ASSERT_TRUE(menu);
   content::RenderFrameHost* target_rfh =

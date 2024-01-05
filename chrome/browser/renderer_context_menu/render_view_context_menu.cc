@@ -253,7 +253,9 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_util.h"
 #include "chrome/browser/pdf/pdf_frame_util.h"
+#include "pdf/pdf_features.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -777,6 +779,21 @@ Browser* FindNormalBrowser(const Profile* profile) {
   }
   return nullptr;
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+// Returns true if the PDF viewer is handling the save, false otherwise.
+bool MaybePdfViewerHandlesSave(RenderFrameHost* frame_host) {
+  if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) ||
+      !IsFrameInPdfViewer(frame_host)) {
+    return false;
+  }
+
+  RenderFrameHost* embedder_host = pdf_frame_util::GetEmbedderHost(frame_host);
+  CHECK(embedder_host);
+
+  return pdf_extension_util::MaybeDispatchSaveEvent(embedder_host);
+}
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 }  // namespace
 
@@ -2059,8 +2076,29 @@ void RenderViewContextMenu::AppendMediaItems() {
 }
 
 void RenderViewContextMenu::AppendPluginItems() {
+  RenderFrameHost* render_frame_host = GetRenderFrameHost();
+
+  bool is_full_page_pdf_viewer = false;
+#if BUILDFLAG(ENABLE_PDF)
+  // Always append page items for full page PDF Viewers.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      render_frame_host) {
+    // If the plugin is the PDF viewer, then `render_frame_host` will either be
+    // the PDF extension host or the PDF content host.
+    RenderFrameHost* extension_host =
+        pdf_frame_util::FindFullPagePdfExtensionHost(embedder_web_contents_);
+    // Check if the context menu is for the PDF extension host.
+    is_full_page_pdf_viewer = render_frame_host == extension_host;
+    if (!is_full_page_pdf_viewer) {
+      // Check if the context menu is for the PDF content host.
+      RenderFrameHost* parent_host = render_frame_host->GetParent();
+      is_full_page_pdf_viewer = parent_host && (parent_host == extension_host);
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
   if (params_.page_url == params_.src_url ||
-      (guest_view::GuestViewBase::IsGuest(GetRenderFrameHost()) &&
+      ((is_full_page_pdf_viewer ||
+        guest_view::GuestViewBase::IsGuest(render_frame_host)) &&
        (!embedder_web_contents_ || !embedder_web_contents_->IsSavable()))) {
     // Both full page and embedded plugins are hosted as guest now,
     // the difference is a full page plugin is not considered as savable.
@@ -3192,6 +3230,13 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_SAVE_PAGE:
+#if BUILDFLAG(ENABLE_PDF)
+      // Give the PDF viewer a chance to handle the save, otherwise have the
+      // embedder `WebContents` handle it.
+      if (MaybePdfViewerHandlesSave(GetRenderFrameHost())) {
+        break;
+      }
+#endif  // BUILDFLAG(ENABLE_PDF)
       embedder_web_contents_->OnSavePage();
       break;
 
@@ -4052,34 +4097,57 @@ void RenderViewContextMenu::ExecSaveLinkAs() {
 }
 
 void RenderViewContextMenu::ExecSaveAs() {
+  RenderFrameHost* frame_host = GetRenderFrameHost();
   bool is_large_data_url =
       params_.has_image_contents && params_.src_url.is_empty();
   if (params_.media_type == ContextMenuDataMediaType::kCanvas ||
       (params_.media_type == ContextMenuDataMediaType::kImage &&
        is_large_data_url)) {
-    RenderFrameHost* frame_host = GetRenderFrameHost();
     if (frame_host)
       frame_host->SaveImageAt(params_.x, params_.y);
-  } else {
-    RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
-    const GURL& url = params_.src_url;
-    content::Referrer referrer = CreateReferrer(url, params_);
-    RenderFrameHost* frame_host =
-        (params_.media_type == ContextMenuDataMediaType::kPlugin)
-            ? source_web_contents_->GetOuterWebContentsFrame()
-            : GetRenderFrameHost();
-    if (frame_host) {
-      net::HttpRequestHeaders headers;
+    return;
+  }
 
-      if (params_.media_type == ContextMenuDataMediaType::kImage) {
-        headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
-                                   blink::network_utils::ImageAcceptHeader());
-      }
-      source_web_contents_->SaveFrameWithHeaders(
-          url, referrer, headers.ToString(), params_.suggested_filename,
-          frame_host);
+  RecordDownloadSource(DOWNLOAD_INITIATED_BY_CONTEXT_MENU);
+  GURL url = params_.src_url;
+  const bool is_plugin =
+      params_.media_type == ContextMenuDataMediaType::kPlugin;
+  RenderFrameHost* target_frame_host = nullptr;
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif) &&
+      is_plugin && IsFrameInPdfViewer(frame_host)) {
+    // Give the PDF viewer a chance to handle the save.
+    if (MaybePdfViewerHandlesSave(frame_host)) {
+      return;
+    }
+
+    // Handle the save here.
+    target_frame_host = pdf_frame_util::GetEmbedderHost(frame_host);
+    CHECK(target_frame_host);
+    url = frame_host->GetLastCommittedURL();
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  if (!target_frame_host) {
+    target_frame_host = is_plugin
+                            ? source_web_contents_->GetOuterWebContentsFrame()
+                            : frame_host;
+    if (!target_frame_host) {
+      return;
     }
   }
+
+  net::HttpRequestHeaders headers;
+
+  if (params_.media_type == ContextMenuDataMediaType::kImage) {
+    headers.SetHeaderIfMissing(net::HttpRequestHeaders::kAccept,
+                               blink::network_utils::ImageAcceptHeader());
+  }
+  content::Referrer referrer = CreateReferrer(url, params_);
+  source_web_contents_->SaveFrameWithHeaders(url, referrer, headers.ToString(),
+                                             params_.suggested_filename,
+                                             target_frame_host);
 }
 
 void RenderViewContextMenu::ExecExitFullscreen() {
@@ -4445,12 +4513,14 @@ void RenderViewContextMenu::PluginActionAt(
     blink::mojom::PluginActionType plugin_action) {
   content::RenderFrameHost* plugin_rfh = nullptr;
 #if BUILDFLAG(ENABLE_PDF)
-  // A PDF plugin exists in a child frame embedded inside the extension's
-  // main frame when Pepper-free PDF viewer is enabled. To trigger any plugin
-  // action, we need to detect this child frame and trigger the actions from
-  // there.
-  plugin_rfh = pdf_frame_util::FindPdfChildFrame(
-      source_web_contents_->GetPrimaryMainFrame());
+  // A PDF plugin exists in a child frame embedded inside the PDF extension's
+  // frame. To trigger any plugin action, detect this child frame and trigger
+  // the actions from there.
+  content::RenderFrameHost* extension_rfh =
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfOopif)
+          ? pdf_frame_util::FindFullPagePdfExtensionHost(source_web_contents_)
+          : source_web_contents_->GetPrimaryMainFrame();
+  plugin_rfh = pdf_frame_util::FindPdfChildFrame(extension_rfh);
 #endif
   if (!plugin_rfh)
     plugin_rfh = source_web_contents_->GetPrimaryMainFrame();

@@ -2236,11 +2236,6 @@ class PdfDownloadTestSplitCacheEnabled : public base::test::WithFeatureOverride,
 
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
                        SaveMainFramePdfFromContextMenu_IsolationInfo) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2311,11 +2306,6 @@ IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
 
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
                        SaveSubframePdfFromPdfUI_IsolationInfo) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
@@ -2503,11 +2493,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTestSplitCacheEnabled,
 #if BUILDFLAG(ENABLE_PDF)
 IN_PROC_BROWSER_TEST_P(PdfDownloadTestSplitCacheEnabled,
                        SaveSubframePdfFromContextMenu_IsolationInfo) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   https_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(https_test_server()->Start());
   EnableFileChooser(true);
