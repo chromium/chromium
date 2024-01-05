@@ -5885,11 +5885,17 @@ void AXObject::SetChildTree(const ui::AXTreeID& child_tree_id) {
     return;
   }
   child_tree_id_ = child_tree_id;
-  // TODO(accessibility) Replace RemoveSubtreeWhenSafe() with an implementation
-  // that only calls InvalidateCachedValues(). It is no longer necessary to
-  // remove the subtree for a changed cached value, because
-  // OnInheritedCachedValuesChanged() ensures that descendants are updated.
-  AXObjectCache().RemoveSubtreeWhenSafe(GetNode(), /* remove_root */ false);
+  // Child objects inherit their cached_is_hidden_by_child_tree_ from their
+  // parents. However, this is not true for the direct children of the root,
+  // because the root itself is not hidden by the child tree. Therefore the
+  // root's direct children must inherit cached_is_hidden_by_child_tree_ from
+  // the presence of a child tree id on their parent (the root). Calling
+  // OnInheritedCachedValuesChanged() as we set child_tree_id_ will cause
+  // cached_is_hidden_by_child_tree_ as well as ignored/included changes from
+  // that to propagate to the children, and further propagation to descendants
+  // wil result from changes to cached_is_hidden_by_child_tree_.
+  AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
+  OnInheritedCachedValuesChanged();
   AXObjectCache().UpdateAXForAllDocuments();
 }
 

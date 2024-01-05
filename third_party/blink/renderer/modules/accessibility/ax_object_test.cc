@@ -1714,7 +1714,7 @@ TEST_F(AccessibilityTest, StitchChildTree) {
                 ax::mojom::blink::StringAttribute::kChildTreeId));
 
   // Fetch the hosting nodes again to ensure that we have their latest
-  // incurnations, if any.
+  // incarnations, if any.
   div = GetAXObjectByElementId("div");
   ASSERT_NE(nullptr, div);
   button = GetAXObjectByElementId("button");
@@ -1725,8 +1725,6 @@ TEST_F(AccessibilityTest, StitchChildTree) {
   EXPECT_TRUE(div->AccessibilityIsIncludedInTree());
   EXPECT_TRUE(div->IsVisible());
   EXPECT_EQ(0, div->ChildCountIncludingIgnored());
-  EXPECT_TRUE(paragraph->IsDetached());
-  EXPECT_TRUE(paragraph_text->IsDetached());
   EXPECT_TRUE(button->AccessibilityIsIncludedInTree())
       << "`button` should switch from ignored due to `display:none`, to "
          "included in the tree.";
@@ -1739,15 +1737,10 @@ TEST_F(AccessibilityTest, StitchChildTree) {
       << "The visibility state should not change, only the inclusion in the "
          "tree.";
   EXPECT_EQ(0, canvas->ChildCountIncludingIgnored());
-  EXPECT_TRUE(ignored_button->IsDetached());
 
   // Re-create the detached objects and check that they are still "hidden by the
   // child tree". We need to do this because Blink will re-create the objects
   // once it walks the DOM tree again.
-  paragraph = GetAXObjectByElementId("paragraph");
-  ASSERT_NE(nullptr, paragraph);
-  ignored_button = GetAXObjectByElementId("ignoredButton");
-  ASSERT_NE(nullptr, ignored_button);
 
   EXPECT_TRUE(paragraph->IsHiddenByChildTree());
   EXPECT_TRUE(paragraph->AccessibilityIsIgnored());
@@ -1809,6 +1802,12 @@ TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedAriaHiddenProperty) {
   ASSERT_NE(nullptr, mark);
   // Ensure that aria-hidden has propagated to a deep descendant.
   ASSERT_TRUE(mark->IsAriaHidden());
+
+  main->GetElement()->removeAttribute(html_names::kAriaHiddenAttr);
+  GetAXObjectCache().UpdateAXForAllDocuments();
+
+  // Ensure that clearing aria-hidden has propagated to a deep descendant.
+  ASSERT_FALSE(mark->IsAriaHidden());
 }
 
 TEST_F(AccessibilityTest, UpdateTreeUpdatesInheritedInertProperty) {
