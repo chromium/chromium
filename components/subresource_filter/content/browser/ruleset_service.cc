@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -79,7 +79,7 @@ class SentinelFile {
   SentinelFile& operator=(const SentinelFile&) = delete;
 
   bool IsPresent() { return base::PathExists(path_); }
-  bool Create() { return base::WriteFile(path_, base::StringPiece()); }
+  bool Create() { return base::WriteFile(path_, std::string_view()); }
   bool Remove() { return base::DeleteFile(path_); }
 
  private:

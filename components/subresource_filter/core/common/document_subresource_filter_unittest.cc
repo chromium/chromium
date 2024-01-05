@@ -4,8 +4,9 @@
 
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
+#include <string_view>
+
 #include "base/files/file.h"
-#include "base/strings/string_piece.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
@@ -50,7 +51,7 @@ class DocumentSubresourceFilterTest : public ::testing::Test {
         SetTestRulesetToDisallowURLsWithPathSuffix(kTestAlphaURLPathSuffix));
   }
 
-  void SetTestRulesetToDisallowURLsWithPathSuffix(base::StringPiece suffix) {
+  void SetTestRulesetToDisallowURLsWithPathSuffix(std::string_view suffix) {
     testing::TestRulesetPair test_ruleset_pair;
     ASSERT_NO_FATAL_FAILURE(
         test_ruleset_creator_.CreateRulesetToDisallowURLsWithPathSuffix(
