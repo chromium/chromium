@@ -23,6 +23,8 @@
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
 using ::testing::_;
+using ::testing::ByMove;
+using ::testing::Return;
 using ::testing::StrictMock;
 
 namespace media {
@@ -108,10 +110,11 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 
   // ProvisionFetcher implementation. Done as a mock method so we can properly
   // check if |media_drm_bridge_| invokes it or not.
-  MOCK_METHOD3(Retrieve,
-               void(const GURL& default_url,
-                    const std::string& request_data,
-                    ResponseCB response_cb));
+  MOCK_METHOD(void,
+              Retrieve,
+              (const GURL& default_url,
+               const std::string& request_data,
+               ResponseCB response_cb));
 
   void Provision() {
     media_drm_bridge_->Provision(base::BindOnce(
@@ -122,7 +125,11 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
 
   // MediaDrmBridge::Provision() requires a callback that is called when
   // provisioning completes and indicates if it succeeds or not.
-  MOCK_METHOD1(ProvisioningDone, void(bool));
+  MOCK_METHOD(void, ProvisioningDone, (bool));
+
+  // Called whenever Provision() is run to create a ProvisionFetcher (which if
+  // needed will be `this`).
+  MOCK_METHOD(std::unique_ptr<ProvisionFetcher>, CreateProvisionFetcher, ());
 
  protected:
   scoped_refptr<MediaDrmBridge> media_drm_bridge_;
@@ -130,14 +137,8 @@ class MediaDrmBridgeTest : public ProvisionFetcher, public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  std::unique_ptr<ProvisionFetcher> CreateProvisionFetcher() {
-    return std::make_unique<ProvisionFetcherWrapper>(this);
-  }
-
   base::test::TaskEnvironment task_environment_;
 };
-
-using MediaDrmBridgeDeathTest = MediaDrmBridgeTest;
 
 TEST_F(MediaDrmBridgeTest, IsKeySystemSupported_Widevine) {
   // TODO(xhwang): Enable when b/13564917 is fixed.
@@ -239,6 +240,9 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   // responds. As a result, there should be a call to Retrieve() but not to
   // ProvisioningDone() (CB passed to Provision()) as the provisioning never
   // completes.
+  EXPECT_CALL(*this, CreateProvisionFetcher())
+      .WillOnce(
+          Return(ByMove(std::make_unique<ProvisionFetcherWrapper>(this))));
   EXPECT_CALL(*this, Retrieve(_, _, _));
   EXPECT_CALL(*this, ProvisioningDone(_)).Times(0);
 
@@ -248,7 +252,7 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
   EXPECT_TRUE(media_drm_bridge_);
   Provision();
 
-  // ProvisioningDone() callback is executed asynchronously.
+  // Provisioning is executed asynchronously.
   base::RunLoop().RunUntilIdle();
 }
 
@@ -262,6 +266,8 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine_NoOrigin) {
   // Calling Provision() later should fail as the origin is not provided (or
   // origin isolated storage is not available). No provisioning request should
   // be attempted.
+  EXPECT_CALL(*this, CreateProvisionFetcher()).Times(0);
+  EXPECT_CALL(*this, Retrieve(_, _, _)).Times(0);
   EXPECT_CALL(*this, ProvisioningDone(false));
 
   // Create MediaDrmBridge. We only test "L3" as "L1" depends on whether the
@@ -270,54 +276,53 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine_NoOrigin) {
   EXPECT_TRUE(media_drm_bridge_);
   Provision();
 
-  // ProvisioningDone() callback is executed asynchronously.
+  // Provisioning is executed asynchronously.
   base::RunLoop().RunUntilIdle();
 }
 
-// Unprovisioning with a Null Callback should not crash, as callback will not be
-// used.
-TEST_F(MediaDrmBridgeTest, UnprovisionWithNullCallback_Widevine) {
+TEST_F(MediaDrmBridgeTest, Unprovision_Widevine) {
+  // Only test this if Widevine is supported. Otherwise
+  // CreateWithoutSessionSupport() will return null and it can't be tested.
+  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
+    GTEST_SKIP() << "Widevine not supported on device.";
+  }
+
+  // Ensure Unprovision doesn't try to provision.
+  EXPECT_CALL(*this, CreateProvisionFetcher()).Times(0);
+
+  // Create MediaDrmBridge. We only test "L3" as "L1" depends on whether the
+  // test device supports it or not.
+  CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
+  EXPECT_TRUE(media_drm_bridge_);
+  Unprovision();
+}
+
+// Provisioning with a Null Callback should not crash, as CreateFetcherCB is
+// 'base::NullCallback()' which cannot be '.Run()'.
+TEST_F(MediaDrmBridgeTest, ProvisionWithNullCallback_Widevine) {
   // Only test this if Widevine is supported. Otherwise
   // CreateWithoutSessionSupport() will return null and it can't be
   // tested.
   if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
     GTEST_SKIP() << "Widevine not supported on device.";
   }
+
+  // Calling Provision() should trigger a provisioning request. But with no
+  // CreateFetcherCB specified, it should simply fail the provisioning attempt.
+  // With no CB there should not be a call to Retrieve() and ProvisioningDone()
+  // should return false.
+  EXPECT_CALL(*this, Retrieve(_, _, _)).Times(0);
+  EXPECT_CALL(*this, ProvisioningDone(false));
 
   // Create MediaDrmBridge. We only test "L3" as "L1" depends on whether
   // the test device supports it or not.
   CreateWithoutSessionSupportWithNullCallback(kWidevineKeySystem, kTestOrigin,
                                               kL3);
   EXPECT_TRUE(media_drm_bridge_);
-  Unprovision();
-  // ProvisioningDone() callback is executed asynchronously.
+  Provision();
+
+  // Provisioning is executed asynchronously.
   base::RunLoop().RunUntilIdle();
-}
-
-// Provisioning with a Null Callback should crash, as CreateFetcherCB becomes
-// 'base::NullCallback()' which cannot be '.Run()'.
-TEST_F(MediaDrmBridgeDeathTest, ProvisionWithNullCallback_Widevine) {
-  // Only test this if Widevine is supported. Otherwise
-  // CreateWithoutSessionSupport() will return null and it can't be
-  // tested.
-  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
-    GTEST_SKIP() << "Widevine not supported on device.";
-  }
-
-  GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DEATH(
-      {
-        // Create MediaDrmBridge. We only test "L3" as "L1" depends on whether
-        // the test device supports it or not.
-        CreateWithoutSessionSupportWithNullCallback(kWidevineKeySystem,
-                                                    kTestOrigin, kL3);
-        EXPECT_TRUE(media_drm_bridge_);
-        Provision();
-
-        // ProvisioningDone() callback is executed asynchronously.
-        base::RunLoop().RunUntilIdle();
-      },
-      "");
 }
 
 }  // namespace media

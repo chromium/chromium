@@ -956,13 +956,22 @@ void MediaDrmBridge::SendProvisioningRequest(const GURL& default_url,
   DVLOG(1) << __func__;
 
   DCHECK(!provision_fetcher_) << "At most one provision request at any time.";
-  DCHECK(create_fetcher_cb_);
-  provision_fetcher_ = create_fetcher_cb_.Run();
 
-  provision_fetcher_->Retrieve(
-      default_url, request_data,
-      base::BindOnce(&MediaDrmBridge::ProcessProvisionResponse,
-                     weak_factory_.GetWeakPtr()));
+  if (create_fetcher_cb_) {
+    provision_fetcher_ = create_fetcher_cb_.Run();
+    provision_fetcher_->Retrieve(
+        default_url, request_data,
+        base::BindOnce(&MediaDrmBridge::ProcessProvisionResponse,
+                       weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // If no fetcher provided, simply fail the request. No response data is
+  // required with a failure.
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> j_response;
+  Java_MediaDrmBridge_processProvisionResponse(env, j_media_drm_, false,
+                                               j_response);
 }
 
 void MediaDrmBridge::ProcessProvisionResponse(bool success,
