@@ -93,7 +93,7 @@ void OnDeviceModelServiceController::Init() {
       switches::GetOnDeviceModelExecutionOverride();
   if (model_path_override_switch) {
     SetModelPath(*StringToFilePath(*model_path_override_switch));
-  } else {
+  } else if (on_device_component_state_manager_) {
     const OnDeviceModelComponentState* state =
         on_device_component_state_manager_->GetState();
     if (state) {
