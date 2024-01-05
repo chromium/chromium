@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Pair;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -21,6 +23,7 @@ import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -157,4 +160,18 @@ public interface TabManagementDelegate {
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
             @NonNull SnackbarManager snackbarManager);
+
+    /**
+     * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
+     *
+     * @param activity The {@link Activity} that hosts the pane.
+     * @param tabModelSelector For access to {@link TabModel}.
+     * @param newTabButtonOnClickListener The listener for clicking the new tab button.
+     * @param isIncognito Whether this is an incognito pane.
+     */
+    Pair<TabSwitcher, Pane> createTabSwitcherPane(
+            @NonNull Activity activity,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull OnClickListener newTabButtonOnClickListener,
+            boolean isIncognito);
 }
