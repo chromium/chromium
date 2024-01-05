@@ -216,6 +216,7 @@ public class ChromeImageViewPreference extends Preference {
             mButton.setPadding(0, 0, 0, 0);
             mButton.setOnClickListener(null);
             mButton.setContentDescription(null);
+            mButton.setClickable(false);
             return;
         }
 
