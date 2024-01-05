@@ -636,6 +636,76 @@ const PermissionsPolicyParserTestCase
             },
         },
         {
+            /* test_name */ "AttributeWithLineBreaks",
+            /* feature_policy_string */
+            "geolocation;\n"
+            "fullscreen",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
+            {
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {{ORIGIN_B, /*has_subdomain_wildcard=*/false}},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {{ORIGIN_B, /*has_subdomain_wildcard=*/false}},
+                },
+            },
+        },
+        {
+            /* test_name */ "AttributeWithCRLF",
+            /* feature_policy_string */
+            "geolocation;\r\n"
+            "fullscreen",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
+            {
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {{ORIGIN_B, /*has_subdomain_wildcard=*/false}},
+                },
+                {
+                    mojom::blink::PermissionsPolicyFeature::kFullscreen,
+                    /* self_if_matches */ absl::nullopt,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {{ORIGIN_B, /*has_subdomain_wildcard=*/false}},
+                },
+            },
+        },
+        {
+            /* test_name */ "AlternativeWhitespceBetweenTokens",
+            /* feature_policy_string */
+            "\r\n\r\ngeolocation\t 'self'\f\f" ORIGIN_B "\t",
+            /* permissions_policy_string */ NOT_APPLICABLE,
+            /* self_origin */ ORIGIN_A,
+            /* src_origin */ ORIGIN_B,
+            /* expected_parse_result */
+            {
+                {
+                    mojom::blink::PermissionsPolicyFeature::kGeolocation,
+                    /* self_if_matches */ ORIGIN_A,
+                    /* matches_all_origins */ false,
+                    /* matches_opaque_src */ false,
+                    {{ORIGIN_B, /*has_subdomain_wildcard=*/false}},
+                },
+            },
+        },
+        {
             /* test_name */ "ReportingEndpointWithStar",
             /* feature_policy_string */ NOT_APPLICABLE,
             /* permissions_policy_string */
