@@ -3963,9 +3963,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="interstitial.malware_subresource.decision.repeat_visit"/>
   <affected-histogram name="interstitial.malware_subresource.interaction"/>
-  <affected-histogram name="interstitial.origin_policy.decision"/>
-  <affected-histogram name="interstitial.origin_policy.decision.repeat_visit"/>
-  <affected-histogram name="interstitial.origin_policy.interaction"/>
   <affected-histogram name="interstitial.phishing.decision"/>
   <affected-histogram name="interstitial.phishing.decision.repeat_visit"/>
   <affected-histogram name="interstitial.phishing.interaction"/>
