@@ -149,6 +149,10 @@ extern const base::FeatureParam<double> kTabOrganizationTriggerThreshold;
 extern const base::FeatureParam<double>
     kTabOrganizationTriggerSensitivityThreshold;
 
+// Enable 'demo mode' for Tab Organization triggering, which triggers much more
+// predictably and frequently.
+extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
+
 BASE_DECLARE_FEATURE(kTabOrganizationRefreshButton);
 
 BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
