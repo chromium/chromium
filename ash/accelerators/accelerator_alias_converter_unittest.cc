@@ -801,6 +801,16 @@ INSTANTIATE_TEST_SUITE_P(
         {ui::Accelerator{ui::VKEY_END, ui::EF_ALT_DOWN}, absl::nullopt},
 
         {ui::Accelerator{ui::VKEY_NEXT, ui::EF_ALT_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_CONTROL_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_CONTROL_DOWN}, absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_HOME, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+         absl::nullopt},
+
+        {ui::Accelerator{ui::VKEY_END, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN},
+         absl::nullopt},
     }));
 
 TEST_P(SixPackAliasAltTest, CheckSixPackAliasAlt) {

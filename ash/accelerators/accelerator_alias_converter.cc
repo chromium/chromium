@@ -449,10 +449,22 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateSixPackAliases(
 
   // For all |six_pack_keys|, avoid remapping if the six-pack remap modifier
   // (Search or Alt) is part of the original accelerator.
-  const bool is_search_remap =
-      six_pack_shortcut_modifier == ui::mojom::SixPackShortcutModifier::kSearch;
-  if ((is_search_remap && accelerator.IsCmdDown()) ||
-      (!is_search_remap && accelerator.IsAltDown())) {
+  if (ui::mojom::SixPackShortcutModifier::kSearch ==
+          six_pack_shortcut_modifier &&
+      accelerator.IsCmdDown()) {
+    return std::vector<ui::Accelerator>();
+  }
+
+  if (ui::mojom::SixPackShortcutModifier::kAlt == six_pack_shortcut_modifier &&
+      accelerator.IsAltDown()) {
+    return std::vector<ui::Accelerator>();
+  }
+
+  // For the Home and End Alt-based aliases, they additionally include the
+  // Ctrl modifier, so the original accelerator must not include Ctrl.
+  if (ui::mojom::SixPackShortcutModifier::kAlt == six_pack_shortcut_modifier &&
+      accelerator.IsCtrlDown() &&
+      (accel_key_code == ui::VKEY_HOME || accel_key_code == ui::VKEY_END)) {
     return std::vector<ui::Accelerator>();
   }
 
