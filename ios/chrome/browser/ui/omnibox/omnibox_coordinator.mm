@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/single_thread_task_runner.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
@@ -63,6 +64,8 @@
 // The mediator for the omnibox.
 @property(nonatomic, strong) OmniboxMediator* mediator;
 
+@property(nonatomic, strong) OmniboxAssistiveKeyboardMediator* keyboardMediator;
+
 // The paste delegate for the omnibox that prevents multipasting.
 @property(nonatomic, strong) OmniboxTextFieldPasteDelegate* pasteDelegate;
 
@@ -88,7 +91,6 @@
   std::unique_ptr<OmniboxViewIOS> _editView;
 
   /// Object handling interactions in the keyboard accessory view.
-  OmniboxAssistiveKeyboardMediator* _keyboardMediator;
 
   // The handler for ToolbarCommands.
   id<ToolbarCommands> _toolbarHandler;
@@ -96,6 +98,7 @@
 @synthesize locationBar = _locationBar;
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
+@synthesize keyboardMediator = _keyboardMediator;
 
 #pragma mark - public
 
@@ -168,9 +171,11 @@
   _keyboardMediator.omniboxTextField = self.textField;
   _keyboardMediator.delegate = self;
 
-  self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
-      self.textField, kDotComTLD, _keyboardMediator, templateURLService,
-      self.bubblePresenter);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [self createKeyboard];
+      }),
+      base::Milliseconds(2));
 
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
     self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
@@ -180,6 +185,17 @@
 
   self.popupCoordinator = [self createPopupCoordinator:self.presenterDelegate];
   [self.popupCoordinator start];
+}
+
+- (void)createKeyboard {
+  if (self.browser) {
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(
+        self.textField, kDotComTLD, _keyboardMediator, templateURLService,
+        self.bubblePresenter);
+  }
 }
 
 - (void)stop {
@@ -197,7 +213,7 @@
     self.keyboardAccessoryView.templateURLService = nil;
   }
 
-  _keyboardMediator = nil;
+  self.keyboardMediator = nil;
   self.keyboardAccessoryView = nil;
   self.mediator = nil;
   self.returnDelegate = nil;
