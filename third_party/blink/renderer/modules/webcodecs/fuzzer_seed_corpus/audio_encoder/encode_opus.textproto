@@ -12,7 +12,15 @@ invocations: [
       codec: 'opus',
       sample_rate: 8000,
       number_of_channels: 2,
-      bitrate: 32000
+      bitrate: 32000,
+      bitrate_mode: VARIABLE,
+      opus {
+        frame_duration: 10000,
+        complexity: 9,
+        packetlossperc: 20,
+        useinbandfec: true,
+        usedtx: true
+      }
     }
   },
   {
@@ -48,7 +56,15 @@ invocations: [
       codec: 'opus',
       sample_rate: 8000,
       number_of_channels: 1,
-      bitrate: 50000
+      bitrate: 50000,
+      bitrate_mode: CONSTANT,
+      opus {
+        frame_duration: 20000,
+        complexity: 5,
+        packetlossperc: 0,
+        useinbandfec: false,
+        usedtx: false
+      }
     }
   },
   {

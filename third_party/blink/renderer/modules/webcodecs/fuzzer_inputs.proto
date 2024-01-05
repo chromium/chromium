@@ -191,8 +191,25 @@ enum AacFormat {
   ADTS = 1;
 }
 
+enum BitrateMode {
+  VARIABLE = 0;
+  CONSTANT = 1;
+}
+
 message AacEncoderConfig {
   optional AacFormat format = 1;
+}
+
+message OpusEncoderConfig {
+  optional uint64 frame_duration = 1;
+
+  optional uint32 complexity = 2;
+
+  optional uint32 packetlossperc = 3;
+
+  optional bool useinbandfec = 4;
+
+  optional bool usedtx = 5;
 }
 
 message ConfigureAudioEncoder {
@@ -206,6 +223,10 @@ message ConfigureAudioEncoder {
   optional uint64 bitrate = 4;
 
   optional AacEncoderConfig aac = 5;
+
+  optional OpusEncoderConfig opus = 6;
+
+  optional BitrateMode bitrate_mode = 7;
 }
 
 enum EncodedChunkType {

@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_opus_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_plane_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
@@ -149,11 +150,35 @@ AudioEncoderConfig* MakeAudioEncoderConfig(
   config->setNumberOfChannels(proto.number_of_channels());
   config->setSampleRate(proto.sample_rate());
 
+  if (proto.has_bitrate_mode()) {
+    config->setBitrateMode(ToBitrateMode(proto.bitrate_mode()));
+  }
+
   if (proto.has_aac()) {
     auto* aac = AacEncoderConfig::Create();
     config->setAac(aac);
     if (proto.aac().has_format()) {
       aac->setFormat(ToAacFormat(proto.aac().format()));
+    }
+  }
+
+  if (proto.has_opus()) {
+    auto* opus = OpusEncoderConfig::Create();
+    config->setOpus(opus);
+    if (proto.opus().has_frame_duration()) {
+      opus->setFrameDuration(proto.opus().frame_duration());
+    }
+    if (proto.opus().has_complexity()) {
+      opus->setComplexity(proto.opus().complexity());
+    }
+    if (proto.opus().has_packetlossperc()) {
+      opus->setPacketlossperc(proto.opus().packetlossperc());
+    }
+    if (proto.opus().has_useinbandfec()) {
+      opus->setUseinbandfec(proto.opus().useinbandfec());
+    }
+    if (proto.opus().has_usedtx()) {
+      opus->setUsedtx(proto.opus().usedtx());
     }
   }
 
@@ -233,6 +258,15 @@ String ToAacFormat(wc_fuzzer::AacFormat format) {
       return "aac";
     case wc_fuzzer::ADTS:
       return "adts";
+  }
+}
+
+String ToBitrateMode(wc_fuzzer::BitrateMode bitrate_mode) {
+  switch (bitrate_mode) {
+    case wc_fuzzer::VARIABLE:
+      return "variable";
+    case wc_fuzzer::CONSTANT:
+      return "constant";
   }
 }
 
