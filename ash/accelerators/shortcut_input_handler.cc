@@ -97,10 +97,19 @@ void ShortcutInputHandler::OnPrerewriteKeyInputEvent(
     return;
   }
 
-  mojom::KeyEvent key_event(event.key_code(), static_cast<int>(event.code()),
+  // Remap positional keys in the current layout to the corresponding US layout
+  // KeyboardCode.
+  ui::KeyboardCode key_code =
+      ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+          event.code(), event.key_code());
+  if (key_code == ui::VKEY_UNKNOWN) {
+    key_code = event.key_code();
+  }
+
+  mojom::KeyEvent key_event(key_code, static_cast<int>(event.code()),
                             static_cast<int>(event.GetDomKey()),
                             event.flags() & kKeyboardModifierFlags,
-                            base::UTF16ToUTF8(GetKeyDisplay(event.key_code())));
+                            base::UTF16ToUTF8(GetKeyDisplay(key_code)));
   if (event.type() == ui::ET_KEY_PRESSED) {
     for (auto& observer : observers_) {
       observer.OnPrerewrittenShortcutInputEventPressed(key_event);
