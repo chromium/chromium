@@ -15,7 +15,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/uuid.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 #include "google_apis/google_api_keys.h"
@@ -68,7 +67,8 @@ class HostStarterImpl : public HostStarter,
   void OnGetUserEmailResponse(const std::string& user_email) override;
 
   // remoting::ServiceClient::Delegate
-  void OnHostRegistered(const std::string& authorization_code) override;
+  void OnHostRegistered(const std::string& host_id,
+                        const std::string& authorization_code) override;
   void OnHostUnregistered() override;
 
   // TODO(sergeyu): Following methods are members of all three delegate
@@ -230,17 +230,33 @@ void HostStarterImpl::OnGetUserEmailResponse(const std::string& user_email) {
   }
 }
 
-void HostStarterImpl::OnHostRegistered(const std::string& authorization_code) {
+void HostStarterImpl::OnHostRegistered(const std::string& host_id,
+                                       const std::string& authorization_code) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&HostStarterImpl::OnHostRegistered, weak_ptr_,
-                                  authorization_code));
+                                  host_id, authorization_code));
     return;
   }
 
+  if (host_id.empty()) {
+    NOTREACHED() << "No host id returned by the Directory.";
+    std::move(on_done_).Run(REGISTRATION_ERROR);
+    return;
+  }
+  if (!start_host_params_.id.empty() &&
+      !base::EqualsCaseInsensitiveASCII(start_host_params_.id, host_id)) {
+    LOG(ERROR) << "Host id (" << host_id << ") returned from the service "
+               << "does not match the host id provided ("
+               << start_host_params_.id << ")";
+    std::move(on_done_).Run(REGISTRATION_ERROR);
+    return;
+  }
+  start_host_params_.id = host_id;
+
   if (authorization_code.empty()) {
     NOTREACHED() << "No authorization code returned by the Directory.";
-    std::move(on_done_).Run(START_ERROR);
+    std::move(on_done_).Run(REGISTRATION_ERROR);
     return;
   }
 
@@ -284,9 +300,6 @@ void HostStarterImpl::StartHostProcess() {
 }
 
 void HostStarterImpl::OnLocalHostStopped() {
-  if (start_host_params_.id.empty()) {
-    start_host_params_.id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  }
   key_pair_ = RsaKeyPair::Generate();
 
   std::string host_client_id =

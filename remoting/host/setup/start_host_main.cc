@@ -163,7 +163,9 @@ void OnDone(HostStarter::Result result) {
 
 bool InitializeHostStarterParams(HostStarter::Params& params,
                                  const base::CommandLine* command_line) {
-  params.id = command_line->GetSwitchValueASCII("host-id");
+  if (command_line->HasSwitch("host-id")) {
+    params.id = command_line->GetSwitchValueASCII("host-id");
+  }
   params.name = command_line->GetSwitchValueASCII("name");
   params.pin = command_line->GetSwitchValueASCII("pin");
   params.auth_code = command_line->GetSwitchValueASCII("code");

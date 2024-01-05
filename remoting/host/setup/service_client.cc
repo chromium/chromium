@@ -109,7 +109,8 @@ void ServiceClient::Core::OnRegisterHostResponse(
     return;
   }
 
-  delegate_->OnHostRegistered(response->auth_code());
+  delegate_->OnHostRegistered(response->host_info().host_id(),
+                              response->auth_code());
 }
 
 void ServiceClient::Core::OnDeleteHostResponse(
