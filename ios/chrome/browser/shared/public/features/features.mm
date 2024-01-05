@@ -389,10 +389,6 @@ BASE_FEATURE(kEnableFeedAblation,
              "EnableFeedAblation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedExperimentTagging,
-             "EnableFeedExperimentTagging",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedDisableHotStartRefresh,
              "FeedDisableHotStartRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -704,10 +700,6 @@ bool IsIOSHideFeedWithSearchChoiceTargeted() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
-}
-
-bool IsFeedExperimentTaggingEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedExperimentTagging);
 }
 
 bool IsFeedHotStartRefreshDisabled() {

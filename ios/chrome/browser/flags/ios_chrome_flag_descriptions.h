@@ -362,10 +362,6 @@ extern const char kEnableWebChannelsDescription[];
 extern const char kFeedBackgroundRefreshName[];
 extern const char kFeedBackgroundRefreshDescription[];
 
-// Title and description for the flag to enable feed experiment tagging.
-extern const char kFeedExperimentTaggingName[];
-extern const char kFeedExperimentTaggingDescription[];
-
 // Title and description for the flag to trigger the startup sign-in promo.
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];

@@ -423,10 +423,6 @@ const char kFeedBackgroundRefreshDescription[] =
     "Schedules a feed background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
-const char kFeedExperimentTaggingName[] = "Enable Feed experiment tagging";
-const char kFeedExperimentTaggingDescription[] =
-    "Makes server experiments visible as client-side experiments.";
-
 const char kForceStartupSigninPromoName[] = "Display the startup sign-in promo";
 const char kForceStartupSigninPromoDescription[] =
     "When enabled, the startup sign-in promo is always displayed when starting "

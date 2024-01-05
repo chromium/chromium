@@ -352,9 +352,6 @@ BASE_DECLARE_FEATURE(kEnableWebChannels);
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
 
-// Feature flag to enable feed experiment tagging.
-BASE_DECLARE_FEATURE(kEnableFeedExperimentTagging);
-
 // Feature flag to disable Discover-controlled foregrounding refreshes.
 BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
 
@@ -565,9 +562,6 @@ bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
 
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
-
-// Whether the feed experiment tagging is enabled.
-bool IsFeedExperimentTaggingEnabled();
 
 // Whether Discover-controlled foregrounding refreshes are disabled.
 bool IsFeedHotStartRefreshDisabled();
