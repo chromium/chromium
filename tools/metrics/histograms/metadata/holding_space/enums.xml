@@ -115,6 +115,11 @@ chromium-metrics-reviews@google.com.
   <int value="76" label=".zip"/>
 </enum>
 
+<enum name="HoldingSpaceFilePickerBindingContext">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kPhotoshopWeb"/>
+</enum>
+
 <enum name="HoldingSpaceFilesAppChipAction">
   <int value="0" label="kClick"/>
 </enum>

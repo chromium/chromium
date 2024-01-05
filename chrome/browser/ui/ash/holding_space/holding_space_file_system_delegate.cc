@@ -416,16 +416,14 @@ void HoldingSpaceFileSystemDelegate::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,
     const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!features::IsHoldingSpacePhotoshopWebIntegrationEnabled()) {
-    return;
-  }
 
-  if (file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
+  holding_space_metrics::RecordFileCreatedFromShowSaveFilePicker(
+      file_picker_binding_context, url.path());
+
+  if (features::IsHoldingSpacePhotoshopWebIntegrationEnabled() &&
+      file_picker_binding_context.DomainIs("photoshop.adobe.com")) {
     service()->AddItemOfType(HoldingSpaceItem::Type::kPhotoshopWeb, url.path());
-    return;
   }
-
-  // TODO(http://b/310708275): Emit histogram to track calls from other domains.
 }
 
 void HoldingSpaceFileSystemDelegate::OnFileModified(

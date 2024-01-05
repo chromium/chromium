@@ -60,6 +60,23 @@ enum class FilesAppChipAction {
 // Records the specified `action` taken on the holding space Files app chip.
 ASH_PUBLIC_EXPORT void RecordFilesAppChipAction(FilesAppChipAction action);
 
+// Enumeration of binding contexts for the file picker used to create a file in
+// fulfillment of a `window.showSaveFilePicker()` request. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum class FilePickerBindingContext {
+  kUnknown = 0,
+  kPhotoshopWeb = 1,
+  kMaxValue = kPhotoshopWeb,
+};
+
+// Records that a file picker with the specified `file_picker_binding_context`
+// was used to create the file at the specified `file_path` in fulfillment of a
+// `window.showSaveFilePicker()` request.
+ASH_PUBLIC_EXPORT void RecordFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const base::FilePath& file_path);
+
 // Enumeration of actions that can be taken on holding space items. These values
 // are persisted to logs. Entries should not be renumbered and numeric values
 // should never be reused.

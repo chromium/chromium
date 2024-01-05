@@ -83,7 +83,10 @@ namespace {
 
 // Aliases ---------------------------------------------------------------------
 
-using holding_space::ScopedTestMountPoint;
+using ::ash::holding_space::ScopedTestMountPoint;
+using ::ash::holding_space_metrics::FilePickerBindingContext;
+using ::base::Bucket;
+using ::base::BucketsAre;
 using ::testing::AllOf;
 using ::testing::Conditional;
 using ::testing::ElementsAre;
@@ -3106,6 +3109,10 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
   const HoldingSpaceFile::FileSystemType file_system_type =
       holding_space_util::ResolveFileSystemType(profile, file_system_url);
 
+  // Verify initial histogram state.
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(histogram_tester.GetAllHistogramsRecorded().empty());
+
   // Propagate file creation event from a file picker with the binding context
   // specified by test parameterization.
   FileSystemAccessPermissionContextFactory::GetForProfile(profile)
@@ -3114,15 +3121,21 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
           file_manager::util::GetFileManagerFileSystemContext(profile)
               ->CrackURLInFirstPartyContext(file_system_url));
 
-  // Verify that a Photoshop Web item is added to the user's Holding Space iff:
+  // A Photoshop Web item should be added to the user's Holding Space iff:
   // (a) Photoshop Web integration is enabled, and
   // (b) the binding context for the file picker is from the domain associated
   //     with Photoshop Web.
+  const bool is_file_picker_binding_context_photoshop_web =
+      GetFilePickerBindingContext().DomainIs("photoshop.adobe.com");
+  const bool expect_to_add_photoshop_web_item =
+      IsPhotoshopWebIntegrationEnabled() &&
+      is_file_picker_binding_context_photoshop_web;
+
+  // Verify model state.
   EXPECT_THAT(
       model->items(),
       Conditional(
-          IsPhotoshopWebIntegrationEnabled() &&
-              GetFilePickerBindingContext().DomainIs("photoshop.adobe.com"),
+          expect_to_add_photoshop_web_item,
           ElementsAre(Pointee(AllOf(
               Property(&HoldingSpaceItem::type,
                        HoldingSpaceItem::Type::kPhotoshopWeb),
@@ -3133,6 +3146,20 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
                              Field(&HoldingSpaceFile::file_system_url,
                                    file_system_url)))))),
           IsEmpty()));
+
+  // Verify histogram state.
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension"),
+              BucketsAre(Bucket(
+                  holding_space_metrics::FilePathToExtension(file_path), 1u)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "HoldingSpace.FileCreatedFromShowSaveFilePicker."
+          "FilePickerBindingContext"),
+      Conditional(
+          is_file_picker_binding_context_photoshop_web,
+          BucketsAre(Bucket(FilePickerBindingContext::kPhotoshopWeb, 1u)),
+          BucketsAre(Bucket(FilePickerBindingContext::kUnknown, 1u))));
 }
 
 // Base class for tests of print-to-PDF integration. Parameterized by whether

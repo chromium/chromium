@@ -43,6 +43,16 @@ constexpr size_t kExtensionsSize =
 
 // Helpers ---------------------------------------------------------------------
 
+// Returns the `FilePickerBindingContext` representation of the specified
+// `file_picker_binding_context`. Note that these values are persisted to
+// histograms so should remain unchanged.
+FilePickerBindingContext ToFilePickerBindingContext(
+    const GURL& file_picker_binding_context) {
+  return file_picker_binding_context.DomainIs("photoshop.adobe.com")
+             ? FilePickerBindingContext::kPhotoshopWeb
+             : FilePickerBindingContext::kUnknown;
+}
+
 // Returns the string representation of the specified `action`. Note that these
 // values are persisted to histograms so should remain unchanged.
 std::string ToString(ItemAction action) {
@@ -126,6 +136,17 @@ void RecordDownloadsAction(DownloadsAction action) {
 
 void RecordFilesAppChipAction(FilesAppChipAction action) {
   base::UmaHistogramEnumeration("HoldingSpace.FilesAppChip.Action.All", action);
+}
+
+void RecordFileCreatedFromShowSaveFilePicker(
+    const GURL& file_picker_binding_context,
+    const base::FilePath& file_path) {
+  base::UmaHistogramExactLinear(
+      "HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension",
+      FilePathToExtension(file_path), kExtensionsSize);
+  base::UmaHistogramEnumeration(
+      "HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext",
+      ToFilePickerBindingContext(file_picker_binding_context));
 }
 
 void RecordItemAction(const std::vector<const HoldingSpaceItem*>& items,

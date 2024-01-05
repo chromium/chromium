@@ -108,6 +108,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HoldingSpace.FileCreatedFromShowSaveFilePicker.Extension"
+    enum="HoldingSpaceExtension" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the extension for a file that was created in fulfillment of a
+    `window.showSaveFilePicker()` request at the moment of file creation.
+  </summary>
+</histogram>
+
+<histogram
+    name="HoldingSpace.FileCreatedFromShowSaveFilePicker.FilePickerBindingContext"
+    enum="HoldingSpaceFilePickerBindingContext" expires_after="2024-06-01">
+  <owner>dmblack@google.com</owner>
+  <owner>alexandrahill@google.com</owner>
+  <summary>
+    Records the binding context for the file picker used to create a file in
+    fulfillment of a `window.showSaveFilePicker()` request at the moment of file
+    creation.
+  </summary>
+</histogram>
+
 <histogram name="HoldingSpace.FilesAppChip.Action.All"
     enum="HoldingSpaceFilesAppChipAction" expires_after="2024-06-01">
   <owner>dmblack@google.com</owner>
