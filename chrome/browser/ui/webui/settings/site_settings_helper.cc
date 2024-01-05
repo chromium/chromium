@@ -315,13 +315,9 @@ SiteSettingSource CalculateSiteSettingSource(
   return SiteSettingSource::kPreference;
 }
 
-bool PatternAppliesToWebUISchemes(const ContentSettingPatternSource& pattern) {
-  return pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_CHROME ||
-         pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_CHROMEUNTRUSTED ||
-         pattern.primary_pattern.GetScheme() ==
-             ContentSettingsPattern::SchemeType::SCHEME_DEVTOOLS;
+bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
+  return HostContentSettingsMap::GetProviderTypeFromSource(pattern.source) ==
+         HostContentSettingsMap::WEBUI_ALLOWLIST_PROVIDER;
 }
 
 // If the given |pattern| represents an individual origin, Isolated Web App, or
@@ -852,8 +848,8 @@ void GetRawExceptionsForContentSettingsType(
       continue;
     }
 
-    // Don't add WebUI settings.
-    if (PatternAppliesToWebUISchemes(setting)) {
+    // Don't add allowlisted settings.
+    if (IsFromWebUIAllowlistSource(setting)) {
       continue;
     }
 
@@ -1098,11 +1094,12 @@ std::vector<ContentSettingPatternSource>
 GetSingleOriginExceptionsForContentType(HostContentSettingsMap* map,
                                         ContentSettingsType content_type) {
   ContentSettingsForOneType entries = map->GetSettingsForOneType(content_type);
-  // Exclude any entries that don't represent a single webby top-frame origin.
+  // Exclude any entries that are allowlisted or don't represent a single
+  // top-frame origin.
   base::EraseIf(entries, [](const ContentSettingPatternSource& e) {
     return !content_settings::PatternAppliesToSingleOrigin(
                e.primary_pattern, e.secondary_pattern) ||
-           PatternAppliesToWebUISchemes(e);
+           IsFromWebUIAllowlistSource(e);
   });
   return entries;
 }
