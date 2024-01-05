@@ -14,7 +14,9 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -131,6 +133,42 @@ IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, TwoInstalls) {
         IconManagerReadAppIconPixel(provider->icon_manager(), other_id, 96);
     EXPECT_THAT(icon_color, testing::Eq(SkColorSetARGB(255, 0, 51, 102)));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(InstallFromSyncCommandTest, AbortInstall) {
+  GURL test_url = https_server()->GetURL(
+      "/banners/"
+      "manifest_test_page.html");
+  webapps::AppId id = GenerateAppId(absl::nullopt, test_url);
+
+  auto* provider = WebAppProvider::GetForTest(profile());
+  InstallFromSyncCommand::Params params = InstallFromSyncCommand::Params(
+      id, GenerateManifestIdFromStartUrlOnly(test_url), /*start_url=*/test_url,
+      "Test Title",
+      /*scope=*/https_server()->GetURL("/banners/"),
+      /*theme_color=*/absl::nullopt, mojom::UserDisplayMode::kStandalone, {});
+  std::unique_ptr<InstallFromSyncCommand> command = std::make_unique<
+      InstallFromSyncCommand>(
+      profile(), params,
+      base::BindLambdaForTesting([&](const webapps::AppId& app_id,
+                                     webapps::InstallResultCode code) {
+        EXPECT_EQ(
+            code,
+            webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+      }));
+  auto* command_ptr = command.get();
+  provider->command_manager().ScheduleCommand(std::move(command));
+  content::NavigationStartObserver navigation_started_observer(
+      provider->command_manager().web_contents_for_testing(),
+      base::BindLambdaForTesting([&](content::NavigationHandle* handle) {
+        if (handle && handle->GetURL() == test_url) {
+          command_ptr->OnShutdown();
+        }
+      }));
+  content::WebContentsDestroyedWatcher web_contents_destroyed_observer(
+      provider->command_manager().web_contents_for_testing());
+  web_contents_destroyed_observer.Wait();
+  EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id));
 }
 
 }  // namespace

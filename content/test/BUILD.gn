@@ -349,6 +349,8 @@ static_library("test_support") {
     "../public/test/url_loader_interceptor.h",
     "../public/test/url_loader_monitor.cc",
     "../public/test/url_loader_monitor.h",
+    "../public/test/web_contents_observer_test_utils.cc",
+    "../public/test/web_contents_observer_test_utils.h",
     "../public/test/web_contents_tester.cc",
     "../public/test/web_contents_tester.h",
     "../public/test/web_transport_simple_test_server.cc",
@@ -467,8 +469,6 @@ static_library("test_support") {
     "test_web_contents_factory.cc",
     "web_contents_observer_consistency_checker.cc",
     "web_contents_observer_consistency_checker.h",
-    "web_contents_observer_test_utils.cc",
-    "web_contents_observer_test_utils.h",
   ]
 
   configs += [

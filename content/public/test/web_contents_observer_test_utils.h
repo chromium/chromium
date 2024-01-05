@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_
-#define CONTENT_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_
+#ifndef CONTENT_PUBLIC_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_
+#define CONTENT_PUBLIC_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_
 
 #include "base/functional/callback.h"
 #include "content/public/browser/web_contents.h"
@@ -46,4 +46,4 @@ class NavigationFinishObserver : public WebContentsObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_
+#endif  // CONTENT_PUBLIC_TEST_WEB_CONTENTS_OBSERVER_TEST_UTILS_H_

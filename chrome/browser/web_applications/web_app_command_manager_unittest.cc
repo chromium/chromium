@@ -30,6 +30,9 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_utils.h"
+#include "content/public/test/web_contents_observer_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -534,6 +537,77 @@ TEST_F(WebAppCommandManagerTest, ToDebugValue) {
       base::DoNothingAs<void(AppLock&)>()));
   loop.Run();
   manager().ToDebugValue();
+}
+
+TEST_F(WebAppCommandManagerTest, DestroySharedWebContentsOnPostTask) {
+  auto mock_command =
+      std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
+          std::make_unique<SharedWebContentsLockDescription>());
+  base::WeakPtr<MockCommand<SharedWebContentsLock>> command_ptr =
+      mock_command->AsWeakPtr();
+
+  // Queue a command with shared web contents.
+  manager().ScheduleCommand(std::move(mock_command));
+  ASSERT_TRUE(command_ptr);
+  EXPECT_FALSE(command_ptr->IsStarted());
+  {
+    base::RunLoop loop;
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
+      loop.Quit();
+    });
+    loop.Run();
+  }
+  // Complete the command and validate web contents is destroyed.
+  {
+    base::test::TestFuture<void> command_done;
+    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
+    command_ptr->CallSignalCompletionAndSelfDestruct(
+        CommandResult::kShutdown, command_done.GetCallback());
+    ASSERT_TRUE(command_done.Wait());
+    // Verify the shared web contents is not destroyed yet.
+    content::WebContents* web_contents = manager().web_contents_for_testing();
+    EXPECT_TRUE(web_contents);
+    // Wait for web contents to be destroyed.
+    content::WebContentsDestroyedWatcher content_destroyed_observer(
+        web_contents);
+    content_destroyed_observer.Wait();
+    // Verify the web contents is now destroyed.
+    EXPECT_FALSE(manager().web_contents_for_testing());
+  }
+  EXPECT_FALSE(command_ptr);
+}
+
+TEST_F(WebAppCommandManagerTest, DestroySharedWebContentsOnShutdown) {
+  auto mock_command =
+      std::make_unique<StrictMock<MockCommand<SharedWebContentsLock>>>(
+          std::make_unique<SharedWebContentsLockDescription>());
+  base::WeakPtr<MockCommand<SharedWebContentsLock>> command_ptr =
+      mock_command->AsWeakPtr();
+
+  manager().ScheduleCommand(std::move(mock_command));
+  ASSERT_TRUE(command_ptr);
+  EXPECT_FALSE(command_ptr->IsStarted());
+  {
+    // Queue a command with shared web contents and validate it doesn't
+    // get destroyed on completion signal right away.
+    base::RunLoop loop;
+    testing::InSequence in_sequence;
+    EXPECT_CALL(*command_ptr, StartWithLock(testing::_)).WillOnce([&]() {
+      loop.Quit();
+    });
+    loop.Run();
+    base::test::TestFuture<void> command_done;
+    EXPECT_CALL(*command_ptr, OnDestruction()).Times(1);
+    command_ptr->CallSignalCompletionAndSelfDestruct(
+        CommandResult::kShutdown, command_done.GetCallback());
+    ASSERT_TRUE(command_done.Wait());
+    EXPECT_TRUE(manager().web_contents_for_testing());
+    // Trigger shutdown and validate web contents is destroyed.
+    manager().Shutdown();
+    EXPECT_FALSE(manager().web_contents_for_testing());
+  }
+  EXPECT_FALSE(command_ptr);
 }
 
 }  // namespace

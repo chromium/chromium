@@ -267,18 +267,30 @@ void WebAppCommandManager::OnCommandComplete(
   DCHECK(command_it != commands_.end());
   commands_.erase(command_it);
 
-  if (shared_web_contents_) {
-    bool lock_free = lock_manager_.IsSharedWebContentsLockFree();
-    if (lock_free) {
-      AddValueToLog(base::Value("Destroying the shared web contents."));
-      shared_web_contents_.reset();
-    }
-  }
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebAppCommandManager::ClearSharedWebContentsIfUnused,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   std::move(completion_callback).Run();
 
-  if (commands_.empty() && run_loop_for_testing_)
+  if (commands_.empty() && run_loop_for_testing_) {
     run_loop_for_testing_->Quit();
+  }
+}
+
+void WebAppCommandManager::ClearSharedWebContentsIfUnused() {
+  if (!shared_web_contents_) {
+    return;
+  }
+
+  bool lock_free = lock_manager_.IsSharedWebContentsLockFree();
+  if (!lock_free) {
+    return;
+  }
+
+  AddValueToLog(base::Value("Destroying the shared web contents."));
+  shared_web_contents_.reset();
 }
 
 void WebAppCommandManager::AddValueToLog(base::Value value) {

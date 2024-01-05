@@ -57,6 +57,9 @@ class WebAppCommandManager {
   void ScheduleCommand(std::unique_ptr<WebAppCommand> command,
                        const base::Location& location = FROM_HERE);
 
+  // Clears shared web contents if it is not used by any commands.
+  void ClearSharedWebContentsIfUnused();
+
   // Called on system shutdown. This call is also forwarded to any commands that
   // have been `Start()`ed.
   void Shutdown();
@@ -78,7 +81,7 @@ class WebAppCommandManager {
 
   void AwaitAllCommandsCompleteForTesting();
 
-  bool has_web_contents_for_testing() const {
+  content::WebContents* web_contents_for_testing() const {
     return shared_web_contents_.get();
   }
 
