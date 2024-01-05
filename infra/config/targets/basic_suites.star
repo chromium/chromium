@@ -5180,7 +5180,7 @@ targets.legacy_basic_suite(
                 "--no-wpt-internal",
             ],
             swarming = targets.swarming(
-                shards = 4,
+                shards = 16,
                 expiration_sec = 18000,
                 hard_timeout_sec = 14400,
             ),
