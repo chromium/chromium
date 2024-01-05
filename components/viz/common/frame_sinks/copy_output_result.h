@@ -121,6 +121,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // Even when the returned pointer is non-null, the object that it points to
   // can be default-constructed (the resulting mailboxes can be empty) in the
   // case of a failed reply, in which case IsEmpty() would report true.
+  // NOTE: The SharedImages referenced by these mailboxes are read-only from the
+  // client's POV (e.g., they cannot be written via the GLES2 interface).
   struct VIZ_COMMON_EXPORT TextureResult {
     // |texture_target| is guaranteed to be GL_TEXTURE_2D for each returned
     // mailbox. The mailboxes are placed continuously from the beginning of the
