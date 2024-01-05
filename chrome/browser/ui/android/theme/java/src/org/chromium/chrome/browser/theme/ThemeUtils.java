@@ -6,14 +6,13 @@ package org.chromium.chrome.browser.theme;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.res.ResourcesCompat;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -41,8 +40,8 @@ public class ThemeUtils {
         WebContents tabWebContents = tab.getWebContents();
         RenderWidgetHostView rwhv =
                 tabWebContents == null ? null : tabWebContents.getRenderWidgetHostView();
-        final @ColorInt int backgroundColor =
-                rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
+        @ColorInt
+        int backgroundColor = rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
         if (backgroundColor != Color.TRANSPARENT) return backgroundColor;
         return ChromeColors.getPrimaryBackgroundColor(tab.getContext(), false);
     }
@@ -174,16 +173,23 @@ public class ThemeUtils {
      */
     public static @ColorInt int getToolbarHairlineColor(
             Context context, @ColorInt int toolbarColor, boolean isIncognito) {
-        final Resources res = context.getResources();
+        // Hairline is not shown when the toolbar is in an expansion animation, which should be the
+        // primary time when there's transparency in the toolbar color. Our color here doesn't
+        // really matter, but we need to guard against calling #overlayColor as it does not accept
+        // transparent colors. Similarly, the check in #isUsingDefaultToolbarColor does not work
+        // when there's any transparency.
+        if (Color.alpha(toolbarColor) < 255) {
+            return Color.TRANSPARENT;
+        }
+
         if (isUsingDefaultToolbarColor(context, isIncognito, toolbarColor)) {
             return isIncognito
-                    ? context.getColor(R.color.divider_line_bg_color_light)
+                    ? ContextCompat.getColor(context, R.color.divider_line_bg_color_light)
                     : SemanticColorUtils.getDividerLineBgColor(context);
         }
 
-        final float alpha = ResourcesCompat.getFloat(res, R.dimen.toolbar_hairline_overlay_alpha);
-        final @ColorInt int hairlineColorOpaque =
-                context.getColor(R.color.toolbar_hairline_overlay_opaque) & 0xFF000000;
-        return ColorUtils.getColorWithOverlay(toolbarColor, hairlineColorOpaque, alpha);
+        @ColorInt
+        int hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay);
+        return ColorUtils.overlayColor(toolbarColor, hairlineColor);
     }
 }

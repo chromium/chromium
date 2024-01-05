@@ -111,9 +111,10 @@ public class ColorUtils {
         // Transparency is ignored in the logic below, so assert if anyone is passing a color that's
         // not fully opaque. This does incur a minor burden on clients that knowingly want to call
         // this on a partially transparent color, as they have to change the alpha value first.
-        // TODO(https://crbug.com/1485217): Enable asserts once hairline calculation is updated.
+        // TODO(https://crbug.com/1485217): Enable asserts once status bar stops passing a base
+        // color that's partially transparent.
         // assert Color.alpha(baseColor) == 255;
-        // assert Color.alpha(overlayColor) == 255;
+        assert Color.alpha(overlayColor) == 255;
 
         int red =
                 (int)

@@ -59,6 +59,7 @@ found in the LICENSE file.
     <color name="baseline_neutral_10_with_neutral_0_alpha_30">#161616</color>
     <color name="baseline_neutral_10_with_neutral_0_alpha_30_with_neutral_variant_60_alpha_15">#282828</color>
     <color name="baseline_neutral_0">@android:color/black</color>
+    <color name="baseline_neutral_0_alpha_10">#19000000</color>
     <color name="baseline_neutral_variant_90">#E1E3E1</color>
     <color name="baseline_neutral_variant_90_alpha_20">#33E1E3E1</color>
     <color name="baseline_neutral_variant_80">#C4C7C5</color>
