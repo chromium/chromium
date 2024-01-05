@@ -1138,7 +1138,7 @@ function getFrameArgumentsArray(frameOrFrameIndex) {
         `but the frame is not on stack anymore: ${JSON_stringify(frames.map(f => f.location))}`);
     }
   } else if (typeof frameOrFrameIndex === "number") {
-    frame = getFrameByIndex(frameIndex);
+    frame = getFrameByIndex(frameOrFrameIndex);
   } else if (isObject(frameOrFrameIndex) && frameOrFrameIndex.callFrameId) {
     frame = frameOrFrameIndex;
   }
@@ -1662,28 +1662,6 @@ function previewBlinkStyle(style) {
   };
 }
 
-function previewBlinkRule(rule) {
-  let parentStyleSheet;
-  if (rule.parentStyleSheet) {
-    parentStyleSheet = registerPlainObject(rule.parentStyleSheet);
-  }
-
-  let style;
-  if (rule.style) {
-    style = getObjectIdRaw(rule.style);
-  }
-
-  return {
-    type: rule.type,
-    cssText: rule.cssText,
-    parentStyleSheet,
-    startLine: InspectorUtils.getRelativeRuleLine(rule),
-    startColumn: InspectorUtils.getRuleColumn(rule),
-    selectorText: rule.selectorText,
-    style,
-  };
-}
-
 function previewArray(cdpProperties) {
   // TODO: [RUN-2223] Find out why Array.length does not always return a value.
   // this.addGetterValue('length', this.cdpObj, /* force */ true);
@@ -2204,8 +2182,8 @@ function CSS_getComputedStyle({ node }) {
 
     // TODO: add pseudoType support - https://linear.app/replay/issue/RUN-953
 
+    let styleInfo;
     // const pseudoType = getPseudoType(node);
-    // let styleInfo;
     // if (pseudoType) {
     //   styleInfo = ownerGlobal.getComputedStyle(
     //     nodeObj.parentNode,

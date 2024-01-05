@@ -131,6 +131,20 @@ if (useGoma) {
 const gn = currentPlatform() == "windows" ? "gn.bat" : "gn";
 spawnChecked(gn, ["gen", outdir], { stdio: "inherit" });
 
+// only lint when not in buildkite (since buildkite does the linting at a different stage)
+if (!process.env["BUILDKITE"]) {
+  console.log(`Linting replay js blobs...`);
+  let cwd;
+  try {
+    cwd = process.cwd();
+    process.chdir(path.join(__dirname, "replay_build_scripts"));
+    spawnChecked("npm", ["ci"], { stdio: "inherit" });
+  } finally {
+    process.chdir(cwd);
+  }
+  spawnChecked("node", [ path.join("replay_build_scripts", "lint.mjs")], { stdio: "inherit" });
+}
+
 console.log(`Building...`);
 const autoninja = currentPlatform() == "windows" ? "autoninja.bat" : "autoninja";
 spawnChecked(autoninja, ["-C", outdir, "chrome"], { stdio: "inherit" });

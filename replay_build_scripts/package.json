@@ -12,6 +12,7 @@
     "@types/node": "^18.15.7"
   },
   "dependencies": {
+    "eslint": "^8.56.0",
     "js-yaml": "^4.1.0"
   }
 }

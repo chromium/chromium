@@ -3,8 +3,34 @@ env:
   GIT_TERMINAL_PROMPT: 0
 
 steps:
+  - label: "Preflight checks (lint/etc)"
+    key: "preflight-checks"
+    plugins:
+      - thedyrt/skip-checkout#v0.1.1:
+          cd: /home/ubuntu/chromium/src
+      - seek-oss/aws-sm#v2.3.1:
+          region: us-east-2
+          env:
+            BUILDEVENT_APIKEY: honeycomb-api-key
+            BUILDEVENT_BUILDKITE_API_TOKEN: buildkite-api-token-honeycomb-build-events
+      - replayio/buildevents#adb8a05: ~
+    commands:
+      - "be_cmd git-fetch-all -- git fetch --all"
+      - "be_cmd git-reset-branch -- git reset --hard origin/$BUILDKITE_BRANCH"
+      - "be_cmd update-all-repos -- node replay_build_scripts/update-all-repos.mjs"
+      - "pushd replay_build_scripts"
+      - "be_cmd npm-ci -- npm ci"
+      - "popd"
+      - "be_cmd lint-replay-scripts -- node replay_build_scripts/lint.mjs third_party/blink/renderer/bindings/core/v8/record_replay_interface.cc"
+    env:
+      RECORD_REPLAY_BACKEND_DIR: /home/ubuntu/chromium/backend
+    agents:
+     - "runtimeType=chromiumbuild"
+     - "os=linux"
+     - "queue=runtime"
   - label: "Build chromium - Linux"
     key: "build-chromium-linux-x86_64"
+    depends_on: "preflight-checks"
     timeout_in_minutes: 60
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
@@ -35,6 +61,7 @@ steps:
       - "build_id/linux/x86_64/**"
   - label: "Build chromium - Mac (x86)"
     key: "build-chromium-mac-x86_64"
+    depends_on: "preflight-checks"
     timeout_in_minutes: 60
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
@@ -66,6 +93,7 @@ steps:
       - "build_id/macOS/x86_64/**"
   - label: "Build chromium - Mac (arm64)"
     key: "build-chromium-mac-arm64"
+    depends_on: "preflight-checks"
     timeout_in_minutes: 60
     plugins:
       - thedyrt/skip-checkout#v0.1.1:
@@ -98,6 +126,7 @@ steps:
       - "build_id/macOS/arm64/**"
   - label: "Build chromium - Windows"
     key: "build-chromium-windows"
+    depends_on: "preflight-checks"
     timeout_in_minutes: 60
     plugins:
       - https://github.com/jazzdan/skip-checkout-buildkite-plugin.git#jazzdan/windows-support: ~
