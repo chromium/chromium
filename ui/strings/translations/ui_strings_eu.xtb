@@ -194,7 +194,7 @@
 <translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">Zenbakiaren jatorria: <ph name="ORIGIN" /></translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{Duela 1 ordu}other{Duela # ordu}}</translation>
-<translation id="8131263257437993507">{SECONDS,plural, =1{1 s gelditzen da}other{# s gelditzen dira}}</translation>
+<translation id="8131263257437993507">{SECONDS,plural, =1{1 segundo gelditzen da}other{# segundo gelditzen dira}}</translation>
 <translation id="8134065097954893699">Orri hau berriro kargatzea</translation>
 <translation id="815598010540052116">Egin behera</translation>
 <translation id="8179976553408161302">Sartu</translation>

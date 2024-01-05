@@ -162,7 +162,7 @@ Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tand
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8060029310790625334">Pusat Bantuan</translation>
 <translation id="806699900641041263">Menyambung ke <ph name="HOSTNAME" /></translation>
-<translation id="8073845705237259513">Untuk menggunakan Desktop Jauh Chrome, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
+<translation id="8073845705237259513">Untuk menggunakan Desktop Jauh Chrome, anda perlu menambahkan Google Account kepada peranti anda.</translation>
 <translation id="809687642899217504">Komputer Saya</translation>
 <translation id="8116630183974937060">Ralat rangkaian berlaku. Sila pastikan peranti anda berada dalam talian dan cuba lagi.</translation>
 <translation id="8295077433896346116">Untuk menggunakan <ph name="PRODUCT_NAME" />, anda perlu memberi 'Kebolehaksesan' kebenaran supaya input daripada mesin jauh boleh disuntik pada Mac ini.
@@ -171,7 +171,7 @@ Untuk memberikan kebenaran ini, klik '<ph name="BUTTON_NAME" />' di bawah. Dalam
 
 Jika '<ph name="SERVICE_SCRIPT_NAME" />' telah pun ditandai, nyahtandai dan tandai sekali lagi.</translation>
 <translation id="8305209735512572429">Proses Pengawalan Pengesahan Web dari Jauh</translation>
-<translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Akaun Google kepada peranti anda.</translation>
+<translation id="8383794970363966105">Untuk menggunakan Chromoting, anda perlu menambahkan Google Account kepada peranti anda.</translation>
 <translation id="8386846956409881180">Hos dikonfigurasikan dengan bukti kelayakan OAuth yang tidak sah.</translation>
 <translation id="8397385476380433240">Berikan kebenaran kepada <ph name="PRODUCT_NAME" /></translation>
 <translation id="8406498562923498210">Pilih sesi untuk dilancarkan dalam persekitaran Desktop Jauh Chrome anda. (Sila ambil perhatian bahawa sesetengah jenis sesi mungkin tidak menyokong dijalankan secara serentak dalam Desktop Jauh Chrome dan konsol setempat.)</translation>
