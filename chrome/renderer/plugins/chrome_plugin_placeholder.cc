@@ -94,9 +94,8 @@ gin::WrapperInfo ChromePluginPlaceholder::kWrapperInfo = {
 ChromePluginPlaceholder::ChromePluginPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params,
-    const std::string& html_data,
     const std::u16string& title)
-    : plugins::LoadablePluginPlaceholder(render_frame, params, html_data),
+    : plugins::LoadablePluginPlaceholder(render_frame, params),
       status_(chrome::mojom::PluginStatus::kAllowed),
       title_(title) {
   RenderThread::Get()->AddObserver(this);
@@ -136,8 +135,10 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateLoadableMissingPlugin(
   std::string html_data = webui::GetI18nTemplateHtml(template_html, values);
 
   // Will destroy itself when its WebViewPlugin is going away.
-  return new ChromePluginPlaceholder(render_frame, params, html_data,
-                                     params.mime_type.Utf16());
+  auto* placeholder = new ChromePluginPlaceholder(render_frame, params,
+                                                  params.mime_type.Utf16());
+  placeholder->Init(html_data);
+  return placeholder;
 }
 
 // static
@@ -170,8 +171,8 @@ ChromePluginPlaceholder* ChromePluginPlaceholder::CreateBlockedPlugin(
 
   // |blocked_plugin| will destroy itself when its WebViewPlugin is going away.
   ChromePluginPlaceholder* blocked_plugin =
-      new ChromePluginPlaceholder(render_frame, params, html_data, name);
-
+      new ChromePluginPlaceholder(render_frame, params, name);
+  blocked_plugin->Init(html_data);
   blocked_plugin->SetPluginInfo(info);
   blocked_plugin->SetIdentifier(identifier);
 

@@ -315,8 +315,8 @@ blink::WebPlugin* WebFrameTestProxy::CreatePlugin(
     return TestPlugin::Create(params, test_runner(), GetWebFrame());
 
   if (params.mime_type == "application/x-plugin-placeholder-test") {
-    auto* placeholder =
-        new plugins::PluginPlaceholder(this, params, "<div>Test content</div>");
+    auto* placeholder = plugins::PluginPlaceholder::Create(
+        this, params, "<div>Test content</div>");
     return placeholder->plugin();
   }
 

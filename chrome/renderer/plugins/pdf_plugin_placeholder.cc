@@ -19,13 +19,14 @@ PDFPluginPlaceholder* PDFPluginPlaceholder::CreatePDFPlaceholder(
     content::RenderFrame* render_frame,
     const blink::WebPluginParams& params) {
   std::string html_data = GetPDFPlaceholderHTML(params.url);
-  return new PDFPluginPlaceholder(render_frame, params, html_data);
+  auto* placeholder = new PDFPluginPlaceholder(render_frame, params);
+  placeholder->Init(html_data);
+  return placeholder;
 }
 
 PDFPluginPlaceholder::PDFPluginPlaceholder(content::RenderFrame* render_frame,
-                                           const blink::WebPluginParams& params,
-                                           const std::string& html_data)
-    : plugins::PluginPlaceholderBase(render_frame, params, html_data) {}
+                                           const blink::WebPluginParams& params)
+    : plugins::PluginPlaceholderBase(render_frame, params) {}
 
 PDFPluginPlaceholder::~PDFPluginPlaceholder() {}
 

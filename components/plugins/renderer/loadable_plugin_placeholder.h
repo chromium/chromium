@@ -38,8 +38,7 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
  protected:
   LoadablePluginPlaceholder(content::RenderFrame* render_frame,
-                            const blink::WebPluginParams& params,
-                            const std::string& html_data);
+                            const blink::WebPluginParams& params);
   ~LoadablePluginPlaceholder() override;
 
   void OnSetIsPrerendering(bool is_prerendering);
@@ -77,11 +76,11 @@ class LoadablePluginPlaceholder : public PluginPlaceholderBase {
 
   // True if the plugin was blocked because the page was being prerendered.
   // Plugin may be automatically be loaded when the page is displayed.
-  bool is_blocked_for_prerendering_;
+  bool is_blocked_for_prerendering_ = false;
 
-  bool allow_loading_;
+  bool allow_loading_ = false;
 
-  bool finished_loading_;
+  bool finished_loading_ = false;
   std::string identifier_;
 
   base::WeakPtrFactory<LoadablePluginPlaceholder> weak_factory_{this};
