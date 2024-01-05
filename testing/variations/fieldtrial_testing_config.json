@@ -9717,29 +9717,6 @@
             ]
         }
     ],
-    "IsolateSandboxedIframes": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithPerOrigin_20230713",
-                    "params": {
-                        "grouping": "per-origin"
-                    },
-                    "enable_features": [
-                        "IsolateSandboxedIframes"
-                    ]
-                }
-            ]
-        }
-    ],
     "JourneysAndroidPreStable": [
         {
             "platforms": [
