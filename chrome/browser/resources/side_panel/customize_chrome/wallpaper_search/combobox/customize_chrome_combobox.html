@@ -132,6 +132,10 @@
 .item:has(img) span {
   padding-inline-start: 16px;
 }
+
+:host([indent-default-option_]) #defaultOption {
+  padding-inline-start: 44px;
+}
 </style>
 
 <button id="input" class="md-select"
@@ -142,13 +146,17 @@
     aria-activedescendant$="[[getAriaActiveDescendant_(highlightedElement_)]]"
     on-click="onInputClick_"
     on-focusout="onInputFocusout_">
-  <div>[[getInputLabel_(label, selectedElement_)]]</div>
+  <div>[[getInputLabel_(label, selectedElement_, value)]]</div>
 </button>
 <div id="dropdownContainer">
   <div id="dropdown" role="listbox" on-click="onDropdownClick_"
       on-pointerdown="onDropdownPointerdown_"
       on-pointermove="onDropdownPointermove_"
       on-pointerover="onDropdownPointerover_">
+    <div id="defaultOption" class="item" role="option"
+        aria-selected="[[getDefaultItemAriaSelected_(value)]]">
+      [[defaultOptionLabel]]
+    </div>
     <template is="dom-repeat" items="[[items]]" restamp>
       <template is="dom-if" if="[[isGroup_(item)]]" restamp>
         <div class="group" role="group">

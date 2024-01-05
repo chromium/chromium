@@ -23,9 +23,13 @@ suite('ComboboxTest', () => {
                .querySelectorAll('[role=option]')[optionIndex] as HTMLElement;
   }
 
+  function getDefaultOption(): HTMLElement {
+    return combobox.shadowRoot!.querySelector('#defaultOption')!;
+  }
+
   function getOption(optionIndex: number): HTMLElement {
     return combobox.shadowRoot!.querySelectorAll(
-               '[role=option]')[optionIndex] as HTMLElement;
+               '[role=option]:not(#defaultOption)')[optionIndex] as HTMLElement;
   }
 
   function toggleGroupExpand(groupIndex: number) {
@@ -40,6 +44,8 @@ suite('ComboboxTest', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     combobox = document.createElement('customize-chrome-combobox');
+    combobox.label = 'Label';
+    combobox.defaultOptionLabel = 'Select a option';
     combobox.items = [
       {label: 'Option 1'},
       {label: 'Option 2'},
@@ -69,12 +75,12 @@ suite('ComboboxTest', () => {
       combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Escape'}));
     }
 
-    assertDropdownOpensAndHighlightsFirst('ArrowDown', getOption(0));
+    assertDropdownOpensAndHighlightsFirst('ArrowDown', getDefaultOption());
     assertDropdownOpensAndHighlightsFirst('ArrowUp', getOption(1));
-    assertDropdownOpensAndHighlightsFirst('Home', getOption(0));
+    assertDropdownOpensAndHighlightsFirst('Home', getDefaultOption());
     assertDropdownOpensAndHighlightsFirst('End', getOption(1));
-    assertDropdownOpensAndHighlightsFirst('Enter', getOption(0));
-    assertDropdownOpensAndHighlightsFirst('Space', getOption(0));
+    assertDropdownOpensAndHighlightsFirst('Enter', getDefaultOption());
+    assertDropdownOpensAndHighlightsFirst('Space', getDefaultOption());
   });
 
   test('HighlightsItemsOnKeydownWhenOpen', async () => {
@@ -103,6 +109,8 @@ suite('ComboboxTest', () => {
     // ArrowDown should loop through list.
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(getDefaultOption(), getHighlightedElement());
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(groupA.querySelector('label'), getHighlightedElement());
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(optionA1, getHighlightedElement());
@@ -113,7 +121,7 @@ suite('ComboboxTest', () => {
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(optionB1, getHighlightedElement());
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    assertEquals(groupA.querySelector('label'), getHighlightedElement());
+    assertEquals(getDefaultOption(), getHighlightedElement());
 
     // ArrowUp goes reverse order.
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
@@ -121,7 +129,7 @@ suite('ComboboxTest', () => {
 
     // Home and End keys work.
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
-    assertEquals(groupA.querySelector('label'), getHighlightedElement());
+    assertEquals(getDefaultOption(), getHighlightedElement());
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'End'}));
     assertEquals(optionB1, getHighlightedElement());
 
@@ -222,6 +230,7 @@ suite('ComboboxTest', () => {
     // Pressing Enter or clicking on an unselectable item should not select it.
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     const groupAClickEvent = eventToPromise('click', groupA);
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
     await groupAClickEvent;
@@ -278,6 +287,11 @@ suite('ComboboxTest', () => {
     combobox.$.input.click();
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
     assertEquals(
+        'defaultOption',
+        combobox.$.input.getAttribute('aria-activedescendant'));
+
+    combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(
         option1.id, combobox.$.input.getAttribute('aria-activedescendant'));
 
     combobox.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
@@ -294,9 +308,10 @@ suite('ComboboxTest', () => {
     ];
     await flushTasks();
 
-    // No options should be visible yet since group is by default collapsed.
+    // Only the default option should be visible yet since group is by default
+    // collapsed.
     assertEquals(
-        0, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+        1, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
 
     const groupLabel = getGroup(0).querySelector('label')!;
     const groupLabelIcon = groupLabel.querySelector('iron-icon')!;
@@ -307,7 +322,7 @@ suite('ComboboxTest', () => {
     toggleGroupExpand(0);
     await flushTasks();
     assertEquals(
-        2, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+        3, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
     assertEquals('true', groupLabel.ariaExpanded);
     assertEquals('cr:expand-less', groupLabelIcon.icon);
 
@@ -315,7 +330,7 @@ suite('ComboboxTest', () => {
     toggleGroupExpand(0);
     await flushTasks();
     assertEquals(
-        0, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
+        1, combobox.shadowRoot!.querySelectorAll('[role=option]').length);
     assertEquals('false', groupLabel.ariaExpanded);
     assertEquals('cr:expand-more', groupLabelIcon.icon);
   });
@@ -345,5 +360,41 @@ suite('ComboboxTest', () => {
     await flushTasks();
     assertFalse(option1Checkmark.checked);
     assertTrue(option2Checkmark.checked);
+  });
+
+  test('SelectingDefaultOptionResetsValue', async () => {
+    combobox.$.input.click();
+    getOption(0).dispatchEvent(
+        new Event('click', {composed: true, bubbles: true}));
+    await flushTasks();
+    assertEquals('Option 1', combobox.value);
+
+    getDefaultOption().dispatchEvent(
+        new Event('click', {composed: true, bubbles: true}));
+    await flushTasks();
+    assertEquals(undefined, combobox.value);
+    assertEquals('true', getDefaultOption().getAttribute('aria-selected'));
+  });
+
+  test('IndentsDefaultOption', async () => {
+    const defaultOptionStyles = window.getComputedStyle(getDefaultOption());
+    assertEquals('44px', defaultOptionStyles.paddingInlineStart);
+
+    // Groups should not indent default option.
+    combobox.items = [
+      {
+        label: 'Group A',
+        items: [{label: 'I am option 1'}, {label: 'I am option 2'}],
+      },
+    ];
+    await flushTasks();
+    assertEquals('20px', defaultOptionStyles.paddingInlineStart);
+
+    // Items with images should not indent.
+    combobox.items = [
+      {label: 'Option 1', imagePath: 'image/path1.png'},
+    ];
+    await flushTasks();
+    assertEquals('20px', defaultOptionStyles.paddingInlineStart);
   });
 });

@@ -7944,11 +7944,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_LABEL" desc="Label for the Create theme with AI dropdown for selecting subject of the image.">
         Subject
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_SUBJECT_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected subject. Also serves as a heading and label for the whole dropdown.">
+        Choose a subject
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_LABEL" desc="Label for the Create theme with AI dropdown for selecting mood of the image.">
         Mood
       </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_MOOD_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected mood. Also serves as a heading and label for the whole dropdown.">
+        Choose a mood
+      </message>
       <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_LABEL" desc="Label for the Create theme with AI dropdown for selecting style of the image.">
         Style
+      </message>
+      <message name="IDS_NTP_WALLPAPER_SEARCH_STYLE_DEFAULT_OPTION_LABEL" desc="Label for the option that a user can pick to unselect a previously selected style. Also serves as a heading and label for the whole dropdown.">
+        Choose a style
       </message>
       <message name="IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL" desc="Accessibility label for a link labeled 'Learn more' that links to a help article about creating themes with AI.">
         Learn more about creating themes with AI.

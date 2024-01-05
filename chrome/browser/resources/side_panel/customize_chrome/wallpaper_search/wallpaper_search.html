@@ -264,6 +264,7 @@
       tabindex="-1">
     <customize-chrome-combobox id="descriptorComboboxA"
         label="$i18n{wallpaperSearchSubjectLabel}"
+        default-option-label="$i18n{wallpaperSearchSubjectDefaultOptionLabel}"
         items="[[comboboxItems_.a]]"
         value="{{selectedDescriptorA_}}">
     </customize-chrome-combobox>
@@ -271,11 +272,13 @@
       <div id="optionalDetailsLabel">$i18n{optionalDetailsLabel}</div>
       <customize-chrome-combobox id="descriptorComboboxB"
           label="$i18n{wallpaperSearchStyleLabel}"
+          default-option-label="$i18n{wallpaperSearchStyleDefaultOptionLabel}"
           items="[[comboboxItems_.b]]"
           value="{{selectedDescriptorB_}}">
       </customize-chrome-combobox>
       <customize-chrome-combobox id="descriptorComboboxC"
           label="$i18n{wallpaperSearchMoodLabel}"
+          default-option-label="$i18n{wallpaperSearchMoodDefaultOptionLabel}"
           items="[[comboboxItems_.c]]"
           value="{{selectedDescriptorC_}}" right-align-dropbox>
       </customize-chrome-combobox>
