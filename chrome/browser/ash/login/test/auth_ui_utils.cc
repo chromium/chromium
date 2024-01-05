@@ -117,7 +117,7 @@ class LoginScreenAuthSurface : public FullScreenAuthSurface {
   }
 
   std::unique_ptr<LocalAuthenticationDialogActor>
-  WaitLocalAuthenticationDialog() override {
+  WaitForLocalAuthenticationDialog() override {
     LocalAuthenticationDialogWaiter()->Wait();
     return std::make_unique<LocalAuthenticationDialogActor>();
   }

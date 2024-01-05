@@ -28,7 +28,7 @@ class FullScreenAuthSurface {
   virtual void AddNewUser() = 0;
 
   virtual std::unique_ptr<LocalAuthenticationDialogActor>
-  WaitLocalAuthenticationDialog() = 0;
+  WaitForLocalAuthenticationDialog() = 0;
 };
 
 class OobePageActor {

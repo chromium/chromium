@@ -257,9 +257,10 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest,
   gaia->TypePassword(test::kNewPassword);
   gaia->ContinueLogin();
 
-  auto lad = test::OnLoginScreen()->WaitLocalAuthenticationDialog();
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
 
-  lad->SubmitPassword(test::kLocalPassword);
+  local_authentication->SubmitPassword(test::kLocalPassword);
   login_mixin_.WaitForActiveSession();
 }
 
@@ -270,12 +271,13 @@ IN_PROC_BROWSER_TEST_F(AuthFlowsLoginReauthTest, LocalPasswordCorrectPassword) {
   auto gaia = test::AwaitGaiaSigninUI();
 
   gaia->ReauthConfirmEmail(user.account_id);
-  gaia->TypePassword(test::kLocalPassword);
+  gaia->TypePassword(test::kNewPassword);
   gaia->ContinueLogin();
 
-  auto lad = test::OnLoginScreen()->WaitLocalAuthenticationDialog();
+  auto local_authentication =
+      test::OnLoginScreen()->WaitForLocalAuthenticationDialog();
 
-  lad->SubmitPassword(test::kLocalPassword);
+  local_authentication->SubmitPassword(test::kLocalPassword);
   login_mixin_.WaitForActiveSession();
 }
 
