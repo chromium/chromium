@@ -22,6 +22,7 @@
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/navigation_url_loader.h"
 #include "content/browser/loader/response_head_update_params.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
@@ -192,6 +193,16 @@ ServiceWorkerMainResourceLoader::ServiceWorkerMainResourceLoader(
     } else if (active_worker->IsWarmedUp()) {
       initial_service_worker_status_ = InitialServiceWorkerStatus::kWarmedUp;
     }
+  }
+
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node) {
+    frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
+  } else {
+    frame_tree_node_type_ = frame_tree_node->IsOutermostMainFrame()
+                                ? FrameTreeNodeType::kOutermostMainFrame
+                                : FrameTreeNodeType::kNotOutermostMainFrame;
   }
 
   response_head_->load_timing.request_start = base::TimeTicks::Now();
@@ -1083,6 +1094,17 @@ ServiceWorkerMainResourceLoader::GetInitialServiceWorkerStatusString() {
   }
 }
 
+std::string ServiceWorkerMainResourceLoader::GetFrameTreeNodeTypeString() {
+  switch (frame_tree_node_type_) {
+    case FrameTreeNodeType::kOutermostMainFrame:
+      return "OutermostMainFrame";
+    case FrameTreeNodeType::kNotOutermostMainFrame:
+      return "NotOutermostMainFrame";
+    case FrameTreeNodeType::kUnknown:
+      return "Unknown";
+  }
+}
+
 void ServiceWorkerMainResourceLoader::
     RecordTimingMetricsForFetchHandlerHandledCase() {
   if (!IsEligibleForRecordingTimingMetrics()) {
@@ -1197,6 +1219,17 @@ void ServiceWorkerMainResourceLoader::
       base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
                     "InitialServiceWorkerStatus.",
                     ComposeNavigationTypeString(resource_request_)}),
+      *initial_service_worker_status_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "InitialServiceWorkerStatus.",
+                    ComposeNavigationTypeString(resource_request_), ".",
+                    GetFrameTreeNodeTypeString()}),
+      *initial_service_worker_status_);
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ServiceWorker.LoadTiming.MainFrame.MainResource."
+                    "InitialServiceWorkerStatus.",
+                    "AnyOriginNavigation.", GetFrameTreeNodeTypeString()}),
       *initial_service_worker_status_);
 }
 

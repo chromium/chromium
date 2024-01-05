@@ -178,6 +178,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
   void DeleteIfNeeded();
 
   std::string GetInitialServiceWorkerStatusString();
+  std::string GetFrameTreeNodeTypeString();
   bool IsEligibleForRecordingTimingMetrics();
   void RecordFindRegistrationToCompletedTrace();
   // Called when the fetch handler handles the request.
@@ -286,6 +287,13 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
     kMaxValue = kWarmedUp,
   };
   absl::optional<InitialServiceWorkerStatus> initial_service_worker_status_;
+  enum class FrameTreeNodeType {
+    kOutermostMainFrame = 0,
+    kNotOutermostMainFrame = 1,
+    kUnknown = 2,
+    kMaxValue = kUnknown,
+  };
+  FrameTreeNodeType frame_tree_node_type_ = FrameTreeNodeType::kUnknown;
   bool is_detached_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory>

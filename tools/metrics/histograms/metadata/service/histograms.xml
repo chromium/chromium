@@ -46,6 +46,9 @@ chromium-metrics-reviews@google.com.
 
 <variants name="NavigationType">
   <variant name="" summary=""/>
+  <variant name=".AnyOriginNavigation"
+      summary="This is recorded for both cross-origin and same-origin
+               navigation."/>
   <variant name=".CrossOriginNavigation"
       summary="This is only recorded when navigation is cross origin
                navigation."/>
@@ -760,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="ServiceWorker.LoadTiming.MainFrame.MainResource.InitialServiceWorkerStatus{NavigationType}"
+    name="ServiceWorker.LoadTiming.MainFrame.MainResource.InitialServiceWorkerStatus{NavigationType}{FrameTreeNodeType}"
     enum="InitialServiceWorkerStatus" expires_after="2024-06-30">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -771,9 +774,22 @@ chromium-metrics-reviews@google.com.
     fetch event handler and the fetch event was successfully dispatched to the
     service worker.
 
-    {NavigationType}
+    {NavigationType}{FrameTreeNodeType}
   </summary>
   <token key="NavigationType" variants="NavigationType"/>
+  <token key="FrameTreeNodeType">
+    <variant name="" summary=""/>
+    <variant name=".NotOutermostMainFrame"
+        summary="Navigation is only recorded when it occurs in the non
+                 outermost main frame."/>
+    <variant name=".OutermostMainFrame"
+        summary="Navigation is only recorded when it occurs in the outermost
+                 main frame."/>
+    <variant name=".Unknown"
+        summary="Navigation is recorded only when it is not possible to
+                 determine whether it occurs in the outermost main frame or
+                 not."/>
+  </token>
 </histogram>
 
 <histogram
