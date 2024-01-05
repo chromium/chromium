@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -71,8 +70,6 @@ scoped_refptr<const MemoryMappedRuleset> VerifiedRulesetDealer::GetRuleset() {
       } else {
         status_ = RulesetVerificationStatus::kInvalidFile;
       }
-      UMA_HISTOGRAM_ENUMERATION("SubresourceFilter.RulesetVerificationStatus",
-                                status_);
       return ruleset;
     }
     case RulesetVerificationStatus::kIntact: {

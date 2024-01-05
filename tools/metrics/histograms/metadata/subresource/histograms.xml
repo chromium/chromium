@@ -402,19 +402,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SubresourceFilter.RulesetVerificationStatus"
-    enum="RulesetVerificationStatus" expires_after="M77">
-  <owner>yaoxia@chromium.org</owner>
-  <summary>
-    Records the ruleset verification status at some point in a browsing session.
-    If AdTagging is disabled, this happens when the user first visits a site
-    that is failing the Better Ads Standard, and gets ads blocked on that site;
-    if AdTagging is enabled, this happens immediately on startup. Note that this
-    is recorded only once per browsing session (the lifetime of the browser
-    process).
-  </summary>
-</histogram>
-
 <histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
     expires_after="2024-05-19">
   <owner>alexmt@chromium.org</owner>

@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/test_ruleset_creator.h"
@@ -103,9 +102,6 @@ std::vector<uint8_t> ReadFileContent(base::File* file) {
 // MemoryMappedRuleset, its lazy creation, etc., are covered with tests to
 // RulesetDealer, therefore these aspects are not tested here.
 
-constexpr char kVerificationHistogram[] =
-  "SubresourceFilter.RulesetVerificationStatus";
-
 class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
  public:
   SubresourceFilterVerifiedRulesetDealerTest() = default;
@@ -128,15 +124,10 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
     return ruleset_dealer_->has_cached_ruleset();
   }
 
-  const base::HistogramTester& histogram_tester() const {
-    return histogram_tester_;
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestRulesets rulesets_;
   std::unique_ptr<VerifiedRulesetDealer> ruleset_dealer_;
-  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -156,8 +147,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_TRUE(ref_to_ruleset);
   EXPECT_TRUE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kIntact, 1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -179,8 +168,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(ref_to_ruleset);
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kCorrupt, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kCorrupt, 1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest, MmapFailureInitial) {
@@ -193,9 +180,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest, MmapFailureInitial) {
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kInvalidFile,
             ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kInvalidFile,
-                                        1);
 }
 
 // This is a duplicated test from RulesetDealer, to ensure that verification
@@ -216,22 +200,13 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest, MmapFailureSubsequent) {
     EXPECT_TRUE(ruleset_dealer()->has_cached_ruleset());
     EXPECT_TRUE(ruleset_dealer()->GetRuleset());
     EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-    histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                          RulesetVerificationStatus::kIntact,
-                                          1);
   }
   EXPECT_FALSE(ruleset_dealer()->has_cached_ruleset());
   EXPECT_FALSE(ruleset_dealer()->GetRuleset());
   EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kIntact,
-                                        1);
   MemoryMappedRuleset::SetMemoryMapFailuresForTesting(false);
   EXPECT_TRUE(ruleset_dealer()->GetRuleset());
   EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kIntact,
-                                        1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -246,8 +221,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(ref_to_ruleset);
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kCorrupt, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kCorrupt, 1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -264,8 +237,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(ref_to_ruleset);
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kCorrupt, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kCorrupt, 1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -287,8 +258,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(ref_to_ruleset);
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kCorrupt, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kCorrupt, 1);
   ruleset_dealer()->SetRulesetFile(
       testing::TestRuleset::Open(rulesets().indexed_2()));
   EXPECT_EQ(RulesetVerificationStatus::kNotVerified,
@@ -299,11 +268,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_TRUE(ref_to_ruleset);
   EXPECT_TRUE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-  histogram_tester().ExpectTotalCount(kVerificationHistogram, 2);
-  histogram_tester().ExpectBucketCount(kVerificationHistogram,
-                                       RulesetVerificationStatus::kCorrupt, 1);
-  histogram_tester().ExpectBucketCount(kVerificationHistogram,
-                                       RulesetVerificationStatus::kIntact, 1);
 }
 
 // Check that without the checksum parameter to OpenAndSetRulesetFile,
@@ -325,15 +289,12 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kNotVerified,
             ruleset_dealer()->status());
-  histogram_tester().ExpectTotalCount(kVerificationHistogram, 0);
 
   // Check that after getting the ruleset the expected values are present.
   scoped_refptr<const MemoryMappedRuleset> ref_to_ruleset =
       ruleset_dealer()->GetRuleset();
   EXPECT_TRUE(ref_to_ruleset);
   EXPECT_EQ(RulesetVerificationStatus::kIntact, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kIntact, 1);
 }
 
 // Check that when adding the checksum parameter to OpenAndSetRulesetFile,
@@ -356,15 +317,12 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kNotVerified,
             ruleset_dealer()->status());
-  histogram_tester().ExpectTotalCount(kVerificationHistogram, 0);
 
   // Check that after getting the ruleset the expected values are present.
   scoped_refptr<const MemoryMappedRuleset> ref_to_ruleset =
       ruleset_dealer()->GetRuleset();
   EXPECT_FALSE(ref_to_ruleset);
   EXPECT_EQ(RulesetVerificationStatus::kCorrupt, ruleset_dealer()->status());
-  histogram_tester().ExpectUniqueSample(kVerificationHistogram,
-                                        RulesetVerificationStatus::kCorrupt, 1);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -381,7 +339,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
   EXPECT_FALSE(has_cached_ruleset());
   EXPECT_EQ(RulesetVerificationStatus::kNotVerified,
             ruleset_dealer()->status());
-  histogram_tester().ExpectTotalCount(kVerificationHistogram, 0);
 }
 
 TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
@@ -392,7 +349,6 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
 
   EXPECT_FALSE(file->IsValid());
   EXPECT_FALSE(ruleset_dealer()->IsRulesetFileAvailable());
-  histogram_tester().ExpectTotalCount(kVerificationHistogram, 0);
 }
 
 // Tests for VerifiedRulesetDealer::Handle. ------------------------------------
