@@ -136,8 +136,10 @@ void SoftwareOutputSurface::UpdateVSyncParameters(base::TimeTicks timebase,
                                                   base::TimeDelta interval) {
   DCHECK(update_vsync_parameters_callback_);
   refresh_timebase_ = timebase;
-  refresh_interval_ = interval;
-  update_vsync_parameters_callback_.Run(timebase, interval);
+  // We should not be receiving 0 intervals.
+  refresh_interval_ =
+      interval.is_zero() ? BeginFrameArgs::DefaultInterval() : interval;
+  update_vsync_parameters_callback_.Run(timebase, refresh_interval_);
 }
 
 void SoftwareOutputSurface::SetUpdateVSyncParametersCallback(
