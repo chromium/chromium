@@ -19,18 +19,18 @@ export class SentenceUtils {
    * search for the sentence start before the current position. The
    * |startCharIndex| and the found sentence start index are relative to the
    * text content of this node group.
-   * @param {ParagraphUtils.NodeGroup} nodeGroup The node group this function
+   * @param nodeGroup The node group this function
    *     will search.
-   * @param {number} startCharIndex The char index that we start from. This
+   * @param startCharIndex The char index that we start from. This
    *     index is relative to the text content of this node group and is
    *     exclusive: if a sentence start at 0 and we search with a 0
    *     |startCharIndex|, this function will return the next sentence start
    *     after 0 if we search forward.
-   * @param {constants.Dir} direction Direction to search for the next sentence
+   * @param direction Direction to search for the next sentence
    *     start. |constants.Dir.BACKWARD| will search for the sentence start
    *     before the current position. |constants.Dir.FORWARD| will search for
    *     the sentence start after the current position.
-   * @return {?number} the next sentence start after |startCharIndex|, returns
+   * @return The next sentence start after |startCharIndex|, returns
    *     null if nothing found.
    */
   static getSentenceStart(
@@ -68,15 +68,15 @@ export class SentenceUtils {
   /**
    * Gets the sentence start before or after current position within the input
    * |nodeGroupItem|.
-   * @param {ParagraphUtils.NodeGroupItem} nodeGroupItem The node group item
+   * @param nodeGroupItem The node group item
    *     this function will search.
-   * @param {number} startCharIndex The char index that we start from. This is
+   * @param startCharIndex The char index that we start from. This is
    *     relative to the text content of the node group.
-   * @param {constants.Dir} direction Direction to search for the next sentence
+   * @param direction Direction to search for the next sentence
    *     start. |constants.Dir.BACKWARD| will search for the sentence start
    *     before the current position. |constants.Dir.FORWARD| will search for
    *     the sentence start after the current position.
-   * @return {?number} the next sentence start after |startCharIndex|, returns
+   * @return The next sentence start after |startCharIndex|, returns
    *     null if nothing found.
    */
   static getSentenceStartInNodeGroupItem(
@@ -144,11 +144,11 @@ export class SentenceUtils {
 
   /**
    * Checks if the current position is a sentence start.
-   * @param {ParagraphUtils.NodeGroup} nodeGroup The node group of the current
+   * @param nodeGroup The node group of the current
    *     position.
-   * @param {number} currentCharIndex The char index of the current position.
+   * @param currentCharIndex The char index of the current position.
    *     This is relative to the text content of the node group.
-   * @return {boolean} Whether the current position is a start of a sentence.
+   * @return Whether the current position is a start of a sentence.
    */
   static isSentenceStart(
       nodeGroup: ParagraphUtils.NodeGroup, currentCharIndex: number): boolean {

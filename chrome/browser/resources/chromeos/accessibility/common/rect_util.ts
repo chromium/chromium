@@ -14,7 +14,6 @@ interface ScreenRect {
 
 /** A collection of helper functions when dealing with rects. */
 export const RectUtil = {
-  /** @type {!ScreenRect} */
   ZERO_RECT: {top: 0, left: 0, width: 0, height: 0},
 
   /**
@@ -97,12 +96,7 @@ export const RectUtil = {
         RectUtil.bottom(outer) >= RectUtil.bottom(inner);
   },
 
-  /**
-   * @param {!ScreenRect} rect
-   * @return {!ScreenRect}
-   */
-  deepCopy: (rect: ScreenRect): ScreenRect =>
-      /** @type {!ScreenRect} */ (Object.assign({}, rect)),
+  deepCopy: (rect: ScreenRect): ScreenRect => Object.assign({}, rect),
 
   /**
    * Returns the largest rectangle contained within the `outer` rect that does

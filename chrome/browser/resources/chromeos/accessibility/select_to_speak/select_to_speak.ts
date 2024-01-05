@@ -398,7 +398,6 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     let selectedNode: AutomationNode|null = firstPosition.node;
     // If the method is set, a user requested the speech.
     const userRequested = method !== null;
-    /**@type {number} */
     const methodNumber: number = method !== null ? method : -1;
     // Certain nodes such as omnibox store text value in the value property,
     // instead of the name property. The getNodeName method in ParagraphUtils
