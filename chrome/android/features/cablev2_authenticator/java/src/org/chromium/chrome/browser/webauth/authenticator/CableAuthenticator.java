@@ -35,6 +35,7 @@ import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCall;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
+import org.chromium.components.webauthn.WebauthnModeProvider;
 import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.DeviceFeatureMap;
 import org.chromium.url.GURL;
@@ -120,6 +121,8 @@ class CableAuthenticator {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(TaskTraits.UI_USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
+        WebauthnModeProvider.getInstance()
+                .setWebauthnMode(WebauthnModeProvider.WebauthnMode.CHROME);
         CableAuthenticatorJni.get().setup(registration, networkContext, secret);
 
         // Wait for |onTransportReady|.
@@ -301,9 +304,8 @@ class CableAuthenticator {
     /**
      * Called from native code when a network-based operation has completed.
      *
-     * @param ok true if the transaction completed successfully. Otherwise it
-     *           indicates some form of error that could include tunnel server
-     *           errors, handshake failures, etc.
+     * @param ok true if the transaction completed successfully. Otherwise it indicates some form of
+     *     error that could include tunnel server errors, handshake failures, etc.
      * @param errorCode a value from cablev2::authenticator::Platform::Error.
      */
     @CalledByNative
@@ -481,8 +483,8 @@ class CableAuthenticator {
     }
 
     /**
-     * validateServerLinkData returns zero if |serverLink| is a valid argument for
-     * |startServerLink| or else an error value from cablev2::authenticator::Platform::Error.
+     * validateServerLinkData returns zero if |serverLink| is a valid argument for |startServerLink|
+     * or else an error value from cablev2::authenticator::Platform::Error.
      */
     static int validateServerLinkData(byte[] serverLinkData) {
         return CableAuthenticatorJni.get().validateServerLinkData(serverLinkData);
@@ -556,9 +558,8 @@ class CableAuthenticator {
         int validateQRURI(String qrURI);
 
         /**
-         * onActivityStop is called when onStop() is called on the Activity. This is done
-         * in order to record events because we want to know when users are abandoning
-         * the process.
+         * onActivityStop is called when onStop() is called on the Activity. This is done in order
+         * to record events because we want to know when users are abandoning the process.
          */
         void onActivityStop(long handle);
 
