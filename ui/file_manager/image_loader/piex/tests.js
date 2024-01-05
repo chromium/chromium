@@ -10,7 +10,7 @@ program.usage('test-page [options]')
   .description('piex wasm raw image preview test runner')
   .option('-d, --debug', 'enable debug mode');
 
-program.on('--help', function help() {
+program.on('--help', () => {
   console.log('');
   console.log('  % ' + example);
   console.log('');
