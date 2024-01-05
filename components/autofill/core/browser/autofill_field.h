@@ -27,11 +27,11 @@
 
 namespace autofill {
 
-typedef std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>
-    FieldTypeValidityStatesMap;
+using FieldTypeValidityStatesMap =
+    std::map<FieldType, std::vector<AutofillDataModel::ValidityState>>;
 
-typedef std::map<FieldType, AutofillDataModel::ValidityState>
-    FieldTypeValidityStateMap;
+using FieldTypeValidityStateMap =
+    std::map<FieldType, AutofillDataModel::ValidityState>;
 
 // Specifies if the Username First Flow vote has intermediate values.
 enum class IsMostRecentSingleUsernameCandidate {
@@ -117,8 +117,8 @@ class AutofillField : public FormFieldData {
     possible_types_ = possible_types;
   }
   void set_possible_types_validities(
-      const FieldTypeValidityStatesMap& possible_types_validities) {
-    possible_types_validities_ = possible_types_validities;
+      FieldTypeValidityStatesMap possible_types_validities) {
+    possible_types_validities_ = std::move(possible_types_validities);
   }
   std::vector<AutofillDataModel::ValidityState>
       get_validities_for_possible_type(FieldType);
@@ -128,11 +128,11 @@ class AutofillField : public FormFieldData {
   void set_previously_autofilled(bool previously_autofilled) {
     previously_autofilled_ = previously_autofilled;
   }
-  void set_parseable_name(const std::u16string& parseable_name) {
-    parseable_name_ = parseable_name;
+  void set_parseable_name(std::u16string parseable_name) {
+    parseable_name_ = std::move(parseable_name);
   }
-  void set_parseable_label(const std::u16string& parseable_label) {
-    parseable_label_ = parseable_label;
+  void set_parseable_label(std::u16string parseable_label) {
+    parseable_label_ = std::move(parseable_label);
   }
 
   void set_only_fill_when_focused(bool fill_when_focused) {
@@ -267,9 +267,7 @@ class AutofillField : public FormFieldData {
   void set_state_is_a_matching_type(bool value = true) {
     state_is_a_matching_type_ = value;
   }
-  const bool& state_is_a_matching_type() const {
-    return state_is_a_matching_type_;
-  }
+  bool state_is_a_matching_type() const { return state_is_a_matching_type_; }
 
   void set_single_username_vote_type(
       AutofillUploadContents::Field::SingleUsernameVoteType vote_type) {
@@ -334,7 +332,7 @@ class AutofillField : public FormFieldData {
       std::optional<std::string> autofill_profile_guid) {
     autofill_source_profile_guid_ = std::move(autofill_profile_guid);
   }
-  std::optional<std::string> autofill_source_profile_guid() const {
+  const std::optional<std::string>& autofill_source_profile_guid() const {
     return autofill_source_profile_guid_;
   }
 
