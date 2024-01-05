@@ -95,6 +95,7 @@ void SearchResultInlineIconView::SetText(const std::u16string& text) {
     label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     label_->SetTextContext(CONTEXT_SEARCH_RESULT_VIEW_INLINE_ANSWER_DETAILS);
     label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
+    label_->SetAutoColorReadabilityEnabled(false);
   }
 
   label_->SetText(text);
