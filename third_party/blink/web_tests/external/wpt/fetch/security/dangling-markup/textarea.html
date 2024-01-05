@@ -7,18 +7,18 @@
 
   var tests = [
     `
-      <form action="/security/resources/postmessage-post.php" method="post">
+      <form action="/resource-timing/resources/document-navigated.html" method="post">
         <input type="submit">
         <textarea name="dangling">
     `,
     `
       <div>
-        <form action="/security/resources/postmessage-post.php" method="post">
+        <form action="/resource-timing/resources/document-navigated.html" method="post">
           <input type="submit">
           <textarea name="dangling">
     `,
     `
-      <form action="/security/resources/postmessage-post.php" method="post" id="form">
+      <form action="/resource-timing/resources/document-navigated.html" method="post" id="form">
         <input type="submit">
       </form>
       <textarea name="dangling" form="form">
@@ -32,4 +32,3 @@
     }, markup.replace(/[\n\r]/g, ''));
   });
 </script>
-  

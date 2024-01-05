@@ -7,35 +7,35 @@
 
   var tests = [
     `
-      <form action="/security/resources/postmessage-post.php" method="post">
+      <form action="/resource-timing/resources/document-navigated.html" method="post">
         <input type="submit">
         <select name="dangling"><option>
     `,
     `
       <div>
-        <form action="/security/resources/postmessage-post.php" method="post">
+        <form action="/resource-timing/resources/document-navigated.html" method="post">
           <input type="submit">
           <select name="dangling"><option>
     `,
     `
-      <form action="/security/resources/postmessage-post.php" method="post" id="form">
+      <form action="/resource-timing/resources/document-navigated.html" method="post" id="form">
         <input type="submit">
       </form>
       <select name="dangling" form="form"><option>
     `,
     `
-      <form action="/security/resources/postmessage-post.php" method="post">
+      <form action="/resource-timing/resources/document-navigated.html" method="post">
         <input type="submit">
         <select name="dangling"><option label="yay">
     `,
     `
       <div>
-        <form action="/security/resources/postmessage-post.php" method="post">
+        <form action="/resource-timing/resources/document-navigated.html" method="post">
           <input type="submit">
           <select name="dangling"><option label="yay">
     `,
     `
-      <form action="/security/resources/postmessage-post.php" method="post" id="form">
+      <form action="/resource-timing/resources/document-navigated.html" method="post" id="form">
         <input type="submit">
       </form>
       <select name="dangling" form="form"><option label="yay">
@@ -49,4 +49,3 @@
     }, markup.replace(/[\n\r]/g, ''));
   });
 </script>
-  
