@@ -37,18 +37,29 @@
         <button id="reload-policies" class="action-row-button">
           $i18n{reloadPolicies}
         </button>
-        <div id="more-actions-dropdown">
-          <button id="more-actions-button" class="action-row-button">
+        <div id="more-actions-dropdown" role="button" aria-haspopup="true">
+          <button
+            id="more-actions-button" class="action-row-button"
+            aria-haspopup="true">
             $i18n{moreActions}
             <div id="dropdown-icon"></div>
           </button>
-          <div id="more-actions-list" class="more-actions-visibility">
-              <button id="export-policies">$i18n{exportPoliciesJSON}</button>
-              <button id="copy-policies">$i18n{copyPoliciesJSON}</button>
+          <div
+            id="more-actions-list" class="more-actions-visibility" role="menu">
+              <button id="export-policies" role="menuitem">
+                $i18n{exportPoliciesJSON}
+              </button>
+              <button id="copy-policies" role="menuitem">
+                $i18n{copyPoliciesJSON}
+              </button>
               <if expr="not is_chromeos">
-                <button id="upload-report">$i18n{uploadReport}</button>
+                <button id="upload-report" role="menuitem">
+                  $i18n{uploadReport}
+                </button>
               </if>
-              <a href="chrome://policy/logs" id="view-logs">$i18n{viewLogs}</a>
+              <a href="chrome://policy/logs" id="view-logs" role="menuitem">
+                $i18n{viewLogs}
+              </a>
           </div>
         </div>
       </div>
