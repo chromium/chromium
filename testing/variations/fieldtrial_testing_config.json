@@ -597,6 +597,22 @@
             ]
         }
     ],
+    "ApnRevamp": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ApnRevamp"
+                    ]
+                }
+            ]
+        }
+    ],
     "AppCloseRefreshClankStudy": [
         {
             "platforms": [
