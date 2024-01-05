@@ -103,6 +103,8 @@ class GraphInfoBuilder final {
         softplus->steepness = activation.softplus_steepness.value();
         return mojom::Activation::NewSoftplus(std::move(softplus));
       }
+      case mojom::Activation::Tag::kSoftsign:
+        return mojom::Activation::NewSoftsign(mojom::Softsign::New());
       case mojom::Activation::Tag::kTanh:
         return mojom::Activation::NewTanh(mojom::Tanh::New());
       default:
@@ -418,6 +420,8 @@ class GraphInfoBuilder final {
   void BuildSoftplus(uint64_t input_operand_id,
                      uint64_t output_operand_id,
                      float steepness);
+
+  void BuildSoftsign(uint64_t input_operand_id, uint64_t output_operand_id);
 
   void BuildSplit(uint64_t input_operand_id,
                   const std::vector<uint64_t>& output_operand_ids,

@@ -329,6 +329,15 @@ void GraphInfoBuilder::BuildSoftplus(uint64_t input_operand_id,
       mojom::Operation::NewSoftplus(std::move(softplus)));
 }
 
+void GraphInfoBuilder::BuildSoftsign(uint64_t input_operand_id,
+                                     uint64_t output_operand_id) {
+  mojom::SoftsignPtr softsign = mojom::Softsign::New();
+  softsign->input_operand_id = input_operand_id;
+  softsign->output_operand_id = output_operand_id;
+  graph_info_->operations.push_back(
+      mojom::Operation::NewSoftsign(std::move(softsign)));
+}
+
 void GraphInfoBuilder::BuildTanh(uint64_t input_operand_id,
                                  uint64_t output_operand_id) {
   mojom::TanhPtr tanh = mojom::Tanh::New();

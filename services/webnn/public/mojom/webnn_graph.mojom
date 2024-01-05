@@ -672,6 +672,15 @@ struct Softplus {
   float steepness = 1.0;
 };
 
+// Corresponds to `MLOperand softsign(MLOperand x)` that computes the softsign
+// function of the input tensor following the expression x / (1 + |x|).
+struct Softsign {
+  // The input operand (referenced by input_operand_id) must be distinct from
+  // the output operand (referenced by output_operand_id).
+  uint64 input_operand_id;
+  uint64 output_operand_id;
+};
+
 // Represents a split operation that splits an input tensor into multiple
 // output tensors. The shape of the outputs and the specified axis determine
 // how the split will be performed. Since axis specifies which input dimension
@@ -776,6 +785,7 @@ union Activation {
   Sigmoid sigmoid;
   Softmax softmax;
   Softplus softplus;
+  Softsign softsign;
   Tanh tanh;
 };
 
@@ -810,6 +820,7 @@ union Operation {
   Slice slice;
   Softmax softmax;
   Softplus softplus;
+  Softsign softsign;
   Split split;
   Tanh tanh;
   Transpose transpose;

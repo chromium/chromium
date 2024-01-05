@@ -739,6 +739,22 @@ TEST_F(WebNNGraphImplTest, BatchNormalizationTest) {
         .Test();
   }
   {
+    // Test batchNormalization with softsign activation.
+    BatchNormalizationTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 3, 3}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32, .dimensions = {2}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
     // Test batchNormalization with tanh activation.
     BatchNormalizationTester{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1390,6 +1406,22 @@ TEST_F(WebNNGraphImplTest, Conv2dTest) {
         .attributes = {.activation =
                            Activation{.kind = mojom::Activation::Tag::kSoftplus,
                                       .softplus_steepness = 1.5}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test conv2d with softsign activation.
+    Conv2dTester{
+        .type = mojom::Conv2d_Type::kDirect,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 5, 5}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 3, 3}},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3}},
         .expected = true}
@@ -4778,6 +4810,71 @@ TEST_F(WebNNGraphImplTest, SoftplusTest) {
 
     builder.BuildSoftplus(input_operand_id, input_operand_id,
                           /*steepness*/ 1.0);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
+  }
+}
+
+struct SoftsignTester {
+  OperandInfo input;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildSoftsign(input_operand_id, output_operand_id);
+    EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, SoftsignTest) {
+  {
+    // Test softsign operator with input dimensions = [2, 4] and data type
+    // float32.
+    SoftsignTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 4}},
+                   .output = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {2, 4}},
+                   .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for invalid data type.
+    SoftsignTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                             .dimensions = {4, 2}},
+                   .output = {.type = mojom::Operand::DataType::kInt32,
+                              .dimensions = {4, 2}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    SoftsignTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {4, 2}},
+                   .output = {.type = mojom::Operand::DataType::kFloat32,
+                              .dimensions = {2}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    SoftsignTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {2, 5}},
+                   .output = {.type = mojom::Operand::DataType::kFloat16,
+                              .dimensions = {2, 5}},
+                   .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for input operand == output operand.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {4, 6}, mojom::Operand::DataType::kFloat32);
+    builder.BuildSoftsign(input_operand_id, input_operand_id);
     EXPECT_EQ(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()), false);
   }
 }

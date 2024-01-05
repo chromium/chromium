@@ -187,6 +187,7 @@ bool ValidateActivation(const mojom::ActivationPtr& activation) {
     case mojom::Activation::Tag::kRelu:
     case mojom::Activation::Tag::kSigmoid:
     case mojom::Activation::Tag::kSoftmax:
+    case mojom::Activation::Tag::kSoftsign:
     case mojom::Activation::Tag::kTanh:
       return true;
   }
@@ -1340,6 +1341,10 @@ bool ValidateOperation(const IdToOperandMap& id_to_operand_map,
       return ValidateSoftmax(id_to_operand_map, operation->get_softmax());
     case mojom::Operation::Tag::kSoftplus:
       return ValidateSoftplus(id_to_operand_map, operation->get_softplus());
+    case mojom::Operation::Tag::kSoftsign:
+      return ValidateUnaryOperation(id_to_operand_map,
+                                    operation->get_softsign(),
+                                    DataTypeConstraint::kFloat);
     case mojom::Operation::Tag::kSplit:
       return ValidateSplit(id_to_operand_map, operation->get_split());
     case mojom::Operation::Tag::kTanh:
