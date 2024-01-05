@@ -54,50 +54,38 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   ~MockHttpStreamRequestDelegate() override;
 
   // std::unique_ptr is not copyable and therefore cannot be mocked.
-  MOCK_METHOD3(OnStreamReadyImpl,
-               void(const SSLConfig& used_ssl_config,
-                    const ProxyInfo& used_proxy_info,
-                    HttpStream* stream));
+  MOCK_METHOD2(OnStreamReadyImpl,
+               void(const ProxyInfo& used_proxy_info, HttpStream* stream));
 
-  void OnStreamReady(const SSLConfig& used_ssl_config,
-                     const ProxyInfo& used_proxy_info,
+  void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
-    OnStreamReadyImpl(used_ssl_config, used_proxy_info, stream.get());
+    OnStreamReadyImpl(used_proxy_info, stream.get());
   }
 
   // std::unique_ptr is not copyable and therefore cannot be mocked.
   void OnBidirectionalStreamImplReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override {}
 
   // std::unique_ptr is not copyable and therefore cannot be mocked.
   void OnWebSocketHandshakeStreamReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {}
 
-  MOCK_METHOD5(OnStreamFailed,
+  MOCK_METHOD4(OnStreamFailed,
                void(int status,
                     const NetErrorDetails& net_error_details,
-                    const SSLConfig& used_ssl_config,
                     const ProxyInfo& used_proxy_info,
                     ResolveErrorInfo resolve_error_info));
 
-  MOCK_METHOD3(OnCertificateError,
-               void(int status,
-                    const SSLConfig& used_ssl_config,
-                    const SSLInfo& ssl_info));
+  MOCK_METHOD2(OnCertificateError, void(int status, const SSLInfo& ssl_info));
 
-  MOCK_METHOD4(OnNeedsProxyAuth,
+  MOCK_METHOD3(OnNeedsProxyAuth,
                void(const HttpResponseInfo& proxy_response,
-                    const SSLConfig& used_ssl_config,
                     const ProxyInfo& used_proxy_info,
                     HttpAuthController* auth_controller));
 
-  MOCK_METHOD2(OnNeedsClientAuth,
-               void(const SSLConfig& used_ssl_config,
-                    SSLCertRequestInfo* cert_info));
+  MOCK_METHOD1(OnNeedsClientAuth, void(SSLCertRequestInfo* cert_info));
 
   MOCK_METHOD0(OnQuicBroken, void());
 };

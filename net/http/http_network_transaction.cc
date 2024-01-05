@@ -67,6 +67,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/ssl/ssl_private_key.h"
@@ -603,8 +604,7 @@ void HttpNetworkTransaction::CloseConnectionOnDestruction() {
   close_connection_on_destruction_ = true;
 }
 
-void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
-                                           const ProxyInfo& used_proxy_info,
+void HttpNetworkTransaction::OnStreamReady(const ProxyInfo& used_proxy_info,
                                            std::unique_ptr<HttpStream> stream) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   DCHECK(stream_request_.get());
@@ -615,7 +615,6 @@ void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
   }
   stream_ = std::move(stream);
   stream_->SetRequestHeadersCallback(request_headers_callback_);
-  server_ssl_config_ = used_ssl_config;
   proxy_info_ = used_proxy_info;
   // TODO(crbug.com/621512): Remove `was_alpn_negotiated` when we remove
   // chrome.loadTimes API.
@@ -634,30 +633,26 @@ void HttpNetworkTransaction::OnStreamReady(const SSLConfig& used_ssl_config,
 }
 
 void HttpNetworkTransaction::OnBidirectionalStreamImplReady(
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<BidirectionalStreamImpl> stream) {
   NOTREACHED();
 }
 
 void HttpNetworkTransaction::OnWebSocketHandshakeStreamReady(
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
-  OnStreamReady(used_ssl_config, used_proxy_info, std::move(stream));
+  OnStreamReady(used_proxy_info, std::move(stream));
 }
 
 void HttpNetworkTransaction::OnStreamFailed(
     int result,
     const NetErrorDetails& net_error_details,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     ResolveErrorInfo resolve_error_info) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   DCHECK_NE(OK, result);
   DCHECK(stream_request_.get());
   DCHECK(!stream_.get());
-  server_ssl_config_ = used_ssl_config;
   net_error_details_ = net_error_details;
   proxy_info_ = used_proxy_info;
   SetProxyInfoInResponse(used_proxy_info, &response_);
@@ -666,17 +661,17 @@ void HttpNetworkTransaction::OnStreamFailed(
   OnIOComplete(result);
 }
 
-void HttpNetworkTransaction::OnCertificateError(
-    int result,
-    const SSLConfig& used_ssl_config,
-    const SSLInfo& ssl_info) {
+void HttpNetworkTransaction::OnCertificateError(int result,
+                                                const SSLInfo& ssl_info) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
   DCHECK_NE(OK, result);
   DCHECK(stream_request_.get());
   DCHECK(!stream_.get());
 
   response_.ssl_info = ssl_info;
-  server_ssl_config_ = used_ssl_config;
+  if (ssl_info.cert) {
+    observed_bad_certs_.emplace_back(ssl_info.cert, ssl_info.cert_status);
+  }
 
   // TODO(mbelshe):  For now, we're going to pass the error through, and that
   // will close the stream_request in all cases.  This means that we're always
@@ -689,7 +684,6 @@ void HttpNetworkTransaction::OnCertificateError(
 
 void HttpNetworkTransaction::OnNeedsProxyAuth(
     const HttpResponseInfo& proxy_response,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     HttpAuthController* auth_controller) {
   DCHECK(stream_request_.get());
@@ -707,7 +701,6 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   }
 
   headers_valid_ = true;
-  server_ssl_config_ = used_ssl_config;
   proxy_info_ = used_proxy_info;
 
   auth_controllers_[HttpAuth::AUTH_PROXY] = auth_controller;
@@ -716,12 +709,9 @@ void HttpNetworkTransaction::OnNeedsProxyAuth(
   DoCallback(OK);
 }
 
-void HttpNetworkTransaction::OnNeedsClientAuth(
-    const SSLConfig& used_ssl_config,
-    SSLCertRequestInfo* cert_info) {
+void HttpNetworkTransaction::OnNeedsClientAuth(SSLCertRequestInfo* cert_info) {
   DCHECK_EQ(STATE_CREATE_STREAM_COMPLETE, next_state_);
 
-  server_ssl_config_ = used_ssl_config;
   response_.cert_request_info = cert_info;
   OnIOComplete(ERR_SSL_CLIENT_AUTH_CERT_NEEDED);
 }
@@ -893,16 +883,18 @@ int HttpNetworkTransaction::DoCreateStream() {
   // they can also be disabled when retrying after a QUIC error).
   if (!enable_ip_based_pooling_)
     DCHECK(!enable_alternative_services_);
+  SSLConfig server_ssl_config;
+  server_ssl_config.allowed_bad_certs = observed_bad_certs_;
   if (ForWebSocketHandshake()) {
     stream_request_ =
         session_->http_stream_factory()->RequestWebSocketHandshakeStream(
-            *request_, priority_, server_ssl_config_, this,
+            *request_, priority_, server_ssl_config, this,
             websocket_handshake_stream_base_create_helper_,
             enable_ip_based_pooling_, enable_alternative_services_, net_log_);
   } else {
     stream_request_ = session_->http_stream_factory()->RequestStream(
-        *request_, priority_, server_ssl_config_, this,
-        enable_ip_based_pooling_, enable_alternative_services_, net_log_);
+        *request_, priority_, server_ssl_config, this, enable_ip_based_pooling_,
+        enable_alternative_services_, net_log_);
   }
   DCHECK(stream_request_.get());
   return ERR_IO_PENDING;

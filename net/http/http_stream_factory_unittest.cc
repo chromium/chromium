@@ -228,64 +228,52 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
 
   // HttpStreamRequest::Delegate
 
-  void OnStreamReady(const SSLConfig& used_ssl_config,
-                     const ProxyInfo& used_proxy_info,
+  void OnStreamReady(const ProxyInfo& used_proxy_info,
                      std::unique_ptr<HttpStream> stream) override {
     stream_done_ = true;
     if (loop_)
       loop_->Quit();
     stream_ = std::move(stream);
-    used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
   }
 
   void OnWebSocketHandshakeStreamReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override {
     stream_done_ = true;
     if (loop_)
       loop_->Quit();
     websocket_stream_ = std::move(stream);
-    used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
   }
 
   void OnBidirectionalStreamImplReady(
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<BidirectionalStreamImpl> stream) override {
     stream_done_ = true;
     if (loop_)
       loop_->Quit();
     bidirectional_stream_impl_ = std::move(stream);
-    used_ssl_config_ = used_ssl_config;
     used_proxy_info_ = used_proxy_info;
   }
 
   void OnStreamFailed(int status,
                       const NetErrorDetails& net_error_details,
-                      const SSLConfig& used_ssl_config,
                       const ProxyInfo& used_proxy_info,
                       ResolveErrorInfo resolve_error_info) override {
     stream_done_ = true;
     if (loop_)
       loop_->Quit();
-    used_ssl_config_ = used_ssl_config;
     error_status_ = status;
   }
 
-  void OnCertificateError(int status,
-                          const SSLConfig& used_ssl_config,
-                          const SSLInfo& ssl_info) override {}
+  void OnCertificateError(int status, const SSLInfo& ssl_info) override {}
 
   void OnNeedsProxyAuth(const HttpResponseInfo& proxy_response,
-                        const SSLConfig& used_ssl_config,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override {}
 
-  void OnNeedsClientAuth(const SSLConfig& used_ssl_config,
-                         SSLCertRequestInfo* cert_info) override {}
+  void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override {}
 
   void OnQuicBroken() override {}
 
@@ -296,8 +284,6 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
       loop_->Run();
     loop_.reset();
   }
-
-  const SSLConfig& used_ssl_config() const { return used_ssl_config_; }
 
   const ProxyInfo& used_proxy_info() const { return used_proxy_info_; }
 
@@ -320,7 +306,6 @@ class StreamRequestWaiter : public HttpStreamRequest::Delegate {
   std::unique_ptr<HttpStream> stream_;
   std::unique_ptr<WebSocketHandshakeStreamBase> websocket_stream_;
   std::unique_ptr<BidirectionalStreamImpl> bidirectional_stream_impl_;
-  SSLConfig used_ssl_config_;
   ProxyInfo used_proxy_info_;
   int error_status_ = OK;
 };

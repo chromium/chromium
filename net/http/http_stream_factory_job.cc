@@ -495,7 +495,7 @@ void HttpStreamFactory::Job::OnStreamReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnStreamReady(this, server_ssl_config_);
+  delegate_->OnStreamReady(this);
   // |this| may be deleted after this call.
 }
 
@@ -507,8 +507,8 @@ void HttpStreamFactory::Job::OnWebSocketHandshakeStreamReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnWebSocketHandshakeStreamReady(
-      this, server_ssl_config_, proxy_info_, std::move(websocket_stream_));
+  delegate_->OnWebSocketHandshakeStreamReady(this, proxy_info_,
+                                             std::move(websocket_stream_));
   // |this| may be deleted after this call.
 }
 
@@ -517,8 +517,7 @@ void HttpStreamFactory::Job::OnBidirectionalStreamImplReadyCallback() {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnBidirectionalStreamImplReady(this, server_ssl_config_,
-                                            proxy_info_);
+  delegate_->OnBidirectionalStreamImplReady(this, proxy_info_);
   // |this| may be deleted after this call.
 }
 
@@ -528,7 +527,7 @@ void HttpStreamFactory::Job::OnStreamFailedCallback(int result) {
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnStreamFailed(this, result, server_ssl_config_);
+  delegate_->OnStreamFailed(this, result);
   // |this| may be deleted after this call.
 }
 
@@ -541,7 +540,7 @@ void HttpStreamFactory::Job::OnCertificateErrorCallback(
 
   MaybeCopyConnectionAttemptsFromHandle();
 
-  delegate_->OnCertificateError(this, result, server_ssl_config_, ssl_info);
+  delegate_->OnCertificateError(this, result, ssl_info);
   // |this| may be deleted after this call.
 }
 
@@ -560,8 +559,7 @@ void HttpStreamFactory::Job::OnNeedsProxyAuthCallback(
   // prevent being passed a new session while waiting on proxy auth credentials.
   spdy_session_request_.reset();
 
-  delegate_->OnNeedsProxyAuth(this, response, server_ssl_config_, proxy_info_,
-                              auth_controller);
+  delegate_->OnNeedsProxyAuth(this, response, proxy_info_, auth_controller);
   // |this| may be deleted after this call.
 }
 
@@ -571,7 +569,7 @@ void HttpStreamFactory::Job::OnNeedsClientAuthCallback(
   DCHECK_NE(job_type_, PRECONNECT_DNS_ALPN_H3);
   DCHECK(!spdy_session_request_);
 
-  delegate_->OnNeedsClientAuth(this, server_ssl_config_, cert_info);
+  delegate_->OnNeedsClientAuth(this, cert_info);
   // |this| may be deleted after this call.
 }
 
@@ -998,6 +996,8 @@ void HttpStreamFactory::Job::OnFailedOnDefaultNetwork(int result) {
 int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_JOB_INIT_CONNECTION);
 
+  establishing_tunnel_ = false;
+
   // No need to continue waiting for a session, once a connection is
   // established.
   spdy_session_request_.reset();
@@ -1105,28 +1105,11 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
     return OK;
   }
 
-  if (result < 0 && !ssl_started)
-    return ReconsiderProxyAfterError(result);
-
-  establishing_tunnel_ = false;
-
-  // Handle SSL errors below.
-  if (using_ssl_) {
-    DCHECK(ssl_started);
-    if (IsCertificateError(result)) {
-      SSLInfo ssl_info;
-      GetSSLInfo(&ssl_info);
-      if (ssl_info.cert) {
-        // Add the bad certificate to the set of allowed certificates in the
-        // SSL config object. This data structure will be consulted after
-        // calling RestartIgnoringLastError(). And the user will be asked
-        // interactively before RestartIgnoringLastError() is ever called.
-        server_ssl_config_.allowed_bad_certs.emplace_back(ssl_info.cert,
-                                                          ssl_info.cert_status);
-      }
+  if (result < 0) {
+    if (!ssl_started) {
+      return ReconsiderProxyAfterError(result);
     }
-    if (result < 0)
-      return result;
+    return result;
   }
 
   next_state_ = STATE_CREATE_STREAM;

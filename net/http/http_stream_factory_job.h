@@ -69,25 +69,21 @@ class HttpStreamFactory::Job
     virtual ~Delegate() = default;
 
     // Invoked when |job| has an HttpStream ready.
-    virtual void OnStreamReady(Job* job, const SSLConfig& used_ssl_config) = 0;
+    virtual void OnStreamReady(Job* job) = 0;
 
     // Invoked when |job| has a BidirectionalStream ready.
     virtual void OnBidirectionalStreamImplReady(
         Job* job,
-        const SSLConfig& used_ssl_config,
         const ProxyInfo& used_proxy_info) = 0;
 
     // Invoked when |job| has a WebSocketHandshakeStream ready.
     virtual void OnWebSocketHandshakeStreamReady(
         Job* job,
-        const SSLConfig& used_ssl_config,
         const ProxyInfo& used_proxy_info,
         std::unique_ptr<WebSocketHandshakeStreamBase> stream) = 0;
 
     // Invoked when |job| fails to create a stream.
-    virtual void OnStreamFailed(Job* job,
-                                int status,
-                                const SSLConfig& used_ssl_config) = 0;
+    virtual void OnStreamFailed(Job* job, int status) = 0;
 
     // Invoked when |job| fails on the default network.
     virtual void OnFailedOnDefaultNetwork(Job* job) = 0;
@@ -95,18 +91,15 @@ class HttpStreamFactory::Job
     // Invoked when |job| has a certificate error for the HttpStreamRequest.
     virtual void OnCertificateError(Job* job,
                                     int status,
-                                    const SSLConfig& used_ssl_config,
                                     const SSLInfo& ssl_info) = 0;
 
     // Invoked when |job| raises failure for SSL Client Auth.
     virtual void OnNeedsClientAuth(Job* job,
-                                   const SSLConfig& used_ssl_config,
                                    SSLCertRequestInfo* cert_info) = 0;
 
     // Invoked when |job| needs proxy authentication.
     virtual void OnNeedsProxyAuth(Job* job,
                                   const HttpResponseInfo& proxy_response,
-                                  const SSLConfig& used_ssl_config,
                                   const ProxyInfo& used_proxy_info,
                                   HttpAuthController* auth_controller) = 0;
 

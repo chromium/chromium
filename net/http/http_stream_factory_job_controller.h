@@ -84,25 +84,21 @@ class HttpStreamFactory::JobController
 
   // From HttpStreamFactory::Job::Delegate.
   // Invoked when |job| has an HttpStream ready.
-  void OnStreamReady(Job* job, const SSLConfig& used_ssl_config) override;
+  void OnStreamReady(Job* job) override;
 
   // Invoked when |job| has a BidirectionalStream ready.
   void OnBidirectionalStreamImplReady(
       Job* job,
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info) override;
 
   // Invoked when |job| has a WebSocketHandshakeStream ready.
   void OnWebSocketHandshakeStreamReady(
       Job* job,
-      const SSLConfig& used_ssl_config,
       const ProxyInfo& used_proxy_info,
       std::unique_ptr<WebSocketHandshakeStreamBase> stream) override;
 
   // Invoked when |job| fails to create a stream.
-  void OnStreamFailed(Job* job,
-                      int status,
-                      const SSLConfig& used_ssl_config) override;
+  void OnStreamFailed(Job* job, int status) override;
 
   // Invoked when |job| fails on the default network.
   void OnFailedOnDefaultNetwork(Job* job) override;
@@ -110,18 +106,14 @@ class HttpStreamFactory::JobController
   // Invoked when |job| has a certificate error for the Request.
   void OnCertificateError(Job* job,
                           int status,
-                          const SSLConfig& used_ssl_config,
                           const SSLInfo& ssl_info) override;
 
   // Invoked when |job| raises failure for SSL Client Auth.
-  void OnNeedsClientAuth(Job* job,
-                         const SSLConfig& used_ssl_config,
-                         SSLCertRequestInfo* cert_info) override;
+  void OnNeedsClientAuth(Job* job, SSLCertRequestInfo* cert_info) override;
 
   // Invoked when |job| needs proxy authentication.
   void OnNeedsProxyAuth(Job* job,
                         const HttpResponseInfo& proxy_response,
-                        const SSLConfig& used_ssl_config,
                         const ProxyInfo& used_proxy_info,
                         HttpAuthController* auth_controller) override;
 

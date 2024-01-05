@@ -291,9 +291,7 @@ void HttpStreamFactory::JobController::SetPriority(RequestPriority priority) {
   }
 }
 
-void HttpStreamFactory::JobController::OnStreamReady(
-    Job* job,
-    const SSLConfig& used_ssl_config) {
+void HttpStreamFactory::JobController::OnStreamReady(Job* job) {
   DCHECK(job);
 
   if (IsJobOrphaned(job)) {
@@ -319,13 +317,11 @@ void HttpStreamFactory::JobController::OnStreamReady(
   DCHECK(request_->completed());
 
   HistogramProxyUsed(job->proxy_info(), /*success=*/true);
-  delegate_->OnStreamReady(used_ssl_config, job->proxy_info(),
-                           std::move(stream));
+  delegate_->OnStreamReady(job->proxy_info(), std::move(stream));
 }
 
 void HttpStreamFactory::JobController::OnBidirectionalStreamImplReady(
     Job* job,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info) {
   DCHECK(job);
 
@@ -348,13 +344,11 @@ void HttpStreamFactory::JobController::OnBidirectionalStreamImplReady(
 
   OnJobSucceeded(job);
   DCHECK(request_->completed());
-  delegate_->OnBidirectionalStreamImplReady(used_ssl_config, used_proxy_info,
-                                            std::move(stream));
+  delegate_->OnBidirectionalStreamImplReady(used_proxy_info, std::move(stream));
 }
 
 void HttpStreamFactory::JobController::OnWebSocketHandshakeStreamReady(
     Job* job,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
   DCHECK(job);
@@ -368,14 +362,11 @@ void HttpStreamFactory::JobController::OnWebSocketHandshakeStreamReady(
 
   OnJobSucceeded(job);
   DCHECK(request_->completed());
-  delegate_->OnWebSocketHandshakeStreamReady(used_ssl_config, used_proxy_info,
+  delegate_->OnWebSocketHandshakeStreamReady(used_proxy_info,
                                              std::move(stream));
 }
 
-void HttpStreamFactory::JobController::OnStreamFailed(
-    Job* job,
-    int status,
-    const SSLConfig& used_ssl_config) {
+void HttpStreamFactory::JobController::OnStreamFailed(Job* job, int status) {
   DCHECK_NE(OK, status);
   if (job->job_type() == MAIN) {
     DCHECK_EQ(main_job_.get(), job);
@@ -435,7 +426,7 @@ void HttpStreamFactory::JobController::OnStreamFailed(
   }
 
   HistogramProxyUsed(job->proxy_info(), /*success=*/false);
-  delegate_->OnStreamFailed(status, *job->net_error_details(), used_ssl_config,
+  delegate_->OnStreamFailed(status, *job->net_error_details(),
                             job->proxy_info(), job->resolve_error_info());
 }
 
@@ -453,7 +444,6 @@ void HttpStreamFactory::JobController::OnFailedOnDefaultNetwork(Job* job) {
 void HttpStreamFactory::JobController::OnCertificateError(
     Job* job,
     int status,
-    const SSLConfig& used_ssl_config,
     const SSLInfo& ssl_info) {
   MaybeResumeMainJob(job, base::TimeDelta());
 
@@ -470,12 +460,11 @@ void HttpStreamFactory::JobController::OnCertificateError(
   if (!bound_job_)
     BindJob(job);
 
-  delegate_->OnCertificateError(status, used_ssl_config, ssl_info);
+  delegate_->OnCertificateError(status, ssl_info);
 }
 
 void HttpStreamFactory::JobController::OnNeedsClientAuth(
     Job* job,
-    const SSLConfig& used_ssl_config,
     SSLCertRequestInfo* cert_info) {
   MaybeResumeMainJob(job, base::TimeDelta());
 
@@ -490,13 +479,12 @@ void HttpStreamFactory::JobController::OnNeedsClientAuth(
   if (!bound_job_)
     BindJob(job);
 
-  delegate_->OnNeedsClientAuth(used_ssl_config, cert_info);
+  delegate_->OnNeedsClientAuth(cert_info);
 }
 
 void HttpStreamFactory::JobController::OnNeedsProxyAuth(
     Job* job,
     const HttpResponseInfo& proxy_response,
-    const SSLConfig& used_ssl_config,
     const ProxyInfo& used_proxy_info,
     HttpAuthController* auth_controller) {
   MaybeResumeMainJob(job, base::TimeDelta());
@@ -512,8 +500,7 @@ void HttpStreamFactory::JobController::OnNeedsProxyAuth(
     return;
   if (!bound_job_)
     BindJob(job);
-  delegate_->OnNeedsProxyAuth(proxy_response, used_ssl_config, used_proxy_info,
-                              auth_controller);
+  delegate_->OnNeedsProxyAuth(proxy_response, used_proxy_info, auth_controller);
 }
 
 void HttpStreamFactory::JobController::OnPreconnectsComplete(Job* job,
@@ -1137,8 +1124,8 @@ void HttpStreamFactory::JobController::MaybeNotifyFactoryOfCompletion() {
 void HttpStreamFactory::JobController::NotifyRequestFailed(int rv) {
   if (!request_)
     return;
-  delegate_->OnStreamFailed(rv, NetErrorDetails(), server_ssl_config_,
-                            ProxyInfo(), ResolveErrorInfo());
+  delegate_->OnStreamFailed(rv, NetErrorDetails(), ProxyInfo(),
+                            ResolveErrorInfo());
 }
 
 void HttpStreamFactory::JobController::RewriteUrlWithHostMappingRules(
