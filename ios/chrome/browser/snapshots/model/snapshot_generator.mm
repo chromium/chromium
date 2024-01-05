@@ -62,6 +62,57 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
   return self;
 }
 
+- (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion {
+  bool showing_native_content =
+      web::GetWebClient()->IsAppSpecificURL(_webState->GetLastCommittedURL());
+  if (!showing_native_content && _webState->CanTakeSnapshot()) {
+    // Take the snapshot using the optimized WKWebView snapshotting API for
+    // pages loaded in the web view when the WebState snapshot API is available.
+    [self generateWKWebViewSnapshotWithCompletion:completion];
+    return;
+  }
+  // Use the UIKit-based snapshot API as a fallback when the WKWebView API is
+  // unavailable.
+  UIImage* snapshot = [self generateUIViewSnapshotWithOverlays];
+  if (completion) {
+    completion(snapshot);
+  }
+}
+
+- (UIImage*)generateUIViewSnapshot {
+  if (![self canTakeSnapshot] || !_webState) {
+    return nil;
+  }
+  [_delegate snapshotGenerator:self
+      willUpdateSnapshotForWebState:_webState.get()];
+
+  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
+  // however, it generates a black image when the size of `baseView` is larger
+  // than `frameInBaseView`. So this is a workaround to generate an UIImage by
+  // dividing the step into 2 steps; 1) convert an UIView to an UIImage 2) crop
+  // an UIImage with `frameInBaseView`.
+  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.baseView];
+  return [self cropImage:baseImage
+         frameInBaseView:snapshotInfo.snapshotFrameInBaseView];
+}
+
+- (UIImage*)generateUIViewSnapshotWithOverlays {
+  if (![self canTakeSnapshot]) {
+    return nil;
+  }
+  SnapshotInfo snapshotInfo = [self snapshotInfo];
+  return [self addOverlays:[self overlays]
+                 baseImage:[self generateUIViewSnapshot]
+             frameInWindow:snapshotInfo.snapshotFrameInWindow];
+}
+
+#pragma mark - Private methods
+
+// Asynchronously generates a new snapshot with WebKit-based snapshot API and
+// runs a callback with the new snapshot image. It is an error to call this
+// method if the web state is showing anything other (e.g., native content) than
+// a web view.
 - (void)generateWKWebViewSnapshotWithCompletion:(void (^)(UIImage*))completion {
   if (!_webState) {
     return;
@@ -102,35 +153,6 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
-- (UIImage*)generateUIViewSnapshot {
-  if (![self canTakeSnapshot] || !_webState) {
-    return nil;
-  }
-  [_delegate snapshotGenerator:self
-      willUpdateSnapshotForWebState:_webState.get()];
-
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
-  // Ideally, generate an UIImage by one step with `UIGraphicsImageRenderer`,
-  // however, it generates a black image when the size of `baseView` is larger
-  // than `frameInBaseView`. So this is a workaround to generate an UIImage by
-  // dividing the step into 2 steps; 1) convert an UIView to an UIImage 2) crop
-  // an UIImage with `frameInBaseView`.
-  UIImage* baseImage = [self convertFromBaseView:snapshotInfo.baseView];
-  return [self cropImage:baseImage
-         frameInBaseView:snapshotInfo.snapshotFrameInBaseView];
-}
-
-- (UIImage*)generateUIViewSnapshotWithOverlays {
-  if (![self canTakeSnapshot]) {
-    return nil;
-  }
-  SnapshotInfo snapshotInfo = [self snapshotInfo];
-  return [self addOverlays:[self overlays]
-                 baseImage:[self generateUIViewSnapshot]
-             frameInWindow:snapshotInfo.snapshotFrameInWindow];
-}
-
-#pragma mark - Private methods
 
 // Returns NO if WebState or the view is not ready for snapshot.
 - (BOOL)canTakeSnapshot {
