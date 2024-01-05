@@ -500,4 +500,26 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
                    0.0, 1.0, 8, gfx::ProtectedVideoType::kClear, std::nullopt);
 }
 
+std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
+    viz::CompositorRenderPass* from_pass,
+    viz::AggregatedRenderPassId to_id,
+    gfx::ContentColorUsage content_usage) {
+  auto copy_pass = std::make_unique<viz::AggregatedRenderPass>(
+      from_pass->shared_quad_state_list.size(), from_pass->quad_list.size());
+  copy_pass->SetAll(to_id, from_pass->output_rect, from_pass->damage_rect,
+                    from_pass->transform_to_root_target, from_pass->filters,
+                    from_pass->backdrop_filters,
+                    from_pass->backdrop_filter_bounds, content_usage,
+                    from_pass->has_transparent_background,
+                    from_pass->cache_render_pass,
+                    from_pass->has_damage_from_contributing_content,
+                    from_pass->generate_mipmap);
+
+  copy_pass->shared_quad_state_list =
+      std::move(from_pass->shared_quad_state_list);
+  copy_pass->quad_list = std::move(from_pass->quad_list);
+
+  return copy_pass;
+}
+
 }  // namespace cc

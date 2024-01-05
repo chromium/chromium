@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "cc/paint/filter_operations.h"
@@ -131,6 +132,11 @@ void AddOneOfEveryQuadTypeInDisplayResourceProvider(
     viz::RasterContextProvider* child_context_provider,
     viz::AggregatedRenderPassId child_pass_id,
     gpu::SyncToken* sync_token_for_mailbox_texture);
+
+std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
+    viz::CompositorRenderPass* from_pass,
+    viz::AggregatedRenderPassId to_id,
+    gfx::ContentColorUsage content_usage);
 
 }  // namespace cc
 
