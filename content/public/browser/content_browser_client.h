@@ -32,6 +32,7 @@
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/generated_code_cache_settings.h"
@@ -278,29 +279,6 @@ class TtsControllerDelegate;
 class SmartCardDelegate;
 #endif
 
-// Structure of data pasted from clipboard.
-struct CONTENT_EXPORT ClipboardPasteData {
-  ClipboardPasteData(std::string text,
-                     std::string image,
-                     std::vector<base::FilePath> file_paths);
-  ClipboardPasteData();
-  ClipboardPasteData(const ClipboardPasteData&);
-  ClipboardPasteData(ClipboardPasteData&&);
-  ClipboardPasteData& operator=(ClipboardPasteData&&);
-  bool isEmpty();
-  ~ClipboardPasteData();
-
-  // UTF-8 encoded text data to scan, such as plain text, URLs, HTML, etc.
-  std::string text;
-
-  // Binary image data to scan, such as png (here we assume the data
-  // struct holds one image only).
-  std::string image;
-
-  // A list of full file paths to scan.
-  std::vector<base::FilePath> file_paths;
-};
-
 // Embedder API (or SPI) for participating in browser logic, to be implemented
 // by the client of the content browser. See ChromeContentBrowserClient for the
 // principal implementation. The methods are assumed to be called on the UI
@@ -311,10 +289,10 @@ struct CONTENT_EXPORT ClipboardPasteData {
 // the observer interfaces.)
 class CONTENT_EXPORT ContentBrowserClient {
  public:
-  // Callback used with IsClipboardPasteContentAllowed() method.  If the paste
-  // is not allowed, nullopt is passed to the callback.  Otherwise, the data
-  // that should be pasted is passed in.
-  using IsClipboardPasteContentAllowedCallback = base::OnceCallback<void(
+  // Callback used with the `IsClipboardPasteAllowedByPolicy()` method.  If the
+  // paste is not allowed, nullopt is passed to the callback.  Otherwise, the
+  // data that should be pasted is passed in.
+  using IsClipboardPasteAllowedCallback = base::OnceCallback<void(
       absl::optional<ClipboardPasteData> clipboard_paste_data)>;
 
   virtual ~ContentBrowserClient() = default;
@@ -2453,12 +2431,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // The callback is called, possibly asynchronously, with a status indicating
   // whether the operation is allowed or not.  If the operation is allowed,
   // the callback is passed the data the can be pasted.
-  virtual void IsClipboardPasteContentAllowed(
-      content::WebContents* web_contents,
-      const GURL& url,
-      const ui::ClipboardFormatType& data_type,
-      ClipboardPasteData content_analyisis_data,
-      IsClipboardPasteContentAllowedCallback callback);
+  virtual void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ClipboardMetadata& metadata,
+      ClipboardPasteData clipboard_paste_data,
+      IsClipboardPasteAllowedCallback callback);
 
   // Returns true if a copy to the clipboard from `url` is allowed by the
   // CopyPreventionSettings policy, false otherwise. The check is only performed

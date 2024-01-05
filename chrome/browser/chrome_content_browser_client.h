@@ -831,12 +831,12 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsClipboardPasteAllowed(
       content::RenderFrameHost* render_frame_host) override;
 
-  void IsClipboardPasteContentAllowed(
-      content::WebContents* web_contents,
-      const GURL& url,
-      const ui::ClipboardFormatType& data_type,
+  void IsClipboardPasteAllowedByPolicy(
+      const content::ClipboardEndpoint& source,
+      const content::ClipboardEndpoint& destination,
+      const content::ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
-      IsClipboardPasteContentAllowedCallback callback) override;
+      IsClipboardPasteAllowedCallback callback) override;
 
   bool IsClipboardCopyAllowed(content::BrowserContext* browser_context,
                               const GURL& url,

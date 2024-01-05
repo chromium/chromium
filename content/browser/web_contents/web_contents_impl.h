@@ -757,13 +757,14 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                  const GURL& url,
                                  bool user_gesture) override;
   bool IsAllowedToGoToEntryAtOffset(int32_t offset) override;
-  void IsClipboardPasteContentAllowed(
-      const GURL& url,
-      const ui::ClipboardFormatType& data_type,
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
-      IsClipboardPasteContentAllowedCallback callback) override;
-  void IsClipboardPasteContentAllowedWrapperCallback(
-      IsClipboardPasteContentAllowedCallback callback,
+      IsClipboardPasteAllowedCallback callback) override;
+  void IsClipboardPasteAllowedWrapperCallback(
+      IsClipboardPasteAllowedCallback callback,
       absl::optional<ClipboardPasteData> clipboard_paste_data);
   void OnPageScaleFactorChanged(PageImpl& source) override;
   void BindScreenOrientation(

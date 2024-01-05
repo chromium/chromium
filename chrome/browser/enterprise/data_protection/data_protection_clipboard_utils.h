@@ -11,27 +11,24 @@
 
 namespace enterprise_data_protection {
 
-// Apply appropriate data protection checks to pasted files.
-// TODO(b/280449704): Remove this function from the header when
-// crrev.com/c/5054488 lands and provides a cleaner interface.
-void HandleExpandedPaths(
-    std::unique_ptr<enterprise_connectors::FilesScanData> fsd,
-    base::WeakPtr<content::WebContents> web_contents,
-    enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    enterprise_connectors::AnalysisConnector connector,
-    std::vector<base::FilePath> paths,
-    content::ContentBrowserClient::IsClipboardPasteContentAllowedCallback
-        callback);
-
-// Apply appropriate data protection checks to pasted text/images.
-// TODO(b/280449704): Remove this function from the header when
-// crrev.com/c/5054488 lands and provides a cleaner interface.
-void HandleStringData(
-    content::WebContents* web_contents,
-    enterprise_connectors::ContentAnalysisDelegate::Data dialog_data,
-    enterprise_connectors::AnalysisConnector connector,
-    content::ContentBrowserClient::IsClipboardPasteContentAllowedCallback
-        callback);
+// This function checks if a paste is allowed to proceed according to the
+// following policies:
+// - DataLeakPreventionRulesList
+// - OnBulkDataEntryEnterpriseConnector
+// TODO(b/302340176): Add support for DataControlsRules
+//
+// This function will always call `callback` after policies are evaluated with
+// true if the paste is allowed to proceed and false if it is not. However, if
+// policies indicate the paste action should receive a bypassable warning, then
+// `callback` will only be called after the user makes the decision to bypass
+// the warning or not. As such, callers should be careful not to bind data that
+// could become dangling as `callback` is not guaranteed to run synchronously.
+void PasteIfAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata,
+    content::ClipboardPasteData clipboard_paste_data,
+    content::ContentBrowserClient::IsClipboardPasteAllowedCallback callback);
 
 }  // namespace enterprise_data_protection
 

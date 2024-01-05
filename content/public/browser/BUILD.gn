@@ -111,6 +111,8 @@ source_set("browser_sources") {
     "client_hints.h",
     "client_hints_controller_delegate.cc",
     "client_hints_controller_delegate.h",
+    "clipboard_types.cc",
+    "clipboard_types.h",
     "commit_deferring_condition.cc",
     "commit_deferring_condition.h",
     "console_message.cc",

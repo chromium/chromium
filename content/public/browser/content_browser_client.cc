@@ -89,22 +89,6 @@
 
 namespace content {
 
-ClipboardPasteData::ClipboardPasteData(std::string text,
-                                       std::string image,
-                                       std::vector<base::FilePath> file_paths)
-    : text(std::move(text)),
-      image(std::move(image)),
-      file_paths(std::move(file_paths)) {}
-ClipboardPasteData::ClipboardPasteData() = default;
-ClipboardPasteData::ClipboardPasteData(const ClipboardPasteData&) = default;
-ClipboardPasteData::ClipboardPasteData(ClipboardPasteData&&) = default;
-ClipboardPasteData& ClipboardPasteData::operator=(ClipboardPasteData&&) =
-    default;
-bool ClipboardPasteData::isEmpty() {
-  return text.empty() && image.empty() && file_paths.empty();
-}
-ClipboardPasteData::~ClipboardPasteData() = default;
-
 std::unique_ptr<BrowserMainParts> ContentBrowserClient::CreateBrowserMainParts(
     bool /* is_integration_test */) {
   return nullptr;
@@ -1419,12 +1403,12 @@ bool ContentBrowserClient::IsClipboardPasteAllowed(
   return true;
 }
 
-void ContentBrowserClient::IsClipboardPasteContentAllowed(
-    content::WebContents* web_contents,
-    const GURL& url,
-    const ui::ClipboardFormatType& data_type,
+void ContentBrowserClient::IsClipboardPasteAllowedByPolicy(
+    const ClipboardEndpoint& source,
+    const ClipboardEndpoint& destination,
+    const ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
+    IsClipboardPasteAllowedCallback callback) {
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 

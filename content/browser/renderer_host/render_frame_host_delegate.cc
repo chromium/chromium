@@ -135,11 +135,12 @@ std::vector<FrameTreeNode*> RenderFrameHostDelegate::GetUnattachedOwnedNodes(
   return {};
 }
 
-void RenderFrameHostDelegate::IsClipboardPasteContentAllowed(
-    const GURL& url,
-    const ui::ClipboardFormatType& data_type,
+void RenderFrameHostDelegate::IsClipboardPasteAllowedByPolicy(
+    const ClipboardEndpoint& source,
+    const ClipboardEndpoint& destination,
+    const ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
+    IsClipboardPasteAllowedCallback callback) {
   std::move(callback).Run(std::move(clipboard_paste_data));
 }
 

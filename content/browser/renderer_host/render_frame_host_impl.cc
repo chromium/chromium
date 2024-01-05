@@ -15354,13 +15354,15 @@ void RenderFrameHostImpl::ReinitializeDocumentAssociatedDataForTesting() {
   document_associated_data_.emplace(*this, blink::DocumentToken());
 }
 
-void RenderFrameHostImpl::IsClipboardPasteContentAllowed(
-    const ui::ClipboardFormatType& data_type,
+void RenderFrameHostImpl::IsClipboardPasteAllowedByPolicy(
+    const ClipboardEndpoint& source,
+    const ClipboardEndpoint& destination,
+    const ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
-  delegate_->IsClipboardPasteContentAllowed(GetLastCommittedURL(), data_type,
-                                            std::move(clipboard_paste_data),
-                                            std::move(callback));
+    IsClipboardPasteAllowedCallback callback) {
+  delegate_->IsClipboardPasteAllowedByPolicy(source, destination, metadata,
+                                             std::move(clipboard_paste_data),
+                                             std::move(callback));
 }
 
 RenderFrameHostImpl* RenderFrameHostImpl::GetParentOrOuterDocument() const {

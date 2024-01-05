@@ -228,10 +228,6 @@ namespace network {
 class ResourceRequestBody;
 }  // namespace network
 
-namespace ui {
-class ClipboardFormatType;
-}
-
 namespace ukm {
 class UkmRecorder;
 }
@@ -322,11 +318,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
-  // Callback used with IsClipboardPasteContentAllowed() method.
-  using IsClipboardPasteContentAllowedCallback =
-      ContentBrowserClient::IsClipboardPasteContentAllowedCallback;
+  // Callback used with IsClipboardPasteAllowed() method.
+  using IsClipboardPasteAllowedCallback =
+      ContentBrowserClient::IsClipboardPasteAllowedCallback;
 
-  // Data used with IsClipboardPasteContentAllowed() method.
+  // Data used with IsClipboardPasteAllowedByPolicy() method.
   using ClipboardPasteData = content::ClipboardPasteData;
 
   // An accessibility reset is only allowed to prevent very rare corner cases
@@ -597,12 +593,14 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to
-  // RenderFrameHostDelegate::IsClipboardPasteContentAllowed().  See the
+  // RenderFrameHostDelegate::IsClipboardPasteAllowedByPolicy().  See the
   // description of the latter method for complete details.
-  void IsClipboardPasteContentAllowed(
-      const ui::ClipboardFormatType& data_type,
+  void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
-      IsClipboardPasteContentAllowedCallback callback);
+      IsClipboardPasteAllowedCallback callback);
 
   // This is called when accessibility events arrive from renderer to browser.
   // This could cause eviction if the page is in back/forward cache. Returns

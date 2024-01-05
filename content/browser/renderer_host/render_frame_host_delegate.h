@@ -127,16 +127,18 @@ class CreateNewWindowParams;
 // WebContents type (see //renderer_host/DEPS).
 class CONTENT_EXPORT RenderFrameHostDelegate {
  public:
-  // Callback used with HandleClipboardPaste() method.  If the clipboard paste
-  // is allowed to proceed, the callback is called with true.  Otherwise the
-  // callback is called with false.
-  using IsClipboardPasteContentAllowedCallback =
-      RenderFrameHostImpl::IsClipboardPasteContentAllowedCallback;
+  // Callback used with IsClipboardPasteAllowedByPolicy() method.  If the
+  // clipboard paste is allowed to proceed, the callback is called with the data
+  // that's allowed to be pasted.
+  using IsClipboardPasteAllowedCallback =
+      RenderFrameHostImpl::IsClipboardPasteAllowedCallback;
 
   using JavaScriptDialogCallback =
       content::JavaScriptDialogManager::DialogClosedCallback;
 
   using ClipboardPasteData = content::ClipboardPasteData;
+  using ClipboardEndpoint = content::ClipboardEndpoint;
+  using ClipboardMetadata = content::ClipboardMetadata;
 
   // This is used to give the delegate a chance to filter IPC messages.
   virtual bool OnMessageReceived(RenderFrameHostImpl* render_frame_host,
@@ -555,11 +557,12 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   //
   // The callback is called, possibly asynchronously, with a status indicating
   // whether the operation is allowed or not.
-  virtual void IsClipboardPasteContentAllowed(
-      const GURL& url,
-      const ui::ClipboardFormatType& data_type,
+  virtual void IsClipboardPasteAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ClipboardEndpoint& destination,
+      const ClipboardMetadata& metadata,
       ClipboardPasteData clipboard_paste_data,
-      IsClipboardPasteContentAllowedCallback callback);
+      IsClipboardPasteAllowedCallback callback);
 
   // Notified when the main frame of `source` adjusts the page scale.
   virtual void OnPageScaleFactorChanged(PageImpl& source) {}

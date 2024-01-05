@@ -7434,48 +7434,16 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
   return false;
 }
 
-void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
-    content::WebContents* web_contents,
-    const GURL& url,
-    const ui::ClipboardFormatType& data_type,
+void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
+    IsClipboardPasteAllowedCallback callback) {
 #if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  bool is_files = data_type == ui::ClipboardFormatType::FilenamesType();
-  enterprise_connectors::AnalysisConnector connector =
-      is_files ? enterprise_connectors::AnalysisConnector::FILE_ATTACHED
-               : enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
-  enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
-
-  if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile, web_contents->GetLastCommittedURL(), &dialog_data,
-          connector)) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
-  dialog_data.reason =
-      enterprise_connectors::ContentAnalysisRequest::CLIPBOARD_PASTE;
-
-  if (is_files) {
-    auto paths = std::move(clipboard_paste_data.file_paths);
-    auto fsd = std::make_unique<enterprise_connectors::FilesScanData>(paths);
-    auto* fsd_ptr = fsd.get();
-    fsd_ptr->ExpandPaths(base::BindOnce(
-        &enterprise_data_protection::HandleExpandedPaths, std::move(fsd),
-        web_contents->GetWeakPtr(), std::move(dialog_data), connector,
-        std::move(paths), std::move(callback)));
-  } else {
-    dialog_data.text.push_back(clipboard_paste_data.text);
-    // Send image only to local agent for analysis.
-    if (dialog_data.settings.cloud_or_local_settings.is_local_analysis()) {
-      dialog_data.image = std::move(clipboard_paste_data.image);
-    }
-    enterprise_data_protection::HandleStringData(
-        web_contents, std::move(dialog_data), connector, std::move(callback));
-  }
+  enterprise_data_protection::PasteIfAllowedByPolicy(
+      source, destination, metadata, std::move(clipboard_paste_data),
+      std::move(callback));
 #else
   std::move(callback).Run(std::move(clipboard_paste_data));
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)

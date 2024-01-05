@@ -10246,6 +10246,7 @@ if (!is_fuchsia) {
     }
 
     if (enterprise_data_controls) {
+      sources += [ "../browser/enterprise/data_protection/data_protection_clipboard_utils_unittest.cc" ]
       deps += [ "../browser/enterprise/data_controls:unit_tests" ]
     }
 

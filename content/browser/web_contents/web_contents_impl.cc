@@ -9788,21 +9788,21 @@ std::vector<FrameTreeNode*> WebContentsImpl::GetUnattachedOwnedNodes(
   return unattached_owned_nodes;
 }
 
-void WebContentsImpl::IsClipboardPasteContentAllowed(
-    const GURL& url,
-    const ui::ClipboardFormatType& data_type,
+void WebContentsImpl::IsClipboardPasteAllowedByPolicy(
+    const ClipboardEndpoint& source,
+    const ClipboardEndpoint& destination,
+    const ClipboardMetadata& metadata,
     ClipboardPasteData clipboard_paste_data,
-    IsClipboardPasteContentAllowedCallback callback) {
+    IsClipboardPasteAllowedCallback callback) {
   ++suppress_unresponsive_renderer_count_;
-  GetContentClient()->browser()->IsClipboardPasteContentAllowed(
-      this, url, data_type, std::move(clipboard_paste_data),
-      base::BindOnce(
-          &WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback,
-          weak_factory_.GetWeakPtr(), std::move(callback)));
+  GetContentClient()->browser()->IsClipboardPasteAllowedByPolicy(
+      source, destination, metadata, std::move(clipboard_paste_data),
+      base::BindOnce(&WebContentsImpl::IsClipboardPasteAllowedWrapperCallback,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebContentsImpl::IsClipboardPasteContentAllowedWrapperCallback(
-    IsClipboardPasteContentAllowedCallback callback,
+void WebContentsImpl::IsClipboardPasteAllowedWrapperCallback(
+    IsClipboardPasteAllowedCallback callback,
     absl::optional<ClipboardPasteData> clipboard_paste_data) {
   std::move(callback).Run(std::move(clipboard_paste_data));
   --suppress_unresponsive_renderer_count_;

@@ -111,6 +111,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/display/screen.h"
@@ -5331,8 +5332,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
       ClipboardPasteData("random pasted text", std::string(), {});
 
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
-  web_contents->IsClipboardPasteContentAllowed(
-      GURL("https://google.com"), ui::ClipboardFormatType::PlainTextType(),
+  web_contents->IsClipboardPasteAllowedByPolicy(
+      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
+      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
+                        base::BindLambdaForTesting([web_contents] {
+                          return web_contents->GetBrowserContext();
+                        }),
+                        *web_contents->GetPrimaryMainFrame()),
+      {.format_type = ui::ClipboardFormatType::PlainTextType()},
       clipboard_paste_data,
       base::BindLambdaForTesting(
           [&web_contents](
