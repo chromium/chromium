@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -84,6 +85,7 @@ class CallTrackingTestWebLocalFrameClient
 };
 
 TEST(WebLocalFrameClientTest, Basic) {
+  test::TaskEnvironment task_environment;
   CallTrackingTestWebLocalFrameClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
 

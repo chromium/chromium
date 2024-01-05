@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -111,6 +112,7 @@ class UseCounterImplTest : public testing::Test {
   void SetURL(const KURL& url) { dummy_->GetDocument().SetURL(url); }
   Document& GetDocument() { return dummy_->GetDocument(); }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_;
   base::HistogramTester histogram_tester_;
 
@@ -392,6 +394,7 @@ class DeprecationTest : public testing::Test {
  protected:
   LocalFrame* GetFrame() { return &dummy_->GetFrame(); }
 
+  test::TaskEnvironment task_environment_;
   std::unique_ptr<DummyPageHolder> dummy_;
   Deprecation& deprecation_;
   UseCounterImpl& use_counter_;

@@ -164,6 +164,7 @@ class VisualViewportTest : public testing::Test,
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
   std::string base_url_;
   frame_test_helpers::WebViewHelper helper_;
 };
