@@ -415,6 +415,7 @@ Si la inhabilitas o no la estableces, el restablecimiento completo de la configu
 <translation id="1327466551276625742">Habilitar mensaje de configuración de red si no hay conexión</translation>
 <translation id="1330145147221172764">Habilitar el teclado en pantalla</translation>
 <translation id="13356285923490863">Nombre de la política</translation>
+<translation id="1336073690474326987">Inhabilitar la función por completo</translation>
 <translation id="1338603603553894503">Especifica si el selector de perfiles está habilitado, inhabilitado o forzado al iniciar el navegador.
 
       De forma predeterminada, no se mostrará el selector de perfiles si se inicia el navegador en modo Incógnito o de invitado, se especifica un directorio de perfiles o URL por línea de comandos, se solicita de forma explícita que se abra una app, se inició el navegador mediante una notificación nativa, hay un solo perfil disponible o se establece la política ForceBrowserSignin como verdadera.
@@ -954,6 +955,7 @@ Más allá del valor, el usuario podrá decidir si desea conservar o no los dato
 
 Esta política no tiene efecto si la opción para conservar los datos de navegación existentes no está disponible. Esto sucede si la separación del perfil empresarial se aplica de manera forzosa o si los datos provienen de un perfil ya administrado.
 </translation>
+<translation id="1795025936135166305">Permitir el uso de funciones para la organización</translation>
 <translation id="1795105105645381965">
       Si habilitas la política (True), permitirás que <ph name="PRODUCT_NAME" /> solicite el consentimiento de los usuarios administrados antes de compartir las señales de los dispositivos no administrados a fin de obtener acceso.
 
@@ -1142,7 +1144,6 @@ Si la inhabilitas, <ph name="PRODUCT_NAME" /> cerrará la pestaña y, luego, cam
 <translation id="1916266055944569995">Si configuras la política, se definirá el valor que muestra la API Managed Configuration para un origen determinado.
 
       La API Managed Configuration es una configuración de pares clave-valor a la cual se puede acceder mediante la llamada de JavaScript navigator.managed.getManagedConfiguration(). Esta API solo está disponible para los orígenes que corresponden a las aplicaciones web que se instalaron de manera automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.</translation>
-<translation id="1918690415433353669">Permitir la organización de pestañas, sin registrar los detalles de la pestaña</translation>
 <translation id="1919802376548418720">Usa la política de KDC para delegar credenciales.</translation>
 <translation id="1920046221095339924">Permitir las sesiones administradas en el dispositivo</translation>
 <translation id="1920772397574801429">Si estableces esta política, se especificará el tipo de cuentas que proporciona la app de autenticación de Android compatible con la autenticación <ph name="HTTP_NEGOTIATE" /> (como la autenticación Kerberos). El proveedor de la app de autenticación debe brindar esta información. Para saber más sobre este procedimiento, consulta The Chromium Projects (https://goo.gl/hajyfN)
@@ -1729,7 +1730,6 @@ política mientras se esté ejecutando el navegador.</translation>
 Si inhabilitas la política, no se permitirá que los usuarios ni las variaciones de <ph name="PRODUCT_NAME" /> habiliten NewBaseUrlInheritanceBehavior en caso de que se detecten problemas de compatibilidad. Si habilitas la política o no la estableces, se permitirá habilitar NewBaseUrlInheritanceBehavior.</translation>
 <translation id="2362469626417133796">Lapso para el reinicio</translation>
 <translation id="2362539163677485510">El token de inscripción de la política de nube</translation>
-<translation id="2362947328909044249">Permitir la organización de pestañas</translation>
 <translation id="2363928351203698966">Si estableces la política en un valor válido, <ph name="PRODUCT_NAME" /> no usará versiones de SSL/TLS anteriores a las especificadas. Se ignorarán los valores que no se reconozcan.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> mostrará un mensaje de error para TLS 1.0 y TLS 1.1, pero el usuario podrá omitirlo.
@@ -2031,6 +2031,13 @@ Si la estableces como falsa, se inhabilitará la función Conjuntos de sitios we
 <translation id="26023406105317310">Configura las cuentas de Kerberos</translation>
 <translation id="2603382859270873566">Habilitar la compatibilidad con la API de PPB_VideoDecoder(Dev)</translation>
 <translation id="2604182581880595781">Configura las políticas relacionadas con la función "Network File Shares".</translation>
+<translation id="2604211069017399189">Esta política te permite controlar cómo se manejan los datos de tu organización con Crear temas con IA de <ph name="PRODUCT_NAME" />. Esta política tendrá prioridad sobre cualquier política general futura.
+
+Si estableces la política como "Permitida", se permitirá el uso de funciones para la organización.
+
+Si estableces la política como "Permitir sin recopilación de datos", se inhabilitará la recopilación de datos empresariales para el entrenamiento de modelos. Este parámetro de configuración también inhabilita el uso compartido de datos a través del diálogo de comentarios en la función y el envío de datos para su evaluación manual. Como resultado, Google no usa contenido de usuarios empresariales (incluidos mensajes, entradas, salidas y materiales de la fuente) para el entrenamiento de modelos. Esto garantiza que Google no use los datos del usuario empresarial para entrenar o mejorar sus modelos de IA. Google no guarda el contenido de los usuarios empresariales (mensajes, fuentes, entradas o salidas). Ten en cuenta que se puede almacenar hasta 24 horas para mantener el contexto de la situación. Esto garantiza que Google no recopile ni almacene datos que se ingresen o generen mediante una función de IA. Esto incluye las entradas del usuario, los resultados generados y los comentarios de los usuarios.
+
+Si inhabilitas la política, se inhabilitará la función por completo.</translation>
 <translation id="2608039968712973520">Solicitar permiso al usuario para ejecutar <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
 <translation id="2608535066974278204">Período (en minutos) que especifica el plazo para el reinicio.</translation>
 <translation id="2608887839902987727">Impedir que la autenticación del portal cautivo ignore la configuración de proxy</translation>
@@ -2090,7 +2097,6 @@ El sistema solo consulta registros AAAA cuando el dispositivo es accesible para 
 <translation id="2650049181907741121">Medida que se debe tomar cuando el usuario cierra la tapa</translation>
 <translation id="2656559539624760733">No utilizar Chrome Root Store</translation>
 <translation id="2658653824183107970">Utiliza la implementación heredada de <ph name="CORS" /> en lugar de la nueva implementación de <ph name="CORS" /></translation>
-<translation id="2659064869547694451">Permitir la redacción</translation>
 <translation id="2660846099862559570">Nunca usar un proxy</translation>
 <translation id="2661628029848851543">Se permiten todos los usos de cuentas administradas</translation>
 <translation id="2664391398878045611">La página Nueva pestaña no mostrará la notificación del espacio del medio aunque esté disponible</translation>
@@ -2868,7 +2874,6 @@ Si inhabilitas la política, no se enviarán los archivos descargados para que l
 Estas restricciones se aplican a las descargas que se inician desde el contenido de páginas web o mediante la opción de Descarga de vínculo del menú. No se aplican a las acciones de descargar o guardar la página que se muestra actualmente ni a la de guardar como PDF desde las opciones de impresión.
 
 En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias que están vinculadas a un dominio de <ph name="MS_AD_NAME" />, vinculadas a <ph name="MS_AAD_NAME" /> o inscritas en <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
-<translation id="3300322252167923819">Permitir la organización de pestañas</translation>
 <translation id="3300784749135986828">Habilitar o inhabilitar la función <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" /></translation>
 <translation id="3301698868852716692">Habilitar la extensión de estadísticas</translation>
 <translation id="3302829897293005699">Si habilitas la política o no la estableces, los dispositivos inscritos informarán sobre la sesión de kiosco activa, como el ID de aplicación y la versión.
@@ -2896,6 +2901,13 @@ En <ph name="MS_WIN_NAME" />, esta política solo está disponible en instancias
       Si la inhabilitas, se reducirá la estabilidad y la seguridad de <ph name="PRODUCT_NAME" />, ya que se debilitará la zona de pruebas que utilizan los procesos del procesador. Desactiva la política solo si hay problemas de compatibilidad con el software de terceros que deba ejecutarse en los procesos del renderizador.
 
       Nota: Obtén más información sobre las políticas de mitigación de procesos ( https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies ).</translation>
+<translation id="3338231005114367157">Esta política te permite controlar cómo se manejan los datos de tu organización con el organizador de pestañas de <ph name="PRODUCT_NAME" />. Esta política tendrá prioridad sobre cualquier política general futura.
+
+Si estableces la política como "Permitida", se permitirá el uso de funciones para la organización.
+
+Si estableces la política como "Permitir sin recopilación de datos", se inhabilitará la recopilación de datos empresariales para el entrenamiento de modelos. Este parámetro de configuración también inhabilita el uso compartido de datos a través del diálogo de comentarios en la función y el envío de datos para su evaluación manual. Como resultado, Google no usa contenido de usuarios empresariales (incluidos mensajes, entradas, salidas y materiales de la fuente) para el entrenamiento de modelos. Esto garantiza que Google no use los datos del usuario empresarial para entrenar o mejorar sus modelos de IA. Google no guarda el contenido de los usuarios empresariales (mensajes, fuentes, entradas o salidas). Ten en cuenta que se puede almacenar hasta 24 horas para mantener el contexto de la situación. Esto garantiza que Google no recopile ni almacene datos que se ingresen o generen mediante una función de IA. Esto incluye las entradas del usuario, los resultados generados y los comentarios de los usuarios.
+
+Si inhabilitas la política, se inhabilitará la función por completo.</translation>
 <translation id="3338431256935927407">Controla los parámetros de configuración relacionados con la función de carga en la nube.</translation>
 <translation id="3339271789059866414">Configura la disponibilidad del servicio de proxy del sistema y las credenciales de proxy para los servicios del sistema.
       Si no se establece la política, no estará disponible el servicio de proxy del sistema.</translation>
@@ -3501,7 +3513,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 
           Si no la estableces, el dictado estará inicialmente inhabilitado en la pantalla de acceso, pero el usuario podrá habilitarlo en cualquier momento.</translation>
 <translation id="3811562426301733860">Permitir anuncios en todos los sitios</translation>
-<translation id="3816281648615435872">Inhabilitar la organización de pestañas</translation>
 <translation id="3816312845600780067">Habilitar combinación de teclas para acceso directo de rescate para el acceso automático</translation>
 <translation id="3817323252437541502">Habilitar protecciones adicionales para los usuarios inscritos en el Programa de Protección Avanzada</translation>
 <translation id="3821861026311587684">Forzar el cierre de sesión del usuario cuando su cuenta pierde la autenticación</translation>
@@ -3891,6 +3902,7 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
 <translation id="4136603825567209889">Habilitar la generación de informes sobre la identificación de usuarios</translation>
 <translation id="4138655880188755661">Límite de tiempo</translation>
 <translation id="4140646780789794190">Inhabilitar el uso compartido de datos de diagnóstico con PluginVm</translation>
+<translation id="4144417751555442768">IA generativa</translation>
 <translation id="4145383150978634398">Hacer que el Modo de escritorio unificado esté disponible para el usuario</translation>
 <translation id="4147818922357566987">Habilitar solo variaciones relacionadas con correcciones críticas</translation>
 <translation id="4150201353443180367">Pantalla</translation>
@@ -4070,7 +4082,6 @@ Si inhabilitas la política, se mostrará un mensaje de error en lugar de la sol
 <translation id="428948795004445932">Es la tasa a la que se toman muestras de los datos de red y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 10 minutos.</translation>
-<translation id="4289628882370719584">La función de organización de pestañas permite a los usuarios organizar las pestañas.</translation>
 <translation id="4290231183305601970">El texto que verá el usuario en Chrome Web Store si se bloquea la instalación.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Esto se aplica a todos los usuarios del dispositivo.
 
@@ -4379,7 +4390,6 @@ No tiene efecto si la habilitas, la dejas vacía o no la configuras.</translatio
 <translation id="453031441196755904">Esta política es obsoleta.</translation>
 <translation id="4531706050939927436">Con Google Play, se puede forzar la instalación de apps de Android desde la Consola del administrador de Google. Estas apps no usan esta política.</translation>
 <translation id="4534500438517478692">Nombre de restricción de Android:</translation>
-<translation id="4537645230504195464">Permitir la redacción sin realizar un registro</translation>
 <translation id="4541530620466526913">Cuentas locales del dispositivo</translation>
 <translation id="4542255783284620926">Bloquear la adición de una cuenta administrada como cuenta secundaria en ChromeOS (cuando se ha iniciado sesión)</translation>
 <translation id="4543502256674577024">Configuración de actualización del dispositivo</translation>
@@ -4590,7 +4600,6 @@ Después de la configuración inicial, los usuarios podrán activar o desactivar
 <translation id="4674871290487541952">Permitir los algoritmos no seguros en las verificaciones de integridad de las instalaciones y actualizaciones de extensiones</translation>
 <translation id="4680961954980851756">Habilitar Autocompletar</translation>
 <translation id="4685721728282448265">Se habilitó el establecimiento de claves poscuántico CECPQ2 para TLS</translation>
-<translation id="4688118315245991650">Inhabilitar la redacción</translation>
 <translation id="468822697351680932">Usar la política SiteList de Internet Explorer como fuente de reglas</translation>
 <translation id="4693190628432874457">Habilitar los informes de ubicación del dispositivo</translation>
 <translation id="4693779768620889402">Destinos basados en extensiones</translation>
@@ -5191,6 +5200,7 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
 <translation id="5252995168844634755">Si estableces la política como verdadera, se activará el modo de escritorio unificado, el cual permite que las aplicaciones abarquen varias pantallas. Los usuarios podrán desactivar este modo en el caso de usar una sola pantalla.
 
       Si estableces la política como falsa o no la estableces, se desactivará este modo y los usuarios no podrán activarlo.</translation>
+<translation id="525500830356475308">Permitir Ayúdame a escribir</translation>
 <translation id="5255162913209987122">Se puede recomendar</translation>
 <translation id="525543707238275321">Inhabilitar los informes de la CPU del dispositivo</translation>
 <translation id="5255790642269910630">Si estableces la política, las pantallas rotarán a la orientación especificada en cada reinicio y la primera vez que se conecten después de cambiar el valor de la política. Después de acceder, los usuarios podrán cambiar la rotación de las pantallas en la página de configuración, pero volverá a cambiar en el próximo reinicio. Esta política se aplica a la pantalla principal y a la secundaria.
@@ -5292,7 +5302,6 @@ Si inhabilitas la política, no podrán borrarse los historiales de navegación 
 <translation id="5340008866815063393">Habilitar la generación de informes con los datos sobre la política</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
-<translation id="5347809796754019202">Permitir la redacción</translation>
 <translation id="534836255587440809">Inhabilitar el clic automático en la pantalla de acceso</translation>
 <translation id="5348658899015174540">La API de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite a las aplicaciones web capturar varias superficies al mismo tiempo.
       Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para las aplicaciones web en orígenes definidos.
@@ -6288,6 +6297,7 @@ Si no estableces la política, se usará el valor predeterminado global para tod
 La sal debe ser una cadena de entre 8 y 32 caracteres.
 
 En la versión 114 y en versiones posteriores, esta política es opcional si se establece la política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />. Si no estableces esta política, se generará un hash para los identificadores en las plantillas de URI configuradas mediante la política <ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" /> sin una sal.</translation>
+<translation id="622197575020133151">Configura las funciones que usan la IA generativa.</translation>
 <translation id="6224070048795197148">Permitir que el usuario utilice el navegador sin acceder</translation>
 <translation id="6224304369267200483">Las URL y los dominios permiten automáticamente la atestación directa de llaves de seguridad</translation>
 <translation id="6225938950222983458">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa <ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />.</translation>
@@ -7775,6 +7785,7 @@ Si inhabilitas esta política o no la estableces, no se permitirá la configurac
       Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME" /> utilizará la configuración para comprobar la actual revocación en línea.
 
       En <ph name="MAC_OS_NAME" />, esta política no tendrá efecto si la política <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> se estableció como falsa.</translation>
+<translation id="7278164481614262110">Crear temas con IA</translation>
 <translation id="7278854311116092134">Nombres de hosts de mensajería nativa que deben excluirse de la lista de elementos bloqueados</translation>
 <translation id="7291084543582732020">Cuando se habilita esta configuración, los usuarios pueden usar Smart Lock si se satisfacen los requisitos de la función.
 
@@ -8158,6 +8169,13 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
       Si la estableces como falsa o no la estableces, se desactivará la generación de informes.
       Las reglas definidas con las restricciones de nivel ALLOW en la política DataLeakPreventionRulesList no informará eventos en ninguno de los dos casos.</translation>
 <translation id="7648907905084499629">Usar el atributo <ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" /> para el comportamiento de las cookies en todos los sitios</translation>
+<translation id="7650618519247719562">Esta política te permite controlar cómo se manejan los datos de tu organización con Ayúdame a escribir de <ph name="PRODUCT_NAME" />. Esta política tendrá prioridad sobre cualquier política general futura.
+
+Si estableces la política como "Permitida", se permitirá el uso de funciones para la organización.
+
+Si estableces la política como "Permitir sin recopilación de datos", se inhabilitará la recopilación de datos empresariales para el entrenamiento de modelos. Este parámetro de configuración también inhabilita el uso compartido de datos a través del diálogo de comentarios en la función y el envío de datos para su evaluación manual. Como resultado, Google no usa contenido de usuarios empresariales (incluidos mensajes, entradas, salidas y materiales de la fuente) para el entrenamiento de modelos. Esto garantiza que Google no use los datos del usuario empresarial para entrenar o mejorar sus modelos de IA. Google no guarda el contenido de los usuarios empresariales (mensajes, fuentes, entradas o salidas). Ten en cuenta que se puede almacenar hasta 24 horas para mantener el contexto de la situación. Esto garantiza que Google no recopile ni almacene datos que se ingresen o generen mediante una función de IA. Esto incluye las entradas del usuario, los resultados generados y los comentarios de los usuarios.
+
+Si inhabilitas la política, se inhabilitará la función por completo.</translation>
 <translation id="765347139142030086">Si habilitas la política, prevalecerán las políticas asociadas a una cuenta de <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> si entran en conflicto con <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.
 
       Solo pueden prevalecer políticas que hayan originado usuarios seguros. Un usuario seguro es aquél que está afiliado a la organización que administra su navegador mediante <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />. Todas las demás políticas destinadas a los usuarios tendrán la prioridad predeterminada.
@@ -8205,6 +8223,7 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar 
 
           El valor de la política debe especificarse en milisegundos. Los valores deben ser menores o iguales que la demora de pantalla apagada (si está configurada) y la demora por inactividad.</translation>
 <translation id="7680437377926096177">No mostrar el diálogo de salida cuando se cierra la última ventana</translation>
+<translation id="7683729067082687012">Permitir sin recopilación de datos</translation>
 <translation id="7683777542468165012">Actualizar política dinámica</translation>
 <translation id="7687943045976362719">Si se configura esta política, <ph name="PRODUCT_FRAME_NAME" /> determinará los tipos de contenido especificados.
 
@@ -8658,6 +8677,7 @@ también es seguro.</translation>
 
       No se activará este comportamiento si la Navegación segura está inhabilitada (ya sea por la política o el usuario). Si quieres forzar la Navegación segura, usa la política <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> o <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784">Inhabilitar el <ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> en todas las páginas web</translation>
+<translation id="8043616595863371483">Permitir el organizador de pestañas</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="80453040817068401">Hacer que el navegador <ph name="LACROS_NAME" /> esté disponible</translation>
 <translation id="804619600634661088">Permitir el uso de la depuración remota</translation>

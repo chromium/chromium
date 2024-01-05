@@ -403,6 +403,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird anhand der Einstell
 <translation id="1327466551276625742">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus aktivieren</translation>
 <translation id="1330145147221172764">Bildschirmtastatur aktivieren</translation>
 <translation id="13356285923490863">Richtlinienname</translation>
+<translation id="1336073690474326987">Funktion vollständig deaktivieren</translation>
 <translation id="1338603603553894503">Gibt an, ob der Profil-Picker beim Browser-Start aktiviert, deaktiviert oder erzwungen wird.
 
       Standardmäßig wird der Profil-Picker nicht angezeigt, wenn der Browser im Gast- oder Inkognitomodus gestartet wird, ein Profilverzeichnis und/oder URLs durch die Befehlszeile vorgegeben werden, das Öffnen einer App ausdrücklich angefordert wird, der Browser durch eine native Benachrichtigung gestartet wird, nur ein Profil verfügbar ist oder die Richtlinie „ForceBrowserSignin“ auf „True“ gesetzt ist.
@@ -931,6 +932,7 @@ Unabhängig davon, ob die Option aktiviert oder deaktiviert ist, kann der Nutzer
 
 Diese Richtlinie hat keine Auswirkungen, wenn die Option zum Beibehalten von bestehenden Browserdaten nicht verfügbar ist. Dies ist der Fall, wenn die Trennung von Unternehmensprofilen streng durchgesetzt wird oder die Daten aus einem bereits verwalteten Profil stammen.
 </translation>
+<translation id="1795025936135166305">Nutzung der Funktion in der Organisation zulassen</translation>
 <translation id="1795105105645381965">
       Wenn die Richtlinie aktiviert (auf „True“ gesetzt) ist, darf <ph name="PRODUCT_NAME" /> vor der Freigabe von Gerätesignalen auf nicht verwalteten Geräten verwaltete Nutzer um Einwilligung bitten, um Zugriff zu erhalten.
 
@@ -1116,7 +1118,6 @@ Ist die Richtlinie deaktiviert, schließt <ph name="PRODUCT_NAME" /> den Tab nac
 
       Die Managed Configuration API ist eine Schlüssel/Wert-Konfiguration, die sich über den JavaScript-Aufruf „navigator.managed.getManagedConfiguration()“ abrufen lässt. Diese API ist nur für Ursprünge verfügbar, die zu Webanwendungen gehören, deren Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> erzwungen wurde.
      </translation>
-<translation id="1918690415433353669">Tab-Organisation zulassen, ohne die Tabdetails zu protokollieren</translation>
 <translation id="1919802376548418720">Mit der KDC-Richtlinie können Anmeldedaten delegiert werden.</translation>
 <translation id="1920046221095339924">Verwaltete Sitzung auf Gerät zulassen</translation>
 <translation id="1920772397574801429">Wenn die Richtlinie konfiguriert ist, werden die Typen von Konten festgelegt, die von der Android-Authentifizierungs-App angegeben werden, die die Authentifizierung durch <ph name="HTTP_NEGOTIATE" /> unterstützt, z. B. die Kerberos-Authentifizierung. Diese Informationen sollten vom Anbieter der Authentifizierungs-App bereitgestellt werden. Weitere Informationen findest du in den Chromium-Projekten unter https://goo.gl/hajyfN.
@@ -1689,7 +1690,6 @@ HINWEIS: Während der Browser ausgeführt wird, werden Änderungen an dieser Ric
 Ist die Richtlinie deaktiviert, können Nutzer von <ph name="PRODUCT_NAME" />-Varianten „NewBaseUrlInheritanceBehavior“ nicht aktivieren, falls Kompatibilitätsprobleme vorliegen. Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann „NewBaseUrlInheritanceBehavior“ aktiviert werden.</translation>
 <translation id="2362469626417133796">Zeitfenster für Neustart</translation>
 <translation id="2362539163677485510">Das Registrierungstoken der Cloud-Richtlinie</translation>
-<translation id="2362947328909044249">Tab-Organisation zulassen</translation>
 <translation id="2363928351203698966">Wenn die Richtlinie auf einen gültigen Wert festgelegt ist, nutzt <ph name="PRODUCT_NAME" /> keine SSL- oder TLS-Versionen, die niedriger als die vorgegebene Version sind. Nicht erkannte Werte werden ignoriert.
 
       Wenn diese Richtlinie nicht konfiguriert ist, zeigt <ph name="PRODUCT_NAME" /> einen Fehler für TLS 1.0 und TLS 1.1 an, den der Nutzer jedoch umgehen kann.
@@ -1978,6 +1978,13 @@ Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher W
 <translation id="26023406105317310">Kerberos-Konten konfigurieren</translation>
 <translation id="2603382859270873566">Unterstützung für die PPB_VideoDecoder(Dev) API aktivieren.</translation>
 <translation id="2604182581880595781">Richtlinien für Netzwerkfreigaben konfigurieren.</translation>
+<translation id="2604211069017399189">Mit dieser Richtlinie kannst du festlegen, wie bei der Verwendung der <ph name="PRODUCT_NAME" />-Funktion zur Erstellung eines Designs mit KI mit den Daten deiner Organisation umgegangen wird. Diese Richtlinie hat Vorrang vor allen zukünftigen übergreifenden Richtlinien.
+
+Wenn die Richtlinie auf „Zugelassen“ gesetzt ist, kann die Funktion in der Organisation genutzt werden.
+
+Wenn sie auf „Ohne Datenerhebung zulassen“ gesetzt ist, wird die Erhebung von Unternehmensdaten für das Trainieren des Modells deaktiviert. Mit dieser Einstellung werden auch die Datenfreigabe über das in der Funktion integrierte Feedback-Dialogfeld und das Senden von Daten zur Auswertung durch Prüfer deaktiviert. Google wird dann keine Inhalte von Unternehmensnutzern (einschließlich Prompts, Eingaben, Ausgaben und Quellmaterialien) für das Trainieren des Modells verwenden. So wird sichergestellt, dass Google keine Daten von Unternehmensnutzern verwendet, um seine KI-Modelle zu trainieren oder zu verbessern. Google speichert keine Inhalte von Unternehmensnutzern, einschließlich Prompts, Quellen, Eingaben oder Ausgaben. Beachte, dass diese Daten trotzdem bis zu 24 Stunden gespeichert werden können, um den Kontext der Situation zu bewahren. Dadurch wird sichergestellt, dass Google keine Daten erhebt oder speichert, die in eine KI-Funktion eingegeben oder von ihr generiert werden. Dazu gehören Nutzereingaben, generierte Ausgaben und Nutzerfeedback.
+
+Ist die Richtlinie deaktiviert, wird die Funktion vollständig deaktiviert.</translation>
 <translation id="2608039968712973520">Nutzer um Erlaubnis zum Ausführen veralteter <ph name="FLASH_PLUGIN_NAME" />-Plug-ins bitten</translation>
 <translation id="2608535066974278204">Zeitraum (in Minuten), der die Dauer des Zeitfensters für den Neustart angibt.</translation>
 <translation id="2608887839902987727">Verhindern, dass die Captive-Portal-Authentifizierung Proxy-Einstellungen ignoriert</translation>
@@ -2024,7 +2031,6 @@ Das System fragt AAAA-Einträge nur dann ab, wenn es für einen globalen IPv6-Ho
 <translation id="2650049181907741121">Auszuführende Aktion beim Zuklappen des Geräts</translation>
 <translation id="2656559539624760733">Chrome Root Store nicht verwenden.</translation>
 <translation id="2658653824183107970">Alte <ph name="CORS" />-Implementierung statt des neuen <ph name="CORS" /> verwenden</translation>
-<translation id="2659064869547694451">„Compose“ zulassen</translation>
 <translation id="2660846099862559570">Nie Proxy verwenden</translation>
 <translation id="2661628029848851543">Jegliche Nutzung von verwalteten Konten ist zulässig</translation>
 <translation id="2664391398878045611">Die Seite „Neuer Tab“ zeigt die Information im mittleren Slot nicht an – selbst wenn sie verfügbar ist</translation>
@@ -2795,7 +2801,6 @@ Ist diese Richtlinie deaktiviert, werden heruntergeladene Dateien nicht von Safe
 Diese Einschränkungen gelten für Downloads, die durch Websiteinhalte ausgelöst werden, sowie für die Menüoption „Link herunterladen“. Diese Einschränkungen gelten aber weder für das Herunterladen und Speichern der gerade angezeigten Seite noch für das Speichern als PDF-Datei in den Druckoptionen.
 
 Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Verfügung, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> angemeldet sind.</translation>
-<translation id="3300322252167923819">Tab-Organisation zulassen</translation>
 <translation id="3300784749135986828">Aktiviere oder deaktiviere die Funktion <ph name="USER_AGENT_REDUCTION_FEATURE_NAME" />.</translation>
 <translation id="3301698868852716692">Erweiterung „Insights“ aktivieren</translation>
 <translation id="3302829897293005699">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden über registrierte Geräte Informationen zur aktiven Kiosksitzung gemeldet, z. B. die Anwendungs-ID und -version.
@@ -2823,6 +2828,13 @@ Unter <ph name="MS_WIN_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
       Wird die Richtlinie deaktiviert, hat dies negative Auswirkungen auf die Sicherheit und Stabilität von <ph name="PRODUCT_NAME" />, da dies die von Rendererprozessen verwendete Sandbox beeinträchtigt. Die Richtlinie sollte nur deaktiviert werden, wenn Kompatibilitätsprobleme mit Drittanbieter-Software auftreten, die innerhalb der Rendererprozesse ausgeführt werden muss.
 
       Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter https://chromium.googlesource.com/chromium/src/+/HEAD/docs/design/sandbox.md#Process-mitigation-policies.</translation>
+<translation id="3338231005114367157">Mit dieser Richtlinie kannst du festlegen, wie bei der Verwendung der <ph name="PRODUCT_NAME" />-Funktion zum Organisieren von Tabs mit den Daten deiner Organisation umgegangen wird. Diese Richtlinie hat Vorrang vor allen zukünftigen übergreifenden Richtlinien.
+
+Wenn die Richtlinie auf „Zugelassen“ gesetzt ist, kann die Funktion in der Organisation genutzt werden.
+
+Wenn sie auf „Ohne Datenerhebung zulassen“ gesetzt ist, wird die Erhebung von Unternehmensdaten für das Trainieren des Modells deaktiviert. Mit dieser Einstellung werden auch die Datenfreigabe über das in der Funktion integrierte Feedback-Dialogfeld und das Senden von Daten zur Auswertung durch Prüfer deaktiviert. Google wird dann keine Inhalte von Unternehmensnutzern (einschließlich Prompts, Eingaben, Ausgaben und Quellmaterialien) für das Trainieren des Modells verwenden. So wird sichergestellt, dass Google keine Daten von Unternehmensnutzern verwendet, um seine KI-Modelle zu trainieren oder zu verbessern. Google speichert keine Inhalte von Unternehmensnutzern, einschließlich Prompts, Quellen, Eingaben oder Ausgaben. Beachte, dass diese Daten trotzdem bis zu 24 Stunden gespeichert werden können, um den Kontext der Situation zu bewahren. Dadurch wird sichergestellt, dass Google keine Daten erhebt oder speichert, die in eine KI-Funktion eingegeben oder von ihr generiert werden. Dazu gehören Nutzereingaben, generierte Ausgaben und Nutzerfeedback.
+
+Ist die Richtlinie deaktiviert, wird die Funktion vollständig deaktiviert.</translation>
 <translation id="3338431256935927407">Über diese Richtlinie werden die Einstellungen für die Cloud Upload-Funktion konfiguriert.</translation>
 <translation id="3339271789059866414">Konfiguriert die Verfügbarkeit des System-Proxy-Dienstes und die Proxy-Anmeldedaten für Systemdienste.
       Ist diese Richtlinie nicht konfiguriert, ist der System-Proxy-Dienst nicht verfügbar.</translation>
@@ -3406,7 +3418,6 @@ Diese Richtlinie ist eine vorübergehende Problemumgehung, die in einem zukünft
 
           Wird sie nicht konfiguriert, ist die Bedienungshilfe "Spracheingabe" auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3811562426301733860">Werbung auf allen Websites zulassen</translation>
-<translation id="3816281648615435872">Tab-Organisation deaktivieren</translation>
 <translation id="3816312845600780067">Tastenkombination zur Umgehung der automatischen Anmeldung aktivieren</translation>
 <translation id="3817323252437541502">Erweiterte Sicherheitsfunktionen für Teilnehmer des erweiterten Sicherheitsprogramms aktivieren</translation>
 <translation id="3821861026311587684">Abmeldung des Nutzers erzwingen, wenn sein Konto nicht mehr authentifiziert ist</translation>
@@ -3783,6 +3794,7 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
 <translation id="4136603825567209889">Erfassen personenbezogener Daten aktivieren</translation>
 <translation id="4138655880188755661">Zeitlimit</translation>
 <translation id="4140646780789794190">Weitergabe von Diagnosedaten an PluginVm deaktivieren</translation>
+<translation id="4144417751555442768">Generative KI</translation>
 <translation id="4145383150978634398">Nutzern Zugriff auf den Unified Desktop-Modus gewähren</translation>
 <translation id="4147818922357566987">Nur Variationen für wichtige Fehlerbehebungen aktivieren</translation>
 <translation id="4150201353443180367">Display</translation>
@@ -3947,7 +3959,6 @@ Ist die Richtlinie deaktiviert, wird stattdessen eine Fehlermeldung angezeigt.</
 <translation id="428948795004445932">Häufigkeit, mit der Netzwerkdaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
-<translation id="4289628882370719584">Mit der Funktion zum Organisieren von Tabs können Nutzer ihre Tabs organisieren.</translation>
 <translation id="4290231183305601970">Text, der dem Nutzer im Chrome Webstore angezeigt wird, wenn die Installation blockiert ist.</translation>
 <translation id="4293187705196369087">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
 
@@ -4237,7 +4248,6 @@ Diese Richtlinie ist nicht wirksam, wenn sie aktiviert ist, leer gelassen oder n
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531706050939927436">Die Installation von Android-Apps kann von der Google Admin-Konsole aus über Google Play erzwungen werden. Android-Apps nutzen diese Richtlinie nicht.</translation>
 <translation id="4534500438517478692">Name der Android-Einschränkung:</translation>
-<translation id="4537645230504195464">„Compose“ ohne Protokollierung zulassen</translation>
 <translation id="4541530620466526913">Lokale Gerätekonten</translation>
 <translation id="4542255783284620926">Hinzufügen eines verwalteten Kontos als sekundäres Konto unter Chrome OS (bei laufender Sitzung) blockieren</translation>
 <translation id="4543502256674577024">Einstellungen für die Geräteaktualisierung</translation>
@@ -4426,7 +4436,6 @@ Nach der Ersteinrichtung können Nutzer die Standortdienste von Google flexibel 
 <translation id="4674871290487541952">Unsichere Algorithmen in Integritätsprüfungen bei Erweiterungsupdates und -installationen erlauben</translation>
 <translation id="4680961954980851756">Autofill zulassen</translation>
 <translation id="4685721728282448265">CECPQ2-Post-Quanten-Algorithmus für Schlüsselvereinbarungen in TLS aktiviert</translation>
-<translation id="4688118315245991650">„Compose“ deaktivieren</translation>
 <translation id="468822697351680932">SiteList-Richtlinie in Internet Explorer als Quelle für Regeln verwenden</translation>
 <translation id="4693190628432874457">Melden des Standorts auf Geräten aktivieren</translation>
 <translation id="4693779768620889402">Erweiterungsbasierte Ziele</translation>
@@ -5016,6 +5025,7 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
 <translation id="5252995168844634755">Wenn die Richtlinie auf "True" gesetzt ist, wird Unified Desktop aktiviert. So können sich Apps über mehrere Bildschirme erstrecken. Nutzer können Unified Desktop für einzelne Displays deaktivieren.
 
       Ist diese Richtlinie auf "False" gesetzt oder nicht konfiguriert, wird Unified Desktop deaktiviert und kann vom Nutzer nicht aktiviert werden.</translation>
+<translation id="525500830356475308">Funktion „Hilfe beim Verfassen“ zulassen</translation>
 <translation id="5255162913209987122">Empfehlenswert</translation>
 <translation id="525543707238275321">Melden der CPU-Informationen auf Geräten deaktivieren</translation>
 <translation id="5255790642269910630">Ist die Richtlinie konfiguriert, wird jeder Bildschirm anhand der festgelegten Bildschirmausrichtung gedreht, wenn das Gerät neu gestartet oder der Bildschirm nach einer Änderung des Richtlinienwerts zum ersten Mal angeschlossen wird. Nachdem ein Nutzer sich angemeldet hat, kann er die Bildschirmausrichtung auf der Einstellungsseite ändern, sie wird aber nach dem nächsten Neustart zurückgesetzt. Diese Richtlinie gilt sowohl für primäre als auch sekundäre Bildschirme.
@@ -5110,7 +5120,6 @@ Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf n
 <translation id="5340008866815063393">Erfassen von Richtliniendaten aktivieren</translation>
 <translation id="5345910753471481870">Schaltfläche „Google Lens“ nicht im Suchfeld auf der Seite „Neuer Tab“ anzeigen.</translation>
 <translation id="5346587320074666194">Den Zugriff auf Sensoren für diese Websites sperren</translation>
-<translation id="5347809796754019202">„Compose“ zulassen</translation>
 <translation id="534836255587440809">„Automatischer Klick“ auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="5348658899015174540">Die <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API erlaubt Web-Apps, mehrere Oberflächen gleichzeitig aufzunehmen.
       Diese Richtlinie macht das Attribut <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> für Web-Apps an definierten Ursprüngen verfügbar.
@@ -6087,6 +6096,7 @@ Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Sta
 Der Salt muss ein String mit 8 bis 32 Zeichen sein.
 
 In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie „<ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />“ konfiguriert ist. Wenn diese Richtlinie nicht konfiguriert ist, werden die IDs in den Vorlagen-URIs, die mit der Richtlinie „<ph name="DOH_TEMPLATES_WITH_IDENTIFIERS_POLICY_NAME" />“ konfiguriert wurden, ohne Salt gehasht.</translation>
+<translation id="622197575020133151">Hier kannst du Funktionen konfigurieren, bei denen generative KI verwendet wird.</translation>
 <translation id="6224070048795197148">Nicht zulassen, dass Nutzer den Browser ohne Anmeldung verwenden</translation>
 <translation id="6224304369267200483">Automatischer Nachweis des Sicherheitsschlüssels durch URLs/Domains</translation>
 <translation id="6225938950222983458">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen „<ph name="NOTE_TAKING_APPS_LOCK_SCREEN_ALLOWLIST" />“.</translation>
@@ -7495,6 +7505,7 @@ Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind die Kontoeinstellun
       Wenn diese Richtlinie nicht konfiguriert oder auf „False“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die vorhandenen Online-Einstellungen zur Widerrufsprüfung.
 
       Unter <ph name="MAC_OS_NAME" /> hat diese Richtlinie keine Auswirkungen, wenn die Richtlinie <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> auf „False“ gesetzt ist.</translation>
+<translation id="7278164481614262110">Design mit KI erstellen</translation>
 <translation id="7278854311116092134">Namen der Hosts für natives Messaging, die von der Sperrliste ausgenommen werden sollen</translation>
 <translation id="7291084543582732020">Wenn du die Einstellung aktivierst, können Nutzer Smart Lock verwenden, wenn die Voraussetzungen für die Funktion erfüllt sind.
 
@@ -7872,6 +7883,13 @@ Wenn du diese Richtlinie konfigurieren möchtest, muss die Richtlinie <ph name="
       Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, wird die Berichterstellung deaktiviert.
       Regeln, die in DataLeakPreventionRulesList mit ALLOW-Ebene-Beschränkungen definiert sind, melden in beiden Fällen keine Ereignisse.</translation>
 <translation id="7648907905084499629">Verhalten "<ph name="FEATURE_NAME_SAMESITE_BY_DEFAULT_COOKIES" />" für alle Cookies auf allen Websites verwenden</translation>
+<translation id="7650618519247719562">Mit dieser Richtlinie kannst du festlegen, wie bei der Verwendung der <ph name="PRODUCT_NAME" />-Funktion „Hilfe beim Verfassen“ mit den Daten deiner Organisation umgegangen wird. Diese Richtlinie hat Vorrang vor allen zukünftigen übergreifenden Richtlinien.
+
+Wenn die Richtlinie auf „Zugelassen“ gesetzt ist, kann die Funktion in der Organisation genutzt werden.
+
+Wenn sie auf „Ohne Datenerhebung zulassen“ gesetzt ist, wird die Erhebung von Unternehmensdaten für das Trainieren des Modells deaktiviert. Mit dieser Einstellung werden auch die Datenfreigabe über das in der Funktion integrierte Feedback-Dialogfeld und das Senden von Daten zur Auswertung durch Prüfer deaktiviert. Google wird dann keine Inhalte von Unternehmensnutzern (einschließlich Prompts, Eingaben, Ausgaben und Quellmaterialien) für das Trainieren des Modells verwenden. So wird sichergestellt, dass Google keine Daten von Unternehmensnutzern verwendet, um seine KI-Modelle zu trainieren oder zu verbessern. Google speichert keine Inhalte von Unternehmensnutzern, einschließlich Prompts, Quellen, Eingaben oder Ausgaben. Beachte, dass diese Daten trotzdem bis zu 24 Stunden gespeichert werden können, um den Kontext der Situation zu bewahren. Dadurch wird sichergestellt, dass Google keine Daten erhebt oder speichert, die in eine KI-Funktion eingegeben oder von ihr generiert werden. Dazu gehören Nutzereingaben, generierte Ausgaben und Nutzerfeedback.
+
+Ist die Richtlinie deaktiviert, wird die Funktion vollständig deaktiviert.</translation>
 <translation id="765347139142030086">Wenn diese Richtlinie aktiviert ist, haben Richtlinien, die mit einem <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />-Konto verknüpft sind, Vorrang, falls sie im Widerspruch zu <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />-Richtlinien stehen.
 
       Nur Richtlinien, die von sicheren Nutzern stammen, dürfen priorisiert werden. Ein sicherer Nutzer ist mit der Organisation verknüpft, die seinen Browser mithilfe von <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" /> verwaltet. Alle anderen Richtlinien auf Nutzerebene haben standardmäßig Vorrang.
@@ -7918,6 +7936,7 @@ Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> g
 
           Der Wert für die Richtlinie muss in Millisekunden angegeben werden. Werte müssen kleiner oder gleich dem Wert der Verzögerung für die Bildschirmabschaltung (falls angegeben) und der Inaktivitätsverzögerung sein.</translation>
 <translation id="7680437377926096177">Dialogfeld für die Abmeldung beim Schließen des letzten Fensters nicht anzeigen.</translation>
+<translation id="7683729067082687012">Ohne Datenerhebung zulassen</translation>
 <translation id="7683777542468165012">Dynamische Richtlinienaktualisierung</translation>
 <translation id="7687943045976362719">Wenn diese Richtlinie konfiguriert ist, wird für alle angegebenen Inhaltstypen <ph name="PRODUCT_FRAME_NAME" /> verwendet.
 
@@ -8353,6 +8372,7 @@ Wenn man <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> oder <ph name="LACROS_
 
       Dieses Verhalten wird nicht ausgelöst, wenn Safe Browsing durch eine Richtlinie oder den Nutzer deaktiviert wurde. Wenn du die Aktivierung von Safe Browsing erzwingen möchtest, verwende die Richtlinie <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> oder <ph name="SAFE_BROWSING_PROTETION_LEVEL_POLICY_NAME" />.</translation>
 <translation id="8038007682032315784"><ph name="SEARCH_SIDE_PANEL_FEATURE_NAME" /> auf allen Webseiten deaktivieren</translation>
+<translation id="8043616595863371483">Taborganisierung zulassen</translation>
 <translation id="8044493735196713914">Startmodus von Geräten melden</translation>
 <translation id="80453040817068401"><ph name="LACROS_NAME" /> verfügbar machen</translation>
 <translation id="804619600634661088">Remote-Debugging zulassen</translation>

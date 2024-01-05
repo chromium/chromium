@@ -32,7 +32,7 @@
 <translation id="1150989369772528668">Koledar</translation>
 <translation id="1154984953698510061">Ogled drugih zavihkov</translation>
 <translation id="1161340988127985692">Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>
-<translation id="1164064664035028907">Uproabi zapleteno geslo:</translation>
+<translation id="1164064664035028907">Uporabi močno geslo:</translation>
 <translation id="1164891049599601209">Vneseno na zavajajočem spletnem mestu</translation>
 <translation id="1165039591588034296">Napaka</translation>
 <translation id="1172898394251786223">Naslednje polje</translation>
@@ -656,7 +656,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4502566650163919158">Preveri</translation>
 <translation id="4508750114462689118">Zapri predstavitev prijave</translation>
 <translation id="4509449376545878717">Nikoli ne zaznaj samodejno paketov</translation>
-<translation id="4514889972748124117">Predlagaj zapleteno geslo ...</translation>
+<translation id="4514889972748124117">Predlagaj močno geslo ...</translation>
 <translation id="4520798012560649652">Preberite več o anonimnem načinu</translation>
 <translation id="452503091941773389">{count,plural, =1{{count} zaznamek}one{{count} zaznamek}two{{count} zaznamka}few{{count} zaznamki}other{{count} zaznamkov}}</translation>
 <translation id="452750746583162491">Pregled sinhroniziranih podatkov</translation>
