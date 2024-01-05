@@ -29,7 +29,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.BiosType" enum="ChromeOSBiosType"
-    expires_after="2024-06-30">
+    expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryCount" units="entries"
-    expires_after="2024-06-30">
+    expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiBootEntryFailedLoad" units="entries"
-    expires_after="2024-05-05">
+    expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -80,7 +80,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.EfiManagementEvent"
-    enum="ChromeOSEfiManagementEvent" expires_after="2024-05-12">
+    enum="ChromeOSEfiManagementEvent" expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -99,7 +99,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ESPMountRetries" units="retries"
-    expires_after="2024-01-20">
+    expires_after="2025-01-01">
   <owner>khionu@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.ManagedEfiBootEntryCount"
-    units="entries" expires_after="2024-02-11">
+    units="entries" expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Installer.Postinstall.NonChromebookBiosSuccess.{BiosType}"
-    enum="BooleanSuccess" expires_after="2024-05-05">
+    enum="BooleanSuccess" expires_after="2025-01-01">
   <owner>tbrandston@google.com</owner>
   <owner>chromeos-flex-eng@google.com</owner>
   <summary>
