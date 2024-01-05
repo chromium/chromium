@@ -70,7 +70,7 @@ public class TabSwitcherCoordinator
         implements DestroyObserver,
                 TabSwitcher,
                 TabSwitcher.TabListDelegate,
-                TabSwitcherMediator.ResetHandler,
+                TabSwitcherResetHandler,
                 TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener {
     // TODO(crbug.com/982018): Rename 'COMPONENT_NAME' so as to add different metrics for carousel
     // tab switcher.

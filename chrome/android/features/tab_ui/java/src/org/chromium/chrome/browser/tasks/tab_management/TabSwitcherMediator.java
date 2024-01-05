@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,7 +99,7 @@ class TabSwitcherMediator
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     final Runnable mClearTabListRunnable;
 
-    private final ResetHandler mResetHandler;
+    private final TabSwitcherResetHandler mResetHandler;
     private final PropertyModel mContainerViewModel;
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
@@ -196,42 +195,11 @@ class TabSwitcherMediator
     // layout.
     private @LayoutType int mLastActiveLayoutType;
 
-    /** Interface to delegate resetting the tab grid. */
-    interface ResetHandler {
-        /**
-         * Reset the tab grid with the given {@link TabList}, which can be null.
-         *
-         * @param tabList The {@link TabList} to show the tabs for in the grid.
-         * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-         * @return Whether the {@link TabListRecyclerView} can be shown quickly.
-         */
-        boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode);
-
-        /**
-         * Reset the tab grid with the given {@link List<PseudoTab>}, which can be null.
-         *
-         * @param tabs The {@link List<PseudoTab>} to show the tabs for in the grid.
-         * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
-         * @return Whether the {@link TabListRecyclerView} can be shown quickly.
-         */
-        boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode);
-
-        /** Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}. */
-        void softCleanup();
-
-        /**
-         * Check to see if there are any not viewed price drops when the user leaves the tab
-         * switcher. This is done only before the coordinator is destroyed to reduce the amount of
-         * calls to ShoppingPersistedTabData.
-         */
-        void hardCleanup();
-    }
-
     /**
      * Basic constructor for the Mediator.
      *
      * @param context The context to use for accessing {@link android.content.res.Resources}.
-     * @param resetHandler The {@link ResetHandler} that handles reset for this Mediator.
+     * @param resetHandler The {@link TabSwitcherResetHandler} that handles reset for this Mediator.
      * @param containerViewModel The {@link PropertyModel} to keep state on the View containing the
      *     grid or carousel.
      * @param tabModelSelector {@link TabModelSelector} to observer for model and selection changes.
@@ -252,7 +220,7 @@ class TabSwitcherMediator
      */
     TabSwitcherMediator(
             Context context,
-            ResetHandler resetHandler,
+            TabSwitcherResetHandler resetHandler,
             PropertyModel containerViewModel,
             TabModelSelector tabModelSelector,
             BrowserControlsStateProvider browserControlsStateProvider,

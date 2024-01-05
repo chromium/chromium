@@ -116,7 +116,7 @@ public class TabSwitcherMediatorUnitTest {
     private LazyOneshotSupplier<TabGridDialogMediator.DialogController>
             mTabGridDialogControllerSupplier;
 
-    @Mock private TabSwitcherMediator.ResetHandler mResetHandler;
+    @Mock private TabSwitcherResetHandler mResetHandler;
     @Mock private Runnable mTabSwitcherVisibilityDelegate;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabModelSelectorImpl mTabModelSelector;
