@@ -168,9 +168,12 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     return split_view_metrics_controller_.get();
   }
   aura::Window* to_be_activated_window() { return to_be_activated_window_; }
-  int divider_position() const;
+
+  // Returns the divider position of the split view divider.
+  int GetDividerPosition() const;
+
   // TODO(michelefan|sophiewen): Revisit and see if this setter can be removed.
-  void set_divider_position(int divider_position) {
+  void SetDividerPosition(int divider_position) {
     divider_position_ = divider_position;
   }
 

@@ -102,7 +102,7 @@ void DoSplitViewTransition(
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
   // If split view mode is already active, use its own divider position.
   if (!split_view_controller->InSplitViewMode()) {
-    split_view_controller->set_divider_position(divider_position);
+    split_view_controller->SetDividerPosition(divider_position);
   }
 
   for (auto& iter : windows) {

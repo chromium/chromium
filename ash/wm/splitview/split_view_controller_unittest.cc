@@ -276,7 +276,9 @@ class SplitViewControllerTest : public AshTestBase {
     return split_view_controller()->split_view_divider();
   }
 
-  int divider_position() { return split_view_controller()->divider_position(); }
+  int GetDividerPosition() {
+    return split_view_controller()->GetDividerPosition();
+  }
 
   float divider_closest_ratio() {
     return split_view_controller()->divider_closest_ratio_;
@@ -2080,16 +2082,16 @@ TEST_F(SplitViewControllerTest,
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.33f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
 
   // Snap the divider to two third position, it should be kept at there after
   // dragging.
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.67f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.5f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.67f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.5f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.67f * workarea_bounds.width());
   EndSplitView();
 
   // Snap the divider to two third position when there is only right window with
@@ -2102,16 +2104,16 @@ TEST_F(SplitViewControllerTest,
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.67f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
 
   // Snap the divider to one third position, it should be kept at there after
   // dragging.
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.33f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0);
-  EXPECT_LE(divider_position(), 0.33f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0);
+  EXPECT_LE(GetDividerPosition(), 0.33f * workarea_bounds.width());
   EndSplitView();
 
   // Snap the divider to one third position when there are both left and right
@@ -2129,16 +2131,16 @@ TEST_F(SplitViewControllerTest,
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.33f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
 
   // Snap the divider to two third position, it should be snapped to the middle
   // position after dragging.
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.67f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
   EndSplitView();
 }
 
@@ -2157,8 +2159,8 @@ TEST_F(SplitViewControllerTest,
   ToggleOverview();
   split_view_controller()->SnapWindow(window1.get(), SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_divider());
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
 
   // Drag the divider to two-third position.
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -2167,8 +2169,8 @@ TEST_F(SplitViewControllerTest,
   generator->set_current_screen_location(divider_bounds.CenterPoint());
   generator->DragMouseTo(gfx::Point(workarea_bounds.width() * 0.67f, 0));
   SkipDividerSnapAnimation();
-  EXPECT_GT(divider_position(), 0.5f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.67f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.5f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.67f * workarea_bounds.width());
 
   std::unique_ptr<aura::Window> window2(CreateWindow(bounds));
   aura::test::TestWindowDelegate* delegate2 =
@@ -2176,8 +2178,8 @@ TEST_F(SplitViewControllerTest,
   delegate2->set_minimum_size(
       gfx::Size(workarea_bounds.width() * 0.4f, workarea_bounds.height()));
   split_view_controller()->SnapWindow(window2.get(), SnapPosition::kSecondary);
-  EXPECT_GT(divider_position(), 0.33f * workarea_bounds.width());
-  EXPECT_LE(divider_position(), 0.5f * workarea_bounds.width());
+  EXPECT_GT(GetDividerPosition(), 0.33f * workarea_bounds.width());
+  EXPECT_LE(GetDividerPosition(), 0.5f * workarea_bounds.width());
 }
 
 // Test that if display configuration changes in lock screen, the split view
@@ -3438,7 +3440,7 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
             SplitViewController::State::kBothSnapped);
   EXPECT_EQ(
       work_area_bounds.width() * 0.5f - kSplitviewDividerShortSideLength / 2,
-      split_view_controller()->divider_position());
+      split_view_controller()->GetDividerPosition());
   EXPECT_EQ(work_area_bounds.width() * 0.5f,
             window1->bounds().width() + kSplitviewDividerShortSideLength / 2);
   EXPECT_EQ(work_area_bounds.width() * 0.5f,
@@ -3449,7 +3451,7 @@ TEST_F(SplitViewControllerTest, ResnapASnappedWindowToOppositePosition) {
                                               chromeos::kTwoThirdSnapRatio);
   WindowState::Get(window2.get())->OnWMEvent(&snap_secondary_two_thirds);
   EXPECT_NEAR(work_area_bounds.width() * 0.67f,
-              split_view_controller()->divider_position(),
+              split_view_controller()->GetDividerPosition(),
               kSplitviewDividerShortSideLength);
   EXPECT_NEAR(work_area_bounds.width() * 0.67f, window2->bounds().width(),
               kSplitviewDividerShortSideLength);

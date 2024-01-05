@@ -225,7 +225,7 @@ gfx::Rect SplitViewDivider::GetDividerBoundsInScreen(bool is_dragging) {
       GetWorkAreaBoundsInScreen(divider_widget_->GetNativeWindow());
   // TODO(b/308819668): Move `divider_position_` to here.
   const int divider_position =
-      SplitViewController::Get(GetRootWindow())->divider_position();
+      SplitViewController::Get(GetRootWindow())->GetDividerPosition();
   const bool landscape = IsCurrentScreenOrientationLandscape();
   return GetDividerBoundsInScreen(work_area_bounds_in_screen, landscape,
                                   divider_position, is_dragging);
@@ -310,7 +310,7 @@ void SplitViewDivider::OnWindowBoundsChanged(aura::Window* window,
       // TODO(b/308819668): Remove this reference to `SplitViewController` when
       // we move `divider_position` to here.
       const int divider_position =
-          SplitViewController::Get(GetRootWindow())->divider_position();
+          SplitViewController::Get(GetRootWindow())->GetDividerPosition();
       for (aura::Window* window_to_transform : observed_windows_) {
         SetWindowTransformDuringResizing(window_to_transform, divider_position);
       }

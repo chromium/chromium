@@ -504,7 +504,7 @@ SplitViewController::~SplitViewController() {
   EndSplitView(EndReason::kRootWindowDestroyed);
 }
 
-int SplitViewController::divider_position() const {
+int SplitViewController::GetDividerPosition() const {
   // TODO(b/308819668): Temporary check. Remove this entire function when
   // `divider_position_` is moved to `SplitViewDivider`.
   CHECK(split_view_divider_);
