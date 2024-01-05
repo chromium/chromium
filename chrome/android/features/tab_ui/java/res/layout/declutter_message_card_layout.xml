@@ -4,7 +4,7 @@ Copyright 2023 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+<org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -27,15 +27,16 @@ found in the LICENSE file.
             android:singleLine="true"
             android:ellipsize="end"
             style="@style/TextAppearance.TextMedium.Primary" />
-        <org.chromium.ui.listmenu.ListMenuButton
+        <ImageButton
             android:id="@+id/declutter_settings"
             android:layout_width="@dimen/tab_list_card_action_button_size"
             android:layout_height="@dimen/tab_list_card_action_button_size"
             android:layout_gravity="end"
             android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_settings_gear_24dp"
-            android:tint="@macro/default_icon_color" />
-        <org.chromium.ui.widget.ChromeImageButton
+            app:tint="@macro/default_icon_color"
+            android:contentDescription="@string/tab_declutter_message_card_review_settings_description" />
+        <ImageButton
             android:id="@+id/declutter_expand_button"
             android:layout_width="@dimen/tab_list_card_action_button_size"
             android:layout_height="@dimen/tab_list_card_action_button_size"
@@ -43,6 +44,7 @@ found in the LICENSE file.
             android:layout_gravity="end"
             android:background="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_expand_more_horizontal_black_24dp"
-            android:tint="@macro/default_icon_color" />
+            app:tint="@macro/default_icon_color"
+            android:contentDescription="@string/tab_declutter_message_card_review_archived_tabs_description" />
     </LinearLayout>
-</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+</org.chromium.chrome.browser.tasks.tab_management.DeclutterMessageCardView>
