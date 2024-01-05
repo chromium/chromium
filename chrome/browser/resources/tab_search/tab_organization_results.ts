@@ -119,6 +119,10 @@ export class TabOrganizationResultsElement extends PolymerElement {
     this.$.scrollable.style.maxHeight = maxHeight + 'px';
   }
 
+  private getInputAriaLabel_() {
+    return loadTimeData.getStringF('inputAriaLabel', this.name);
+  }
+
   private onInputFocus_() {
     this.$.input.select();
   }
