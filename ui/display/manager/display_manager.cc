@@ -7,6 +7,7 @@
 #include <cmath>
 #include <limits>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -774,9 +775,15 @@ bool DisplayManager::GetActiveModeForDisplayId(int64_t display_id,
 
   // If 'selected' mode is empty, it should return the default mode. This means
   // the native mode for the external display, and the first one for internal.
+  // For external display, check display info for current active mode first to
+  // handle the fallback situation when native mode is not supported.
   const ManagedDisplayInfo& info = GetDisplayInfo(display_id);
   const ManagedDisplayInfo::ManagedDisplayModeList& display_modes =
       info.display_modes();
+  const ManagedDisplayMode current_mode(
+      info.bounds_in_native().size(), info.refresh_rate(), info.is_interlaced(),
+      info.native(), info.device_scale_factor());
+  std::optional<ManagedDisplayMode> external_native_mode;
 
   for (const auto& display_mode : display_modes) {
     if (display::IsInternalDisplayId(display_id)) {
@@ -784,10 +791,17 @@ bool DisplayManager::GetActiveModeForDisplayId(int64_t display_id,
         *mode = display_mode;
         return true;
       }
-    } else if (display_mode.native()) {
+    } else if (display_mode.IsEquivalent(current_mode)) {
       *mode = display_mode;
       return true;
+    } else if (display_mode.native()) {
+      external_native_mode = std::make_optional(display_mode);
     }
+  }
+
+  if (external_native_mode.has_value()) {
+    *mode = external_native_mode.value();
+    return true;
   }
 
   return false;

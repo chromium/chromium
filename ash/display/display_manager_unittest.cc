@@ -2000,14 +2000,55 @@ TEST_F(DisplayManagerTest, MAYBE_NativeDisplaysChangedAfterPrimaryChange) {
   EXPECT_EQ(gfx::Rect(0, 0, 200, 100), GetDisplayForId(10).bounds());
 }
 
+TEST_F(DisplayManagerTest, ActiveModeWhenNativeResolutionNotSupported) {
+  int display_id = 1000;
+  display::ManagedDisplayInfo native_display_info =
+      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 800, 300));
+  native_display_info.set_is_interlaced(false);
+  native_display_info.set_native(false);
+  native_display_info.set_refresh_rate(59.0f);
+
+  display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
+  display_modes.emplace_back(gfx::Size(1000, 500), 58.0f,
+                             /*is_interlaced=*/false, /*native=*/true);
+  display_modes.emplace_back(gfx::Size(800, 300), 59.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
+  display_modes.emplace_back(gfx::Size(400, 500), 60.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
+  native_display_info.SetManagedDisplayModes(display_modes);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(native_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  display::ManagedDisplayMode expected_mode(gfx::Size(800, 300), 59.0f,
+                                            /*is_interlaced=*/false,
+                                            /*native=*/false);
+
+  // Make sure there is no selected mode.
+  display::ManagedDisplayMode mode;
+  EXPECT_FALSE(
+      display_manager()->GetSelectedModeForDisplayId(display_id, &mode));
+
+  // Check display info for the active mode to handle the case when native mode
+  // is not supported.
+  display::ManagedDisplayMode active_mode;
+  EXPECT_TRUE(
+      display_manager()->GetActiveModeForDisplayId(display_id, &active_mode));
+  EXPECT_TRUE(expected_mode.IsEquivalent(active_mode));
+}
+
 TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   int display_id = 1000;
   display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
-  display_modes.emplace_back(gfx::Size(1000, 500), 58.0f, false, true);
-  display_modes.emplace_back(gfx::Size(800, 300), 59.0f, false, false);
-  display_modes.emplace_back(gfx::Size(400, 500), 60.0f, false, false);
+  display_modes.emplace_back(gfx::Size(1000, 500), 58.0f,
+                             /*is_interlaced=*/false, /*native=*/true);
+  display_modes.emplace_back(gfx::Size(800, 300), 59.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
+  display_modes.emplace_back(gfx::Size(400, 500), 60.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
 
   native_display_info.SetManagedDisplayModes(display_modes);
 
@@ -2015,8 +2056,9 @@ TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   display_info_list.push_back(native_display_info);
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
-  display::ManagedDisplayMode expected_mode(gfx::Size(1000, 500), 58.0f, false,
-                                            true);
+  display::ManagedDisplayMode expected_mode(gfx::Size(1000, 500), 58.0f,
+                                            /*is_interlaced=*/false,
+                                            /*native=*/true);
 
   display::ManagedDisplayMode mode;
   EXPECT_FALSE(
@@ -2044,8 +2086,8 @@ TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   EXPECT_EQ(59.0f, mode.refresh_rate());
   EXPECT_FALSE(mode.native());
 
-  expected_mode =
-      display::ManagedDisplayMode(gfx::Size(800, 300), 59.0f, false, false);
+  expected_mode = display::ManagedDisplayMode(
+      gfx::Size(800, 300), 59.0f, /*is_interlaced=*/false, /*native=*/false);
 
   EXPECT_TRUE(
       display_manager()->GetActiveModeForDisplayId(display_id, &active_mode));
@@ -2060,8 +2102,8 @@ TEST_F(DisplayManagerTest, DontRememberBestResolution) {
   EXPECT_EQ(58.0f, mode.refresh_rate());
   EXPECT_TRUE(mode.native());
 
-  expected_mode =
-      display::ManagedDisplayMode(gfx::Size(1000, 500), 58.0f, false, true);
+  expected_mode = display::ManagedDisplayMode(
+      gfx::Size(1000, 500), 58.0f, /*is_interlaced=*/false, /*native=*/true);
 
   EXPECT_TRUE(
       display_manager()->GetActiveModeForDisplayId(display_id, &active_mode));
@@ -2073,9 +2115,12 @@ TEST_F(DisplayManagerTest, ResolutionFallback) {
   display::ManagedDisplayInfo native_display_info =
       display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1000, 500));
   display::ManagedDisplayInfo::ManagedDisplayModeList display_modes;
-  display_modes.emplace_back(gfx::Size(1000, 500), 60.0f, false, true);
-  display_modes.emplace_back(gfx::Size(800, 300), 59.0f, false, false);
-  display_modes.emplace_back(gfx::Size(400, 500), 60.0f, false, false);
+  display_modes.emplace_back(gfx::Size(1000, 500), 60.0f,
+                             /*is_interlaced=*/false, /*native=*/true);
+  display_modes.emplace_back(gfx::Size(800, 300), 59.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
+  display_modes.emplace_back(gfx::Size(400, 500), 60.0f,
+                             /*is_interlaced=*/false, /*native=*/false);
 
   native_display_info.SetManagedDisplayModes(display_modes);
 
