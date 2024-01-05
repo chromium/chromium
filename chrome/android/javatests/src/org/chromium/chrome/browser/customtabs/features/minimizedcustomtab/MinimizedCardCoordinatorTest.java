@@ -19,7 +19,6 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
@@ -32,14 +31,14 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
-/** On-device unit tests for {@link MinimizedCardDialogFragmentTest}. */
+/** On-device unit tests for {@link MinimizedCardCoordinator}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class MinimizedCardDialogFragmentTest extends BlankUiTestActivityTestCase {
+public class MinimizedCardCoordinatorTest extends BlankUiTestActivityTestCase {
     private static final String TITLE = "Google";
     private static final String URL = "google.com";
 
-    private MinimizedCardDialogFragment mFragment;
+    private MinimizedCardCoordinator mCoordinator;
 
     @Override
     public void setUpTest() throws Exception {
@@ -64,13 +63,7 @@ public class MinimizedCardDialogFragmentTest extends BlankUiTestActivityTestCase
                                     .with(MinimizedCardProperties.URL, URL)
                                     .with(MinimizedCardProperties.FAVICON, favicon)
                                     .build();
-                    mFragment = MinimizedCardDialogFragment.newInstance(model);
-                    FragmentTransaction transaction =
-                            getActivity().getSupportFragmentManager().beginTransaction();
-                    transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-                    transaction
-                            .add(android.R.id.content, mFragment, MinimizedCardDialogFragment.TAG)
-                            .commitNow();
+                    mCoordinator = new MinimizedCardCoordinator(getActivity(), content, model);
                 });
     }
 
@@ -88,7 +81,7 @@ public class MinimizedCardDialogFragmentTest extends BlankUiTestActivityTestCase
                                     .getImportantForAccessibility());
                 });
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> mFragment.dismissNow());
+        TestThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.dismiss());
 
         onView(withId(R.id.card)).check(doesNotExist());
 

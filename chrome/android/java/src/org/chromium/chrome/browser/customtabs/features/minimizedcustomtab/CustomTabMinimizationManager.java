@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 import android.app.PictureInPictureParams;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Rational;
 
@@ -23,15 +24,17 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.PictureInPictureModeChangedInfo;
 import androidx.core.util.Consumer;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Lifecycle.State;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.InflationObserver;
+import org.chromium.chrome.browser.lifecycle.SaveInstanceStateObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -47,7 +50,9 @@ import java.util.concurrent.TimeUnit;
 /** Class that manages minimizing a Custom Tab into picture-in-picture. */
 @RequiresApi(VERSION_CODES.O)
 public class CustomTabMinimizationManager
-        implements CustomTabMinimizeDelegate, Consumer<PictureInPictureModeChangedInfo> {
+        implements CustomTabMinimizeDelegate,
+                Consumer<PictureInPictureModeChangedInfo>,
+                SaveInstanceStateObserver {
     // List of possible minimization events - maximize is effectively an 'un-PiP', whereas destroy
     // refers to the activity being finished either by user action or otherwise.
     // These values are persisted to logs. Entries should not be renumbered and
@@ -70,12 +75,22 @@ public class CustomTabMinimizationManager
     @VisibleForTesting static final Rational ASPECT_RATIO = new Rational(16, 9);
 
     @VisibleForTesting static WeakReference<CustomTabMinimizeDelegate> sLastMinimizeDelegate;
+
+    @VisibleForTesting static final String KEY_IS_CCT_MINIMIZED = "isCctMinimized";
+
+    @VisibleForTesting
+    static final String KEY_CCT_MINIMIZATION_SYSTEM_TIME = "cctMinimizationSystemTime";
+
     private final AppCompatActivity mActivity;
     private final ActivityTabProvider mTabProvider;
     private final MinimizedCustomTabFeatureEngagementDelegate mFeatureEngagementDelegate;
     private final BrowserServicesIntentDataProvider mIntentData;
     private final Runnable mCloseTabRunnable;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private MinimizedCardCoordinator mCoordinator;
+    private PropertyModel mModel;
     private long mMinimizationSystemTime;
     private boolean mMinimized;
 
@@ -86,22 +101,42 @@ public class CustomTabMinimizationManager
      * @param featureEngagementDelegate The {@link MinimizedCustomTabFeatureEngagementDelegate}.
      * @param closeTabRunnable The {@link Runnable} to close the Custom Tab when the minimized tab
      *     is dismissed.
+     * @param intentData The {@link BrowserServicesIntentDataProvider}.
+     * @param lifecycleDispatcher The {@link ActivityLifecycleDispatcher}.
+     * @param savedInstanceStateSupplier {@link Supplier} for the saved instance state.
      */
     public CustomTabMinimizationManager(
             AppCompatActivity activity,
             ActivityTabProvider tabProvider,
             MinimizedCustomTabFeatureEngagementDelegate featureEngagementDelegate,
             Runnable closeTabRunnable,
-            BrowserServicesIntentDataProvider intentData) {
+            BrowserServicesIntentDataProvider intentData,
+            ActivityLifecycleDispatcher lifecycleDispatcher,
+            Supplier<Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
         mTabProvider = tabProvider;
         mFeatureEngagementDelegate = featureEngagementDelegate;
         mCloseTabRunnable = closeTabRunnable;
         mIntentData = intentData;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mSavedInstanceStateSupplier = savedInstanceStateSupplier;
+
+        mLifecycleDispatcher.register(this);
+
+        maybeInitializeAsMinimized();
     }
 
     public void destroy() {
         mActivity.removeOnPictureInPictureModeChangedListener(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mMinimized) {
+            outState.putBoolean(KEY_IS_CCT_MINIMIZED, true);
+            outState.putLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME, mMinimizationSystemTime);
+            putIntoBundleFromModel(outState, mModel);
+        }
     }
 
     /** Minimize the Custom Tab into picture-in-picture. */
@@ -153,6 +188,7 @@ public class CustomTabMinimizationManager
         Tab tab = mTabProvider.get();
         assert tab != null;
         if (pictureInPictureModeChangedInfo.isInPictureInPictureMode()) {
+            showMinimizedCard(/* fromSavedState= */ false);
             updateTabForMinimization(tab);
             CustomTabsConnection.getInstance().onMinimized(mIntentData.getSession());
             RecordHistogram.recordEnumeratedHistogram(
@@ -197,26 +233,59 @@ public class CustomTabMinimizationManager
         }
     }
 
+    private void maybeInitializeAsMinimized() {
+        mMinimized =
+                mSavedInstanceStateSupplier.hasValue()
+                        && mSavedInstanceStateSupplier.get().getBoolean(KEY_IS_CCT_MINIMIZED);
+
+        if (mMinimized) {
+            mLifecycleDispatcher.register(
+                    new InflationObserver() {
+                        @Override
+                        public void onPreInflationStartup() {}
+
+                        @Override
+                        public void onPostInflationStartup() {
+                            maybeSaveLastMinimizeDelegate();
+                            mActivity.addOnPictureInPictureModeChangedListener(
+                                    CustomTabMinimizationManager.this);
+                            showMinimizedCard(/* fromSavedState= */ true);
+                            notifyObservers(true);
+                            mMinimizationSystemTime =
+                                    mSavedInstanceStateSupplier
+                                            .get()
+                                            .getLong(KEY_CCT_MINIMIZATION_SYSTEM_TIME);
+                            mLifecycleDispatcher.unregister(this);
+                        }
+                    });
+        }
+    }
+
+    private void showMinimizedCard(boolean fromSavedState) {
+        if (fromSavedState) {
+            assert mSavedInstanceStateSupplier.hasValue();
+            mModel = toModel(mSavedInstanceStateSupplier.get());
+        } else {
+            Tab tab = mTabProvider.get();
+            if (tab == null) return;
+            GURL url =
+                    DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
+                            ? tab.getOriginalUrl()
+                            : tab.getUrl();
+            mModel =
+                    new PropertyModel.Builder(ALL_KEYS)
+                            .with(TITLE, tab.getTitle())
+                            .with(URL, url.getHost())
+                            .with(FAVICON, TabFavicon.getBitmap(tab))
+                            .build();
+        }
+        mCoordinator =
+                new MinimizedCardCoordinator(
+                        mActivity, mActivity.findViewById(android.R.id.content), mModel);
+    }
+
     private void updateTabForMinimization(Tab tab) {
         if (tab == null) return;
-
-        GURL url =
-                DomDistillerUrlUtils.isDistilledPage(tab.getUrl())
-                        ? tab.getOriginalUrl()
-                        : tab.getUrl();
-
-        PropertyModel model =
-                new PropertyModel.Builder(ALL_KEYS)
-                        .with(TITLE, tab.getTitle())
-                        .with(URL, url.getHost())
-                        .with(FAVICON, TabFavicon.getBitmap(tab))
-                        .build();
-        var fragment = MinimizedCardDialogFragment.newInstance(model);
-        FragmentTransaction transaction = mActivity.getSupportFragmentManager().beginTransaction();
-        transaction.setTransition(FragmentTransaction.TRANSIT_NONE);
-        transaction
-                .add(android.R.id.content, fragment, MinimizedCardDialogFragment.TAG)
-                .commitNow();
 
         tab.stopLoading();
         tab.hide(TabHidingType.ACTIVITY_HIDDEN);
@@ -234,12 +303,9 @@ public class CustomTabMinimizationManager
         if (webContents != null) {
             webContents.setAudioMuted(false);
         }
-        var fragment =
-                (DialogFragment)
-                        mActivity
-                                .getSupportFragmentManager()
-                                .findFragmentByTag(MinimizedCardDialogFragment.TAG);
-        fragment.dismissNow();
+        if (mCoordinator != null) {
+            mCoordinator.dismiss();
+        }
     }
 
     private void notifyObservers(boolean minimized) {
@@ -287,5 +353,21 @@ public class CustomTabMinimizationManager
         if (lastMinimized == this) {
             clearLastMinimizeDelegate();
         }
+    }
+
+    private static void putIntoBundleFromModel(Bundle out, PropertyModel model) {
+        if (model == null) return;
+
+        out.putString(TITLE.toString(), model.get(TITLE));
+        out.putString(URL.toString(), model.get(URL));
+        out.putParcelable(FAVICON.toString(), model.get(FAVICON));
+    }
+
+    private static PropertyModel toModel(Bundle bundle) {
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(TITLE, bundle.getString(TITLE.toString()))
+                .with(URL, bundle.getString(URL.toString()))
+                .with(FAVICON, bundle.getParcelable(FAVICON.toString()))
+                .build();
     }
 }
