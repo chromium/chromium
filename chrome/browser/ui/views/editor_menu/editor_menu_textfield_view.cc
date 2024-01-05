@@ -37,6 +37,25 @@ constexpr char16_t kContainerTitle[] = u"Editor Menu Textfield";
 constexpr gfx::Size kArrowButtonSize(20, 20);
 constexpr gfx::Insets kArrowButtonInsets(4);
 constexpr int kPaddingBetweenArrowButtonAndTextfield = 10;
+constexpr int kMinWidthForFullPlaceHolderString = 400;
+
+std::u16string GetPlaceholderText(EditorMenuMode editor_menu_mode, int width) {
+  int placeholder_text_id;
+  if (editor_menu_mode == EditorMenuMode::kWrite &&
+      width >= kMinWidthForFullPlaceHolderString) {
+    placeholder_text_id = IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER;
+  } else if (editor_menu_mode == EditorMenuMode::kRewrite &&
+             width >= kMinWidthForFullPlaceHolderString) {
+    placeholder_text_id = IDS_EDITOR_MENU_REWRITE_CARD_FREEFORM_PLACEHOLDER;
+  } else if (editor_menu_mode == EditorMenuMode::kWrite &&
+             width < kMinWidthForFullPlaceHolderString) {
+    placeholder_text_id = IDS_EDITOR_MENU_WRITE_CARD_SHORT_FREEFORM_PLACEHOLDER;
+  } else {
+    placeholder_text_id =
+        IDS_EDITOR_MENU_REWRITE_CARD_SHORT_FREEFORM_PLACEHOLDER;
+  }
+  return l10n_util::GetStringUTF16(placeholder_text_id);
+}
 
 }  // namespace
 
@@ -65,6 +84,10 @@ void EditorMenuTextfieldView::Layout() {
           (kArrowButtonSize.height() + kArrowButtonInsets.height()) / 2,
       kArrowButtonSize.width() + kArrowButtonInsets.width(),
       kArrowButtonSize.height() + kArrowButtonInsets.height());
+
+  // Update the placeholder text based on the widget width.
+  textfield_->SetPlaceholderText(
+      GetPlaceholderText(editor_menu_mode_, width()));
 }
 
 void EditorMenuTextfieldView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
