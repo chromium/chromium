@@ -14651,6 +14651,24 @@
             ]
         }
     ],
+    "ReadAloudReadabilityCheckOnly": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReadAloud"
+                    ],
+                    "disable_features": [
+                        "ReadAloudPlayback"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReadAnythingLocalSidePanelRollout": [
         {
             "platforms": [
