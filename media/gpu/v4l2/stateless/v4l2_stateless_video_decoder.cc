@@ -185,26 +185,10 @@ void V4L2StatelessVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     CHECK(output_queue_task_runner_);
   }
 
-  if (!buffer->end_of_stream()) {
-    decode_request_queue_.push(
-        DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
+  decode_request_queue_.push(
+      DecodeRequest(std::move(buffer), std::move(decode_cb), bitstream_id));
 
-    ServiceDecodeRequestQueue();
-  } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&V4L2StatelessVideoDecoder::Flush,
-                       base::Unretained(this), std::move(decode_cb)));
-  }
-}
-
-void V4L2StatelessVideoDecoder::Flush(DecodeCB decode_cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(2);
-
-  // TODO(frkoenig): This is not correct. The buffers in progress must be
-  // completed before this callback can execute.
-  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
+  ServiceDecodeRequestQueue();
 }
 
 void V4L2StatelessVideoDecoder::Reset(base::OnceClosure reset_cb) {
@@ -266,6 +250,10 @@ V4L2StatelessVideoDecoder::CreateSurface() {
   }
   const uint64_t frame_id =
       frame_id_generator_.GenerateNextId().GetUnsafeValue();
+
+  // |last_frame_id_generated_| is used when flushing to track the frames
+  // through the queue and make sure all are processed.
+  last_frame_id_generated_ = frame_id;
 
   // This callback is used to enqueue the buffer. It is called by the
   // |StatelessDecodeSurface| when it is no longer referenced and therefore
@@ -546,6 +534,14 @@ void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
   // Check the display queue to see if there are buffers that are ready to
   // be displayed.
   ServiceDisplayQueue();
+
+  last_frame_id_dequeued_ = buffer.GetTimeAsFrameID();
+
+  if (flush_cb_ && (last_frame_id_generated_ == last_frame_id_dequeued_)) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(flush_cb_), DecoderStatus::Codes::kOk));
+  }
 }
 
 void V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers(Buffer buffer) {
@@ -555,12 +551,11 @@ void V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers(Buffer buffer) {
   // Put the just dequeued buffer into the list of available input buffers.
   input_queue_->Reclaim(buffer);
 
-  // A surface can only be created when there is a free input buffer. Now that
-  // a buffer has been returned the backlog of decode requests can be processed.
-  if (paused_waiting_for_surface_) {
-    paused_waiting_for_surface_ = false;
-    ServiceDecodeRequestQueue();
-  }
+  // Always check to see if there are decode requests outstanding. This can
+  // occur when there are no more surfaces. Another reason to try is EOS
+  // handling. The EOS packet does not need a surface, but can get stuck behind
+  // a decode request.
+  ServiceDecodeRequestQueue();
 }
 
 void V4L2StatelessVideoDecoder::EnqueueDecodedOutputBufferByFrameID(
@@ -609,16 +604,34 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
         current_decode_request_ = std::move(decode_request_queue_.front());
         decode_request_queue_.pop();
 
-        decoder_->SetStream(current_decode_request_->bitstream_id,
-                            *current_decode_request_->buffer);
-        bitstream_id_to_timestamp_.Put(
-            current_decode_request_->bitstream_id,
-            current_decode_request_->buffer->timestamp());
+        if (current_decode_request_->buffer->end_of_stream()) {
+          VLOGF(2) << "EOS request processing.";
+          if (!decoder_->Flush()) {
+            return;
+          }
 
+          // Put the decoder in an idle state, ready to resume.
+          decoder_->Reset();
+
+          // When there are outstanding frames the callback needs to be differed
+          // until they are dequeued.
+          if (last_frame_id_generated_ != last_frame_id_dequeued_) {
+            flush_cb_ = std::move(current_decode_request_->decode_cb);
+            current_decode_request_ = absl::nullopt;
+            done = true;
+          }
+        } else {
+          decoder_->SetStream(current_decode_request_->bitstream_id,
+                              *current_decode_request_->buffer);
+          bitstream_id_to_timestamp_.Put(
+              current_decode_request_->bitstream_id,
+              current_decode_request_->buffer->timestamp());
+        }
         break;
       case AcceleratedVideoDecoder::kRanOutOfSurfaces:
         VLOGF(2) << "AcceleratedVideoDecoder::kRanOutOfSurfaces";
-        paused_waiting_for_surface_ = true;
+        // |ServiceDecodeRequestQueue| will be called again once a buffer has
+        // been freed up and a surface can be created.
         return;
       case AcceleratedVideoDecoder::kDecodeError:
         VLOGF(1) << "AcceleratedVideoDecoder::kDecodeError.";
