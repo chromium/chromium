@@ -907,6 +907,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
 
   const display::Display& new_primary_display =
       GetDisplayManager()->GetDisplayForId(id);
+  const int64_t new_primary_id = new_primary_display.id();
   if (!new_primary_display.is_valid()) {
     LOG(ERROR) << "Invalid or non-existent display is requested:"
                << new_primary_display.ToString();
@@ -915,19 +916,25 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
 
   display::DisplayManager* display_manager = GetDisplayManager();
   DCHECK(new_primary_display.is_valid());
-  DCHECK(display_manager->GetDisplayForId(new_primary_display.id()).is_valid());
+  DCHECK(display_manager->GetDisplayForId(new_primary_id).is_valid());
 
-  AshWindowTreeHost* non_primary_host =
-      window_tree_hosts_[new_primary_display.id()];
+  AshWindowTreeHost* non_primary_host = window_tree_hosts_[new_primary_id];
   LOG_IF(ERROR, !non_primary_host)
       << "Unknown display is requested in SetPrimaryDisplay: id="
-      << new_primary_display.id();
+      << new_primary_id;
   if (!non_primary_host)
     return;
 
   display::Display old_primary_display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
-  DCHECK_EQ(old_primary_display.id(), primary_display_id);
+  const int64_t old_primary_id = old_primary_display.id();
+  DCHECK_EQ(old_primary_id, primary_display_id);
+
+  auto* window_bounds_tracker = Shell::Get()->window_bounds_tracker();
+  if (window_bounds_tracker) {
+    window_bounds_tracker->OnWillSwapDisplayRootWindows(old_primary_id,
+                                                        new_primary_id);
+  }
 
   // Swap root windows between current and new primary display.
   AshWindowTreeHost* primary_host = window_tree_hosts_[primary_display_id];
@@ -936,12 +943,11 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
 
   aura::Window* primary_window = GetWindow(primary_host);
   aura::Window* non_primary_window = GetWindow(non_primary_host);
-  window_tree_hosts_[new_primary_display.id()] = primary_host;
-  GetRootWindowSettings(primary_window)->display_id = new_primary_display.id();
+  window_tree_hosts_[new_primary_id] = primary_host;
+  GetRootWindowSettings(primary_window)->display_id = new_primary_id;
 
-  window_tree_hosts_[old_primary_display.id()] = non_primary_host;
-  GetRootWindowSettings(non_primary_window)->display_id =
-      old_primary_display.id();
+  window_tree_hosts_[old_primary_id] = non_primary_host;
+  GetRootWindowSettings(non_primary_window)->display_id = old_primary_id;
 
   // Ensure that color spaces for the root windows reflect those of their new
   // displays. If these go out of sync, we can lose the ability to composite
@@ -960,16 +966,16 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   // The requested primary id can be same as one in the stored layout
   // when the primary id is set after new displays are connected.
   // Only update the layout if it is requested to swap primary display.
-  if (layout.primary_id != new_primary_display.id()) {
+  if (layout.primary_id != new_primary_id) {
     std::unique_ptr<display::DisplayLayout> swapped_layout = layout.Copy();
-    swapped_layout->SwapPrimaryDisplay(new_primary_display.id());
+    swapped_layout->SwapPrimaryDisplay(new_primary_id);
     display::DisplayIdList list = display_manager->GetConnectedDisplayIdList();
     GetDisplayManager()->layout_store()->RegisterLayoutForDisplayIdList(
         list, std::move(swapped_layout));
   }
 
   // Update the global primary_display_id.
-  primary_display_id = new_primary_display.id();
+  primary_display_id = new_primary_id;
 
   UpdateWorkAreaOfDisplayNearestWindow(GetWindow(primary_host),
                                        old_primary_display.GetWorkAreaInsets());
@@ -984,6 +990,11 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetDisplayManager()->set_force_bounds_changed(true);
   GetDisplayManager()->UpdateDisplays();
   GetDisplayManager()->set_force_bounds_changed(false);
+
+  if (window_bounds_tracker) {
+    window_bounds_tracker->OnDisplayRootWindowsSwapped(old_primary_id,
+                                                       new_primary_id);
+  }
 }
 
 void WindowTreeHostManager::PostDisplayConfigurationChange() {

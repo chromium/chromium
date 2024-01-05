@@ -90,6 +90,12 @@ class ScopedMultiSourceObservation {
   // Returns the number of sources being observed.
   size_t GetSourcesCount() const { return sources_.size(); }
 
+  // Returns the sources being observed. Note: It is invalid to add or remove
+  // sources while iterating on it.
+  const std::vector<raw_ptr<Source, LeakedDanglingUntriaged>>& sources() const {
+    return sources_;
+  }
+
  private:
   using Traits = ScopedObservationTraits<Source, Observer>;
 

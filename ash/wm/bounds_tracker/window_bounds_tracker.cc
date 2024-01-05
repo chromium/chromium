@@ -107,12 +107,12 @@ gfx::Rect AdjustBoundsForRotation(const gfx::Rect& window_bounds,
 // ensures that the distance of the window's center point from the center of
 // `target_work_area` is equal to the distance of the window's center point
 // from the center of `source_work_area` multiplied by a *factor*.
-
-// This factor is ratio between the target and source work area sizes, i.e.:
-
+//
+// This factor is the ratio between the target and source work area sizes, i.e.:
+//
 // factor_x = target_work_area.width() / source_work_area.width();
 // factor_y = target_work_area.height() / source_work_area.height();
-
+//
 // Note: `source_work_area` must have already been adjusted to match
 // the orientation of `target_work_area`, i.e. by calling
 // `AdjustBoundsForRotation()` before this.
@@ -169,23 +169,7 @@ void WindowBoundsTracker::OnWindowAddedToRootWindow(aura::Window* window) {
   if (iter == bounds_database_.end()) {
     return;
   }
-  auto& window_bounds_map = iter->second.window_bounds_map;
-  CHECK(!window_bounds_map.empty());
-  display::Display target_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  const WindowDisplayInfo target_window_display_info(
-      target_display.id(), target_display.rotation(),
-      target_display.GetLocalWorkArea());
-  const auto bounds_iter = window_bounds_map.find(target_window_display_info);
-  CHECK(bounds_iter != window_bounds_map.end());
-
-  window->SetBounds(bounds_iter->second.bounds_in_parent);
-  // Remove the stored non-restore-bounds from the database after it has been
-  // used. As the non-restore-bounds will never be used to restore the window
-  // later, the recalculation will be triggered instead.
-  if (!bounds_iter->second.is_restore_bounds) {
-    window_bounds_map.erase(bounds_iter);
-  }
+  RestoreWindowToCachedBounds(window);
 }
 
 void WindowBoundsTracker::OnWindowRemovingFromRootWindow(
@@ -215,6 +199,35 @@ void WindowBoundsTracker::OnWindowRemovingFromRootWindow(
   // restore on it.
   if (is_moving_window_between_displays) {
     moving_window_between_displays_ = nullptr;
+  }
+}
+
+void WindowBoundsTracker::OnWillSwapDisplayRootWindows(
+    int64_t first_display_id,
+    int64_t second_display_id) {
+  CHECK_NE(first_display_id, second_display_id);
+  for (const auto& window : window_observations_.sources()) {
+    const int64_t window_display_id =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+    if (window_display_id == first_display_id) {
+      RemapOrRestore(window, second_display_id);
+    } else if (window_display_id == second_display_id) {
+      RemapOrRestore(window, first_display_id);
+    }
+  }
+}
+
+void WindowBoundsTracker::OnDisplayRootWindowsSwapped(
+    int64_t first_display_id,
+    int64_t second_display_id) {
+  CHECK_NE(first_display_id, second_display_id);
+  for (const auto& window : window_observations_.sources()) {
+    const int64_t window_display_id =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+    if (window_display_id == first_display_id ||
+        window_display_id == second_display_id) {
+      RestoreWindowToCachedBounds(window);
+    }
   }
 }
 
@@ -397,6 +410,27 @@ WindowBoundsTracker::UpdateBoundsDatabaseOfWindow(
         window_display_info, WindowBoundsInfo(bounds, is_current_bounds));
   }
   return window_bounds_entry;
+}
+
+void WindowBoundsTracker::RestoreWindowToCachedBounds(aura::Window* window) {
+  const auto iter = bounds_database_.find(window);
+  CHECK(iter != bounds_database_.end());
+  auto& window_bounds_map = iter->second.window_bounds_map;
+  CHECK(!window_bounds_map.empty());
+  display::Display display =
+      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+  const WindowDisplayInfo window_display_info(display.id(), display.rotation(),
+                                              display.GetLocalWorkArea());
+  const auto bounds_iter = window_bounds_map.find(window_display_info);
+  CHECK(bounds_iter != window_bounds_map.end());
+
+  window->SetBounds(bounds_iter->second.bounds_in_parent);
+  // Remove the stored non-restore-bounds from the database after it has been
+  // used. As the non-restore-bounds will never be used to restore the window
+  // later, the recalculation will be triggered instead.
+  if (!bounds_iter->second.is_restore_bounds) {
+    window_bounds_map.erase(bounds_iter);
+  }
 }
 
 }  // namespace ash
