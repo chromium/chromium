@@ -85,32 +85,12 @@ TEST_F('OSSettingsDevicePageRevampTest', 'AllJsTests', () => {
 });
 
 [['AboutPage', 'os_about_page_tests.js'],
- ['ApnDetailDialog', 'apn_detail_dialog_test.js'],
  [
    'ApnSubpage', 'apn_subpage_tests.js',
    {enabled: ['ash::features::kApnRevamp']}
  ],
- [
-   'AppLanguageSelectionDialog',
-   'common/app_language_selection_dialog/app_language_selection_dialog_test.js'
- ],
- [
-   'AppLanguageSelectionItem',
-   'common/app_language_selection_dialog/app_language_selection_item_test.js'
- ],
- ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
- ['AppManagementManagedApps', 'app_management/managed_apps_test.js'],
- ['AppManagementToggleRow', 'app_management/toggle_row_test.js'],
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
- ['DateTimePage', 'date_time_page/date_time_page_test.js'],
- [
-   'DateTimePageDateTimeSettingsCard',
-   'date_time_page/date_time_settings_card_test.js',
-   {disabled: ['ash::features::kOsSettingsRevampWayfinding']},
- ],
- ['DateTimePageTimezoneSelector', 'date_time_page/timezone_selector_test.js'],
- ['DateTimePageTimezoneSubpage', 'date_time_page/timezone_subpage_test.js'],
  ['DevicePageAudioPage', 'device_page/audio_page_test.js'],
  [
    'DevicePageCustomizeButtonDropdownItem',
