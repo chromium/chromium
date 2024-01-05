@@ -1679,6 +1679,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigrationTime" units="ms"
+    expires_after="2024-05-01">
+  <owner>treib@chromium.org</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    The time taken for the Sync-to-Signin migration. Recorded on profile
+    creation/startup, only if the migration actually ran. Note that the total
+    count of this histogram can be compared to the number of samples in the
+    &quot;Migrate&quot; bucket of &quot;Sync.SyncToSigninMigrationDecision&quot;
+    to verify that all migrations that were started also finished.
+  </summary>
+</histogram>
+
 <histogram name="Sync.ThrottledAllModelTypes" enum="Boolean"
     expires_after="2025-02-12">
   <owner>victorvianna@google.com</owner>

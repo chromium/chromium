@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/common/bookmark_constants.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -210,6 +211,8 @@ SyncToSigninMigrationDataTypeDecision GetSyncToSigninMigrationDataTypeDecision(
 
 void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
                                        PrefService* pref_service) {
+  base::Time start_time = base::Time::Now();
+
   // ======================================
   // Global migration decision and metrics.
   // ======================================
@@ -381,6 +384,8 @@ void MaybeMigrateSyncingUserToSignedIn(const base::FilePath& profile_path,
   // as the number of migrations that were completed.
   base::UmaHistogramBoolean("Sync.SyncToSigninMigrationOutcome",
                             migration_successful);
+  base::UmaHistogramTimes("Sync.SyncToSigninMigrationTime",
+                          base::Time::Now() - start_time);
 }
 
 }  // namespace browser_sync

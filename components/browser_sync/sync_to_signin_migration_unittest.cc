@@ -386,6 +386,13 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
           : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
   histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
                                 expected_decision, 1);
+  if (IsMigrationEnabled()) {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+  } else {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+  }
   // All the data type migrations should run - in "DryRun" mode if the feature
   // flag is disabled.
   std::string infix = GetTypeDecisionHistogramInfix();
@@ -433,6 +440,13 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncActiveButNotDataTypes) {
           : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
   histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
                                 expected_decision, 1);
+  if (IsMigrationEnabled()) {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+  } else {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+  }
 
   std::string infix = GetTypeDecisionHistogramInfix();
   // Bookmarks was active, so its migration should run.
@@ -472,6 +486,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncStatusPrefsUnset) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision",
       /*SyncToSigninMigrationDecision::kDontMigrateSyncStatusUndefined*/ 3, 1);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK", 0);
   histograms.ExpectTotalCount(
@@ -506,6 +522,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, NotSignedIn) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision",
       /*SyncToSigninMigrationDecision::kDontMigrateNotSignedIn*/ 1, 1);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK", 0);
   histograms.ExpectTotalCount(
@@ -541,6 +559,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncTransport) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigrationDecision",
       /*SyncToSigninMigrationDecision::kDontMigrateNotSyncing*/ 2, 1);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK", 0);
   histograms.ExpectTotalCount(
@@ -578,6 +598,13 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncPaused) {
           : /*SyncToSigninMigrationDecision::kDontMigrateFlagDisabled*/ 5;
   histograms.ExpectUniqueSample("Sync.SyncToSigninMigrationDecision",
                                 expected_decision, 1);
+  if (IsMigrationEnabled()) {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 1);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+  } else {
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+  }
 
   // However, the individual data types were by definition not active and so
   // should not be migrated.
@@ -615,6 +642,8 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncInitializing) {
       "Sync.SyncToSigninMigrationDecision",
       /*SyncToSigninMigrationDecision::kDontMigrateSyncStatusInitializing*/ 4,
       1);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
+  histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
   histograms.ExpectTotalCount(
       "Sync.SyncToSigninMigrationDecision.DryRun.BOOKMARK", 0);
   histograms.ExpectTotalCount(
