@@ -575,8 +575,12 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
  public:
   ThirdPartyCookiesBlockedHttpCookieBrowserTest()
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-    feature_list_.InitAndEnableFeature(
-        net::features::kForceThirdPartyCookieBlocking);
+    feature_list_.InitWithFeatures(
+        {
+            net::features::kForceThirdPartyCookieBlocking,
+            net::features::kThirdPartyCookieTopLevelSiteCorsException,
+        },
+        {});
   }
 
   ~ThirdPartyCookiesBlockedHttpCookieBrowserTest() override = default;
@@ -615,19 +619,21 @@ class ThirdPartyCookiesBlockedHttpCookieBrowserTest
     return EvalJs(frame, JsReplace(script, url)).ExtractString();
   }
 
-  std::string FetchWithCredentials(RenderFrameHost* frame, const GURL& url) {
+  EvalJsResult Fetch(RenderFrameHost* frame,
+                     const GURL& url,
+                     const std::string& mode,
+                     const std::string& credentials) {
     constexpr char script[] = R"JS(
-      fetch($1, { credentials : 'include' }
-      ).then((result) => result.text());
+      fetch($1, {mode: $2, credentials: $3}).then(result => result.text());
     )JS";
-    return EvalJs(frame, JsReplace(script, url)).ExtractString();
+    return EvalJs(frame, JsReplace(script, url, mode, credentials));
   }
 
   bool CookieStoreEmpty(RenderFrameHost* frame) {
     constexpr char script[] = R"JS(
           (async () => {
             let cookies = await cookieStore.getAll();
-            return cookies.length == 0 ? true : false;
+            return cookies.length == 0;
           })();
       )JS";
     return EvalJs(frame, script).ExtractBool();
@@ -832,10 +838,51 @@ IN_PROC_BROWSER_TEST_F(
   // check if cookies are present on the request.
   ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostB)));
 
-  EXPECT_TRUE(FetchWithCredentials(
-                  web_contents()->GetPrimaryMainFrame(),
-                  https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath))
-                  .empty());
+  EXPECT_THAT(Fetch(web_contents()->GetPrimaryMainFrame(),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "cors", "include")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_F(ThirdPartyCookiesBlockedHttpCookieBrowserTest,
+                       TopLevelSiteCorsException) {
+  // Set and confirm SameSite=None cookie on Site A.
+  ASSERT_TRUE(SetCookie(
+      web_contents()->GetBrowserContext(), https_server()->GetURL(kHostA, "/"),
+      base::StrCat({kSameSiteNoneCookieName, "=1;Secure;SameSite=None;"})));
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), EchoCookiesUrl(kHostA)));
+
+  // Embed an iframe containing A in B.
+  ASSERT_EQ(content::ArrangeFramesAndGetContentFromLeaf(
+                web_contents(), https_server(), base::StrCat({kHostA, "(%s)"}),
+                {0}, EchoCookiesUrl(kHostB)),
+            "None");
+
+  // Test that a subresource request from B to A can use cookies if it is
+  // in CORS mode and includes credentials.
+  EXPECT_EQ(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                  https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                  "cors", "include")
+                .ExtractString(),
+            base::StrCat({kSameSiteNoneCookieName, "=1"}));
+
+  // Test that a subresource request from B to A cannot use cookies if it is
+  // in CORS mode and omits credentials.
+  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "cors", "omit")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
+
+  // Test that a subresource request from B to A cannot use cookies if it is
+  // in no-cors mode.
+  EXPECT_THAT(Fetch(ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0),
+                    https_server()->GetURL(kHostA, kEchoCookiesWithCorsPath),
+                    "no-cors", "include")
+                  .ExtractString(),
+              net::CookieStringIs(IsEmpty()));
 }
 
 INSTANTIATE_TEST_SUITE_P(/* no label */,

@@ -2450,6 +2450,16 @@
     "owners": ["arichiv@chromium.org"]
   },
   {
+    "prefix": "saa-top-level-site-cors-exception",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.js"
+    ],
+    "args": ["--enable-features=ThirdPartyCookieTopLevelSiteCorsException"],
+    "expires": "Jul 1, 2024",
+    "owners": ["dylancutler@google.com"]
+  },
+  {
     "prefix": "permission-element",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/permission-element"],

@@ -29,8 +29,13 @@ enum class CookieSettingOverride {
   // backs 3PC accesses granted via 3PC deprecation trial.
   kSkipTPCDSupport = 3,
   kSkipTPCDMetadataGrant = 4,
+  // Corresponds to checks that may grant 3PCs when a request opts into
+  // credentials and CORS protection.
+  // One example are subresource requests that are same-site with the top-level
+  // site but originate from a cross-site embed.
+  kCrossSiteCredentialedWithCORS = 5,
 
-  kMaxValue = kSkipTPCDMetadataGrant,
+  kMaxValue = kCrossSiteCredentialedWithCORS,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride,

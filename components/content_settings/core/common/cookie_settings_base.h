@@ -98,7 +98,8 @@ class CookieSettingsBase {
     kAllowBy3PCDHeuristics = 5,
     kAllowByStorageAccess = 6,
     kAllowByTopLevelStorageAccess = 7,
-    kMaxValue = kAllowByTopLevelStorageAccess,
+    kAllowByCORSException = 8,
+    kMaxValue = kAllowByCORSException,
   };
 
   class CookieSettingWithMetadata {

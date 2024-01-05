@@ -301,6 +301,7 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Storage access allowed by 3PCD metadata grants content settings"/>
   <int value="7" label="Temporary storage access allowed by 3PCD heuristics"/>
+  <int value="8" label="Storage access allowed due to CORS opt in"/>
 </enum>
 
 <enum name="StorageBucketDurabilityParameter">

@@ -49,7 +49,8 @@ enum class StorageAccessResult {
   ACCESS_ALLOWED_3PCD = 5,
   ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
   ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT = 7,
-  kMaxValue = ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT,
+  ACCESS_ALLOWED_CORS_EXCEPTION = 8,
+  kMaxValue = ACCESS_ALLOWED_CORS_EXCEPTION,
 };
 // This enum must match the numbering for BreakageIndicatorType in
 // histograms/enums.xml. Do not reorder or remove items, only add new items

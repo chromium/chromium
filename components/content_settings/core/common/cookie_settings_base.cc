@@ -26,6 +26,20 @@
 
 namespace content_settings {
 
+namespace {
+
+bool IsAllowedByCORS(const net::CookieSettingOverrides& overrides,
+                     const GURL& request_url,
+                     const GURL& first_party_url) {
+  return overrides.Has(
+             net::CookieSettingOverride::kCrossSiteCredentialedWithCORS) &&
+         base::FeatureList::IsEnabled(
+             net::features::kThirdPartyCookieTopLevelSiteCorsException) &&
+         net::SchemefulSite(request_url) == net::SchemefulSite(first_party_url);
+}
+
+}  // namespace
+
 bool CookieSettingsBase::storage_access_api_grants_unpartitioned_storage_ =
     false;
 
@@ -363,6 +377,14 @@ CookieSettingsBase::GetCookieSettingInternal(
         ThirdPartyCookieAllowMechanism::kAllowBy3PCDHeuristics;
     FireStorageAccessHistogram(net::cookie_util::StorageAccessResult::
                                    ACCESS_ALLOWED_3PCD_HEURISTICS_GRANT);
+  }
+
+  if (block_third && IsAllowedByCORS(overrides, request_url, first_party_url)) {
+    block_third = false;
+    third_party_cookie_allow_mechanism =
+        ThirdPartyCookieAllowMechanism::kAllowByCORSException;
+    FireStorageAccessHistogram(
+        net::cookie_util::StorageAccessResult::ACCESS_ALLOWED_CORS_EXCEPTION);
   }
 
   if (block_third) {
