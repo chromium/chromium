@@ -431,6 +431,41 @@ TEST_F(WindowBoundsTrackerTest, RemoveNonPrimaryDisplay) {
   EXPECT_EQ(updated_bounds_in_1st, window2->GetBoundsInScreen());
 }
 
+TEST_F(WindowBoundsTrackerTest, RemoveDisplayInLockScreen) {
+  UpdateDisplay("400x300,600x500");
+
+  display::ManagedDisplayInfo primary_info =
+      display_manager()->GetDisplayInfo(GetPrimaryDisplay().id());
+  display::ManagedDisplayInfo secondary_info =
+      display_manager()->GetDisplayInfo(GetSecondaryDisplay().id());
+
+  // Initially, the window is half-offscreen inside the 2nd display.
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect initial_bounds_2nd(gfx::Point(900, 0), window_size);
+  aura::Window* window = CreateTestWindowInShellWithBounds(initial_bounds_2nd);
+  wm::ActivateWindow(window);
+
+  // Enter locked session state and disconnect the 2nd display.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(primary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(gfx::Rect(gfx::Point(200, 0), window_size),
+            window->GetBoundsInScreen());
+
+  // Reconnect the 2nd display, `window` should be restored to the 2nd display
+  // at its previous bounds even though it is in lock screen.
+  display_info_list.push_back(secondary_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(initial_bounds_2nd, window->GetBoundsInScreen());
+
+  // Unlock and `window` should still at the correct position.
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
+  EXPECT_EQ(initial_bounds_2nd, window->GetBoundsInScreen());
+}
+
 TEST_F(WindowBoundsTrackerTest, RootWindowChanges) {
   UpdateDisplay("400x300,600x500");
 
@@ -527,6 +562,43 @@ TEST_F(WindowBoundsTrackerTest, ChangeCurrentPrimaryDisplay) {
   window_tree_host_manager->SetPrimaryDisplayId(first_display_id);
   EXPECT_EQ(w1_initial_bounds, w1->GetBoundsInScreen());
   EXPECT_EQ(w2_initial_bounds, w2->GetBoundsInScreen());
+}
+
+TEST_F(WindowBoundsTrackerTest, MirrorBuiltinPrimaryDisplay) {
+  UpdateDisplay("400x300,600x500");
+
+  display::Display first_display = GetPrimaryDisplay();
+  display::Display secondary_display = GetSecondaryDisplay();
+  const int64_t first_display_id = first_display.id();
+  ASSERT_EQ(first_display_id, WindowTreeHostManager::GetPrimaryDisplayId());
+
+  // `w1` is at the top left of the 1st display, a little bit off the screen.
+  const gfx::Size window_size(200, 100);
+  const gfx::Rect w1_initial_bounds(gfx::Rect(gfx::Point(-10, 0), window_size));
+  // `w2` is half-offscreen inside the 2nd display.
+  const gfx::Rect w2_initial_bounds(gfx::Rect(gfx::Point(900, 0), window_size));
+  aura::Window* w1 = CreateTestWindowInShellWithBounds(w1_initial_bounds);
+  wm::ActivateWindow(w1);
+  aura::Window* w2 = CreateTestWindowInShellWithBounds(w2_initial_bounds);
+  wm::ActivateWindow(w2);
+
+  // Enter mirror mode.
+  const gfx::Rect w2_remapping_bounds_in_1st(
+      gfx::Rect(gfx::Point(200, 0), window_size));
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
+  EXPECT_TRUE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(first_display_id, display_manager()->mirroring_source_id());
+  EXPECT_EQ(w1_initial_bounds, w1->GetBoundsInScreen());
+  EXPECT_EQ(w2_remapping_bounds_in_1st, w2->GetBoundsInScreen());
+
+  // Exit mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, absl::nullopt);
+  EXPECT_FALSE(display_manager()->IsInMirrorMode());
+  EXPECT_EQ(w2_initial_bounds, w2->GetBoundsInScreen());
+
+  // TODO(b/261122785): Add the test case for mirroring the built-in display
+  // when it is not the current primary display. But the external display is the
+  // primary, which means it will remove the primary display while mirroring.
 }
 
 }  // namespace ash

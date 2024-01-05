@@ -5,9 +5,11 @@
 #include "ash/wm/bounds_tracker/window_bounds_tracker.h"
 
 #include "ash/root_window_controller.h"
+#include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/auto_reset.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -139,6 +141,20 @@ void AdjustBoundsForWorkArea(const gfx::Rect& source_work_area,
   inout_bounds.set_origin(
       new_window_center -
       gfx::Vector2d(inout_bounds.width() / 2, inout_bounds.height() / 2));
+}
+
+// Gets the display's in root coordinate and in session work area, which will
+// always be used while doing window bounds remapping and restoring.
+gfx::Rect GetDisplayInSessionWorkArea(int64_t display_id) {
+  display::Display display;
+  display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id, &display);
+  CHECK(display.is_valid());
+  const gfx::Insets insets =
+      WorkAreaInsets::ForWindow(Shell::GetRootWindowForDisplayId(display_id))
+          ->in_session_user_work_area_insets();
+  gfx::Rect work_area(display.size());
+  work_area.Inset(insets);
+  return work_area;
 }
 
 }  // namespace
@@ -349,7 +365,7 @@ void WindowBoundsTracker::RemapOrRestore(aura::Window* window,
   const display::Display source_display =
       screen->GetDisplayNearestWindow(window);
   const int64_t source_display_id = source_display.id();
-  gfx::Rect source_work_area = source_display.GetLocalWorkArea();
+  gfx::Rect source_work_area = GetDisplayInSessionWorkArea(source_display_id);
 
   const auto& window_bounds_entry = UpdateBoundsDatabaseOfWindow(
       window,
@@ -362,7 +378,8 @@ void WindowBoundsTracker::RemapOrRestore(aura::Window* window,
   display::Display target_display;
   screen->GetDisplayWithDisplayId(target_display_id, &target_display);
   CHECK(target_display.is_valid());
-  const gfx::Rect target_work_area = target_display.GetLocalWorkArea();
+  const gfx::Rect target_work_area =
+      GetDisplayInSessionWorkArea(target_display_id);
   const WindowDisplayInfo target_window_display_info(
       target_display_id, target_display.rotation(), target_work_area);
   const auto iter = window_bounds_map.find(target_window_display_info);
@@ -419,8 +436,9 @@ void WindowBoundsTracker::RestoreWindowToCachedBounds(aura::Window* window) {
   CHECK(!window_bounds_map.empty());
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window);
-  const WindowDisplayInfo window_display_info(display.id(), display.rotation(),
-                                              display.GetLocalWorkArea());
+  const WindowDisplayInfo window_display_info(
+      display.id(), display.rotation(),
+      GetDisplayInSessionWorkArea(display.id()));
   const auto bounds_iter = window_bounds_map.find(window_display_info);
   CHECK(bounds_iter != window_bounds_map.end());
 
