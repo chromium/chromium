@@ -47,11 +47,13 @@ const CGFloat kHorizontalPadding = 16.0;
 const CGFloat kFaviconProfileImageVerticalOverlap = 10.0;
 
 // Durations of specific parts of the animation in seconds.
-const CGFloat kImagesSlidingOutDuration = 1.0;
+const CGFloat kImagesSlidingOutDelay = 0.35;
+const CGFloat kImagesSlidingOutDuration = 0.5;
+const CGFloat kLockAppearingDuration = 0.15;
 const CGFloat kProgressBarLoadingDuration = 3.25;
-const CGFloat kImagesSlidingInDuration = 1.0;
-const CGFloat kFaviconAppearingDuration = 0.15;
+const CGFloat kImagesSlidingInDuration = 0.5;
 const CGFloat kFaviconAppearingDelay = 0.1;
+const CGFloat kFaviconAppearingDuration = 0.15;
 const CGFloat kSharingCancelledDuration = 0.5;
 
 // Distance by which the profile images need to be moved when sliding.
@@ -96,8 +98,10 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 // of recipients sliding to the right.
 @property(nonatomic, strong) UIViewPropertyAnimator* imagesSlidingOutAnimation;
 
-// Animates lock appearing in the middle between profile images and the progress
-// bar going from the left to right.
+// Animates lock appearing in the middle between profile images.
+@property(nonatomic, strong) UIViewPropertyAnimator* lockAppearingAnimation;
+
+// Animates the progress bar going from the left to right image.
 @property(nonatomic, strong)
     UIViewPropertyAnimator* progressBarLoadingAnimation;
 
@@ -182,12 +186,14 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   // Make sure that the title is focused when the view appears.
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.titleLabel);
-  [self.imagesSlidingOutAnimation startAnimation];
+  [self.imagesSlidingOutAnimation
+      startAnimationAfterDelay:kImagesSlidingOutDelay];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   // Stop the ongoing animations so that their completion is not called.
   [self.imagesSlidingOutAnimation stopAnimation:YES];
+  [self.lockAppearingAnimation stopAnimation:YES];
   [self.progressBarLoadingAnimation stopAnimation:YES];
   [self.imagesSlidingInAnimation stopAnimation:YES];
   [super viewDidDisappear:animated];
@@ -472,31 +478,44 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   UIImageView* lockImage = self.lockImage;
   UIView* progressBarView = self.progressBarView;
 
+  UICubicTimingParameters* imagesSlidingTimingParams =
+      [[UICubicTimingParameters alloc]
+          initWithControlPoint1:CGPointMake(0.7, 0.0)
+                  controlPoint2:CGPointMake(0.45, 1.45)];
+
   self.imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingOutDuration
-                 curve:UIViewAnimationCurveEaseInOut
-            animations:^{
-              senderImageView.hidden = NO;
-              senderImageView.center = CGPointMake(
-                  senderImageView.center.x - kImagesSlidingOutDistance,
-                  senderImageView.center.y);
-              recipientImageView.center = CGPointMake(
-                  recipientImageView.center.x + kImagesSlidingOutDistance,
-                  recipientImageView.center.y);
-            }];
-
+      timingParameters:imagesSlidingTimingParams];
+  [self.imagesSlidingOutAnimation addAnimations:^{
+    senderImageView.hidden = NO;
+    senderImageView.center =
+        CGPointMake(senderImageView.center.x - kImagesSlidingOutDistance,
+                    senderImageView.center.y);
+    recipientImageView.center =
+        CGPointMake(recipientImageView.center.x + kImagesSlidingOutDistance,
+                    recipientImageView.center.y);
+  }];
   __weak __typeof(self) weakSelf = self;
   [self.imagesSlidingOutAnimation
+      addCompletion:^(UIViewAnimatingPosition finalPosition) {
+        [weakSelf.lockAppearingAnimation startAnimation];
+      }];
+
+  self.lockAppearingAnimation = [[UIViewPropertyAnimator alloc]
+      initWithDuration:kLockAppearingDuration
+                 curve:UIViewAnimationCurveEaseIn
+            animations:^{
+              lockImage.hidden = NO;
+            }];
+  [self.lockAppearingAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf.progressBarLoadingAnimation startAnimation];
       }];
 
   self.progressBarLoadingAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kProgressBarLoadingDuration
-                 curve:UIViewAnimationCurveEaseInOut
+                 curve:UIViewAnimationCurveLinear
             animations:^{
-              lockImage.hidden = NO;
-
               for (NSInteger i = 0; i < kProgressBarCirclesAmount; i++) {
                 [UIView animateWithDuration:0
                                       delay:(kProgressBarLoadingDuration /
@@ -516,17 +535,16 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   self.imagesSlidingInAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingInDuration
-                 curve:UIViewAnimationCurveEaseInOut
-            animations:^{
-              lockImage.hidden = YES;
-              progressBarView.hidden = YES;
-              senderImageView.center = CGPointMake(
-                  senderImageView.center.x + kImagesSlidingInDistance,
-                  senderImageView.center.y);
-              recipientImageView.center = CGPointMake(
-                  recipientImageView.center.x - kImagesSlidingInDistance,
-                  recipientImageView.center.y);
-            }];
+      timingParameters:imagesSlidingTimingParams];
+  [self.imagesSlidingInAnimation addAnimations:^{
+    progressBarView.hidden = YES;
+    senderImageView.center =
+        CGPointMake(senderImageView.center.x + kImagesSlidingInDistance,
+                    senderImageView.center.y);
+    recipientImageView.center =
+        CGPointMake(recipientImageView.center.x - kImagesSlidingInDistance,
+                    recipientImageView.center.y);
+  }];
   [self.imagesSlidingInAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf.faviconAppearingAnimation
@@ -535,7 +553,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
   self.faviconAppearingAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kFaviconAppearingDuration
-                 curve:UIViewAnimationCurveEaseInOut
+                 curve:UIViewAnimationCurveEaseIn
             animations:^{
               self.faviconContainerView.hidden = NO;
             }];
@@ -546,17 +564,20 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
         [weakDelegate startPasswordSharing];
       }];
 
+  UICubicTimingParameters* animationCancelledTimingParams =
+      [[UICubicTimingParameters alloc]
+          initWithControlPoint1:CGPointMake(0.7, -0.45)
+                  controlPoint2:CGPointMake(0.45, 1.0)];
   self.sharingCancelledAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kSharingCancelledDuration
-                 curve:UIViewAnimationCurveEaseInOut
-            animations:^{
-              lockImage.hidden = YES;
-              progressBarView.hidden = YES;
-              senderImageView.center = CGPointMake(progressBarView.center.x,
-                                                   senderImageView.center.y);
-              recipientImageView.center = CGPointMake(
-                  progressBarView.center.x, recipientImageView.center.y);
-            }];
+      timingParameters:animationCancelledTimingParams];
+  [self.sharingCancelledAnimation addAnimations:^{
+    progressBarView.hidden = YES;
+    senderImageView.center =
+        CGPointMake(progressBarView.center.x, senderImageView.center.y);
+    recipientImageView.center =
+        CGPointMake(progressBarView.center.x, recipientImageView.center.y);
+  }];
   [self.sharingCancelledAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displayCancelledStatus];
