@@ -101,10 +101,8 @@ const IMAGE_FILE_HEADER* PeImageReader::GetCoffFileHeader() {
           .data());
 }
 
-const uint8_t* PeImageReader::GetOptionalHeaderData(
-    size_t* optional_header_size) {
-  *optional_header_size = GetOptionalHeaderSize();
-  return GetOptionalHeaderStart();
+span<const uint8_t> PeImageReader::GetOptionalHeaderData() {
+  return make_span(GetOptionalHeaderStart(), GetOptionalHeaderSize());
 }
 
 size_t PeImageReader::GetNumberOfSections() {
@@ -119,16 +117,15 @@ const IMAGE_SECTION_HEADER* PeImageReader::GetSectionHeaderAt(size_t index) {
       (sizeof(IMAGE_SECTION_HEADER) * index));
 }
 
-const uint8_t* PeImageReader::GetExportSection(size_t* section_size) {
+span<const uint8_t> PeImageReader::GetExportSection() {
   span<const uint8_t> data = GetImageData(IMAGE_DIRECTORY_ENTRY_EXPORT);
 
   // The export section data must be big enough for the export directory.
   if (data.size() < sizeof(IMAGE_EXPORT_DIRECTORY)) {
-    return nullptr;
+    return span<const uint8_t>();
   }
 
-  *section_size = data.size();
-  return data.data();
+  return data;
 }
 
 size_t PeImageReader::GetNumberOfDebugEntries() {
@@ -138,8 +135,7 @@ size_t PeImageReader::GetNumberOfDebugEntries() {
 
 const IMAGE_DEBUG_DIRECTORY* PeImageReader::GetDebugEntry(
     size_t index,
-    const uint8_t** raw_data,
-    size_t* raw_data_size) {
+    span<const uint8_t>& raw_data) {
   DCHECK_LT(index, GetNumberOfDebugEntries());
 
   // Get the debug directory.
@@ -154,8 +150,7 @@ const IMAGE_DEBUG_DIRECTORY* PeImageReader::GetDebugEntry(
           debug_directory_data[index * sizeof(IMAGE_DEBUG_DIRECTORY)]);
   const uint8_t* debug_data = nullptr;
   if (GetStructureAt(entry.PointerToRawData, entry.SizeOfData, &debug_data)) {
-    *raw_data = debug_data;
-    *raw_data_size = entry.SizeOfData;
+    raw_data = make_span(debug_data, entry.SizeOfData);
   }
   return &entry;
 }
