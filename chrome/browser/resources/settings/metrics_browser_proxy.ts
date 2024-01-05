@@ -615,7 +615,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordSafetyHubEntryPointShown(page: SafetyHubEntryPoint) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.EntryPointShown',
+      'Settings.SafetyHub.EntryPointImpression',
       page,
       SafetyHubEntryPoint.MAX_VALUE,
     ]);
@@ -623,7 +623,7 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordSafetyHubEntryPointClicked(page: SafetyHubEntryPoint) {
     chrome.send('metricsHandler:recordInHistogram', [
-      'Settings.SafetyHub.EntryPointClicked',
+      'Settings.SafetyHub.EntryPointInteraction',
       page,
       SafetyHubEntryPoint.MAX_VALUE,
     ]);

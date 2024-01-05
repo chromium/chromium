@@ -637,6 +637,16 @@ chromium-metrics-reviews@google.com.
   <summary>Resulting state of the safety check updates check.</summary>
 </histogram>
 
+<histogram name="Settings.SafetyHub.DashboardWarning"
+    enum="SafetyHubModuleType" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Captures the impressions of the different modules that have some warnings in
+    Safety Check page. Recorded whenever Safety Check page is loaded.
+  </summary>
+</histogram>
+
 <histogram name="Settings.SafetyHub.EntryPointImpression"
     enum="SafetyHubEntryPoint" expires_after="2024-11-11">
   <owner>sideyilmaz@chromium.org</owner>
@@ -656,6 +666,16 @@ chromium-metrics-reviews@google.com.
     Captures the interaction with an entry point of Safety Hub, that will
     eventually lead to the Safety Check page, password manager checkup page or
     the extensions page.
+  </summary>
+</histogram>
+
+<histogram name="Settings.SafetyHub.HasDashboardShowAnyWarning"
+    enum="BooleanVisible" expires_after="2024-11-11">
+  <owner>sideyilmaz@chromium.org</owner>
+  <owner>chrome-privacy-controls@google.com</owner>
+  <summary>
+    Captures whether the Safety Check dashboard has any warning. Recorded
+    whenever Safety Check page is loaded.
   </summary>
 </histogram>
 
