@@ -113,8 +113,8 @@ class SourceStreamToDataPipeTest
   void FinishedReading(int result) { callback_result_ = result; }
 
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<net::MockSourceStream, DanglingUntriaged> source_;
-  std::unique_ptr<SourceStreamToDataPipe> adapter_;
+  std::unique_ptr<SourceStreamToDataPipe> adapter_;  // owned by `adapter_`.
+  raw_ptr<net::MockSourceStream> source_;
   mojo::ScopedDataPipeConsumerHandle consumer_end_;
   absl::optional<int> callback_result_;
 };

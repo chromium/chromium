@@ -93,6 +93,7 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
   ~TestNavigationLoaderInterceptor() override {
     url_loader_ = nullptr;
     resource_scheduler_client_ = nullptr;
+    url_loader_context_.Detach();
   }
 
   void MaybeCreateLoader(const network::ResourceRequest& resource_request,

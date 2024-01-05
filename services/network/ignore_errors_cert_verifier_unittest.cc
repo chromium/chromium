@@ -72,7 +72,7 @@ class IgnoreErrorsCertVerifierTest : public ::testing::Test {
   IgnoreErrorsCertVerifierTest()
       : mock_verifier_(new MockCertVerifier()),
         verifier_(base::WrapUnique(mock_verifier_.get()), SPKIHashSet()) {}
-  ~IgnoreErrorsCertVerifierTest() override {}
+  ~IgnoreErrorsCertVerifierTest() override { mock_verifier_ = nullptr; }
 
  protected:
   void SetUp() override {
@@ -81,7 +81,7 @@ class IgnoreErrorsCertVerifierTest : public ::testing::Test {
 
   // The wrapped CertVerifier. Defaults to returning ERR_CERT_INVALID. Owned by
   // |verifier_|.
-  raw_ptr<MockCertVerifier, DanglingUntriaged> mock_verifier_;
+  raw_ptr<MockCertVerifier> mock_verifier_;
   IgnoreErrorsCertVerifier verifier_;
 };
 

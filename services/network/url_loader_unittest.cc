@@ -784,7 +784,7 @@ class URLLoaderTest : public testing::Test {
   }
 
   void TearDown() override {
-    context().set_resource_scheduler_client(nullptr);
+    context().Detach();
     unowned_test_network_delegate_ = nullptr;
     url_request_context_.reset();
     net::QuicSimpleTestServer::Shutdown();
@@ -896,6 +896,7 @@ class URLLoaderTest : public testing::Test {
 
     delete_run_loop.Run();
 
+    context().set_network_context_client(nullptr);
     return client_.completion_status().error_code;
   }
 
@@ -3182,6 +3183,7 @@ TEST_F(URLLoaderTest, UploadFileCanceled) {
   base::RunLoop().RunUntilIdle();
   std::move(callback).Run(net::OK, std::move(opened_file));
   base::RunLoop().RunUntilIdle();
+  context().set_network_context_client(nullptr);
 }
 
 // Tests a request body with a data pipe element.
@@ -3434,6 +3436,7 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
   EXPECT_TRUE(client.response_head()->ssl_info.value().cert);
   EXPECT_EQ(net::CERT_STATUS_DATE_INVALID,
             client.response_head()->ssl_info.value().cert_status);
+  context().set_network_context_client(nullptr);
 }
 
 // Make sure the client can modify headers during a redirect.

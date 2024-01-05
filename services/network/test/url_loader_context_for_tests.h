@@ -22,6 +22,12 @@ class URLLoaderContextForTests : public URLLoaderContext {
   URLLoaderContextForTests(const URLLoaderContextForTests&) = delete;
   URLLoaderContextForTests& operator=(const URLLoaderContextForTests&) = delete;
 
+  void Detach() {
+    network_context_client_ = nullptr;
+    url_request_context_ = nullptr;
+    resource_scheduler_client_ = nullptr;
+  }
+
   // Accessors to let tests configure some aspects of `this` object.
   mojom::URLLoaderFactoryParams& mutable_factory_params() {
     return factory_params_;
@@ -61,10 +67,8 @@ class URLLoaderContextForTests : public URLLoaderContext {
   cors::OriginAccessList origin_access_list_;
   corb::PerFactoryState corb_state_;
 
-  raw_ptr<mojom::NetworkContextClient, DanglingUntriaged>
-      network_context_client_ = nullptr;
-  raw_ptr<net::URLRequestContext, DanglingUntriaged> url_request_context_ =
-      nullptr;
+  raw_ptr<mojom::NetworkContextClient> network_context_client_ = nullptr;
+  raw_ptr<net::URLRequestContext> url_request_context_ = nullptr;
   scoped_refptr<ResourceSchedulerClient> resource_scheduler_client_;
 };
 
