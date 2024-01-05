@@ -128,7 +128,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
 
     /** Tests that a Tap gesture followed by scrolling clears the selection. */
     @Test
-    @DisabledTest(message = "crbug.com/841017")
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapGestureFollowedByScrollClearsSelection() throws Exception {
