@@ -45,54 +45,13 @@ PlatformClipboard::Data WaylandDataDeviceBase::ReadSelectionData(
   // data, thus getting the owning thread stuck at the blocking read call below.
   connection_->RoundTripQueue();
 
-  return ReadFromFD(std::move(fd));
-}
-
-void WaylandDataDeviceBase::ResetDataOffer() {
-  data_offer_.reset();
-}
-
-PlatformClipboard::Data WaylandDataDeviceBase::ReadFromFD(
-    base::ScopedFD fd) const {
   std::vector<uint8_t> contents;
   wl::ReadDataFromFD(std::move(fd), &contents);
   return base::RefCountedBytes::TakeVector(&contents);
 }
 
-void WaylandDataDeviceBase::RegisterDeferredReadCallback() {
-  DCHECK(!sync_callback_);
-  sync_callback_.reset(wl_display_sync(connection_->display_wrapper()));
-
-  static constexpr wl_callback_listener kSyncCallbackListener = {
-      .done = &OnSyncDone};
-  wl_callback_add_listener(sync_callback_.get(), &kSyncCallbackListener, this);
-  connection_->Flush();
-}
-
-void WaylandDataDeviceBase::RegisterDeferredReadClosure(
-    base::OnceClosure closure) {
-  deferred_read_closure_ = std::move(closure);
-}
-
-// static
-void WaylandDataDeviceBase::OnSyncDone(void* data,
-                                       wl_callback* cb,
-                                       uint32_t time) {
-  auto* self = static_cast<WaylandDataDeviceBase*>(data);
-  DCHECK(self);
-  self->DoDeferredRead(cb, time);
-}
-
-void WaylandDataDeviceBase::DoDeferredRead(wl_callback* cb, uint32_t time) {
-  DCHECK(!deferred_read_closure_.is_null());
-
-  // The callback must be reset before invoking the closure because the latter
-  // may want to set another callback.  That typically happens when
-  // non-trivial data types are dropped; they have fallbacks to plain text so
-  // several roundtrips to data are chained.
-  sync_callback_.reset();
-
-  std::move(deferred_read_closure_).Run();
+void WaylandDataDeviceBase::ResetDataOffer() {
+  data_offer_.reset();
 }
 
 void WaylandDataDeviceBase::NotifySelectionOffer(
