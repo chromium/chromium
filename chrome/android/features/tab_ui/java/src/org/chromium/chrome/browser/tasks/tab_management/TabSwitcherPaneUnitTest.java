@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -18,6 +19,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.View;
 
 import androidx.appcompat.content.res.AppCompatResources;
@@ -29,12 +32,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -42,7 +49,15 @@ import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
 /** Unit tests for {@link TabSwitcherPane} and {@link TabSwitcherPaneBase}. */
@@ -50,13 +65,23 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPr
 public class TabSwitcherPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private SharedPreferences mSharedPreferences;
+    @Mock private Profile mProfile;
+    @Mock private ProfileProvider mProfileProvider;
     @Mock private TabSwitcherPaneCoordinatorFactory mTabSwitcherPaneCoordinatorFactory;
     @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
     @Mock private TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
     @Mock private TabSwitcherDrawable mTabSwitcherDrawable;
     @Mock private HubContainerView mHubContainerView;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
+    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
+    @Captor ArgumentCaptor<MenuOrKeyboardActionHandler> mMenuOrKeyboardActionHandlerCaptor;
+    @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
+
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+            new OneshotSupplierImpl<>();
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mHandleBackPressChangeSupplier =
             new ObservableSupplierImpl<>();
@@ -67,6 +92,13 @@ public class TabSwitcherPaneUnitTest {
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
         when(mHubContainerView.getContext()).thenReturn(mContext);
+
+        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
+        mProfileProviderSupplier.set(mProfileProvider);
+
         doAnswer(
                         invocation -> {
                             mTimesCreated++;
@@ -74,9 +106,9 @@ public class TabSwitcherPaneUnitTest {
                         })
                 .when(mTabSwitcherPaneCoordinatorFactory)
                 .create(any());
+        when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);
-
         mHandleBackPressChangeSupplier.set(false);
         when(mTabSwitcherPaneDrawableCoordinator.getTabSwitcherDrawable())
                 .thenReturn(mTabSwitcherDrawable);
@@ -92,15 +124,28 @@ public class TabSwitcherPaneUnitTest {
         mTabSwitcherPane =
                 new TabSwitcherPane(
                         mContext,
+                        mSharedPreferences,
+                        mProfileProviderSupplier,
                         mTabSwitcherPaneCoordinatorFactory,
+                        () -> mTabModelFilter,
                         mNewTabButtonClickListener,
+                        mMenuOrKeyboardActionController,
                         mTabSwitcherPaneDrawableCoordinator);
+        ShadowLooper.runUiThreadTasks();
+        verify(mSharedPreferences)
+                .registerOnSharedPreferenceChangeListener(
+                        mPriceAnnotationsPrefListenerCaptor.capture());
     }
 
     @After
     public void tearDown() {
         mTabSwitcherPane.destroy();
         verify(mTabSwitcherPaneCoordinator, times(mTimesCreated)).destroy();
+        verify(mMenuOrKeyboardActionController, atLeastOnce())
+                .unregisterMenuOrKeyboardActionHandler(any());
+        verify(mSharedPreferences)
+                .unregisterOnSharedPreferenceChangeListener(
+                        mPriceAnnotationsPrefListenerCaptor.getValue());
     }
 
     @Test
@@ -207,6 +252,83 @@ public class TabSwitcherPaneUnitTest {
                 mTabSwitcherPane
                         .createShowHubLayoutAnimatorProvider(mHubContainerView)
                         .getPlannedAnimationType());
+    }
+
+    @Test
+    @SmallTest
+    public void testPriceTracking() {
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+
+        OnSharedPreferenceChangeListener listener = mPriceAnnotationsPrefListenerCaptor.getValue();
+        // Check this doesn't crash if there is no coordinator.
+        listener.onSharedPreferenceChanged(
+                mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        listener.onSharedPreferenceChanged(
+                mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(false);
+        listener.onSharedPreferenceChanged(
+                mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+        listener.onSharedPreferenceChanged(
+                mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+
+        listener.onSharedPreferenceChanged(mSharedPreferences, "foo");
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        listener.onSharedPreferenceChanged(
+                mSharedPreferences, PriceTrackingUtilities.TRACK_PRICES_ON_TABS);
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTabListEditor() {
+        verify(mMenuOrKeyboardActionController, never()).registerMenuOrKeyboardActionHandler(any());
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(mMenuOrKeyboardActionController)
+                .registerMenuOrKeyboardActionHandler(mMenuOrKeyboardActionHandlerCaptor.capture());
+
+        MenuOrKeyboardActionHandler handler = mMenuOrKeyboardActionHandlerCaptor.getValue();
+        // Check this doesn't crash if there is no coordinator.
+        assertFalse(
+                handler.handleMenuOrKeyboardAction(
+                        org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
+
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        assertFalse(
+                handler.handleMenuOrKeyboardAction(
+                        org.chromium.chrome.tab_ui.R.id.new_tab_menu_id, false));
+        verify(coordinator, never()).showTabListEditor();
+
+        assertTrue(
+                handler.handleMenuOrKeyboardAction(
+                        org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
+        verify(coordinator).showTabListEditor();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        verify(mMenuOrKeyboardActionController).unregisterMenuOrKeyboardActionHandler(handler);
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        verify(mMenuOrKeyboardActionController, times(2))
+                .unregisterMenuOrKeyboardActionHandler(handler);
     }
 
     @Test

@@ -65,7 +65,7 @@ public class TabListCoordinator
      *
      * <p>NOTE: STRIP, LIST, and GRID modes will have height equal to that of the container view.
      */
-    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.LIST})
+    @IntDef({TabListMode.GRID, TabListMode.STRIP, TabListMode.LIST, TabListMode.NUM_ENTRIES})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListMode {
         int GRID = 0;

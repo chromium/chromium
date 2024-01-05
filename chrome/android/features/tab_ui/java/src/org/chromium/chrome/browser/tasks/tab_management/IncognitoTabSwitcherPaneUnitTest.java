@@ -36,10 +36,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
-import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
  * Unit tests for {@link IncognitoTabSwitcherPane}. Refer to {@link TabSwitcherPaneUnitTest} for
@@ -53,6 +53,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private TabSwitcherPaneCoordinator mTabSwitcherPaneCoordinator;
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private IncognitoTabModel mIncognitoTabModel;
+    @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
 
@@ -76,7 +77,8 @@ public class IncognitoTabSwitcherPaneUnitTest {
                         mContext,
                         mTabSwitcherPaneCoordinatorFactory,
                         () -> mIncognitoTabModel,
-                        mNewTabButtonClickListener);
+                        mNewTabButtonClickListener,
+                        mMenuOrKeyboardActionController);
     }
 
     @After
@@ -114,15 +116,6 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @SmallTest
     public void testPaneId() {
         assertEquals(PaneId.INCOGNITO_TAB_SWITCHER, mIncognitoTabSwitcherPane.getPaneId());
-    }
-
-    @Test
-    @SmallTest
-    public void testLoadHint() {
-        // TODO(crbug/1505772): this is a noop right now.
-        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
-        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
-        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
     }
 
     @Test

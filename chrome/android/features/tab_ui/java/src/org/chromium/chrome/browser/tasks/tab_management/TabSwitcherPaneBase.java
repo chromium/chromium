@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -26,8 +27,13 @@ import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
+import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /**
@@ -39,6 +45,24 @@ public abstract class TabSwitcherPaneBase implements Pane {
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
             new ObservableSupplierImpl<>();
+
+    private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
+            new MenuOrKeyboardActionHandler() {
+                @Override
+                public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
+                    if (id == R.id.menu_select_tabs) {
+                        @Nullable
+                        TabSwitcherPaneCoordinator coordinator =
+                                mTabSwitcherPaneCoordinatorSupplier.get();
+                        if (coordinator == null) return false;
+
+                        coordinator.showTabListEditor();
+                        RecordUserAction.record("MobileMenuSelectTabs");
+                        return true;
+                    }
+                    return false;
+                }
+            };
     private final ObservableSupplierImpl<TabSwitcherPaneCoordinator>
             mTabSwitcherPaneCoordinatorSupplier = new ObservableSupplierImpl<>();
     private final TransitiveObservableSupplier<TabSwitcherPaneCoordinator, Boolean>
@@ -47,6 +71,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
                             mTabSwitcherPaneCoordinatorSupplier,
                             pc -> pc.getHandleBackPressChangedSupplier());
     private final ViewGroup mRootView;
+    private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
 
     private boolean mNativeInitialized;
@@ -56,6 +81,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
+     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param newTabButtonContentDescriptionRes The resource for the new tab button content
      *     description.
      */
@@ -63,8 +89,10 @@ public abstract class TabSwitcherPaneBase implements Pane {
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull OnClickListener newTabButtonClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @StringRes int newTabButtonContentDescriptionRes) {
         mFactory = factory;
+        mMenuOrKeyboardActionController = menuOrKeyboardActionController;
 
         mNewTabButtonDataSupplier.set(
                 new DelegateButtonData(
@@ -79,12 +107,29 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     @Override
     public void destroy() {
+        mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                mMenuOrKeyboardActionHandler);
         destroyTabSwitcherPaneCoordinator();
     }
 
     @Override
     public @NonNull View getRootView() {
         return mRootView;
+    }
+
+    @Override
+    public void notifyLoadHint(@LoadHint int loadHint) {
+        // TODO(crbug/1502201): Figure out a more immediate signal for pane visibility. Due to
+        // WARM/COLD signals being posted this can lead to multiple HOT panes for a brief period.
+        // In this case multiple HOT panes might listen for the same menu event leading to a
+        // collision.
+        if (loadHint == LoadHint.HOT) {
+            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        } else {
+            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        }
     }
 
     @Override
@@ -117,6 +162,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     @Override
     public @BackPressResult int handleBackPress() {
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return BackPressResult.FAILURE;
         return coordinator.handleBackPress();
@@ -131,6 +177,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
         if (mNativeInitialized) return;
 
         mNativeInitialized = true;
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator != null) {
             coordinator.initWithNative();
@@ -139,6 +186,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     /** Returns a {@link Supplier} that provides dialog visibility information. */
     public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return null;
         return coordinator.getTabGridDialogVisibilitySupplier();
@@ -146,6 +194,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     /** Returns a {@link TabSwitcherCustomViewManager} for supplying custom views. */
     public @Nullable TabSwitcherCustomViewManager getTabSwitcherCustomViewManager() {
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return null;
         return coordinator.getTabSwitcherCustomViewManager();
@@ -153,6 +202,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     /** Returns the number of elements in the tab switcher's tab list model. */
     public int getTabSwitcherTabListModelSize() {
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return 0;
         return coordinator.getTabSwitcherTabListModelSize();
@@ -160,11 +210,17 @@ public abstract class TabSwitcherPaneBase implements Pane {
 
     /** Set the tab switcher's RecyclerViewPosition. */
     public void setTabSwitcherRecyclerViewPosition(RecyclerViewPosition position) {
+        @Nullable
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         if (coordinator == null) return;
         coordinator.setTabSwitcherRecyclerViewPosition(position);
     }
 
+    protected @TabListMode int getTabListMode() {
+        return mFactory.getTabListMode();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected @Nullable TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
         return mTabSwitcherPaneCoordinatorSupplier.get();
     }
@@ -173,7 +229,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     void createTabSwitcherPaneCoordinator() {
         if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
 
-        TabSwitcherPaneCoordinator coordinator = mFactory.create(mRootView);
+        @NonNull TabSwitcherPaneCoordinator coordinator = mFactory.create(mRootView);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         if (mNativeInitialized) {
             coordinator.initWithNative();
@@ -183,7 +239,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     protected void destroyTabSwitcherPaneCoordinator() {
         if (!mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
 
-        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        @NonNull TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         mTabSwitcherPaneCoordinatorSupplier.set(null);
         mRootView.removeAllViews();
         coordinator.destroy();

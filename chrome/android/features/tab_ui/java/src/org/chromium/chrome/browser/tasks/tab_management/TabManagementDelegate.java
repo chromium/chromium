@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -165,13 +166,17 @@ public interface TabManagementDelegate {
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
      *
      * @param activity The {@link Activity} that hosts the pane.
+     * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
+     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether this is an incognito pane.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull OnClickListener newTabButtonOnClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito);
 }

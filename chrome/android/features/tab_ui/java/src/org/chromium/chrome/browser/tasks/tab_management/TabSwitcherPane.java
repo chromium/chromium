@@ -5,50 +5,84 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.View.OnClickListener;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /** A {@link Pane} representing the regular tab switcher. */
 public class TabSwitcherPane extends TabSwitcherPaneBase {
+    private final @NonNull SharedPreferences mSharedPreferences;
+    private final @NonNull Supplier<TabModelFilter> mTabModelFilterSupplier;
     private final @NonNull TabSwitcherPaneDrawableCoordinator mTabSwitcherPaneDrawableCoordinator;
+
+    private @Nullable OnSharedPreferenceChangeListener mPriceAnnotationsPrefListener;
+    private boolean mIsVisible;
 
     /**
      * @param context The activity context.
+     * @param sharedPreferences The app shared preferences.
+     * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
+     * @param tabModelFilterSupplier The supplier of the regular {@link TabModelFilter}.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
+     * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param tabSwitcherPaneDrawableCoordinator The drawable to represent the pane.
      */
     TabSwitcherPane(
             @NonNull Context context,
+            @NonNull SharedPreferences sharedPreferences,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
+            @NonNull Supplier<TabModelFilter> tabModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull TabSwitcherPaneDrawableCoordinator tabSwitcherDrawableCoordinator) {
         super(
                 context,
                 factory,
                 newTabButtonClickListener,
+                menuOrKeyboardActionController,
                 org.chromium.chrome.browser.toolbar.R.string.button_new_tab);
+        mSharedPreferences = sharedPreferences;
+        mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
 
         // TODO(crbug/1505772): Update this string to not be an a11y string and it should probably
         // just say "Tabs".
         mReferenceButtonDataSupplier.set(
                 new DrawableButtonData(
-                        org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
-                        org.chromium.chrome.tab_ui.R.string.accessibility_tab_switcher,
+                        R.string.accessibility_tab_switcher,
+                        R.string.accessibility_tab_switcher,
                         tabSwitcherDrawableCoordinator.getTabSwitcherDrawable()));
+
+        profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
     }
 
     @Override
     public void destroy() {
         super.destroy();
         mTabSwitcherPaneDrawableCoordinator.destroy();
+        if (mPriceAnnotationsPrefListener != null) {
+            mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
+                    mPriceAnnotationsPrefListener);
+        }
     }
 
     @Override
@@ -58,6 +92,29 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
 
     @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
-        // TODO(crbug/1505772): Implement.
+        super.notifyLoadHint(loadHint);
+        mIsVisible = loadHint == LoadHint.HOT;
+    }
+
+    private void onProfileProviderAvailable(@NonNull ProfileProvider profileProvider) {
+        if (!PriceTrackingFeatures.isPriceTrackingEnabled(profileProvider.getOriginalProfile())
+                && getTabListMode() == TabListMode.GRID) {
+            return;
+        }
+        mPriceAnnotationsPrefListener =
+                (sharedPrefs, key) -> {
+                    if (!PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key) || !mIsVisible) {
+                        return;
+                    }
+                    TabModelFilter filter = mTabModelFilterSupplier.get();
+                    @Nullable
+                    TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+                    if (filter.isCurrentlySelectedFilter()
+                            && filter.isTabModelRestored()
+                            && coordinator != null) {
+                        coordinator.resetWithTabList(filter);
+                    }
+                };
+        mSharedPreferences.registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
     }
 }

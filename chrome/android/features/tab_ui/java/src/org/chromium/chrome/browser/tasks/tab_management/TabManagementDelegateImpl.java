@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -27,9 +28,11 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -143,8 +146,10 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull OnClickListener newTabButtonOnClickListener,
+            @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
         // TODO(crbug/1505772): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
@@ -156,13 +161,20 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
                             activity,
                             factory,
                             () -> (IncognitoTabModel) tabModelSelector.getModel(true),
-                            newTabButtonOnClickListener);
+                            newTabButtonOnClickListener,
+                            menuOrKeyboardActionController);
         } else {
+            Supplier<TabModelFilter> tabModelFilterSupplier =
+                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
             pane =
                     new TabSwitcherPane(
                             activity,
+                            ContextUtils.getAppSharedPreferences(),
+                            profileProviderSupplier,
                             factory,
+                            tabModelFilterSupplier,
                             newTabButtonOnClickListener,
+                            menuOrKeyboardActionController,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector));
         }
         return Pair.create(new TabSwitcherPaneAdapter(pane), pane);

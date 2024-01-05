@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
@@ -28,6 +29,20 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     /** Post native initialization. */
     public void initWithNative() {}
+
+    /** Shows the tab list editor. */
+    public void showTabListEditor() {
+        assert false : "Not implemented.";
+    }
+
+    /**
+     * Resets the UI with the specified tabs.
+     *
+     * @param tabList The {@link TabList} to show tabs for.
+     */
+    public void resetWithTabList(@Nullable TabList tabList) {
+        assert false : "Not implemented.";
+    }
 
     /** Returns a {@link Supplier} that provides dialog visibility information. */
     public @Nullable Supplier<Boolean> getTabGridDialogVisibilitySupplier() {
