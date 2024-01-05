@@ -121,7 +121,6 @@ void EditorMenuTextfieldView::InitLayout() {
   // TODO:b:302404392 - Consider removing the line below after fixing the autocorrect crash
   // issue in native views
   textfield_->SetTextInputFlags(ui::TEXT_INPUT_FLAG_AUTOCORRECT_OFF);
-  textfield_->SetAccessibleName(kContainerTitle);
   textfield_->SetPlaceholderText(l10n_util::GetStringUTF16(
       editor_menu_mode_ == EditorMenuMode::kWrite
           ? IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER
