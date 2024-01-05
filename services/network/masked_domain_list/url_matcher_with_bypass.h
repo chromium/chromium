@@ -66,6 +66,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UrlMatcherWithBypass {
       const std::string& partition_key,
       const masked_domain_list::ResourceOwner& resource_owner);
 
+  // Builds a single amatcher for the provided partition that does not have any
+  // bypass rules.
+  void AddRulesWithoutBypass(const std::vector<std::string>& domains,
+                             const std::string& partition_key);
+
   void Clear();
 
   // Estimates dynamic memory usage.
