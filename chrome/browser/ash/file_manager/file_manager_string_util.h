@@ -13,6 +13,8 @@ class Profile;
 
 base::Value::Dict GetFileManagerStrings();
 
+base::Value::Dict GetFileManagerPluralStrings();
+
 // This function will return a number between 0 (Sunday) and 6 (Saturday)
 // to indicate which day is the start of week based on the current locale.
 int GetLocaleBasedWeekStart();
