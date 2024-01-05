@@ -22,6 +22,7 @@ android_library("java") {
     "//chrome/browser/device:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
