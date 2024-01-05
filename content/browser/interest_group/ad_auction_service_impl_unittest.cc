@@ -10910,6 +10910,15 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
       "Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon", false, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.AuctionWithWinnerTime",
                         1);
+  hist.ExpectUniqueSample("Ads.InterestGroup.ServerAuction.KeyFetch.Cached",
+                          false, 1);
+  hist.ExpectUniqueSample(
+      "Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached", false, 1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.KeyFetch.NetworkTime",
+                        1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime",
+                        1);
+  hist.ExpectTotalCount("Ads.InterestGroup.ServerAuction.ReportDelay", 1);
 
   // There should be no on-device metrics
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.EndToEndTime", 0);
@@ -10917,6 +10926,7 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuction) {
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.Result", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.AuctionWithWinnerTime", 0);
+  hist.ExpectTotalCount("Ads.InterestGroup.Auction.ReportDelay", 0);
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionNoBids) {

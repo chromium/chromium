@@ -161,8 +161,8 @@ ConvertOwnerJoinerPairsToDataKeys(
 InterestGroupManagerImpl::ReportRequest::ReportRequest() = default;
 InterestGroupManagerImpl::ReportRequest::~ReportRequest() = default;
 
-InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState() =
-    default;
+InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState()
+    : start_time(base::TimeTicks::Now()) {}
 InterestGroupManagerImpl::AdAuctionDataLoaderState::AdAuctionDataLoaderState(
     AdAuctionDataLoaderState&& state) = default;
 InterestGroupManagerImpl::AdAuctionDataLoaderState::
@@ -548,7 +548,11 @@ void InterestGroupManagerImpl::OnLoadedNextInterestGroupAdAuctionData(
 
 void InterestGroupManagerImpl::OnAdAuctionDataLoadComplete(
     AdAuctionDataLoaderState state) {
-  std::move(state.callback).Run(state.serializer.Build());
+  BiddingAndAuctionData data = state.serializer.Build();
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime",
+      base::TimeTicks::Now() - state.start_time);
+  std::move(state.callback).Run(std::move(data));
 }
 
 void InterestGroupManagerImpl::GetBiddingAndAuctionServerKey(

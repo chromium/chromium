@@ -1242,6 +1242,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.ServerAuction.AdAuctionDataLoadTime"
+    units="ms" expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to load and serialize the request for a Bidding
+    and Auction Services auction. This includes loading the interest group data
+    from the database and encoding it. It does not include the time for
+    encryption.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.ServerAuction.EndToEndTime" units="ms"
     expires_after="2024-06-02">
   <owner>behamilton@google.com</owner>
@@ -1272,6 +1290,77 @@ chromium-metrics-reviews@google.com.
     `navigator.getInterestGroupAdAuctionData()` to the completion of the
     `navigator.runAdAuction()` call. This metric is only recorded if there was
     *no* winning bid.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.Cached"
+    enum="Boolean" expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether the key requested for a Bidding and Auction Services auction was
+    cached and returned immediately. If a fetch request for the key is already
+    in progress this metric is still recorded with a value of &quot;False&quot;.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.NetworkCached"
+    enum="Boolean" expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether the fetch for the key requested for a Bidding and Auction Services
+    auction was served from the Network cache. This metric is only recorded on a
+    per-fetch level so it will not be recorded if the key is requested while
+    waiting for an existing fetch for the key to complete.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.NetworkTime"
+    units="ms" expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to perform the network fetch for the key
+    requested for a Bidding and Auction Services auction. This metric is only
+    recorded on a per-fetch level so it will not be recorded if the key is
+    requested while waiting for an existing fetch for the key to complete.
+
+    See
+    https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
+    for the latest version of the Protected Audience Bidding &amp; Auction
+    Services explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.ServerAuction.KeyFetch.TotalTime" units="ms"
+    expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time it took to fetch and parse the key requested for a
+    Bidding and Auction Services auction. This metric is only recorded on a
+    per-fetch level so it will not be recorded if the key is requested while
+    waiting for an existing fetch for the key to complete.
 
     See
     https://github.com/WICG/turtledove/blob/main/FLEDGE_browser_bidding_and_auction_API.md
@@ -1376,6 +1465,25 @@ chromium-metrics-reviews@google.com.
       <owner>pauljensen@chromium.org</owner>
       <owner>privacy-sandbox-dev@chromium.org</owner>
     </variant>
+  </token>
+</histogram>
+
+<histogram name="Ads.InterestGroup.{AuctionType}.ReportDelay" units="ms"
+    expires_after="M125">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The length of time between when a {AuctionType} auction returns and
+    navigation occurs on the winning render URL. Only recorded for the first
+    navigation. Not recorded if there was no winner in the auction.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+  <token key="AuctionType">
+    <variant name="Auction" summary="FLEDGE"/>
+    <variant name="ServerAuction" summary="Bidding and Auction Services"/>
   </token>
 </histogram>
 

@@ -530,6 +530,8 @@ class CONTENT_EXPORT InterestGroupAuctionReporter {
   bool reporting_complete_ = false;
   bool navigated_to_winning_ad_ = false;
 
+  const base::TimeTicks start_time_ = base::TimeTicks::Now();
+
   // The current reporter phase of worklet invocation. This is never kAdNotUsed,
   // but rather one of the others, depending on worklet progress. On
   // destruction, if `navigated_to_winning_ad_` is true, this is the logged to

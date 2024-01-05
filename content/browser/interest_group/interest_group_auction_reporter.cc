@@ -973,6 +973,15 @@ void InterestGroupAuctionReporter::OnNavigateToWinningAd(
   }
   navigated_to_winning_ad_ = true;
 
+  base::UmaHistogramTimes(
+      base::StrCat(
+          {"Ads.InterestGroup.",
+           top_level_seller_winning_bid_info_.saved_response.has_value()
+               ? "ServerAuction"
+               : "Auction",
+           ".ReportDelay"}),
+      base::TimeTicks::Now() - start_time_);
+
   // Send any pending reports that are gathered as reports run.
   SendPendingReportsIfNavigated();
   MaybeSendPrivateAggregationReports();

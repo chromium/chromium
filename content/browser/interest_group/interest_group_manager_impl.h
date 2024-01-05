@@ -451,6 +451,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     AdAuctionDataLoaderState(AdAuctionDataLoaderState&& state);
     BiddingAndAuctionSerializer serializer;
     base::OnceCallback<void(BiddingAndAuctionData)> callback;
+    base::TimeTicks start_time;
   };
 
   // Callbacks for CheckPermissionsAndJoinInterestGroup(),
