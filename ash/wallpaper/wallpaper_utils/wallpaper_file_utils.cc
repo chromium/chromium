@@ -10,6 +10,9 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "third_party/skia/include/encode/SkJpegEncoder.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -21,6 +24,23 @@ namespace {
 // Default quality for encoding wallpaper.
 constexpr int kDefaultEncodingQuality = 90;
 
+// Encodes jpeg image with xmp metadata.
+bool EncodeJpegImageWithXmpMetadata(const std::string& image_metadata,
+                                    const SkBitmap& src,
+                                    int quality,
+                                    std::vector<unsigned char>* output) {
+  SkPixmap pixmap;
+  if (!src.peekPixels(&pixmap)) {
+    return false;
+  }
+
+  auto xmpMetadata = SkData::MakeWithCString(image_metadata.c_str());
+
+  return gfx::JPEGCodec::Encode(pixmap, quality,
+                                SkJpegEncoder::Downsample::k420, output,
+                                xmpMetadata.get());
+}
+
 // Resizes |image| to a resolution which is nearest to |preferred_width| and
 // |preferred_height| while respecting the |layout| choice. Encodes the image to
 // JPEG and saves to |output|. Returns true on success.
@@ -28,7 +48,8 @@ bool ResizeAndEncodeImage(const gfx::ImageSkia& image,
                           WallpaperLayout layout,
                           int preferred_width,
                           int preferred_height,
-                          scoped_refptr<base::RefCountedBytes>* output) {
+                          scoped_refptr<base::RefCountedBytes>* output,
+                          const std::string& image_metadata) {
   int width = image.width();
   int height = image.height();
   int resized_width;
@@ -67,7 +88,16 @@ bool ResizeAndEncodeImage(const gfx::ImageSkia& image,
       gfx::Size(resized_width, resized_height));
 
   SkBitmap bitmap = *(resized_image.bitmap());
-  gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality, &(*output)->data());
+
+  // TODO(b/318519426): consider updating the return value based on image
+  // encoding result.
+  if (image_metadata.empty()) {
+    gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality, &(*output)->data());
+    return true;
+  }
+
+  EncodeJpegImageWithXmpMetadata(image_metadata, bitmap,
+                                 kDefaultEncodingQuality, &(*output)->data());
   return true;
 }
 
@@ -77,7 +107,8 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
                             const base::FilePath& path,
                             WallpaperLayout layout,
                             int preferred_width,
-                            int preferred_height) {
+                            int preferred_height,
+                            const std::string& image_metadata) {
   DVLOG(3) << __func__ << " path=" << path;
   if (layout == WALLPAPER_LAYOUT_CENTER) {
     if (base::PathExists(path)) {
@@ -87,7 +118,7 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
   }
   scoped_refptr<base::RefCountedBytes> data;
   if (!ResizeAndEncodeImage(image, layout, preferred_width, preferred_height,
-                            &data)) {
+                            &data, image_metadata)) {
     return false;
   }
 

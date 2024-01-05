@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
@@ -15,7 +16,9 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
 #include "base/functional/bind.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 #include "chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.h"
@@ -32,7 +35,68 @@ namespace ash::personalization_app {
 
 namespace {
 constexpr int kSeaPenImageThumbnailSizeDip = 512;
+constexpr char kMonthName[12][4] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                                    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+// Converts a base::Time time into a string in the format "mmm dd, yyyy" such as
+// "Jan 08, 2023".
+std::string GetTimeInfo(base::Time time) {
+  base::Time::Exploded exploded_time;
+  time.UTCExplode(&exploded_time);
+  return base::StringPrintf("%s %02d, %04d",
+                            kMonthName[exploded_time.month - 1],
+                            exploded_time.day_of_month, exploded_time.year);
 }
+
+/**
+ * Serializes a sea pen query into json string format based on the query type
+ * such as {freeform_query: <string>} or {template_id: <number>, options:
+ * {<chip_number>:<option_number>, ...}}. For example:
+ * {"freeform_query":"test query"}
+ * {"template_id":"2","options":{"4":"34","5":"40"}}
+ *
+ * @param query  pointer to the sea pen query
+ * @return query information in string format
+ */
+std::string SeaPenQueryToJsonString(const mojom::SeaPenQueryPtr& query) {
+  std::string query_info;
+  base::Value::Dict query_dict = base::Value::Dict();
+  query_dict.Set("creation_time", GetTimeInfo(base::Time::Now()));
+
+  switch (query->which()) {
+    case mojom::SeaPenQuery::Tag::kTextQuery:
+      query_dict.Set("freeform_query", query->get_text_query());
+      break;
+    case mojom::SeaPenQuery::Tag::kTemplateQuery:
+      query_dict.Set("template_id", base::NumberToString(static_cast<int32_t>(
+                                        query->get_template_query()->id)));
+      base::Value::Dict options_dict = base::Value::Dict();
+      for (const auto& [chip, option] : query->get_template_query()->options) {
+        options_dict.Set(base::NumberToString(static_cast<int32_t>(chip)),
+                         base::NumberToString(static_cast<int32_t>(option)));
+      }
+      query_dict.Set("options", std::move(options_dict));
+      break;
+  }
+
+  base::JSONWriter::Write(query_dict, &query_info);
+  return query_info;
+}
+
+// Constructs the xmp metadata string from the string query information.
+std::string QueryInfoToXmpString(const std::string& query_info) {
+  static constexpr char kXmpData[] = R"(
+            <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="XMP Core 6.0.0">
+               <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                  <rdf:Description rdf:about="" xmlns:dc="http://purl.org/dc/elements/1.1/">
+                     <dc:description>%s</dc:description>
+                  </rdf:Description>
+               </rdf:RDF>
+            </x:xmpmeta>)";
+  return base::StringPrintf(kXmpData, query_info.c_str());
+}
+
+}  // namespace
 
 PersonalizationAppSeaPenProviderImpl::PersonalizationAppSeaPenProviderImpl(
     content::WebUI* web_ui,
@@ -195,9 +259,13 @@ void PersonalizationAppSeaPenProviderImpl::OnFetchWallpaperDone(
     return;
   }
 
+  CHECK(last_query_);
+  const std::string query_info =
+      QueryInfoToXmpString(SeaPenQueryToJsonString(last_query_));
+
   auto* wallpaper_controller = ash::WallpaperController::Get();
   wallpaper_controller->SetSeaPenWallpaper(GetAccountId(profile_), *image,
-                                           std::move(callback));
+                                           query_info, std::move(callback));
 }
 
 void PersonalizationAppSeaPenProviderImpl::OnRecentSeaPenImageSelected(

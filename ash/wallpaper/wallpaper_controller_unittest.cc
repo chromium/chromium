@@ -851,7 +851,7 @@ class WallpaperControllerTestBase : public AshTestBase {
     controller_->SetSeaPenWallpaper(
         kAccountId1,
         {std::move(jpg_bytes), /*id=*/5, manta::proto::RESOLUTION_64},
-        set_wallpaper_future.GetCallback());
+        /*query_info=*/"test query", set_wallpaper_future.GetCallback());
 
     EXPECT_TRUE(set_wallpaper_future.Take());
     EXPECT_EQ(1, observer.wallpaper_changed_count());
