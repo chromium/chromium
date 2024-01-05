@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/weak_ptr.h"
 #include "components/assist_ranker/predictor_config.h"
 #include "components/assist_ranker/ranker_model_loader.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -37,7 +36,7 @@ class RankerModel;
 // static validation function with the following signature:
 //
 // static RankerModelStatus ValidateModel(const RankerModel& model);
-class BasePredictor : public base::SupportsWeakPtr<BasePredictor> {
+class BasePredictor {
  public:
   BasePredictor(const PredictorConfig& config);
 
