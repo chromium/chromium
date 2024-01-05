@@ -111,6 +111,11 @@ bool OptimizationGuideOnDeviceModelInstallerPolicy::AllowCachedCopies() const {
   return false;
 }
 
+bool OptimizationGuideOnDeviceModelInstallerPolicy::
+    AllowUpdatesOnMeteredConnections() const {
+  return false;
+}
+
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
     scoped_refptr<OnDeviceModelComponentStateManager> state_manager) {
