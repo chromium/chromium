@@ -65,6 +65,16 @@ const TestParam kTestParam[] = {
     {.test_suffix = "Success", .step = Step::kInstallSuccess},
 };
 
+class FakeIsolatedWebAppsEnabledPrefObserver
+    : public IsolatedWebAppsEnabledPrefObserver {
+ public:
+  void Start(PrefChangedCallback callback) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(callback, true));
+  }
+  void Reset() override {}
+};
+
 class IsolatedWebAppInstallerViewUiPixelTest
     : public TestBrowserDialog,
       public MixinBasedInProcessBrowserTest,
@@ -83,7 +93,8 @@ class IsolatedWebAppInstallerViewUiPixelTest
 
     Profile* profile = browser()->profile();
     IsolatedWebAppInstallerViewController controller{
-        profile, WebAppProvider::GetForWebApps(profile), &model};
+        profile, WebAppProvider::GetForWebApps(profile), &model,
+        std::make_unique<FakeIsolatedWebAppsEnabledPrefObserver>()};
 
     base::test::TestFuture<void> future;
     controller.Start(future.GetCallback(), base::DoNothing());

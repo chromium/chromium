@@ -122,15 +122,18 @@ struct IsolatedWebAppInstallerViewController::InstallabilityCheckedVisitor {
 IsolatedWebAppInstallerViewController::IsolatedWebAppInstallerViewController(
     Profile* profile,
     WebAppProvider* web_app_provider,
-    IsolatedWebAppInstallerModel* model)
+    IsolatedWebAppInstallerModel* model,
+    std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer)
     : profile_(profile),
       web_app_provider_(web_app_provider),
       model_(model),
       view_(nullptr),
-      dialog_delegate_(nullptr) {
+      dialog_delegate_(nullptr),
+      pref_observer_(std::move(pref_observer)) {
   CHECK(profile_);
   CHECK(model_);
   CHECK(web_app_provider_);
+  CHECK(pref_observer_);
 }
 
 IsolatedWebAppInstallerViewController::
@@ -145,13 +148,15 @@ void IsolatedWebAppInstallerViewController::Start(
   CHECK(completion_callback);
   completion_callback_ = std::move(completion_callback);
 
-  CHECK(!pref_observer_);
-  // Upon creation, the observer will invoke callback with initial pref value.
-  pref_observer_ = IsolatedWebAppsEnabledPrefObserver::
-      CreateIsolatedWebAppsEnabledPrefObserver(
-          profile_, base::BindRepeating(
-                        &IsolatedWebAppInstallerViewController::OnPrefChanged,
-                        weak_ptr_factory_.GetWeakPtr()));
+  // This callback will be posted asynchronously by the |pref_observer_|:
+  // - Once on `Start()` of `pref_observer_`.
+  // - Every time the pref value is changed.
+  IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback
+      pref_changed_callback = base::BindRepeating(
+          &IsolatedWebAppInstallerViewController::OnPrefChanged,
+          weak_ptr_factory_.GetWeakPtr());
+
+  pref_observer_->Start(pref_changed_callback);
 }
 
 void IsolatedWebAppInstallerViewController::SetViewForTesting(
@@ -366,7 +371,7 @@ void IsolatedWebAppInstallerViewController::OnChildDialogAccepted() {
       // Accepting the dialog corresponds to the Retry button.
       model_->SetDialogContent(std::nullopt);
       installability_checker_.reset();
-      pref_observer_.reset();
+      pref_observer_->Reset();
       Start(base::DoNothing(), std::move(completion_callback_));
       break;
 

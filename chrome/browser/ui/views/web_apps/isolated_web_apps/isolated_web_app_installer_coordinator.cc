@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -39,7 +40,8 @@ IsolatedWebAppInstallerCoordinator::IsolatedWebAppInstallerCoordinator(
       controller_(std::make_unique<IsolatedWebAppInstallerViewController>(
           profile,
           WebAppProvider::GetForWebApps(profile),
-          model_.get())) {}
+          model_.get(),
+          IsolatedWebAppsEnabledPrefObserver::Create(profile))) {}
 
 IsolatedWebAppInstallerCoordinator::~IsolatedWebAppInstallerCoordinator() =
     default;

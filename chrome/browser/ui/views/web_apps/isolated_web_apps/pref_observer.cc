@@ -9,15 +9,29 @@
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
 
+class IsolatedWebAppsEnabledPrefObserverDefault
+    : public IsolatedWebAppsEnabledPrefObserver {
+ public:
+  ~IsolatedWebAppsEnabledPrefObserverDefault() override = default;
+
+  void Start(IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback)
+      override {
+    CHECK(!callback_);
+    callback_ = callback;
+    // The pref value is for ChromeOS only, therefore just runs callback
+    // asynchronously with default value of true.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(callback_, true));
+  }
+
+  void Reset() override { callback_.Reset(); }
+
+ private:
+  IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback_;
+};
+
 // static
 std::unique_ptr<IsolatedWebAppsEnabledPrefObserver>
-IsolatedWebAppsEnabledPrefObserver::CreateIsolatedWebAppsEnabledPrefObserver(
-    Profile* profile,
-    IsolatedWebAppsEnabledPrefObserver::PrefChangedCallback callback) {
-  // The pref value is for ChromeOS only, therefore just runs callback
-  // asynchronously with default value of true.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(callback, true));
-
-  return std::make_unique<IsolatedWebAppsEnabledPrefObserver>();
+IsolatedWebAppsEnabledPrefObserver::Create(Profile* profile) {
+  return std::make_unique<IsolatedWebAppsEnabledPrefObserverDefault>();
 }

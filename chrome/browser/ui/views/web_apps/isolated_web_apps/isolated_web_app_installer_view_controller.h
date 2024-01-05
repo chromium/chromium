@@ -12,9 +12,9 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/installability_checker.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 
-class IsolatedWebAppsEnabledPrefObserver;
 class Profile;
 
 namespace views {
@@ -31,9 +31,11 @@ class WebAppProvider;
 class IsolatedWebAppInstallerViewController
     : public IsolatedWebAppInstallerView::Delegate {
  public:
-  IsolatedWebAppInstallerViewController(Profile* profile,
-                                        WebAppProvider* web_app_provider,
-                                        IsolatedWebAppInstallerModel* model);
+  IsolatedWebAppInstallerViewController(
+      Profile* profile,
+      WebAppProvider* web_app_provider,
+      IsolatedWebAppInstallerModel* model,
+      std::unique_ptr<IsolatedWebAppsEnabledPrefObserver> pref_observer);
   virtual ~IsolatedWebAppInstallerViewController();
 
   // Starts the installer state transition. |initialized_callback| will be
@@ -107,6 +109,7 @@ class IsolatedWebAppInstallerViewController
 
   base::OnceClosure initialized_callback_;
   base::OnceClosure completion_callback_;
+
   base::WeakPtrFactory<IsolatedWebAppInstallerViewController> weak_ptr_factory_{
       this};
 };
