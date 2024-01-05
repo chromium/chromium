@@ -137,7 +137,9 @@ void ClearRelevantData() {
              [self isRunningTest:@selector
                    (testMigrateSyncToSignin_BookmarksDisabled)] ||
              [self isRunningTest:@selector
-                   (testMigrateSyncToSignin_ReadingListDisabled)]) {
+                   (testMigrateSyncToSignin_ReadingListDisabled)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_SyncNotActive)]) {
     // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
     // later turn on the appropriate flags and restart Chrome.
     config.features_disabled.push_back(
@@ -191,6 +193,19 @@ void ClearRelevantData() {
                                           /*is_toggled_on=*/YES,
                                           /*is_enabled=*/YES)]
       performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+}
+
+- (void)enableTypeForSyncTheFeature:(NSString*)typeIdentifier {
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          typeIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*is_enabled=*/YES)]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
       performAction:grey_tap()];
 }
@@ -813,6 +828,60 @@ void ClearRelevantData() {
   GREYAssertEqual(
       1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
       @"Password should be in the account store");
+}
+
+- (void)testMigrateSyncToSignin_SyncNotActive {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Disable a data type (so that we can later re-enable it to trigger a
+  // reconfiguration).
+  [self disableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Disconnect the fake server, simulating a network/connection issue.
+  [ChromeEarlGreyAppInterface disconnectFakeSyncServerNetwork];
+  [self setTearDownHandler:^{
+    [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  }];
+
+  // Re-enable the data type that was previously disabled. This causes a
+  // reconfiguration, which will not complete due to the network issue.
+  [self enableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Now, while Sync is not active (it's reconfiguring), restart Chrome with UNO
+  // phase 3 (i.e. the migration) enabled. (Note that for simplicity, this test
+  // skips phase 2, which doesn't change anything relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+
+  // Because Sync wasn't active at the time of the migration attempt, the
+  // migration should NOT have happened, and Sync-the-feature should still be
+  // enabled.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+
+  // Resolve the network error and wait for Sync to become active.
+  [ChromeEarlGreyAppInterface connectFakeSyncServerNetwork];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Relaunch again - this time the migration should trigger.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // ...and Sync-the-feature should NOT be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
 }
 
 @end
