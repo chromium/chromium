@@ -140,7 +140,6 @@ public class ContextualSearchRelatedSearchesTest extends ContextualSearchInstrum
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @DisabledTest(message = "https://crbug.com/1244089")
     public void testRelatedSearchesInBarWithDefaultQuery_HighlightDefaultQuery() throws Exception {
         ContextualSearchFakeServer.FakeResolveSearch fakeSearch =
                 simulateResolveSearch("intelligence");
