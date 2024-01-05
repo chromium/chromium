@@ -125,6 +125,7 @@ class ServiceProxyImplTest : public testing::Test,
   }
 
   void TearDown() override {
+    service_proxy_impl_.reset();
     segment_db_.reset();
     configs_.clear();
     client_info_.clear();

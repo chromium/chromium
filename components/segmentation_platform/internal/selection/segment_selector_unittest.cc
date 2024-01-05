@@ -204,13 +204,13 @@ class SegmentSelectorTest : public testing::Test {
   base::SimpleTestClock clock_;
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
-  raw_ptr<TestSegmentationResultPrefs, DanglingUntriaged> prefs_;
-  std::unique_ptr<SegmentSelectorImpl> segment_selector_;
-  MockTrainingDataCollector training_data_collector_;
-  raw_ptr<processing::MockFeatureListQueryProcessor, DanglingUntriaged>
-      mock_query_processor_ = nullptr;
   std::unique_ptr<MockModelManager> mock_model_manager_;
   std::unique_ptr<ExecutionService> execution_service_;
+  std::unique_ptr<SegmentSelectorImpl> segment_selector_;
+  raw_ptr<TestSegmentationResultPrefs> prefs_;
+  MockTrainingDataCollector training_data_collector_;
+  raw_ptr<processing::MockFeatureListQueryProcessor> mock_query_processor_ =
+      nullptr;
 };
 
 TEST_F(SegmentSelectorTest, FindBestSegmentFlowWithTwoSegments) {
