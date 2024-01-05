@@ -4,13 +4,92 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** Holds dependencies for constructing a {@link TabSwitcherPane}. */
 public class TabSwitcherPaneCoordinatorFactory {
-    TabSwitcherPaneCoordinatorFactory() {}
+    private final TitleProvider mTitleProvider = this::getTitle;
+    private final Activity mActivity;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
+    private final TabModelSelector mTabModelSelector;
+    private final TabContentManager mTabContentManager;
+    private final TabCreatorManager mTabCreatorManager;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
+    private final ScrimCoordinator mScrimCoordinator;
+    private final SnackbarManager mSnackbarManager;
+    private final ModalDialogManager mModalDialogManager;
+    private final @TabListMode int mMode;
+
+    /**
+     * @param activity The {@link Activity} that hosts the pane.
+     * @param profileProviderSupplier The supplier for profiles.
+     * @param tabModelSelector For access to {@link TabModel}.
+     * @param tabContentManager For management of thumbnails.
+     * @param tabCreatorManager For creating new tabs.
+     * @param browserControlsStateProvider For determining thumbnail size.
+     * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
+     * @param rootUiScrimCoordinator The root UI coordinator's scrim coordinator. On LFF this is
+     *     unused as the root UI's scrim coordinator is used for the show/hide animation.
+     * @param snackbarManager The activity level snackbar manager.
+     * @param modalDialogManager The modal dialog manager for the activity.
+     */
+    TabSwitcherPaneCoordinatorFactory(
+            @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
+            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager) {
+        mActivity = activity;
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mProfileProviderSupplier = profileProviderSupplier;
+        mTabModelSelector = tabModelSelector;
+        mTabContentManager = tabContentManager;
+        mTabCreatorManager = tabCreatorManager;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
+        mMultiWindowModeStateDispatcher = multiWindowModeStateDispatcher;
+        mScrimCoordinator =
+                DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity)
+                        ? createScrimCoordinatorForTablet(activity)
+                        : rootUiScrimCoordinator;
+        mSnackbarManager = snackbarManager;
+        mModalDialogManager = modalDialogManager;
+        mMode =
+                TabUiFeatureUtilities.shouldUseListMode(activity)
+                        ? TabListCoordinator.TabListMode.LIST
+                        : TabListCoordinator.TabListMode.GRID;
+    }
 
     /**
      * Creates a {@link TabSwitcherPaneCoordinator} using a combination of the held dependencies and
@@ -19,16 +98,49 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param parentView The view to use as a parent.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
-    TabSwitcherPaneCoordinator create(ViewGroup parentView) {
+    TabSwitcherPaneCoordinator create(@NonNull ViewGroup parentView) {
+        // TODO(crbug/1505772): Forward the args into the coordinator (along with incognito
+        // information).
         return new TabSwitcherPaneCoordinator(parentView);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
-    public @TabListMode int getTabListMode() {
+    @TabListMode
+    int getTabListMode() {
         // This value will be determined at initialization time based on whether the device is
         // low-end and is not subject to change. Certain behaviors are limited to LIST vs GRID
         // mode and this information may be required even if a coordinator does not exist.
-        assert false : "Not implemented.";
-        return TabListMode.NUM_ENTRIES;
+        return mMode;
+    }
+
+    /** Returns the title of a tab or tab group for display in the tab switcher. */
+    @VisibleForTesting
+    String getTitle(@NonNull Context context, @NonNull PseudoTab tab) {
+        int numRelatedTabs = PseudoTab.getRelatedTabs(context, tab, mTabModelSelector).size();
+        if (numRelatedTabs == 1) return tab.getTitle();
+
+        return TabGroupTitleEditor.getDefaultTitle(context, numRelatedTabs);
+    }
+
+    /** Returns a scrim coordinator to use for tab grid dialog on LFF devices. */
+    @VisibleForTesting
+    static ScrimCoordinator createScrimCoordinatorForTablet(Activity activity) {
+        ViewGroup coordinator = activity.findViewById(R.id.coordinator);
+        // TODO(crbug/1464216): Because the show/hide animation already uses the RootUiCoordinator's
+        // ScrimCoordinator, a separate instance is needed. However, the way this is implemented the
+        // status bar color is not updated. This should be fixed.
+        SystemUiScrimDelegate delegate =
+                new SystemUiScrimDelegate() {
+                    @Override
+                    public void setStatusBarScrimFraction(float scrimFraction) {}
+
+                    @Override
+                    public void setNavigationBarScrimFraction(float scrimFraction) {}
+                };
+        return new ScrimCoordinator(
+                activity,
+                delegate,
+                coordinator,
+                activity.getColor(R.color.omnibox_focused_fading_background_color));
     }
 }

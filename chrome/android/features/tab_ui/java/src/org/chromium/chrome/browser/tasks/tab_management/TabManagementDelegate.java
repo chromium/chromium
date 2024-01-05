@@ -168,14 +168,32 @@ public interface TabManagementDelegate {
      * @param activity The {@link Activity} that hosts the pane.
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
+     * @param tabContentManager For management of thumbnails.
+     * @param tabCreatorManager For creating new tabs.
+     * @param browserControlsStateProvider For determining thumbnail size.
+     * @param multiWindowModeStateDispatcher For managing behavior in multi-window.
+     * @param rootUiScrimCoordinator The root UI coordinator's scrim coordinator. On LFF this is
+     *     unused as the root UI's scrim coordinator is used for the show/hide animation.
+     * @param snackbarManager The activity level snackbar manager.
+     * @param modalDialogManager The modal dialog manager for the activity.
+     * @param incognitoReauthController The incognito reauth controller.
      * @param newTabButtonOnClickListener The listener for clicking the new tab button.
      * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param isIncognito Whether this is an incognito pane.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthController,
             @NonNull OnClickListener newTabButtonOnClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito);

@@ -146,14 +146,35 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
     @Override
     public Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabModelSelector tabModelSelector,
+            @NonNull TabContentManager tabContentManager,
+            @NonNull TabCreatorManager tabCreatorManager,
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            @NonNull ScrimCoordinator rootUiScrimCoordinator,
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull ModalDialogManager modalDialogManager,
+            @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthController,
             @NonNull OnClickListener newTabButtonOnClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             boolean isIncognito) {
         // TODO(crbug/1505772): Consider making this an activity scoped singleton and possibly
         // hosting it in CTA/HubProvider.
-        TabSwitcherPaneCoordinatorFactory factory = new TabSwitcherPaneCoordinatorFactory();
+        TabSwitcherPaneCoordinatorFactory factory =
+                new TabSwitcherPaneCoordinatorFactory(
+                        activity,
+                        lifecycleDispatcher,
+                        profileProviderSupplier,
+                        tabModelSelector,
+                        tabContentManager,
+                        tabCreatorManager,
+                        browserControlsStateProvider,
+                        multiWindowModeStateDispatcher,
+                        rootUiScrimCoordinator,
+                        snackbarManager,
+                        modalDialogManager);
         TabSwitcherPaneBase pane;
         if (isIncognito) {
             pane =
