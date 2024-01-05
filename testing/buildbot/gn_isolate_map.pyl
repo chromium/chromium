@@ -1940,6 +1940,19 @@
     "label": "//android_webview/test:webview_instrumentation_test_apk",
     "type": "console_test_launcher",
   },
+  "webview_trichrome_64_cts_hostside_tests": {
+    "label": "//android_webview/test:webview_trichrome_64_cts_hostside_tests",
+    "type": "script",
+    "script": "//android_webview/tools/run_cts.py",
+    "args": [
+      "--cts-gcs-path",
+      "../../android_webview/tools/cts_config/webview_cts_hostside_gcs_path.json",
+      "--additional-apk",
+      "apks/TrichromeLibrary64.apk",
+      "--use-webview-provider",
+      "apks/TrichromeWebView64.apk",
+    ],
+  },
   "webview_trichrome_64_cts_tests": {
     "label": "//android_webview/test:webview_trichrome_64_cts_tests",
     "type": "script",

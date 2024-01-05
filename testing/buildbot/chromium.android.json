@@ -5528,6 +5528,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5587,6 +5588,7 @@
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -5649,6 +5651,7 @@
           "--gtest_filter=-All/ChromeBrowsingDataLifetimeManagerScheduledRemovalTest.History/*"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -5709,6 +5712,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5767,6 +5771,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5823,6 +5828,7 @@
           "-v",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -5866,6 +5872,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5923,6 +5930,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -5980,6 +5988,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6037,6 +6046,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6094,6 +6104,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6151,6 +6162,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6209,6 +6221,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6266,6 +6279,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6324,6 +6338,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11_12.cc_unittests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6382,6 +6397,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -6440,6 +6456,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6501,6 +6518,7 @@
           "--timeout-scale=2.0"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -6568,6 +6586,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.chrome_public_unit_test_apk.filter"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6631,6 +6650,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6689,6 +6709,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-FieldFormatterTest.DifferentLocales"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6749,6 +6770,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_browsertests.filter"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -6810,6 +6832,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.content_shell_test_apk.filter"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6868,6 +6891,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6927,6 +6951,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -6984,6 +7009,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7042,6 +7068,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7099,6 +7126,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7157,6 +7185,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7214,6 +7243,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7271,6 +7301,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7328,6 +7359,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7385,6 +7417,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7444,6 +7477,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7502,6 +7536,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12.gl_unittests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7559,6 +7594,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7616,6 +7652,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7673,6 +7710,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7730,6 +7768,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7787,6 +7826,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7845,6 +7885,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7902,6 +7943,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -7959,6 +8001,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8017,6 +8060,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8074,6 +8118,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8131,6 +8176,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
@@ -8189,6 +8235,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8246,6 +8293,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8303,6 +8351,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8362,6 +8411,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8419,6 +8469,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8477,6 +8528,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--gtest_filter=-PacLibraryTest.ActualPacMyIpAddress*"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8535,6 +8587,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8592,6 +8645,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8649,6 +8703,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8706,6 +8761,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8763,6 +8819,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8820,6 +8877,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8877,6 +8935,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8934,6 +8993,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -8991,6 +9051,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9048,6 +9109,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9106,6 +9168,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9163,6 +9226,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9220,6 +9284,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9278,6 +9343,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9336,6 +9402,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9394,6 +9461,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9463,6 +9531,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9531,6 +9600,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9596,6 +9666,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9655,6 +9726,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9712,6 +9784,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9769,6 +9842,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -9826,6 +9900,7 @@
           "--use-persistent-shell",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -13528,6 +13603,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13584,6 +13660,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--gtest_filter=-OfferNotificationControllerAndroidBrowserTestForMessagesUi.MessageShown"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13641,6 +13718,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13696,6 +13774,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13750,6 +13829,7 @@
           "-v",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -13791,6 +13871,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13846,6 +13927,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13901,6 +13983,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -13956,6 +14039,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14011,6 +14095,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14066,6 +14151,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14122,6 +14208,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14177,6 +14264,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14232,6 +14320,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14287,6 +14376,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14344,6 +14434,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_test_apk.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14407,6 +14498,7 @@
           "--git-revision=${got_revision}",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.chrome_public_unit_test_apk.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14468,6 +14560,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14523,6 +14616,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14580,6 +14674,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_browsertests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14637,6 +14732,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_13.content_shell_test_apk.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14693,6 +14789,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14750,6 +14847,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14805,6 +14903,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14861,6 +14960,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14916,6 +15016,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -14972,6 +15073,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15027,6 +15129,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15082,6 +15185,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15137,6 +15241,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15192,6 +15297,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15249,6 +15355,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15304,6 +15411,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15359,6 +15467,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15414,6 +15523,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15469,6 +15579,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15524,6 +15635,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15579,6 +15691,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15635,6 +15748,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "ci_only": true,
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15690,6 +15804,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15745,6 +15860,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15801,6 +15917,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15856,6 +15973,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15911,6 +16029,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -15966,6 +16085,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16021,6 +16141,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16078,6 +16199,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16133,6 +16255,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16188,6 +16311,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16243,6 +16367,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16298,6 +16423,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16353,6 +16479,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16408,6 +16535,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16463,6 +16591,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16518,6 +16647,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16573,6 +16703,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16628,6 +16759,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16683,6 +16815,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16738,6 +16871,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16794,6 +16928,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16849,6 +16984,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16904,6 +17040,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -16960,6 +17097,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17016,6 +17154,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17072,6 +17211,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17139,6 +17279,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17204,6 +17345,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17267,6 +17409,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17322,6 +17465,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -17377,6 +17521,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21549,6 +21694,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21604,6 +21750,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21659,6 +21806,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21714,6 +21862,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21770,6 +21919,7 @@
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb",
           "--emulator-enable-network"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21826,6 +21976,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21881,6 +22032,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21936,6 +22088,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_31_google_apis_x64.textpb"
         ],
+        "description": "Run with android_31_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -21996,6 +22149,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22051,6 +22205,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22106,6 +22261,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22161,6 +22317,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22217,6 +22374,7 @@
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
           "--emulator-enable-network"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22273,6 +22431,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22328,6 +22487,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",
@@ -22383,6 +22543,7 @@
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
+        "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
             "--bucket",

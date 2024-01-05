@@ -5058,6 +5058,13 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "webview_trichrome_64_cts_hostside_tests",
+    tests = {
+        "webview_trichrome_64_cts_hostside_tests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "webview_trichrome_64_cts_tests",
     tests = {
         "webview_trichrome_64_cts_tests": targets.legacy_test_config(
