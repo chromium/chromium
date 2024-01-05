@@ -8812,26 +8812,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Rollback.OobeRestoreResult" enum="Rollback_OobeRestoreResult"
-    expires_after="2023-11-30">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The result when attempting to restore data during a ChromeOS rollback.
-  </summary>
-</histogram>
-
-<histogram name="Rollback.RollbackSaveResult"
-    enum="Rollback_RollbackSaveResult" expires_after="2024-05-26">
-  <owner>mpolzer@google.com</owner>
-  <owner>crisguerrero@chromium.org</owner>
-  <owner>chromeos-commercial-remote-management@google.com</owner>
-  <summary>
-    The result when attempting to save data during a ChromeOS rollback.
-  </summary>
-</histogram>
-
 <histogram name="SB2.DownloadChecks" enum="SB2DownloadChecks"
     expires_after="2024-06-30">
   <owner>xinghuilu@chromium.org</owner>

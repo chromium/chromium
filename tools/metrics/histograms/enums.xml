@@ -43667,19 +43667,6 @@ Called by update_net_error_codes.py.-->
   third_party/cros_system_api/dbus/rgbkbd/dbus-constants.h.
 -->
 
-<enum name="Rollback_OobeRestoreResult">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Stage 1 Failure"/>
-  <int value="2" label="Stage 2 Failure"/>
-  <int value="3" label="Stage 3 Failure"/>
-</enum>
-
-<enum name="Rollback_RollbackSaveResult">
-  <int value="0" label="Succeeded"/>
-  <int value="1" label="Stage 1 Failure"/>
-  <int value="2" label="Stage 2 Failure"/>
-</enum>
-
 <enum name="RulesetVerificationStatus">
   <int value="0" label="Not verified"/>
   <int value="1" label="Intact"/>
