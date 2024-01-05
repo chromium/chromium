@@ -1350,8 +1350,6 @@ void AshNotificationView::CreateOrUpdateInlineSettingsViews(
     return;
   }
 
-  inline_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
   auto turn_off_notifications_button = GenerateNotificationLabelButton(
       base::BindRepeating(&AshNotificationView::DisableNotification,
                           base::Unretained(this)),
@@ -1377,8 +1375,6 @@ void AshNotificationView::CreateOrUpdateSnoozeSettingsViews(
     return;
   }
 
-  snooze_settings_row()->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal));
   auto snooze_notification_1_hour_button = GenerateNotificationLabelButton(
       base::BindRepeating(&AshNotificationView::DisableNotification,
                           base::Unretained(this)),
