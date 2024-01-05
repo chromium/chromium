@@ -940,7 +940,7 @@ void NewTabPageUI::CreatePageHandler(
       ntp_custom_background_service_, theme_service_,
       LogoServiceFactory::GetForProfile(profile_), web_contents(),
       std::make_unique<NewTabPageFeaturePromoHelper>(), navigation_start_time_,
-      module_id_names_);
+      &module_id_names_);
 }
 
 void NewTabPageUI::CreateCustomizeThemesHandler(
