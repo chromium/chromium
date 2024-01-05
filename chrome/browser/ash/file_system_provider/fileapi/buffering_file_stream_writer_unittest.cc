@@ -56,7 +56,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
   FakeFileStreamWriter(const FakeFileStreamWriter&) = delete;
   FakeFileStreamWriter& operator=(const FakeFileStreamWriter&) = delete;
 
-  ~FakeFileStreamWriter() override {}
+  ~FakeFileStreamWriter() override = default;
 
   // storage::FileStreamWriter overrides.
   int Write(net::IOBuffer* buf,
@@ -103,7 +103,7 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
 
 class FileSystemProviderBufferingFileStreamWriterTest : public testing::Test {
  protected:
-  FileSystemProviderBufferingFileStreamWriterTest() {}
+  FileSystemProviderBufferingFileStreamWriterTest() = default;
 
   void SetUp() override {
     short_text_buffer_ =
@@ -113,7 +113,7 @@ class FileSystemProviderBufferingFileStreamWriterTest : public testing::Test {
     ASSERT_LT(short_text_buffer_->size(), long_text_buffer_->size());
   }
 
-  ~FileSystemProviderBufferingFileStreamWriterTest() override {}
+  ~FileSystemProviderBufferingFileStreamWriterTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<net::StringIOBuffer> short_text_buffer_;

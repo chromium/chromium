@@ -33,8 +33,8 @@ const base::FilePath::CharType kEntryPath[] =
 
 class FileSystemProviderOperationsAddWatcherTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsAddWatcherTest() {}
-  ~FileSystemProviderOperationsAddWatcherTest() override {}
+  FileSystemProviderOperationsAddWatcherTest() = default;
+  ~FileSystemProviderOperationsAddWatcherTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

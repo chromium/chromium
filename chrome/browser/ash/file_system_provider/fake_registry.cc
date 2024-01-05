@@ -11,8 +11,8 @@
 
 namespace ash::file_system_provider {
 
-FakeRegistry::FakeRegistry() {}
-FakeRegistry::~FakeRegistry() {}
+FakeRegistry::FakeRegistry() = default;
+FakeRegistry::~FakeRegistry() = default;
 
 void FakeRegistry::RememberFileSystem(
     const ProvidedFileSystemInfo& file_system_info,

@@ -6,8 +6,8 @@
 
 namespace ash::file_system_provider {
 
-LoggingObserver::LoggingObserver() {}
-LoggingObserver::~LoggingObserver() {}
+LoggingObserver::LoggingObserver() = default;
+LoggingObserver::~LoggingObserver() = default;
 
 void LoggingObserver::OnProvidedFileSystemMount(
     const ProvidedFileSystemInfo& file_system_info,

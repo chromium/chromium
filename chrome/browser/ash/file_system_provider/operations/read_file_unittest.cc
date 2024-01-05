@@ -46,7 +46,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     int chunk_length() const { return chunk_length_; }
     bool has_more() const { return has_more_; }
@@ -58,12 +58,12 @@ class CallbackLogger {
     base::File::Error result_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnReadFile(int chunk_length, bool has_more, base::File::Error result) {
     events_.push_back(std::make_unique<Event>(chunk_length, has_more, result));
@@ -79,8 +79,8 @@ class CallbackLogger {
 
 class FileSystemProviderOperationsReadFileTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsReadFileTest() {}
-  ~FileSystemProviderOperationsReadFileTest() override {}
+  FileSystemProviderOperationsReadFileTest() = default;
+  ~FileSystemProviderOperationsReadFileTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

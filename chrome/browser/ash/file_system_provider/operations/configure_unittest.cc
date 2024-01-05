@@ -31,8 +31,8 @@ const int kRequestId = 2;
 
 class FileSystemProviderOperationsConfigureTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsConfigureTest() {}
-  ~FileSystemProviderOperationsConfigureTest() override {}
+  FileSystemProviderOperationsConfigureTest() = default;
+  ~FileSystemProviderOperationsConfigureTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

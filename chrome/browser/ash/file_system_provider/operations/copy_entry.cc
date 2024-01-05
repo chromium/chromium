@@ -21,8 +21,7 @@ CopyEntry::CopyEntry(RequestDispatcher* dispatcher,
       target_path_(target_path),
       callback_(std::move(callback)) {}
 
-CopyEntry::~CopyEntry() {
-}
+CopyEntry::~CopyEntry() = default;
 
 bool CopyEntry::Execute(int request_id) {
   using extensions::api::file_system_provider::CopyEntryRequestedOptions;

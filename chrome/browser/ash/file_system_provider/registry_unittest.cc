@@ -95,7 +95,7 @@ class FileSystemProviderRegistryTest : public testing::Test {
  protected:
   FileSystemProviderRegistryTest() : profile_(nullptr) {}
 
-  ~FileSystemProviderRegistryTest() override {}
+  ~FileSystemProviderRegistryTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(

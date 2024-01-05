@@ -20,7 +20,7 @@ namespace ash::file_system_provider {
 
 class FakeExtensionProvider : public ProviderInterface {
  public:
-  ~FakeExtensionProvider() override {}
+  ~FakeExtensionProvider() override = default;
 
   // Returns a fake provider instance for the specified extension. The extension
   // doesn't have to exist.

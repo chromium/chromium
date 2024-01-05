@@ -41,13 +41,13 @@ constexpr char kBadFakeEntryName2[] = "bad2";
 const base::FilePath::CharType kFakeFilePath[] =
     FILE_PATH_LITERAL("/hello.txt");
 
-FakeEntry::FakeEntry() {}
+FakeEntry::FakeEntry() = default;
 
 FakeEntry::FakeEntry(std::unique_ptr<EntryMetadata> metadata,
                      const std::string& contents)
     : metadata(std::move(metadata)), contents(contents) {}
 
-FakeEntry::~FakeEntry() {}
+FakeEntry::~FakeEntry() = default;
 
 FakeProvidedFileSystem::FakeProvidedFileSystem(
     const ProvidedFileSystemInfo& file_system_info)
@@ -69,7 +69,7 @@ FakeProvidedFileSystem::FakeProvidedFileSystem(
            kFakeFileSize, modification_time, kFakeFileMimeType, kFakeFileText);
 }
 
-FakeProvidedFileSystem::~FakeProvidedFileSystem() {}
+FakeProvidedFileSystem::~FakeProvidedFileSystem() = default;
 
 void FakeProvidedFileSystem::AddEntry(const base::FilePath& entry_path,
                                       bool is_directory,

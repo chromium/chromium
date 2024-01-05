@@ -44,12 +44,12 @@ std::optional<std::string> GetTestingParamFromResult(
 // a notification.
 class FakeNotificationManager : public NotificationManagerInterface {
  public:
-  FakeNotificationManager() {}
+  FakeNotificationManager() = default;
 
   FakeNotificationManager(const FakeNotificationManager&) = delete;
   FakeNotificationManager& operator=(const FakeNotificationManager&) = delete;
 
-  ~FakeNotificationManager() override {}
+  ~FakeNotificationManager() override = default;
 
   // NotificationManagerInterface overrides:
   void ShowUnresponsiveNotification(int id,
@@ -116,7 +116,7 @@ class EventLogger {
   class ExecuteEvent {
    public:
     explicit ExecuteEvent(int request_id) : request_id_(request_id) {}
-    virtual ~ExecuteEvent() {}
+    virtual ~ExecuteEvent() = default;
 
     int request_id() { return request_id_; }
 
@@ -131,7 +131,7 @@ class EventLogger {
           testing_param_(GetTestingParamFromResult(result)),
           result_is_valid_(result.is_valid()),
           has_more_(has_more) {}
-    virtual ~SuccessEvent() {}
+    virtual ~SuccessEvent() = default;
 
     int request_id() const { return request_id_; }
     const std::optional<std::string>& testing_param() const {
@@ -151,7 +151,7 @@ class EventLogger {
    public:
     ErrorEvent(int request_id, base::File::Error error)
         : request_id_(request_id), error_(error) {}
-    virtual ~ErrorEvent() {}
+    virtual ~ErrorEvent() = default;
 
     int request_id() { return request_id_; }
     base::File::Error error() { return error_; }
@@ -172,12 +172,12 @@ class EventLogger {
     int request_id_;
   };
 
-  EventLogger() {}
+  EventLogger() = default;
 
   EventLogger(const EventLogger&) = delete;
   EventLogger& operator=(const EventLogger&) = delete;
 
-  virtual ~EventLogger() {}
+  virtual ~EventLogger() = default;
 
   void OnExecute(int request_id) {
     execute_events_.push_back(std::make_unique<ExecuteEvent>(request_id));
@@ -263,7 +263,7 @@ class FakeHandler : public RequestManager::HandlerInterface {
   FakeHandler(const FakeHandler&) = delete;
   FakeHandler& operator=(const FakeHandler&) = delete;
 
-  ~FakeHandler() override {}
+  ~FakeHandler() override = default;
 
  private:
   base::WeakPtr<EventLogger> logger_;
@@ -276,7 +276,7 @@ class RequestObserver : public RequestManager::Observer {
   class Event {
    public:
     explicit Event(int request_id) : request_id_(request_id) {}
-    virtual ~Event() {}
+    virtual ~Event() = default;
     int request_id() const { return request_id_; }
 
    private:
@@ -287,7 +287,7 @@ class RequestObserver : public RequestManager::Observer {
    public:
     CreatedEvent(int request_id, RequestType type)
         : Event(request_id), type_(type) {}
-    ~CreatedEvent() override {}
+    ~CreatedEvent() override = default;
 
     RequestType type() const { return type_; }
 
@@ -299,7 +299,7 @@ class RequestObserver : public RequestManager::Observer {
    public:
     FulfilledEvent(int request_id, bool has_more)
         : Event(request_id), has_more_(has_more) {}
-    ~FulfilledEvent() override {}
+    ~FulfilledEvent() override = default;
 
     bool has_more() const { return has_more_; }
 
@@ -311,7 +311,7 @@ class RequestObserver : public RequestManager::Observer {
    public:
     RejectedEvent(int request_id, base::File::Error error)
         : Event(request_id), error_(error) {}
-    ~RejectedEvent() override {}
+    ~RejectedEvent() override = default;
 
     base::File::Error error() const { return error_; }
 
@@ -330,12 +330,12 @@ class RequestObserver : public RequestManager::Observer {
     OperationCompletion completion_;
   };
 
-  RequestObserver() {}
+  RequestObserver() = default;
 
   RequestObserver(const RequestObserver&) = delete;
   RequestObserver& operator=(const RequestObserver&) = delete;
 
-  ~RequestObserver() override {}
+  ~RequestObserver() override = default;
 
   // RequestManager::Observer overrides.
   void OnRequestCreated(int request_id, RequestType type) override {
@@ -392,8 +392,8 @@ class RequestObserver : public RequestManager::Observer {
 
 class FileSystemProviderRequestManagerTest : public testing::Test {
  protected:
-  FileSystemProviderRequestManagerTest() {}
-  ~FileSystemProviderRequestManagerTest() override {}
+  FileSystemProviderRequestManagerTest() = default;
+  ~FileSystemProviderRequestManagerTest() override = default;
 
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();

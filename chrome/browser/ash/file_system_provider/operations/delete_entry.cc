@@ -21,8 +21,7 @@ DeleteEntry::DeleteEntry(RequestDispatcher* dispatcher,
       recursive_(recursive),
       callback_(std::move(callback)) {}
 
-DeleteEntry::~DeleteEntry() {
-}
+DeleteEntry::~DeleteEntry() = default;
 
 bool DeleteEntry::Execute(int request_id) {
   using extensions::api::file_system_provider::DeleteEntryRequestedOptions;

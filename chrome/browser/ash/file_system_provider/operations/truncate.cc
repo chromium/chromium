@@ -21,8 +21,7 @@ Truncate::Truncate(RequestDispatcher* dispatcher,
       length_(length),
       callback_(std::move(callback)) {}
 
-Truncate::~Truncate() {
-}
+Truncate::~Truncate() = default;
 
 bool Truncate::Execute(int request_id) {
   using extensions::api::file_system_provider::TruncateRequestedOptions;

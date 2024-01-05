@@ -39,8 +39,8 @@ AbortCallback OnRunNonAbortable(int* run_counter, int* abort_counter) {
 
 class FileSystemProviderQueueTest : public testing::Test {
  protected:
-  FileSystemProviderQueueTest() {}
-  ~FileSystemProviderQueueTest() override {}
+  FileSystemProviderQueueTest() = default;
+  ~FileSystemProviderQueueTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
 };

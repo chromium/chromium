@@ -44,8 +44,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 Registry::Registry(Profile* profile) : profile_(profile) {
 }
 
-Registry::~Registry() {
-}
+Registry::~Registry() = default;
 
 void Registry::RememberFileSystem(
     const ProvidedFileSystemInfo& file_system_info,

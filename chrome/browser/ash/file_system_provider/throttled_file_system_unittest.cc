@@ -44,8 +44,8 @@ void LogOpen(OpenLog* log, int handle, base::File::Error result) {
 
 class FileSystemProviderThrottledFileSystemTest : public testing::Test {
  protected:
-  FileSystemProviderThrottledFileSystemTest() {}
-  ~FileSystemProviderThrottledFileSystemTest() override {}
+  FileSystemProviderThrottledFileSystemTest() = default;
+  ~FileSystemProviderThrottledFileSystemTest() override = default;
 
   void SetUp() override {}
 

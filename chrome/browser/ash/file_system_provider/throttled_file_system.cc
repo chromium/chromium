@@ -26,8 +26,7 @@ ThrottledFileSystem::ThrottledFileSystem(
                         : new Queue(std::numeric_limits<size_t>::max()));
 }
 
-ThrottledFileSystem::~ThrottledFileSystem() {
-}
+ThrottledFileSystem::~ThrottledFileSystem() = default;
 
 AbortCallback ThrottledFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {

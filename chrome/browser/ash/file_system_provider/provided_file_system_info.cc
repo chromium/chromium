@@ -142,6 +142,6 @@ ProvidedFileSystemInfo::ProvidedFileSystemInfo(
 ProvidedFileSystemInfo::ProvidedFileSystemInfo(
     const ProvidedFileSystemInfo& other) = default;
 
-ProvidedFileSystemInfo::~ProvidedFileSystemInfo() {}
+ProvidedFileSystemInfo::~ProvidedFileSystemInfo() = default;
 
 }  // namespace ash::file_system_provider

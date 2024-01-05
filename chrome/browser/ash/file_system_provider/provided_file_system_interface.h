@@ -141,7 +141,7 @@ class ProvidedFileSystemInterface {
   // Mask of fields requested from the GetMetadata() call.
   typedef int MetadataFieldMask;
 
-  virtual ~ProvidedFileSystemInterface() {}
+  virtual ~ProvidedFileSystemInterface() = default;
 
   // Requests unmounting of the file system. The callback is called when the
   // request is accepted or rejected, with an error code.

@@ -47,12 +47,12 @@ const ProviderId kProviderId = ProviderId::CreateFromExtensionId(kExtensionId);
 // Logs callbacks invocations on the file stream reader.
 class EventLogger {
  public:
-  EventLogger() {}
+  EventLogger() = default;
 
   EventLogger(const EventLogger&) = delete;
   EventLogger& operator=(const EventLogger&) = delete;
 
-  virtual ~EventLogger() {}
+  virtual ~EventLogger() = default;
 
   void OnRead(int result) { results_.push_back(result); }
   void OnGetLength(int64_t result) { results_.push_back(result); }
@@ -86,7 +86,7 @@ class FileSystemProviderFileStreamReader : public testing::Test {
  protected:
   FileSystemProviderFileStreamReader()
       : profile_(nullptr), fake_file_(nullptr) {}
-  ~FileSystemProviderFileStreamReader() override {}
+  ~FileSystemProviderFileStreamReader() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());

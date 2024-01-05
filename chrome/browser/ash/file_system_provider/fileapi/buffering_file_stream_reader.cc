@@ -27,8 +27,7 @@ BufferingFileStreamReader::BufferingFileStreamReader(
       preloading_buffer_offset_(0),
       preloaded_bytes_(0) {}
 
-BufferingFileStreamReader::~BufferingFileStreamReader() {
-}
+BufferingFileStreamReader::~BufferingFileStreamReader() = default;
 
 int BufferingFileStreamReader::Read(net::IOBuffer* buffer,
                                     int buffer_length,

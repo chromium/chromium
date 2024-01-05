@@ -21,7 +21,7 @@ class LoggingObserver : public Observer {
         : file_system_info_(file_system_info),
           context_(context),
           error_(error) {}
-    ~Event() {}
+    ~Event() = default;
 
     const ProvidedFileSystemInfo& file_system_info() const {
       return file_system_info_;

@@ -308,9 +308,9 @@ void OnTruncate(storage::AsyncFileUtil::StatusCallback callback,
 
 }  // namespace
 
-ProviderAsyncFileUtil::ProviderAsyncFileUtil() {}
+ProviderAsyncFileUtil::ProviderAsyncFileUtil() = default;
 
-ProviderAsyncFileUtil::~ProviderAsyncFileUtil() {}
+ProviderAsyncFileUtil::~ProviderAsyncFileUtil() = default;
 
 void ProviderAsyncFileUtil::CreateOrOpen(
     std::unique_ptr<storage::FileSystemOperationContext> context,

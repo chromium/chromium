@@ -83,8 +83,7 @@ bool IsFileSystemProviderLocalPath(const base::FilePath& local_path) {
 FileSystemURLParser::FileSystemURLParser(const storage::FileSystemURL& url)
     : url_(url), file_system_(nullptr) {}
 
-FileSystemURLParser::~FileSystemURLParser() {
-}
+FileSystemURLParser::~FileSystemURLParser() = default;
 
 bool FileSystemURLParser::Parse() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -157,8 +156,7 @@ LocalPathParser::LocalPathParser(Profile* profile,
                                  const base::FilePath& local_path)
     : profile_(profile), local_path_(local_path), file_system_(nullptr) {}
 
-LocalPathParser::~LocalPathParser() {
-}
+LocalPathParser::~LocalPathParser() = default;
 
 bool LocalPathParser::Parse() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

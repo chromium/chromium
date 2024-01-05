@@ -28,8 +28,7 @@ WriteFile::WriteFile(RequestDispatcher* dispatcher,
       length_(length),
       callback_(std::move(callback)) {}
 
-WriteFile::~WriteFile() {
-}
+WriteFile::~WriteFile() = default;
 
 bool WriteFile::Execute(int request_id) {
   TRACE_EVENT0("file_system_provider", "WriteFile::Execute");

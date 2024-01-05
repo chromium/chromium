@@ -64,8 +64,8 @@ storage::FileSystemURL CreateFileSystemURL(
 
 class FileSystemProviderMountPathUtilTest : public testing::Test {
  protected:
-  FileSystemProviderMountPathUtilTest() {}
-  ~FileSystemProviderMountPathUtilTest() override {}
+  FileSystemProviderMountPathUtilTest() = default;
+  ~FileSystemProviderMountPathUtilTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(

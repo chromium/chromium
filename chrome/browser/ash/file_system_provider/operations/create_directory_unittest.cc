@@ -35,8 +35,8 @@ const base::FilePath::CharType kDirectoryPath[] =
 
 class FileSystemProviderOperationsCreateDirectoryTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsCreateDirectoryTest() {}
-  ~FileSystemProviderOperationsCreateDirectoryTest() override {}
+  FileSystemProviderOperationsCreateDirectoryTest() = default;
+  ~FileSystemProviderOperationsCreateDirectoryTest() override = default;
 
   void SetUp() override {
     MountOptions mount_options(kFileSystemId, "" /* display_name */);

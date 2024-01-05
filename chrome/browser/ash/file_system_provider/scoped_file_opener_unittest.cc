@@ -24,7 +24,7 @@ class TestingProvidedFileSystem : public FakeProvidedFileSystem {
   TestingProvidedFileSystem()
       : FakeProvidedFileSystem(ProvidedFileSystemInfo()) {}
 
-  ~TestingProvidedFileSystem() override {}
+  ~TestingProvidedFileSystem() override = default;
 
   AbortCallback OpenFile(const base::FilePath& file_path,
                          OpenFileMode mode,

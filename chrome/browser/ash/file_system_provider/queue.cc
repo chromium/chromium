@@ -21,16 +21,14 @@ Queue::Task::Task(size_t token, AbortableCallback callback)
 Queue::Task::Task(Task&& other) = default;
 Queue::Task& Queue::Task::operator=(Task&& other) = default;
 
-Queue::Task::~Task() {
-}
+Queue::Task::~Task() = default;
 
 Queue::Queue(size_t max_in_parallel)
     : max_in_parallel_(max_in_parallel), next_token_(1) {
   CHECK_LT(0u, max_in_parallel);
 }
 
-Queue::~Queue() {
-}
+Queue::~Queue() = default;
 
 size_t Queue::NewToken() {
   return next_token_++;

@@ -49,7 +49,7 @@ class CallbackLogger {
     Event(const Event&) = delete;
     Event& operator=(const Event&) = delete;
 
-    virtual ~Event() {}
+    virtual ~Event() = default;
 
     base::File::Error result() { return result_; }
     const storage::AsyncFileUtil::EntryList& entry_list() {
@@ -63,12 +63,12 @@ class CallbackLogger {
     bool has_more_;
   };
 
-  CallbackLogger() {}
+  CallbackLogger() = default;
 
   CallbackLogger(const CallbackLogger&) = delete;
   CallbackLogger& operator=(const CallbackLogger&) = delete;
 
-  virtual ~CallbackLogger() {}
+  virtual ~CallbackLogger() = default;
 
   void OnReadDirectory(base::File::Error result,
                        storage::AsyncFileUtil::EntryList entry_list,
@@ -102,8 +102,8 @@ void CreateRequestValueFromJSON(const std::string& json, RequestValue* result) {
 
 class FileSystemProviderOperationsReadDirectoryTest : public testing::Test {
  protected:
-  FileSystemProviderOperationsReadDirectoryTest() {}
-  ~FileSystemProviderOperationsReadDirectoryTest() override {}
+  FileSystemProviderOperationsReadDirectoryTest() = default;
+  ~FileSystemProviderOperationsReadDirectoryTest() override = default;
 
   void SetUp() override {
     file_system_info_ = ProvidedFileSystemInfo(

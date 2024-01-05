@@ -90,7 +90,7 @@ class FileSystemProviderServiceTest : public testing::Test {
  protected:
   FileSystemProviderServiceTest() : profile_(nullptr) {}
 
-  ~FileSystemProviderServiceTest() override {}
+  ~FileSystemProviderServiceTest() override = default;
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(

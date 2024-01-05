@@ -10,7 +10,6 @@ ProvidedFileSystemObserver::Change::Change()
     : change_type(storage::WatcherManager::CHANGED) {
 }
 
-ProvidedFileSystemObserver::Change::~Change() {
-}
+ProvidedFileSystemObserver::Change::~Change() = default;
 
 }  // namespace ash::file_system_provider

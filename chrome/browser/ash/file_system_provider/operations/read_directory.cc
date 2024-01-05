@@ -57,8 +57,7 @@ ReadDirectory::ReadDirectory(
       directory_path_(directory_path),
       callback_(std::move(callback)) {}
 
-ReadDirectory::~ReadDirectory() {
-}
+ReadDirectory::~ReadDirectory() = default;
 
 bool ReadDirectory::Execute(int request_id) {
   using extensions::api::file_system_provider::ReadDirectoryRequestedOptions;

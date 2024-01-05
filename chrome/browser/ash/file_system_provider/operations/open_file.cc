@@ -19,8 +19,7 @@ OpenFile::OpenFile(RequestDispatcher* dispatcher,
       mode_(mode),
       callback_(std::move(callback)) {}
 
-OpenFile::~OpenFile() {
-}
+OpenFile::~OpenFile() = default;
 
 bool OpenFile::Execute(int request_id) {
   using extensions::api::file_system_provider::OpenFileRequestedOptions;

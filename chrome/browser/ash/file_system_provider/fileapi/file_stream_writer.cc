@@ -115,7 +115,7 @@ class FileStreamWriter::OperationRunner
       content::BrowserThread::UI>;
   friend class base::DeleteHelper<OperationRunner>;
 
-  virtual ~OperationRunner() {}
+  virtual ~OperationRunner() = default;
 
   // Remembers a file handle for further operations and forwards the result to
   // the IO thread.

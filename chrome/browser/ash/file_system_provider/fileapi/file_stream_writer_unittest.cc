@@ -67,8 +67,8 @@ storage::FileSystemURL CreateFileSystemURL(const std::string& mount_point_name,
 
 class FileSystemProviderFileStreamWriter : public testing::Test {
  protected:
-  FileSystemProviderFileStreamWriter() {}
-  ~FileSystemProviderFileStreamWriter() override {}
+  FileSystemProviderFileStreamWriter() = default;
+  ~FileSystemProviderFileStreamWriter() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());

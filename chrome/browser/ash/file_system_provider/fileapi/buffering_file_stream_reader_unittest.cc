@@ -49,7 +49,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
   FakeFileStreamReader(const FakeFileStreamReader&) = delete;
   FakeFileStreamReader& operator=(const FakeFileStreamReader&) = delete;
 
-  ~FakeFileStreamReader() override {}
+  ~FakeFileStreamReader() override = default;
 
   // storage::FileStreamReader overrides.
   int Read(net::IOBuffer* buf,
@@ -88,8 +88,8 @@ class FakeFileStreamReader : public storage::FileStreamReader {
 
 class FileSystemProviderBufferingFileStreamReaderTest : public testing::Test {
  protected:
-  FileSystemProviderBufferingFileStreamReaderTest() {}
-  ~FileSystemProviderBufferingFileStreamReaderTest() override {}
+  FileSystemProviderBufferingFileStreamReaderTest() = default;
+  ~FileSystemProviderBufferingFileStreamReaderTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;
 };

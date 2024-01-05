@@ -64,7 +64,7 @@ class ScopedFileOpener::Runner
         open_completed_(false),
         file_handle_(0) {}
 
-  ~Runner() {}
+  ~Runner() = default;
 
   // Called when opening is completed with either a success or an error.
   void OnOpenFileCompleted(int file_handle, base::File::Error result) {

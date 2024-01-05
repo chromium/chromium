@@ -19,8 +19,7 @@ CloseFile::CloseFile(RequestDispatcher* dispatcher,
       open_request_id_(open_request_id),
       callback_(std::move(callback)) {}
 
-CloseFile::~CloseFile() {
-}
+CloseFile::~CloseFile() = default;
 
 bool CloseFile::Execute(int request_id) {
   using extensions::api::file_system_provider::CloseFileRequestedOptions;
