@@ -246,10 +246,11 @@ bool IsGraphicsTabletPenButton(const mojom::Button& button) {
 
 void AddButtonToButtonRemappingList(
     const mojom::Button& button,
-    std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
+    std::vector<mojom::ButtonRemappingPtr>& button_remappings,
+    bool is_mouse_button_remapping) {
   std::string button_name;
   // If its a middle click, give it the default middle button name.
-  if (button.is_customizable_button() &&
+  if (is_mouse_button_remapping && button.is_customizable_button() &&
       button.get_customizable_button() == mojom::CustomizableButton::kMiddle) {
     button_name = l10n_util::GetStringUTF8(
         IDS_SETTINGS_CUSTOMIZATION_MIDDLE_BUTTON_DEFAULT_NAME);
@@ -265,7 +266,7 @@ void AddButtonToButtonRemappingList(
                            });
 
     int button_number = button_remappings.size() + 1;
-    if (iter != button_remappings.end()) {
+    if (is_mouse_button_remapping && iter != button_remappings.end()) {
       --button_number;
     }
     button_name = l10n_util::GetStringFUTF8(
@@ -1807,7 +1808,8 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
     return;
   }
 
-  AddButtonToButtonRemappingList(button, button_remappings);
+  AddButtonToButtonRemappingList(button, button_remappings,
+                                 /*is_mouse_button_remapping=*/true);
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), mouse);
   DispatchCustomizableMouseButtonPressed(mouse, button);
@@ -1855,12 +1857,14 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
   }
 
   if (IsGraphicsTabletPenButton(button)) {
-    AddButtonToButtonRemappingList(button, pen_button_remappings);
+    AddButtonToButtonRemappingList(button, pen_button_remappings,
+                                   /*is_mouse_button_remapping=*/false);
     DispatchCustomizablePenButtonPressed(graphics_tablet, button);
     metrics_manager_->RecordNewButtonRegisteredMetrics(
         button, kGraphicsTabletPenDeviceType);
   } else {
-    AddButtonToButtonRemappingList(button, tablet_button_remappings);
+    AddButtonToButtonRemappingList(button, tablet_button_remappings,
+                                   /*is_mouse_button_remapping=*/false);
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
     metrics_manager_->RecordNewButtonRegisteredMetrics(
         button, kGraphicsTabletDeviceType);
