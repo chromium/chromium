@@ -2116,6 +2116,7 @@ data/accessibility/event/aria-hidden-descendants-already-ignored.html
 data/accessibility/event/aria-hidden-descendants-expected-uia-win.txt
 data/accessibility/event/aria-hidden-descendants-expected-win.txt
 data/accessibility/event/aria-hidden-descendants.html
+data/accessibility/event/aria-hidden-single-descendant-display-none-expected-auralinux.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none-expected-uia-win.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none-expected-win.txt
 data/accessibility/event/aria-hidden-single-descendant-display-none.html
