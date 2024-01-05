@@ -6,14 +6,13 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {PolicyErrorType, ProgressCenterItem, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
 import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
-import {ProgressCenterPanelInterface} from '../../../externs/progress_center_panel.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
 import {PanelType, type UserData} from '../../elements/xf_panel_item.js';
 
 /**
  * Progress center panel.
  */
-export class ProgressCenterPanel implements ProgressCenterPanelInterface {
+export class ProgressCenterPanel {
   /**
    * Reference to the feedback panel host.
    */

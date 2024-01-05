@@ -4,12 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {compareLabel, compareName} from '../../common/js/entry_utils.js';
 import {FileExtensionType, getType, isImage, isRaw} from '../../common/js/file_type.js';
 import {getRecentDateBucket, getTranslationKeyForDateBucket} from '../../common/js/recent_date_bucket.js';
 import {collator, str, strf} from '../../common/js/translations.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 

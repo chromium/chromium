@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {EntryLocation} from '../background/js/entry_location_impl.js';
 import type {CustomEventMap, FilesEventTarget} from '../common/js/files_event_target.js';
 import type {VolumeType} from '../common/js/volume_manager_types.js';
 
-import type {EntryLocation} from './entry_location.js';
 import type {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
 import type {VolumeInfo} from './volume_info.js';
 import type {VolumeInfoList} from './volume_info_list.js';

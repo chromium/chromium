@@ -15,11 +15,6 @@ image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
   # Externs:
-  "file_manager/externs/background/crostini.js",
-  "file_manager/externs/background/progress_center.js",
-  "file_manager/externs/entry_location.js",
-  "file_manager/externs/metadata_model.js",
-  "file_manager/externs/progress_center_panel.js",
   "file_manager/externs/ts/state.js",
 
   # Files app Foreground:

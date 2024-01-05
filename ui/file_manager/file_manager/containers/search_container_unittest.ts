@@ -6,7 +6,8 @@ import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.j
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {EntryLocation} from '../externs/entry_location.js';
+import {EntryLocation} from '../background/js/entry_location_impl.js';
+import {RootType} from '../common/js/volume_manager_types.js';
 import {PropStatus, State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
@@ -45,7 +46,7 @@ function setupSearchContainer(): void {
   if (searchContainer === undefined) {
     const volumeManager: VolumeManager = {
       getLocationInfo: (_entry: Entry): EntryLocation => {
-        return new EntryLocation();
+        return new EntryLocation(null, RootType.DOWNLOADS, true, true);
       },
     } as unknown as VolumeManager;
     searchContainer = new SearchContainer(

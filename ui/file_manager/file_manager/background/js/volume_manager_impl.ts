@@ -9,14 +9,13 @@ import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {promisify, timeoutPromise} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
-import {EntryLocationImpl} from './entry_location_impl.js';
+import {EntryLocation} from './entry_location_impl.js';
 import {VolumeInfoImpl} from './volume_info_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';
 
@@ -547,7 +546,7 @@ export class VolumeManagerImpl extends
       if (rootType === RootType.RECENT || rootType === RootType.TRASH) {
         isReadOnly = false;
       }
-      return new EntryLocationImpl(
+      return new EntryLocation(
           volumeInfo, rootType, true /* The entry points a root directory. */,
           isReadOnly);
     }
@@ -649,7 +648,7 @@ export class VolumeManagerImpl extends
       }
     }
 
-    return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, isReadOnly);
+    return new EntryLocation(volumeInfo, rootType, isRootEntry, isReadOnly);
   }
 
   findByDevicePath(devicePath: string): VolumeInfo|null {

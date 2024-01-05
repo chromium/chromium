@@ -4,12 +4,12 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {EntryLocation} from '../../../background/js/entry_location_impl.js';
 import {ArrayDataModel} from '../../../common/js/array_data_model.js';
 import {isTeamDriveRoot} from '../../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../../common/js/file_type.js';
 import {isDlpEnabled, isDriveFsBulkPinningEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
-import {EntryLocation} from '../../../externs/entry_location.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel} from '../file_list_model.js';

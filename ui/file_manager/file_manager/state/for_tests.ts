@@ -4,8 +4,8 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {Crostini} from '../background/js/crostini.js';
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
-import {Crostini} from '../externs/background/crostini.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
 import {DialogType, FileKey, PropStatus, State} from '../externs/ts/state.js';
 import type {VolumeInfo} from '../externs/volume_info.js';

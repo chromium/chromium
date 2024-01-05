@@ -7,8 +7,9 @@ import {PolicyErrorType, ProgressCenterItem, ProgressItemState, ProgressItemType
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {checkAPIError, visitURL} from '../../common/js/util.js';
 import {VolumeType} from '../../common/js/volume_manager_types.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {getStore} from '../../state/store.js';
+
+import type {ProgressCenter} from './progress_center.js';
 
 /**
  * An event handler of the background page for file operations.

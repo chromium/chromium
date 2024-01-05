@@ -4,7 +4,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import type {EntryLocation} from '../../externs/entry_location.js';
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {getMediaViewRootTypeFromVolumeId, MediaViewRootType, RootType} from './volume_manager_types.js';

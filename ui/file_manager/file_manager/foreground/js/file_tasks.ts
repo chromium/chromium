@@ -4,6 +4,8 @@
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
+import type {ProgressCenter} from '../../background/js/progress_center.js';
 import {executeTask, getDirectory, getFileTasks} from '../../common/js/api.js';
 import {AsyncQueue} from '../../common/js/async_util.js';
 import {entriesToURLs, isFakeEntry} from '../../common/js/entry_utils.js';
@@ -15,8 +17,6 @@ import {bytesToString, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileTasks as StoreFileTasks} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';

@@ -5,13 +5,13 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
-import {CrostiniImpl} from './crostini.js';
+import {Crostini} from './crostini.js';
 
 /**
  * Mock metrics.
@@ -24,7 +24,7 @@ let volumeManagerRootType: RootType;
 
 let volumeManager: VolumeManager;
 
-let crostini: CrostiniImpl;
+let crostini: Crostini;
 
 // Set up the test components.
 export function setUp() {
@@ -51,7 +51,7 @@ export function setUp() {
   volumeManagerRootType = 'testroot' as RootType;
 
   // Create and initialize Crostini.
-  crostini = new CrostiniImpl();
+  crostini = new Crostini();
   crostini.initVolumeManager(volumeManager);
 }
 

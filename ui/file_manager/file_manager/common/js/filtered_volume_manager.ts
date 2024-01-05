@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {EntryLocation} from '../../externs/entry_location.js';
+import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeInfoList} from '../../externs/volume_info_list.js';

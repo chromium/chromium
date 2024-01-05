@@ -13,7 +13,9 @@ import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
 import {FileManagerBase} from '../../background/js/file_manager_base.js';
+import type {ProgressCenter} from '../../background/js/progress_center.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
@@ -31,8 +33,6 @@ import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/j
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {DialogType, PropStatus, SearchLocation} from '../../externs/ts/state.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';

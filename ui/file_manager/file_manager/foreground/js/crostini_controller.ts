@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 
+import type {Crostini} from '../../background/js/crostini.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {Crostini} from '../../externs/background/crostini.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';

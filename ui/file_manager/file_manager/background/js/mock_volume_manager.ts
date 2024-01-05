@@ -9,12 +9,11 @@ import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
 import {FileSystemType, getRootTypeFromVolumeType, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {EntryLocation} from '../../externs/entry_location.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
-import {EntryLocationImpl} from './entry_location_impl.js';
+import {EntryLocation} from './entry_location_impl.js';
 import {VolumeInfoImpl} from './volume_info_impl.js';
 import {VolumeInfoListImpl} from './volume_info_list_impl.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
@@ -118,7 +117,7 @@ export class MockVolumeManager extends
     if (isFakeEntry(entry)) {
       const isReadOnly = entry.rootType !== RootType.RECENT &&
           entry.rootType !== RootType.TRASH;
-      return new EntryLocationImpl(
+      return new EntryLocation(
           this.volumeInfoList.item(0), entry.rootType!, /* isRootType= */ true,
           isReadOnly);
     }
@@ -146,7 +145,7 @@ export class MockVolumeManager extends
       } else if (/^\/\.(files|shortcut-targets)-by-id/.test(entry.fullPath)) {
         rootType = RootType.DRIVE_SHARED_WITH_ME;
       }
-      return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, true);
+      return new EntryLocation(volumeInfo, rootType, isRootEntry, true);
     }
 
     const volumeInfo = this.getVolumeInfo(entry);
@@ -158,7 +157,7 @@ export class MockVolumeManager extends
     assert(volumeInfo.volumeType);
     const rootType = getRootTypeFromVolumeType(volumeInfo.volumeType);
     const isRootEntry = isSameEntry(entry, volumeInfo.fileSystem.root);
-    return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, false);
+    return new EntryLocation(volumeInfo, rootType, isRootEntry, false);
   }
 
   /**

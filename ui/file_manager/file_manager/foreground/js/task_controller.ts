@@ -4,14 +4,14 @@
 
 import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 
+import type {Crostini} from '../../background/js/crostini.js';
+import type {ProgressCenter} from '../../background/js/progress_center.js';
 import {getMimeType, startIOTask} from '../../common/js/api.js';
 import {unwrapEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
 import {checkAPIError} from '../../common/js/util.js';
-import {Crostini} from '../../externs/background/crostini.js';
-import {ProgressCenter} from '../../externs/background/progress_center.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {FileData, FileKey, FileTasks as StoreFileTasks, PropStatus, State} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
