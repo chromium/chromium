@@ -41,11 +41,11 @@ e.g. `//content/browser`, `//content/renderer` etc...
   `content::PageTransition` enum.
 - content implementation code should use other implementations directly and
   not go through the interface (i.e., code in `//content/renderer` should use
-  `RenderViewImpl` instead of `content::RenderView`).
+  `RenderFrameImpl` instead of `content::RenderFrame`).
 - It's acceptable to put implementation files that hold constructors/destructors
   of interfaces/structs which might have member variables. For structs, this
   covers initializing member variables. For interfaces (i.e.
-  `RenderViewObserver`) this might cover things like automatic
+  `RenderFrameObserver`) this might cover things like automatic
   registration/unregistration. Normally we would put this small code in headers,
   but because of the clang checks against putting code in headers, we're forced
   to put it in .cc files (we don't want to make a clang exception for the
@@ -67,9 +67,9 @@ e.g. `//content/browser`, `//content/renderer` etc...
 - The `const` identifier can be added to simple getter APIs implemented by
   content. Don't add `const` to interfaces implemented by the embedder, where
   we can't make assumptions about what the embedder needs to implement it.
-- Observer interfaces (i.e. `WebContentsObserver`, `RenderFrameObserver`,
-  `RenderViewObserver`) should only have void methods. This is because otherwise
-  the order that observers are registered would matter, and we don't want that.
+- Observer interfaces (i.e. `WebContentsObserver`, `RenderFrameObserver`)
+  should only have void methods. This is because otherwise the order that
+  observers are registered would matter, and we don't want that.
   The only exception is `OnMessageReceived()`, which is fine since only one
   observer class handles each particular IPC, so ordering doesn't make a
   difference.
