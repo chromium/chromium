@@ -363,7 +363,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   static bool IsNameFromLabelElement(HTMLElement* control);
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
   bool always_load_inline_text_boxes_ = false;
 #endif
 

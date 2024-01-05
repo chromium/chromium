@@ -3066,7 +3066,7 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // For now, keep this line in order to pass CheckTreeIsUpdated().
     tree_update_callback_queue_popup_.clear();
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
     // On Android, the inline textboxes of focused editable subtrees are always
     // loaded, but only if inline text boxes are enabled.
     if (ax_mode_.has_mode(ui::AXMode::kInlineTextBoxes)) {

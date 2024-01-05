@@ -4336,7 +4336,7 @@ bool AXNodeObject::ShouldLoadInlineTextBoxes() const {
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
   // On Android, once an object has loaded inline text boxes, it will keep
   // them refreshed.
   return always_load_inline_text_boxes_;
@@ -4391,7 +4391,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
   // The inline textbox children start empty.
   DCHECK(CachedChildrenIncludingIgnored().empty());
 
-#if BUILDFLAG(IS_ANDROID)
+#if defined(REDUCE_AX_INLINE_TEXTBOXES)
   // Keep inline text box children up-to-date for this object in the future.
   // This is only necessary on Android, which tries to skip inline text boxes
   // for most objects.
