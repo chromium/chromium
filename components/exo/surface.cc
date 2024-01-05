@@ -1739,10 +1739,16 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
           state_.basic_state.alpha, render_pass, quad_to_target_transform,
           quad_rect, msk, quad_clip_rect, are_contents_opaque);
 
+      // Our historical implementation of the wayland blending protocol is to
+      // treat blend none as fully opaque alpha and not simply "src". This allow
+      // us to treat client buffers as rgbx. For an example see b/305977429
+      const bool force_rgbx_for_opaque =
+          are_contents_opaque && current_resource_has_alpha_;
       // Draw quad is only needed if buffer is not fully transparent.
       const bool requires_texture_draw_quad =
           state_.basic_state.only_visible_on_secure_output ||
-          state_.overlay_priority_hint != OverlayPriority::LOW;
+          state_.overlay_priority_hint != OverlayPriority::LOW ||
+          force_rgbx_for_opaque;
 
       if (requires_texture_draw_quad) {
         viz::TextureDrawQuad* texture_quad =
@@ -1757,6 +1763,10 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
                              gfx::ProtectedVideoType::kClear);
         if (current_resource_.is_overlay_candidate)
           texture_quad->set_resource_size_in_pixels(current_resource_.size);
+
+        if (force_rgbx_for_opaque) {
+          texture_quad->set_force_rgbx();
+        }
 
         switch (state_.overlay_priority_hint) {
           case OverlayPriority::LOW:

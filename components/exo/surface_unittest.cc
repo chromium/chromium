@@ -1133,6 +1133,65 @@ TEST_P(SurfaceTest, SetAlpha) {
   }
 }
 
+TEST_P(SurfaceTest, ForceRgbxTest) {
+  gfx::Size buffer_size(1, 1);
+  auto buffer = std::make_unique<Buffer>(
+      exo_test_helper()->CreateGpuMemoryBuffer(buffer_size), GL_TEXTURE_2D, 0,
+      true, true, false);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  {
+    surface->Attach(buffer.get());
+    // Blend mode 'kSrc' will result in an opaque surface.
+    surface->SetBlendMode(SkBlendMode::kSrc);
+    surface->Commit();
+    test::WaitForLastFrameAck(shell_surface.get());
+
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    ASSERT_EQ(1u, frame.resource_list.size());
+    ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
+    auto& quad_list = frame.render_pass_list.back()->quad_list;
+    auto* texture_quad = quad_list.front()->DynamicCast<viz::TextureDrawQuad>();
+    ASSERT_TRUE(texture_quad);
+    ASSERT_TRUE(texture_quad->force_rgbx);
+  }
+}
+
+TEST_P(SurfaceTest, ForceRgbxTestNoBufferAlpha) {
+  gfx::Size buffer_size(1, 1);
+  auto buffer =
+      std::make_unique<Buffer>(exo_test_helper()->CreateGpuMemoryBuffer(
+                                   buffer_size, gfx::BufferFormat::RGBX_8888),
+                               GL_TEXTURE_2D, 0, true, true, false);
+  auto surface = std::make_unique<Surface>();
+  auto shell_surface = std::make_unique<ShellSurface>(surface.get());
+
+  {
+    surface->Attach(buffer.get());
+    // Blend mode 'kSrc' will result in an opaque surface.
+    surface->SetBlendMode(SkBlendMode::kSrc);
+    surface->Commit();
+    test::WaitForLastFrameAck(shell_surface.get());
+
+    const viz::CompositorFrame& frame =
+        GetFrameFromSurface(shell_surface.get());
+    ASSERT_EQ(1u, frame.render_pass_list.size());
+    ASSERT_EQ(1u, frame.render_pass_list.back()->quad_list.size());
+    ASSERT_EQ(1u, frame.resource_list.size());
+    ASSERT_EQ(viz::ResourceId(1u), frame.resource_list.back().id);
+    EXPECT_EQ(gfx::Rect(buffer_size), ToTargetSpaceDamage(frame));
+    auto& quad_list = frame.render_pass_list.back()->quad_list;
+    auto* texture_quad = quad_list.front()->DynamicCast<viz::TextureDrawQuad>();
+    ASSERT_TRUE(texture_quad);
+    ASSERT_FALSE(texture_quad->force_rgbx);
+  }
+}
+
 TEST_P(SurfaceTest, SurfaceQuad) {
   gfx::Size buffer_size(1, 1);
   auto buffer = std::make_unique<Buffer>(
