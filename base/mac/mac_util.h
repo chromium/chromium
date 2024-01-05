@@ -24,14 +24,6 @@ namespace base::mac {
 // release it!
 BASE_EXPORT CGColorSpaceRef GetSRGBColorSpace();
 
-// Returns the generic RGB color space. The return value is a static value; do
-// not release it!
-BASE_EXPORT CGColorSpaceRef GetGenericRGBColorSpace();
-
-// Returns the color space being used by the main display.  The return value
-// is a static value; do not release it!
-BASE_EXPORT CGColorSpaceRef GetSystemColorSpace();
-
 // Adds the specified application to the set of Login Items with specified
 // "hide" flag. This has the same effect as adding/removing the application in
 // SystemPreferences->Accounts->LoginItems or marking Application in the Dock
