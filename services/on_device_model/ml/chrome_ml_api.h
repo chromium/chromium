@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 #include "third_party/dawn/include/dawn/dawn_proc_table.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
@@ -85,6 +86,7 @@ struct ChromeMLModelDescriptor {
   size_t ts_size;
   const void* ts_spm_data;
   size_t ts_spm_size;
+  size_t ts_dimension;
 };
 
 // Function provided from the library that will cancel the corresponding input
@@ -97,6 +99,10 @@ using ChromeMLCancelFn = std::function<void()>;
 // that model execution is complete.
 using ChromeMLOutputFn = std::function<void(const std::optional<std::string>&)>;
 
+// Receives periodic updates to TS scores, per `score_ts_interval` set in
+// ChromeMLExecuteOptions.
+using ChromeMLScoreTSFn = std::function<void(const std::vector<float>&)>;
+
 // Called with the number of tokens processed after a call to RunModel()
 // which has the kSave ContextMode set. This will be called on the internal
 // thread executing the model.
@@ -106,6 +112,8 @@ using ChromeMLContextSavedFn = std::function<void(int)>;
 struct ChromeMLExecutionResult {
   // If true, all prior output received for this model execution is effectively
   // retracted by the library and should be discarded by the client.
+  //
+  // DEPRECATED: Clients should ignore this field. It will be deleted.
   bool retracted;
 };
 
@@ -115,14 +123,16 @@ using ChromeMLCompletionFn =
     std::function<void(const ChromeMLExecutionResult&)>;
 
 struct ChromeMLExecuteOptions {
-  const char* prompt = nullptr;
-  int context_mode = ContextMode::kNone;
-  uint32_t max_tokens = 0;
-  uint32_t token_offset = 0;
-  uint32_t max_output_tokens = 0;
-  const ChromeMLOutputFn* output_fn = nullptr;
-  const ChromeMLContextSavedFn* context_saved_fn = nullptr;
-  const ChromeMLCompletionFn* completion_fn = nullptr;
+  const char* prompt;
+  int context_mode;
+  uint32_t max_tokens;
+  uint32_t token_offset;
+  uint32_t max_output_tokens;
+  uint32_t score_ts_interval;
+  const ChromeMLOutputFn* output_fn;
+  const ChromeMLScoreTSFn* score_ts_fn;
+  const ChromeMLContextSavedFn* context_saved_fn;
+  const ChromeMLCompletionFn* completion_fn;
 };
 
 // Performance data filled out by GetEstimatedPerformance().

@@ -60,6 +60,7 @@ source_set("tests") {
   deps = [
     ":on_device_model_service_for_test",
     "//base/test:test_support",
+    "//services/on_device_model/public/cpp/test_support",
     "//services/on_device_model/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
