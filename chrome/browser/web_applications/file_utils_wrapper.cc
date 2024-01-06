@@ -1,9 +1,11 @@
 // Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 
@@ -30,16 +32,9 @@ bool FileUtilsWrapper::GetFileInfo(const base::FilePath& file_path,
   return base::GetFileInfo(file_path, info);
 }
 
-int FileUtilsWrapper::ReadFile(const base::FilePath& filename,
-                               char* data,
-                               int max_size) {
-  return base::ReadFile(filename, data, max_size);
-}
-
-int FileUtilsWrapper::WriteFile(const base::FilePath& filename,
-                                const char* data,
-                                int size) {
-  return base::WriteFile(filename, data, size);
+bool FileUtilsWrapper::WriteFile(const base::FilePath& filename,
+                                 base::span<const uint8_t> file_data) {
+  return base::WriteFile(filename, file_data);
 }
 
 bool FileUtilsWrapper::Move(const base::FilePath& from_path,

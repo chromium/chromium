@@ -17,6 +17,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -925,9 +926,7 @@ class WriteIconsJob {
                                          icon_file.AsUTF8Unsafe()})}};
     }
 
-    const char* image_data_ptr = reinterpret_cast<const char*>(&image_data[0]);
-    int size = base::checked_cast<int>(image_data.size());
-    if (utils_->WriteFile(icon_file, image_data_ptr, size) != size) {
+    if (!utils_->WriteFile(icon_file, base::as_byte_span(image_data))) {
       return {.error_log = {CreateError(
                   {"Could not write icon file: ", icon_file.AsUTF8Unsafe()})}};
     }

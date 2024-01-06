@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -78,12 +79,8 @@ bool WriteProtoBlocking(scoped_refptr<FileUtilsWrapper> utils,
                         AllTranslations proto) {
   base::FilePath translations_dir = GetDirectory(web_apps_directory);
   std::string proto_as_string = proto.SerializeAsString();
-  int size = base::checked_cast<int>(proto_as_string.size());
-  if (utils->WriteFile(translations_dir, proto_as_string.c_str(), size) !=
-      size) {
-    return false;
-  }
-  return true;
+  return utils->WriteFile(translations_dir,
+                          base::as_byte_span(proto_as_string));
 }
 
 bool DeleteTranslationsBlocking(scoped_refptr<FileUtilsWrapper> utils,

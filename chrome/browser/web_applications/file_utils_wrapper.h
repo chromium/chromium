@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_FILE_UTILS_WRAPPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_FILE_UTILS_WRAPPER_H_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
@@ -46,11 +47,8 @@ class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
 
   bool GetFileInfo(const base::FilePath& file_path, base::File::Info* info);
 
-  int ReadFile(const base::FilePath& filename, char* data, int max_size);
-
-  virtual int WriteFile(const base::FilePath& filename,
-                        const char* data,
-                        int size);
+  virtual bool WriteFile(const base::FilePath& filename,
+                         base::span<const uint8_t> file_data);
 
   bool Move(const base::FilePath& from_path, const base::FilePath& to_path);
 

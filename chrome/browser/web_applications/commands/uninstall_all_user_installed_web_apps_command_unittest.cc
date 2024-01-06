@@ -147,7 +147,7 @@ class UninstallAllUserInstalledWebAppsCommandWithIconManagerTest
 TEST_F(UninstallAllUserInstalledWebAppsCommandWithIconManagerTest,
        ReturnUninstallErrors) {
   EXPECT_CALL(*file_utils_wrapper_, WriteFile)
-      .WillRepeatedly(testing::ReturnArg<2>());
+      .WillRepeatedly(testing::Return(true));
 
   webapps::AppId app_id = test::InstallDummyWebApp(
       profile(), "app from sync", GURL("https://example.com"),

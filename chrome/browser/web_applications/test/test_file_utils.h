@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -27,9 +28,8 @@ class TestFileUtils : public FileUtilsWrapper {
   TestFileUtils& operator=(const TestFileUtils&) = delete;
 
   // FileUtilsWrapper:
-  int WriteFile(const base::FilePath& filename,
-                const char* data,
-                int size) override;
+  bool WriteFile(const base::FilePath& filename,
+                 base::span<const uint8_t> file_data) override;
   bool ReadFileToString(const base::FilePath& path,
                         std::string* contents) override;
   bool DeleteFileRecursively(const base::FilePath& path) override;
