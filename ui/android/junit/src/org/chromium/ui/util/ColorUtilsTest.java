@@ -76,7 +76,7 @@ public class ColorUtilsTest {
     @Test
     public void testOverlayTransparentColorWithFraction() {
         // Hard coded solved expected color to avoid just duplicating impl in the test.
-        @ColorInt int expected = Color.parseColor("#FF133557");
+        @ColorInt int expected = Color.parseColor("#FF143658");
         @ColorInt int base = Color.parseColor("#FF123456");
         @ColorInt int overlay = Color.parseColor("#12345678");
         @ColorInt int actual = ColorUtils.overlayColor(base, overlay, .63f);

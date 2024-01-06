@@ -116,19 +116,19 @@ public class ColorUtils {
         // assert Color.alpha(baseColor) == 255;
         assert Color.alpha(overlayColor) == 255;
 
-        int red =
-                (int)
-                        MathUtils.interpolate(
-                                Color.red(baseColor), Color.red(overlayColor), overlayAlpha);
-        int green =
-                (int)
-                        MathUtils.interpolate(
-                                Color.green(baseColor), Color.green(overlayColor), overlayAlpha);
-        int blue =
-                (int)
-                        MathUtils.interpolate(
-                                Color.blue(baseColor), Color.blue(overlayColor), overlayAlpha);
-        return Color.rgb(red, green, blue);
+        int fromRed = Color.red(baseColor);
+        int toRed = Color.red(overlayColor);
+        int resultRed = Math.round(MathUtils.interpolate(fromRed, toRed, overlayAlpha));
+
+        int fromGreen = Color.green(baseColor);
+        int toGreen = Color.green(overlayColor);
+        int resultGreen = Math.round(MathUtils.interpolate(fromGreen, toGreen, overlayAlpha));
+
+        int fromBlue = Color.blue(baseColor);
+        int toBlue = Color.blue(overlayColor);
+        int resultBlue = Math.round(MathUtils.interpolate(fromBlue, toBlue, overlayAlpha));
+
+        return Color.rgb(resultRed, resultGreen, resultBlue);
     }
 
     /**
