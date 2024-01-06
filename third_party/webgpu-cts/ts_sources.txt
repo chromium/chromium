@@ -341,6 +341,7 @@ src/webgpu/api/validation/texture/float32_filterable.spec.ts
 src/webgpu/api/validation/texture/rg11b10ufloat_renderable.spec.ts
 src/webgpu/compat/compatibility_test.ts
 src/webgpu/compat/api/validation/createBindGroup.spec.ts
+src/webgpu/compat/api/validation/createBindGroupLayout.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToBuffer.spec.ts
 src/webgpu/compat/api/validation/encoding/cmds/copyTextureToTexture.spec.ts
 src/webgpu/compat/api/validation/encoding/programmable/pipeline_bind_group_compat.spec.ts
