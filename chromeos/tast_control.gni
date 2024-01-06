@@ -118,9 +118,6 @@ tast_disabled_tests_from_chrome_all = [
   "inputs.VirtualKeyboardHandwriting.floating_lacros@jacuzzi",
   "inputs.VirtualKeyboardHandwriting.floating_lacros@octopus",
 
-  # b/314779670, waiting for LKGM including the revert
-  "platform.Resourced.baseline",
-
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
