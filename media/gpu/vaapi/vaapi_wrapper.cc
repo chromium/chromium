@@ -1527,19 +1527,6 @@ VADisplayStateHandle VADisplayStateSingleton::GetHandle() {
     return {};
   }
 
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/1116701): add vaapi support for other Ozone platforms on
-  // Linux. See comment in OzonePlatform::PlatformProperties::supports_vaapi
-  // for more details. This will also require revisiting everything that's
-  // guarded by USE_VAAPI_X11. For example, if USE_VAAPI_X11 is true, but the
-  // user chooses the Wayland backend for Ozone at runtime, then many things (if
-  // not all) that we do for X11 won't apply.
-  auto* ozone = ui::OzonePlatform::GetInstance();
-  if (!ozone || !ozone->GetPlatformProperties().supports_vaapi) {
-    return {};
-  }
-#endif
-
   const bool libraries_initialized = IsVaInitialized() && IsVa_drmInitialized();
   if (!libraries_initialized) {
     return {};

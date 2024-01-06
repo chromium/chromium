@@ -7,8 +7,5 @@ extern "C" {
 
 #include <va/va_drm.h>
 #include <va/va.h>
-#if BUILDFLAG(USE_VAAPI_X11)
-#include <va/va_x11.h>
-#endif  // BUILDFLAG(USE_VAAPI_X11)
 
 }

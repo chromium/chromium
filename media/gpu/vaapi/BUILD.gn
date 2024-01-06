@@ -170,10 +170,6 @@ source_set("common") {
     deps += [ "//ui/ozone" ]
   }
 
-  if (use_vaapi_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
-
   configs += [ "//build/config/linux/libva" ]
 }
 
