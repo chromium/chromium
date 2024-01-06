@@ -171,8 +171,12 @@ CastContentBrowserClient::CastContentBrowserClient(
     // Use the software decoder provided by MediaCodec instead of the built in
     // software decoder. This can improve av sync quality.
     extra_enable_features.push_back(&::media::kAllowMediaCodecSoftwareDecoder);
-    // Disable AAudio on ATV for a better av sync quality, before we root cause
-    // the issue.
+    // For ATV HDMI dongle devices, it's hard to get an accurate audio latency.
+    // The OpenSL ES output path has a way to adjust the audio timestamp by
+    // querying AudioManager.getOutputLatency. Based on the experiment, this
+    // combination has a better av sync performance compared to the AAudio path
+    // on ATV devices.
+    extra_enable_features.push_back(&::media::kUseAudioLatencyFromHAL);
     extra_disable_features.push_back(&::features::kUseAAudioDriver);
   }
 #endif
