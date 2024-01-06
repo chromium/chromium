@@ -262,10 +262,6 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
   CHECK(!g_browser_process);
   g_browser_process = this;
 
-  // Initialize the SessionIdGenerator instance, providing a PrefService to
-  // ensure the persistent storage of current max SessionId.
-  sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
-
   DCHECK(browser_policy_connector_);
   DCHECK(local_state_);
   DCHECK(startup_data);
@@ -1200,6 +1196,10 @@ void BrowserProcessImpl::PreCreateThreads() {
 
 void BrowserProcessImpl::PreMainMessageLoopRun() {
   TRACE_EVENT0("startup", "BrowserProcessImpl::PreMainMessageLoopRun");
+
+  // Initialize the SessionIdGenerator instance, providing a PrefService to
+  // ensure the persistent storage of current max SessionId.
+  sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
 
   // browser_policy_connector() is created very early because local_state()
   // needs policy to be initialized with the managed preference values.
