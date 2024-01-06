@@ -389,7 +389,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
   std::string GetGeolocationApiKey() override;
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   device::GeolocationManager* GetGeolocationManager() override;
 #endif
 
