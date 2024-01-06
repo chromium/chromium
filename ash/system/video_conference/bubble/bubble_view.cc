@@ -129,9 +129,9 @@ void BubbleView::AddedToWidget() {
   AddChildView(std::make_unique<ReturnToAppPanel>(*media_apps_));
 
   const bool has_toggle_effects =
-      controller_->effects_manager().HasToggleEffects();
+      controller_->GetEffectsManager().HasToggleEffects();
   const bool has_set_value_effects =
-      controller_->effects_manager().HasSetValueEffects();
+      controller_->GetEffectsManager().HasSetValueEffects();
 
   if (HasLinuxApps(*media_apps_) &&
       (has_toggle_effects || has_set_value_effects)) {

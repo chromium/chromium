@@ -29,12 +29,10 @@ class ASH_EXPORT FakeVideoConferenceTrayController
     : public VideoConferenceTrayController {
  public:
   FakeVideoConferenceTrayController();
-
   FakeVideoConferenceTrayController(const FakeVideoConferenceTrayController&) =
       delete;
   FakeVideoConferenceTrayController& operator=(
       const FakeVideoConferenceTrayController&) = delete;
-
   ~FakeVideoConferenceTrayController() override;
 
   // VideoConferenceTrayController:
@@ -43,7 +41,9 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   bool GetCameraMuted() override;
   bool GetMicrophoneMuted() override;
   void StopAllScreenShare() override;
+  VideoConferenceTrayEffectsManager& GetEffectsManager() override;
 
+  void SetEffectsManager(VideoConferenceTrayEffectsManager* effects_manager);
   void GetMediaApps(base::OnceCallback<void(MediaApps)> ui_callback) override;
   void ReturnToApp(const base::UnguessableToken& id) override;
   void HandleDeviceUsedWhileDisabled(
@@ -91,6 +91,13 @@ class ASH_EXPORT FakeVideoConferenceTrayController
   // A mapping from the media app's id to its launch state (whether the app is
   // launched and brought to the foreground).
   std::map<base::UnguessableToken, bool> app_to_launch_state_;
+
+  // The `VideoConferenceTrayEffectsManager` that should be used. Can be
+  // specified by `SetEffectsManager()`. Mainly used by tests that require use
+  // of a fake VC effects manager over the manager used in production. If null,
+  // then a call to `GetEffectsManager()` will return the result of the base
+  // `VideoConferenceTrayController::GetEffectsManager()`.
+  raw_ptr<VideoConferenceTrayEffectsManager> effects_manager_;
 
   // General-purpose repository for fake effects.
   std::unique_ptr<fake_video_conference::EffectRepository> effect_repository_;

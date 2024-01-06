@@ -232,39 +232,39 @@ EffectRepository::EffectRepository(
       super_cuteness_(std::make_unique<SuperCutnessEffect>()) {
   DCHECK(controller_);
   if (features::IsVcControlsUiFakeEffectsEnabled()) {
-    controller_->effects_manager().RegisterDelegate(cat_ears_.get());
-    controller_->effects_manager().RegisterDelegate(dog_fur_.get());
-    controller_->effects_manager().RegisterDelegate(spaceship_.get());
-    controller_->effects_manager().RegisterDelegate(office_bunny_.get());
-    controller_->effects_manager().RegisterDelegate(calm_forest_.get());
-    controller_->effects_manager().RegisterDelegate(stylish_kitchen_.get());
-    controller_->effects_manager().RegisterDelegate(
+    controller_->GetEffectsManager().RegisterDelegate(cat_ears_.get());
+    controller_->GetEffectsManager().RegisterDelegate(dog_fur_.get());
+    controller_->GetEffectsManager().RegisterDelegate(spaceship_.get());
+    controller_->GetEffectsManager().RegisterDelegate(office_bunny_.get());
+    controller_->GetEffectsManager().RegisterDelegate(calm_forest_.get());
+    controller_->GetEffectsManager().RegisterDelegate(stylish_kitchen_.get());
+    controller_->GetEffectsManager().RegisterDelegate(
         long_text_label_effect_.get());
-    controller_->effects_manager().RegisterDelegate(shaggy_fur_.get());
-    controller_->effects_manager().RegisterDelegate(super_cuteness_.get());
+    controller_->GetEffectsManager().RegisterDelegate(shaggy_fur_.get());
+    controller_->GetEffectsManager().RegisterDelegate(super_cuteness_.get());
   }
 }
 
 EffectRepository::~EffectRepository() {
   if (features::IsVcControlsUiFakeEffectsEnabled()) {
-    controller_->effects_manager().UnregisterDelegate(cat_ears_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(cat_ears_.get());
     cat_ears_.reset();
-    controller_->effects_manager().UnregisterDelegate(dog_fur_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(dog_fur_.get());
     dog_fur_.reset();
-    controller_->effects_manager().UnregisterDelegate(spaceship_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(spaceship_.get());
     spaceship_.reset();
-    controller_->effects_manager().UnregisterDelegate(office_bunny_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(office_bunny_.get());
     office_bunny_.reset();
-    controller_->effects_manager().UnregisterDelegate(calm_forest_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(calm_forest_.get());
     calm_forest_.reset();
-    controller_->effects_manager().UnregisterDelegate(stylish_kitchen_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(stylish_kitchen_.get());
     stylish_kitchen_.reset();
-    controller_->effects_manager().UnregisterDelegate(
+    controller_->GetEffectsManager().UnregisterDelegate(
         long_text_label_effect_.get());
     long_text_label_effect_.reset();
-    controller_->effects_manager().UnregisterDelegate(shaggy_fur_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(shaggy_fur_.get());
     shaggy_fur_.reset();
-    controller_->effects_manager().UnregisterDelegate(super_cuteness_.get());
+    controller_->GetEffectsManager().UnregisterDelegate(super_cuteness_.get());
     super_cuteness_.reset();
   }
 }

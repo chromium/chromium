@@ -32,6 +32,10 @@ class ASH_EXPORT VcTileUiController {
   // Creates and returns the `FeatureTile` associated with this controller.
   std::unique_ptr<FeatureTile> CreateTile();
 
+  // Returns the effect id associated with this controller, for testing purposes
+  // only.
+  VcEffectId effect_id_for_testing() const { return effect_id_; }
+
  private:
   friend class VcTileUiControllerTest;
 

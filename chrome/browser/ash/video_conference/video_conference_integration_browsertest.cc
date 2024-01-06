@@ -850,7 +850,7 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
   //  (3) Register audio_effects_controller again with
   //      OnActiveUserPrefServiceChanged.
   auto* audio_effects_controller = Shell::Get()->audio_effects_controller();
-  VideoConferenceTrayController::Get()->effects_manager().UnregisterDelegate(
+  VideoConferenceTrayController::Get()->GetEffectsManager().UnregisterDelegate(
       audio_effects_controller);
   CrasAudioHandler::Get()->SetNoiseCancellationSupportedForTesting(true);
   audio_effects_controller->OnActiveUserPrefServiceChanged(

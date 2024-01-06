@@ -344,7 +344,7 @@ CameraEffectsController::CameraEffectsController()
 
 CameraEffectsController::~CameraEffectsController() {
   VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
+      VideoConferenceTrayController::Get()->GetEffectsManager();
   if (effects_manager.IsDelegateRegistered(this)) {
     // The `VcEffectsDelegate` was registered, so must therefore be
     // unregistered.
@@ -864,7 +864,7 @@ bool CameraEffectsController::IsEffectControlAvailable(
 
 void CameraEffectsController::InitializeEffectControls() {
   if (VideoConferenceTrayController::Get()
-          ->effects_manager()
+          ->GetEffectsManager()
           .IsDelegateRegistered(this)) {
     return;
   }
@@ -939,7 +939,7 @@ void CameraEffectsController::InitializeEffectControls() {
   // If *any* effects' UI controls are present, register with the effects
   // manager.
   if (IsEffectControlAvailable()) {
-    VideoConferenceTrayController::Get()->effects_manager().RegisterDelegate(
+    VideoConferenceTrayController::Get()->GetEffectsManager().RegisterDelegate(
         this);
   }
 }

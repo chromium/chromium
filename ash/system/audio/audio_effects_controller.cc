@@ -32,7 +32,7 @@ AudioEffectsController::AudioEffectsController() {
 AudioEffectsController::~AudioEffectsController() {
   CrasAudioHandler::Get()->RemoveAudioObserver(this);
   VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
+      VideoConferenceTrayController::Get()->GetEffectsManager();
   if (effects_manager.IsDelegateRegistered(this)) {
     effects_manager.UnregisterDelegate(this);
   }
@@ -156,7 +156,7 @@ void AudioEffectsController::RefreshNoiseCancellationSupported() {
   }
 
   VideoConferenceTrayController::Get()
-      ->effects_manager()
+      ->GetEffectsManager()
       .NotifyEffectSupportStateChanged(VcEffectId::kNoiseCancellation,
                                        noise_cancellation_supported_);
 }
@@ -197,7 +197,7 @@ void AudioEffectsController::AddNoiseCancellationEffect() {
   // Note that other functions might register this delegate already and we need
   // to avoid registering twice.
   VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
+      VideoConferenceTrayController::Get()->GetEffectsManager();
   if (!effects_manager.IsDelegateRegistered(this)) {
     effects_manager.RegisterDelegate(this);
   }
@@ -237,7 +237,7 @@ void AudioEffectsController::AddLiveCaptionEffect() {
   // Note that other functions might register this delegate already and we need
   // to avoid registering twice.
   VideoConferenceTrayEffectsManager& effects_manager =
-      VideoConferenceTrayController::Get()->effects_manager();
+      VideoConferenceTrayController::Get()->GetEffectsManager();
   if (!effects_manager.IsDelegateRegistered(this)) {
     effects_manager.RegisterDelegate(this);
   }

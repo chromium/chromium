@@ -189,9 +189,7 @@ class ASH_EXPORT VideoConferenceTrayController
   // Gets `disable_shelf_autohide_timer_`, used for testing.
   base::OneShotTimer& GetShelfAutoHideTimerForTest();
 
-  VideoConferenceTrayEffectsManager& effects_manager() {
-    return effects_manager_;
-  }
+  virtual VideoConferenceTrayEffectsManager& GetEffectsManager();
 
   bool camera_muted_by_hardware_switch() const {
     return camera_muted_by_hardware_switch_;

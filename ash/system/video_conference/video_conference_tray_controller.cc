@@ -668,6 +668,11 @@ VideoConferenceTrayController::GetShelfAutoHideTimerForTest() {
   return disable_shelf_autohide_timer_;
 }
 
+VideoConferenceTrayEffectsManager&
+VideoConferenceTrayController::GetEffectsManager() {
+  return effects_manager_;
+}
+
 void VideoConferenceTrayController::UpdateWithMediaState(
     VideoConferenceMediaState state) {
   auto old_state = state_;
@@ -676,7 +681,7 @@ void VideoConferenceTrayController::UpdateWithMediaState(
   const bool new_tray_target_visibility = ShouldShowTray();
 
   if (new_tray_target_visibility && !old_tray_target_visibility) {
-    effects_manager_.RecordInitialStates();
+    GetEffectsManager().RecordInitialStates();
 
     // Keeps increment the count to track the number of times the view flickers.
     // When the delay of `kRepeatedShowTimerInterval` has reached, record that
