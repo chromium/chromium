@@ -206,13 +206,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
     });
   };
 
-  // The `engagedWithLatestRefreshedContent` criteria only applies to background
-  // app close. Early return if criteria is not met.
-  if (IsFeedAppCloseBackgroundRefreshEnabled() &&
-      ![self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]) {
-    return;
-  }
-
   // Cold starts are killed earlier in this method, so warm and cold starts
   // cannot be recorded at the same time.
   [self recordWarmStartMetrics];
@@ -245,9 +238,6 @@ NSString* const kFeedLastBackgroundRefreshTimestamp =
 
 // Record refresh trigger for warm start.
 - (void)recordWarmStartMetrics {
-  CHECK(!IsFeedAppCloseBackgroundRefreshEnabled() ||
-        [self.feedMetricsRecorder hasEngagedWithLatestRefreshedContent]);
-
   if (IsFeedAppCloseBackgroundRefreshEnabled()) {
     // This is recorded if both app close and regular background refreshes are
     // enabled.

@@ -326,17 +326,6 @@ BASE_DECLARE_FEATURE(kEnableReviewAccountSettingsPromo);
 // signed in non syncing users.
 BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
 
-// Engagement criteria type for a feed refresh.
-enum class FeedRefreshEngagementCriteriaType {
-  // Any scroll or interaction.
-  kSimpleEngagement = 0,
-  // Meets minimum scroll criteria or any interaction.
-  kEngagement = 1,
-  // Meets good visit criteria.
-  kGoodVisit = 2,
-  kMaxValue = kGoodVisit,
-};
-
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
@@ -410,10 +399,6 @@ extern const char kBackgroundRefreshIntervalInSeconds[];
 extern const char kBackgroundRefreshMaxAgeInSeconds[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// following a Feed session.
-extern const char kEnableFeedSessionCloseForegroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
 // on app backgrounding.
 extern const char kEnableFeedAppCloseForegroundRefresh[];
 
@@ -422,16 +407,8 @@ extern const char kEnableFeedAppCloseForegroundRefresh[];
 extern const char kEnableFeedAppCloseBackgroundRefresh[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
-// engagement criteria type to refresh the feed.
-extern const char kFeedRefreshEngagementCriteriaType[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
 // background refresh interval in seconds.
 extern const char kAppCloseBackgroundRefreshIntervalInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the time
-// interval used to set the refresh timer.
-extern const char kFeedRefreshTimerTimeoutInSeconds[];
 
 // Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
 // threshold when the last refresh was seen.
@@ -519,11 +496,6 @@ double GetBackgroundRefreshMaxAgeInSeconds();
 // Whether feed can be refreshed while not visible.
 bool IsFeedInvisibleForegroundRefreshEnabled();
 
-// Whether feed is refreshed after the user ends a Feed session, but while the
-// app is still in the foreground (e.g., user switches tabs, user navigates away
-// from Feed in current tab).
-bool IsFeedSessionCloseForegroundRefreshEnabled();
-
 // Whether feed is refreshed at the moment the app is backgrounding. This is
 // different from background refresh.
 bool IsFeedAppCloseForegroundRefreshEnabled();
@@ -532,15 +504,9 @@ bool IsFeedAppCloseForegroundRefreshEnabled();
 // backgrounded, and the capability was enabled at startup.
 bool IsFeedAppCloseBackgroundRefreshEnabled();
 
-// Returns the engagement criteria type for a feed refresh.
-FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType();
-
 // The earliest interval to refresh in the background after app enters the
 // background in app close background refresh.
 double GetAppCloseBackgroundRefreshIntervalInSeconds();
-
-// Returns the time interval used to set the session end timer.
-double GetFeedRefreshTimerTimeoutInSeconds();
 
 // Returns the refresh threshold (aka feed expiration) for a feed that has been
 // seen.

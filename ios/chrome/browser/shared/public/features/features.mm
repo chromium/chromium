@@ -449,18 +449,12 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
-const char kEnableFeedSessionCloseForegroundRefresh[] =
-    "EnableFeedSessionCloseForegroundRefresh";
 const char kEnableFeedAppCloseForegroundRefresh[] =
     "EnableFeedAppCloseForegroundRefresh";
 const char kEnableFeedAppCloseBackgroundRefresh[] =
     "EnableFeedAppCloseBackgroundRefresh";
-const char kFeedRefreshEngagementCriteriaType[] =
-    "FeedRefreshEngagementCriteriaType";
 const char kAppCloseBackgroundRefreshIntervalInSeconds[] =
     "AppCloseBackgroundRefreshIntervalInSeconds";
-const char kFeedRefreshTimerTimeoutInSeconds[] =
-    "FeedRefreshTimerTimeoutInSeconds";
 const char kFeedSeenRefreshThresholdInSeconds[] =
     "FeedSeenRefreshThresholdInSeconds";
 const char kFeedUnseenRefreshThresholdInSeconds[] =
@@ -606,13 +600,6 @@ bool IsFeedInvisibleForegroundRefreshEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedInvisibleForegroundRefresh);
 }
 
-bool IsFeedSessionCloseForegroundRefreshEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedInvisibleForegroundRefresh,
-      kEnableFeedSessionCloseForegroundRefresh,
-      /*default=*/false);
-}
-
 bool IsFeedAppCloseForegroundRefreshEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kEnableFeedInvisibleForegroundRefresh,
@@ -625,15 +612,6 @@ bool IsFeedAppCloseBackgroundRefreshEnabled() {
          IsFeedAppCloseBackgroundRefreshEnabledOnly();
 }
 
-FeedRefreshEngagementCriteriaType GetFeedRefreshEngagementCriteriaType() {
-  return (FeedRefreshEngagementCriteriaType)
-      base::GetFieldTrialParamByFeatureAsInt(
-          kEnableFeedInvisibleForegroundRefresh,
-          kFeedRefreshEngagementCriteriaType,
-          /*default_value=*/
-          (int)FeedRefreshEngagementCriteriaType::kSimpleEngagement);
-}
-
 double GetAppCloseBackgroundRefreshIntervalInSeconds() {
   double override_value = [[NSUserDefaults standardUserDefaults]
       doubleForKey:@"AppCloseBackgroundRefreshIntervalInSeconds"];
@@ -643,17 +621,6 @@ double GetAppCloseBackgroundRefreshIntervalInSeconds() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedInvisibleForegroundRefresh,
       kAppCloseBackgroundRefreshIntervalInSeconds,
-      /*default=*/base::Minutes(5).InSecondsF());
-}
-
-double GetFeedRefreshTimerTimeoutInSeconds() {
-  double override_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:@"FeedRefreshTimerTimeoutInSeconds"];
-  if (override_value > 0.0) {
-    return override_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedInvisibleForegroundRefresh, kFeedRefreshTimerTimeoutInSeconds,
       /*default=*/base::Minutes(5).InSecondsF());
 }
 

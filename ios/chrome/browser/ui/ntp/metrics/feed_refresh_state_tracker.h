@@ -10,10 +10,6 @@
 // content.
 @protocol FeedRefreshStateTracker
 
-// Returns YES if the user has engaged with the latest refreshed content. The
-// term "engaged" is an implementation detail of the receiver.
-- (BOOL)hasEngagedWithLatestRefreshedContent;
-
 // Returns YES if the NTP is visible to the user.
 - (BOOL)isNTPVisible;
 
