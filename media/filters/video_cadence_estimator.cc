@@ -202,6 +202,9 @@ bool VideoCadenceEstimator::HasSimpleCadence(
     base::TimeDelta render_interval,
     base::TimeDelta frame_duration,
     base::TimeDelta minimum_time_until_max_drift) {
+  if (render_interval.is_zero()) {
+    return false;
+  }
   const double perfect_cadence = frame_duration / render_interval;
   base::TimeDelta time_until_max_drift;
   auto cadence = ConstructSimpleCadence(perfect_cadence, render_interval,
