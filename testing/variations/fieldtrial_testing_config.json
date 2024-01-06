@@ -17923,6 +17923,29 @@
             ]
         }
     ],
+    "TabOrganization": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "trigger_period": "30m"
+                    },
+                    "enable_features": [
+                        "TabOrganization"
+                    ]
+                }
+            ]
+        }
+    ],
     "TabSearchFuzzySearchStudy": [
         {
             "platforms": [
