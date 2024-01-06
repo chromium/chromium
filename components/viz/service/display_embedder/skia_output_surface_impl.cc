@@ -1481,7 +1481,13 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
         }
         // Each task can check SkiaOutputSurfaceImplOnGpu::contest_is_lost_
         // to detect errors.
+        gl::ProgressReporter* progress_reporter = nullptr;
+        if (impl_on_gpu) {
+          progress_reporter = impl_on_gpu->context_state()->progress_reporter();
+        }
         for (auto& task : tasks) {
+          gl::ScopedProgressReporter scoped_process_reporter(
+              progress_reporter);
           std::move(task).Run();
         }
 

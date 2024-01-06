@@ -292,6 +292,10 @@ class SkiaOutputSurfaceImplOnGpu
   // associated completion callbacks to run.
   void CheckAsyncWorkCompletion();
 
+  gpu::SharedContextState* context_state() const {
+    return context_state_.get();
+  }
+
  private:
   struct MailboxAccessData {
     MailboxAccessData();
