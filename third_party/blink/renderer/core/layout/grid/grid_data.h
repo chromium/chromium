@@ -15,7 +15,7 @@
 namespace blink {
 
 struct CORE_EXPORT GridPlacementData {
-  USING_FAST_MALLOC(GridPlacementData);
+  DISALLOW_NEW();
 
  public:
   GridPlacementData(GridPlacementData&&) = default;
