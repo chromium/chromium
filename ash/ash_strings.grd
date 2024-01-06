@@ -5598,6 +5598,9 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ASSISTANT" desc="Message shown on suggestion chip in LauncherSearchIphView to open the Assistant UI." meaning="Text on the button. [CHAR_LIMIT=14]">
         Go to Assistant
       </message>
+      <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ACCNAME_PREFIX" desc="The prefix for the accessible name of the suggestion chip in LauncherSearchIphView.">
+        Search for <ph name="text">$1<ex>Weather</ex></ph>
+      </message>
       <message name="IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE" desc="Text shown in LauncherSearchIphView.">
         Search for what you need directly in Launcher
       </message>

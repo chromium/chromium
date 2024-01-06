@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/label.h"
@@ -117,6 +118,12 @@ std::u16string GetQueryText(QueryType type) {
   return l10n_util::GetStringUTF16(id);
 }
 
+std::u16string GetQueryTextAccessibleName(QueryType type) {
+  std::u16string text = GetQueryText(type);
+  return l10n_util::GetStringFUTF16(
+      IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_CHIP_ACCNAME_PREFIX, text);
+}
+
 }  // namespace
 
 // static
@@ -166,6 +173,7 @@ LauncherSearchIphView::LauncherSearchIphView(
           IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE)));
   title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   title_label->SetEnabledColorId(kColorAshTextColorPrimary);
+  title_label->GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
 
   views::Label* description_label = text_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -268,6 +276,7 @@ void LauncherSearchIphView::CreateChips(
     ChipView* chip = actions_container->AddChildView(
         std::make_unique<ChipView>(ChipView::Type::kLarge));
     chip->SetText(GetQueryText(query_type));
+    chip->SetAccessibleName(GetQueryTextAccessibleName(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
                             weak_ptr_factory_.GetWeakPtr(), query_type));
@@ -300,6 +309,7 @@ void LauncherSearchIphView::ShuffleChipsQuery() {
     CHECK_LT(chip_index, chips_.size());
     auto chip = chips_[chip_index++];
     chip->SetText(GetQueryText(query_type));
+    chip->SetAccessibleName(GetQueryTextAccessibleName(query_type));
     chip->SetCallback(
         base::BindRepeating(&LauncherSearchIphView::RunLauncherSearchQuery,
                             weak_ptr_factory_.GetWeakPtr(), query_type));
