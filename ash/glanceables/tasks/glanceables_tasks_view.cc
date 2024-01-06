@@ -57,8 +57,10 @@ namespace {
 constexpr int kAddNewTaskIconSize = 24;
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kInteriorGlanceableBubbleMargin = 16;
-constexpr int kListViewBetweenChildSpacing = 2;
+constexpr int kScrollViewBottomMargin = 12;
+constexpr int kListViewBetweenChildSpacing = 4;
 constexpr int kMaximumTasks = 100;
+constexpr gfx::Insets kFooterBorderInsets = gfx::Insets::TLBR(4, 6, 8, 2);
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -142,7 +144,9 @@ GlanceablesTasksView::GlanceablesTasksView(
           .WithWeight(1));
   list_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      /*inside_border_insets=*/gfx::Insets(), kListViewBetweenChildSpacing));
+      /*inside_border_insets=*/
+      gfx::Insets::TLBR(0, 0, kScrollViewBottomMargin, 0),
+      kListViewBetweenChildSpacing));
 
   add_new_task_button_ =
       list_view->AddChildView(std::make_unique<AddNewTaskButton>(
@@ -191,14 +195,17 @@ GlanceablesTasksView::GlanceablesTasksView(
   task_list_combo_box_view_->SetSelectionChangedCallback(base::BindRepeating(
       &GlanceablesTasksView::SelectedTasksListChanged, base::Unretained(this)));
 
-  list_footer_view_ = AddChildView(std::make_unique<GlanceablesListFooterView>(
-      l10n_util::GetStringUTF16(
-          IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
-      base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
-                          base::Unretained(this),
-                          TasksLaunchSource::kFooterButton)));
+  list_footer_view_ =
+      list_view->AddChildView(std::make_unique<GlanceablesListFooterView>(
+          l10n_util::GetStringUTF16(
+              IDS_GLANCEABLES_TASKS_SEE_ALL_BUTTON_ACCESSIBLE_NAME),
+          base::BindRepeating(&GlanceablesTasksView::ActionButtonPressed,
+                              base::Unretained(this),
+                              TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
+  list_footer_view_->SetBorder(views::CreateEmptyBorder(kFooterBorderInsets));
+  list_footer_view_->SetVisible(false);
 
   ScheduleUpdateTasksList(/*initial_update=*/true);
 }
@@ -294,7 +301,6 @@ void GlanceablesTasksView::UpdateTasksList(
   task_items_container_view_->RemoveAllChildViews();
 
   size_t num_tasks_shown = 0;
-  size_t num_tasks = 0;
 
   for (const auto& task : *tasks) {
     if (task->completed) {
@@ -306,12 +312,9 @@ void GlanceablesTasksView::UpdateTasksList(
           CreateTaskView(task_list_id, task.get()));
       ++num_tasks_shown;
     }
-    ++num_tasks;
   }
   task_items_container_view_->SetVisible(num_tasks_shown > 0);
-
-  list_footer_view_->UpdateItemsCount(num_tasks_shown, num_tasks);
-  list_footer_view_->SetVisible(num_tasks_shown > 0);
+  list_footer_view_->SetVisible(tasks->item_count() >= kMaximumTasks);
 
   task_items_container_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_GLANCEABLES_TASKS_SELECTED_LIST_ACCESSIBLE_NAME,
@@ -406,6 +409,8 @@ void GlanceablesTasksView::OnTaskSaved(
   }
   progress_bar_->UpdateProgressBarVisibility(/*visible=*/false);
   std::move(callback).Run(task);
+  list_footer_view_->SetVisible(task_items_container_view_->children().size() >=
+                                kMaximumTasks);
 }
 
 BEGIN_METADATA(GlanceablesTasksView, views::View)

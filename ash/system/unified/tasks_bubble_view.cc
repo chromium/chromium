@@ -55,6 +55,8 @@ constexpr int kInteriorGlanceableBubbleMargin = 16;
 constexpr int kAddNewButtonCornerRadius = 16;
 constexpr auto kAddNewTaskButtonMargins = gfx::Insets::TLBR(0, 0, 16, 0);
 constexpr auto kHeaderIconButtonMargins = gfx::Insets::TLBR(0, 0, 0, 4);
+constexpr int kFooterStartSpacing = 6;
+constexpr int kFooterVerticalSpacing = 7;
 
 constexpr char kTasksManagementPage[] =
     "https://calendar.google.com/calendar/u/0/r/week?opentasks=1";
@@ -173,6 +175,10 @@ TasksBubbleView::TasksBubbleView(
                           TasksLaunchSource::kFooterButton)));
   list_footer_view_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter));
+  list_footer_view_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(kFooterVerticalSpacing, kFooterStartSpacing,
+                        kFooterVerticalSpacing, 0));
 
   ScheduleUpdateTasksList(/*initial_update=*/true);
 }

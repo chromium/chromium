@@ -14,6 +14,7 @@
 #include "ash/style/combobox.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
@@ -65,6 +66,20 @@ class GlanceablesTasksViewTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  // Populates `num` of tasks to the default task list.
+  void PopulateTasks(size_t num) {
+    for (size_t i = 0; i < num; ++i) {
+      auto num_string = base::NumberToString(i);
+      fake_glanceables_tasks_client_->AddTask(
+          "TaskListID1", base::StrCat({"title_", num_string}),
+          base::DoNothing());
+    }
+
+    // Recreate the tasks view to update the task views.
+    view_ = widget_->SetContentsView(std::make_unique<GlanceablesTasksView>(
+        fake_glanceables_tasks_client_->task_lists()));
+  }
+
   Combobox* GetComboBoxView() const {
     return views::AsViewClass<Combobox>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleComboBox)));
@@ -78,6 +93,11 @@ class GlanceablesTasksViewTest : public AshTestBase {
   const views::LabelButton* GetAddNewTaskButton() const {
     return views::AsViewClass<views::LabelButton>(view_->GetViewByID(
         base::to_underlying(GlanceablesViewId::kTasksBubbleAddNewButton)));
+  }
+
+  const GlanceablesListFooterView* GetListFooterView() const {
+    return views::AsViewClass<GlanceablesListFooterView>(view_->GetViewByID(
+        base::to_underlying(GlanceablesViewId::kTasksBubbleListFooter)));
   }
 
   const views::ProgressBar* GetProgressBar() const {
@@ -168,6 +188,27 @@ TEST_F(GlanceablesTasksViewTest, ShowsProgressBarWhileEditingTask) {
   // After replying to pending callbacks, the progress bar should become hidden.
   EXPECT_EQ(tasks_client()->RunPendingUpdateTaskCallbacks(), 1u);
   EXPECT_FALSE(GetProgressBar()->GetVisible());
+}
+
+TEST_F(GlanceablesTasksViewTest, OnlyShowsFooterIfAtLeast100Tasks) {
+  ASSERT_TRUE(GetListFooterView());
+  EXPECT_FALSE(GetListFooterView()->GetVisible());
+
+  const auto initial_tasks_count =
+      GetTaskItemsContainerView()->children().size();
+  // Add tasks to make the list contain 99 tasks.
+  PopulateTasks(99u - initial_tasks_count);
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_FALSE(GetListFooterView()->GetVisible());
+
+  // Creates the 100th task.
+  GestureTapOn(GetAddNewTaskButton());
+  PressAndReleaseKey(ui::VKEY_N, ui::EF_SHIFT_DOWN);
+  PressAndReleaseKey(ui::VKEY_E);
+  PressAndReleaseKey(ui::VKEY_W);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+  view()->GetWidget()->LayoutRootViewIfNecessary();
+  EXPECT_TRUE(GetListFooterView()->GetVisible());
 }
 
 TEST_F(GlanceablesTasksViewTest, SupportsEditingRightAfterAdding) {
