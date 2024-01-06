@@ -200,8 +200,77 @@ constexpr TestKeyEvent BPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::VKEY_B, flags};
 }
 
+constexpr TestKeyEvent CPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::US_C,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'C'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'c'>::Character)),
+          ui::VKEY_C, flags};
+}
+
+constexpr TestKeyEvent CReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::US_C,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'C'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'c'>::Character)),
+          ui::VKEY_C, flags};
+}
+
+constexpr TestKeyEvent DPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::US_D,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'D'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'d'>::Character)),
+          ui::VKEY_D, flags};
+}
+
+constexpr TestKeyEvent DReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::US_D,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'D'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'d'>::Character)),
+          ui::VKEY_D, flags};
+}
+
+constexpr TestKeyEvent NPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::US_N,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'N'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'n'>::Character)),
+          ui::VKEY_N, flags};
+}
+
+constexpr TestKeyEvent NReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::US_N,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'N'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'n'>::Character)),
+          ui::VKEY_N, flags};
+}
+
+constexpr TestKeyEvent TPressed(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_PRESSED, ui::DomCode::US_T,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'T'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'t'>::Character)),
+          ui::VKEY_T, flags};
+}
+
+constexpr TestKeyEvent TReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::US_T,
+          ((flags & ui::EF_SHIFT_DOWN)
+               ? ui::DomKey(ui::DomKey::Constant<'T'>::Character)
+               : ui::DomKey(ui::DomKey::Constant<'t'>::Character)),
+          ui::VKEY_T, flags};
+}
+
 constexpr TestKeyEvent LShiftPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::SHIFT_LEFT, ui::DomKey::SHIFT,
+          ui::VKEY_SHIFT, flags | ui::EF_SHIFT_DOWN};
+}
+
+constexpr TestKeyEvent LShiftReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::SHIFT_LEFT, ui::DomKey::SHIFT,
           ui::VKEY_SHIFT, flags | ui::EF_SHIFT_DOWN};
 }
 
@@ -456,6 +525,11 @@ constexpr TestKeyEvent PageUpPressed(ui::EventFlags flags = ui::EF_NONE) {
           ui::VKEY_PRIOR, flags};
 }
 
+constexpr TestKeyEvent PageUpReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::PAGE_UP, ui::DomKey::PAGE_UP,
+          ui::VKEY_PRIOR, flags};
+}
+
 constexpr TestKeyEvent PageDownPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::PAGE_DOWN, ui::DomKey::PAGE_DOWN,
           ui::VKEY_NEXT, flags};
@@ -463,6 +537,11 @@ constexpr TestKeyEvent PageDownPressed(ui::EventFlags flags = ui::EF_NONE) {
 
 constexpr TestKeyEvent ArrowUpPressed(ui::EventFlags flags = ui::EF_NONE) {
   return {ui::ET_KEY_PRESSED, ui::DomCode::ARROW_UP, ui::DomKey::ARROW_UP,
+          ui::VKEY_UP, flags};
+}
+
+constexpr TestKeyEvent ArrowUpReleased(ui::EventFlags flags = ui::EF_NONE) {
+  return {ui::ET_KEY_RELEASED, ui::DomCode::ARROW_UP, ui::DomKey::ARROW_UP,
           ui::VKEY_UP, flags};
 }
 
@@ -870,22 +949,55 @@ class EventRewriterTest : public ChromeAshTestBase {
  protected:
   std::optional<TestKeyEvent> RunRewriter(const TestKeyEvent& test_key_event,
                                           int device_id = kKeyboardDeviceId) {
-    ui::KeyEvent event(test_key_event.type, test_key_event.keycode,
-                       test_key_event.code, test_key_event.flags,
-                       test_key_event.key, ui::EventTimeForNow());
-    event.set_scan_code(test_key_event.scan_code);
-    event.set_source_device_id(device_id);
-    source().Send(&event);
-
-    auto events =
-        static_cast<TestEventSink*>(source().GetEventSink())->TakeEvents();
+    auto events = SendKeyEvent(test_key_event, device_id);
     if (events.empty()) {
       return std::nullopt;
     }
-    auto* key_event = events[0]->AsKeyEvent();
-    return {{key_event->type(), key_event->code(), key_event->GetDomKey(),
-             key_event->key_code(), key_event->flags(),
-             key_event->scan_code()}};
+    return {events[0]};
+  }
+
+  // Sends a KeyEvent to the rewriter, returns the rewritten events.
+  // Note: one event may be rewritten into multiple events.
+  std::vector<TestKeyEvent> SendKeyEvent(const TestKeyEvent& event,
+                                         int device_id = kKeyboardDeviceId) {
+    return SendKeyEvents({event}, device_id);
+  }
+
+  std::vector<TestKeyEvent> SendKeyEvents(
+      const std::vector<TestKeyEvent>& events,
+      int device_id = kKeyboardDeviceId) {
+    // Just in case some events may be there.
+    if (!TakeEvents().empty()) {
+      ADD_FAILURE() << "Rewritten events were left";
+    }
+
+    // Convert TestKeyEvent into ui::KeyEvent, then dispatch it to the
+    // rewriter.
+    for (const TestKeyEvent& event : events) {
+      ui::KeyEvent key_event(event.type, event.keycode, event.code, event.flags,
+                             event.key, ui::EventTimeForNow());
+      key_event.set_scan_code(event.scan_code);
+      key_event.set_source_device_id(device_id);
+      ui::EventDispatchDetails details = source_.Send(&key_event);
+      CHECK(!details.dispatcher_destroyed);
+    }
+
+    // Convert the rewritten ui::Events back to TestKeyEvent.
+    auto rewritten_events = TakeEvents();
+    std::vector<TestKeyEvent> result;
+    for (const auto& rewritten_event : rewritten_events) {
+      auto* rewritten_key_event = rewritten_event->AsKeyEvent();
+      if (!rewritten_key_event) {
+        ADD_FAILURE() << "Unexpected rewritten key event: "
+                      << rewritten_event->ToString();
+        continue;
+      }
+      result.push_back(
+          {rewritten_key_event->type(), rewritten_key_event->code(),
+           rewritten_key_event->GetDomKey(), rewritten_key_event->key_code(),
+           rewritten_key_event->flags(), rewritten_key_event->scan_code()});
+    }
+    return result;
   }
 
   // Parameterized version of test depending on feature flag values. The feature
@@ -968,23 +1080,6 @@ class EventRewriterTest : public ChromeAshTestBase {
 
   std::vector<std::unique_ptr<ui::Event>> TakeEvents() {
     return sink_.TakeEvents();
-  }
-
-  void SendKeyEvent(ui::EventType type,
-                    ui::KeyboardCode key_code,
-                    ui::DomCode code,
-                    ui::DomKey key,
-                    int flags) {
-    ui::KeyEvent press(type, key_code, code, flags, key, ui::EventTimeForNow());
-    ui::EventDispatchDetails details = source_.Send(&press);
-    CHECK(!details.dispatcher_destroyed);
-  }
-
-  void SendActivateStickyKeyPattern(ui::KeyboardCode key_code,
-                                    ui::DomCode code,
-                                    ui::DomKey key) {
-    SendKeyEvent(ui::ET_KEY_PRESSED, key_code, code, key, ui::EF_NONE);
-    SendKeyEvent(ui::ET_KEY_RELEASED, key_code, code, key, ui::EF_NONE);
   }
 
   void ClearNotifications() {
@@ -3319,15 +3414,10 @@ TEST_F(EventRewriterTest, TestRewriteKeyEventSentByXSendEvent) {
 
   // Send left control press.
   {
-    ui::KeyEvent keyevent(ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
-                          ui::DomCode::CONTROL_LEFT, ui::EF_FINAL,
-                          ui::DomKey::CONTROL, ui::EventTimeForNow());
-    source().Send(&keyevent);
-    auto events = TakeEvents();
+    auto events = SendKeyEvent(LControlPressed(ui::EF_FINAL));
     // Control should NOT be remapped to Alt if EF_FINAL is set.
     ASSERT_EQ(1u, events.size());
-    ASSERT_TRUE(events[0]->IsKeyEvent());
-    EXPECT_EQ(ui::VKEY_CONTROL, events[0]->AsKeyEvent()->key_code());
+    EXPECT_EQ(LControlPressed(ui::EF_FINAL), events[0]);
   }
 }
 
@@ -3662,52 +3752,32 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
 TEST_F(EventRewriterTest, StickyKeyEventDispatchImpl) {
   Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test the actual key event dispatch implementation.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvents({LControlPressed(), LControlReleased()});
     ASSERT_EQ(1u, events.size());
-    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-    EXPECT_EQ(ui::VKEY_CONTROL, events[0]->AsKeyEvent()->key_code());
+    EXPECT_EQ(LControlPressed(), events[0]);
   }
 
   // Test key press event is correctly modified and modifier release
   // event is sent.
-  ui::KeyEvent press(ui::ET_KEY_PRESSED, ui::VKEY_C, ui::DomCode::US_C,
-                     ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
-                     ui::EventTimeForNow());
-  ui::EventDispatchDetails details = source().Send(&press);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvent(CPressed());
     ASSERT_EQ(2u, events.size());
-    ASSERT_EQ(ui::ET_KEY_PRESSED, events[0]->type());
-    EXPECT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
-    EXPECT_TRUE(events[0]->flags() & ui::EF_CONTROL_DOWN);
-
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[1]->type());
-    EXPECT_EQ(ui::VKEY_CONTROL, events[1]->AsKeyEvent()->key_code());
+    EXPECT_EQ(CPressed(ui::EF_CONTROL_DOWN), events[0]);
+    EXPECT_EQ(LControlReleased(), events[1]);
   }
 
   // Test key release event is not modified.
-  ui::KeyEvent release(ui::ET_KEY_RELEASED, ui::VKEY_C, ui::DomCode::US_C,
-                       ui::EF_NONE, ui::DomKey::Constant<'c'>::Character,
-                       ui::EventTimeForNow());
-  details = source().Send(&release);
-  ASSERT_FALSE(details.dispatcher_destroyed);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvent(CReleased());
     ASSERT_EQ(1u, events.size());
-    ASSERT_EQ(ui::ET_KEY_RELEASED, events[0]->type());
-    ASSERT_EQ(ui::VKEY_C, events[0]->AsKeyEvent()->key_code());
-    EXPECT_FALSE(events[0]->flags() & ui::EF_CONTROL_DOWN);
+    EXPECT_EQ(CReleased(), events[0]);
   }
 }
 
 TEST_F(EventRewriterTest, MouseEventDispatchImpl) {
   Shell::Get()->sticky_keys_controller()->Enable(true);
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  std::ignore = TakeEvents();
+  SendKeyEvents({LControlPressed(), LControlReleased()});
 
   // Test mouse press event is correctly modified.
   gfx::Point location(0, 0);
@@ -3745,9 +3815,7 @@ TEST_F(EventRewriterTest, MouseWheelEventDispatchImpl) {
   Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test positive mouse wheel event is correctly modified and modifier release
   // event is sent.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  std::ignore = TakeEvents();
+  SendKeyEvents({LControlPressed(), LControlReleased()});
 
   gfx::Point location(0, 0);
   ui::MouseWheelEvent positive(
@@ -3768,9 +3836,7 @@ TEST_F(EventRewriterTest, MouseWheelEventDispatchImpl) {
 
   // Test negative mouse wheel event is correctly modified and modifier release
   // event is sent.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  std::ignore = TakeEvents();
+  SendKeyEvents({LControlPressed(), LControlReleased()});
 
   ui::MouseWheelEvent negative(
       gfx::Vector2d(0, -ui::MouseWheelEvent::kWheelDelta), location, location,
@@ -3837,52 +3903,39 @@ TEST_F(EventRewriterTest, KeyEventRewritingEdgeCases) {
 
   // Edge case 1: Press the Launcher button first. Then press the Up Arrow
   // button.
-  SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META, ui::EF_NONE);
-  SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
   {
-    auto events = TakeEvents();
+    auto events =
+        SendKeyEvents({LWinPressed(), ArrowUpPressed(ui::EF_COMMAND_DOWN)});
     EXPECT_EQ(2u, events.size());
   }
 
   // When releasing the Launcher button, the rewritten event should be released
   // as well.
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META, ui::EF_NONE);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvent(LWinReleased());
     ASSERT_EQ(2u, events.size());
-    EXPECT_EQ(ui::VKEY_COMMAND, events[0]->AsKeyEvent()->key_code());
-    EXPECT_EQ(ui::VKEY_PRIOR, events[1]->AsKeyEvent()->key_code());
+    EXPECT_EQ(LWinReleased(), events[0]);
+    EXPECT_EQ(PageUpReleased(), events[1]);
   }
 
   // Edge case 2: Press the Up Arrow button first. Then press the Launch button.
-  SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP, ui::EF_NONE);
-  SendKeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-               ui::DomKey::META, ui::EF_NONE);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvents({ArrowUpPressed(), LWinPressed()});
     EXPECT_EQ(2u, events.size());
   }
 
   // When releasing the Up Arrow button, the rewritten event should be blocked.
-  SendKeyEvent(ui::ET_KEY_RELEASED, ui::VKEY_UP, ui::DomCode::ARROW_UP,
-               ui::DomKey::ARROW_UP, ui::EF_COMMAND_DOWN);
   {
-    auto events = TakeEvents();
+    auto events = SendKeyEvent(ArrowUpReleased(ui::EF_COMMAND_DOWN));
     ASSERT_EQ(1u, events.size());
-    EXPECT_EQ(ui::VKEY_UP, events[0]->AsKeyEvent()->key_code());
+    EXPECT_EQ(ArrowUpReleased(ui::EF_COMMAND_DOWN), events[0]);
   }
 }
 
 TEST_F(EventRewriterTest, ScrollEventDispatchImpl) {
   Shell::Get()->sticky_keys_controller()->Enable(true);
   // Test scroll event is correctly modified.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  std::ignore = TakeEvents();
+  SendKeyEvents({LControlPressed(), LControlReleased()});
 
   gfx::PointF location(0, 0);
   ui::ScrollEvent scroll(ui::ET_SCROLL, location, location,
@@ -3915,8 +3968,8 @@ TEST_F(EventRewriterTest, ScrollEventDispatchImpl) {
   }
 
   // Test scroll direction change causes that modifier release event is sent.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
+  SendKeyEvents({LControlPressed(), LControlReleased()});
+
   details = source().Send(&scroll);
   ASSERT_FALSE(details.dispatcher_destroyed);
   std::ignore = TakeEvents();
@@ -3986,15 +4039,13 @@ TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing modifier key should show overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
+  SendKeyEvents({LControlPressed(), LControlReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing a normal key should hide overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_T, ui::DomCode::US_T,
-                               ui::DomKey::Constant<'t'>::Character);
+  SendKeyEvents({TPressed(), TReleased()});
   EXPECT_FALSE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
@@ -4008,10 +4059,8 @@ TEST_F(StickyKeysOverlayTest, TwoModifiersEnabled) {
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing two modifiers should show overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
-                               ui::DomKey::SHIFT);
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
+  SendKeyEvents({LShiftPressed(), LShiftReleased(), LControlPressed(),
+                 LControlReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
@@ -4019,8 +4068,7 @@ TEST_F(StickyKeysOverlayTest, TwoModifiersEnabled) {
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing a normal key should hide overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_N, ui::DomCode::US_N,
-                               ui::DomKey::Constant<'n'>::Character);
+  SendKeyEvents({NPressed(), NReleased()});
   EXPECT_FALSE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
@@ -4034,17 +4082,13 @@ TEST_F(StickyKeysOverlayTest, LockedModifier) {
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
 
   // Pressing a modifier key twice should lock modifier and show overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
-                               ui::DomKey::ALT);
-  SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
-                               ui::DomKey::ALT);
+  SendKeyEvents({LAltPressed(), LAltReleased(), LAltPressed(), LAltReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
 
   // Pressing a normal key should not hide overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_D, ui::DomCode::US_D,
-                               ui::DomKey::Constant<'d'>::Character);
+  SendKeyEvents({DPressed(), DReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_ALT_DOWN));
@@ -4058,17 +4102,14 @@ TEST_F(StickyKeysOverlayTest, LockedAndNormalModifier) {
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing a modifier key twice should lock modifier and show overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
+  SendKeyEvents({LControlPressed(), LControlReleased(), LControlPressed(),
+                 LControlReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
 
   // Pressing another modifier key should still show overlay.
-  SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
-                               ui::DomKey::SHIFT);
+  SendKeyEvents({LShiftPressed(), LShiftReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
@@ -4076,8 +4117,7 @@ TEST_F(StickyKeysOverlayTest, LockedAndNormalModifier) {
             overlay_->GetModifierKeyState(ui::EF_SHIFT_DOWN));
 
   // Pressing a normal key should not hide overlay but disable normal modifier.
-  SendActivateStickyKeyPattern(ui::VKEY_D, ui::DomCode::US_D,
-                               ui::DomKey::Constant<'d'>::Character);
+  SendKeyEvents({DPressed(), DReleased()});
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_LOCKED,
             overlay_->GetModifierKeyState(ui::EF_CONTROL_DOWN));
@@ -4097,18 +4137,10 @@ TEST_F(StickyKeysOverlayTest, ModifiersDisabled) {
             overlay_->GetModifierKeyState(ui::EF_COMMAND_DOWN));
 
   // Enable modifiers.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
-                               ui::DomKey::SHIFT);
-  SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
-                               ui::DomKey::SHIFT);
-  SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
-                               ui::DomKey::ALT);
-  SendActivateStickyKeyPattern(ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-                               ui::DomKey::META);
-  SendActivateStickyKeyPattern(ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-                               ui::DomKey::META);
+  SendKeyEvents({LControlPressed(), LControlReleased(), LShiftPressed(),
+                 LShiftReleased(), LShiftPressed(), LShiftReleased(),
+                 LAltPressed(), LAltReleased(), LWinPressed(), LWinReleased(),
+                 LWinPressed(), LWinReleased()});
 
   EXPECT_TRUE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_ENABLED,
@@ -4121,18 +4153,10 @@ TEST_F(StickyKeysOverlayTest, ModifiersDisabled) {
             overlay_->GetModifierKeyState(ui::EF_COMMAND_DOWN));
 
   // Disable modifiers and overlay should be hidden.
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  SendActivateStickyKeyPattern(ui::VKEY_CONTROL, ui::DomCode::CONTROL_LEFT,
-                               ui::DomKey::CONTROL);
-  SendActivateStickyKeyPattern(ui::VKEY_SHIFT, ui::DomCode::SHIFT_LEFT,
-                               ui::DomKey::SHIFT);
-  SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
-                               ui::DomKey::ALT);
-  SendActivateStickyKeyPattern(ui::VKEY_LMENU, ui::DomCode::ALT_LEFT,
-                               ui::DomKey::ALT);
-  SendActivateStickyKeyPattern(ui::VKEY_COMMAND, ui::DomCode::META_LEFT,
-                               ui::DomKey::META);
+  SendKeyEvents({LControlPressed(), LControlReleased(), LControlPressed(),
+                 LControlReleased(), LShiftPressed(), LShiftReleased(),
+                 LAltPressed(), LAltReleased(), LAltPressed(), LAltReleased(),
+                 LWinPressed(), LWinReleased()});
 
   EXPECT_FALSE(overlay_->is_visible());
   EXPECT_EQ(STICKY_KEY_STATE_DISABLED,
