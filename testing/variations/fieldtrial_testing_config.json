@@ -6759,6 +6759,27 @@
             ]
         }
     ],
+    "ExperimentalFeaturesVisibilityDesktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeSettingsVisibility",
+                        "TabOrganizationSettingsVisibility",
+                        "WallpaperSearchSettingsVisibility"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExploreSitesDense": [
         {
             "platforms": [
