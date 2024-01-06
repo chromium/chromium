@@ -2872,7 +2872,7 @@ crbug.com/626703 [ Mac12 ] external/wpt/fetch/api/cors/cors-keepalive.any.html [
 crbug.com/626703 [ Mac13 Release ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
 crbug.com/626703 virtual/threaded/external/wpt/css/css-backgrounds/box-shadow-border-radius-001.html [ Failure ]
-crbug.com/626703 [ Mac13 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
+crbug.com/626703 [ Mac13 Release ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac13-arm64 Release ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded-prefer-compositing/external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Skip Timeout ]
 crbug.com/626703 [ Mac13 Release ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Timeout ]
@@ -3408,7 +3408,6 @@ crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/srcdoc-inherit.meta
 crbug.com/1001374 external/wpt/upgrade-insecure-requests/gen/top.meta/unset/iframe-tag.https.html [ Skip Timeout ]
 
 # Different results on try bots and CQ, skipped to unblock wpt import.
-crbug.com/888443 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/scroll-behavior-element.html [ Failure Pass ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-main-frame-root.html [ Crash Failure Pass Timeout ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-main-frame-window.html [ Crash Failure Pass Timeout ]
 crbug.com/888443 external/wpt/css/cssom-view/scroll-behavior-scrollintoview-nested.html [ Crash Failure Pass Timeout ]
@@ -6145,7 +6144,6 @@ crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.t
 crbug.com/1412866 http/tests/inspector-protocol/tracing/advanced-painting-instrumentation.js [ Failure Pass ]
 
 # Sheriff 2023-02-14
-crbug.com/1414978 external/wpt/webrtc/RTCPeerConnection-GC.https.html [ Failure Pass ]
 crbug.com/1417178 [ Linux ] external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-cross-document-nav.html [ Failure Pass ]
 
 # This test time out because it triggers the legacy SVC path.
