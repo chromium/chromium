@@ -1880,12 +1880,10 @@ config("default_warnings") {
       ]
 
       if (!is_nacl) {
-        if (llvm_force_head_revision) {
-          cflags_cc += [
-            # TODO(https://crbug.com/1513724): Fix and re-enable.
-            "-Wno-c++11-narrowing-const-reference",
-          ]
-        }
+        cflags_cc += [
+          # TODO(https://crbug.com/1513724): Fix and re-enable.
+          "-Wno-c++11-narrowing-const-reference",
+        ]
       }
     }
 
