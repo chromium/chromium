@@ -70,7 +70,7 @@ bool TabletModeToggleFullscreenEventHandler::ProcessEvent(
         return false;
       }
 
-      drag_data_ = DragData{y, active_window};
+      drag_data_ = DragData{.start_y_location = y, .window = active_window};
       active_window->AddObserver(this);
       return true;
     }

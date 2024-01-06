@@ -192,81 +192,69 @@ constexpr TabletModeController::TabletModeBehavior kDefault{};
 
 // Defines the behavior of the tablet mode when enabled by sensor.
 constexpr TabletModeController::TabletModeBehavior kOnBySensor{
-    /*use_sensor=*/true,
-    /*observe_display_events=*/true,
-    /*observe_pointer_device_events=*/true,
-    /*block_internal_input_device=*/true,
-    /*always_show_overview_button=*/false,
-    TabletModeController::ForcePhysicalTabletState::kDefault,
+    .use_sensor = true,
+    .block_internal_input_device = true,
 };
 
 // Defines the behavior that sticks to tablet mode. Used to implement the
 // --force-tablet-mode=touch_view flag.
 constexpr TabletModeController::TabletModeBehavior kLockInTabletMode{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/false,
-    /*block_internal_input_device=*/false,
-    /*always_show_overview_button=*/true,
-    TabletModeController::ForcePhysicalTabletState::kDefault,
+    .use_sensor = false,
+    .observe_display_events = false,
+    .observe_pointer_device_events = false,
+    .block_internal_input_device = false,
+    .always_show_overview_button = true,
 };
 
 // Defines the behavior that sticks to tablet mode. Used to implement the
 // --force-tablet-mode=clamshell flag.
 constexpr TabletModeController::TabletModeBehavior kLockInClamshellMode{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/false,
-    /*block_internal_input_device=*/false,
-    /*always_show_overview_button=*/false,
-    TabletModeController::ForcePhysicalTabletState::kDefault,
+    .use_sensor = false,
+    .observe_display_events = false,
+    .observe_pointer_device_events = false,
 };
 
 // Defines the behavior used for testing. It prevents the device from
 // switching the mode due to sensor events during the test.
 constexpr TabletModeController::TabletModeBehavior kOnForTest{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/true,
-    /*observe_pointer_device_events=*/true,
-    /*block_internal_input_device=*/true,
-    /*always_show_overview_button=*/false,
-    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
+    .use_sensor = false,
+    .block_internal_input_device = true,
+    .force_physical_tablet_state =
+        TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
 // Used for the testing API to forcibly enter into the tablet mode. It should
 // not observe hardware events as tests want to stick with the tablet mode, and
 // it should not block internal keyboard as some tests may want to use keyboard
 // events in the tablet mode.
-// TODO(mukai): consolidate this with kOnFOrTest.
 constexpr TabletModeController::TabletModeBehavior kOnForAutotest{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/false,
-    /*block_internal_input_device=*/false,
-    /*always_show_overview_button=*/false,
-    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
+    .use_sensor = false,
+    .observe_display_events = false,
+    .observe_pointer_device_events = false,
+    .force_physical_tablet_state =
+        TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
 // Used for the testing API to forcibly exit from the tablet mode.
 constexpr TabletModeController::TabletModeBehavior kOffForAutotest{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/false,
-    /*observe_pointer_device_events=*/false,
-    /*block_internal_input_device=*/false,
-    /*always_show_overview_button=*/false,
-    TabletModeController::ForcePhysicalTabletState::kForceClamshellMode,
+    .use_sensor = false,
+    .observe_display_events = false,
+    .observe_pointer_device_events = false,
+    .force_physical_tablet_state =
+        TabletModeController::ForcePhysicalTabletState::kForceClamshellMode,
 };
 
 // Used for development purpose (currently debug shortcut shift-ctrl-alt). This
 // ignores the sensor but allows to switch upon docked mode and external
 // pointing device. It also forces to show the overview button.
 constexpr TabletModeController::TabletModeBehavior kOnForDev{
-    /*use_sensor=*/false,
-    /*observe_display_events=*/true,
-    /*observe_pointer_device_events=*/true,
-    /*block_internal_input_device=*/false,
-    /*always_show_overview_button=*/true,
-    TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
+    .use_sensor = false,
+    .observe_display_events = true,
+    .observe_pointer_device_events = true,
+    .block_internal_input_device = false,
+    .always_show_overview_button = true,
+    .force_physical_tablet_state =
+        TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
 };
 
 using LidState = chromeos::PowerManagerClient::LidState;
@@ -1067,8 +1055,8 @@ void TabletModeController::RecordTabletModeUsageInterval(
 void TabletModeController::RecordLidAngle() {
   DCHECK(can_detect_lid_angle_);
   base::LinearHistogram::FactoryGet(
-      kLidAngleHistogramName, 1 /* minimum */, 360 /* maximum */,
-      50 /* bucket_count */, base::HistogramBase::kUmaTargetedHistogramFlag)
+      kLidAngleHistogramName, /*minimum=*/1, /*maximum=*/360,
+      /*bucket_count=*/50, base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(std::round(lid_angle_));
 }
 

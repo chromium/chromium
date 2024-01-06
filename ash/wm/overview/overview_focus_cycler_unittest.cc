@@ -44,9 +44,8 @@ struct OverviewFocusCyclerTestParams {
 
 }  // namespace
 
-class OverviewFocusCyclerTest
-    : public OverviewTestBase,
-      public testing::WithParamInterface<OverviewFocusCyclerTestParams> {
+class OverviewFocusCyclerTest : public OverviewTestBase,
+                                public testing::WithParamInterface<bool> {
  public:
   OverviewFocusCyclerTest() = default;
   OverviewFocusCyclerTest(const OverviewFocusCyclerTest&) = delete;
@@ -58,9 +57,7 @@ class OverviewFocusCyclerTest
   }
 
   // Helper to make tests more readable.
-  bool AreDeskTemplatesEnabled() const {
-    return GetParam().desk_templates_enabled;
-  }
+  bool AreDeskTemplatesEnabled() const { return GetParam(); }
 
   // OverviewTestBase:
   void SetUp() override {
@@ -960,13 +957,7 @@ TEST_P(DesksOverviewFocusCyclerTest, SwitchingToZeroStateWhileTabbing) {
   SendKey(ui::VKEY_TAB);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         OverviewFocusCyclerTest,
-                         testing::Values(OverviewFocusCyclerTestParams{true},
-                                         OverviewFocusCyclerTestParams{false}));
-INSTANTIATE_TEST_SUITE_P(All,
-                         DesksOverviewFocusCyclerTest,
-                         testing::Values(OverviewFocusCyclerTestParams{true},
-                                         OverviewFocusCyclerTestParams{false}));
+INSTANTIATE_TEST_SUITE_P(All, OverviewFocusCyclerTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All, DesksOverviewFocusCyclerTest, testing::Bool());
 
 }  // namespace ash

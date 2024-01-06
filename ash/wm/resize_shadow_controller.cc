@@ -21,13 +21,13 @@ namespace {
 
 // Lock shadow params
 constexpr ResizeShadow::InitParams kLockParams{
-    /*thickness=*/6,
-    /*shadow_corner_radius=*/6,
-    /*window_corner_radius=*/2,
-    /*opacity =*/0.3f,
-    /*color=*/gfx::kGoogleGrey900,
-    /*hit_test_enabled=*/false,
-    /*hide_duration_ms=*/0,
+    .thickness = 6,
+    .shadow_corner_radius = 6,
+    .window_corner_radius = 2,
+    .opacity = 0.3f,
+    .color = gfx::kGoogleGrey900,
+    .hit_test_enabled = false,
+    .hide_duration_ms = 0,
 };
 
 }  // namespace
