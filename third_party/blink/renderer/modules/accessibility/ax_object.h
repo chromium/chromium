@@ -1209,7 +1209,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
   bool NeedsToUpdateChildren() const;
-  virtual void SetNeedsToUpdateChildren() const;
+  virtual void SetNeedsToUpdateChildren(bool update = true) const;
   virtual void ClearChildren() const;
   void DetachFromParent();
   virtual void SelectedOptions(AXObjectVector&) const {}
@@ -1399,7 +1399,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
   mutable AXObjectVector children_;
-  mutable bool children_dirty_ = false;
   mutable bool has_dirty_descendants_ = false;
 
   // The final role, taking into account the ARIA role and native role.
@@ -1491,6 +1490,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   String KeyboardShortcut() const;
   void UpdateStyleAndLayoutTreeForNode(Node& node);
   void OnInheritedCachedValuesChanged() const;
+
+  mutable bool children_dirty_ : 1 = false;
 
   // Do the rest of the cached_* member variables need to be recomputed?
   mutable bool cached_values_need_update_ : 1;

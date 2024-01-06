@@ -822,6 +822,8 @@ void AXObject::Detach() {
   parent_ = nullptr;
   ax_object_cache_ = nullptr;
   children_dirty_ = false;
+  child_cached_values_need_update_ = false;
+  cached_values_need_update_ = false;
   has_dirty_descendants_ = false;
   id_ = 0;
 }
@@ -5759,10 +5761,15 @@ void AXObject::UpdateChildrenIfNecessary() {
   DCHECK(!AXObjectCache().HasBeenDisposed());
 #endif
 
-  if (!NeedsToUpdateChildren() || !CanHaveChildren()) {
+  if (!NeedsToUpdateChildren()) {
     CHECK(!child_cached_values_need_update_)
-        << "This should only be set when also setting children_dirty_ to true.";
-    children_dirty_ = false;
+        << "This should only be set when also setting children_dirty_ to true: "
+        << ToString(true, true);
+    return;
+  }
+
+  if (!CanHaveChildren()) {
+    SetNeedsToUpdateChildren(false);
     return;
   }
 
@@ -5775,18 +5782,26 @@ void AXObject::UpdateChildrenIfNecessary() {
 
   ClearChildren();
   AddChildren();
-  child_cached_values_need_update_ = false;
+  CHECK(!children_dirty_);
+  CHECK(!child_cached_values_need_update_);
 }
 
 bool AXObject::NeedsToUpdateChildren() const {
   return children_dirty_;
 }
 
-void AXObject::SetNeedsToUpdateChildren() const {
+void AXObject::SetNeedsToUpdateChildren(bool update) const {
   CHECK(!IsDetached()) << "Cannot update children on a detached node: "
                        << ToString(true, true);
   CHECK(!AXObjectCache().IsFrozen());
   CHECK(!AXObjectCache().HasBeenDisposed());
+
+  if (!update) {
+    children_dirty_ = false;
+    child_cached_values_need_update_ = false;
+    return;
+  }
+
 #if defined(AX_FAIL_FAST_BUILD)
   SANITIZER_CHECK(!is_adding_children_)
       << "Should not invalidate children while adding them: "

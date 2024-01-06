@@ -48,8 +48,7 @@ void AXVirtualObject::AddChildren() {
   if (!accessible_node_)
     return;
 
-  DCHECK(children_dirty_);
-  children_dirty_ = false;
+  CHECK(NeedsToUpdateChildren());
 
   for (const auto& child : accessible_node_->GetChildren()) {
     AXObject* ax_child = AXObjectCache().GetOrCreate(child, this);
@@ -69,6 +68,8 @@ void AXVirtualObject::AddChildren() {
 
     children_.push_back(ax_child);
   }
+
+  SetNeedsToUpdateChildren(false);
 }
 
 const AtomicString& AXVirtualObject::GetAOMPropertyOrARIAAttribute(

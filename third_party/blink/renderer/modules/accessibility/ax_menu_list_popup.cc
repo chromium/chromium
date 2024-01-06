@@ -133,8 +133,7 @@ void AXMenuListPopup::AddChildren() {
     return;
 
   DCHECK(children_.empty());
-  DCHECK(children_dirty_);
-  children_dirty_ = false;
+  CHECK(NeedsToUpdateChildren());
 
   if (active_index_ == -1) {
     active_index_ = GetSelectedIndex();
@@ -148,6 +147,7 @@ void AXMenuListPopup::AddChildren() {
       children_.push_back(option);
     }
   }
+  SetNeedsToUpdateChildren(false);
 }
 
 void AXMenuListPopup::DidUpdateActiveOption(int option_index,

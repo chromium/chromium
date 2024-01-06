@@ -4402,7 +4402,7 @@ void AXNodeObject::LoadInlineTextBoxesHelper() {
     // Can only add new objects while processing deferred events.
     AddInlineTextBoxChildren();
     // Avoid adding these children twice.
-    children_dirty_ = false;
+    SetNeedsToUpdateChildren(false);
     // If inline text box children were added, mark the node dirty so that the
     // results are serialized.
     if (!CachedChildrenIncludingIgnored().empty()) {
@@ -4577,7 +4577,7 @@ void AXNodeObject::AddChildrenImpl() {
     return;                                                               \
   }
 
-  DCHECK(children_dirty_);
+  CHECK(NeedsToUpdateChildren());
 
   if (!CanHaveChildren()) {
     // TODO(crbug.com/1407397): Make sure this is no longer firing then
@@ -4648,7 +4648,7 @@ void AXNodeObject::AddChildren() {
 #endif
 
   AddChildrenImpl();
-  children_dirty_ = false;
+  SetNeedsToUpdateChildren(false);
 
 #if DCHECK_IS_ON()
   // All added children must be attached.
