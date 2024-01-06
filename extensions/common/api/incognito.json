@@ -5,7 +5,7 @@
 [
   {
     "namespace": "incognito",
-    "description": "Dummy namepsace for the incognito manifest key.",
+    "description": "Dummy namespace for the incognito manifest key.",
     "types": [
       {
         "id": "IncognitoMode",
