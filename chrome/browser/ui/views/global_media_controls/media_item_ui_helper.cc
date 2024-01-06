@@ -149,8 +149,6 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
       media_message_center::SourceType::kLocalMediaSession;
   const bool gmc_cast_start_stop_enabled =
       media_router::GlobalMediaControlsCastStartStopEnabled(profile);
-  const bool show_expand_button =
-      !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI);
   mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
   mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
@@ -165,8 +163,8 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
   }
   return std::make_unique<MediaItemUIDeviceSelectorView>(
       id, selector_delegate, std::move(host), std::move(client_receiver),
-      /* has_audio_output */ is_local_media_session, entry_point,
-      show_expand_button, show_devices, media_color_theme);
+      /*has_audio_output=*/is_local_media_session, entry_point,
+      /*show_expand_button=*/true, show_devices, media_color_theme);
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(

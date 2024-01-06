@@ -12,7 +12,6 @@
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_item.h"
-#include "components/media_message_center/media_notification_view_modern_impl.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/audio/audio_device_description.h"
@@ -41,17 +40,13 @@ namespace global_media_controls {
 namespace {
 
 constexpr int kWidth = 400;
-constexpr int kModernUIWidth = 350;
 constexpr gfx::Size kNormalSize = gfx::Size(kWidth, 100);
 constexpr gfx::Size kExpandedSize = gfx::Size(kWidth, 150);
-constexpr gfx::Size kModernUISize = gfx::Size(kModernUIWidth, 168);
 constexpr gfx::Size kDismissButtonSize = gfx::Size(30, 30);
 constexpr int kDismissButtonIconSize = 20;
 constexpr int kDismissButtonBackgroundRadius = 15;
 constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
-constexpr gfx::Size kModernDismissButtonSize = gfx::Size(14, 14);
-constexpr int kModernDismissButtonIconSize = 10;
 constexpr int kCrOSDeviceSelectorSeparatorHeight = 22;
 constexpr gfx::Insets kSwipeableContainerInsets =
     gfx::Insets::TLBR(4, 16, 8, 16);
@@ -161,11 +156,8 @@ MediaItemUIView::MediaItemUIView(
     SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
 
-    gfx::Size dismiss_button_size =
+    const gfx::Size dismiss_button_size =
         has_notification_theme_ ? kCrOSDismissButtonSize : kDismissButtonSize;
-    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
-      dismiss_button_size = kModernDismissButtonSize;
-    }
 
     auto dismiss_button_placeholder = std::make_unique<views::View>();
     dismiss_button_placeholder->SetPreferredSize(dismiss_button_size);
@@ -193,22 +185,13 @@ MediaItemUIView::MediaItemUIView(
     slide_out_controller_ =
         std::make_unique<views::SlideOutController>(this, this);
 
-    if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI)) {
-      footer_view_ = footer_view.get();
-      view = std::make_unique<
-          media_message_center::MediaNotificationViewModernImpl>(
-          this, std::move(item), std::move(dismiss_button_placeholder),
-          std::move(footer_view), kModernUIWidth, notification_theme);
-      SetPreferredSize(kModernUISize);
-    } else {
-      view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
-          this, std::move(item), std::move(dismiss_button_placeholder),
-          std::u16string(), kWidth, /*should_show_icon=*/false,
-          notification_theme);
+    view = std::make_unique<media_message_center::MediaNotificationViewImpl>(
+        this, std::move(item), std::move(dismiss_button_placeholder),
+        std::u16string(), kWidth, /*should_show_icon=*/false,
+        notification_theme);
+    UpdateFooterView(std::move(footer_view));
+    SetPreferredSize(kNormalSize);
 
-      UpdateFooterView(std::move(footer_view));
-      SetPreferredSize(kNormalSize);
-    }
     view_ = swipeable_container_->AddChildView(std::move(view));
     UpdateDeviceSelector(std::move(device_selector_view));
     ForceExpandedState();
@@ -432,9 +415,6 @@ void MediaItemUIView::UpdateDismissButtonIcon() {
 
   int icon_size = has_notification_theme_ ? kCrOSDismissButtonIconSize
                                           : kDismissButtonIconSize;
-  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
-    icon_size = kModernDismissButtonIconSize;
-
   views::SetImageFromVectorIconWithColor(
       dismiss_button_, vector_icons::kCloseRoundedIcon, icon_size,
       foreground_color_, foreground_disabled_color_);
@@ -491,9 +471,6 @@ void MediaItemUIView::OnSizeChanged() {
   gfx::Size new_size;
   if (use_cros_updated_ui_) {
     new_size = kCrOSMediaItemUpdatedUISize;
-  } else if (base::FeatureList::IsEnabled(
-                 media::kGlobalMediaControlsModernUI)) {
-    new_size = kModernUISize;
   } else {
     new_size = is_expanded_ ? kExpandedSize : kNormalSize;
   }

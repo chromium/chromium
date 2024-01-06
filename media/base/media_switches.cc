@@ -745,11 +745,6 @@ BASE_FEATURE(kGlobalMediaControlsSeamlessTransfer,
              "GlobalMediaControlsSeamlessTransfer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable an updated version of the Global Media Controls UI.
-BASE_FEATURE(kGlobalMediaControlsModernUI,
-             "GlobalMediaControlsModernUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // CanPlayThrough issued according to standard.
 BASE_FEATURE(kSpecCompliantCanPlayThrough,
              "SpecCompliantCanPlayThrough",
