@@ -4742,9 +4742,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Blink.FrameLoader">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Timing metrics associated with the frame loader in Blink.
+  </summary>
+  <metric name="CommitDocumentLoaderTime">
+    <summary>
+      Time taken to commit a new document in Blink in microseconds. Collected
+      once per navigation when a frame is loaded. This is rounded down to the
+      nearest exponential bucket.
+    </summary>
+  </metric>
+</event>
+
 <event name="Blink.HTMLParsing">
   <owner>schenney@chromium.org</owner>
   <owner>dom-dev@chromium.org</owner>
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
   <summary>
     Logged once per page load, to capture information about invocation of the
     HTMLDocumentParser for the initial document load. Does not include other
@@ -4758,6 +4775,12 @@ be describing additional metrics about the same event.
       The number of chunks parsed while loading the page. Each chunk represents
       a piece of the HTML content that can be loaded without blocking or
       yielding.
+    </summary>
+  </metric>
+  <metric name="FetchQueuedPreloadsTime">
+    <summary>
+      Time taken to fetch queued subresource preloads for a document in
+      microseconds. This is rounded down to the nearest exponential bucket.
     </summary>
   </metric>
   <metric name="ParsingTimeMax">
@@ -4776,6 +4799,38 @@ be describing additional metrics about the same event.
     <summary>
       The total amount of time spent in the HTMLDocumentParser parsing the page,
       in microseconds.
+    </summary>
+  </metric>
+  <metric name="PreloadTime">
+    <summary>
+      Time spent on preloading subresources for a document, including mojo
+      operations, in microseconds. This is rounded down to the nearest
+      exponential bucket.
+    </summary>
+  </metric>
+  <metric name="PrepareToStopParsingTime">
+    <summary>
+      Time taken to tokenize the HTML document, if necessary, and perform other
+      tasks around parsing completion in microseconds. This is rounded down to
+      the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="PumpTokenizerTime">
+    <summary>
+      Time taken to tokenize an HTML document in Blink in microseconds. This is
+      rounded down to the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="ScanAndPreloadTime">
+    <summary>
+      Time taken to scan and preload subresources for a document in
+      microseconds. This is rounded down to the nearest exponential bucket.
+    </summary>
+  </metric>
+  <metric name="ScanTime">
+    <summary>
+      Time spent on the preload scanning process for an HTML document, in
+      microseconds. This is rounded down to the nearest exponential bucket.
     </summary>
   </metric>
   <metric name="TokensParsedAverage">

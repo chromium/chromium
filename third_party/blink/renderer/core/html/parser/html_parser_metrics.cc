@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace blink {
@@ -46,6 +47,30 @@ void HTMLParserMetrics::AddYieldInterval(base::TimeDelta elapsed_time) {
 
 void HTMLParserMetrics::AddInput(unsigned length) {
   input_character_count_ += length;
+}
+
+void HTMLParserMetrics::AddFetchQueuedPreloadsTime(int64_t elapsed_time) {
+  fetch_queued_preloads_time_ += elapsed_time;
+}
+
+void HTMLParserMetrics::AddPreloadTime(int64_t elapsed_time) {
+  preload_time_ += elapsed_time;
+}
+
+void HTMLParserMetrics::AddPrepareToStopParsingTime(int64_t elapsed_time) {
+  prepare_to_stop_parsing_time_ += elapsed_time;
+}
+
+void HTMLParserMetrics::AddPumpTokenizerTime(int64_t elapsed_time) {
+  pump_tokenizer_time_ += elapsed_time;
+}
+
+void HTMLParserMetrics::AddScanAndPreloadTime(int64_t elapsed_time) {
+  scan_and_preload_time_ += elapsed_time;
+}
+
+void HTMLParserMetrics::AddScanTime(int64_t elapsed_time) {
+  scan_time_ += elapsed_time;
 }
 
 void HTMLParserMetrics::ReportUMAs() {
@@ -107,6 +132,22 @@ void HTMLParserMetrics::ReportMetricsAtParseEnd() {
     builder.SetYieldedTimeMin(min_yield_interval_.InMicroseconds());
     builder.SetYieldedTimeAverage(
         accumulated_yield_intervals_.InMicroseconds() / yield_count_);
+  }
+  if (fetch_queued_preloads_time_ > 0 || preload_time_ > 0 ||
+      prepare_to_stop_parsing_time_ > 0 || pump_tokenizer_time_ > 0 ||
+      scan_time_ > 0 || scan_and_preload_time_ > 0) {
+    builder.SetFetchQueuedPreloadsTime(
+        ukm::GetExponentialBucketMinForUserTiming(fetch_queued_preloads_time_));
+    builder.SetPreloadTime(
+        ukm::GetExponentialBucketMinForUserTiming(preload_time_));
+    builder.SetPrepareToStopParsingTime(
+        ukm::GetExponentialBucketMinForUserTiming(
+            prepare_to_stop_parsing_time_));
+    builder.SetPumpTokenizerTime(
+        ukm::GetExponentialBucketMinForUserTiming(pump_tokenizer_time_));
+    builder.SetScanAndPreloadTime(
+        ukm::GetExponentialBucketMinForUserTiming(scan_and_preload_time_));
+    builder.SetScanTime(ukm::GetExponentialBucketMinForUserTiming(scan_time_));
   }
   builder.Record(recorder_);
 }
