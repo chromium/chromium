@@ -24,26 +24,6 @@ BASE_FEATURE(kAndroidDownloadableFontsMatching,
              "AndroidDownloadableFontsMatching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The following two features, when enabled, result in the browser process only
-// asking the renderer process to run beforeunload handlers if it knows such
-// handlers are registered. The two slightly differ in what they do and how
-// they behave:
-// . `kAvoidUnnecessaryBeforeUnloadCheckPostTask` in this case content continues
-//   to report a beforeunload handler is present (even though it isn't). When
-//   asked to dispatch the beforeunload handler, a post task is used (rather
-//   than going to the renderer).
-// . `kAvoidUnnecessaryBeforeUnloadCheckSync` in this case content does not
-//   report a beforeunload handler is present. A ramification of this is
-//   navigations that would normally check beforeunload handlers before
-//   continuing will not, and navigation will synchronously continue.
-// Only one should be used (if both are set, the second takes precedence). The
-// second is unsafe for Android WebView (and thus entirely disabled via
-// ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()),
-// because the embedder may trigger reentrancy, which cannot be avoided.
-BASE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync,
-             "AvoidUnnecessaryBeforeUnloadCheckSync",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables controlling the time to live for pages in the BackForwardCache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.

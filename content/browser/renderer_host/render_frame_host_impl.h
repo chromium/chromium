@@ -1355,12 +1355,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // BeforeUnload IPC.  This can be called on a main frame or subframe.  If
   // |check_subframes_only| is false, it covers handlers for the frame
   // itself and all its descendants.  If |check_subframes_only| is true, it
-  // only checks the frame's descendants but not the frame itself. See
-  // CheckOrDispatchBeforeUnloadForSubtree() for details on
-  // |no_dispatch_because_avoid_unnecessary_sync|.
-  bool ShouldDispatchBeforeUnload(
-      bool check_subframes_only,
-      bool* no_dispatch_because_avoid_unnecessary_sync = nullptr);
+  // only checks the frame's descendants but not the frame itself.
+  bool ShouldDispatchBeforeUnload(bool check_subframes_only);
 
   // Allow tests to override how long to wait for beforeunload completion
   // callbacks to be invoked before timing out.
@@ -3609,15 +3605,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // whether beforeunload is needed and returns the answer.  |subframes_only|
   // indicates whether to only check subframes of the current frame, and skip
   // the current frame itself.
-  // |no_dispatch_because_avoid_unnecessary_sync| is set to true if there are no
-  // before-unload handlers because the feature
-  // |kAvoidUnnecessaryBeforeUnloadCheckSync| is enabled (see description of
-  // |kAvoidUnnecessaryBeforeUnloadCheckSync| for more details).
-  bool CheckOrDispatchBeforeUnloadForSubtree(
-      bool subframes_only,
-      bool send_ipc,
-      bool is_reload,
-      bool* no_dispatch_because_avoid_unnecessary_sync);
+  bool CheckOrDispatchBeforeUnloadForSubtree(bool subframes_only,
+                                             bool send_ipc,
+                                             bool is_reload);
 
   // |ForEachRenderFrameHost|'s callback used in
   // |CheckOrDispatchBeforeUnloadForSubtree|.

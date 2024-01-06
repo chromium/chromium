@@ -68,13 +68,6 @@ using CrossOriginOpenerPolicyValue =
 using CrossOriginEmbedderPolicyValue =
     network::mojom::CrossOriginEmbedderPolicyValue;
 
-void LogNavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync(
-    base::TimeDelta delta) {
-  base::UmaHistogramTimes(
-      "Navigation.NavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync",
-      delta);
-}
-
 // Map Cross-Origin-Opener-Policy header value to its corresponding WebFeature.
 absl::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
   switch (value) {
@@ -762,14 +755,12 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   // We don't want to dispatch a beforeunload handler if
   // is_history_navigation_in_new_child is true. This indicates a newly created
   // child frame which does not have a beforeunload handler.
-  bool no_dispatch_because_avoid_unnecessary_sync = false;
   bool should_dispatch_beforeunload =
       !NavigationTypeUtils::IsSameDocument(
           request->common_params().navigation_type) &&
       !request->common_params().is_history_navigation_in_new_child_frame &&
       frame_tree_node->current_frame_host()->ShouldDispatchBeforeUnload(
-          false /* check_subframes_only */,
-          &no_dispatch_because_avoid_unnecessary_sync);
+          false /* check_subframes_only */);
 
   int nav_entry_id = request->nav_entry_id();
   bool is_pending_entry =
@@ -787,12 +778,6 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
         RenderFrameHostImpl::BeforeUnloadType::BROWSER_INITIATED_NAVIGATION,
         reload_type != ReloadType::NONE);
   } else {
-    if (no_dispatch_because_avoid_unnecessary_sync) {
-      LogNavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync(
-          base::TimeTicks::Now() - frame_tree_node->navigation_request()
-                                       ->common_params()
-                                       .navigation_start);
-    }
     frame_tree_node->navigation_request()->BeginNavigation();
     // WARNING: The NavigationRequest might have been destroyed in
     // BeginNavigation(). Do not use |frame_tree_node->navigation_request()|
@@ -1109,11 +1094,9 @@ void Navigator::OnBeginNavigation(
   // those frames.
   DCHECK(!NavigationTypeUtils::IsSameDocument(
       navigation_request->common_params().navigation_type));
-  bool no_dispatch_because_avoid_unnecessary_sync = false;
   bool should_dispatch_beforeunload =
       frame_tree_node->current_frame_host()->ShouldDispatchBeforeUnload(
-          true /* check_subframes_only */,
-          &no_dispatch_because_avoid_unnecessary_sync);
+          true /* check_subframes_only */);
   if (should_dispatch_beforeunload) {
     frame_tree_node->navigation_request()->SetWaitingForRendererResponse();
     frame_tree_node->current_frame_host()->DispatchBeforeUnload(
@@ -1121,12 +1104,6 @@ void Navigator::OnBeginNavigation(
         NavigationTypeUtils::IsReload(
             navigation_request->common_params().navigation_type));
     return;
-  }
-
-  if (no_dispatch_because_avoid_unnecessary_sync) {
-    LogNavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync(
-        base::TimeTicks::Now() -
-        navigation_request->common_params().navigation_start);
   }
 
   // For main frames, NavigationHandle will be created after the call to

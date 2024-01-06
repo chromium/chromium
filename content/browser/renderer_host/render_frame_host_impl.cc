@@ -930,24 +930,6 @@ GURL GetLastDocumentURL(
   return params.url;
 }
 
-bool IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled() {
-  const bool is_feature_enabled = base::FeatureList::IsEnabled(
-      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
-#if BUILDFLAG(IS_ANDROID)
-  return is_feature_enabled &&
-         GetContentClient()
-             ->browser()
-             ->SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
-#else
-  return is_feature_enabled;
-#endif
-}
-
-bool IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled() {
-  // Only one of sync or posttask should be used. If both are set, use sync.
-  return !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
-}
-
 // Returns true if `host` has the Window Management permission granted.
 bool IsWindowManagementGranted(RenderFrameHost* host) {
   content::PermissionController* permission_controller =
@@ -9713,10 +9695,8 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
 
       // Run beforeunload in this frame and its cross-process descendant
       // frames, in parallel.
-      CheckOrDispatchBeforeUnloadForSubtree(
-          check_subframes_only,
-          /*send_ipc=*/true, is_reload,
-          /*no_dispatch_because_avoid_unnecessary_sync=*/nullptr);
+      CheckOrDispatchBeforeUnloadForSubtree(check_subframes_only,
+                                            /*send_ipc=*/true, is_reload);
     }
   }
 }
@@ -9724,8 +9704,7 @@ void RenderFrameHostImpl::DispatchBeforeUnload(BeforeUnloadType type,
 bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     bool subframes_only,
     bool send_ipc,
-    bool is_reload,
-    bool* no_dispatch_because_avoid_unnecessary_sync) {
+    bool is_reload) {
   // Beforeunload is not supported inside fenced frame trees.
   if (IsFencedFrameRoot())
     return false;
@@ -9746,10 +9725,6 @@ bool RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForSubtree(
     DCHECK(send_ipc);
     beforeunload_pending_replies_.insert(this);
     SendBeforeUnload(is_reload, GetWeakPtr(), /*for_legacy=*/true);
-  } else if (no_dispatch_because_avoid_unnecessary_sync &&
-             !found_beforeunload && !subframes_only && IsRenderFrameLive() &&
-             IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled()) {
-    *no_dispatch_because_avoid_unnecessary_sync = true;
   }
 
   return found_beforeunload;
@@ -9779,13 +9754,9 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
 
   // Only run beforeunload in frames that have registered a beforeunload
   // handler. See description of SendBeforeUnload() for details on simulating
-  // beforeunload for legacy reasons. If
-  // `kAvoidUnnecessaryBeforeUnloadCheckSync` is true and there is no
-  // beforeunload handler for the navigating frame, then do not simulate a
-  // beforeunload handler, and navigation can continue.
+  // beforeunload for legacy reasons.
   const bool run_beforeunload_for_legacy_frame =
-      rfh == this && !rfh->has_before_unload_handler_ &&
-      !IsAvoidUnnecessaryBeforeUnloadCheckSyncEnabled();
+      rfh == this && !rfh->has_before_unload_handler_;
   const bool should_run_beforeunload =
       rfh->has_before_unload_handler_ || run_beforeunload_for_legacy_frame;
 
@@ -9827,12 +9798,10 @@ RenderFrameHostImpl::CheckOrDispatchBeforeUnloadForFrame(
   if (has_same_site_ancestor)
     return FrameIterationAction::kContinue;
 
-  if (run_beforeunload_for_legacy_frame &&
-      IsAvoidUnnecessaryBeforeUnloadCheckPostTaskEnabled()) {
+  if (run_beforeunload_for_legacy_frame) {
     // Wait to schedule until all frames have been processed. The legacy
     // beforeunload is not needed if another frame has a beforeunload
-    // handler. Note that for `kAvoidUnnecessaryBeforeUnloadCheckSync`
-    // `run_beforeunload_for_legacy_frame` is never true.
+    // handler.
     *run_beforeunload_for_legacy = true;
     return FrameIterationAction::kContinue;
   }
@@ -9862,11 +9831,9 @@ void RenderFrameHostImpl::SimulateBeforeUnloadCompleted(bool proceed) {
 }
 
 bool RenderFrameHostImpl::ShouldDispatchBeforeUnload(
-    bool check_subframes_only,
-    bool* no_dispatch_because_avoid_unnecessary_sync) {
+    bool check_subframes_only) {
   return CheckOrDispatchBeforeUnloadForSubtree(
-      check_subframes_only, /*send_ipc=*/false, /*is_reload=*/false,
-      no_dispatch_because_avoid_unnecessary_sync);
+      check_subframes_only, /*send_ipc=*/false, /*is_reload=*/false);
 }
 
 void RenderFrameHostImpl::SetBeforeUnloadTimeoutDelayForTesting(

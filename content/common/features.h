@@ -15,7 +15,6 @@ namespace features {
 // Please keep features in alphabetical order.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAllowContentInitiatedDataUrlNavigations);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidDownloadableFontsMatching);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAvoidUnnecessaryBeforeUnloadCheckSync);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBackForwardCacheTimeToLiveControl);
 BASE_DECLARE_FEATURE(kBeforeUnloadBrowserResponseQueue);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

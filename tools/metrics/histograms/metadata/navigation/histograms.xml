@@ -1064,18 +1064,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Navigation.NavigationStartToBeginWithAvoidUnnecessaryBeforeUnloadSync"
-    units="ms" expires_after="2024-03-17">
-  <owner>sky@chromium.org</owner>
-  <owner>swarm-team@chromium.org</owner>
-  <summary>
-    Time from navigation start to calling NavigationRequest::BeginNavigation().
-    This is only logged if before-unload handlers are skipped because the
-    feature AvoidUnnecessaryBeforeUnloadCheckSync is enabled.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.OnBeforeUnloadBrowserToRendererIpcTime" units="ms"
     expires_after="2023-11-19">
   <owner>sky@chromium.org</owner>

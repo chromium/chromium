@@ -1101,10 +1101,6 @@ bool ContentBrowserClient::ShouldOverrideUrlLoading(
     bool* ignore_navigation) {
   return true;
 }
-
-bool ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
-  return true;
-}
 #endif
 
 bool ContentBrowserClient::AllowRenderingMhtmlOverHttp(

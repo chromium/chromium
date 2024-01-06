@@ -353,9 +353,7 @@ NavigationSimulatorImpl::NavigationSimulatorImpl(
       transition_(browser_initiated ? ui::PAGE_TRANSITION_TYPED
                                     : ui::PAGE_TRANSITION_LINK),
       contents_mime_type_("text/html"),
-      load_url_params_(nullptr),
-      force_before_unload_for_browser_initiated_(base::FeatureList::IsEnabled(
-          features::kAvoidUnnecessaryBeforeUnloadCheckSync)) {
+      load_url_params_(nullptr) {
   net::IPAddress address;
   CHECK(address.AssignFromIPLiteral("2001:db8::1"));
   remote_endpoint_ = net::IPEndPoint(address, 80);
@@ -1124,7 +1122,6 @@ content::GlobalRequestID NavigationSimulatorImpl::GetGlobalRequestID() {
 }
 
 void NavigationSimulatorImpl::BrowserInitiatedStartAndWaitBeforeUnload() {
-  AddBeforeUnloadHandlerIfNecessary();
   if (reload_type_ != ReloadType::NONE) {
     web_contents_->GetController().Reload(reload_type_,
                                           false /*check_for_repost */);
@@ -1687,31 +1684,6 @@ bool NavigationSimulatorImpl::NeedsThrottleChecks() const {
 bool NavigationSimulatorImpl::NeedsPreCommitChecks() const {
   DCHECK(request_);
   return NeedsThrottleChecks() || request_->IsPageActivation();
-}
-
-void NavigationSimulatorImpl::AddBeforeUnloadHandlerIfNecessary() {
-  if (!force_before_unload_for_browser_initiated_)
-    return;
-
-  RenderFrameHostImpl* target_frame_render_frame_host_impl;
-  if (load_url_params_ && load_url_params_->frame_tree_node_id !=
-                              RenderFrameHost::kNoFrameTreeNodeId) {
-    FrameTreeNode* target_frame_tree_node =
-        FrameTreeNode::GloballyFindByID(load_url_params_->frame_tree_node_id);
-    DCHECK(target_frame_tree_node);
-    target_frame_render_frame_host_impl =
-        target_frame_tree_node->current_frame_host();
-  } else {
-    target_frame_render_frame_host_impl =
-        static_cast<RenderFrameHostImpl*>(web_contents_->GetPrimaryMainFrame());
-  }
-  if (target_frame_render_frame_host_impl &&
-      !target_frame_render_frame_host_impl->GetSuddenTerminationDisablerState(
-          blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler)) {
-    target_frame_render_frame_host_impl->SuddenTerminationDisablerChanged(
-        true,
-        blink::mojom::SuddenTerminationDisablerType::kBeforeUnloadHandler);
-  }
 }
 
 }  // namespace content

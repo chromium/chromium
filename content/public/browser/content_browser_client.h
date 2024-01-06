@@ -2020,14 +2020,6 @@ class CONTENT_EXPORT ContentBrowserClient {
                                         bool is_outermost_main_frame,
                                         ui::PageTransition transition,
                                         bool* ignore_navigation);
-
-  // Returns true if navigation can synchronously continue if the frame
-  // being navigated (and all child frames) do not have beforeunload handlers.
-  // Synchronously continuing with navigation can lead to reentrancy in
-  // content, which is not supported (triggers CHECKs). Defaults to true. The
-  // ability to disable this is provided for Android WebView, which is known to
-  // cause reentrancy for such synchronous navigations.
-  virtual bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync();
 #endif
 
   // Called on IO or UI thread to determine whether or not to allow load and

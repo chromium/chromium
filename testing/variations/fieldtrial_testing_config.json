@@ -2126,28 +2126,6 @@
             ]
         }
     ],
-    "AvoidUnnecessaryBeforeUnloadCheckSync": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheckSync"
-                    ]
-                }
-            ]
-        }
-    ],
     "BFCachePerformanceManagerPolicy": [
         {
             "platforms": [
