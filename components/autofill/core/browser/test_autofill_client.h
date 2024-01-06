@@ -325,11 +325,6 @@ class TestAutofillClientTemplate : public T {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure) override {
-    std::move(show_migration_dialog_closure).Run();
-  }
-
   void ConfirmMigrateLocalCardToCloud(
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,

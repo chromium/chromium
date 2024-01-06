@@ -179,8 +179,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
 #endif
 #if !BUILDFLAG(IS_ANDROID)
-  void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure) override;
   void ConfirmMigrateLocalCardToCloud(
       const LegalMessageLines& legal_message_lines,
       const std::string& user_email,

@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -272,9 +273,10 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
                 NOT_OFFERED_NO_SUPPORTED_CARDS);
         return;
       }
-      client_->ShowLocalCardMigrationDialog(base::BindOnce(
-          &LocalCardMigrationManager::OnUserAcceptedIntermediateMigrationDialog,
-          weak_ptr_factory_.GetWeakPtr()));
+      client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationDialog(
+          base::BindOnce(&LocalCardMigrationManager::
+                             OnUserAcceptedIntermediateMigrationDialog,
+                         weak_ptr_factory_.GetWeakPtr()));
       autofill_metrics::LogLocalCardMigrationPromptMetric(
           local_card_migration_origin_,
           autofill_metrics::INTERMEDIATE_BUBBLE_SHOWN);

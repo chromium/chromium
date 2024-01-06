@@ -9,6 +9,10 @@
 
 #include "content/public/browser/web_contents_observer.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace autofill::payments {
 
 // Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop and
@@ -23,6 +27,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   ChromePaymentsAutofillClient& operator=(const ChromePaymentsAutofillClient&) =
       delete;
   ~ChromePaymentsAutofillClient() override;
+
+#if !BUILDFLAG(IS_ANDROID)
+  void ShowLocalCardMigrationDialog(
+      base::OnceClosure show_migration_dialog_closure) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace autofill::payments

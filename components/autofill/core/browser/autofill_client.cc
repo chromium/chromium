@@ -162,10 +162,6 @@ void AutofillClient::ShowMandatoryReauthOptInConfirmation() {}
 void AutofillClient::HideVirtualCardEnrollBubbleAndIconIfVisible() {
 }
 
-void AutofillClient::ShowLocalCardMigrationDialog(
-    base::OnceClosure show_migration_dialog_closure) {
-}
-
 void AutofillClient::ConfirmMigrateLocalCardToCloud(
     const LegalMessageLines& legal_message_lines,
     const std::string& user_email,

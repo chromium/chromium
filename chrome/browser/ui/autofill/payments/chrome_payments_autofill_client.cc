@@ -16,4 +16,14 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
 
+#if !BUILDFLAG(IS_ANDROID)
+void ChromePaymentsAutofillClient::ShowLocalCardMigrationDialog(
+    base::OnceClosure show_migration_dialog_closure) {
+  ManageMigrationUiController::CreateForWebContents(web_contents());
+  ManageMigrationUiController* controller =
+      ManageMigrationUiController::FromWebContents(web_contents());
+  controller->ShowBubble(std::move(show_migration_dialog_closure));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace autofill::payments

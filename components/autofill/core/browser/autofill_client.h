@@ -606,11 +606,6 @@ class AutofillClient : public RiskDataLoader {
   // Hides the virtual card enroll bubble and icon if it is visible.
   virtual void HideVirtualCardEnrollBubbleAndIconIfVisible();
 
-  // Runs |show_migration_dialog_closure| if the user accepts the card migration
-  // offer. This causes the card migration dialog to be shown.
-  virtual void ShowLocalCardMigrationDialog(
-      base::OnceClosure show_migration_dialog_closure);
-
   // Shows a dialog with the given |legal_message_lines| and the |user_email|.
   // Runs |start_migrating_cards_callback| if the user would like the selected
   // cards in the |migratable_credit_cards| to be uploaded to cloud.
