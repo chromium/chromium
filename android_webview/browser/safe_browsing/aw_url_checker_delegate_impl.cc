@@ -204,9 +204,9 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
-    resource.callback_sequence->PostTask(
-        FROM_HERE, base::BindOnce(resource.callback, true /* proceed */,
-                                  false /* showed_interstitial */));
+    resource.DispatchCallback(FROM_HERE, true /* proceed */,
+                              false /* showed_interstitial */,
+                              false /* has_post_commit_interstitial_skipped */);
     return;
   }
 
@@ -314,9 +314,9 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
   }
 
   // Reporting back that it is not okay to proceed with loading the URL.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(resource.callback, false /* proceed */,
-                                false /* showed_interstitial */));
+  resource.DispatchCallback(FROM_HERE, false /* proceed */,
+                            false /* showed_interstitial */,
+                            false /* has_post_commit_interstitial_skipped */);
 }
 
 }  // namespace android_webview

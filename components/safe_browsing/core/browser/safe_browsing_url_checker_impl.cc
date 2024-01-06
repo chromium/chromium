@@ -58,6 +58,7 @@ SafeBrowsingUrlCheckerImpl::Notifier::operator=(Notifier&& other) = default;
 void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     PerformedCheck performed_check) {
   DCHECK(performed_check != PerformedCheck::kUnknown);
   if (callback_) {
@@ -68,7 +69,8 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
 
   if (native_callback_) {
     std::move(native_callback_)
-        .Run(nullptr, proceed, showed_interstitial, performed_check);
+        .Run(nullptr, proceed, showed_interstitial,
+             has_post_commit_interstitial_skipped, performed_check);
     return;
   }
 
@@ -79,7 +81,8 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
   }
 
   std::move(native_slow_check_notifier_)
-      .Run(proceed, showed_interstitial, performed_check);
+      .Run(proceed, showed_interstitial, has_post_commit_interstitial_skipped,
+           performed_check);
 }
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(const GURL& in_url,
@@ -283,7 +286,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     }
     // Let the navigation continue in case of delayed warnings.
     // No need to call ProcessUrls here, it'll return early.
-    RunNextCallbackAndMaybeDeleteSelf(true, false, performed_check);
+    RunNextCallbackAndMaybeDeleteSelf(
+        /*proceed=*/true,
+        /*showed_interstitial=*/false,
+        /*has_post_commit_interstitial_skipped=*/false, performed_check);
     return;
   }
 
@@ -295,7 +301,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
       url_checker_delegate_->NotifySuspiciousSiteDetected(web_contents_getter_);
     }
 
-    if (!RunNextCallbackAndMaybeDeleteSelf(true, false, performed_check)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(
+            /*proceed=*/true,
+            /*showed_interstitial=*/false,
+            /*has_post_commit_interstitial_skipped=*/false, performed_check)) {
       return;
     }
 
@@ -315,7 +324,9 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
         "SB2Test.RequestDestination.UnsafePrefetchCanceled",
         request_destination_);
 
-    BlockAndProcessUrlsAndMaybeDeleteSelf(false, performed_check);
+    BlockAndProcessUrlsAndMaybeDeleteSelf(
+        /*showed_interstitial=*/false,
+        /*has_post_commit_interstitial_skipped=*/false, performed_check);
     return;
   }
 
@@ -364,8 +375,10 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
     const GURL& url = urls_[next_index_].url;
     if (url_checker_delegate_->IsUrlAllowlisted(url)) {
-      if (!RunNextCallbackAndMaybeDeleteSelf(true, false,
-                                             PerformedCheck::kCheckSkipped)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(
+              /*proceed=*/true, /*showed_interstitial=*/false,
+              /*has_post_commit_interstitial_skipped=*/false,
+              PerformedCheck::kCheckSkipped)) {
         return;
       }
 
@@ -378,8 +391,10 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);
 
-      if (!RunNextCallbackAndMaybeDeleteSelf(true, false,
-                                             PerformedCheck::kCheckSkipped)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(
+              /*proceed=*/true, /*showed_interstitial=*/false,
+              /*has_post_commit_interstitial_skipped=*/false,
+              PerformedCheck::kCheckSkipped)) {
         return;
       }
 
@@ -419,8 +434,11 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
       TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
                                       TRACE_ID_LOCAL(this), "url", url.spec());
 
-      if (!RunNextCallbackAndMaybeDeleteSelf(true, false,
-                                             result.performed_check)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(
+              /*proceed=*/true,
+              /*showed_interstitial=*/false,
+              /*has_post_commit_interstitial_skipped=*/false,
+              result.performed_check)) {
         return;
       }
 
@@ -485,6 +503,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(const GURL& url) {
 
 void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrlsAndMaybeDeleteSelf(
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     PerformedCheck performed_check) {
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl blocks URL: "
            << urls_[next_index_].url;
@@ -493,8 +512,9 @@ void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrlsAndMaybeDeleteSelf(
   // If user decided to not proceed through a warning, mark all the remaining
   // redirects as "bad".
   while (next_index_ < urls_.size()) {
-    if (!RunNextCallbackAndMaybeDeleteSelf(false, showed_interstitial,
-                                           performed_check)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(
+            /*proceed=*/false, showed_interstitial,
+            has_post_commit_interstitial_skipped, performed_check)) {
       return;
     }
   }
@@ -502,20 +522,22 @@ void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrlsAndMaybeDeleteSelf(
 
 void SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf(
     PerformedCheck performed_check,
-    bool proceed,
-    bool showed_interstitial) {
+    UnsafeResource::UrlCheckResult result) {
   DCHECK(state_ == STATE_DISPLAYING_BLOCKING_PAGE ||
          state_ == STATE_DELAYED_BLOCKING_PAGE);
 
-  if (proceed) {
+  if (result.proceed) {
     state_ = STATE_NONE;
-    if (!RunNextCallbackAndMaybeDeleteSelf(true, showed_interstitial,
-                                           performed_check)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(
+            /*proceed=*/true, result.showed_interstitial,
+            result.has_post_commit_interstitial_skipped, performed_check)) {
       return;
     }
     ProcessUrlsAndMaybeDeleteSelf();
   } else {
-    BlockAndProcessUrlsAndMaybeDeleteSelf(showed_interstitial, performed_check);
+    BlockAndProcessUrlsAndMaybeDeleteSelf(
+        result.showed_interstitial, result.has_post_commit_interstitial_skipped,
+        performed_check);
   }
 }
 
@@ -538,6 +560,7 @@ SBThreatType SafeBrowsingUrlCheckerImpl::CheckWebUIUrls(const GURL& url) {
 bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     PerformedCheck performed_check) {
   DCHECK_LT(next_index_, urls_.size());
   // OnCompleteCheck may delete *this*. Do not access internal members after
@@ -545,6 +568,7 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
   auto weak_self = weak_factory_.GetWeakPtr();
   UrlInfo& url_info = urls_[next_index_++];
   url_info.notifier.OnCompleteCheck(proceed, showed_interstitial,
+                                    has_post_commit_interstitial_skipped,
                                     performed_check);
 
   // Careful; `this` may be destroyed.

@@ -16,6 +16,7 @@
 #include "components/safe_browsing/content/browser/safe_browsing_controller_client.h"
 #include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
@@ -56,21 +57,28 @@ class SafeBrowsingCallbackWaiter {
   bool callback_called() const { return callback_called_; }
   bool proceed() const { return proceed_; }
   bool showed_interstitial() const { return showed_interstitial_; }
+  bool has_post_commit_interstitial_skipped() const {
+    return has_post_commit_interstitial_skipped_;
+  }
 
-  void OnBlockingPageDone(bool proceed, bool showed_interstitial) {
+  void OnBlockingPageDone(
+      security_interstitials::UnsafeResource::UrlCheckResult result) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     callback_called_ = true;
-    proceed_ = proceed;
-    showed_interstitial_ = showed_interstitial;
+    proceed_ = result.proceed;
+    showed_interstitial_ = result.showed_interstitial;
+    has_post_commit_interstitial_skipped_ =
+        result.has_post_commit_interstitial_skipped;
     loop_.Quit();
   }
 
-  void OnBlockingPageDoneOnIO(bool proceed, bool showed_interstitial) {
+  void OnBlockingPageDoneOnIO(
+      security_interstitials::UnsafeResource::UrlCheckResult result) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
-                       base::Unretained(this), proceed, showed_interstitial));
+                       base::Unretained(this), result));
   }
 
   void WaitForCallback() {
@@ -82,6 +90,7 @@ class SafeBrowsingCallbackWaiter {
   bool callback_called_ = false;
   bool proceed_ = false;
   bool showed_interstitial_ = false;
+  bool has_post_commit_interstitial_skipped_ = false;
   base::RunLoop loop_;
 };
 
@@ -611,6 +620,26 @@ TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial) {
   waiter.WaitForCallback();
   EXPECT_FALSE(waiter.proceed());
   EXPECT_TRUE(waiter.showed_interstitial());
+  EXPECT_TRUE(waiter.has_post_commit_interstitial_skipped());
+}
+
+TEST_F(SafeBrowsingUIManagerTest, DisplayInterstitial_PostCommitInterstitial) {
+  security_interstitials::UnsafeResource resource =
+      MakeUnsafeResource(kBadURL, false /* is_subresource */);
+  resource.threat_source = safe_browsing::ThreatSource::REMOTE;
+  // Make it a post commit interstitial.
+  resource.threat_type = SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+
+  SafeBrowsingCallbackWaiter waiter;
+  resource.callback =
+      base::BindRepeating(&SafeBrowsingCallbackWaiter::OnBlockingPageDone,
+                          base::Unretained(&waiter));
+  resource.callback_sequence = content::GetUIThreadTaskRunner({});
+  ui_manager()->StartDisplayingBlockingPage(resource);
+  waiter.WaitForCallback();
+  EXPECT_FALSE(waiter.proceed());
+  EXPECT_FALSE(waiter.showed_interstitial());
+  EXPECT_FALSE(waiter.has_post_commit_interstitial_skipped());
 }
 
 TEST_F(SafeBrowsingUIManagerTest, InvalidRenderFrameHostId) {

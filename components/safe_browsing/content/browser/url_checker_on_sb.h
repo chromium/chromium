@@ -58,9 +58,11 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
     OnCompleteCheckResult(
         bool proceed,
         bool showed_interstitial,
+        bool has_post_commit_interstitial_skipped,
         SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
     bool proceed;
     bool showed_interstitial;
+    bool has_post_commit_interstitial_skipped;
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check;
   };
 
@@ -73,6 +75,7 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
   using NativeUrlCheckNotifier = base::OnceCallback<void(
       bool /* proceed */,
       bool /* showed_interstitial */,
+      bool /* has_post_commit_interstitial_skipped */,
       SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
 
   UrlCheckerOnSB(
@@ -115,11 +118,13 @@ class UrlCheckerOnSB : public base::SupportsWeakPtr<UrlCheckerOnSB> {
       NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   void OnCompleteCheck(
       bool proceed,
       bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
 
   // The following member stays valid until |url_checker_| is created.

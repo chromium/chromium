@@ -26,9 +26,12 @@ namespace safe_browsing {
 UrlCheckerOnSB::OnCompleteCheckResult::OnCompleteCheckResult(
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check)
     : proceed(proceed),
       showed_interstitial(showed_interstitial),
+      has_post_commit_interstitial_skipped(
+          has_post_commit_interstitial_skipped),
       performed_check(performed_check) {}
 
 UrlCheckerOnSB::StartParams::StartParams(
@@ -142,15 +145,20 @@ void UrlCheckerOnSB::OnCheckUrlResult(
     NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-  OnCompleteCheck(proceed, showed_interstitial, performed_check);
+  OnCompleteCheck(proceed, showed_interstitial,
+                  has_post_commit_interstitial_skipped, performed_check);
 }
 
 void UrlCheckerOnSB::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
-  OnCompleteCheckResult result(proceed, showed_interstitial, performed_check);
+  OnCompleteCheckResult result(proceed, showed_interstitial,
+                               has_post_commit_interstitial_skipped,
+                               performed_check);
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     complete_callback_.Run(result);
   } else {

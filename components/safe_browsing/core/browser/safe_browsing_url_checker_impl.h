@@ -75,15 +75,18 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
+                              bool /* has_post_commit_interstitial_skipped */,
                               PerformedCheck /* performed_check */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
   // this output parameter with a callback to receive complete notification. In
-  // that case, |proceed| and |showed_interstitial| should be ignored.
+  // that case, |proceed|, |showed_interstitial| and
+  // |has_post_commit_interstitial_skipped| should be ignored.
   using NativeCheckUrlCallback =
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
+                              bool /* has_post_commit_interstitial_skipped */,
                               PerformedCheck /* performed_check */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
@@ -165,6 +168,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
+                         bool has_post_commit_interstitial_skipped,
                          PerformedCheck performed_check);
 
    private:
@@ -214,12 +218,14 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   void ProcessUrlsAndMaybeDeleteSelf();
 
   // NOTE: this method runs callbacks which could destroy this object.
-  void BlockAndProcessUrlsAndMaybeDeleteSelf(bool showed_interstitial,
-                                             PerformedCheck performed_check);
+  void BlockAndProcessUrlsAndMaybeDeleteSelf(
+      bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
+      PerformedCheck performed_check);
 
-  void OnBlockingPageCompleteAndMaybeDeleteSelf(PerformedCheck performed_check,
-                                                bool proceed,
-                                                bool showed_interstitial);
+  void OnBlockingPageCompleteAndMaybeDeleteSelf(
+      PerformedCheck performed_check,
+      security_interstitials::UnsafeResource::UrlCheckResult result);
 
   // Helper method that checks whether |url|'s reputation can be checked using
   // real time lookups.
@@ -232,9 +238,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // Returns false if this object has been destroyed by the callback. In that
   // case none of the members of this object should be touched again.
-  bool RunNextCallbackAndMaybeDeleteSelf(bool proceed,
-                                         bool showed_interstitial,
-                                         PerformedCheck performed_check);
+  bool RunNextCallbackAndMaybeDeleteSelf(
+      bool proceed,
+      bool showed_interstitial,
+      bool has_post_commit_interstitial_skipped,
+      PerformedCheck performed_check);
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,

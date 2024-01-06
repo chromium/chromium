@@ -206,6 +206,7 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
         slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
@@ -218,13 +219,15 @@ void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckUrlResult(
     return;
   }
 
-  OnCheckComplete(url_checker, proceed, showed_interstitial, performed_check);
+  OnCheckComplete(url_checker, proceed, showed_interstitial,
+                  has_post_commit_interstitial_skipped, performed_check);
 }
 
 void SafeBrowsingQueryManager::UrlCheckerClient::OnCheckComplete(
     safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
     bool proceed,
     bool showed_interstitial,
+    bool has_post_commit_interstitial_skipped,
     safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   DCHECK_CURRENTLY_ON(
       base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)
