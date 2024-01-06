@@ -631,7 +631,7 @@ input[type="password" i]::-internal-reveal:focus {
 }
 
 input[type="password" i]::-internal-strong {
-  color: rgb(66, 133, 244);
+  color: -internal-light-dark(#0B57D0, #A8C7FA);
   font-family: roboto;
   -webkit-text-security: none;
 }
