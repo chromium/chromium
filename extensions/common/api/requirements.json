@@ -5,7 +5,7 @@
 [
   {
     "namespace": "requirements",
-    "description": "Stub namepsace for the 'requirements' manifest key.",
+    "description": "Stub namespace for the 'requirements' manifest key.",
     "compiler_options": {
       "generate_error_messages": true
     },
