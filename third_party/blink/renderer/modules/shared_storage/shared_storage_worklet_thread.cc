@@ -11,52 +11,16 @@
 
 namespace blink {
 
-namespace {
-
-// Use for ref-counting of all SharedStorageWorkletThread instances in a
-// process. Incremented by the constructor and decremented by destructor.
-int ref_count = 0;
-
-void EnsureSharedBackingThread(const ThreadCreationParams& params) {
-  DCHECK(IsMainThread());
-  DCHECK_EQ(ref_count, 1);
-  WorkletThreadHolder<SharedStorageWorkletThread>::EnsureInstance(params);
-}
-
-}  // namespace
-
-template class WorkletThreadHolder<SharedStorageWorkletThread>;
-
 SharedStorageWorkletThread::SharedStorageWorkletThread(
     WorkerReportingProxy& worker_reporting_proxy)
-    : WorkerThread(worker_reporting_proxy) {
-  DCHECK(IsMainThread());
+    : WorkerThread(worker_reporting_proxy),
+      worker_backing_thread_(std::make_unique<WorkerBackingThread>(
+          ThreadCreationParams(GetThreadType()))) {}
 
-  // TODO(crbug.com/1414951): Specify a correct type.
-  ThreadCreationParams params =
-      ThreadCreationParams(ThreadType::kUnspecifiedWorkerThread);
+SharedStorageWorkletThread::~SharedStorageWorkletThread() = default;
 
-  if (++ref_count == 1) {
-    EnsureSharedBackingThread(params);
-  }
-}
-
-SharedStorageWorkletThread::~SharedStorageWorkletThread() {
-  DCHECK(IsMainThread());
-  if (--ref_count == 0) {
-    ClearSharedBackingThread();
-  }
-}
-
-WorkerBackingThread& SharedStorageWorkletThread::GetWorkerBackingThread() {
-  return *WorkletThreadHolder<SharedStorageWorkletThread>::GetInstance()
-              ->GetThread();
-}
-
-void SharedStorageWorkletThread::ClearSharedBackingThread() {
-  DCHECK(IsMainThread());
-  CHECK_EQ(ref_count, 0);
-  WorkletThreadHolder<SharedStorageWorkletThread>::ClearInstance();
+void SharedStorageWorkletThread::ClearWorkerBackingThread() {
+  worker_backing_thread_ = nullptr;
 }
 
 void SharedStorageWorkletThread::InitializeSharedStorageWorkletService(
