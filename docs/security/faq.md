@@ -464,8 +464,31 @@ This topic has been moved to the [Extensions Security FAQ](https://chromium.goog
 
 Null pointer dereferences with consistent, small, fixed offsets are not considered
 security bugs. A read or write to the NULL page results in a non-exploitable crash.
-If the offset is larger than a page, or if there's uncertainty about whether the
+If the offset is larger than 32KB, or if there's uncertainty about whether the
 offset is controllable, it is considered a security bug.
+
+All supported Chrome platforms do not allow mapping memory in at least the first
+32KB of address space:
+
+- Windows: Windows 8 and later disable mapping the first 64k of address space;
+  see page 33 of [Exploit Mitigation Improvements in Windows
+  8][windows-null-page-mapping] [[archived]][windows-null-page-mapping-archived].
+- Mac and iOS: by default, the linker reserves the first 4GB of address space
+  with the `__PAGEZERO` segment for 64-bit binaries.
+- Linux: the default `mmap_min_addr` value for supported distributions is at
+  least 64KB.
+- Android: [CTS][android-mmap_min_addr] enforces that `mmap_min_addr` is set to
+  exactly 32KB.
+- ChromeOS: the [ChromeOS kernels][chromeos-mmap_min_addr] set the default
+  `mmap_min_addr` value to at least 32KB.
+- Fuchsia: the [userspace base address][fuchsia-min-base-address] begins at 2MB;
+  this is configured per-platform but set to the same value on all platforms.
+
+[windows-null-page-mapping]: https://media.blackhat.com/bh-us-12/Briefings/M_Miller/BH_US_12_Miller_Exploit_Mitigation_Slides.pdf
+[windows-null-page-mapping-archived]: https://web.archive.org/web/20230608131033/https://media.blackhat.com/bh-us-12/Briefings/M_Miller/BH_US_12_Miller_Exploit_Mitigation_Slides.pdf
+[android-mmap_min_addr]: https://android.googlesource.com/platform/cts/+/496152a250d10e629d31ac90b2e828ad77b8d70a/tests/tests/security/src/android/security/cts/KernelSettingsTest.java#43
+[chromeos-mmap_min_addr]: https://source.chromium.org/search?q=%22CONFIG_DEFAULT_MMAP_MIN_ADDR%3D%22%20path:chromeos%2F&ss=chromiumos%2Fchromiumos%2Fcodesearch:src%2Fthird_party%2Fkernel%2F
+[fuchsia-min-base-address]: https://cs.opensource.google/fuchsia/fuchsia/+/main:zircon/kernel/arch/arm64/include/arch/kernel_aspace.h;l=20;drc=eeceea01eee2615de74b1339bcf6e6c2c6f72769
 
 <a name="TOC-Indexing-a-container-out-of-bounds-hits-a-libcpp-verbose-abort--is-this-a-security-bug-"></a>
 ### Indexing a container out of bounds hits a __libcpp_verbose_abort, is this a security bug?
