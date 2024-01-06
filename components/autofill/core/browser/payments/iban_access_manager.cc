@@ -73,6 +73,7 @@ void IbanAccessManager::OnUnmaskResponseReceived(
   bool is_successful = result == AutofillClient::PaymentsRpcResult::kSuccess;
   autofill_metrics::LogServerIbanUnmaskLatency(
       AutofillTickClock::NowTicks() - unmask_request_timestamp, is_successful);
+  autofill_metrics::LogServerIbanUnmaskStatus(is_successful);
   if (is_successful) {
     std::move(on_iban_fetched).Run(value);
     return;

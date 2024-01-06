@@ -144,6 +144,9 @@ void LogIbanUploadEnabledMetric(
 // Logs the latency for fetching a server IBAN in IbanAccessManager.
 void LogServerIbanUnmaskLatency(base::TimeDelta latency, bool is_successful);
 
+// Logs the status for fetching a server IBAN in IbanAccessManager.
+void LogServerIbanUnmaskStatus(bool is_successful);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_IBAN_METRICS_H_

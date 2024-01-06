@@ -2358,6 +2358,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Autofill.Iban.UnmaskIbanResult" enum="Boolean"
+    expires_after="2024-07-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>jsaul@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Recorded upon receiving the response for an unmask server IBAN call. This
+    metric tracks whether the unmask call succeeded or failed.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.IbanUploadEnabled" enum="IbanUploadEnabledStatus"
     expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>

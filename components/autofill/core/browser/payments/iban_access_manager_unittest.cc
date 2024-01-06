@@ -254,4 +254,38 @@ TEST_F(IbanAccessManagerTest, UnmaskServerIban_Failure_Metric) {
                                       kDefaultUnmaskIbanLatencyMs, 1);
 }
 
+// Verify that UnmaskIbanResult records true for a successful call.
+TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Success) {
+  base::HistogramTester histogram_tester;
+  SetUpUnmaskIbanCall(/*is_successful=*/true, /*value=*/kFullIbanValue);
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", true,
+                                      1);
+}
+
+// Verify that UnmaskIbanResult records false for a failed call.
+TEST_F(IbanAccessManagerTest, UnmaskIbanResult_Metric_Failure) {
+  base::HistogramTester histogram_tester;
+  SetUpUnmaskIbanCall(/*is_successful=*/false, /*value=*/u"");
+
+  Iban server_iban = test::GetServerIban();
+  server_iban.set_identifier(Iban::InstrumentId(kInstrumentId));
+  personal_data().AddServerIban(server_iban);
+  Suggestion suggestion(PopupItemId::kIbanEntry);
+  suggestion.payload = Suggestion::InstrumentId(kInstrumentId);
+
+  iban_access_manager_->FetchValue(suggestion, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample("Autofill.Iban.UnmaskIbanResult", false,
+                                      1);
+}
+
 }  // namespace autofill
