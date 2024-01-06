@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">‏שיתוף תיקייה באמצעות Parallels Desktop</translation>
 <translation id="1439919885608649279">אדם עם פרחים</translation>
 <translation id="1458457385801829801">הוצאה של <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">שגיאה אחת.</translation>
 <translation id="146691674290220697">לא ניתן להעתיק <ph name="NUMBER_OF_FILES" /> קבצים כי הם מוצפנים.</translation>
 <translation id="1471718551822868769">סלובקית</translation>
 <translation id="1482884275703521657">פינית</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">‏גיליון אלקטרוני של Google</translation>
 <translation id="3479552764303398839">לא עכשיו</translation>
 <translation id="3486821258960016770">מונגולית</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> שגיאות.</translation>
 <translation id="3509680540198371098">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="NETWORK_NAME" />,‏ <ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, פרטים</translation>
 <translation id="3511705761158917664">בהכנה לסנכרון של <ph name="NUMBER_OF_ITEMS" /> פריטים…</translation>
 <translation id="3522708245912499433">פורטוגזית</translation>
@@ -1061,7 +1059,6 @@
 <translation id="9038620279323455325">הקובץ שנקרא "<ph name="FILE_NAME" />" כבר קיים. יש לבחור שם אחר.</translation>
 <translation id="9046895021617826162">החיבור נכשל</translation>
 <translation id="9065512565307033593">אם האימות ייכשל, הגישה שלך לרשת תושבת.</translation>
-<translation id="9083722265619106011">{0,plural, =1{אזהרה אחת.}one{<ph name="COUNT" /> אזהרות.}two{<ph name="COUNT" /> אזהרות.}other{<ph name="COUNT" /> אזהרות.}}</translation>
 <translation id="908378762078012445">‏רוסית עם מקלדת פונטית AATSEEL</translation>
 <translation id="9086302186042011942">הסנכרון מתבצע</translation>
 <translation id="9099674669267916096">מספר עמודים</translation>

@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Kausta jagamine üksusega Parallels Desktop</translation>
 <translation id="1439919885608649279">Lilledega inimene</translation>
 <translation id="1458457385801829801">Väljuta <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 viga.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> faili ei saanud kopeerida, kuna need on krüpteeritud.</translation>
 <translation id="1471718551822868769">slovaki</translation>
 <translation id="1482884275703521657">soome</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google'i arvutustabel</translation>
 <translation id="3479552764303398839">Mitte praegu</translation>
 <translation id="3486821258960016770">mongoli</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> viga.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" />%, üksikasjad</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> üksuse sünkroonimise ettevalmistamine...</translation>
 <translation id="3522708245912499433">Portugali keel</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Fail nimega „<ph name="FILE_NAME" />” on juba olemas? Valige muu nimi.</translation>
 <translation id="9046895021617826162">Ühendamine nurjus</translation>
 <translation id="9065512565307033593">Kui kinnitamine ebaõnnestub, keelatakse juurdepääs võrgule.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 hoiatus.}other{<ph name="COUNT" /> hoiatust}}</translation>
 <translation id="908378762078012445">vene, foneetilise AATSEEL-klaviatuuriga</translation>
 <translation id="9086302186042011942">Sünkroonimine</translation>
 <translation id="9099674669267916096">Lehtede arv</translation>

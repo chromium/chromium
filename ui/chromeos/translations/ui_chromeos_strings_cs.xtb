@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Sdílení složky s nástrojem Parallels Desktop</translation>
 <translation id="1439919885608649279">Člověk s květinami</translation>
 <translation id="1458457385801829801">Odpojit <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 chyba.</translation>
 <translation id="146691674290220697">Některé soubory (celkem <ph name="NUMBER_OF_FILES" />) nelze zkopírovat, protože jsou zašifrované.</translation>
 <translation id="1471718551822868769">slovenština</translation>
 <translation id="1482884275703521657">finština</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Tabulka Google</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3486821258960016770">mongolština</translation>
-<translation id="3495304270784461826">Chyby: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3511705761158917664">Příprava na synchronizaci položek (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">portugalština</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Soubor s názvem „<ph name="FILE_NAME" />“ již existuje. Zvolte jiný název.</translation>
 <translation id="9046895021617826162">Připojení selhalo</translation>
 <translation id="9065512565307033593">Pokud se vám nepodaří provést ověření, bude vám zakázán přístup k síti.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 upozornění.}few{<ph name="COUNT" /> upozornění.}many{<ph name="COUNT" /> upozornění.}other{<ph name="COUNT" /> upozornění.}}</translation>
 <translation id="908378762078012445">ruština s fonetickou klávesnicí AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizace</translation>
 <translation id="9099674669267916096">Počet stránek</translation>

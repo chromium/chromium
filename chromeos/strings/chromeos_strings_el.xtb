@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Δείτε το νέο ψηφιακό περιοδικό του Chromebook για δημιουργούς</translation>
 <translation id="1270369111467284986">Η πύλη υποδοχής είναι ύποπτη</translation>
 <translation id="1290331692326790741">Ασθενές σήμα</translation>
+<translation id="1300115153046603471">Το APN είναι τύπου προεπιλογής και <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Πραγματοποιείται ενημέρωση (ολοκληρώθηκε το <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> λεπτά</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">Βαθμοί Φαρενάιτ</translation>
 <translation id="584953448295717128">Το APN εντοπίζεται αυτόματα.</translation>
 <translation id="5849570051105887917">Κωδικός παρόχου αρχικής σελίδας</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Λεύκωμα γκαλερί</translation>
 <translation id="5859969039821714932">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χωρίς το πλήκτρο <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Απενεργοποιημένη</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">Αντιστοίχιση ταπετσαρίας</translation>
 <translation id="6527081081771465939">Άγνωστο πρωτόκολλο ασφαλείας Wi-Fi</translation>
 <translation id="6535178685492749208">Είστε εκτός σύνδεσης. Τα σχόλια θα σταλούν αργότερα.</translation>
+<translation id="6557784757915238407">Το APN είναι τύπου <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Επίπεδος</translation>
 <translation id="6560196641871357166">Ζωηρός</translation>
 <translation id="6564646048574748301">Σφάλμα - Δεν είναι δυνατή η πρόσβαση στον εκτυπωτή</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">μετατροπή</translation>
 <translation id="7415801143053185905">Πολύ υψηλός λανθάνων χρόνος HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Δεν είναι δυνατή η απενεργοποίηση ή η κατάργηση αυτού του APN. Βεβαιωθείτε ότι τα ενεργοποιημένα APN τύπου <ph name="ATTACH" /> έχουν απενεργοποιηθεί ή καταργηθεί.</translation>
 <translation id="7458970041932198923">Συνδεθείτε σε ένα δίκτυο και επαναλάβετε τη φόρτωση της σελίδας για να δείτε και να ορίσετε avatar.</translation>
 <translation id="7469648432129124067">Εντοπίστηκε πύλη</translation>
 <translation id="7481312909269577407">Προώθηση</translation>

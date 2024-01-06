@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Share folder with Parallels Desktop</translation>
 <translation id="1439919885608649279">Person with flowers</translation>
 <translation id="1458457385801829801">Eject <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 error.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> files could not be copied because they are encrypted.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3479552764303398839">Not now</translation>
 <translation id="3486821258960016770">Mongolian</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errors.</translation>
 <translation id="3509680540198371098">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="3511705761158917664">Preparing to sync <ph name="NUMBER_OF_ITEMS" /> items…</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">The file named '<ph name="FILE_NAME" />' already exists. Please choose a different name.</translation>
 <translation id="9046895021617826162">Connection failed</translation>
 <translation id="9065512565307033593">If you fail to verify, your network access will be disabled.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 warning.}other{<ph name="COUNT" /> warnings.}}</translation>
 <translation id="908378762078012445">Russian with phonetic AATSEEL keyboard</translation>
 <translation id="9086302186042011942">Syncing</translation>
 <translation id="9099674669267916096">Page count</translation>

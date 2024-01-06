@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">‏مشاركة المجلد مع نظام Parallels Desktop</translation>
 <translation id="1439919885608649279">شخص يحمل أزهارًا</translation>
 <translation id="1458457385801829801">إلغاء تثبيت <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">خطأ واحد.</translation>
 <translation id="146691674290220697">تعذّر نسخ <ph name="NUMBER_OF_FILES" /> ملف لأنّها مشفَّرة.</translation>
 <translation id="1471718551822868769">السلوفاكية</translation>
 <translation id="1482884275703521657">الفنلندية</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">‏جدول بيانات Google</translation>
 <translation id="3479552764303398839">ليس الآن</translation>
 <translation id="3486821258960016770">المنغولية</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> من الأخطاء.</translation>
 <translation id="3509680540198371098">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="3511705761158917664">يجري الإعداد لمزامنة <ph name="NUMBER_OF_ITEMS" /> عنصر…</translation>
 <translation id="3522708245912499433">البرتغالية</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">الملف الذي يحمل الاسم "<ph name="FILE_NAME" />" موجود من قبل. يُرجى اختيار اسم مختلف.</translation>
 <translation id="9046895021617826162">تعذّر الاتصال</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
-<translation id="9083722265619106011">{0,plural, =1{تحذير واحد.}zero{<ph name="COUNT" /> تحذير.}two{تحذيران (<ph name="COUNT" />).}few{<ph name="COUNT" /> تحذيرات.}many{<ph name="COUNT" /> تحذيرًا.}other{<ph name="COUNT" /> تحذير.}}</translation>
 <translation id="908378762078012445">‏الروسية باستخدام لوحة مفاتيح AATSEEL الصوتية</translation>
 <translation id="9086302186042011942">جارٍ المزامنة</translation>
 <translation id="9099674669267916096">عدد الصفحات</translation>

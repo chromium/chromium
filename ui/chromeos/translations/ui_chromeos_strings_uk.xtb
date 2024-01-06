@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Надати додатку Parallels Desktop доступ до папки</translation>
 <translation id="1439919885608649279">Людина з квітами</translation>
 <translation id="1458457385801829801">Вилучити <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 помилка.</translation>
 <translation id="146691674290220697">Не вдалося скопіювати файли (<ph name="NUMBER_OF_FILES" />), оскільки вони зашифровані.</translation>
 <translation id="1471718551822868769">Словацька</translation>
 <translation id="1482884275703521657">Фінська</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Таблиці Google</translation>
 <translation id="3479552764303398839">Не зараз</translation>
 <translation id="3486821258960016770">Монгольська</translation>
-<translation id="3495304270784461826">Помилок: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Докладніше</translation>
 <translation id="3511705761158917664">Підготовка до синхронізації файлів (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">Португальська</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Виберіть іншу назву.</translation>
 <translation id="9046895021617826162">Помилка з'єднання</translation>
 <translation id="9065512565307033593">Якщо ви не пройдете цю перевірку, вам буде закрито доступ до мережі.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 попередження.}one{<ph name="COUNT" /> попередження.}few{<ph name="COUNT" /> попередження.}many{<ph name="COUNT" /> попереджень.}other{<ph name="COUNT" /> попередження.}}</translation>
 <translation id="908378762078012445">Російська, фонетична розкладка AATSEEL</translation>
 <translation id="9086302186042011942">Синхронізація</translation>
 <translation id="9099674669267916096">Кількість сторінок</translation>

@@ -399,7 +399,6 @@ Bu politika, kullanımdan kaldırılan <ph name="DEFAULT_WINDOW_PLACEMENT_SETTIN
 Politika, Etkin değerine ayarlanırsa mevcut kullanıcının son kullandığı <ph name="PRODUCT_OS_NAME" /> cihazdaki tarayıcı pencereleri giriş yapıldıktan sonra otomatik olarak açılır.
 Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa giriş yapıldıktan sonra nelerin açılacağı, tam geri yükleme ayarları tarafından belirlenir.</translation>
 <translation id="1327466551276625742">Çevrimdışı iken ağ yapılandırma istemini etkinleştir</translation>
-<translation id="1330145147221172764">Ekran klavyesini etkinleştir</translation>
 <translation id="13356285923490863">Politika Adı</translation>
 <translation id="1336073690474326987">Özelliği tamamen devre dışı bırak</translation>
 <translation id="1338603603553894503">Profil seçicinin etkin olup olmadığını, devre dışı bırakılıp bırakılmadığını veya tarayıcı başlatılırken zorunlu tutulup tutulmadığını belirtir.
@@ -3063,7 +3062,6 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 
           Bu politika ayarlanmadan bırakılırsa giriş ekranında seç ve dinle özelliği başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman bunu etkinleştirebilir.</translation>
 <translation id="3483585138745445814">Kullanıcıların Yakındakilerle Paylaş ayarını etkinleştirmesine izin ver</translation>
-<translation id="348495353354674884">Sanal klavyeyi etkinleştir</translation>
 <translation id="3485200437120267231">Oturum açma müdahalesini devre dışı bırak</translation>
 <translation id="3487651201232258606">Yerel mesajlaşma</translation>
 <translation id="3492351353716550742">Varsayılan yönlendirme politikası olarak "no-referrer-when-downgrade" kullanma</translation>
@@ -3147,7 +3145,6 @@ HTTPS'ye yönelik RSA sertifikalarına her ikisini de eklemelidir.</translation>
 <translation id="3532827558833318911">Şifreyle Oturum Açma Bilgilerini Temizle</translation>
 <translation id="353611922042274900">Oturum açma ekranında sistem bilgilerini her zaman göster</translation>
 <translation id="3536263244905016305">Otomatik Web Proxy Keşfi (WPAD) optimizasyonunu devre dışı bırak</translation>
-<translation id="3538869107794555625">Tablet modunda dokunmatik klavyeyi etkinleştir</translation>
 <translation id="3539103206548425861">Politikayı ayarladığınızda <ph name="PRODUCT_NAME" /> ürününde sesli videolar otomatik (kullanıcı onayı olmadan) oynatılır. <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> True (Doğru) değerine ayarlandığında bu politika geçerliliğini yitirir. <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> False (Yanlış) değerine ayarlandığında bu politikadaki URL kalıpları oynatılabilir. <ph name="PRODUCT_NAME" /> çalışırken bu politika değiştirilirse sadece yeni açılan sekmelere uygulanır.
 
       Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.</translation>
@@ -3371,16 +3368,6 @@ zorunlu kılınmaz ve istekler engellenmez.
       Bu ayarı etkinleştirirseniz veya bir değer ayarlamazsanız, Otomatik Doldurma kullanıcının denetimi altında kalır. Böylece kullanıcılara, Otomatik Doldurma profillerini yapılandırma ve kendi istedikleri şekilde Otomatik Doldurma özelliğini açıp kapama olanağı verilir.</translation>
 <translation id="3733014427925403568">Haftanın hangi gününde ara verileceği.</translation>
 <translation id="3736879847913515635">Kullanıcı yöneticisinde kişi eklemeyi etkinleştir</translation>
-<translation id="3739912184950385207">Bu politika ile yöneticiler, <ph name="PRODUCT_OS_NAME" /> ürününde <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırabilir.
-
-Politika "<ph name="ALLOWED_NAME" />" olarak ayarlandığında kullanıcı isterse <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandırabilir.
-Yapılandırma işlemi tamamlandıktan sonra dosya biçimleri eşleşen dosyalar varsayılan olarak <ph name="MICROSOFT_ONE_DRIVE_NAME" /> içine taşınır ve kullanıcı tarafından açılmaya çalışıldığında <ph name="MICROSOFT_365_NAME" /> uygulamalarından biri ile işlenir.
-
-Politika "<ph name="DISALLOWED_NAME" />" olarak ayarlandığında kullanıcı yukarıda açıklandığı gibi <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışını yapılandıramaz ve <ph name="MICROSOFT_365_NAME" />, olası dosya işleyiciler listesinden kaldırılır.
-
-Politika "<ph name="AUTOMATED_NAME" />" olarak ayarlandığında <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ve <ph name="MICROSOFT_365_NAME" /> için <ph name="CLOUD_UPLOAD_NAME" /> akışı otomatik olarak yapılandırılır. Böylece, dosya biçimleri eşleşen dosyalar varsayılan olarak <ph name="MICROSOFT_ONE_DRIVE_NAME" /> içine taşınır ve kullanıcı tarafından açılmaya çalışıldığında <ph name="MICROSOFT_365_NAME" /> uygulamalarından biri ile işlenir.
-
-Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel olarak "<ph name="ALLOWED_NAME" />" değerine, kurumsal kullanıcılar için ise varsayılan olarak "<ph name="DISALLOWED_NAME" />" değerine ayarlanmasıyla eşdeğerdir.</translation>
 <translation id="3744984310825999317"><ph name="PEPPER_NAME" /> eklentisinin, donanım hızlandırmalı video kod çözme işlemi için yeni bir kod çözücü kullanmasına izin ver.</translation>
 <translation id="3749259744154402564">Desteklenmiyor</translation>
 <translation id="3749511622128647337">Ses çıkışını devre dışı bırak</translation>
@@ -3609,15 +3596,6 @@ Bu politika geçici bir çözümdür ve birkaç kilometre taşından kaldırıla
       * Farklı kapsamlar veya düzey: En yüksek önceliğe sahip politika uygulanır.
 
       Bir politika listede yoksa ve kaynaklar, kapsamlar veya düzey arasında çakışma varsa en yüksek önceliğe sahip politika uygulanır.</translation>
-<translation id="3912092044353890761">Giriş ekranında sanal klavye erişilebilirlik özelliğini etkinleştirin.
-
-          Bu politika true (doğru) değerine ayarlanırsa giriş ekranında sanal klavye her zaman etkinleştirilir.
-
-          Bu politika false (yanlış) değerine ayarlanırsa giriş ekranında sanal klavye her zaman devre dışı olur.
-
-          Bu politikayı ayarlarsanız kullanıcılar değiştiremez veya geçersiz kılamazlar.
-
-          Bu politika ayarlanmadan bırakılırsa giriş ekranında sanal klavye başlangıçta devre dışı bırakılır, ancak kullanıcılar istedikleri zaman etkinleştirebilirler.</translation>
 <translation id="3913680877415932969">Politikaları, bir sitenin yakalayabileceği (ör. sekme, pencere veya masaüstü yakalama) ekran paylaşımı API'lerinin (ör. getDisplayMedia()
       veya Desktop Capture uzantı API'si) seviyesini kontrol edecek şekilde yapılandırın.</translation>
 <translation id="3915395663995367577">Proxy .pac dosyası için URL</translation>
@@ -3766,7 +3744,6 @@ Eski davranış: "beforeunload" komutunda "event.preventDefault()" çağrısı y
 <translation id="4051723201852944592">Pencere Kapamayı Etkinleştir</translation>
 <translation id="4052529125939620019">CryptoToken bileşen uzantısını başlangıçta yükle</translation>
 <translation id="4053157306171963473">Cihaz etkinlik zamanı raporlamasını devre dışı bırak</translation>
-<translation id="4053612967614057854">Ekran klavyesini devre dışı bırak</translation>
 <translation id="4055758693679485627">Kullanıcı tüm tarayıcı pencerelerini kapattığında silinmesi gereken tarama verisi türlerinin listesini yapılandırır. Kullanılabilir veri türleri şunlardır: Tarama geçmişi (<ph name="DATA_TYPE_BROWSING_HISTORY" />), indirme geçmişi (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), çerezler (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), önbellek <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, otomatik doldurma (<ph name="DATA_TYPE_AUTOFILL" />), şifreler (<ph name="DATA_TYPE_PASSWORD" />), site ayarları (<ph name="DATA_TYPE_SITE_SETTINGS" />) ve barındırılan uygulama verileri (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Bu politikanın <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" /> üzerinde önceliği yoktur.
 
 Bu politika, Chrome 114 sürümüne kadar <ph name="SYNC_DISABLED_POLICY_NAME" /> politikasının doğru değerine ayarlanmasını gerektiriyordu. Chrome 115 sürümünden itibaren <ph name="SYNC_DISABLED_POLICY_NAME" /> politikası ayarlanarak "<ph name="CHROME_SYNC_NAME" />" devre dışı bırakılmadığı veya <ph name="BROWSER_SIGNIN_POLICY_NAME" /> devre dışı olmadığı sürece, bu politika ayarlandığında ilgili veri türleri için senkronizasyon devre dışı bırakılır.
@@ -3862,9 +3839,6 @@ Linux'ta <ph name="PRODUCT_NAME" /> tarafından yerel bildirimlerin kullanılıp
 Bu politika Doğru değerine ayarlanır veya ayarlanmadan bırakılırsa yerel bildirimlerin <ph name="PRODUCT_NAME" /> tarafından kullanılmasına izin verilir.
 
 Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bildirimleri kullanmaz. <ph name="PRODUCT_NAME" /> Mesaj Merkezi yedek olarak kullanılır.</translation>
-<translation id="412394201461298128">Politikayı Doğru değerine ayarlamak, dokunmatik klavyeyi açık tutar. Politikayı Yanlış değerine ayarlamak, başka unsurlarla açılmadığı sürece dokunmatik klavyeyi kapalı tutar. Bu unsurların örneği için <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasına göz atın.
-
-      Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Ayarlanmazsa dokunmatik klavye ilk başta kapalıdır, ancak kullanıcılar istedikleri zaman açabilir.</translation>
 <translation id="412697421478384751">Kullanıcıların kilit ekranı PIN'i için zayıf PIN'ler ayarlamasına izin ver</translation>
 <translation id="4136603825567209889">Kullanıcı tanımlama bilgilerinin raporlanmasını etkinleştir</translation>
 <translation id="4138655880188755661">Zaman Limiti</translation>
@@ -5220,7 +5194,6 @@ Güvenli içerikler hakkında daha fazla bilgi için Secure Contexts sayfasına 
 Politika, Devre Dışı değerine ayarlanırsa tarayıcı geçmişi ve indirme geçmişi silinemez. Bu politika devre dışı bırakılsa bile tarama ve indirme geçmişinin saklanacağı garanti edilmez. Kullanıcılar geçmiş veritabanındaki dosyaları doğrudan düzenleyebilir veya silebilirler. Ayrıca tarayıcının kendisinin süresi dolabilir veya geçmiş öğelerinin herhangi birini veya tümünü her an arşive alabilir.</translation>
 <translation id="5323200200131319468">Giriş ekranında sözlü geri bildirimi etkinleştir</translation>
 <translation id="5323271643727095577">beforeunload etkinliği için event.preventDefault() çağrıldığında iptal iletişim kutusunu gösterme beforeunload event.returnValue, beforeunload etkinliği için boş dize olduğunda iptal iletişim kutusunu göster.</translation>
-<translation id="5323355956693037267">Giriş ekranında dokunmatik klavyeyi etkinleştir</translation>
 <translation id="5324430722441910403">Site arama ayarları</translation>
 <translation id="532848608876725157">DNS-over-HTTPS'i güvenli olmayan geçişle etkinleştir</translation>
 <translation id="5328965694451556034">Girişi/çıkışı raporla</translation>
@@ -6066,7 +6039,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6092073071805297119">Erişilebilirlik performansı filtrelerinin kullanılmasına izin ver.</translation>
 <translation id="6093156968240188330">Uzaktan yardım oturumlarında uzak kullanıcıların yükseltilmiş pencerelerle etkileşimde bulunmasına izin ver</translation>
 <translation id="6094314311474620462">Yazdırmayı devre dışı bırak</translation>
-<translation id="6095048925836115505">Giriş ekranında sanal klavyeyi etkinleştir</translation>
 <translation id="6097601282776163274">URL içeren veya URL'lerle ilişkili anonim veri toplamayı etkinleştir</translation>
 <translation id="6099853574908182288">Varsayılan renkli yazdırma modu</translation>
 <translation id="6102342563050263313">URL parçalarında belirtilen metne kaydırma işlevini etkinleştirme</translation>
@@ -7084,7 +7056,6 @@ yeni başlatılan oluşturucu işlemleri yansıtır.</translation>
 <translation id="6841254611279513739">Politika ayarlanırsa yazdırma yalnızca renkli, yalnızca tek renk veya renk modu kısıtlaması yok değerine ayarlanır. Politika ayarlanmadan bırakılırsa hiçbir kısıtlama uygulanmaz.</translation>
 <translation id="6843008643303282259">İstenen yükleme hızı (kbit/sn. olarak).</translation>
 <translation id="6843296367238757293">Bu politika kullanımdan kaldırılmıştır. Kullanılması önerilmez. Daha fazla bilgiyi https://support.google.com/chrome/a/answer/7643500 adresinde bulabilirsiniz</translation>
-<translation id="6845162369344636241">Giriş ekranında dokunmatik klavyeyi devre dışı bırak</translation>
 <translation id="6846126863870444592">Bu politika, bir yazdırma işini göndermek için <ph name="PRINTING_API" /> işlevi <ph name="SUBMIT_JOB_FUNCTION" /> kullandığında hangi uzantılara onay iletişim kutusunu atlama izni verildiğini belirtir.
 
       Bir uzantı listede yoksa veya liste ayarlanmamışsa her <ph name="SUBMIT_JOB_FUNCTION" /> işlev çağrısı için kullanıcıya yazdırma işi onay iletişim kutusu gösterilir.
@@ -8586,19 +8557,6 @@ Uyarı: Kullanıcıların yazılım güncellemelerini ve kritik güvenlik düzel
 <translation id="8102854005031553638">PDF görüntüleyici AGG oluşturucuyu kullanır.</translation>
 <translation id="8102913158860568230">Varsayılan medya akışı ayarı</translation>
 <translation id="8104962233214241919">Bu siteler için istemci sertifikalarını otomatik olarak seç</translation>
-<translation id="8106782817348995849">Bu politika, <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> etkinleştirildiğinde yöneticilerin, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hizmetinde oturum açmasına izin verilen hesapları kısıtlamasına olanak tanır.
-
-Bu politika "<ph name="COMMON_NAME" />" değerini içeriyorsa oturum açmak için herhangi bir hesap kullanılabilir.
-
-Bu politika "<ph name="ORGANIZATIONS_NAME" />" değerini içeriyorsa oturum açmak için iş veya okul hesapları kullanılabilir.
-
-Bu politika "<ph name="CONSUMER_NAME" />" değerini içeriyorsa oturum açmak için kişisel <ph name="MICROSOFT_NAME" /> hesapları kullanılabilir.
-
-Bu politika alan adları ya da kiracı kimlikleri içeriyorsa oturum açmak için bu alan adlarındaki veya kiracı kimliklerindeki hesaplar (https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints adresine göz atın) kullanılabilir.
-
-Bu politika ayarlanmazsa veya yalnızca boş bir değer içerirse normal kullanıcılar için "<ph name="COMMON_NAME" />", kurumsal kullanıcılar için "<ph name="ORGANIZATIONS_NAME" />" değeri belirtilmiş gibi davranır.
-
-Kısıtlama durumunun değiştirilmesi, yeni kısıtlamalara uymadığı takdirde kullanıcıların <ph name="MICROSOFT_ONE_DRIVE_NAME" /> hesaplarının oturumunun kapatılmasına neden olabilir.</translation>
 <translation id="8109762054721090517"><ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /> şablonu</translation>
 <translation id="8111331908123507719">Kilit ekranında ekran koruyucu gösterilmeden önce cihazın boşta bekleyeceği süreyi saniye cinsinden yapılandırır.
 
@@ -8729,18 +8687,6 @@ Bu politika, Gizli moda uygulanır. Dolayısıyla, tarayıcıda Gizli mod etkinl
 <translation id="8220023426952118761">İstenen indirme hızı (kbit/sn. olarak).</translation>
 <translation id="8220156281401380422">Yerel mesajlaşma izin verilenler listesini yapılandırma</translation>
 <translation id="822055204938220476">Bildirim göstermeden tam ekran modunda kalmasına izin verilen URL'lerin listesi</translation>
-<translation id="8222103851860031829"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik klavyeyi kontrol eder.
-
-      <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikası Doğru değerine ayarlanırsa veya ChromeOS'teki Dokunmatik klavyeyi etkinleştir ayarı açıksa bu politikanın hiçbir etkisi olmaz.
-
-      <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlanırsa ya da ayarlanmadan bırakılırsa ve ChromeOS'teki Dokunmatik klavyeyi etkinleştir ayarı kapalıysa bu politikanın şu gibi etkileri olur:
-      Bu politika ayarlanmadan bırakılırsa cihaz tablet modundayken dokunmatik klavye gösterilir.
-      Bu politika Doğru değerine ayarlanırsa dokunmatik klavye her zaman gösterilir.
-      Bu politika Yanlış değerine ayarlanırsa dokunmatik klavye hiçbir zaman gösterilmez.
-
-      Dokunmatik klavye, giriş yöntemine bağlı olarak küçük boyuta geçebilir.
-
-      Bu politikayı ayarlarsanız kullanıcılar değiştiremez.</translation>
 <translation id="8225579382697740712">WebHID API'nin kullanımını kontrol et</translation>
 <translation id="8229912067600517877">Geliştirici Araçları'nı etkinleştir</translation>
 <translation id="8238421250255592181">Dokunmatik klavyede otomatik tamamlama özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
@@ -8891,16 +8837,6 @@ Eski teknolojiler hakkında daha fazla bilgiyi https://chromestatus.com/features
 <translation id="8316940611391250886">subjectAlternativeName uzantısına sahip olmayan sertifikalara izin verme</translation>
 <translation id="8319678975002906774">Belirli kaynaklar için web sitelerine yönetilen yapılandırma değerleri ayarla</translation>
 <translation id="8320149248919453401">Pil şarj modu</translation>
-<translation id="8324872579207355449">Bu politika ile yöneticiler, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırabilir.
-
-Politika "<ph name="ALLOWED_NAME" />" değerine ayarlandığında kullanıcı isterse <ph name="MICROSOFT_ONE_DRIVE_NAME" /> kurulumunu yapabilir.
-<ph name="MICROSOFT_ONE_DRIVE_NAME" />, kurulum işlemi tamamlandıktan sonra dosya yöneticisine eklenir.
-
-Politika "<ph name="DISALLOWED_NAME" />" değerine ayarlandığında kullanıcının <ph name="MICROSOFT_ONE_DRIVE_NAME" /> kurulumunu yapması yasaklanır.
-
-Politika "<ph name="AUTOMATED_NAME" />" değerine ayarlandığında <ph name="MICROSOFT_ONE_DRIVE_NAME" /> otomatik olarak kurulmaya çalışılır. Hata olması durumunda kurulum akışı tekrar gösterilir.
-
-Politikanın ayarlanmadan bırakılması, normal kullanıcılar için işlevsel olarak "<ph name="ALLOWED_NAME" />" değerine, kurumsal kullanıcılar için ise varsayılan olarak "<ph name="DISALLOWED_NAME" />" değerine ayarlanmasıyla eşdeğerdir.</translation>
 <translation id="8327651196906278510">Bu kaynakların Sekme yakalamasına izin ver</translation>
 <translation id="8329434144708110">TOA sağlayıcılarla şifre senkronizasyonu için kimlik doğrulama akışlarını tetikle</translation>
 <translation id="8329984337216493753">Bu politika sadece perakende modunda etkindir.

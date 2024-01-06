@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Qovluğu Parallels Desktop ilə paylaşın</translation>
 <translation id="1439919885608649279">Əlində gül olan adam</translation>
 <translation id="1458457385801829801">Çıxarın: <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 xəta.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> fayl şifrələndiyi üçün kopyalanmadı.</translation>
 <translation id="1471718551822868769">Slovak</translation>
 <translation id="1482884275703521657">Fin</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google cədvəl</translation>
 <translation id="3479552764303398839">İndi yox</translation>
 <translation id="3486821258960016770">Monqol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> xətalar.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Detallar</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> element sinxronlaşdırma üçün hazırlanır...</translation>
 <translation id="3522708245912499433">Portuqal</translation>
@@ -1058,7 +1056,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" adlı fayl artıq mövcuddur. Fərqli ad seçin.</translation>
 <translation id="9046895021617826162">Qoşulma uğursuz oldu</translation>
 <translation id="9065512565307033593">Doğrulamaq alınmasa, şəbəkəyə girişiniz deaktiv ediləcək.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 xəbərdarlıq.}other{<ph name="COUNT" /> xəbərdarlıq.}}</translation>
 <translation id="908378762078012445">Fonetik AATSEEL klaviaturası ilə Rus dili</translation>
 <translation id="9086302186042011942">Sinxronizasiya edilir</translation>
 <translation id="9099674669267916096">Səhifə sayı</translation>

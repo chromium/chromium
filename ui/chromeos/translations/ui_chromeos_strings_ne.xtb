@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktop सँग फोल्डर सेयर गर्नुहोस्</translation>
 <translation id="1439919885608649279">फूल बोकिरहेका व्यक्ति</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> हटाउनुहोस्</translation>
-<translation id="1464724975715666883">1 त्रुटि।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> वटा फाइलहरू इन्क्रिप्ट गरिएकाले तिनलाई कपी गर्न सकिएन।</translation>
 <translation id="1471718551822868769">स्लोभाकियाली</translation>
 <translation id="1482884275703521657">फिनिस</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google स्प्रेडसिट</translation>
 <translation id="3479552764303398839">अहिले होइन</translation>
 <translation id="3486821258960016770">मङ्गोलियाली</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> त्रुटिहरू।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, विवरणहरू</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> वटा सामग्री सिंक गर्ने तयारी गरिँदै छ…</translation>
 <translation id="3522708245912499433">पोर्टुगिज</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नाम गरेको फाइल पहिलेदेखि नै अवस्थित छ। कृपया कुनै फरक नाम चयन गर्नुहोस्।</translation>
 <translation id="9046895021617826162">जडान असफल भयो,</translation>
 <translation id="9065512565307033593">तपाईंले पुष्टि गर्न सक्नुभएन भने तपाईं अब नेटवर्क प्रयोग गर्न पाउनु हुने छैन।</translation>
-<translation id="9083722265619106011">{0,plural, =1{एउटा चेतावनी।}other{<ph name="COUNT" /> वटा चेतावनी।}}</translation>
 <translation id="908378762078012445">रसियाली फोनेटिक AATSEEL किबोर्ड</translation>
 <translation id="9086302186042011942">समक्रमण गर्दै</translation>
 <translation id="9099674669267916096">पृष्ठको गणना</translation>

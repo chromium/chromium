@@ -398,7 +398,6 @@ Dit vervangt het beëindigde beleid <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_P
 Als je het beleid toepast en een gebruiker inlogt, worden automatisch de browser- en app-vensters geopend van het <ph name="PRODUCT_OS_NAME" />-apparaat dat de huidige gebruiker het laatst heeft gebruikt.
 Als je het beleid niet toepast of niet instelt, wordt op basis van de instellingen voor volledig herstel bepaald wat er bij het inloggen wordt gestart.</translation>
 <translation id="1327466551276625742">Prompt voor netwerkconfiguratie tonen als je offline bent</translation>
-<translation id="1330145147221172764">Schermtoetsenbord aanzetten</translation>
 <translation id="13356285923490863">Naam van beleid</translation>
 <translation id="1336073690474326987">Functie helemaal uitzetten</translation>
 <translation id="1338603603553894503">Geeft aan of de profielkiezer aanstaat, uitstaat of wordt verplicht bij het opstarten van de browser.
@@ -3006,7 +3005,6 @@ Verbindingen die niet door deze controle komen, krijgen de fout ERR_SSL_KEY_USAG
 
           Als dit beleid niet is ingesteld, staat 'Selecteer om voor te lezen' in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3483585138745445814">Toestaan dat gebruikers Dichtbij delen aanzetten</translation>
-<translation id="348495353354674884">Virtueel toetsenbord aanzetten</translation>
 <translation id="3485200437120267231">Onderschepping bij inloggen uitzetten</translation>
 <translation id="3487651201232258606">Systeemeigen berichten</translation>
 <translation id="3492351353716550742">'no-referrer-when-downgrade' niet gebruiken als standaardbeleid voor verwijzende URL's</translation>
@@ -3090,7 +3088,6 @@ Als je dit beleid niet instelt, worden er geen beperkingen toegepast.</translati
 <translation id="3532827558833318911">Inloggen met wachtwoord wissen</translation>
 <translation id="353611922042274900">Altijd systeemgegevens weergeven op het inlogscherm</translation>
 <translation id="3536263244905016305">WPAD-optimalisatie (Web Proxy Auto-Discovery) uitzetten</translation>
-<translation id="3538869107794555625">Schermtoetsenbord aanzetten in de tabletmodus</translation>
 <translation id="3539103206548425861">Als je dit beleid instelt, worden video's met audiocontent automatisch (zonder toestemming van de gebruiker) afgespeeld in <ph name="PRODUCT_NAME" />. Als het beleid <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> is ingesteld op True, heeft dit beleid geen effect. Als <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> is ingesteld op False, kunnen URL-patronen die in dit beleid zijn ingesteld nog altijd worden afgespeeld. Als je dit beleid wijzigt terwijl <ph name="PRODUCT_NAME" /> wordt uitgevoerd, wordt het alleen toegepast op nieuw geopende tabbladen.
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.</translation>
@@ -3307,16 +3304,6 @@ Als je deze instelling uitzet, kunnen gebruikers de functie Automatisch aanvulle
 Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opties voor Automatisch aanvullen zelf beheren. Zo kunnen ze profielen voor Automatisch aanvullen instellen en de functie naar wens aan- of uitzetten.</translation>
 <translation id="3733014427925403568">Dag van de week voor het interval.</translation>
 <translation id="3736879847913515635">'Persoon toevoegen' aanzetten in gebruikersbeheer</translation>
-<translation id="3739912184950385207">Met dit beleid kunnen beheerders het <ph name="CLOUD_UPLOAD_NAME" />-proces instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> op <ph name="PRODUCT_OS_NAME" />.
-
-Als je het beleid instelt op <ph name="ALLOWED_NAME" />, kunnen gebruikers het <ph name="CLOUD_UPLOAD_NAME" />-proces instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> als ze dat willen.
-Nadat het instelproces is afgerond, worden bestanden met overeenkomende bestandsindelingen standaard verplaatst naar <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en door een van de <ph name="MICROSOFT_365_NAME" />-apps verwerkt als de gebruiker ze probeert te openen.
-
-Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kan de gebruiker het <ph name="CLOUD_UPLOAD_NAME" />-proces niet instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> zoals hierboven beschreven en wordt <ph name="MICROSOFT_365_NAME" /> verwijderd uit de lijst met mogelijke bestandshandlers.
-
-Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en<ph name="MICROSOFT_365_NAME" /> automatisch in, zodat bestanden met overeenkomende bestandsindelingen standaard naar<ph name="MICROSOFT_ONE_DRIVE_NAME" /> worden verplaatst en door een van de <ph name="MICROSOFT_365_NAME" />-apps worden verwerkt als de gebruiker ze probeert te openen.
-
-Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.</translation>
 <translation id="3744984310825999317">Toestaan dat <ph name="PEPPER_NAME" /> een nieuwe decoder gebruikt voor videodecodering met hardwareversnelling.</translation>
 <translation id="3749259744154402564">Niet ondersteund</translation>
 <translation id="3749511622128647337">Audio-uitvoer uitzetten</translation>
@@ -3545,15 +3532,6 @@ Dit beleid is een tijdelijke oplossing en wordt na bepaalde tijd verwijderd (de 
       * Verschillend bereik en niveau: het beleid met de hoogste prioriteit wordt toegepast.
 
       Als een beleid niet in de lijst staat en er een conflict tussen bronnen, bereik of niveau is, wordt het beleid met de hoogste prioriteit toegepast.</translation>
-<translation id="3912092044353890761">Zet de toegankelijkheidsfunctie voor het virtuele toetsenbord op het inlogscherm aan.
-
-          Als dit beleid is ingesteld op True, staat het virtuele toetsenbord altijd aan op het inlogscherm.
-
-          Als dit beleid is ingesteld op False, staat het virtuele toetsenbord altijd uit op het inlogscherm.
-
-          Als je dit beleid instelt, kunnen gebruikers het niet wijzigen of overschrijven.
-
-          Als dit beleid niet is ingesteld, staat het virtuele toetsenbord in eerste instantie uit op het inlogscherm. De gebruiker kan deze functie op elk gewenst moment aanzetten.</translation>
 <translation id="3913680877415932969">Stel beleid in om het niveau van API's voor scherm delen (bijv. getDisplayMedia() of de API voor de extensie Bureaublad streamen) te bepalen die een site mag opnemen (bijv. tabblad, venster of bureaublad).</translation>
 <translation id="3915395663995367577">URL naar een PAC-bestand voor de proxy</translation>
 <translation id="3915587396318773837">Als je dit beleid instelt, moet de host voor externe toegang clients verifiëren om een verificatietoken van deze URL te krijgen en zo verbinding te kunnen maken.
@@ -3696,7 +3674,6 @@ Oud en verouderd gedrag: Als 'event.preventDefault()' wordt aangeroepen in 'befo
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
 <translation id="4052529125939620019">De componentextensie CryptoToken laden bij opstarten</translation>
 <translation id="4053157306171963473">Rapportage voor tijd van apparaatactiviteit uitzetten</translation>
-<translation id="4053612967614057854">Schermtoetsenbord uitzetten</translation>
 <translation id="4055758693679485627">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit. De beschikbare gegevenstypen zijn browsegeschiedenis (<ph name="DATA_TYPE_BROWSING_HISTORY" />), downloadgeschiedenis (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cachegeheugen (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), automatisch invullen (<ph name="DATA_TYPE_AUTOFILL" />), wachtwoorden (<ph name="DATA_TYPE_PASSWORD" />), site-instellingen (<ph name="DATA_TYPE_SITE_SETTINGS" />) en gegevens van gehoste apps (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Dit beleid krijgt geen voorrang op <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
 
 Tot Chrome 114 moest voor dit beleid het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> worden ingesteld op True. Vanaf Chrome 115 geldt dat als je dit beleid instelt, synchronisatie voor de betreffende gegevenstypen wordt uitgezet als <ph name="CHROME_SYNC_NAME" /> niet is uitgezet door het beleid <ph name="SYNC_DISABLED_POLICY_NAME" /> in te stellen en <ph name="BROWSER_SIGNIN_POLICY_NAME" /> niet is uitgezet.
@@ -3790,9 +3767,6 @@ Bepaalt of <ph name="PRODUCT_NAME" /> in Linux systeemeigen meldingen gebruikt.
 Als dit beleid is ingesteld op True of niet is ingesteld, mag <ph name="PRODUCT_NAME" /> systeemeigen meldingen gebruiken.
 
 Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen systeemeigen meldingen. Het berichtencentrum van <ph name="PRODUCT_NAME" /> wordt gebruikt als reserve.</translation>
-<translation id="412394201461298128">Als je het beleid instelt op True, blijft het schermtoetsenbord aanstaan. Als je het beleid instelt op False, blijft het schermtoetsenbord uitstaan, tenzij andere factoren ervoor zorgen dat het wordt aangezet. Bekijk het beleid <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> als voorbeeld van deze factoren.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je dit beleid niet instelt, staat het schermtoetsenbord in eerste instantie uit, maar kunnen gebruikers het op elk moment aanzetten.</translation>
 <translation id="412697421478384751">Gebruikers toestaan om zwakke pincodes in te stellen als pincode voor het vergrendelscherm</translation>
 <translation id="4136603825567209889">Rapportage van informatie over gebruikersidentificatie aanzetten</translation>
 <translation id="4138655880188755661">Tijdslimiet</translation>
@@ -5116,7 +5090,6 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 Als je dit beleid niet toepast, kunnen de browser- en downloadgeschiedenis niet worden verwijderd. Ook als je dit beleid niet toepast, kan niet worden gegarandeerd dat de browser- en downloadgeschiedenis behouden blijven. Gebruikers kunnen de databasebestanden van de geschiedenis rechtstreeks bewerken of verwijderen en de browser kan sommige of alle geschiedenisitems op elk moment laten verlopen of archiveren.</translation>
 <translation id="5323200200131319468">Gesproken feedback op het inlogscherm aanzetten</translation>
 <translation id="5323271643727095577">Geen annuleringsdialoogvenster tonen als event.preventDefault() wordt aangeroepen voor beforeunload-gebeurtenis. Annuleringsdialoogvenster tonen als event.returnValue de lege tekenreeks voor de beforeunload-gebeurtenis is.</translation>
-<translation id="5323355956693037267">Schermtoetsenbord op het inlogscherm aanzetten</translation>
 <translation id="5324430722441910403">Instellingen voor Zoekopdrachten op site</translation>
 <translation id="532848608876725157">DNS-over-HTTPS met onbeveiligde fallback aanzetten</translation>
 <translation id="5328965694451556034">Inloggen/uitloggen rapporteren</translation>
@@ -5959,7 +5932,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6092073071805297119">Toestaan dat filters voor toegankelijkheidsprestaties worden gebruikt.</translation>
 <translation id="6093156968240188330">Externe gebruikers toestaan om een vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6094314311474620462">Afdrukken uitzetten</translation>
-<translation id="6095048925836115505">Virtuele toetsenbord op het inlogscherm aanzetten</translation>
 <translation id="6097601282776163274">Aan URL's gekoppelde, geanonimiseerde gegevens verzamelen</translation>
 <translation id="6099853574908182288">Standaard kleurenmodus voor afdrukken</translation>
 <translation id="6102342563050263313">Scrollen naar opgegeven tekst in URL-fragmenten aanzetten</translation>
@@ -6955,7 +6927,6 @@ OPMERKING: Wijzigingen in dit beleid worden alleen weergegeven in onlangs gestar
 <translation id="6841254611279513739">Als je dit beleid instelt, kun je bepalen of je alleen in kleur, alleen in monochroom of zonder kleurbeperking wilt afdrukken. Als je het beleid niet instelt, wordt er geen beperking ingesteld.</translation>
 <translation id="6843008643303282259">Gewenste uploadsnelheid in kbits/s.</translation>
 <translation id="6843296367238757293">Dit beleid is beëindigd. Het gebruik ervan wordt afgeraden. Ga naar https://support.google.com/chrome/a/answer/7643500 voor meer informatie</translation>
-<translation id="6845162369344636241">Schermtoetsenbord op het inlogscherm uitzetten</translation>
 <translation id="6846126863870444592">Dit beleid specificeert de extensies die het bevestigingsdialoogvenster voor afdruktaken mogen overslaan als ze de <ph name="PRINTING_API" />-functie <ph name="SUBMIT_JOB_FUNCTION" /> gebruiken om een afdruktaak te sturen.
 
       Als een extensie niet in de lijst staat of de lijst niet is ingesteld, krijgt de gebruiker het bevestigingsdialoogvenster voor afdruktaken te zien voor elke <ph name="SUBMIT_JOB_FUNCTION" />-functieaanroep.
@@ -8422,19 +8393,6 @@ Waarschuwing: Het wordt aanbevolen automatische updates aangezet te laten, zodat
 <translation id="8102854005031553638">De pdf-viewer gebruikt het AGG-weergaveprogramma.</translation>
 <translation id="8102913158860568230">Standaardinstelling voor mediastreams</translation>
 <translation id="8104962233214241919">Clientcertificaten automatisch selecteren voor deze sites</translation>
-<translation id="8106782817348995849">Met dit beleid kunnen beheerders beperken welke accounts mogen inloggen bij <ph name="MICROSOFT_ONE_DRIVE_NAME" /> als het beleid <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> wordt toegepast.
-
-Als dit beleid de waarde <ph name="COMMON_NAME" /> bevat, kan elk account worden gebruikt om in te loggen.
-
-Als dit beleid de waarde <ph name="ORGANIZATIONS_NAME" /> bevat, kunnen werk- of schoolaccounts worden gebruikt om in te loggen.
-
-Als dit beleid de waarde <ph name="CONSUMER_NAME" /> bevat, kunnen persoonlijke <ph name="MICROSOFT_NAME" />-accounts worden gebruikt om in te loggen.
-
-Als dit beleid domeinnamen of tenant-ID's bevat, kunnen accounts van deze domeinnamen of tenant-ID's (zie https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) worden gebruikt om in te loggen.
-
-Als dit beleid niet is ingesteld of alleen een lege waarde bevat, gedraagt het zich alsof '<ph name="COMMON_NAME" />' is aangegeven voor gewone gebruikers. Voor zakelijke gebruikers gedraagt het zich alsof '<ph name="ORGANIZATIONS_NAME" />' is aangegeven.
-
-Als je de beperking wijzigt, kunnen gebruikers worden uitgelogd van hun <ph name="MICROSOFT_ONE_DRIVE_NAME" />-account als dit niet voldoet aan de nieuwe beperkingen.</translation>
 <translation id="8109762054721090517">Template voor <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Hiermee stel je in hoeveel seconden het apparaat inactief moet zijn voordat de screensaver voor het vergrendelscherm wordt getoond.
 
@@ -8565,18 +8523,6 @@ Dit beleid wordt toegepast op de incognitomodus. Dit betekent dat de incognitomo
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
 <translation id="822055204938220476">Lijst met URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen</translation>
-<translation id="8222103851860031829">Beheert het schermtoetsenbord en fungeert als aanvullend beleid op het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
-
-      Als het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> is ingesteld op True of als de Chrome OS-instelling 'Schermtoetsenbord aanzetten' aanstaat, heeft dit beleid geen effect.
-
-      Als het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> is ingesteld op False of niet is ingesteld en de Chrome OS-instelling 'Schermtoetsenbord aanzetten' uitstaat, heeft dit beleid het volgende effect:
-Als je dit beleid niet instelt, wordt het schermtoetsenbord getoond als de tabletmodus van het apparaat aanstaat.
-      Als je dit beleid instelt op True, wordt het schermtoetsenbord altijd getoond.
-      Als je dit beleid instelt op False, wordt het schermtoetsenbord nooit getoond.
-
-      Voor het schermtoetsenbord kan een compacte indeling worden gebruikt afhankelijk van de invoermethode.
-
-      Als je het beleid instelt, kunnen gebruikers het niet wijzigen.</translation>
 <translation id="8225579382697740712">Het gebruik van de WebHID API beheren</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
@@ -8723,16 +8669,6 @@ Meer informatie over verouderde technologieën vind je op https://chromestatus.c
 <translation id="8316940611391250886">Certificaten zonder de extensie subjectAlternativeName niet toestaan</translation>
 <translation id="8319678975002906774">Stelt waarden voor beheerde configuraties voor websites in voor specifieke herkomsten</translation>
 <translation id="8320149248919453401">Batterijoplaadmodus</translation>
-<translation id="8324872579207355449">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
-
-Als je het beleid instelt op <ph name="ALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen als die dat wil.
-Nadat het instelproces is afgerond, wordt <ph name="MICROSOFT_ONE_DRIVE_NAME" /> geactiveerd in Bestandsbeheer.
-
-Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> niet instellen.
-
-Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, wordt geprobeerd <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisch in te stellen. Als dat niet werkt, wordt het instelproces weer getoond.
-
-Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.</translation>
 <translation id="8327651196906278510">Tabbladopname door deze oorsprongen toestaan</translation>
 <translation id="8329434144708110">Verificatieprocessen activeren om wachtwoorden te synchroniseren met SSO-providers</translation>
 <translation id="8329984337216493753">Dit beleid wordt alleen toegepast in de winkelmodus.

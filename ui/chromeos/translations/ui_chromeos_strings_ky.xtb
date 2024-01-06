@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Файлды Parallels Desktop менен бөлүшүү</translation>
 <translation id="1439919885608649279">Гүл көтөргөн адам</translation>
 <translation id="1458457385801829801">Чыгаруу: <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 ката.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файл шифрленгендиктен, алар жылдырылган жок</translation>
 <translation id="1471718551822868769">Словакча</translation>
 <translation id="1482884275703521657">Финче</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google электрондук жадыбал</translation>
 <translation id="3479552764303398839">Азыр эмес</translation>
 <translation id="3486821258960016770">Монголчо</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ката.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Чоо-жайы</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> нерсе шайкештирүүгө даярдалууда...</translation>
 <translation id="3522708245912499433">Португалча</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" деген файл мурунтан эле бар. Файлды башкача атаңыз.</translation>
 <translation id="9046895021617826162">Туташпай калды</translation>
 <translation id="9065512565307033593">Эгер текшерүүдөн өтпөсөңүз, тармакка кирүү мүмкүнчүлүгү өчүрүлөт.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 эскертүү.}other{<ph name="COUNT" /> эскертүү.}}</translation>
 <translation id="908378762078012445">Орусча (AATSEEL фонетикалык баскычтобу)</translation>
 <translation id="9086302186042011942">Шайкештештирилүүдө</translation>
 <translation id="9099674669267916096">Барактардын саны</translation>

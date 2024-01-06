@@ -399,7 +399,6 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
 Se il criterio viene attivato, le finestre del browser e delle app verranno avviate automaticamente al momento dell'accesso dall'ultimo dispositivo <ph name="PRODUCT_OS_NAME" /> utilizzato dall'utente corrente.
 Se il criterio viene disattivato o se non viene configurato, gli elementi da avviare al momento dell'accesso verranno determinati dalle impostazioni di ripristino completo.</translation>
 <translation id="1327466551276625742">Attivazione richiesta di configurazione della rete offline</translation>
-<translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
 <translation id="13356285923490863">Nome criterio</translation>
 <translation id="1336073690474326987">Disattiva completamente la funzionalità</translation>
 <translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
@@ -3014,7 +3013,6 @@ Le connessioni che non superano il controllo non andranno a buon fine con l'erro
 
           Se questo criterio non viene impostato, inizialmente la funzionalità Seleziona per ascoltare è disattivata, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="3483585138745445814">Consenti agli utenti di attivare la Condivisione nelle vicinanze</translation>
-<translation id="348495353354674884">Attiva tastiera virtuale</translation>
 <translation id="3485200437120267231">Disattiva l'intercettazione dell'accesso</translation>
 <translation id="3487651201232258606">Messaggi nativi</translation>
 <translation id="3492351353716550742">Non viene usato un criterio relativo al referrer predefinito no-referrer-when-downgrade</translation>
@@ -3098,7 +3096,6 @@ Le connessioni che non superano il controllo non andranno a buon fine con l'erro
 <translation id="3532827558833318911">Cancella l'accesso con password</translation>
 <translation id="353611922042274900">Mostra sempre le informazioni di sistema nella schermata di accesso</translation>
 <translation id="3536263244905016305">Disattiva l'ottimizzazione WPAD (Web Proxy Auto-Discovery)</translation>
-<translation id="3538869107794555625">Attiva la tastiera sullo schermo in modalità tablet</translation>
 <translation id="3539103206548425861">Se il criterio viene configurato, la riproduzione video automatica (senza il consenso dell'utente) con contenuti audio è consentita in <ph name="PRODUCT_NAME" />. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su true, tale criterio non ha effetto. Se il criterio <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> viene impostato su false, l'insieme di pattern URL in tale criterio possono comunque essere riprodotti. Se il criterio viene modificato mentre <ph name="PRODUCT_NAME" /> è in esecuzione, viene applicato solo alle nuove schede aperte.
 
       Per informazioni dettagliate sui pattern URL validi, vai all'indirizzo https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -3317,16 +3314,6 @@ Visita la pagina https://wicg.github.io/private-network-access/ per conoscere le
       Se la attivi o se non la configuri, la funzionalità di compilazione automatica potrà essere gestita dagli utenti, che potranno quindi configurare i profili di compilazione automatica e attivare o disattivare a propria scelta questa funzionalità.</translation>
 <translation id="3733014427925403568">Giorno della settimana dell'intervallo.</translation>
 <translation id="3736879847913515635">Attiva la funzione Aggiungi persona in Gestione utenti</translation>
-<translation id="3739912184950385207">Questo criterio consente agli amministratori di configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> su <ph name="PRODUCT_OS_NAME" />.
-
-Se il criterio viene impostato su "<ph name="ALLOWED_NAME" />", se vuole l'utente può configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" />.
-Dopo aver completato la procedura di configurazione, i file con formati file corrispondenti verranno spostati per impostazione predefinita su <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e gestiti da una delle app <ph name="MICROSOFT_365_NAME" /> quando l'utente tenterà di aprirli.
-
-Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non può configurare il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> come descritto in precedenza e <ph name="MICROSOFT_365_NAME" /> viene rimosso dall'elenco dei potenziali gestori di file.
-
-Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e <ph name="MICROSOFT_365_NAME" /> viene configurato automaticamente, quindi i file con formati file corrispondenti verranno spostati per impostazione predefinita su <ph name="MICROSOFT_ONE_DRIVE_NAME" /> e gestiti da una delle app <ph name="MICROSOFT_365_NAME" /> quando l'utente tenterà di aprirli.
-
-Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
 <translation id="3744984310825999317">Consenti a <ph name="PEPPER_NAME" /> di usare un nuovo decodificatore per la decodifica video con accelerazione hardware.</translation>
 <translation id="3749259744154402564">Opzione non supportata</translation>
 <translation id="3749511622128647337">Disattiva l'output audio</translation>
@@ -3555,15 +3542,6 @@ Questo criterio è una soluzione alternativa temporanea e verrà rimosso dopo il
       * Se hanno ambito o livello diversi: verrà applicato il criterio con la priorità massima.
 
       Se un criterio non è nell'elenco, nel caso ci sia conflitto tra le origini, l'ambito o il livello, verrà applicato il criterio con la priorità massima.</translation>
-<translation id="3912092044353890761">Consente di attivare la funzione di accessibilità della tastiera virtuale nella schermata di accesso.
-
-          Se questo criterio è impostato su true, la tastiera virtuale sarà sempre attivata nella schermata di accesso.
-
-          Se questo criterio è impostato su false, la tastiera virtuale sarà sempre disattivata nella schermata di accesso.
-
-          Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
-
-          Se questo criterio non viene impostato, inizialmente la tastiera virtuale è disattivata nella schermata di accesso, ma l'utente può attivarla in qualsiasi momento.</translation>
 <translation id="3913680877415932969">Configura i criteri per controllare il livello delle API di condivisione schermo (ad esempio, getDisplayMedia() o l'API dell'estensione di acquisizione schermata desktop) che un sito può acquisire (ad esempio, acquisizione di schede, finestre o schermate desktop).</translation>
 <translation id="3915395663995367577">URL di un file proxy .pac</translation>
 <translation id="3915587396318773837">Se questo criterio viene configurato, l'host di accesso remoto richiede che i client di autenticazione ricevano un token di autenticazione da questo URL per la connessione.
@@ -3706,7 +3684,6 @@ Vecchio comportamento precedente: in "beforeunload", la chiamata di "event.preve
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
 <translation id="4052529125939620019">Carica l'estensione del componente CryptoToken all'avvio</translation>
 <translation id="4053157306171963473">Disattiva i report sul tempo di attività del dispositivo</translation>
-<translation id="4053612967614057854">Disattiva tastiera sullo schermo</translation>
 <translation id="4055758693679485627">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente. Tra i tipi di dati disponibili ci sono: cronologia di navigazione (<ph name="DATA_TYPE_BROWSING_HISTORY" />), cronologia dei download (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookie (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache <ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />, compilazione automatica (<ph name="DATA_TYPE_AUTOFILL" />), password (<ph name="DATA_TYPE_PASSWORD" />), impostazioni sito (<ph name="DATA_TYPE_SITE_SETTINGS" />) e dati di app ospitate (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Questo criterio non ha la precedenza su <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
 
 Fino a Chrome 114, questo criterio richiedeva l'impostazione del criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> su true. A partire da Chrome 115, la configurazione di questo criterio disattiva la sincronizzazione per i rispettivi tipi di dati se "<ph name="CHROME_SYNC_NAME" />" non viene disattivato impostando il criterio <ph name="SYNC_DISABLED_POLICY_NAME" /> e non viene disattivato <ph name="BROWSER_SIGNIN_POLICY_NAME" />.
@@ -3802,9 +3779,6 @@ Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche nati
 Se questo criterio viene impostato su Vero o se non viene impostato, <ph name="PRODUCT_NAME" /> potrà utilizzare notifiche native.
 
 Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non utilizzerà notifiche native. Il Centro messaggi di <ph name="PRODUCT_NAME" /> verrà utilizzato come riserva.</translation>
-<translation id="412394201461298128">Se il criterio viene impostato su Vero, la tastiera sullo schermo rimane attivata. Se viene impostato su Falso, la tastiera sullo schermo rimane disattivata, a meno che non venga attivata da altri fattori. Il criterio <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> è un esempio di questi fattori.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo. Se non viene configurato, la tastiera sullo schermo è disattivata all'inizio, ma gli utenti possono attivarla in qualsiasi momento.</translation>
 <translation id="412697421478384751">Consenti agli utenti di impostare PIN non sicuri per la schermata di blocco</translation>
 <translation id="4136603825567209889">Attiva la generazione di report sulle informazioni di identificazione degli utenti</translation>
 <translation id="4138655880188755661">Limite di tempo</translation>
@@ -5153,7 +5127,6 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito Secure Contexts: 
 Se il criterio viene impostato su Disattivato, la cronologia di navigazione e quella dei download non possono essere eliminate. Non è garantita la memorizzazione della cronologia di navigazione e di quella dei download, anche se questo criterio viene disattivato. Gli utenti potrebbero essere in grado di modificare o eliminare direttamente i file dei database delle cronologie e il browser stesso potrebbe far scadere o archiviare una o tutte le voci delle cronologie in qualsiasi momento.</translation>
 <translation id="5323200200131319468">Attiva la funzione di lettura vocale nella schermata di accesso</translation>
 <translation id="5323271643727095577">Non mostrare la finestra di dialogo di annullamento quando viene chiamato event.preventDefault() per l'evento beforeunload. Mostra la finestra di dialogo di annullamento quando event.returnValue è la stringa vuota dell'evento beforeunload.</translation>
-<translation id="5323355956693037267">Attiva tastiera sullo schermo nella schermata di accesso</translation>
 <translation id="5324430722441910403">Impostazioni ricerca sui siti</translation>
 <translation id="532848608876725157">Attiva DNS over HTTPS con fallback non sicuro</translation>
 <translation id="5328965694451556034">Segnala accesso/uscita</translation>
@@ -5996,7 +5969,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6092073071805297119">Consenti l'uso del filtro delle prestazioni di accessibilità.</translation>
 <translation id="6093156968240188330">Consente agli utenti remoti di interagire con finestre con privilegi più elevati nelle sessioni di assistenza remota</translation>
 <translation id="6094314311474620462">Viene disattivata la stampa</translation>
-<translation id="6095048925836115505">Attiva la tastiera virtuale nella schermata di accesso</translation>
 <translation id="6097601282776163274">Attiva la raccolta di dati anonimizzati con chiave URL</translation>
 <translation id="6099853574908182288">Modalità di stampa a colori predefinita</translation>
 <translation id="6102342563050263313">Attiva scorrimento al testo specificato in frammenti di URL</translation>
@@ -7017,7 +6989,6 @@ NOTA: le modifiche apportate a questo criterio verranno applicate soltanto ai pr
 <translation id="6841254611279513739">La configurazione del criterio consente di impostare solo la stampa a colori, solo la stampa monocromatica oppure nessuna limitazione per la modalità a colori. Se il criterio non viene configurato non vengono applicate limitazioni.</translation>
 <translation id="6843008643303282259">La velocità di caricamento desiderata, in kbit/s.</translation>
 <translation id="6843296367238757293">Questa norma è obsoleta. Ne sconsigliamo l'utilizzo. Leggi ulteriori informazioni all'indirizzo https://support.google.com/chrome/a/answer/7643500</translation>
-<translation id="6845162369344636241">Disattiva tastiera sullo schermo nella schermata di accesso</translation>
 <translation id="6846126863870444592">Questo criterio specifica le estensioni autorizzate a ignorare la finestra di dialogo di conferma del processo di stampa quando utilizzano la funzione <ph name="SUBMIT_JOB_FUNCTION" /> di <ph name="PRINTING_API" /> per l'invio di un processo di stampa.
 
       Se un'estensione non è presente nell'elenco o non è configurato alcun elenco, la finestra di dialogo di conferma del processo di stampa verrà mostrata all'utente per ogni chiamata alla funzione <ph name="SUBMIT_JOB_FUNCTION" />.
@@ -8481,19 +8452,6 @@ Avviso: è consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="8102854005031553638">Il visualizzatore PDF utilizza il renderer AGG.</translation>
 <translation id="8102913158860568230">Impostazione stream multimediale predefinito</translation>
 <translation id="8104962233214241919">Seleziona automaticamente i certificati client per questi siti</translation>
-<translation id="8106782817348995849">Questo criterio consente agli amministratori di limitare gli account autorizzati ad accedere a <ph name="MICROSOFT_ONE_DRIVE_NAME" /> quando il criterio <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> è attivato.
-
-Se questo criterio contiene il valore "<ph name="COMMON_NAME" />", è possibile utilizzare qualsiasi account per accedere.
-
-Se questo criterio contiene il valore "<ph name="ORGANIZATIONS_NAME" />", è possibile utilizzare account di lavoro o della scuola per accedere.
-
-Se questo criterio contiene il valore "<ph name="CONSUMER_NAME" />", è possibile utilizzare account <ph name="MICROSOFT_NAME" /> personali per accedere.
-
-Se questo criterio contiene nomi di dominio o ID tenant, è possibile utilizzare gli account di questi nomi di dominio o ID tenant (vedi la pagina https://learn.microsoft.com/it-it/azure/active-directory/develop/v2-protocols#endpoints) per accedere.
-
-Se questo criterio non viene configurato o se contiene soltanto un valore vuoto, si comporta come se "<ph name="COMMON_NAME" />" fosse stato specificato per gli utenti normali; per gli utenti aziendali, si comporta come se fosse specificato "<ph name="ORGANIZATIONS_NAME" />".
-
-La modifica della limitazione potrebbe comportare la disconnessione degli utenti dal proprio account <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se non ottempera alle nuove limitazioni.</translation>
 <translation id="8109762054721090517">Modello per l'<ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Consente di configurare il tempo di inattività del dispositivo in secondi che deve trascorrere prima di mostrare il salvaschermo per la schermata di blocco.
 
@@ -8624,18 +8582,6 @@ Questo criterio viene applicato alla modalità di navigazione in incognito. Ciò
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
 <translation id="822055204938220476">Elenco di URL che possono rimanere in modalità a schermo intero senza mostrare una notifica</translation>
-<translation id="8222103851860031829">Consente di controllare la tastiera sullo schermo, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
-
-      Se il criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> viene impostato su true o se l'impostazione di ChromeOS Attiva tastiera sullo schermo viene attivata, questo criterio non ha alcun effetto.
-
-      Se il criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> viene impostato su false o se non viene configurato e l'impostazione di ChromeOS Attiva tastiera sullo schermo viene disattivata, questo criterio ha l'effetto che segue:
-      Se il criterio non viene configurato, la tastiera sullo schermo viene visualizzata quando il dispositivo è in modalità tablet.
-      Se viene impostato su true, la tastiera sullo schermo viene sempre visualizzata.
-      Se viene impostato su false, la tastiera sullo schermo non viene mai visualizzata.
-
-      Il layout della tastiera sullo schermo potrebbe cambiare diventando compatto, in base al metodo di immissione.
-
-      Se il criterio viene configurato, gli utenti non possono modificarlo.</translation>
 <translation id="8225579382697740712">Controlla l'utilizzo dell'API WebHID</translation>
 <translation id="8229912067600517877">Attiva Strumenti per sviluppatori</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>
@@ -8783,16 +8729,6 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8316940611391250886">Non consentire i certificati privi di un'estensione subjectAlternativeName</translation>
 <translation id="8319678975002906774">Imposta valori Managed Configuration per siti web corrispondenti a origini specifiche</translation>
 <translation id="8320149248919453401">Modalità di carica della batteria</translation>
-<translation id="8324872579207355449">Questo criterio consente agli amministratori di configurare il montaggio di <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
-
-Se il criterio viene impostato su "<ph name="ALLOWED_NAME" />", l'utente può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> se vuole.
-Dopo aver completato la procedura di configurazione, l'app <ph name="MICROSOFT_ONE_DRIVE_NAME" /> verrà montata in gestore di file.
-
-Se il criterio viene impostato su "<ph name="DISALLOWED_NAME" />", l'utente non può configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
-
-Se il criterio viene impostato su "<ph name="AUTOMATED_NAME" />", questo tenta di configurare <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automaticamente. In caso di errore, torna al flusso di configurazione.
-
-Se il criterio non viene configurato, in pratica equivale a impostarlo su "<ph name="ALLOWED_NAME" />" per gli utenti normali e su "<ph name="DISALLOWED_NAME" />" per gli utenti aziendali.</translation>
 <translation id="8327651196906278510">Consenti acquisizione schede in base a queste origini</translation>
 <translation id="8329434144708110">Vengono attivati i flussi di autenticazione per la sincronizzazione delle password con fornitori di servizi SSO</translation>
 <translation id="8329984337216493753">Questa norma è attiva soltanto in modalità retail.

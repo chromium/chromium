@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Condividi cartella con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona con fiori</translation>
 <translation id="1458457385801829801">Espelli <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">Un errore.</translation>
 <translation id="146691674290220697">Impossibile copiare <ph name="NUMBER_OF_FILES" /> file perché è criptato.</translation>
 <translation id="1471718551822868769">Slovacco</translation>
 <translation id="1482884275703521657">Finlandese</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Foglio di calcolo Google</translation>
 <translation id="3479552764303398839">Non adesso</translation>
 <translation id="3486821258960016770">Mongolo</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> errori.</translation>
 <translation id="3509680540198371098">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="3511705761158917664">Preparazione alla sincronizzazione di <ph name="NUMBER_OF_ITEMS" /> elementi in corso…</translation>
 <translation id="3522708245912499433">Portoghese</translation>
@@ -1059,7 +1057,6 @@
 <translation id="9038620279323455325">Esiste già un file chiamato "<ph name="FILE_NAME" />". Scegli un altro nome.</translation>
 <translation id="9046895021617826162">Connessione non riuscita</translation>
 <translation id="9065512565307033593">Se non superi la verifica, l'accesso alla rete verrà disattivato.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 avviso.}other{<ph name="COUNT" /> avvisi.}}</translation>
 <translation id="908378762078012445">Russo con tastiera fonetica AATSEEL</translation>
 <translation id="9086302186042011942">Sincronizzazione in corso</translation>
 <translation id="9099674669267916096">Numero di pagine</translation>

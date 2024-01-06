@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Делите фолдер са Parallels Desktop-ом</translation>
 <translation id="1439919885608649279">Особа са цвећем</translation>
 <translation id="1458457385801829801">Избаци <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 грешка.</translation>
 <translation id="146691674290220697">Копирање фајлова (<ph name="NUMBER_OF_FILES" />) није успело зато што су шифровани.</translation>
 <translation id="1471718551822868769">словачки</translation>
 <translation id="1482884275703521657">фински</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google табела</translation>
 <translation id="3479552764303398839">Не сада</translation>
 <translation id="3486821258960016770">монголски</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> грешака.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, детаљи</translation>
 <translation id="3511705761158917664">Припрема се синхронизација ставки (<ph name="NUMBER_OF_ITEMS" />)…</translation>
 <translation id="3522708245912499433">португалски</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Датотека „<ph name="FILE_NAME" />“ већ постоји. Одаберите други назив.</translation>
 <translation id="9046895021617826162">Повезивање није успело</translation>
 <translation id="9065512565307033593">Ако верификација не успе, приступ мрежи ће бити онемогућен.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 упозорење.}one{<ph name="COUNT" /> упозорење.}few{<ph name="COUNT" /> упозорења.}other{<ph name="COUNT" /> упозорења.}}</translation>
 <translation id="908378762078012445">руски са фонетском тастатуром AATSEEL</translation>
 <translation id="9086302186042011942">Синхронизовање</translation>
 <translation id="9099674669267916096">Број страница</translation>

@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktop과 폴더 공유</translation>
 <translation id="1439919885608649279">꽃에 둘러싸인 사람</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> 꺼내기</translation>
-<translation id="1464724975715666883">오류가 1개 있습니다.</translation>
 <translation id="146691674290220697">파일 <ph name="NUMBER_OF_FILES" />개가 암호화되어 있으므로 복사할 수 없습니다.</translation>
 <translation id="1471718551822868769">슬로바키아어</translation>
 <translation id="1482884275703521657">핀란드어</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google Sheets</translation>
 <translation id="3479552764303398839">나중에</translation>
 <translation id="3486821258960016770">몽골어</translation>
-<translation id="3495304270784461826">오류가 <ph name="COUNT" />개 있습니다.</translation>
 <translation id="3509680540198371098">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="3511705761158917664">항목 <ph name="NUMBER_OF_ITEMS" />개 동기화 준비 중...</translation>
 <translation id="3522708245912499433">포르투갈어</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">'<ph name="FILE_NAME" />' 파일이 이미 존재합니다. 다른 이름을 선택하세요.</translation>
 <translation id="9046895021617826162">연결 실패</translation>
 <translation id="9065512565307033593">확인하지 못하면 네트워크 액세스가 사용 중지됩니다.</translation>
-<translation id="9083722265619106011">{0,plural, =1{경고가 1개입니다.}other{경고 <ph name="COUNT" />개입니다.}}</translation>
 <translation id="908378762078012445">러시아어(표음 AATSEEL 키보드)</translation>
 <translation id="9086302186042011942">동기화 중</translation>
 <translation id="9099674669267916096">페이지 수</translation>

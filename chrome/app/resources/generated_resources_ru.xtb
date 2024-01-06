@@ -565,7 +565,6 @@
 <translation id="1437986450143295708">Подробно опишите проблему</translation>
 <translation id="1439671507542716852">долгосрочная поддержка</translation>
 <translation id="1440090277117135316">Регистрация в учебном заведении завершена</translation>
-<translation id="1441895600924734038">или повторить попытку позже, когда будут открыты другие похожие вкладки.</translation>
 <translation id="144283815522798837">Выбрано: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Задать активный билет Kerberos</translation>
 <translation id="1444628761356461360">Этот аккаунт контролируется владельцем устройства (<ph name="OWNER_EMAIL" />)</translation>
@@ -1396,7 +1395,7 @@
 <translation id="2048554637254265991">Не удалось запустить менеджер контейнеров. Повторите попытку.</translation>
 <translation id="2048653237708779538">Действие недоступно</translation>
 <translation id="204914487372604757">Создать ярлык</translation>
-<translation id="2050339315714019657">Портрет</translation>
+<translation id="2050339315714019657">Вертикальная</translation>
 <translation id="2051266530792296582">Google Менеджер паролей сгенерировал надежный пароль для этого сайта</translation>
 <translation id="2051555741181591333">Автоматически выключать точку доступа</translation>
 <translation id="2051669996101374349">По возможности будет использоваться протокол HTTPS. Если сайт его не поддерживает, браузер покажет предупреждение, прежде чем загрузить страницу. Вы не можете изменить этот параметр, поскольку у вас включена Дополнительная защита.</translation>
@@ -8648,7 +8647,7 @@
 <translation id="7770450735129978837">Нажатие правой кнопки мыши</translation>
 <translation id="7770612696274572992">Изображение скопировано с другого устройства</translation>
 <translation id="7770827449915784217">Встроенное ПО обновлено до последней версии</translation>
-<translation id="7771452384635174008">Раскладка</translation>
+<translation id="7771452384635174008">Ориентация</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
 <translation id="7772127298218883077">О <ph name="PRODUCT_NAME" /></translation>
 <translation id="7773726648746946405">Хранение сеансов</translation>
@@ -9008,7 +9007,6 @@
 <translation id="8041267120753677077">Транслировать приложения с телефона</translation>
 <translation id="8042142357103597104">Прозрачность текста</translation>
 <translation id="8042331986490021244">Ваши пароли шифруются на устройстве и только потом сохраняются в Google Менеджере паролей.</translation>
-<translation id="8042392272728017793">или повторить попытку позже.</translation>
 <translation id="8044090981104134791">Использование MIDI-устройств разрешено</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не отвечает</translation>
 <translation id="8044899503464538266">Медленно</translation>
@@ -10608,7 +10606,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" />, включена запись с камеры и микрофона</translation>
 <translation id="984275831282074731">Способы оплаты</translation>
 <translation id="984705303330760860">Добавить языки проверки правописания</translation>
-<translation id="98515147261107953">Альбомная</translation>
+<translation id="98515147261107953">Горизонтальная</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">Общие</translation>
 <translation id="987475089238841621">Языковые пакеты используются для создания автоматических субтитров и хранятся на вашем устройстве</translation>

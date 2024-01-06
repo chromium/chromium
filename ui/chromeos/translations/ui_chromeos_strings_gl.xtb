@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Compartir cartafol con Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoa con flores</translation>
 <translation id="1458457385801829801">Expulsar <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 erro.</translation>
 <translation id="146691674290220697">Non se puideron copiar <ph name="NUMBER_OF_FILES" /> ficheiros porque están encriptados.</translation>
 <translation id="1471718551822868769">Eslovaco</translation>
 <translation id="1482884275703521657">Finés</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Folla de cálculo de Google</translation>
 <translation id="3479552764303398839">Agora non</translation>
 <translation id="3486821258960016770">Mongol</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> erros.</translation>
 <translation id="3509680540198371098">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, detalles</translation>
 <translation id="3511705761158917664">Preparando sincronización de <ph name="NUMBER_OF_ITEMS" /> elementos...</translation>
 <translation id="3522708245912499433">Portugués</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Xa existe un ficheiro denominado "<ph name="FILE_NAME" />". Escolle un nome diferente.</translation>
 <translation id="9046895021617826162">Erro na conexión</translation>
 <translation id="9065512565307033593">Se non levas a cabo a verificación correctamente, desactivaráseche o acceso á rede.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 advertencia.}other{<ph name="COUNT" /> advertencias.}}</translation>
 <translation id="908378762078012445">Ruso con teclado AATSEEL fonético</translation>
 <translation id="9086302186042011942">Sincronizando</translation>
 <translation id="9099674669267916096">Número de páxinas</translation>

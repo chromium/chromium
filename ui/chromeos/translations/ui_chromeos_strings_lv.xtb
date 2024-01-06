@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Mapes kopīgošana ar Parallels Desktop</translation>
 <translation id="1439919885608649279">Persona ar puķēm</translation>
 <translation id="1458457385801829801">Atvienot <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 kļūda.</translation>
 <translation id="146691674290220697">Failus (<ph name="NUMBER_OF_FILES" />) nevarēja nokopēt, jo tie ir šifrēti.</translation>
 <translation id="1471718551822868769">Slovāku</translation>
 <translation id="1482884275703521657">Somu</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google izklājlapa</translation>
 <translation id="3479552764303398839">Vēlāk</translation>
 <translation id="3486821258960016770">Mongoļu</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> kļūdas.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signāla stiprums:<ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="3511705761158917664">Notiek gatavošanās <ph name="NUMBER_OF_ITEMS" /> faila(-u) sinhronizēšanai…</translation>
 <translation id="3522708245912499433">Portugāļu valoda</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Fails ar nosaukumu “<ph name="FILE_NAME" />” jau pastāv. Lūdzu, izvēlieties citu nosaukumu.</translation>
 <translation id="9046895021617826162">Savienojums neizdevās</translation>
 <translation id="9065512565307033593">Ja verifikācija neizdosies, jūsu piekļuve tīklam tiks atspējota.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 brīdinājums.}zero{<ph name="COUNT" /> brīdinājumu.}one{<ph name="COUNT" /> brīdinājums.}other{<ph name="COUNT" /> brīdinājumi.}}</translation>
 <translation id="908378762078012445">Krievu, ar fonētisko AATSEEL tastatūru</translation>
 <translation id="9086302186042011942">Notiek sinhronizācija</translation>
 <translation id="9099674669267916096">Lappušu skaits</translation>

@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">ចែករំលែក​ថត​ជាមួយ Parallels Desktop</translation>
 <translation id="1439919885608649279">មនុស្ស​កាន់ផ្កា</translation>
 <translation id="1458457385801829801">ដក <ph name="TARGET_NAME" /> ចេញ</translation>
-<translation id="1464724975715666883">កំហុសឆ្គងមួយ 1។</translation>
 <translation id="146691674290220697">មិនអាច​ចម្លង​ឯកសារ <ph name="NUMBER_OF_FILES" /> បានទេ ដោយសារ​ឯកសារ​ទាំងនេះ​ត្រូវបាន​អ៊ីនគ្រីប។</translation>
 <translation id="1471718551822868769">ភាសា​ស្លូវ៉ាគី</translation>
 <translation id="1482884275703521657">ភាសា​ហ្វាំងឡង់</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google សៀវភៅបញ្ជី</translation>
 <translation id="3479552764303398839">មិនមែនឥឡូវនេះទេ</translation>
 <translation id="3486821258960016770">ភាសា​ម៉ុងហ្គោលី</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> កំហុសឆ្គង។</translation>
 <translation id="3509680540198371098">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, កម្លាំងរលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ព័ត៌មានលម្អិត</translation>
 <translation id="3511705761158917664">កំពុង​រៀបចំ​ធ្វើ​សមកាលកម្មធាតុ <ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="3522708245912499433">ភាសាប៉ទុយកាល់</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">ឯកសារដែល​ដាក់ឈ្មោះ "<ph name="FILE_NAME" />" មានរួចហើយ។ សូមជ្រើសរើស​ឈ្មោះផ្សេង។</translation>
 <translation id="9046895021617826162">ការភ្ជាប់បានបរាជ័យ</translation>
 <translation id="9065512565307033593">ប្រសិនបើអ្នក​មិនអាចផ្ទៀងផ្ទាត់​បានទេ សិទ្ធិចូលប្រើ​បណ្ដាញ​របស់អ្នក​នឹងត្រូវបានបិទ។</translation>
-<translation id="9083722265619106011">{0,plural, =1{សារប្រុងប្រយ័ត្ន 1។}other{សារប្រុងប្រយ័ត្ន <ph name="COUNT" />។}}</translation>
 <translation id="908378762078012445">ភាសារុស្ស៊ី​ដែលប្រើ​ក្ដារចុចតាម​សូរសព្ទ AATSEEL</translation>
 <translation id="9086302186042011942">កំពុងធ្វើសមកម្ម</translation>
 <translation id="9099674669267916096">ចំនួន​ទំព័រ</translation>

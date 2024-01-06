@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Dela mappen med Parallels Desktop</translation>
 <translation id="1439919885608649279">Person med blommor</translation>
 <translation id="1458457385801829801">Avmontera <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 fel.</translation>
 <translation id="146691674290220697">Det gick inte att kopiera <ph name="NUMBER_OF_FILES" /> eftersom de är krypterade.</translation>
 <translation id="1471718551822868769">slovakiska</translation>
 <translation id="1482884275703521657">finska</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Kalkylark i Google Dokument</translation>
 <translation id="3479552764303398839">Inte nu</translation>
 <translation id="3486821258960016770">mongoliska</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> fel.</translation>
 <translation id="3509680540198371098">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3511705761158917664">Förbereder synkronisering av <ph name="NUMBER_OF_ITEMS" /> objekt …</translation>
 <translation id="3522708245912499433">portugisiska</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Välj ett annat namn.</translation>
 <translation id="9046895021617826162">Anslutningen misslyckades</translation>
 <translation id="9065512565307033593">Nätverksåtkomsten kommer att inaktiveras om du misslyckas med verifieringen.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 varning.}other{<ph name="COUNT" /> varningar.}}</translation>
 <translation id="908378762078012445">ryskt fonetiskt tangentbord (AATSEEL)</translation>
 <translation id="9086302186042011942">Synkroniserar</translation>
 <translation id="9099674669267916096">Sidantal</translation>

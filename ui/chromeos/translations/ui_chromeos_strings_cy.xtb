@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Rhannu'r ffolder gyda Parallels Desktop</translation>
 <translation id="1439919885608649279">Person â blodau</translation>
 <translation id="1458457385801829801">Dadlwytho <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 gwall.</translation>
 <translation id="146691674290220697">Nid oedd modd copïo <ph name="NUMBER_OF_FILES" /> ffeil oherwydd eu bod wedi'u hamgryptio.</translation>
 <translation id="1471718551822868769">Slofac</translation>
 <translation id="1482884275703521657">Ffineg</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Taenlen Google</translation>
 <translation id="3479552764303398839">Nid nawr</translation>
 <translation id="3486821258960016770">Mongoleg</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> o wallau.</translation>
 <translation id="3509680540198371098">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder Signal <ph name="SIGNAL_STRENGTH" />%, Manylion</translation>
 <translation id="3511705761158917664">Wrthi'n paratoi i gysoni <ph name="NUMBER_OF_ITEMS" /> eitem...</translation>
 <translation id="3522708245912499433">Portiwgaleg</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Mae ffeil o'r enw "<ph name="FILE_NAME" />" eisoes yn bodoli. Dewiswch enw gwahanol.</translation>
 <translation id="9046895021617826162">Wedi methu cysylltu</translation>
 <translation id="9065512565307033593">Os byddwch yn methu â dilysu, bydd eich mynediad at y rhwydwaith yn cael ei ddiffodd.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 rhybudd.}zero{<ph name="COUNT" /> rhybuddion}two{<ph name="COUNT" /> rybudd}few{<ph name="COUNT" /> rhybudd}many{<ph name="COUNT" /> rhybudd}other{<ph name="COUNT" /> rhybudd}}</translation>
 <translation id="908378762078012445">Rwseg gyda bysellfwrdd Seinegol AATSEEL</translation>
 <translation id="9086302186042011942">Wrthi’n cysoni</translation>
 <translation id="9099674669267916096">Cyfrif tudalennau</translation>

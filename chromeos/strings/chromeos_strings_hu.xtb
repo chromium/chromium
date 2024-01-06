@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Olvassa el a Chromebook új, alkotóknak szóló digitális magazinját</translation>
 <translation id="1270369111467284986">Gyaníthatóan hitelesítési portál</translation>
 <translation id="1290331692326790741">Gyenge jel</translation>
+<translation id="1300115153046603471">Az APN típusa: alapértelmezett és <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Frissítés (<ph name="PERCENTAGE_VALUE" />% kész)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> perc</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">A rendszer automatikusan észlelt APN-t.</translation>
 <translation id="5849570051105887917">Otthoni szolgáltató kódja</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Művészeti album</translation>
 <translation id="5859969039821714932">A billentyűparancs nem áll rendelkezésre. Nyomjon le új billentyűparancsot a(z) <ph name="KEY" /> billentyű nélkül.</translation>
 <translation id="5860033963881614850">Kikapcsolva</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">Háttérkép igazítása</translation>
 <translation id="6527081081771465939">Ismeretlen Wi-Fi biztonsági protokoll</translation>
 <translation id="6535178685492749208">Offline állapotban van. A visszajelzést később küldi majd el a rendszer.</translation>
+<translation id="6557784757915238407">Az APN típusa: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Síkágy</translation>
 <translation id="6560196641871357166">Élénk</translation>
 <translation id="6564646048574748301">Sikertelen – Nem lehet hozzáférni a nyomtatóhoz</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">Átváltás</translation>
 <translation id="7415801143053185905">Nagyon hosszú HTTP várakozási idő</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Nem lehet letiltani vagy eltávolítani ezt az APN-t. Győződjön meg arról, hogy az engedélyezett <ph name="ATTACH" /> APN-ek le vannak tiltva vagy el vannak távolítva.</translation>
 <translation id="7458970041932198923">Az avatarok megtekintéséhez és beállításához csatlakozzon egy hálózathoz, majd töltse be újra az oldalt.</translation>
 <translation id="7469648432129124067">Portál észlelve</translation>
 <translation id="7481312909269577407">Előre</translation>

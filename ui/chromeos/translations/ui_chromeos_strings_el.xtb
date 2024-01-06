@@ -57,7 +57,6 @@
 <translation id="1435838927755162558">Κοινή χρήση φακέλου με το Parallels Desktop</translation>
 <translation id="1439919885608649279">Άτομο με λουλούδια</translation>
 <translation id="1458457385801829801">Αποσύνδεση <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 σφάλμα.</translation>
 <translation id="146691674290220697">Δεν ήταν δυνατή η αντιγραφή <ph name="NUMBER_OF_FILES" /> αρχείων επειδή είναι κρυπτογραφημένα.</translation>
 <translation id="1471718551822868769">Σλοβακικά</translation>
 <translation id="1482884275703521657">Φινλανδικά</translation>
@@ -316,7 +315,6 @@
 <translation id="3475447146579922140">Υπολογιστικό φύλλο Google</translation>
 <translation id="3479552764303398839">Όχι τώρα</translation>
 <translation id="3486821258960016770">Μογγολικά</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> σφάλματα.</translation>
 <translation id="3509680540198371098">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="3511705761158917664">Προετοιμασία για συγχρονισμό <ph name="NUMBER_OF_ITEMS" /> στοιχείων…</translation>
 <translation id="3522708245912499433">Πορτογαλικά</translation>
@@ -1083,7 +1081,6 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 προειδοποίηση.}other{<ph name="COUNT" /> προειδοποιήσεις.}}</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>

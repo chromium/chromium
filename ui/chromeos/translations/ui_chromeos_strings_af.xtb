@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Deel vouer met Parallels Desktop</translation>
 <translation id="1439919885608649279">Persoon met blomme</translation>
 <translation id="1458457385801829801">Maak <ph name="TARGET_NAME" /> los</translation>
-<translation id="1464724975715666883">1 fout.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> lêers kon nie gekopieer word nie omdat hulle geënkripteer is.</translation>
 <translation id="1471718551822868769">Slowaaks</translation>
 <translation id="1482884275703521657">Fins</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google-sigblad</translation>
 <translation id="3479552764303398839">Nie nou nie</translation>
 <translation id="3486821258960016770">Mongools</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> foute.</translation>
 <translation id="3509680540198371098">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="3511705761158917664">Berei tans voor om <ph name="NUMBER_OF_ITEMS" /> items te sinkroniseer …</translation>
 <translation id="3522708245912499433">Portugees</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">'n Lêer met die naam "<ph name="FILE_NAME" />" bestaan reeds. Kies asseblief 'n ander naam.</translation>
 <translation id="9046895021617826162">Kon nie koppel nie</translation>
 <translation id="9065512565307033593">Jou netwerktoegang sal gedeaktiveer word as jy nie verifieer nie.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 waarskuwing.}other{<ph name="COUNT" /> waarskuwings.}}</translation>
 <translation id="908378762078012445">Russies met fonetiese AATSEEL-sleutelbord</translation>
 <translation id="9086302186042011942">Sinkroniseer tans</translation>
 <translation id="9099674669267916096">Aantal bladsye</translation>

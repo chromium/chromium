@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktopৰ জৰিয়তে ফ’ল্ডাৰটো শ্বেয়াৰ কৰক</translation>
 <translation id="1439919885608649279">ফুলৰ সৈতে ব্যক্তিৰ ছবি</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />ক বাহিৰ কৰক</translation>
-<translation id="1464724975715666883">১টা আসোঁৱাহ।</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> টা ফাইল এনক্ৰিপ্ট কৰা হৈছে বাবে সেইসমূহ প্ৰতিলিপি কৰিব পৰা নগ’ল।</translation>
 <translation id="1471718551822868769">শ্ল’ভাক</translation>
 <translation id="1482884275703521657">ফিনিশ্ব</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google স্প্ৰেডশ্বীট</translation>
 <translation id="3479552764303398839">এতিয়া নহয়</translation>
 <translation id="3486821258960016770">মংগোলিয়ান</translation>
-<translation id="3495304270784461826"><ph name="COUNT" />টা আসোঁৱাহ।</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, সবিশেষ</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> টা বস্তু ছিংক কৰিবলৈ সাজু কৰি থকা হৈছে...</translation>
 <translation id="3522708245912499433">পর্তুগীজ</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" নামৰ ফাইল ইতিমধ্যে আছেই। অনুগ্ৰহ কৰি অন্য কোনো নাম বাছনি কৰক।</translation>
 <translation id="9046895021617826162">সংযোগ কৰিব পৰা নগ'ল</translation>
 <translation id="9065512565307033593">আপুনি যদি সত্যাপন কৰিব নোৱাৰে, আপোনাৰ নেটৱৰ্ক এক্সেছ অক্ষম কৰা হ’ব।</translation>
-<translation id="9083722265619106011">{0,plural, =1{১ টা সকীয়নি।}one{<ph name="COUNT" /> টা সকীয়নি।}other{<ph name="COUNT" /> টা সকীয়নি।}}</translation>
 <translation id="908378762078012445">ফ’নেটিক AATSEEL কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="9086302186042011942">ছিংক কৰি থকা হৈছে</translation>
 <translation id="9099674669267916096">পৃষ্ঠাৰ সংখ্যা</translation>

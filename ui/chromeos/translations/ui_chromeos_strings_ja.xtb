@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktop とのフォルダ共有</translation>
 <translation id="1439919885608649279">花を持っている人</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> を取り外す</translation>
-<translation id="1464724975715666883">1 件のエラーがあります。</translation>
 <translation id="146691674290220697">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルをコピーできませんでした。</translation>
 <translation id="1471718551822868769">スロバキア語</translation>
 <translation id="1482884275703521657">フィンランド語</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google スプレッドシート</translation>
 <translation id="3479552764303398839">後で</translation>
 <translation id="3486821258960016770">モンゴル語</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> 件のエラーがあります。</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムの同期を準備しています...</translation>
 <translation id="3522708245912499433">ポルトガル語</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。別の名前を選択してください。</translation>
 <translation id="9046895021617826162">接続に失敗しました</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>
-<translation id="9083722265619106011">{0,plural, =1{警告 1 件。}other{警告 <ph name="COUNT" /> 件。}}</translation>
 <translation id="908378762078012445">ロシア語（表音 AATSEEL）キーボード</translation>
 <translation id="9086302186042011942">同期しています</translation>
 <translation id="9099674669267916096">ページ数</translation>

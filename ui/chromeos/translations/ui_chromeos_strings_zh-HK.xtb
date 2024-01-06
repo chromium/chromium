@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">與 Parallels Desktop 共用資料夾</translation>
 <translation id="1439919885608649279">拿著花的人</translation>
 <translation id="1458457385801829801">卸載 <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">發生 1 個錯誤。</translation>
 <translation id="146691674290220697">由於 <ph name="NUMBER_OF_FILES" /> 個檔案已加密，因此無法複製。</translation>
 <translation id="1471718551822868769">斯洛伐克文</translation>
 <translation id="1482884275703521657">芬蘭文</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google 試算表</translation>
 <translation id="3479552764303398839">略過</translation>
 <translation id="3486821258960016770">蒙古文</translation>
-<translation id="3495304270784461826">發生 <ph name="COUNT" /> 個錯誤。</translation>
 <translation id="3509680540198371098">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="NETWORK_NAME" />，<ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，詳情</translation>
 <translation id="3511705761158917664">正在準備同步 <ph name="NUMBER_OF_ITEMS" /> 個項目…</translation>
 <translation id="3522708245912499433">葡萄牙文</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">名稱為「<ph name="FILE_NAME" />」的檔案已經存在，請選擇其他名稱。</translation>
 <translation id="9046895021617826162">連線失敗</translation>
 <translation id="9065512565307033593">如未完成驗證，您將無法存取網絡。</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 個警告。}other{<ph name="COUNT" /> 個警告。}}</translation>
 <translation id="908378762078012445">俄文 (注音 AATSEEL 鍵盤)</translation>
 <translation id="9086302186042011942">正在同步處理</translation>
 <translation id="9099674669267916096">頁數</translation>

@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Yabelana ngefolda ne-Parallels Desktop</translation>
 <translation id="1439919885608649279">Umuntu onezimbali</translation>
 <translation id="1458457385801829801">Khipha u-<ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 iphutha.</translation>
 <translation id="146691674290220697">Amafayela angu-<ph name="NUMBER_OF_FILES" /> awakwazanga ukukopishwa ngoba abethelwe.</translation>
 <translation id="1471718551822868769">Isi-Slovak</translation>
 <translation id="1482884275703521657">Finnish</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Isipredishithi se-Google</translation>
 <translation id="3479552764303398839">Hhayi manje</translation>
 <translation id="3486821258960016770">Mongolian</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> amaphutha.</translation>
 <translation id="3509680540198371098">Inethiwkehi <ph name="NETWORK_INDEX" /> ye-<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, amandla esignali <ph name="SIGNAL_STRENGTH" />%, imininingwane</translation>
 <translation id="3511705761158917664">Ilungiselela ukuvumelanisa izinto ezingu-<ph name="NUMBER_OF_ITEMS" />...</translation>
 <translation id="3522708245912499433">Portuguese</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Igama eliqanjwe "<ph name="FILE_NAME" />" selivele likhona. Sicela ukhethe igama elihlukile.</translation>
 <translation id="9046895021617826162">Ukuxhumeka kuhlulekile</translation>
 <translation id="9065512565307033593">Uma wehluleka ukuqinisekisa, ukufinyelela kwakho kunethiwekhi kuzokhutshazwa.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 isexwayiso.}one{<ph name="COUNT" /> izexwayiso.}other{<ph name="COUNT" /> izexwayiso.}}</translation>
 <translation id="908378762078012445">Isi-Russian esinekhibhodi ye-Phonetic AATSEEL</translation>
 <translation id="9086302186042011942">Iyavumelanisa</translation>
 <translation id="9099674669267916096">Ukubalwa kwekhasi</translation>

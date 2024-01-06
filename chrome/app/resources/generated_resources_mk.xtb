@@ -565,7 +565,6 @@
 <translation id="1437986450143295708">Детално опишете го проблемот</translation>
 <translation id="1439671507542716852">долгорочна поддршка</translation>
 <translation id="1440090277117135316">Регистрирањето училиште е завршено</translation>
-<translation id="1441895600924734038">или обидете се повторно подоцна откако ќе отворите нови, слични картички.</translation>
 <translation id="144283815522798837">Избрани се <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Поставете активен билет на Kerberos</translation>
 <translation id="1444628761356461360">Со поставката управува сопственикот на уредот, <ph name="OWNER_EMAIL" />.</translation>
@@ -1407,7 +1406,7 @@
 <translation id="2048554637254265991">Грешка при стартувањето на управувачот со контејнери. Обидете се повторно.</translation>
 <translation id="2048653237708779538">Дејството не е достапно</translation>
 <translation id="204914487372604757">Креирај кратенка</translation>
-<translation id="2050339315714019657">Портрет</translation>
+<translation id="2050339315714019657">Вертикално</translation>
 <translation id="2051266530792296582">Google Password Manager создаде силна лозинка за веб-сајтов</translation>
 <translation id="2051555741181591333">Автоматско оневозможување на точката на пристап</translation>
 <translation id="2051669996101374349">Користете HTTPS секогаш кога е возможно и добивајте известувања пред вчитувањето сајтови што не ја поддржуваат. Не може да ја промените поставкава бидејќи имате овозможено „Напредна заштита“.</translation>
@@ -9018,7 +9017,6 @@
 <translation id="8041267120753677077">Стримувајте ги апликациите на телефонот</translation>
 <translation id="8042142357103597104">Непроѕирност на текст</translation>
 <translation id="8042331986490021244">Лозинките се шифрираат на уредот пред да се зачуваат во „Управникот со лозинки на Google“</translation>
-<translation id="8042392272728017793">или да се обидете повторно подоцна.</translation>
 <translation id="8044090981104134791">MIDI-уредите се дозволени</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не одговара.</translation>
 <translation id="8044899503464538266">Бавно</translation>

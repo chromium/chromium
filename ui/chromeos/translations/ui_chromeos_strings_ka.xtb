@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">საქაღალდის გაზიარება Parallels Desktop-თან</translation>
 <translation id="1439919885608649279">პიროვნება ყვავილებით</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-ის ამოღება</translation>
-<translation id="1464724975715666883">1 შეცდომა.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ფაილის კოპირება ვერ მოხერხდა, რადგან ისინი დაშიფრულია.</translation>
 <translation id="1471718551822868769">სლოვაკური</translation>
 <translation id="1482884275703521657">ფინური</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google ის ელ.ცხრილი</translation>
 <translation id="3479552764303398839">ახლა არა</translation>
 <translation id="3486821258960016770">მონღოლური</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> შეცდომა.</translation>
 <translation id="3509680540198371098">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დეტალები</translation>
 <translation id="3511705761158917664">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ერთეულის სინქრონიზაციისთვის მომზადება...</translation>
 <translation id="3522708245912499433">პორტუგალიური</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">ფაილი სახელად „<ph name="FILE_NAME" />“ უკვე არსებობს. გთხოვთ, აირჩიოთ სხვა სახელი.</translation>
 <translation id="9046895021617826162">დაკავშირება ვერ მოხერხდა</translation>
 <translation id="9065512565307033593">თუ დადასტურებას ვერ მოახერხებთ, ქსელზე წვდომა გაითიშება.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 გაფრთხილება.}other{<ph name="COUNT" /> გაფრთხილება.}}</translation>
 <translation id="908378762078012445">რუსული ფონეტიკური AATSEEL კლავიატურით</translation>
 <translation id="9086302186042011942">სინქრონიზაცია</translation>
 <translation id="9099674669267916096">გვერდების რაოდენობა</translation>

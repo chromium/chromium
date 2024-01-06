@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Udostępnij folder aplikacji Parallels Desktop</translation>
 <translation id="1439919885608649279">Osoba z kwiatami</translation>
 <translation id="1458457385801829801">Odłącz <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 błąd.</translation>
 <translation id="146691674290220697">Nie udało się skopiować <ph name="NUMBER_OF_FILES" /> plików, bo są one zaszyfrowane.</translation>
 <translation id="1471718551822868769">Słowacki</translation>
 <translation id="1482884275703521657">Fiński</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Arkusz kalkulacyjny Google</translation>
 <translation id="3479552764303398839">Nie teraz</translation>
 <translation id="3486821258960016770">Mongolski</translation>
-<translation id="3495304270784461826">Błędy: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="3511705761158917664">Przygotowuję do synchronizacji <ph name="NUMBER_OF_ITEMS" /> elementów…</translation>
 <translation id="3522708245912499433">Portugalski</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Istnieje już plik o nazwie „<ph name="FILE_NAME" />”. Wybierz inną nazwę.</translation>
 <translation id="9046895021617826162">Łączenie nie powiodło się</translation>
 <translation id="9065512565307033593">Jeśli nie uda Ci się dokonać weryfikacji, dostęp do sieci zostanie wyłączony.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ostrzeżenie.}few{<ph name="COUNT" /> ostrzeżenia.}many{<ph name="COUNT" /> ostrzeżeń.}other{<ph name="COUNT" /> ostrzeżenia.}}</translation>
 <translation id="908378762078012445">Rosyjski z klawiaturą fonetyczną AATSEEL</translation>
 <translation id="9086302186042011942">Synchronizuję</translation>
 <translation id="9099674669267916096">Liczba stron</translation>

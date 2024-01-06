@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktop सोबत फोल्डर शेअर करा</translation>
 <translation id="1439919885608649279">हातात फुले असलेली व्यक्ती</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> बाहेर काढा</translation>
-<translation id="1464724975715666883">१ एरर.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> फाइल कॉपी करता आल्या नाहीत, कारण त्या एन्क्रिप्ट केलेल्या आहेत.</translation>
 <translation id="1471718551822868769">स्लोव्हाक</translation>
 <translation id="1482884275703521657">फिनिश</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google स्प्रेडशीट</translation>
 <translation id="3479552764303398839">सध्या नाही</translation>
 <translation id="3486821258960016770">मंगोलियन</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> एरर.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> आयटम सिंक करण्‍याची तयारी करत आहे...</translation>
 <translation id="3522708245912499433">पोर्तुगीज</translation>
@@ -1060,7 +1058,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. कृपया वेगळे नाव निवडा.</translation>
 <translation id="9046895021617826162">कनेक्ट करण्यात अयशस्वी</translation>
 <translation id="9065512565307033593">तुम्हाला पडताळणी करता न आल्यास, तुमचा नेटवर्क अ‍ॅक्सेस बंद केला जाईल.</translation>
-<translation id="9083722265619106011">{0,plural, =1{१ चेतावणी.}other{<ph name="COUNT" /> चेतावण्या.}}</translation>
 <translation id="908378762078012445">फोनेटिक AATSEEL कीबोर्डसह रशियन</translation>
 <translation id="9086302186042011942">समक्रमण करीत आहे</translation>
 <translation id="9099674669267916096">पेज गणना</translation>

@@ -46,6 +46,7 @@
 <translation id="3067436040345934772">Nach rechts schwenken</translation>
 <translation id="3081586908890909590">Zu Videomodus wechseln</translation>
 <translation id="313467653172006084">30 fps</translation>
+<translation id="3158534262962737808">Mit „<ph name="WIFINAME" />“ verbinden?</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3240426699337459095">Link wurde kopiert.</translation>
 <translation id="3354465018370944241">Fotoeinstellungen</translation>
@@ -85,6 +86,7 @@
 <translation id="5034763830503483128">Seitenverhältnis für Foto</translation>
 <translation id="5057360777601936059">Deine Kamera ist zurzeit nicht verfügbar.
         Bitte überprüfe, ob die Kamera richtig verbunden ist.</translation>
+<translation id="5157591164390831335">URL erkannt.</translation>
 <translation id="5163387177077603948">Wird nach rechts verschoben</translation>
 <translation id="5235304959032763950">16 zu 9</translation>
 <translation id="5266635337630551423">Linke obere Ecke des Dokuments</translation>
@@ -111,6 +113,7 @@
 <translation id="6353688143752491039">Vielen Dank für dein Feedback zur Kamera App.
 
 Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte als Beispiel ein Foto oder Video an und beschreibe den Fehler. (Beispielsweise "Das Foto ist zu dunkel" oder "Das Motiv ist nicht im Fokus".)</translation>
+<translation id="6519884562954018934">Mit <ph name="WIFINAME" /> verbinden</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6617916774429601017">Alle Auflösungen anzeigen</translation>
 <translation id="6631515515009660915">Spiegelung deaktivieren</translation>
@@ -158,6 +161,7 @@ Falls sich dein Feedback auf die Bild- oder Videoqualität bezieht, hänge bitte
 <translation id="8711011893539266636">Mikrofonstummschaltung einschalten. Stummschaltung ist aktiviert.</translation>
 <translation id="8730621377337864115">Fertig</translation>
 <translation id="8732462232047530626">Vorschau der Metadaten anzeigen</translation>
+<translation id="874854738381978209">WLAN gefunden.</translation>
 <translation id="8815966864175525708">Zum Porträtmodus wechseln</translation>
 <translation id="8828441885228359828">Aufnahme fortsetzen</translation>
 <translation id="8870695351537079478">Videoaufnahme konnte nicht gestartet werden</translation>

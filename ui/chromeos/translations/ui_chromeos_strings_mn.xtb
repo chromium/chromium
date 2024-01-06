@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Фолдерыг Parallels Desktop-тай хуваалцах</translation>
 <translation id="1439919885608649279">Цэцэгтэй хүн</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />-г гаргах</translation>
-<translation id="1464724975715666883">1 алдаа.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> файлыг шифрлэсэн тул тэдгээрийг хуулж чадсангүй.</translation>
 <translation id="1471718551822868769">Словак</translation>
 <translation id="1482884275703521657">Финланд</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google-ийн хүснэгт</translation>
 <translation id="3479552764303398839">Одоо биш</translation>
 <translation id="3486821258960016770">Монгол</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> алдаа.</translation>
 <translation id="3509680540198371098">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, дэлгэрэнгүй мэдээлэл</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> зүйлийг синк хийхээр бэлтгэж байна...</translation>
 <translation id="3522708245912499433">Португал</translation>
@@ -1058,7 +1056,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" нэртэй файл аль хэдийн байна. Өөр нэр сонгоно уу.</translation>
 <translation id="9046895021617826162">Холболт амжилтгүй боллоо</translation>
 <translation id="9065512565307033593">Хэрэв та баталгаажуулж чадаагүй бол таны сүлжээний хандалтыг идэвхгүй болгоно.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 сануулга.}other{<ph name="COUNT" /> сануулга.}}</translation>
 <translation id="908378762078012445">AATSEEL авиа зүйн гартай орос</translation>
 <translation id="9086302186042011942">Sync хийж байна.</translation>
 <translation id="9099674669267916096">Хуудасны тоо</translation>

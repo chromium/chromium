@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Chromebook のクリエイター向けの新しい電子雑誌をお試しください</translation>
 <translation id="1270369111467284986">キャプティブ ポータルの可能性があります</translation>
 <translation id="1290331692326790741">電波: 弱い</translation>
+<translation id="1300115153046603471">APN の種類はデフォルトで、<ph name="ATTACH" /> です。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">更新中（<ph name="PERCENTAGE_VALUE" />% 完了）</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分</translation>
@@ -449,6 +450,7 @@
 <translation id="4354430579665871434">キー</translation>
 <translation id="4361257691546579041">APN の種類はデフォルトです。</translation>
 <translation id="437294888293595148">すべてのショートカットをリセットする</translation>
+<translation id="4376423484621194274">管理者が <ph name="APP_NAME" /> の終了を許可していません</translation>
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +651,7 @@
 <translation id="5843706793424741864">華氏</translation>
 <translation id="584953448295717128">APN は自動的に検出されます。</translation>
 <translation id="5849570051105887917">ホーム プロバイダのコード</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" />（<ph name="IA" />）</translation>
 <translation id="5859603669299126575">アート ギャラリーのアルバム</translation>
 <translation id="5859969039821714932">このショートカットは使用できません。<ph name="KEY" /> を使用しない新しいショートカットを押してください。</translation>
 <translation id="5860033963881614850">OFF</translation>
@@ -754,6 +757,7 @@
 <translation id="6526200165918397681">壁紙に合わせる</translation>
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
 <translation id="6535178685492749208">オフラインです。フィードバックは後で送信されます。</translation>
+<translation id="6557784757915238407">APN の種類は <ph name="ATTACH" /> です。</translation>
 <translation id="65587193855025101">フラットベッド</translation>
 <translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">失敗 - プリンタにアクセスできません</translation>
@@ -867,6 +871,7 @@
 <translation id="741244894080940828">単位変換</translation>
 <translation id="7415801143053185905">HTTP レイテンシが非常に高くなっています</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">この APN を無効化または削除できません。有効になっている <ph name="ATTACH" /> APN を無効化または削除しようとしていることを確認してください。</translation>
 <translation id="7458970041932198923">アバターを表示、設定するには、ネットワークに接続してページを再読み込みしてください。</translation>
 <translation id="7469648432129124067">ポータルが検出されました</translation>
 <translation id="7481312909269577407">進む</translation>

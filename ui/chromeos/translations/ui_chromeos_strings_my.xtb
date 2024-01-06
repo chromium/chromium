@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">ဖိုင်တွဲကို Parallels Desktop အား မျှဝေခြင်း</translation>
 <translation id="1439919885608649279">ပန်းများနှင့်လူ</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> ထုတ်ရန်</translation>
-<translation id="1464724975715666883">မှားယွင်းမှု ၁ ခု</translation>
 <translation id="146691674290220697">ဖိုင် <ph name="NUMBER_OF_FILES" /> ဖိုင်ကို အသွင်ဝှက်ထားသောကြောင့် မိတ္တူကူး၍မရပါ။</translation>
 <translation id="1471718551822868769">ဆလိုဗက်</translation>
 <translation id="1482884275703521657">ဖင်လန်</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google spreadsheet</translation>
 <translation id="3479552764303398839">ယခု မလို</translation>
 <translation id="3486821258960016770">မွန်ဂိုလီးယား</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> အမှားများ။</translation>
 <translation id="3509680540198371098">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်များ</translation>
 <translation id="3511705761158917664">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ဖိုင်ကို စင့်ခ်လုပ်ရန် ပြင်ဆင်နေသည်...</translation>
 <translation id="3522708245912499433">ပေါ်တူဂီ</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" အမည်ဖြင့်ဖိုင် ရှိပြီးဖြစ်သည်။ အခြားအမည်ရွေးပါ။</translation>
 <translation id="9046895021617826162">ကွန်ရက်ချိတ်ဆက်မှု မအောင်မြင်ပါ</translation>
 <translation id="9065512565307033593">အတည်ပြု၍မရပါက သင့်ကွန်ရက်သုံးခွင့်ကို ပိတ်လိုက်ပါမည်။</translation>
-<translation id="9083722265619106011">{0,plural, =1{သတိပေးချက် ၁ ခု။}other{သတိပေးချက် <ph name="COUNT" /> ခု။}}</translation>
 <translation id="908378762078012445">အသံထွက် AATSEEL ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="9086302186042011942">စင့်က် လုပ်နေ</translation>
 <translation id="9099674669267916096">စာမျက်နှာအရေအတွက်</translation>

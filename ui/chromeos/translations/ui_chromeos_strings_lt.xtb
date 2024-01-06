@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Bendrinkite aplanką su „Parallels Desktop“</translation>
 <translation id="1439919885608649279">Žmogus su gėlėmis</translation>
 <translation id="1458457385801829801">Pašalinti <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">1 klaida.</translation>
 <translation id="146691674290220697">Nepavyko nukopijuoti failų (iš viso: <ph name="NUMBER_OF_FILES" />), nes jie šifruoti.</translation>
 <translation id="1471718551822868769">Slovakų k.</translation>
 <translation id="1482884275703521657">Suomių k.</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">„Google“ skaičiuoklė</translation>
 <translation id="3479552764303398839">Ne dabar</translation>
 <translation id="3486821258960016770">Mongolų k.</translation>
-<translation id="3495304270784461826">Klaidų: <ph name="COUNT" />.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, „<ph name="NETWORK_NAME" />“, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, išsami informacija</translation>
 <translation id="3511705761158917664">Ruošiamasi sinchronizuoti <ph name="NUMBER_OF_ITEMS" /> elem...</translation>
 <translation id="3522708245912499433">Portugalų</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">Failas pavadinimu „<ph name="FILE_NAME" />“ jau yra. Pasirinkite kitą pavadinimą.</translation>
 <translation id="9046895021617826162">Nepavyko prisijungti</translation>
 <translation id="9065512565307033593">Jei jums nepavyks patvirtinti, tinklo prieiga bus išjungta.</translation>
-<translation id="9083722265619106011">{0,plural, =1{Vienas perspėjimas.}one{<ph name="COUNT" /> perspėjimas.}few{<ph name="COUNT" /> perspėjimai.}many{<ph name="COUNT" /> perspėjimo.}other{<ph name="COUNT" /> perspėjimų.}}</translation>
 <translation id="908378762078012445">Rusų k. su fonetine AATSEEL klaviatūra</translation>
 <translation id="9086302186042011942">Sinchronizuojama</translation>
 <translation id="9099674669267916096">Puslapių skaičius</translation>

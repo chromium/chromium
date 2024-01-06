@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">አቃፊን ለParallels ዴስክቶፕ አጋራ</translation>
 <translation id="1439919885608649279">አበቦች የያዘ ሰው</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" /> አስወጣ</translation>
-<translation id="1464724975715666883">1 ስህተት።</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ፋይሎች የተመሰጠሩ በመሆናቸው ሊቀዱ አልቻሉም።</translation>
 <translation id="1471718551822868769">ስሎቫክኛ</translation>
 <translation id="1482884275703521657">ፊንላንድኛ</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google ተመን ሉህ</translation>
 <translation id="3479552764303398839">አሁን አይደለም</translation>
 <translation id="3486821258960016770">ሞንጎሊያኛ</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> ስህተቶች።</translation>
 <translation id="3509680540198371098">አውታረመረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />፣ <ph name="SECURITY_STATUS" />፣ <ph name="CONNECTION_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ ዝርዝሮች</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ንጥሎችን ለማስመር በማዘጋጀት ላይ...</translation>
 <translation id="3522708245912499433">ፖርቱጋሊኛ</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">«<ph name="FILE_NAME" />» የሚባለው ፋይል አስቀድሞ አለ። እባክዎ የተለየ ስም ይምረጡ።</translation>
 <translation id="9046895021617826162">ማገናኘት አልተሳካም</translation>
 <translation id="9065512565307033593">ማረጋገጥ ካልቻሉ የእርስዎ የአውታረ መረብ መዳረሻ ይሰናከላል።</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 ማስጠንቀቂያ።}one{<ph name="COUNT" /> ማስጠንቀቂያ።}other{<ph name="COUNT" /> ማስጠንቀቂያዎች።}}</translation>
 <translation id="908378762078012445">ሩሲያኛ በፎነቲክ በAATSEEL ቁልፍ ሰሌዳ</translation>
 <translation id="9086302186042011942">በማመሳሰል ላይ</translation>
 <translation id="9099674669267916096">የገጽ ብዛት</translation>

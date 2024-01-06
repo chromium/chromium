@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">‏هم‌رسانی پوشه با Parallels Desktop</translation>
 <translation id="1439919885608649279">شخصی میان گل‌ها</translation>
 <translation id="1458457385801829801">برداشتن <ph name="TARGET_NAME" /></translation>
-<translation id="1464724975715666883">۱ خطا.</translation>
 <translation id="146691674290220697">‏<ph name="NUMBER_OF_FILES" /> فایل کپی نشدند زیرا رمزگذاری شده‌اند.</translation>
 <translation id="1471718551822868769">اسلوواکی</translation>
 <translation id="1482884275703521657">فنلاندی</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">‏صفحه‌گسترده Google</translation>
 <translation id="3479552764303398839">حالا نه</translation>
 <translation id="3486821258960016770">مغولی</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> خطا.</translation>
 <translation id="3509680540198371098">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="3511705761158917664">درحال آماده شدن برای همگام‌سازی <ph name="NUMBER_OF_ITEMS" /> مورد…</translation>
 <translation id="3522708245912499433">پرتغالی</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">فایلی با نام «<ph name="FILE_NAME" />» ازقبل وجود دارد. لطفاً نام دیگری انتخاب کنید.</translation>
 <translation id="9046895021617826162">اتصال برقرار نشد</translation>
 <translation id="9065512565307033593">اگر نتوانید به‌تأیید برسانید، دسترسی شما به شبکه غیرفعال خواهد شد.</translation>
-<translation id="9083722265619106011">{0,plural, =1{۱ هشدار.}one{<ph name="COUNT" /> هشدار.}other{<ph name="COUNT" /> هشدار.}}</translation>
 <translation id="908378762078012445">‏روسی با صفحه‌کلید آوایی AATSEEL</translation>
 <translation id="9086302186042011942">همگام‌سازی</translation>
 <translation id="9099674669267916096">تعداد صفحه</translation>

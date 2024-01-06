@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Poznaj nowe cyfrowe czasopismo Chromebooka dla twórców</translation>
 <translation id="1270369111467284986">Podejrzany portal przechwytujący</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
+<translation id="1300115153046603471">APN jest typu domyślnego i: <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizuję (ukończone <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">Stopnie Fahrenheita</translation>
 <translation id="584953448295717128">APN jest wykrywany automatycznie.</translation>
 <translation id="5849570051105887917">Kod operatora macierzystego</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Album Galeria sztuki</translation>
 <translation id="5859969039821714932">Brak dostępnego skrótu. Naciśnij nowy skrót bez klawisza <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Wyłączone</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">Dopasuj do tapety</translation>
 <translation id="6527081081771465939">Nieznany protokół zabezpieczeń Wi-Fi</translation>
 <translation id="6535178685492749208">Jesteś offline. Opinia zostanie wysłana później.</translation>
+<translation id="6557784757915238407">APN jest typu: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Szyba</translation>
 <translation id="6560196641871357166">Wyrazisty</translation>
 <translation id="6564646048574748301">Niepowodzenie – drukarka jest nieosiągalna</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">przeliczanie</translation>
 <translation id="7415801143053185905">Bardzo duże opóźnienie HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Tego punktu APN nie można wyłączyć ani usunąć. Upewnij się, że włączone punkty APN typu <ph name="ATTACH" /> zostały wyłączone lub usunięte.</translation>
 <translation id="7458970041932198923">Aby wyświetlić i ustawić awatary, połącz się z siecią i załaduj ponownie stronę.</translation>
 <translation id="7469648432129124067">Wykryto portal</translation>
 <translation id="7481312909269577407">Dalej</translation>

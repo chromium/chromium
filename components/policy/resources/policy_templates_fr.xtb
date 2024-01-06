@@ -398,7 +398,6 @@ Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLIC
 Si cette règle est activée, les fenêtres de navigateurs et d'applications qui étaient ouvertes sur l'appareil <ph name="PRODUCT_OS_NAME" /> auquel l'utilisateur était connecté en dernier sont automatiquement rétablies lorsqu'il se connecte.
 Si cette règle est désactivée ou n'est pas configurée, les paramètres de restauration complète déterminent ce qui doit être lancé à la connexion.</translation>
 <translation id="1327466551276625742">Activer l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
-<translation id="1330145147221172764">Activer le clavier à l'écran</translation>
 <translation id="13356285923490863">Nom de stratégie</translation>
 <translation id="1336073690474326987">Désactiver complètement la fonctionnalité</translation>
 <translation id="1338603603553894503">Indique si l'outil de sélection du profil est activé, désactivé ou forcé au démarrage du navigateur.
@@ -3011,7 +3010,6 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 
           Si cette règle n'est pas configurée, Sélectionner pour écouter est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="3483585138745445814">Autoriser les utilisateurs à activer le Partage à proximité</translation>
-<translation id="348495353354674884">Activer le clavier virtuel</translation>
 <translation id="3485200437120267231">Désactiver l'interception de connexion</translation>
 <translation id="3487651201232258606">Messagerie native</translation>
 <translation id="3492351353716550742">Ne pas utiliser de règle par défaut en matière d'URL de provenance (no-referrer-when-downgrade)</translation>
@@ -3093,7 +3091,6 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
 <translation id="3532827558833318911">Effacer la connexion par mot de passe</translation>
 <translation id="353611922042274900">Toujours afficher les informations système sur l'écran de connexion</translation>
 <translation id="3536263244905016305">Désactiver l'optimisation WPAD (Web Proxy Auto-Discovery, découverte automatique du proxy)</translation>
-<translation id="3538869107794555625">Activer le clavier à l'écran en mode tablette</translation>
 <translation id="3539103206548425861">Permet la lecture automatique des vidéos (sans accord de l'utilisateur) avec leur contenu audio dans <ph name="PRODUCT_NAME" />. Si la règle <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "True", cette règle n'a aucune incidence. Si <ph name="AUTOPLAY_ALLOWED_POLICY_NAME" /> est définie sur "False", la lecture automatique est toujours activée pour les formats d'URL inclus dans cette règle. Si <ph name="PRODUCT_NAME" /> est en cours d'exécution lorsque cette règle est modifiée, la modification n'affectera que les nouveaux onglets ouverts.
 
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
@@ -3313,16 +3310,6 @@ Pour connaître les restrictions concernant <ph name="PRIVATE_NETWORK_ACCESS" />
       Si vous l'activez ou ne configurez aucune valeur, les utilisateurs contrôlent la saisie automatique. Ils peuvent alors l'activer ou la désactiver et configurer des profils de saisie automatique comme ils le souhaitent.</translation>
 <translation id="3733014427925403568">Jour de la semaine pour l'intervalle.</translation>
 <translation id="3736879847913515635">Autoriser l'ajout de personnes dans le gestionnaire d'utilisateurs</translation>
-<translation id="3739912184950385207">Cette règle permet aux administrateurs de configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> sur <ph name="PRODUCT_OS_NAME" />.
-
-Si cette règle est définie sur "<ph name="ALLOWED_NAME" />", l'utilisateur peut configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> s'il le souhaite.
-Une fois le processus de configuration terminé, les fichiers dont les formats sont identiques sont déplacés par défaut vers <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et gérés par l'une des applis <ph name="MICROSOFT_365_NAME" /> lorsque l'utilisateur tente de les ouvrir.
-
-Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur ne peut pas configurer le flux <ph name="CLOUD_UPLOAD_NAME" /> pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" /> (comme décrit ci-dessus) et cela supprime <ph name="MICROSOFT_365_NAME" /> de la liste des gestionnaires de fichiers potentiels.
-
-Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", le flux <ph name="CLOUD_UPLOAD_NAME" /> est automatiquement configuré pour <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et <ph name="MICROSOFT_365_NAME" />, de sorte que les fichiers dont les formats sont identiques sont déplacés par défaut vers <ph name="MICROSOFT_ONE_DRIVE_NAME" /> et gérés par l'une des applis <ph name="MICROSOFT_365_NAME" /> lorsque l'utilisateur tente de les ouvrir.
-
-Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards. Pour les utilisateurs de la version Enterprise, si cette règle n'est pas configurée, elle est définie par défaut sur "<ph name="DISALLOWED_NAME" />".</translation>
 <translation id="3744984310825999317">Autoriser <ph name="PEPPER_NAME" /> à utiliser un nouveau décodeur pour le décodage vidéo avec accélération matérielle.</translation>
 <translation id="3749259744154402564">Non compatible</translation>
 <translation id="3749511622128647337">Désactiver la sortie audio</translation>
@@ -3551,15 +3538,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
       * la règle ayant la plus haute priorité s'applique si le niveau ou les champs d'application diffèrent.
 
       Si une règle ne figure pas dans la liste et qu'il y a conflit entre plusieurs sources, champs d'application ou niveaux, la règle ayant la plus haute priorité s'applique.</translation>
-<translation id="3912092044353890761">Permet d'activer la fonctionnalité d'accessibilité de clavier virtuel sur l'écran de connexion.
-
-          Si cette règle est définie sur "True", le clavier virtuel est toujours activé sur l'écran de connexion.
-
-          Si cette règle est définie sur "False", le clavier virtuel est toujours désactivé sur l'écran de connexion.
-
-          Si vous configurez cette règle, les utilisateurs ne peuvent ni la modifier, ni l'ignorer.
-
-          Si cette règle n'est pas configurée, le clavier virtuel est initialement désactivé sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="3913680877415932969">Configurer des règles pour contrôler le niveau d'API de partage d'écran (ex. : getDisplayMedia() ou Desktop Capture Extension) dont un site peut prendre une capture (d'onglet, de fenêtre ou d'écran, par exemple).</translation>
 <translation id="3915395663995367577">URL d'un fichier .pac de proxy</translation>
 <translation id="3915587396318773837">Si cette règle est configurée, l'hôte d'accès à distance exige des clients qui s'authentifient qu'ils obtiennent un jeton d'authentification à partir de cette URL pour se connecter.
@@ -3702,7 +3680,6 @@ Ancien comportement : dans "beforeunload", appeler event.preventDefault() ne d�
 <translation id="4051723201852944592">Détecter les fenêtres recouvertes</translation>
 <translation id="4052529125939620019">Charger l'extension du composant CryptoToken au démarrage</translation>
 <translation id="4053157306171963473">Désactiver les rapports sur le temps d'activité de l'appareil</translation>
-<translation id="4053612967614057854">Désactiver le clavier à l'écran</translation>
 <translation id="4055758693679485627">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur. Types de données disponibles : historique de navigation (<ph name="DATA_TYPE_BROWSING_HISTORY" />), historique des téléchargements (<ph name="DATA_TYPE_DOWNLOAD_HISTORY" />), cookies (<ph name="DATA_TYPE_COOKIES_AND_OTHER_SITE_DATA" />), cache (<ph name="DATA_TYPE_CACHED_IMAGES_AND_FILES" />), saisie automatique (<ph name="DATA_TYPE_AUTOFILL" />), mots de passe (<ph name="DATA_TYPE_PASSWORD" />), paramètres des sites (<ph name="DATA_TYPE_SITE_SETTINGS" />) et données des applis hébergées (<ph name="DATA_TYPE_HOSTED_APP_DATA" />). Cette règle ne prévaut pas sur <ph name="ALLOW_DELETING_BROWSER_HISTORY_POLICY_NAME" />.
 
 Jusqu'à Chrome 114, cette règle exigeait que la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> soit définie sur "true". À partir de Chrome 115, si vous configurez cette règle, la synchronisation sera désactivée pour les types de données respectifs si <ph name="CHROME_SYNC_NAME" /> n'est pas désactivé en définissant la règle <ph name="SYNC_DISABLED_POLICY_NAME" /> et que <ph name="BROWSER_SIGNIN_POLICY_NAME" /> n'est pas désactivé.
@@ -3796,9 +3773,6 @@ Elle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications natives 
 Si elle est définie sur "True" ou n'est pas définie, <ph name="PRODUCT_NAME" /> utilise les notifications natives.
 
 Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les notifications natives. Le Centre de messagerie de <ph name="PRODUCT_NAME" /> sera utilisé à la place.</translation>
-<translation id="412394201461298128">Définissez cette règle sur "True" pour maintenir le clavier à l'écran activé. Définissez-la sur "False" pour le maintenir désactivé, sauf si d'autres facteurs l'activent. Consultez la règle <ph name="TOUCH_VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> pour un exemple de ces facteurs.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, le clavier à l'écran est désactivé par défaut, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="412697421478384751">Autoriser les utilisateurs à définir des codes ayant un niveau de sécurité faible pour le code de l'écran de verrouillage</translation>
 <translation id="4136603825567209889">Activer les rapports sur les informations d'identification des utilisateurs</translation>
 <translation id="4138655880188755661">Période limite</translation>
@@ -5133,7 +5107,6 @@ Pour en savoir plus sur les contextes sécurisés, consultez https://www.w3.org/
 Si cette règle est désactivée, ces deux historiques ne peuvent pas être supprimés. Même si cette règle est désactivée, cela ne garantit pas que ces historiques soient conservés. En effet, les utilisateurs peuvent modifier ou supprimer directement les fichiers de ces historiques. De même, le navigateur peut arriver à expiration ou archiver l'historique partiellement ou intégralement à tout moment.</translation>
 <translation id="5323200200131319468">Activer les commentaires audio sur l'écran de connexion</translation>
 <translation id="5323271643727095577">Ne pas afficher de boîte de dialogue d'annulation quand event.preventDefault() est appelé pour l'événement beforeunload. Afficher la boîte de dialogue d'annulation quand beforeunload event.returnValue est la chaîne vide de l'événement beforeunload.</translation>
-<translation id="5323355956693037267">Activer le clavier à l'écran sur l'écran de connexion</translation>
 <translation id="5324430722441910403">Paramètres de recherche sur site</translation>
 <translation id="532848608876725157">Activer DNS-over-HTTPS avec solution de secours à risque</translation>
 <translation id="5328965694451556034">Signaler une connexion/déconnexion</translation>
@@ -5989,7 +5962,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6092073071805297119">Autoriser l'utilisation du filtrage des performances d'accessibilité.</translation>
 <translation id="6093156968240188330">Permettre aux utilisateurs distants d'interagir avec des fenêtres élevées dans les sessions d'assistance à distance</translation>
 <translation id="6094314311474620462">Désactivez l'impression</translation>
-<translation id="6095048925836115505">Activer le clavier virtuel sur l'écran de connexion</translation>
 <translation id="6097601282776163274">Activer la collecte des données anonymes incluant les URL</translation>
 <translation id="6099853574908182288">Mode d'impression par défaut couleur</translation>
 <translation id="6102342563050263313">Activer le défilement jusqu'au texte spécifié dans des fragments d'URL</translation>
@@ -6987,7 +6959,6 @@ REMARQUE : Seuls les nouveaux processus du moteur de rendu refléteront les mod
 <translation id="6841254611279513739">Cette règle permet de définir l'impression sur couleur seulement, monochrome seulement ou absence de restriction de couleur. Si la règle n'est pas définie, on considère qu'il n'y a aucune restriction.</translation>
 <translation id="6843008643303282259">Débit d'importation souhaité en kbit/s.</translation>
 <translation id="6843296367238757293">Cette règle est obsolète. Nous vous déconseillons de l'utiliser. Pour en savoir plus, rendez-vous sur https://support.google.com/chrome/a/answer/7643500.</translation>
-<translation id="6845162369344636241">Désactiver le clavier à l'écran sur l'écran de connexion</translation>
 <translation id="6846126863870444592">Permet de définir les extensions autorisées à ignorer la boîte de dialogue de confirmation d'une tâche d'impression lorsque la fonction <ph name="SUBMIT_JOB_FUNCTION" /> est utilisée via l'API <ph name="PRINTING_API" /> pour envoyer la tâche en question.
 
       Si une extension ne figure pas dans la liste ou si cette liste n'est pas configurée, la boîte de dialogue de confirmation d'une tâche d'impression s'affiche à chaque appel de fonction <ph name="SUBMIT_JOB_FUNCTION" />.
@@ -8456,19 +8427,6 @@ Avertissement : Il est recommandé de ne pas désactiver les mises à jour auto
 <translation id="8102854005031553638">La visionneuse PDF utilise le moteur de rendu AGG.</translation>
 <translation id="8102913158860568230">Paramètre MediaStream par défaut</translation>
 <translation id="8104962233214241919">Sélectionner automatiquement des certificats client pour ces sites</translation>
-<translation id="8106782817348995849">Cette règle permet aux administrateurs de limiter les comptes autorisés à se connecter à <ph name="MICROSOFT_ONE_DRIVE_NAME" /> lorsque la règle <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> est activée.
-
-Si cette règle contient une valeur "<ph name="COMMON_NAME" />", n'importe quel compte peut être utilisé pour se connecter.
-
-Si cette règle contient une valeur "<ph name="ORGANIZATIONS_NAME" />", un compte professionnel ou scolaire peut être utilisé pour se connecter.
-
-Si cette règle contient une valeur "<ph name="CONSUMER_NAME" />", un compte personnel <ph name="MICROSOFT_NAME" /> peut être utilisé pour se connecter.
-
-Si cette règle contient des noms de domaine ou des ID de locataire, les comptes de ces noms de domaine ou ID de locataire (voir https://learn.microsoft.com/fr-fr/azure/active-directory/develop/v2-protocols#Endpoint) peuvent être utilisés pour se connecter.
-
-Si cette règle n'est pas configurée ou ne contient qu'une valeur vide, c'est comme si "<ph name="COMMON_NAME" />" était spécifié pour les utilisateurs de la version Standard et comme si "<ph name="ORGANIZATIONS_NAME" />" était spécifié pour les utilisateurs de la version Enterprise.
-
-Modifier la restriction peut entraîner la déconnexion des utilisateurs de leur compte <ph name="MICROSOFT_ONE_DRIVE_NAME" /> si celui-ci ne respecte pas les nouvelles restrictions.</translation>
 <translation id="8109762054721090517">Modèle pour l'attribut <ph name="IPP_ATTRIBUTE" /> <ph name="INTERNET_PRINTING_PROTOCOL" /> <ph name="CLIENT_NAME_IPP_ATTRIBUTE" /></translation>
 <translation id="8111331908123507719">Configure le délai d'inactivité de l'appareil, en secondes, avant d'afficher l'économiseur d'écran à l'écran de verrouillage.
 
@@ -8599,18 +8557,6 @@ Cette règle s'applique au mode navigation privée. Cela signifie que la navigat
 <translation id="8220023426952118761">Débit de téléchargement souhaité en kbit/s.</translation>
 <translation id="8220156281401380422">Configurer la liste d'autorisation de messagerie native</translation>
 <translation id="822055204938220476">Liste des URL autorisées à rester en mode plein écran sans afficher de notification</translation>
-<translation id="8222103851860031829">Contrôle le clavier à l'écran en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
-
-      Si la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> est définie sur "True" ou si le paramètre Chrome OS "Activer le clavier à l'écran" est activé, cette règle n'a aucun effet.
-
-      Si la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> est définie sur "False" ou si elle n'est pas configurée et que le paramètre Chrome OS "Activer le clavier à l'écran" est désactivé, cette règle a l'effet suivant :
-      Si cette règle n'est pas configurée, le clavier à l'écran est affiché lorsque l'appareil est en mode tablette.
-      Si cette règle est définie sur "True", le clavier à l'écran est toujours affiché.
-      Si elle est définie sur "False", il n'est jamais affiché.
-
-      Le clavier à l'écran peut adopter une disposition compacte en fonction du mode de saisie.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier.</translation>
 <translation id="8225579382697740712">Contrôler l'utilisation de l'API WebHID</translation>
 <translation id="8229912067600517877">Activer les Outils pour les développeurs</translation>
 <translation id="8238421250255592181">Flag booléen spécifiant si la saisie semi-automatique est disponible ou non avec le clavier à l'écran.</translation>
@@ -8758,16 +8704,6 @@ Pour en savoir plus sur les anciennes technologies, consultez https://chromestat
 <translation id="8316940611391250886">Interdire les certificats sans extension subjectAlternativeName</translation>
 <translation id="8319678975002906774">Définit des valeurs de configuration gérée pour des sites Web aux origines spécifiques.</translation>
 <translation id="8320149248919453401">Mode de recharge de la batterie</translation>
-<translation id="8324872579207355449">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
-
-Si cette règle est définie sur "<ph name="ALLOWED_NAME" />", l'utilisateur peut configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" /> s'il le souhaite.
-Une fois le processus de configuration terminé, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> sera installé dans le gestionnaire de fichiers.
-
-Si cette règle est définie sur "<ph name="DISALLOWED_NAME" />", l'utilisateur ne peut pas configurer <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
-
-Si cette règle est définie sur "<ph name="AUTOMATED_NAME" />", <ph name="MICROSOFT_ONE_DRIVE_NAME" /> est configuré automatiquement, si possible. En cas d'échec, le processus de configuration s'affiche.
-
-Si cette règle n'est pas configurée, cela revient à la définir sur "<ph name="ALLOWED_NAME" />" pour les utilisateurs standards et "<ph name="DISALLOWED_NAME" />" pour les utilisateurs de la version Enterprise.</translation>
 <translation id="8327651196906278510">Autoriser la capture d'onglet selon ces origines</translation>
 <translation id="8329434144708110">Déclencher les flux d'authentification pour synchroniser les mots de passe avec les fournisseurs SSO</translation>
 <translation id="8329984337216493753">Cette règle n'est active qu'en mode Point de vente.

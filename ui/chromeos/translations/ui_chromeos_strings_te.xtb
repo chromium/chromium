@@ -56,7 +56,6 @@
 <translation id="1435838927755162558">Parallels Desktopతో ఫోల్డర్‌ను షేర్ చేయండి</translation>
 <translation id="1439919885608649279">పూలను పట్టుకున్న వ్యక్తి</translation>
 <translation id="1458457385801829801"><ph name="TARGET_NAME" />‌ను తొలగించండి</translation>
-<translation id="1464724975715666883">1 ఎర్రర్.</translation>
 <translation id="146691674290220697"><ph name="NUMBER_OF_FILES" /> ఫైళ్లు ఎన్‌క్రిప్ట్ చేయబడ్డాయి కాబట్టి వాటిని కాపీ చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="1471718551822868769">స్లోవాక్</translation>
 <translation id="1482884275703521657">ఫిన్నిష్</translation>
@@ -310,7 +309,6 @@
 <translation id="3475447146579922140">Google స్ప్రెడ్‌షీట్</translation>
 <translation id="3479552764303398839">ఇప్పుడు కాదు</translation>
 <translation id="3486821258960016770">మంగోలియన్</translation>
-<translation id="3495304270784461826"><ph name="COUNT" /> లోపాలు.</translation>
 <translation id="3509680540198371098"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, వివరాలు</translation>
 <translation id="3511705761158917664"><ph name="NUMBER_OF_ITEMS" /> ఐటెమ్‌లను సింక్ చేయడానికి సిద్ధం చేస్తోంది...</translation>
 <translation id="3522708245912499433">పోర్చుగీస్</translation>
@@ -1060,7 +1058,6 @@
 <translation id="9038620279323455325">"<ph name="FILE_NAME" />" పేరు గల ఫైల్ ఇప్పటికే ఉంది. దయచేసి వేరొక పేరును ఎంచుకోండి.</translation>
 <translation id="9046895021617826162">కనెక్ట్ విఫలమైంది</translation>
 <translation id="9065512565307033593">మీరు వెరిఫై చేయలేకపోతే, మీ నెట్‌వర్క్ యాక్సెస్ డిజేబుల్ చేయబడుతుంది.</translation>
-<translation id="9083722265619106011">{0,plural, =1{1 హెచ్చరిక.}other{<ph name="COUNT" /> హెచ్చరికలు.}}</translation>
 <translation id="908378762078012445">ఫోనెటిక్ AATSEEL కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="9086302186042011942">సింక్ చేస్తోంది</translation>
 <translation id="9099674669267916096">పేజీ గణన</translation>

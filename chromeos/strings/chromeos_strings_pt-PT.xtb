@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Veja a nova revista digital do Chromebook para criadores</translation>
 <translation id="1270369111467284986">Portal cativo suspeito</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
+<translation id="1300115153046603471">O tipo de APN é predefinido e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">A atualizar (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -449,6 +450,7 @@
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">O tipo de APN é predefinido.</translation>
 <translation id="437294888293595148">Repor todos os atalhos</translation>
+<translation id="4376423484621194274">O seu administrador não permite fechar a app <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Não foi executada.</translation>
 <translation id="4378551569595875038">A ligar...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +651,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">O APN (Nome do Ponto de Acesso) é detetado automaticamente.</translation>
 <translation id="5849570051105887917">Código do fornecedor base</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
 <translation id="5859969039821714932">Atalho não disponível. Prima um novo atalho sem <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desativado</translation>
@@ -754,6 +757,7 @@
 <translation id="6526200165918397681">Corresponder à imagem de fundo</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido.</translation>
 <translation id="6535178685492749208">Está offline. O feedback vai ser enviado mais tarde.</translation>
+<translation id="6557784757915238407">O tipo de APN é <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Plano</translation>
 <translation id="6560196641871357166">Vibrante</translation>
 <translation id="6564646048574748301">Falha – Impressora inacessível</translation>
@@ -867,6 +871,7 @@
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Não é possível desativar nem remover este APN. Certifique-se de que os APNs <ph name="ATTACH" /> ativados foram desativados ou removidos.</translation>
 <translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detetado</translation>
 <translation id="7481312909269577407">Avançar</translation>

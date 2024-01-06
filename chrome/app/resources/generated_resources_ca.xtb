@@ -562,7 +562,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1437986450143295708">Descriu el problema detalladament</translation>
 <translation id="1439671507542716852">assistència a llarg termini</translation>
 <translation id="1440090277117135316">La inscripció al centre educatiu s'ha completat</translation>
-<translation id="1441895600924734038">o torna-ho a provar més tard després d'obrir pestanyes similars noves.</translation>
 <translation id="144283815522798837">Elements seleccionats: <ph name="NUMBER_OF_ITEMS_SELECTED" /></translation>
 <translation id="1442851588227551435">Estableix el tiquet de Kerberos actiu</translation>
 <translation id="1444628761356461360">Aquesta configuració està gestionada pel propietari del dispositiu, <ph name="OWNER_EMAIL" />.</translation>
@@ -8999,7 +8998,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8041267120753677077">Reprodueix en continu aplicacions del telèfon</translation>
 <translation id="8042142357103597104">Opacitat del text</translation>
 <translation id="8042331986490021244">Les contrasenyes s'encripten al dispositiu abans de desar-les al gestor de contrasenyes de Google</translation>
-<translation id="8042392272728017793">o torna-ho a provar més tard.</translation>
 <translation id="8044090981104134791">Dispositius MIDI permesos</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> no respon.</translation>
 <translation id="8044899503464538266">Lenta</translation>
