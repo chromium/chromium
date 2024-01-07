@@ -100,8 +100,4 @@ class InvalidationService {
 
 }  // namespace invalidation
 
-namespace base {
-
-}  // namespace base
-
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATION_SERVICE_H_
