@@ -604,6 +604,7 @@
 <translation id="2135799067377889518">בגדי גברים</translation>
 <translation id="2137891579555018930">בהמתנה לאישור…</translation>
 <translation id="213826338245044447">סימניות לנייד</translation>
+<translation id="2141000681034340397">עריכת הקלט</translation>
 <translation id="214556005048008348">ביטול תשלום</translation>
 <translation id="2148613324460538318">הוספת כרטיס</translation>
 <translation id="2148716181193084225">היום</translation>
@@ -1392,6 +1393,7 @@
 <translation id="3736520371357197498">אם הבנת את הסיכונים בנוגע לאבטחה שלך, באפשרותך <ph name="BEGIN_LINK" />להיכנס לאתר לא בטוח זה<ph name="END_LINK" /> לפני הסרת התוכניות המסוכנות.</translation>
 <translation id="3736739313435669994">‏חסמת אתרים כך שלא יוכלו להשתמש בקובצי cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה. אפשר <ph name="LINK" /> בהגדרות.</translation>
 <translation id="3738166223076830879">הדפדפן מנוהל על ידי מנהל המערכת</translation>
+<translation id="3739842843727261045">בסימון לייק, נשלח משוב שאהבת את התוצאות האלה</translation>
 <translation id="3740319564441798148">אוטובוסים ורכבות למרחקים ארוכים</translation>
 <translation id="3740447166056383374">נדרשת בדיקה לפני ההעתקה</translation>
 <translation id="374325029554577103">מוצרי כושר טכנולוגיים</translation>
@@ -2618,6 +2620,7 @@ Del</translation>
 <translation id="6232271601416750929">קוסמטיקה ידידותית לסביבה</translation>
 <translation id="6234122620015464377">חיתוך אחרי כל מסמך</translation>
 <translation id="6236290670123303279">ניהול ההגדרות</translation>
+<translation id="623825323736974198">ניהול האתרים שתמיד יישארו פעילים ואף פעם לא יפונה זיכרון שמשמש להפעלה שלהם</translation>
 <translation id="6240447795304464094">‏הלוגו של Google Pay</translation>
 <translation id="6240964651812394252">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת ההפעלה, צריך להפעיל מחדש את Chrome ולאפשר גישה למנהל הסיסמאות במחשב. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="6241121617266208201">הסתרת ההצעות</translation>
@@ -4089,6 +4092,7 @@ Del</translation>
 <translation id="9089260154716455634">מדיניות לשעות ללא פעילות:</translation>
 <translation id="9090243919347147717">קבצים מצורפים</translation>
 <translation id="9093723786115107672">ביגוד לשינה</translation>
+<translation id="9094544726794842788">בסימון דיסלייק, נפתח טופס לשליחת משוב מפורט על הסיבה לכך שלא אהבת את התוצאות האלה</translation>
 <translation id="9095388113577226029">שפות נוספות...</translation>
 <translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי להגדיר את Chrome כדפדפן ברירת המחדל של המערכת בהגדרות iOS</translation>
 <translation id="9096679202588811390">תוכניות וסדרות טלוויזיה</translation>

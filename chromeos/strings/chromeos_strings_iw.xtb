@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">‏רוצה לעיין בכתב העת הדיגיטלי החדש של Chromebook ליוצרים?</translation>
 <translation id="1270369111467284986">יש חשד לפורטל שבוי</translation>
 <translation id="1290331692326790741">אות חלש</translation>
+<translation id="1300115153046603471">‏ה-APN הוא מסוג ברירת מחדל ו<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">מתבצע עדכון (%‏<ph name="PERCENTAGE_VALUE" /> הושלמו)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> דקות</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">פרנהייט</translation>
 <translation id="584953448295717128">‏ה-APN מזוהה באופן אוטומטי.</translation>
 <translation id="5849570051105887917">קוד ספק ביתי</translation>
+<translation id="5856267793478861942">‫<ph name="ATTACH" /> ‏(<ph name="IA" />)</translation>
 <translation id="5859603669299126575">אלבום של גלריית אומנות</translation>
 <translation id="5859969039821714932">מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש בלי <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">כבוי</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">התאמת הטפט</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
 <translation id="6535178685492749208">אין לך חיבור לאינטרנט. המשוב יישלח מאוחר יותר.</translation>
+<translation id="6557784757915238407">‏ה-APN הוא מסוג <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">שטוח</translation>
 <translation id="6560196641871357166">מלא חיים</translation>
 <translation id="6564646048574748301">נכשלה – לא ניתן להתחבר אל המדפסת</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">המרה</translation>
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך לוודא שפריטי ה-APN ב<ph name="ATTACH" /> שהופעלו הושבתו או הוסרו.</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7481312909269577407">קדימה</translation>

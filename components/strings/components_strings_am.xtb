@@ -604,6 +604,7 @@
 <translation id="2135799067377889518">የወንዶች ልብስ</translation>
 <translation id="2137891579555018930">ፈቃድን በመጠበቅ ላይ...</translation>
 <translation id="213826338245044447">የተንቀሳቃሽ ስልክ ዕልባቶች</translation>
+<translation id="2141000681034340397">ግብዓትዎትን ያርትዑ</translation>
 <translation id="214556005048008348">ክፍያን ሰርዝ</translation>
 <translation id="2148613324460538318">ካርድ አክል</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
@@ -1391,6 +1392,7 @@
 <translation id="3736520371357197498">ደህንነትዎ ላይ የሚያመጣቸውን ስጋቶች ከተረዱ አደገኛ ፕሮግራሞቹ ከመወገዳቸው በፊት <ph name="BEGIN_LINK" />ይህን ደህንነቱ ያልተጠበቀ ጣቢያ ሊጎብኙ<ph name="END_LINK" /> ይችላሉ።</translation>
 <translation id="3736739313435669994">በማሰስ ላይ እንዳሉ እርስዎን ለመከታተል የሦስተኛ ወገን ኩኪዎችን እንዳይጠቀሙ ጣቢያዎችን አግደዋል። ወደ <ph name="LINK" /> ቅንብሮችን ይጎብኙ።</translation>
 <translation id="3738166223076830879">የእርስዎ አሳሽ በእርስዎ አስተዳዳሪ የሚተዳደር ነው።</translation>
+<translation id="3739842843727261045">አሪፍ የሚለው እርስዎ እነዚህን ውጤቶች እንደወደዱ ግብረመልስ ያቀርባል</translation>
 <translation id="3740319564441798148">የረጅም ርቀት አውቶቡስ እና ባቡር</translation>
 <translation id="3740447166056383374">ከመቅዳት በፊት ግምገማ ያስፈልጋል</translation>
 <translation id="374325029554577103">የአካል ብቃት ቴክኖሎጂ ምርቶች</translation>
@@ -2612,6 +2614,7 @@
 <translation id="6232271601416750929">ንጹህ ውበት</translation>
 <translation id="6234122620015464377">ከእያንዳንዱ ሰነድ በኋላ ከርክም</translation>
 <translation id="6236290670123303279">ቅንብሮችን ያቀናብሩ</translation>
+<translation id="623825323736974198">ሁሌም ንቁ ሆነው የሚቀጥሉ እና ማሕደረ ትውስታዎ ከእነሱ ነጻ የማይሆኑ ጣቢያዎችን ያስተዳድሩ</translation>
 <translation id="6240447795304464094">የGoogle Pay ዓርማ</translation>
 <translation id="6240964651812394252">የGoogle የይለፍ ቃል አስተዳዳሪን ከስርዓተ ክወና ጋር ለመጠቀም Chromeን ዳግም ያስጀምሩ እና የኮምፒውተርዎን የይለፍ ቃል አስተዳዳሪ እንዲገቡ ፍቃድ ይስጡ። ዳግም ከጀመረ በኋላ ትሮችዎ እንደገና ይከፈታሉ።</translation>
 <translation id="6241121617266208201">የአስተያየት ጥቆማዎችን ደብቅ</translation>
@@ -4084,6 +4087,7 @@
 <translation id="9089260154716455634">ከሰዓታት ውጭ መመሪያ፦</translation>
 <translation id="9090243919347147717">ዓባሪዎች</translation>
 <translation id="9093723786115107672">የእንቅልፍ ልብስ</translation>
+<translation id="9094544726794842788">ደባሪ ነው የሚለው እርስዎ እነዚህን ውጤቶች ለምን እንዳልወደዱ ዝርዝር ግብረመልስ ለማስገባት ቅጽ ይከፍታል</translation>
 <translation id="9095388113577226029">ተጨማሪ ቋንቋዎች...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ Chromeን በiOS ቅንብሮች ውስጥ እንደ የስርዓቱ ነባሪ አሳሽ ለማዋቀር ትርን ከዛ አስገባን ይጫኑ</translation>
 <translation id="9096679202588811390">የቲቪ ትርዒቶች እና ፕሮግራሞች</translation>

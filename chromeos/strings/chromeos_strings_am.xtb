@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">ለፈጣሪዎች የሆነውን የChromebookን አዲሱ የዲጂታል መጽሔትን ይመልከቱ</translation>
 <translation id="1270369111467284986">ተያዥ መግቢያ ተጠርጥሯል</translation>
 <translation id="1290331692326790741">ደካማ ሲግናል</translation>
+<translation id="1300115153046603471">ኤፒኤን ነባሪ ዓይነት እና <ph name="ATTACH" />ነው።</translation>
 <translation id="1301069673413256657">ጂኤስኤም</translation>
 <translation id="1308754910631152188">በማዘመን ላይ (<ph name="PERCENTAGE_VALUE" />% ተጠናቅቋል)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ደቂቃዎች</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">ፋራናይት</translation>
 <translation id="584953448295717128">ኤፒኤን በራስ-ሰር ተገኝቷል።</translation>
 <translation id="5849570051105887917">የመነሻ ገፅ አቅራቢ ኮድ</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">የሥነ ጥበብ ማዕከል አልበም</translation>
 <translation id="5859969039821714932">አቋራጭ አይገኝም። <ph name="KEY" /> የሌለው አዲስ አቋራጭ ይጫኑ።</translation>
 <translation id="5860033963881614850">አጥፋ</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">ልጣፍን አዛምድ</translation>
 <translation id="6527081081771465939">ያልታወቀ የWiFi ደህንነት ፕሮቶኮል</translation>
 <translation id="6535178685492749208">ከመስመር ውጭ ነዎት። ግብረመልስ በኋላ ይላካል።</translation>
+<translation id="6557784757915238407">ኤፒኤን ዓይነት <ph name="ATTACH" /> ነው።</translation>
 <translation id="65587193855025101">ጠፍጣፋ ወለል</translation>
 <translation id="6560196641871357166">ደማቅ ቀለሞች</translation>
 <translation id="6564646048574748301">አልተሳካም - አታሚ የማይደረስበት ነው</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">ልወጣ</translation>
 <translation id="7415801143053185905">በጣም ከፍተኛ የኤችቲቲፒ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">ይህን ኤፒኤን ማሰናከል ወይም ማስወገድ አልተቻለም። የነቁ <ph name="ATTACH" /> ኤፒኤኖች መሰናከላቸውን እና መወገዳቸውን ያረጋግጡ።</translation>
 <translation id="7458970041932198923">እባክዎ ገጹን ለማየት እና አምሳያዎችን ለማዋቀር ከአውታረ መረብ ጋር ይገናኙ።</translation>
 <translation id="7469648432129124067">መግቢያ ተገኝቷል</translation>
 <translation id="7481312909269577407">ወደ ፊት</translation>
