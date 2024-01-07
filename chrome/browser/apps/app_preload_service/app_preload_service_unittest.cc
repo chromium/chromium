@@ -63,8 +63,7 @@ class AppPreloadServiceTest : public testing::Test {
 
     TestingProfile::Builder profile_builder;
     profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_));
+        url_loader_factory_.GetSafeWeakWrapper());
     profile_ = profile_builder.Build();
 
     web_app::test::AwaitStartWebAppProviderAndSubsystems(GetProfile());
