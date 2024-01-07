@@ -822,6 +822,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.REGISTER_JS_SOURCE_LOCATION_BLOCKING_BF_CACHE,
                 "Starts capturing bfcache blocking details"),
+        Flag.baseFeature(
+                "MojoChannelAssociatedSendUsesRunOrPostTask",
+                "Enables optimization for sending messages on channel-associated interfaces"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
