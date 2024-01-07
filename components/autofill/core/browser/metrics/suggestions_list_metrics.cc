@@ -8,23 +8,24 @@
 #include "base/metrics/user_metrics.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
-#include "components/autofill/core/browser/ui/popup_types.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
-ManageSuggestionType ToManageSuggestionType(PopupType popup_type) {
+ManageSuggestionType ToManageSuggestionType(FillingProduct popup_type) {
   switch (popup_type) {
-    case PopupType::kAddresses:
+    case FillingProduct::kAddress:
       return ManageSuggestionType::kAddresses;
-    case PopupType::kCreditCards:
+    case FillingProduct::kCreditCard:
       return ManageSuggestionType::kPaymentMethodsCreditCards;
-    case PopupType::kIbans:
+    case FillingProduct::kIban:
       return ManageSuggestionType::kPaymentMethodsIbans;
-    case PopupType::kPasswords:
-      ABSL_FALLTHROUGH_INTENDED;
-    case PopupType::kAutocomplete:
-    case PopupType::kUnspecified:
+    case FillingProduct::kAutocomplete:
+    case FillingProduct::kCompose:
+    case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kPassword:
+    case FillingProduct::kPlusAddresses:
+    case FillingProduct::kNone:
       return ManageSuggestionType::kOther;
   }
 }
@@ -66,8 +67,8 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                             off_the_record);
 }
 
-void LogAutofillSelectedManageEntry(PopupType popup_type) {
-  const ManageSuggestionType uma_type = ToManageSuggestionType(popup_type);
+void LogAutofillSelectedManageEntry(FillingProduct filling_product) {
+  const ManageSuggestionType uma_type = ToManageSuggestionType(filling_product);
   base::UmaHistogramEnumeration("Autofill.SuggestionsListManageClicked",
                                 uma_type);
 }

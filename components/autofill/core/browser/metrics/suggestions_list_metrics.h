@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SUGGESTIONS_LIST_METRICS_H_
 
 namespace autofill {
-enum class PopupType;
 enum class FillingProduct;
 
 namespace autofill_metrics {
@@ -45,7 +44,7 @@ void LogAutofillSuggestionAcceptedIndex(int index,
                                         bool off_the_record);
 
 // Logs that the user selected 'Manage...' settings entry in the popup.
-void LogAutofillSelectedManageEntry(autofill::PopupType popup_type);
+void LogAutofillSelectedManageEntry(FillingProduct filling_product);
 
 // Logs the 'Show cards from your Google Account" button events.
 void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(

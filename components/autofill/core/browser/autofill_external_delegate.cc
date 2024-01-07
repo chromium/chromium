@@ -509,11 +509,16 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     return;
   }
   switch (suggestion.popup_item_id) {
-    case PopupItemId::kAutofillOptions:
+    case PopupItemId::kAutofillOptions: {
       // User selected 'Autofill Options'.
-      autofill_metrics::LogAutofillSelectedManageEntry(popup_type_);
+      const FillingProduct main_filling_product = GetMainFillingProduct();
+      CHECK(main_filling_product == FillingProduct::kAddress ||
+            main_filling_product == FillingProduct::kCreditCard ||
+            main_filling_product == FillingProduct::kIban);
+      autofill_metrics::LogAutofillSelectedManageEntry(main_filling_product);
       manager_->client().ShowAutofillSettings(popup_type_);
       break;
+    }
     case PopupItemId::kEditAddressProfile: {
       ShowEditAddressProfileDialog(
           suggestion.GetBackendId<Suggestion::Guid>().value());
