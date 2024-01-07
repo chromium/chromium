@@ -1373,6 +1373,53 @@
       },
     },
 
+    'chromium_web_tests_graphite_isolated_scripts': {
+      'graphite_enabled_blink_web_tests': {
+        'test': 'blink_web_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=enable-skia-graphite',
+          '--skipped=always',
+          '--num-retries=3',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+      'graphite_enabled_blink_wpt_tests': {
+        'test': 'blink_wpt_tests',
+        'results_handler': 'layout tests',
+        'mixins': [
+          'has_native_resultdb_integration',
+          'blink_tests_write_run_histories',
+        ],
+        'args': [
+          '--flag-specific=enable-skia-graphite',
+          '--skipped=always',
+          '--num-retries=3',
+        ],
+        'swarming': {
+          'shards': 7,
+        },
+        'merge': {
+          'script': '//third_party/blink/tools/merge_web_test_results.py',
+          'args': [
+            '--verbose',
+          ],
+        },
+      },
+    },
+
     'chromium_web_tests_high_dpi_isolated_scripts': {
       'high_dpi_blink_web_tests': {
         'test': 'blink_web_tests',

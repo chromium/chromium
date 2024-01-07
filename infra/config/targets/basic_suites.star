@@ -1389,6 +1389,22 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromium_web_tests_graphite_isolated_scripts",
+    tests = {
+        "graphite_enabled_blink_web_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "graphite_enabled_blink_wpt_tests": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 7,
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromium_web_tests_high_dpi_isolated_scripts",
     tests = {
         # high_dpi_blink_web_tests provides coverage for

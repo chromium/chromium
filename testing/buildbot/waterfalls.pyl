@@ -6851,6 +6851,14 @@
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
         },
       },
+      'mac13.arm64-skia-alt-blink-rel': {
+        'mixins': [
+          'mac_13_arm64',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chromium_web_tests_graphite_isolated_scripts',
+        },
+      },
       'win10.20h2-blink-rel': {
         'mixins': [
             'win10',

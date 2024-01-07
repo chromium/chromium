@@ -866,6 +866,7 @@ _exempted_from_contact_builders = {
         "mac13-tests",
         "mac13-wpt-content-shell-fyi-rel",
         "mac13.arm64-blink-rel",
+        "mac13.arm64-skia-alt-blink-rel",
         "mac_chromium_10.15_rel_ng",
         "mac_chromium_11.0_rel_ng",
         "mac_chromium_asan_rel_ng",

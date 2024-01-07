@@ -194,5 +194,14 @@
           "--use-webgpu-power-preference=default-high-performance indicates",
           "it uses high-performance gpu when not explicitly specified"
     ]
+  },
+  {
+    "name": "enable-skia-graphite",
+    "args": [
+      "--enable-skia-graphite"
+    ],
+    "comments": [
+      "Used to test Chrome with Skia Graphite."
+    ]
   }
 ]

@@ -1171,6 +1171,44 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
+    # graphite_enabled_blink_web_tests provides coverage for
+    # running Layout Tests with Skia Graphite.
+    name = "graphite_enabled_blink_web_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=enable-skia-graphite",
+        "--skipped=always",
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        "--num-retries=3",
+    ],
+    binary = "blink_web_tests",
+)
+
+targets.tests.isolated_script_test(
+    # graphite_enabled_blink_wpt_tests provides coverage for
+    # running Layout Tests with Skia Graphite.
+    name = "graphite_enabled_blink_wpt_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+        "blink_tests_write_run_histories",
+    ],
+    args = [
+        "--flag-specific=enable-skia-graphite",
+        "--skipped=always",
+        # layout test failures are retried 3 times when '--test-list' is not
+        # passed, but 0 times when '--test-list' is passed. We want to always
+        # retry 3 times, so we explicitly specify it.
+        "--num-retries=3",
+    ],
+    binary = "blink_wpt_tests",
+)
+
+targets.tests.isolated_script_test(
     name = "grit_python_unittests",
 )
 
