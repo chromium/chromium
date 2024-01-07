@@ -408,7 +408,12 @@ class Port(object):
                 '--user-data-dir',
             ])
         elif driver_name == self.CHROME_NAME:
-            flags.append('--enable-blink-test-features')
+            flags.extend([
+                '--enable-blink-test-features',
+                # Expose the non-standard `window.gc()` for `wpt_internal/`
+                # tests. See: crbug.com/1509657
+                '--js-flags=--expose-gc',
+            ])
 
         if driver_name in {self.CONTENT_SHELL_NAME, self.CHROME_NAME}:
             known_fingerprints = [
