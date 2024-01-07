@@ -388,6 +388,7 @@
 #include "chrome/browser/chromeos/reporting/metric_reporting_manager_lacros_shutdown_notifier_factory.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
+#include "chrome/browser/lacros/file_change_service_bridge_factory.h"
 #include "chrome/browser/lacros/remote_apps/remote_apps_proxy_lacros_factory.h"
 #include "chrome/browser/speech/tts_client_factory_lacros.h"
 #include "chrome/browser/ui/startup/first_run_service.h"
@@ -813,6 +814,9 @@ void ChromeBrowserMainExtraPartsProfiles::
   feedback::FeedbackUploaderFactoryChrome::GetInstance();
 #endif
   FieldInfoManagerFactory::GetInstance();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  FileChangeServiceBridgeFactory::GetInstance();
+#endif
   FileSystemAccessPermissionContextFactory::GetInstance();
   FindBarStateFactory::GetInstance();
   first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance();

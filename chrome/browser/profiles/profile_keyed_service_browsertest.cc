@@ -240,6 +240,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
     "FederatedIdentityPermissionContext",
     "FeedbackPrivateAPI",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "FileChangeServiceBridge",
+#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "GeneratedPrefs",
     "HeavyAdService",
@@ -402,6 +405,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ExtensionWebUIOverrideRegistrar",
     "FederatedIdentityPermissionContext",
     "FeedbackPrivateAPI",
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    "FileChangeServiceBridge",
+#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
     "FileSystemAccessPermissionContext",
     "FirstPartySetsPolicyService",
     "FontPrefChangeNotifier",

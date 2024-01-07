@@ -48,6 +48,7 @@ import "chromeos/crosapi/mojom/extension_keeplist.mojom";
 import "chromeos/crosapi/mojom/eye_dropper.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
+import "chromeos/crosapi/mojom/file_change_service_bridge.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
 import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
@@ -154,8 +155,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 128
-// Next method id: 130
+// Next version: 129
+// Next method id: 131
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -385,6 +386,15 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=70]
   BindExtensionPublisher@73(pending_receiver<AppPublisher> receiver);
+
+  // Binds the bridge implemented in Ash which is connected to the
+  // `FileChangeServiceBridge` in Lacros via crosapi. This bridge enables file
+  // change events originating from Lacros to be propagated to the
+  // `FileChangeService`, and its observers, in Ash.
+  // Added in M122.
+  [MinVersion=128]
+  BindFileChangeServiceBridge@130(
+      pending_receiver<FileChangeServiceBridge> receiver);
 
   // Binds the FileManager interface for showing files, folders, etc.
   // Added in M88.

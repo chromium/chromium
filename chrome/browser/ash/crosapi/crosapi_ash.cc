@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/crosapi/eye_dropper_ash.h"
 #include "chrome/browser/ash/crosapi/feedback_ash.h"
 #include "chrome/browser/ash/crosapi/field_trial_service_ash.h"
+#include "chrome/browser/ash/crosapi/file_change_service_bridge_ash.h"
 #include "chrome/browser/ash/crosapi/file_manager_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
@@ -147,6 +148,7 @@
 #include "chromeos/crosapi/mojom/embedded_accessibility_helper.mojom.h"
 #include "chromeos/crosapi/mojom/eye_dropper.mojom.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
+#include "chromeos/crosapi/mojom/file_change_service_bridge.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/image_writer.mojom.h"
@@ -607,6 +609,19 @@ void CrosapiAsh::BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) {
 void CrosapiAsh::BindFieldTrialService(
     mojo::PendingReceiver<crosapi::mojom::FieldTrialService> receiver) {
   field_trial_service_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindFileChangeServiceBridge(
+    mojo::PendingReceiver<crosapi::mojom::FileChangeServiceBridge> receiver) {
+  // NOTE: The `FileChangeServiceBridgeAsh` is created lazily as the Ash profile
+  // is not yet ready on `CrosapiAsh` construction.
+  if (!file_change_service_bridge_ash_) {
+    Profile* const profile = GetAshProfile();
+    CHECK(profile);
+    file_change_service_bridge_ash_ =
+        std::make_unique<FileChangeServiceBridgeAsh>(profile);
+  }
+  file_change_service_bridge_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFileManager(

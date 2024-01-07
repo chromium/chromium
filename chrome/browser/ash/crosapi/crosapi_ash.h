@@ -81,6 +81,7 @@ class ExtensionInfoPrivateAsh;
 class EyeDropperAsh;
 class FeedbackAsh;
 class FieldTrialServiceAsh;
+class FileChangeServiceBridgeAsh;
 class FileManagerAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
@@ -247,6 +248,8 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindFeedback(mojo::PendingReceiver<mojom::Feedback> receiver) override;
   void BindFieldTrialService(
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
+  void BindFileChangeServiceBridge(
+      mojo::PendingReceiver<mojom::FileChangeServiceBridge> receiver) override;
   void BindFileManager(
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
   void BindFileSystemAccessCloudIdentifierProvider(
@@ -645,6 +648,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<EyeDropperAsh> eye_dropper_ash_;
   std::unique_ptr<FeedbackAsh> feedback_ash_;
   std::unique_ptr<FieldTrialServiceAsh> field_trial_service_ash_;
+  std::unique_ptr<FileChangeServiceBridgeAsh> file_change_service_bridge_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
   std::unique_ptr<FileSystemAccessCloudIdentifierProviderAsh>
       file_system_access_cloud_identifier_provider_ash_;
