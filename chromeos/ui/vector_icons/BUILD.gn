@@ -26,6 +26,7 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "filetype_gmap.icon",
     "filetype_gsheet.icon",
     "filetype_gsite.icon",
+    "filetype_gmaillayout.icon",
     "filetype_gslides.icon",
     "filetype_gtable.icon",
     "filetype_image.icon",

@@ -28,6 +28,7 @@ const char kGoogleMapMimeType[] = "application/vnd.google-apps.map";
 const char kGoogleSiteMimeType[] = "application/vnd.google-apps.site";
 const char kDriveFolderMimeType[] = "application/vnd.google-apps.folder";
 const char kEncryptedMimeType[] = "application/vnd.google-gsuite.encrypted";
+const char kEmailLayoutsMimeType[] = "application/vnd.google-apps.mail-layout";
 
 // Escapes ' to \' in the |str|. This is designed to use for string value of
 // search parameter on Drive API v2.

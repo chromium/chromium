@@ -25,15 +25,15 @@ struct HostedDocumentKind {
 };
 
 const HostedDocumentKind kHostedDocumentKinds[] = {
-    {kGoogleDocumentMimeType,     ".gdoc"},
-    {kGoogleSpreadsheetMimeType,  ".gsheet"},
+    {kGoogleDocumentMimeType, ".gdoc"},
+    {kGoogleSpreadsheetMimeType, ".gsheet"},
     {kGooglePresentationMimeType, ".gslides"},
-    {kGoogleDrawingMimeType,      ".gdraw"},
-    {kGoogleTableMimeType,        ".gtable"},
-    {kGoogleFormMimeType,         ".gform"},
-    {kGoogleMapMimeType,          ".gmaps"},
-    {kGoogleSiteMimeType,         ".gsite"},
-};
+    {kGoogleDrawingMimeType, ".gdraw"},
+    {kGoogleTableMimeType, ".gtable"},
+    {kGoogleFormMimeType, ".gform"},
+    {kGoogleMapMimeType, ".gmaps"},
+    {kGoogleSiteMimeType, ".gsite"},
+    {kEmailLayoutsMimeType, ".gmaillayout"}};
 
 const char kUnknownHostedDocumentExtension[] = ".glink";
 

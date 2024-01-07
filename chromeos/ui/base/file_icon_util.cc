@@ -161,6 +161,8 @@ const std::map<IconType, IconParams>& GetIconTypeToIconParamsMap() {
             IconParams{raw_ref(kFiletypeGsheetIcon), ColorId::kGreen}},
            {IconType::kGsite,
             IconParams{raw_ref(kFiletypeGsiteIcon), ColorId::kFiletypeGsite}},
+           {IconType::kGmaillayout,
+            IconParams{raw_ref(kFiletypeGmaillayoutIcon), ColorId::kRed}},
            {IconType::kGslide,
             IconParams{raw_ref(kFiletypeGslidesIcon), ColorId::kYellow}},
            {IconType::kGtable,
@@ -302,6 +304,7 @@ IconType GetIconTypeForPath(const base::FilePath& filepath) {
           {".GFORM", IconType::kGform},
           {".GMAPS", IconType::kGmap},
           {".GSITE", IconType::kGsite},
+          {".GMAILLAYOUT", IconType::kGmaillayout},
 
           // Other
           {".PDF", IconType::kPdf},
@@ -348,6 +351,7 @@ IconType GetIconTypeFromString(const std::string& icon_type_string) {
                                 {"gmap", IconType::kGmap},
                                 {"gsheet", IconType::kGsheet},
                                 {"gsite", IconType::kGsite},
+                                {"gmaillayout", IconType::kGmaillayout},
                                 {"gslides", IconType::kGslide},
                                 {"gtable", IconType::kGtable},
                                 {"image", IconType::kImage},

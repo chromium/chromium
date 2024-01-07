@@ -107,6 +107,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
+[file-type-icon='gmaillayout'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gmaillayout.svg);
+}
+
 [file-type-icon='image'] {
   -webkit-mask-image: url(../images/filetype/filetype_image.svg);
 }
@@ -214,6 +218,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   -webkit-mask-image: url(../images/filetype/filetype_gsite.svg);
 }
 
+.no-thumbnail[generic-thumbnail='gmaillayout'] {
+  -webkit-mask-image: url(../images/filetype/filetype_gmaillayout.svg);
+}
+
 .no-thumbnail[generic-thumbnail='pdf'] {
   -webkit-mask-image: url(../images/filetype/filetype_pdf.svg);
 }
@@ -250,13 +258,15 @@ body.check-select #list-container li[selected] [file-type-icon],
 [file-type-icon='gmap'],
 [file-type-icon='pdf'],
 [file-type-icon='video'],
+[file-type-icon='gmaillayout'],
 .no-thumbnail[generic-thumbnail='audio'],
 .no-thumbnail[generic-thumbnail='gdraw'],
 .no-thumbnail[generic-thumbnail='image'],
 .no-thumbnail[generic-thumbnail='gmap'],
 .no-thumbnail[generic-thumbnail='pdf'],
 .no-thumbnail[generic-thumbnail='raw'],
-.no-thumbnail[generic-thumbnail='video'] {
+.no-thumbnail[generic-thumbnail='video'],
+.no-thumbnail[generic-thumbnail='gmaillayout'] {
   background-color: var(--cros-sys-error);
 }
 

@@ -1520,6 +1520,9 @@
   <message name="IDS_FILE_BROWSER_GSITE_DOCUMENT_FILE_TYPE" desc="Google site file type">
     Google site
   </message>
+  <message name="IDS_FILE_BROWSER_EMAIL_LAYOUTS_DOCUMENT_FILE_TYPE" desc="Email layouts file type">
+    Email layouts
+  </message>
   <message name="IDS_FILE_BROWSER_GLINK_DOCUMENT_FILE_TYPE" desc="Google Drive link file type">
     Google Drive link
   </message>

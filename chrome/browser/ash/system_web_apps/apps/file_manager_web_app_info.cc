@@ -118,8 +118,9 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
                     });
 
   // Drive & Google Docs:
-  AppendFileHandler(*info, "open-hosted-generic",
-                    {"gdraw", "gtable", "gform", "gmaps", "gsite", "glink"});
+  AppendFileHandler(
+      *info, "open-hosted-generic",
+      {"gdraw", "gtable", "gform", "gmaps", "gsite", "glink", "gmaillayout"});
   AppendFileHandler(*info, "open-hosted-gdoc", {"gdoc"});
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});

@@ -303,6 +303,10 @@ function getCSS() {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_gsite.svg);
     }
 
+    :host([type="gmaillayout"]) span {
+      -webkit-mask-image: url(../foreground/images/filetype/filetype_gmaillayout.svg);
+    }
+
     :host([type="gslides"]) span {
       -webkit-mask-image: url(../foreground/images/filetype/filetype_gslides.svg);
     }
@@ -434,7 +438,8 @@ function getCSS() {
     :host([type='image']) span,
     :host([type='gmap']) span,
     :host([type='pdf']) span,
-    :host([type='video']) span {
+    :host([type='video']) span,
+    :host([type='gmaillayout']) span {
       background-color: var(--cros-sys-error);
     }
 
