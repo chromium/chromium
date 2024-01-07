@@ -256,16 +256,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
 
 // Tests that the intent picker icon is not visible if the navigation redirects
 // to a URL that doesn't have an installed PWA.
-// TODO(crbug.com/1515480): This test is flaky. Re-enable this test.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope \
-  DISABLED_DoesNotShowIntentPickerWhenRedirectedOutOfScope
-#else
-#define MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope \
-  DoesNotShowIntentPickerWhenRedirectedOutOfScope
-#endif
+// Gardeners: If this test is still flaky, please update crbug.com/1515480.
 IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
-                       MAYBE_DoesNotShowIntentPickerWhenRedirectedOutOfScope) {
+                       DoesNotShowIntentPickerWhenRedirectedOutOfScope) {
   InstallTestWebApp(GetOtherAppUrlHost(), /*app_scope=*/"/");
 
   const GURL out_of_scope_url =
