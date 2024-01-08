@@ -64,7 +64,6 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
@@ -124,7 +123,7 @@ FormStructure::FormStructure(const FormData& form)
       main_frame_origin_(form.main_frame_origin),
       is_form_tag_(form.is_form_tag),
       all_fields_are_passwords_(!form.fields.empty()),
-      form_parsed_timestamp_(AutofillTickClock::NowTicks()),
+      form_parsed_timestamp_(base::TimeTicks::Now()),
       host_frame_(form.host_frame),
       version_(form.version),
       unique_renderer_id_(form.unique_renderer_id) {

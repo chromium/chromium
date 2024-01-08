@@ -52,7 +52,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -63,7 +62,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -6137,10 +6135,6 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
 
 // Verify that we correctly log metrics tracking the duration of form fill.
 TEST_F(AutofillMetricsTest, FormFillDuration) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData empty_form = CreateForm(
       {CreateTestFormField("Name", "name", "", FormControlType::kInputText),
        CreateTestFormField("Email", "email", "", FormControlType::kInputText),
@@ -6170,11 +6164,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     SCOPED_TRACE("Test 1 - no interaction, fields are prefilled");
     base::HistogramTester histogram_tester;
     SeeForm(empty_form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
@@ -6203,7 +6193,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
     SimulateUserChangedTextField(user_filled_form,
                                  user_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(filled_form);
 
     histogram_tester.ExpectTotalCount(
@@ -6231,7 +6221,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
 
     FormData autofilled_form = test::AsAutofilled(filled_form);
     FillAutofillFormData(autofilled_form, parse_time + base::Microseconds(5));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(autofilled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6268,7 +6258,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                  mixed_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6303,7 +6293,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
                                  mixed_filled_form.fields.front(),
                                  parse_time + base::Microseconds(3));
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(mixed_filled_form);
 
     histogram_tester.ExpectUniqueSample(
@@ -6332,7 +6322,7 @@ TEST_F(AutofillMetricsTest, FormFillDuration) {
         parse_time = kv.second->form_parsed_timestamp();
     }
 
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(second_form);
 
     histogram_tester.ExpectTotalCount(
@@ -7527,10 +7517,6 @@ TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
 }
 
 TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = CreateForm({CreateTestFormField(
       "", "", "", FormControlType::kInputPassword, "one-time-code")});
   form.fields[0].value = u"123456";
@@ -7538,11 +7524,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
   {
     base::HistogramTester histogram_tester;
     SeeForm(form);
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(form);
 
     histogram_tester.ExpectTotalCount(
@@ -7562,7 +7544,7 @@ TEST_F(AutofillMetricsTest, AutocompleteOneTimeCodeFormFilledDuration) {
     FillAutofillFormData(form, parse_time + base::Microseconds(5));
     SimulateUserChangedTextField(form, form.fields.front(),
                                  parse_time + base::Microseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Microseconds(17));
+    task_environment_.FastForwardBy(base::Microseconds(17));
     SubmitForm(form);
 
     histogram_tester.ExpectUniqueSample(
@@ -8254,10 +8236,6 @@ class AutofillMetricsFromLogEventsTest : public AutofillMetricsTest {
 // Test if we record FieldInfo UKM event correctly after we click the field and
 // show autofill suggestions.
 TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   RecreateProfile();
   FormData form = test::GetFormData({.fields = {
                                          {.label = u"State", .name = u"state"},
@@ -8276,11 +8254,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
         form, form.fields[0], gfx::RectF(),
         AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
-    base::TimeTicks parse_time = autofill_manager()
-                                     .form_structures()
-                                     .begin()
-                                     ->second->form_parsed_timestamp();
-    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+    task_environment_.FastForwardBy(base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
@@ -8327,10 +8301,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
 // Test if we record FieldInfo UKM metrics correctly after we fill and submit an
 // address form.
 TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   RecreateProfile();
   FormData form = test::GetFormData({.fields = {
                                          {.label = u"State", .name = u"state"},
@@ -8358,7 +8328,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
     // Simulate text input in the first fields.
     SimulateUserChangedTextFieldTo(form, form.fields[0], u"United States",
                                    parse_time + base::Milliseconds(3));
-    test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+    task_environment_.FastForwardBy(base::Milliseconds(9));
     base::HistogramTester histogram_tester;
     SubmitForm(form);
 
@@ -8514,10 +8484,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
 // Test if we have recorded UKM metrics correctly about field types after
 // parsing the form by the local heuristic prediction.
 TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Heuristic value will match with Autocomplete attribute.
@@ -8576,11 +8542,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       .OnLoadedServerPredictions(
           response_string, test::GetEncodedSignatures(*form_structure_ptr));
 
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(17));
+  task_environment_.FastForwardBy(base::Milliseconds(17));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   // Record Autofill2.FieldInfo UKM event at autofill manager reset.
@@ -8760,10 +8722,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 // fields without autofilling first.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsEditedFieldWithoutFill) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   test::FormDescription form_description = {
       .fields = {{.role = NAME_FULL},
                  {.role = EMAIL_ADDRESS},
@@ -8780,7 +8738,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                  parse_time + base::Milliseconds(3));
   SimulateUserChangedTextFieldTo(form, form.fields[1], u"buddy@gmail.com",
                                  parse_time + base::Milliseconds(3));
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
 
@@ -9008,10 +8966,6 @@ TEST_F(
 // which have predicted types are recorded in FieldInfo metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnCheckBoxWithTextField) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Start with two input text fields.
@@ -9031,11 +8985,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                         UNKNOWN_TYPE};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -9121,10 +9071,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 // metrics.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnSelectListField) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   FormData form = test::GetFormData(
       {.fields = {
            // Start with two input text fields.
@@ -9140,11 +9086,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
                                         ADDRESS_HOME_COUNTRY};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();
@@ -9167,10 +9109,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
 // as AutofillStatus::kIsInSubFrame.
 TEST_F(AutofillMetricsFromLogEventsTest,
        AutofillFieldInfoMetricsRecordOnDifferentFrames) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
-
   // The form has three input text fields, the second field is in a sub frame.
   FormData form = test::GetFormData(
       {.fields =
@@ -9186,11 +9124,7 @@ TEST_F(AutofillMetricsFromLogEventsTest,
   std::vector<FieldType> field_types = {NAME_FIRST, NAME_LAST, EMAIL_ADDRESS};
   autofill_manager().AddSeenForm(form, field_types);
   SeeForm(form);
-  base::TimeTicks parse_time = autofill_manager()
-                                   .form_structures()
-                                   .begin()
-                                   ->second->form_parsed_timestamp();
-  test_clock.SetNowTicks(parse_time + base::Milliseconds(9));
+  task_environment_.FastForwardBy(base::Milliseconds(9));
   base::HistogramTester histogram_tester;
   SubmitForm(form);
   autofill_manager().Reset();

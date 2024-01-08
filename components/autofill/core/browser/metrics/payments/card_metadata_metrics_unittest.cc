@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -476,16 +476,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Test to ensure that we log card metadata related metrics only when card
 // metadata is available.
 TEST_P(CardMetadataLatencyMetricsTest, LogMetrics) {
-  base::TimeTicks now = AutofillTickClock::NowTicks();
-  TestAutofillTickClock test_clock;
-  test_clock.SetNowTicks(now);
   base::HistogramTester histogram_tester;
 
   // Simulate activating the autofill popup for the credit card field.
   autofill_manager().OnAskForValuesToFillTest(form(), form().fields.back());
   DidShowAutofillSuggestions(form(), /*field_index=*/form().fields.size() - 1,
                              PopupItemId::kCreditCardEntry);
-  test_clock.SetNowTicks(now + base::Seconds(2));
+  task_environment_.FastForwardBy(base::Seconds(2));
   autofill_manager().FillOrPreviewCreditCardForm(
       mojom::ActionPersistence::kFill, form(), form().fields.front(),
       *personal_data().GetCreditCardByGUID(kTestMaskedCardId),

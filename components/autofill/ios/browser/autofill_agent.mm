@@ -36,7 +36,6 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
-#import "components/autofill/core/common/autofill_tick_clock.h"
 #import "components/autofill/core/common/autofill_util.h"
 #import "components/autofill/core/common/field_data_manager.h"
 #import "components/autofill/core/common/form_data.h"
@@ -589,8 +588,7 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
   autofill::BrowserAutofillManager* autofillManager =
       [self autofillManagerFromWebState:_webState webFrame:frame];
   if (autofillManager)
-    autofillManager->OnDidFillAutofillFormData(
-        form, autofill::AutofillTickClock::NowTicks());
+    autofillManager->OnDidFillAutofillFormData(form, base::TimeTicks::Now());
 }
 
 // Similar to `fillField`, but does not rely on `FillActiveFormField`, opting
@@ -1165,8 +1163,8 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 
   autofill::FormFieldData field;
   GetFormField(&field, forms[0], fieldIdentifier);
-  autofillManager->OnTextFieldDidChange(
-      forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
+  autofillManager->OnTextFieldDidChange(forms[0], field, gfx::RectF(),
+                                        base::TimeTicks::Now());
 }
 
 // Helper method to create icons for payment cards.

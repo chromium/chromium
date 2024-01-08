@@ -105,7 +105,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -576,7 +575,7 @@ BrowserAutofillManager::FillingContext::FillingContext(
     : filled_field_id(field.global_id()),
       filled_field_signature(field.GetFieldSignature()),
       filled_origin(field.origin),
-      original_fill_time(AutofillTickClock::NowTicks()) {
+      original_fill_time(base::TimeTicks::Now()) {
   DCHECK(absl::holds_alternative<const CreditCard*>(profile_or_credit_card) ||
          !optional_cvc);
 
@@ -799,7 +798,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     return;
   }
 
-  form_submitted_timestamp_ = AutofillTickClock::NowTicks();
+  form_submitted_timestamp_ = base::TimeTicks::Now();
 
   // Log metrics about the autocomplete attribute usage in the submitted form.
   LogAutocompletePredictionCollisionTypeMetrics(*submitted_form);
@@ -807,7 +806,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   // Log interaction time metrics for the ablation study.
   if (!initial_interaction_timestamp_.is_null()) {
     base::TimeDelta time_from_interaction_to_submission =
-        AutofillTickClock::NowTicks() - initial_interaction_timestamp_;
+        base::TimeTicks::Now() - initial_interaction_timestamp_;
     DenseSet<FormType> form_types = submitted_form->GetFormTypes();
     bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
     bool address_form = base::Contains(form_types, FormType::kAddressForm);
@@ -971,11 +970,11 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
   // BrowserAutofillManager::UploadVotesAndLogQuality() call.
   FormStructure* raw_form = form_structure.get();
 
-  base::OnceClosure call_after_determine_field_types = base::BindOnce(
-      &BrowserAutofillManager::UploadVotesAndLogQuality,
-      weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
-      initial_interaction_timestamp_, AutofillTickClock::NowTicks(),
-      observed_submission, client().GetUkmSourceId());
+  base::OnceClosure call_after_determine_field_types =
+      base::BindOnce(&BrowserAutofillManager::UploadVotesAndLogQuality,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(form_structure),
+                     initial_interaction_timestamp_, base::TimeTicks::Now(),
+                     observed_submission, client().GetUkmSourceId());
 
   // If the form was not submitted (e.g. the user just removed the focus from
   // the form), it's possible that later modifications lead to more accurate
@@ -1850,7 +1849,7 @@ void BrowserAutofillManager::AnalyzeJavaScriptChangedAutofilledValue(
   if (!filling_context)
     return;
 
-  base::TimeTicks now = AutofillTickClock::NowTicks();
+  base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
   // If the filling happened too long ago, maybe this is just an effect of
@@ -3284,7 +3283,7 @@ bool BrowserAutofillManager::ShouldTriggerRefill(
   address_form_event_logger_->OnDidSeeFillableDynamicForm(
       signin_state_for_metrics_, form_structure);
 
-  base::TimeTicks now = AutofillTickClock::NowTicks();
+  base::TimeTicks now = base::TimeTicks::Now();
   base::TimeDelta delta = now - filling_context->original_fill_time;
 
   if (filling_context->attempted_refill && delta < limit_before_refill_) {

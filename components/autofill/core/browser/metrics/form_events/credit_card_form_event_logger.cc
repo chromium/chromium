@@ -71,7 +71,7 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
                                             signin_state_for_metrics,
                                             off_the_record);
 
-  suggestion_shown_timestamp_ = AutofillTickClock::NowTicks();
+  suggestion_shown_timestamp_ = base::TimeTicks::Now();
 
   // Log if standalone CVC suggestions were shown for virtual cards.
   if (is_virtual_card_standalone_cvc_field_) {
@@ -148,7 +148,7 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
   }
 
   autofill_metrics::LogAcceptanceLatency(
-      AutofillTickClock::NowTicks() - suggestion_shown_timestamp_,
+      base::TimeTicks::Now() - suggestion_shown_timestamp_,
       metadata_logging_context_, credit_card);
 
   // Log if a CVC suggestion was selected for a virtual card.

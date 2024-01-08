@@ -41,7 +41,6 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -557,7 +556,7 @@ void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
     const FormFieldData& field = form->fields.front();
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(*form, field, field.bounds,
-                                          AutofillTickClock::NowTicks());
+                                          base::TimeTicks::Now());
     }
   }
 }
@@ -600,7 +599,7 @@ void AutofillAgent::OnTextFieldDidChange(const WebFormControlElement& element) {
     auto& [form, field] = *form_and_field;
     if (auto* autofill_driver = unsafe_autofill_driver()) {
       autofill_driver->TextFieldDidChange(form, field, field.bounds,
-                                          AutofillTickClock::NowTicks());
+                                          base::TimeTicks::Now());
     }
   }
 }
@@ -745,7 +744,7 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
         autofill_driver && updated_form_data) {
       CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
       autofill_driver->DidFillAutofillFormData(*updated_form_data,
-                                               AutofillTickClock::NowTicks());
+                                               base::TimeTicks::Now());
       autofill_driver->FormsSeen({std::move(*updated_form_data)},
                                  /*removed_forms=*/{});
     }

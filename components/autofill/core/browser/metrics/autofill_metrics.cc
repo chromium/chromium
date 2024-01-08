@@ -32,7 +32,6 @@
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/language/core/browser/language_usage_metrics.h"
@@ -2899,9 +2898,8 @@ int64_t AutofillMetrics::FormInteractionsUkmLogger::MillisecondsSinceFormParsed(
     const base::TimeTicks& form_parsed_timestamp) const {
   DCHECK(!form_parsed_timestamp.is_null());
   // Use the pinned timestamp as the current time if it's set.
-  base::TimeTicks now = pinned_timestamp_.is_null()
-                            ? AutofillTickClock::NowTicks()
-                            : pinned_timestamp_;
+  base::TimeTicks now =
+      pinned_timestamp_.is_null() ? base::TimeTicks::Now() : pinned_timestamp_;
 
   return ukm::GetExponentialBucketMin(
       (now - form_parsed_timestamp).InMilliseconds(),
@@ -2913,7 +2911,7 @@ AutofillMetrics::UkmTimestampPin::UkmTimestampPin(
     : logger_(logger) {
   DCHECK(logger_);
   DCHECK(!logger_->has_pinned_timestamp());
-  logger_->set_pinned_timestamp(AutofillTickClock::NowTicks());
+  logger_->set_pinned_timestamp(base::TimeTicks::Now());
 }
 
 AutofillMetrics::UkmTimestampPin::~UkmTimestampPin() {

@@ -316,7 +316,7 @@ void LogQualityMetrics(
       // submitted a blank form.
       if (!interaction_time.is_null()) {
         // Submission should always chronologically follow interaction.
-        DCHECK(submission_time > interaction_time);
+        DCHECK_GE(submission_time, interaction_time);
         base::TimeDelta elapsed = submission_time - interaction_time;
         AutofillMetrics::LogFormFillDurationFromInteraction(
             form_structure.GetFormTypes(), did_autofill_some_possible_fields,
@@ -331,7 +331,7 @@ void LogQualityMetrics(
         AutofillMetrics::LogFormFillDurationFromLoadForOneTimeCode(elapsed);
       }
       if (!interaction_time.is_null()) {
-        DCHECK(submission_time > interaction_time);
+        DCHECK_GE(submission_time, interaction_time);
         base::TimeDelta elapsed = submission_time - interaction_time;
         AutofillMetrics::LogFormFillDurationFromInteractionForOneTimeCode(
             elapsed);

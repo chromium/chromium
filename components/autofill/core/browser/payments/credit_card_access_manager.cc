@@ -38,7 +38,6 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -148,7 +147,7 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
   if (is_user_verifiable_.has_value()) {
     GetUnmaskDetailsIfUserIsVerifiable(is_user_verifiable_.value());
   } else {
-    is_user_verifiable_called_timestamp_ = AutofillTickClock::NowTicks();
+    is_user_verifiable_called_timestamp_ = base::TimeTicks::Now();
 
     GetOrCreateFidoAuthenticator()->IsUserVerifiable(base::BindOnce(
         &CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable,
@@ -164,8 +163,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
 
   if (is_user_verifiable_called_timestamp_.has_value()) {
     autofill_metrics::LogUserVerifiabilityCheckDuration(
-        AutofillTickClock::NowTicks() -
-        is_user_verifiable_called_timestamp_.value());
+        base::TimeTicks::Now() - is_user_verifiable_called_timestamp_.value());
   }
 
   // If there is already an unmask details request in progress, do not initiate
@@ -182,7 +180,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
   // require any.
   if (is_user_verifiable_.value_or(false)) {
     unmask_details_request_in_progress_ = true;
-    preflight_call_timestamp_ = AutofillTickClock::NowTicks();
+    preflight_call_timestamp_ = base::TimeTicks::Now();
     payments_network_interface_->GetUnmaskDetails(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        weak_ptr_factory_.GetWeakPtr()),
@@ -239,7 +237,7 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
   // Log latency for preflight call.
   if (preflight_call_timestamp_.has_value()) {
     autofill_metrics::LogCardUnmaskPreflightDuration(
-        AutofillTickClock::NowTicks() - *preflight_call_timestamp_);
+        base::TimeTicks::Now() - *preflight_call_timestamp_);
   }
 
   unmask_details_request_in_progress_ = false;
@@ -1128,8 +1126,7 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
       IsUserOptedInToFidoAuth() && !get_unmask_details_returned;
 
   if (should_wait_to_authenticate) {
-    card_selected_without_unmask_details_timestamp_ =
-        AutofillTickClock::NowTicks();
+    card_selected_without_unmask_details_timestamp_ = base::TimeTicks::Now();
 
     // Wait for |ready_to_start_authentication_| to be signaled by
     // OnDidGetUnmaskDetails() or until timeout before calling
@@ -1410,7 +1407,7 @@ void CreditCardAccessManager::OnStopWaitingForUnmaskDetails(
   // If the user had to wait for Unmask Details, log the latency.
   if (card_selected_without_unmask_details_timestamp_.has_value()) {
     autofill_metrics::LogUserPerceivedLatencyOnCardSelectionDuration(
-        AutofillTickClock::NowTicks() -
+        base::TimeTicks::Now() -
         card_selected_without_unmask_details_timestamp_.value());
     autofill_metrics::LogUserPerceivedLatencyOnCardSelectionTimedOut(
         /*did_time_out=*/!get_unmask_details_returned);

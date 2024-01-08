@@ -41,6 +41,11 @@ AutofillMetricsBaseTest::AutofillMetricsBaseTest(bool is_in_any_main_frame)
 AutofillMetricsBaseTest::~AutofillMetricsBaseTest() = default;
 
 void AutofillMetricsBaseTest::SetUpHelper() {
+  // Advance the mock clock to a fixed, arbitrary, somewhat recent date.
+  base::Time year2020;
+  ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
+  task_environment_.FastForwardBy(year2020 - base::Time::Now());
+
   autofill_client_ = std::make_unique<MockAutofillClient>();
   autofill_client_->SetPrefs(test::PrefServiceForTesting());
 

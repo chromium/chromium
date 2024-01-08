@@ -60,7 +60,6 @@
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_external_delegate.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -76,7 +75,6 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_tick_clock.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -704,6 +702,11 @@ class MockAutofillDriver : public TestAutofillDriver {
 class BrowserAutofillManagerTest : public testing::Test {
  public:
   void SetUp() override {
+    // Advance the mock clock to a fixed, arbitrary, somewhat recent date.
+    base::Time year2020;
+    ASSERT_TRUE(base::Time::FromString("01/01/20", &year2020));
+    task_environment_.FastForwardBy(year2020 - base::Time::Now());
+
     autofill_client_.SetPrefs(test::PrefServiceForTesting());
     personal_data().set_auto_accept_address_imports_for_testing(true);
     personal_data().SetPrefService(autofill_client_.GetPrefs());
@@ -1292,7 +1295,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         test_api(*browser_autofill_manager_).single_field_form_fill_router());
   }
 
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   std::unique_ptr<MockAutofillDriver> autofill_driver_;
@@ -1313,6 +1317,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     AutofillProfile profile1 =
         FillDataToAutofillProfile(GetElvisAddressFillData());
     profile1.set_guid(kElvisProfileGuid);
+    profile1.set_use_date(base::Time::Now() - base::Days(2));
     personal_data().AddProfile(profile1);
 
     AutofillProfile profile2(
@@ -1321,6 +1326,7 @@ class BrowserAutofillManagerTest : public testing::Test {
                          "buddy@gmail.com", "Decca", "123 Apple St.", "unit 6",
                          "Lubbock", "Texas", "79401", "US", "23456789012");
     profile2.set_guid(MakeGuid(2));
+    profile2.set_use_date(base::Time::Now() - base::Days(1));
     personal_data().AddProfile(profile2);
 
     AutofillProfile profile3(
@@ -1328,6 +1334,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     test::SetProfileInfo(&profile3, "", "", "", "", "", "", "", "", "", "", "",
                          "");
     profile3.set_guid(MakeGuid(3));
+    profile3.set_use_date(base::Time::Now());
     personal_data().AddProfile(profile3);
   }
 
@@ -1930,6 +1937,7 @@ TEST_P(SuggestionMatchingTest,
   // letter for last name.
   AutofillProfile profile1(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile1.set_guid(MakeGuid(103));
+  profile1.set_use_date(base::Time::Now() - base::Days(2));
   profile1.SetInfo(NAME_FIRST, u"Robin", "en-US");
   profile1.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile1.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -1937,6 +1945,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile2(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile2.set_guid(MakeGuid(124));
+  profile2.set_use_date(base::Time::Now() - base::Days(1));
   profile2.SetInfo(NAME_FIRST, u"Carl", "en-US");
   profile2.SetInfo(NAME_LAST, u"Grimes", "en-US");
   profile2.SetInfo(ADDRESS_HOME_LINE1, u"1234 Smith Blvd.", "en-US");
@@ -1944,6 +1953,7 @@ TEST_P(SuggestionMatchingTest,
 
   AutofillProfile profile3(i18n_model_definition::kLegacyHierarchyCountryCode);
   profile3.set_guid(MakeGuid(126));
+  profile3.set_use_date(base::Time::Now());
   profile3.SetInfo(NAME_FIRST, u"Aaron", "en-US");
   profile3.SetInfo(NAME_LAST, u"Googler", "en-US");
   profile3.SetInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheater pkwy", "en-US");
@@ -2583,6 +2593,7 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
                           "378282246310005" /* American Express */, "04",
                           "2910", "1");
   credit_card0.set_guid(MakeGuid(1));
+  credit_card0.set_use_date(base::Time::Now() - base::Days(1));
   personal_data().AddCreditCard(credit_card0);
 
   CreditCard credit_card1("1141084B-72D7-4B73-90CF-3D6AC154673B",
@@ -3159,7 +3170,6 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
   base::test::ScopedFeatureList scoped_feature_list;
   DisableAutofillViaAblation(scoped_feature_list, /*for_addresses=*/true,
                              /*for_credit_cards=*/true);
-  TestAutofillTickClock clock(AutofillTickClock::NowTicks());
   base::HistogramTester histogram_tester;
 
   // Set up our form data. In the kMixed case the form will contain the fields
@@ -3184,8 +3194,8 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   // Simulate user typing into field (due to the ablation we would not fill).
   field.value = u"Unknown User";
-  browser_autofill_manager_->OnTextFieldDidChange(
-      form, field, gfx::RectF(), AutofillTickClock::NowTicks());
+  browser_autofill_manager_->OnTextFieldDidChange(form, field, gfx::RectF(),
+                                                  base::TimeTicks::Now());
 
   if (params.second_query_for_suggestions_with_typed_prefix) {
     // Do another lookup. We won't have any suggestions because they would not
@@ -3195,7 +3205,7 @@ TEST_P(BrowserAutofillManagerLogAblationTest, TestLogging) {
 
   // Advance time and possibly submit the form.
   base::TimeDelta time_delta = base::Seconds(42);
-  clock.Advance(time_delta);
+  task_environment_.FastForwardBy(time_delta);
   if (params.submit_form)
     FormSubmitted(form);
 
@@ -6072,8 +6082,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest, LogEventsAtUserTypingInField) {
   FormFieldData field = form.fields[0];
   // Simulate editing the first field.
   field.value = u"Michael";
-  browser_autofill_manager_->OnTextFieldDidChange(
-      form, field, gfx::RectF(), AutofillTickClock::NowTicks());
+  browser_autofill_manager_->OnTextFieldDidChange(form, field, gfx::RectF(),
+                                                  base::TimeTicks::Now());
 
   // Simulate form submission.
   FormSubmitted(response_data);
@@ -7937,7 +7947,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndUnfocus_Upload) {
   form.fields[2].value = u"theking@gmail.com";
   // Simulate editing a field.
   browser_autofill_manager_->OnTextFieldDidChange(
-      form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
+      form, form.fields.front(), gfx::RectF(), base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
@@ -7987,7 +7997,7 @@ TEST_F(BrowserAutofillManagerTest, OnTextFieldDidChangeAndNavigation_Upload) {
   form.fields[2].value = u"theking@gmail.com";
   // Simulate editing a field.
   browser_autofill_manager_->OnTextFieldDidChange(
-      form, form.fields.front(), gfx::RectF(), AutofillTickClock::NowTicks());
+      form, form.fields.front(), gfx::RectF(), base::TimeTicks::Now());
 
   // Simulate a navigation so that the pending form is uploaded.
   browser_autofill_manager_->Reset();
@@ -8035,8 +8045,8 @@ TEST_F(BrowserAutofillManagerTest, OnDidFillAutofillFormDataAndUnfocus_Upload) {
   form.fields[0].value = u"Elvis";
   form.fields[1].value = u"Presley";
   form.fields[2].value = u"theking@gmail.com";
-  browser_autofill_manager_->OnDidFillAutofillFormData(
-      form, AutofillTickClock::NowTicks());
+  browser_autofill_manager_->OnDidFillAutofillFormData(form,
+                                                       base::TimeTicks::Now());
 
   // Simulate lost of focus on the form.
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
@@ -9855,7 +9865,7 @@ TEST_F(BrowserAutofillManagerTest, TrackFillingOriginOnEditedField) {
   response_data.fields[0].value = u"Michael";
   browser_autofill_manager_->OnTextFieldDidChange(
       response_data, response_data.fields[0], gfx::RectF(),
-      AutofillTickClock::NowTicks());
+      base::TimeTicks::Now());
 
   FormStructure* form_structure =
       browser_autofill_manager_->FindCachedFormById(form.global_id());
@@ -10456,8 +10466,7 @@ TEST_F(BrowserAutofillManagerClearFieldTest, ModifiedButDidNotClearField) {
 // Ensure that we do not log an appropriate Autofill.FormEvents event if an
 // autofilled field is cleared by JavaScript too long after it was filled.
 TEST_F(BrowserAutofillManagerClearFieldTest, NoLoggingAfterDelay) {
-  TestAutofillTickClock clock(AutofillTickClock::NowTicks());
-  clock.Advance(base::Seconds(5));
+  task_environment_.FastForwardBy(base::Seconds(5));
 
   // Simulate that JavaScript clears the first field.
   SimulateOverrideFieldByJavaScript(0, u"");
@@ -10491,7 +10500,7 @@ class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
   void SimulateTypingFirstNameIntoFirstField() {
     form_.fields[0].value = u"Elvis";
     browser_autofill_manager_->OnTextFieldDidChange(
-        form_, form_.fields[0], gfx::RectF(), AutofillTickClock::NowTicks());
+        form_, form_.fields[0], gfx::RectF(), base::TimeTicks::Now());
   }
 
  protected:
@@ -10527,7 +10536,7 @@ TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   // 3. Simulate typing into second field
   form_.fields[1].value = u"Presley";
   browser_autofill_manager_->OnTextFieldDidChange(
-      form_, form_.fields[1], gfx::RectF(), AutofillTickClock::NowTicks());
+      form_, form_.fields[1], gfx::RectF(), base::TimeTicks::Now());
 
   // 4. Simulate removing the focus from the form, which generates a second blur
   // vote which should be sent.

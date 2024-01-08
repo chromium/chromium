@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/payments/test_authentication_requester.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -65,8 +64,9 @@ class CreditCardRiskBasedAuthenticatorTest : public testing::Test {
         autofill_client_.GetPaymentsNetworkInterface());
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestAuthenticationRequester> requester_;
-  base::test::TaskEnvironment task_environment_;
   TestAutofillClient autofill_client_;
   TestPersonalDataManager personal_data_manager_;
   std::unique_ptr<CreditCardRiskBasedAuthenticator> authenticator_;
@@ -98,7 +98,6 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
 TEST_F(CreditCardRiskBasedAuthenticatorTest,
        AuthServerCardLatencyLoggedCorrectly) {
   base::HistogramTester histogram_tester;
-  TestAutofillTickClock tick_clock{AutofillTickClock::NowTicks()};
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with valid masked server card information.
@@ -106,7 +105,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   response.card_type = AutofillClient::PaymentsRpcCardType::kServerCard;
   response.real_pan = kTestNumber;
 
-  tick_clock.Advance(base::Minutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   authenticator_->OnUnmaskResponseReceivedForTesting(
       AutofillClient::PaymentsRpcResult::kSuccess, response);
 
