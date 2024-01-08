@@ -74,7 +74,7 @@ bool InstallIsolatedWebAppVirtualTask::Execute(
       // extensions were selected. `AsUTF8Unsafe()` is safe on ChromeOS.
       DCHECK(apps_util::ExtensionMatched(path.BaseName().AsUTF8Unsafe(),
                                          matcher_file_extensions_[0]));
-      web_app_provider->ui_manager().LaunchIsolatedWebAppInstaller(
+      web_app_provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(
           file_url.path());
     }
     return true;

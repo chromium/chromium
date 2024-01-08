@@ -267,7 +267,9 @@ class WebAppUiManager {
       UninstallScheduledCallback scheduled_callback) = 0;
 
   // Launches the Isolated Web App installer for a bundle with the given path.
-  virtual void LaunchIsolatedWebAppInstaller(
+  // If an installer with the given path already exists, brings it to front and
+  // focuses it instead.
+  virtual void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) = 0;
 
   // Creates the EnableSupportedLinksInfobar in an app window when the app is

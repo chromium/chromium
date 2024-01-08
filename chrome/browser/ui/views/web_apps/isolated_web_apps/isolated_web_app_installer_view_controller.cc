@@ -177,10 +177,25 @@ void IsolatedWebAppInstallerViewController::Show() {
 
   OnModelChanged();
 
-  views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
-                                            /*context=*/nullptr,
-                                            /*parent=*/nullptr)
-      ->Show();
+  views::Widget* widget =
+      views::DialogDelegate::CreateDialogWidget(std::move(dialog_delegate),
+                                                /*context=*/nullptr,
+                                                /*parent=*/nullptr);
+
+  CHECK(!window_);
+
+  window_ = widget->GetNativeWindow();
+
+  widget->Show();
+}
+
+void IsolatedWebAppInstallerViewController::FocusWindow() {
+  if (!window_) {
+    return;
+  }
+
+  auto* widget = views::Widget::GetWidgetForNativeWindow(window_);
+  widget->Activate();
 }
 
 // static

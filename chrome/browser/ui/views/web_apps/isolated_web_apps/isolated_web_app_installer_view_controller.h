@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
+#include "ui/gfx/native_widget_types.h"
 
 class Profile;
 
@@ -46,6 +47,8 @@ class IsolatedWebAppInstallerViewController
 
   // Present the installer when it is initialized.
   void Show();
+
+  void FocusWindow();
 
   void SetViewForTesting(IsolatedWebAppInstallerView* view);
 
@@ -95,6 +98,8 @@ class IsolatedWebAppInstallerViewController
 
   std::unique_ptr<views::DialogDelegate> CreateDialogDelegate(
       std::unique_ptr<views::View> contents_view);
+
+  gfx::NativeWindow window_ = nullptr;
 
   raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> web_app_provider_;

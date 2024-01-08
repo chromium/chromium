@@ -225,7 +225,7 @@ void FakeWebAppUiManager::PresentUserUninstallDialog(
   std::move(callback).Run(webapps::UninstallResultCode::kSuccess);
 }
 
-void FakeWebAppUiManager::LaunchIsolatedWebAppInstaller(
+void FakeWebAppUiManager::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {}
 
 void FakeWebAppUiManager::MaybeCreateEnableSupportedLinksInfobar(

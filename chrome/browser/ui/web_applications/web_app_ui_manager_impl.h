@@ -51,6 +51,7 @@ enum class WebappUninstallSource;
 
 namespace web_app {
 
+class IsolatedWebAppInstallerCoordinator;
 class WithAppResources;
 
 // Implementation of WebAppUiManager that depends upon //c/b/ui.
@@ -152,7 +153,7 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
-  void LaunchIsolatedWebAppInstaller(
+  void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 
   void MaybeCreateEnableSupportedLinksInfobar(
@@ -202,6 +203,8 @@ class WebAppUiManagerImpl : public BrowserListObserver,
       UninstallScheduledCallback uninstall_scheduled_callback,
       std::map<SquareSizePx, SkBitmap> icon_bitmaps);
 
+  void OnIsolatedWebAppInstallerClosed(base::FilePath bundle_path);
+
   void ScheduleUninstallIfUserRequested(
       const webapps::AppId& app_id,
       webapps::WebappUninstallSource uninstall_source,
@@ -231,6 +234,8 @@ class WebAppUiManagerImpl : public BrowserListObserver,
   std::map<webapps::AppId, std::vector<base::OnceClosure>>
       windows_closed_requests_map_;
   std::map<webapps::AppId, size_t> num_windows_for_apps_map_;
+  std::map<base::FilePath, raw_ptr<IsolatedWebAppInstallerCoordinator>>
+      active_installers_;
   bool started_ = false;
 
   base::WeakPtrFactory<WebAppUiManagerImpl> weak_ptr_factory_{this};

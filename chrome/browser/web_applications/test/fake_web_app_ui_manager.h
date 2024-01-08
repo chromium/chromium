@@ -128,7 +128,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
       UninstallCompleteCallback callback,
       UninstallScheduledCallback scheduled_callback) override;
 
-  void LaunchIsolatedWebAppInstaller(
+  void LaunchOrFocusIsolatedWebAppInstaller(
       const base::FilePath& bundle_path) override;
 
   void MaybeCreateEnableSupportedLinksInfobar(

@@ -544,9 +544,31 @@ void WebAppUiManagerImpl::PresentUserUninstallDialog(
                      std::move(uninstall_scheduled_callback)));
 }
 
-void WebAppUiManagerImpl::LaunchIsolatedWebAppInstaller(
+void WebAppUiManagerImpl::LaunchOrFocusIsolatedWebAppInstaller(
     const base::FilePath& bundle_path) {
-  ::web_app::LaunchIsolatedWebAppInstaller(profile_, bundle_path);
+  auto it = active_installers_.find(bundle_path);
+
+  if (it == active_installers_.end()) {
+    // If no installer exists for the path, we create a new coordinator
+    active_installers_[bundle_path] = ::web_app::LaunchIsolatedWebAppInstaller(
+        profile_, bundle_path,
+        base::BindOnce(&WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed,
+                       weak_ptr_factory_.GetWeakPtr(), bundle_path));
+  } else {
+    // If an installer already exists for |path|, we focus the existing
+    // installer.
+    FocusIsolatedWebAppInstaller(it->second);
+  }
+}
+
+void WebAppUiManagerImpl::OnIsolatedWebAppInstallerClosed(
+    base::FilePath bundle_path) {
+  auto it = active_installers_.find(bundle_path);
+  CHECK(it != active_installers_.end())
+      << "Installer with path " << bundle_path
+      << " is being closed, but it is not found in the list of active "
+         "installers.";
+  active_installers_.erase(it);
 }
 
 void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(

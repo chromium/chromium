@@ -262,7 +262,7 @@ void WebAppProviderBridgeLacros::LaunchIsolatedWebAppInstallerImpl(
   CHECK(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
 
-  provider->ui_manager().LaunchIsolatedWebAppInstaller(bundle_path);
+  provider->ui_manager().LaunchOrFocusIsolatedWebAppInstaller(bundle_path);
 }
 
 }  // namespace crosapi
