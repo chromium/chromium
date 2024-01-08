@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/ash/ash_test_util.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -44,7 +46,7 @@ void Click(const views::View* view, int flags) {
   event_generator.ClickLeftButton();
 }
 
-base::FilePath CreateFile(Profile* profile, const std::string& extension) {
+base::FilePath CreateFile(Profile* profile, std::string_view extension) {
   const base::FilePath file_path =
       GetDownloadsPath(profile).Append(base::StrCat(
           {base::UnguessableToken::Create().ToString(), ".", extension}));
