@@ -43,8 +43,6 @@
 #import "ios/web/web_state/ui/crw_web_view_navigation_proxy.h"
 #import "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "ios/web/webui/web_ui_ios_impl.h"
-#import "ui/gfx/geometry/rect_f.h"
-#import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 #import "url/url_constants.h"
 
@@ -816,15 +814,15 @@ bool WebStateImpl::RealizedWebState::CanTakeSnapshot() const {
   return !running_javascript_dialog_;
 }
 
-void WebStateImpl::RealizedWebState::TakeSnapshot(const gfx::RectF& rect,
+void WebStateImpl::RealizedWebState::TakeSnapshot(const CGRect rect,
                                                   SnapshotCallback callback) {
   DCHECK(CanTakeSnapshot());
   // Move the callback to a __block pointer, which will be in scope as long
   // as the callback is retained.
   __block SnapshotCallback shared_callback = std::move(callback);
-  [web_controller_ takeSnapshotWithRect:rect.ToCGRect()
+  [web_controller_ takeSnapshotWithRect:rect
                              completion:^(UIImage* snapshot) {
-                               shared_callback.Run(gfx::Image(snapshot));
+                               shared_callback.Run(snapshot);
                              }];
 }
 

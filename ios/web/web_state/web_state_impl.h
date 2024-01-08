@@ -345,7 +345,7 @@ class WebStateImpl final : public WebState {
   bool HasOpener() const final;
   void SetHasOpener(bool has_opener) final;
   bool CanTakeSnapshot() const final;
-  void TakeSnapshot(const gfx::RectF& rect, SnapshotCallback callback) final;
+  void TakeSnapshot(const CGRect rect, SnapshotCallback callback) final;
   void CreateFullPagePdf(base::OnceCallback<void(NSData*)> callback) final;
   void CloseMediaPresentations() final;
   void AddObserver(WebStateObserver* observer) final;

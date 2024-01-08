@@ -44,11 +44,6 @@ typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 @class UIView;
 typedef UIView<CRWScrollableContent> CRWContentView;
 
-namespace gfx {
-class Image;
-class RectF;
-}
-
 namespace web {
 namespace proto {
 class WebStateStorage;
@@ -449,7 +444,7 @@ class WebState : public base::SupportsUserData {
   virtual void SetHasOpener(bool has_opener) = 0;
 
   // Callback used to handle snapshots. The parameter is the snapshot image.
-  typedef base::RepeatingCallback<void(const gfx::Image&)> SnapshotCallback;
+  typedef base::RepeatingCallback<void(UIImage*)> SnapshotCallback;
 
   // Returns whether TakeSnapshot() can be executed.  The API may be disabled if
   // the WKWebView IPC mechanism is blocked due to an outstanding JavaScript
@@ -460,8 +455,7 @@ class WebState : public base::SupportsUserData {
   // in the coordinate system of the view returned by GetView(). `callback` is
   // asynchronously invoked after performing the snapshot. Prior to iOS 11, the
   // callback is invoked with a nil snapshot.
-  virtual void TakeSnapshot(const gfx::RectF& rect,
-                            SnapshotCallback callback) = 0;
+  virtual void TakeSnapshot(const CGRect rect, SnapshotCallback callback) = 0;
 
   // Creates PDF representation of the web page and invokes the `callback` with
   // the NSData of the PDF or nil if a PDF couldn't be generated.

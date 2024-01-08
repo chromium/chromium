@@ -742,8 +742,7 @@ bool WebStateImpl::CanTakeSnapshot() const {
   return LIKELY(pimpl_) ? pimpl_->CanTakeSnapshot() : false;
 }
 
-void WebStateImpl::TakeSnapshot(const gfx::RectF& rect,
-                                SnapshotCallback callback) {
+void WebStateImpl::TakeSnapshot(const CGRect rect, SnapshotCallback callback) {
   RealizedState()->TakeSnapshot(rect, std::move(callback));
 }
 

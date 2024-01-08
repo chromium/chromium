@@ -34,7 +34,6 @@
 #import "ios/web/web_state/web_state_impl.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
-#import "ui/gfx/geometry/rect_f.h"
 #import "ui/gfx/image/image.h"
 #import "ui/gfx/image/image_unittest_util.h"
 
@@ -159,7 +158,8 @@ TEST_F(WebStateTest, Snapshot) {
   CGRect rect = [web_state()->GetView() bounds];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(0.2));
   web_state()->TakeSnapshot(
-      gfx::RectF(rect), base::BindRepeating(^(const gfx::Image& snapshot) {
+      rect, base::BindRepeating(^(UIImage* image) {
+        const gfx::Image snapshot = gfx::Image(image);
         ASSERT_FALSE(snapshot.IsEmpty());
         EXPECT_GT(snapshot.Width(), 0);
         EXPECT_GT(snapshot.Height(), 0);

@@ -21,7 +21,6 @@
 #import "ios/web/public/test/fakes/crw_fake_find_interaction.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
-#import "ui/gfx/image/image.h"
 
 namespace web {
 
@@ -494,9 +493,8 @@ bool FakeWebState::CanTakeSnapshot() const {
   return can_take_snapshot_;
 }
 
-void FakeWebState::TakeSnapshot(const gfx::RectF& rect,
-                                SnapshotCallback callback) {
-  std::move(callback).Run(gfx::Image([[UIImage alloc] init]));
+void FakeWebState::TakeSnapshot(const CGRect rect, SnapshotCallback callback) {
+  std::move(callback).Run([[UIImage alloc] init]);
 }
 
 void FakeWebState::CreateFullPagePdf(

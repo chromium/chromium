@@ -15,8 +15,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
-#import "ui/gfx/geometry/rect_f.h"
-#import "ui/gfx/image/image.h"
 
 namespace {
 
@@ -133,23 +131,21 @@ BOOL ViewHierarchyContainsWebView(UIView* view) {
 
   SnapshotInfo snapshotInfo = [self snapshotInfo];
   auto wrappedCompletion =
-      ^(__weak SnapshotGenerator* generator, const gfx::Image& image) {
+      ^(__weak SnapshotGenerator* generator, UIImage* image) {
         if (!generator) {
           completion(nil);
         }
-        UIImage* snapshot = nil;
-        if (!image.IsEmpty()) {
-          snapshot = [generator addOverlays:[generator overlays]
-                                  baseImage:image.ToUIImage()
-                              frameInWindow:snapshotInfo.snapshotFrameInWindow];
-        }
+        UIImage* snapshot =
+            [generator addOverlays:[generator overlays]
+                         baseImage:image
+                     frameInWindow:snapshotInfo.snapshotFrameInWindow];
         if (completion) {
           completion(snapshot);
         }
       };
 
   __weak SnapshotGenerator* weakSelf = self;
-  _webState->TakeSnapshot(gfx::RectF(snapshotInfo.snapshotFrameInBaseView),
+  _webState->TakeSnapshot(snapshotInfo.snapshotFrameInBaseView,
                           base::BindRepeating(wrappedCompletion, weakSelf));
 }
 
