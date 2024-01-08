@@ -282,6 +282,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
        IDS_PASSWORD_MANAGER_UI_MOVE_SINGLE_PASSWORD_ACTION_BUTTON},
       {"movePasswordsDescription",
        IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_DESCRIPTION},
+      {"movePasswordsInSettingsSubLabel",
+       IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_IN_SETTINGS_SUB_LABEL},
       {"movePasswordsTitle", IDS_PASSWORD_MANAGER_UI_MOVE_PASSWORDS_TITLE},
       {"muteCompromisedPassword", IDS_PASSWORD_MANAGER_UI_MUTE_ISSUE},
       {"mutedCompromisedCredentials",

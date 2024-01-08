@@ -100,7 +100,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       },
 
       passwordsOnDevice_: {
-        type: Number,
+        type: Array,
         computed: 'computePasswordsOnDevice_(groups_)',
       },
 
