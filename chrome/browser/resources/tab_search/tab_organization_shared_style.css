@@ -33,7 +33,7 @@
   font-size: 13px;
   font-weight: 400;
   outline-color: var(--color-button-foreground);
-  outline-offset: 2px;
+  outline-offset: 1px;
   text-decoration: underline;
 }
 

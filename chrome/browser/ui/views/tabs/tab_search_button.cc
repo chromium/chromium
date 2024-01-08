@@ -22,7 +22,7 @@
 
 namespace {
 constexpr int kCRTabSearchCornerRadius = 10;
-constexpr int kCRTabSearchFlatCornerRadius = 2;
+constexpr int kCRTabSearchFlatCornerRadius = 4;
 }
 
 TabSearchButton::TabSearchButton(TabStripController* tab_strip_controller,

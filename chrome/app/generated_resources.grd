@@ -10712,7 +10712,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         refresh now
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GENERIC_POST_LINK" desc="The post-link body text for the generic failure state in the tab organization UI" translateable="false">
-        or try again later.
+        or try again later
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_PRE_LINK" desc="The pre-link body text for the grouping failure state in the tab organization UI" translateable="false">
         You can
@@ -10721,7 +10721,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
          refresh now
       </message>
       <message name="IDS_TAB_ORGANIZATION_FAILURE_BODY_GROUPING_POST_LINK" desc="The post-link body text for the grouping failure state in the tab organization UI" translateable="false">
-         or try again later after you open new similar tabs.
+         or try again later after you open new similar tabs
       </message>
       <message name="IDS_TAB_ORGANIZATION_TIP_TITLE" desc="The bolded text at the start of the tip in the tab organization UI" translateable="false">
         Tip:

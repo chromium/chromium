@@ -66,8 +66,10 @@
 
       .tab-indicator {
         background: var(--cr-tabs-unselected-color, var(--google-blue-600));
-        border-top-left-radius: var(--cr-tabs-selection-bar-width, 2px);
-        border-top-right-radius: var(--cr-tabs-selection-bar-width, 2px);
+        border-top-left-radius: var(--cr-tabs-selection-bar-radius,
+            var(--cr-tabs-selection-bar-width, 2px));
+        border-top-right-radius: var(--cr-tabs-selection-bar-radius,
+            var(--cr-tabs-selection-bar-width, 2px));
         bottom: 0;
         height: var(--cr-tabs-selection-bar-width, 2px);
         left: var(--cr-tabs-tab-inline-padding, 0);
