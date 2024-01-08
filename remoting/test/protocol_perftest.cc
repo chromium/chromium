@@ -323,8 +323,7 @@ class ProtocolPerfTest
     base::FilePath key_path = certs_dir.AppendASCII("unittest.key.bin");
     std::string key_string;
     ASSERT_TRUE(base::ReadFileToString(key_path, &key_string));
-    std::string key_base64;
-    base::Base64Encode(key_string, &key_base64);
+    std::string key_base64 = base::Base64Encode(key_string);
     scoped_refptr<RsaKeyPair> key_pair = RsaKeyPair::FromString(key_base64);
     ASSERT_TRUE(key_pair.get());
 

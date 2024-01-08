@@ -543,8 +543,7 @@ TEST_F(PageStateSerializationTest, DumpExpectedPageStateForBackwardsCompat) {
   std::string encoded;
   EncodePageState(state, &encoded);
 
-  std::string base64;
-  base::Base64Encode(encoded, &base64);
+  std::string base64 = base::Base64Encode(encoded);
 
   base::FilePath path;
   base::PathService::Get(base::DIR_TEMP, &path);

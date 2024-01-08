@@ -195,7 +195,7 @@ absl::optional<std::string> SCTAuditingHandler::SerializeData() {
 
     std::string serialized_report;
     reporter->report()->SerializeToString(&serialized_report);
-    base::Base64Encode(serialized_report, &serialized_report);
+    serialized_report = base::Base64Encode(serialized_report);
 
     auto report_entry =
         base::Value::Dict()

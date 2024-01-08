@@ -66,8 +66,7 @@ std::string RsaKeyPair::ToString() const {
   std::vector<uint8_t> key_buf;
   CHECK(key_->ExportPrivateKey(&key_buf));
   std::string key_str(key_buf.begin(), key_buf.end());
-  std::string key_base64;
-  base::Base64Encode(key_str, &key_base64);
+  std::string key_base64 = base::Base64Encode(key_str);
   return key_base64;
 }
 
@@ -75,8 +74,7 @@ std::string RsaKeyPair::GetPublicKey() const {
   std::vector<uint8_t> public_key;
   CHECK(key_->ExportPublicKey(&public_key));
   std::string public_key_str(public_key.begin(), public_key.end());
-  std::string public_key_base64;
-  base::Base64Encode(public_key_str, &public_key_base64);
+  std::string public_key_base64 = base::Base64Encode(public_key_str);
   return public_key_base64;
 }
 
@@ -89,8 +87,7 @@ std::string RsaKeyPair::SignMessage(const std::string& message) const {
   std::vector<uint8_t> signature_buf;
   signature_creator->Final(&signature_buf);
   std::string signature_str(signature_buf.begin(), signature_buf.end());
-  std::string signature_base64;
-  base::Base64Encode(signature_str, &signature_base64);
+  std::string signature_base64 = base::Base64Encode(signature_str);
   return signature_base64;
 }
 

@@ -57,9 +57,8 @@ class BitSet {
     size_t end = data_.size();
     while (end > 0 && data_[end - 1] == '\0')
       --end;
-    std::string b64_string;
-    base::Base64Encode(base::StringPiece(data_.data(), end), &b64_string);
-    return b64_string;
+
+    return base::Base64Encode(base::StringPiece(data_.data(), end));
   }
 
  private:

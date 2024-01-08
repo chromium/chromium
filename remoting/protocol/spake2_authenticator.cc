@@ -43,8 +43,7 @@ const jingle_xmpp::StaticQName kCertificateTag = {kChromotingXmlNamespace,
 std::unique_ptr<jingle_xmpp::XmlElement> EncodeBinaryValueToXml(
     const jingle_xmpp::StaticQName& qname,
     const std::string& content) {
-  std::string content_base64;
-  base::Base64Encode(content, &content_base64);
+  std::string content_base64 = base::Base64Encode(content);
 
   std::unique_ptr<jingle_xmpp::XmlElement> result(
       new jingle_xmpp::XmlElement(qname));
