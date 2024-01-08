@@ -352,6 +352,7 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_EXCLUSIVE_WALLPAPERS_HEADING},
       {"seaPenChooseAWallpaperHeading",
        IDS_PERSONALIZATION_APP_CHOOSE_A_WALLPAPER_HEADING},
+      {"seaPenLabel", IDS_SEA_PEN_LABEL},
       {"seaPenPoweredByGoogle", IDS_SEA_PEN_POWERED_BY_GOOGLE},
       {"seaPenTemplateHeading", IDS_SEA_PEN_TEMPLATE_HEADING},
       {"seaPenRecentWallpapersHeading", IDS_SEA_PEN_RECENT_WALLPAPERS_HEADING},

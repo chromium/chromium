@@ -421,7 +421,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      'Sea Pen',
+      breadcrumbElement.i18n('seaPenLabel'),
     ]);
   });
 
@@ -434,9 +434,11 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const breadcrumbContainer =
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(
-        breadcrumbContainer,
-        [breadcrumbElement.i18n('wallpaperLabel'), 'Sea Pen', 'Airbrushed']);
+    assertBreadcrumbs(breadcrumbContainer, [
+      breadcrumbElement.i18n('wallpaperLabel'),
+      breadcrumbElement.i18n('seaPenLabel'),
+      'Airbrushed',
+    ]);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {

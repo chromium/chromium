@@ -223,13 +223,11 @@ export class PersonalizationBreadcrumbElement extends WithPersonalizationStore {
         break;
       case Paths.SEA_PEN_COLLECTION:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        // TODO(b/308200616): Add real text
-        breadcrumbs.push('Sea Pen');
+        breadcrumbs.push(this.i18n('seaPenLabel'));
         break;
       case Paths.SEA_PEN_RESULTS:
         breadcrumbs.push(this.i18n('wallpaperLabel'));
-        // TODO(b/308200616): Add real text
-        breadcrumbs.push('Sea Pen');
+        breadcrumbs.push(this.i18n('seaPenLabel'));
         if (this.seaPenTemplateId && isNonEmptyArray(this.seaPenTemplates_)) {
           const template = this.seaPenTemplates_.find(
               template => template.id === this.seaPenTemplateId);
