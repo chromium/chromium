@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_icon/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/file_system_provider/cached_file_system.h"
 #include "chrome/browser/ash/file_system_provider/mount_request_handler.h"
 #include "chrome/browser/ash/file_system_provider/odfs_metrics.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system.h"
@@ -97,6 +98,11 @@ ExtensionProvider::CreateProvidedFileSystem(
     Profile* profile,
     const ProvidedFileSystemInfo& file_system_info) {
   DCHECK(profile);
+  if (chromeos::features::IsFileSystemProviderContentCacheEnabled()) {
+    return std::make_unique<ThrottledFileSystem>(
+        std::make_unique<CachedFileSystem>(
+            std::make_unique<ProvidedFileSystem>(profile, file_system_info)));
+  }
   return std::make_unique<ThrottledFileSystem>(
       std::make_unique<ProvidedFileSystem>(profile, file_system_info));
 }

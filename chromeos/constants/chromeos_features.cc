@@ -284,6 +284,10 @@ bool IsEssentialSearchEnabled() {
   return base::FeatureList::IsEnabled(kEssentialSearch);
 }
 
+bool IsFileSystemProviderContentCacheEnabled() {
+  return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+}
+
 bool IsIWAForTelemetryExtensionAPIEnabled() {
   return base::FeatureList::IsEnabled(kIWAForTelemetryExtensionAPI);
 }
