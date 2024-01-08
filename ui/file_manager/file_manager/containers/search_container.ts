@@ -10,7 +10,7 @@ import {recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootType} from '../common/js/volume_manager_types.js';
 import type {FakeEntry} from '../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, PropStatus, SearchData, SearchLocation, SearchOptions, SearchRecency, State} from '../externs/ts/state.js';
+import {type CurrentDirectory, PropStatus, type SearchData, SearchLocation, type SearchOptions, SearchRecency, type State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import {PathComponent} from '../foreground/js/path_component.js';
 import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';

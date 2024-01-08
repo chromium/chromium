@@ -14,9 +14,6 @@ image_loader_static_js_files = [
 image_loader_ts = [ "image_loader/background.ts" ]
 
 static_js_files = [
-  # Externs:
-  "file_manager/externs/ts/state.js",
-
   # Files app Foreground:
   "file_manager/foreground/js/mock_navigation_list_model.js",
   "file_manager/foreground/js/navigation_list_model.js",
@@ -73,6 +70,7 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Externs:
   "file_manager/externs/files_app_entry_interfaces.ts",
+  "file_manager/externs/ts/state.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.

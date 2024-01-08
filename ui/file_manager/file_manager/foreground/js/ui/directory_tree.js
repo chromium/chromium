@@ -15,7 +15,7 @@ import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
 import {iconSetToCSSBackgroundImageValue} from '../../../common/js/util.js';
 import {getMediaViewRootTypeFromVolumeId, RootType, RootTypesForUMA, shouldProvideIcons, Source, VolumeType} from '../../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {PropStatus, SearchData, SearchLocation, State} from '../../../externs/ts/state.js';
+import {PropStatus, SearchLocation} from '../../../externs/ts/state.js';
 import {getStore} from '../../../state/store.js';
 import {DLP_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from '../constants.js';
 import {FileFilter} from '../directory_contents.js';
@@ -2407,7 +2407,7 @@ export class DirectoryTree extends Tree {
     // For Search V2 subscribe to the store so that we can listen to search
     // becoming active and inactive. We use this to hide or show the highlight
     // of the active item in the directory tree.
-    /** @type {!SearchData|undefined} */
+    /** @type {!import('../../../externs/ts/state.js').SearchData|undefined} */
     // @ts-ignore: error TS2739: Type '{}' is missing the following properties
     // from type 'SearchData': status, query, options
     this.cachedSearchState_ = {};
@@ -2424,7 +2424,7 @@ export class DirectoryTree extends Tree {
   }
 
   /**
-   * @param {!State} state
+   * @param {!import('../../../externs/ts/state.js').State} state
    */
   onStateChanged(state) {
     // Search.

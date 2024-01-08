@@ -12,7 +12,7 @@ import {vmTypeToIconName} from '../common/js/icon_util.js';
 import {recordEnum, recordUserAction} from '../common/js/metrics.js';
 import {str, strf} from '../common/js/translations.js';
 import {RootTypesForUMA, VolumeType} from '../common/js/volume_manager_types.js';
-import {AndroidApp, CurrentDirectory, FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, SearchLocation, State} from '../externs/ts/state.js';
+import {type AndroidApp, type CurrentDirectory, type FileData, type FileKey, type NavigationKey, type NavigationRoot, NavigationType, PropStatus, SearchLocation, type State} from '../externs/ts/state.js';
 import type {VolumeManager} from '../externs/volume_manager.js';
 import {ICON_TYPES} from '../foreground/js/constants.js';
 import {DirectoryModel} from '../foreground/js/directory_model.js';

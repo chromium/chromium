@@ -8,7 +8,7 @@ import {annotateTasks, getDefaultTask, INSTALL_LINUX_PACKAGE_TASK_DESCRIPTOR} fr
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {CurrentDirectory, DialogType, DirectoryContent, FileData, FileKey, FileTask, FileTasks, PropStatus, Selection, State} from '../../externs/ts/state.js';
+import {type CurrentDirectory, DialogType, type DirectoryContent, type FileData, type FileKey, type FileTask, type FileTasks, PropStatus, type Selection, type State} from '../../externs/ts/state.js';
 import {DEFAULT_CROSTINI_VM} from '../../foreground/js/constants.js';
 import {PathComponent} from '../../foreground/js/path_component.js';
 import type {ActionsProducerGen} from '../../lib/actions_producer.js';

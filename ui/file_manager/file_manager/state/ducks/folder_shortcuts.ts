@@ -4,7 +4,7 @@
 
 import {comparePath} from '../../common/js/entry_utils.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileKey, State} from '../../externs/ts/state.js';
+import type {FileKey, State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
 import {getEntry} from '../store.js';
 

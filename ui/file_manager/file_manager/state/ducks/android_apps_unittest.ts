@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {State} from '../../externs/ts/state.js';
+import type {State} from '../../externs/ts/state.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {setupStore, waitDeepEquals} from '../for_tests.js';
 

@@ -7,7 +7,7 @@ import {EntryList, FakeEntryImpl, VolumeEntry} from '../../common/js/files_app_e
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {AndroidApp, FileData, NavigationSection, NavigationType, State, Volume} from '../../externs/ts/state.js';
+import {type AndroidApp, type FileData, NavigationSection, NavigationType, type State, type Volume} from '../../externs/ts/state.js';
 import {ICON_TYPES, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import {convertEntryToFileData} from '../ducks/all_entries.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore, waitDeepEquals} from '../for_tests.js';

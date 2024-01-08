@@ -17,7 +17,7 @@ import {createTrashReaders} from '../../common/js/trash.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {SearchLocation, SearchOptions} from '../../externs/ts/state.js';
+import {SearchLocation, type SearchOptions} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
 import {getStore} from '../../state/store.js';

@@ -13,7 +13,7 @@ import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/
 import {str, strf} from '../../common/js/translations.js';
 import {checkAPIError} from '../../common/js/util.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {FileData, FileKey, FileTasks as StoreFileTasks, PropStatus, State} from '../../externs/ts/state.js';
+import {type FileData, type FileKey, type FileTasks as StoreFileTasks, PropStatus, type State} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {fetchFileTasks} from '../../state/ducks/current_directory.js';
 import {getFilesData, getStore, type Store, waitForState} from '../../state/store.js';

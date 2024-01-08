@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {State} from '../../externs/ts/state.js';
+import type {State} from '../../externs/ts/state.js';
 import {Slice} from '../../lib/base_store.js';
 
 /**

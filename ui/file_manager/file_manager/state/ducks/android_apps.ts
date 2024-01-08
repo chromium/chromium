@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {iconSetToCSSBackgroundImageValue} from '../../common/js/util.js';
-import {AndroidApp, State} from '../../externs/ts/state.js';
+import type {AndroidApp, State} from '../../externs/ts/state.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
 
