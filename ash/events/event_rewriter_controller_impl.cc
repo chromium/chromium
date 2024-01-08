@@ -99,15 +99,12 @@ void EventRewriterControllerImpl::Initialize(
   accessibility_event_rewriter_ = accessibility_event_rewriter.get();
 
   // EventRewriters are notified in the order they are added.
-  AddEventRewriter(std::move(accessibility_event_rewriter));
-  if (features::IsPeripheralCustomizationEnabled() ||
-      ::features::IsShortcutCustomizationEnabled()) {
-    AddEventRewriter(std::move(prerewritten_event_forwarder));
-  }
   if (features::IsPeripheralCustomizationEnabled() ||
       ::features::IsShortcutCustomizationEnabled()) {
     AddEventRewriter(std::move(peripheral_customization_event_rewriter));
+    AddEventRewriter(std::move(prerewritten_event_forwarder));
   }
+  AddEventRewriter(std::move(accessibility_event_rewriter));
   AddEventRewriter(std::move(keyboard_driven_event_rewriter));
   AddEventRewriter(std::move(keyboard_device_id_event_rewriter));
   AddEventRewriter(std::move(event_rewriter_ash));
