@@ -687,8 +687,10 @@ bool PepperGraphics2DHost::PrepareTransferableResource(
       recycled_shared_images_.pop_back();
     }
     if (gpu_mailbox.IsZero()) {
-      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                       gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
+      // We will potentially write to this SharedImage via the raster interface
+      // (which might be going over GLES2) and will later send it off to the
+      // display compositor.
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
       if (overlays_supported)
         usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
