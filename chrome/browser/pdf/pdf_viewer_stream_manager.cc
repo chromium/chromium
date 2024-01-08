@@ -245,7 +245,7 @@ void PdfViewerStreamManager::ReadyToCommitNavigation(
   // `embedder_host` should claim the unclaimed `StreamInfo`.
   content::RenderFrameHost* embedder_host =
       navigation_handle->GetRenderFrameHost();
-  if (!GetClaimedStreamInfo(embedder_host) &&
+  if (GetClaimedStreamInfo(embedder_host) ||
       !ContainsUnclaimedStreamInfo(embedder_host->GetFrameTreeNodeId())) {
     return;
   }

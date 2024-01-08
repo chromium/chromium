@@ -388,6 +388,14 @@ TEST_F(PdfViewerStreamManagerTest, ReadyToCommitNavigationClaimAndDelete) {
   manager->ReadyToCommitNavigation(&navigation_handle);
   EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
   EXPECT_TRUE(pdf_viewer_stream_manager());
+
+  // Committing a navigation again shouldn't try to claim a stream again if
+  // there isn't a new stream. The stream should still exist. This can occur
+  // if a page contains an embed to a PDF, and the embed later navigates to
+  // another URL.
+  manager->ReadyToCommitNavigation(&navigation_handle);
+  EXPECT_TRUE(manager->GetStreamContainer(embedder_host));
+  EXPECT_TRUE(pdf_viewer_stream_manager());
 }
 
 }  // namespace pdf
