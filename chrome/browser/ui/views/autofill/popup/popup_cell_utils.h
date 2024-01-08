@@ -129,10 +129,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
 
 int GetMaxPopupAddressProfileWidth();
 
-void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
-                                              const Suggestion& suggestion,
-                                              PopupType popup_type);
-
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     const gfx::VectorIcon& vector_icon,
     int icon_size);

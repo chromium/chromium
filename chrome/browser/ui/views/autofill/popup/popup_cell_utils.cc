@@ -581,21 +581,6 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackSubtextViews(
   return result;
 }
 
-void AddSuggestionStrategyContentCellChildren(PopupRowContentView* view,
-                                              const Suggestion& suggestion,
-                                              PopupType popup_type) {
-  // Add the label views.
-  std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      suggestion.main_text, views::style::TextStyle::STYLE_PRIMARY);
-  FormatLabel(*main_text_label, suggestion.main_text, popup_type,
-              GetMaxPopupAddressProfileWidth());
-  AddSuggestionContentToView(
-      suggestion, std::move(main_text_label),
-      CreateMinorTextLabel(suggestion.minor_text),
-      /*description_label=*/nullptr,
-      CreateAndTrackSubtextViews(*view, suggestion, popup_type), *view);
-}
-
 std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
     const gfx::VectorIcon& vector_icon,
     int icon_size = kIconSize) {
