@@ -4162,7 +4162,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleNtpOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2024-02-20">
+    enum="SettingsOverriddenDialogResult" expires_after="2024-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -4176,7 +4176,7 @@ of interesting buckets, such as "internal + external".
 
 <histogram
     name="Extensions.SettingsOverridden.BackToGoogleSearchOverriddenDialogResult"
-    enum="SettingsOverriddenDialogResult" expires_after="2024-04-28">
+    enum="SettingsOverriddenDialogResult" expires_after="2024-12-15">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
