@@ -20,7 +20,6 @@ struct RequirementsInfo : public Extension::ManifestData {
   ~RequirementsInfo() override;
 
   bool webgl = false;
-  bool window_shape = false;
 
   static const RequirementsInfo& GetRequirements(const Extension* extension);
 };

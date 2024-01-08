@@ -41,16 +41,6 @@
                 "items": { "$ref": "3DFeature" }
               }
             }
-          },
-          "window": {
-            "type": "object",
-            "optional": true,
-            "properties": {
-              "shape": {
-                "type": "boolean",
-                "optional": true
-              }
-            }
           }
         }
       }
