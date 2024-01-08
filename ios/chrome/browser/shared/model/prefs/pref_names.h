@@ -43,6 +43,7 @@ extern const char kIosBookmarkLastUsedStorageReceivingBookmarks[];
 extern const char kIosBookmarkPromoAlreadySeen[];
 extern const char kIosBookmarkSettingsPromoAlreadySeen[];
 extern const char kIosBookmarkSigninPromoDisplayedCount[];
+extern const char kIosBookmarkUploadSyncLeftBehindCompleted[];
 extern const char kIosBringAndroidTabsPromptDisplayed[];
 extern const char kIosShareChromeCount[];
 extern const char kIosShareChromeLastShare[];

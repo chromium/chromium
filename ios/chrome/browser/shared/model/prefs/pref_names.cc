@@ -143,6 +143,11 @@ const char kIosBookmarkSettingsPromoAlreadySeen[] =
 const char kIosBookmarkSigninPromoDisplayedCount[] =
     "ios.bookmark.signin_promo_displayed_count";
 
+// Boolean to represent if the user has uploaded the sync left-behind bookmarks
+// from the bookmarks manager.
+const char kIosBookmarkUploadSyncLeftBehindCompleted[] =
+    "ios.bookmark.upload_sync_left_behind_completed";
+
 // Boolean to represent if the Bring Android Tabs prompt has been displayed for
 // the user.
 const char kIosBringAndroidTabsPromptDisplayed[] =
