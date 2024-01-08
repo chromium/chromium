@@ -68,6 +68,7 @@ ts_library("ts_build") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = select_to_speak_out_dir
+  clear_dest_dirs = [ "." ]
   deps = [
     ":ts_build",
     "../common:copied_files",
