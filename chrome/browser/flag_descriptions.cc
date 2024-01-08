@@ -4425,6 +4425,10 @@ const char kTabletToolbarReorderingAndroidDescription[] =
     "placing the Home button from 1st to the 4th position after the Refresh"
     "button to match the Desktop toolbar";
 
+const char kTabResumptionModuleAndroidName[] = "Tab Resumption Module";
+const char kTabResumptionModuleAndroidDescription[] =
+    "Enable showing tab suggestions on Android";
+
 const char kTabStripStartupRefactoringName[] =
     "Refactor for tablet tab strip startup.";
 const char kTabStripStartupRefactoringDescription[] =

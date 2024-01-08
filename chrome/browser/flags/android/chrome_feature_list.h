@@ -159,6 +159,7 @@ BASE_DECLARE_FEATURE(kAccountReauthenticationRecentTimeWindow);
 BASE_DECLARE_FEATURE(kStartSurfaceRefactor);
 BASE_DECLARE_FEATURE(kStartSurfaceWithAccessibility);
 BASE_DECLARE_FEATURE(kSurfacePolish);
+BASE_DECLARE_FEATURE(kTabResumptionModuleAndroid);
 BASE_DECLARE_FEATURE(kUmaBackgroundSessions);
 BASE_DECLARE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid);
 BASE_DECLARE_FEATURE(kUserMediaScreenCapturing);

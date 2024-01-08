@@ -3591,6 +3591,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-tab-resumption-module",
+    "owners": ["clank-start@chromium.org","hanxi@chromium.org","huangs@chromium.org"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "enable-tab-strip-startup-refactoring",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 125

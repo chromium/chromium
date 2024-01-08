@@ -1919,6 +1919,9 @@ extern const char kTearOffWebAppAppTabOpensWebAppWindowDescription[];
 extern const char kTabletToolbarReorderingAndroidName[];
 extern const char kTabletToolbarReorderingAndroidDescription[];
 
+extern const char kTabResumptionModuleAndroidName[];
+extern const char kTabResumptionModuleAndroidDescription[];
+
 extern const char kTabStripStartupRefactoringName[];
 extern const char kTabStripStartupRefactoringDescription[];
 

@@ -264,6 +264,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabAndLinkDragDropAndroid,
     &kTabEngagementReportingAndroid,
     &kTabletToolbarReordering,
+    &kTabResumptionModuleAndroid,
     &kTabStateFlatBuffer,
     &kTabStripStartupRefactoring,
     &kTabToGTSAnimation,
@@ -876,6 +877,10 @@ BASE_FEATURE(kStartSurfaceWithAccessibility,
 
 BASE_FEATURE(kSurfacePolish,
              "SurfacePolish",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabResumptionModuleAndroid,
+             "TabResumptionModuleAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.

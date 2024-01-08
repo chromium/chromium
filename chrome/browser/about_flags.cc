@@ -6917,6 +6917,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArchiveTabServiceDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kArchiveTabService)},
 
+    {"enable-tab-resumption-module",
+     flag_descriptions::kTabResumptionModuleAndroidName,
+     flag_descriptions::kTabResumptionModuleAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kTabResumptionModuleAndroid)},
+
     {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
      flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kTabStateFlatBuffer)},
