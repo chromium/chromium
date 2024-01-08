@@ -43,9 +43,9 @@ class ImageModel;
 // clicking the avatar button.
 class ProfileMenuViewBase : public content::WebContentsDelegate,
                             public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(ProfileMenuViewBase);
+  METADATA_HEADER(ProfileMenuViewBase, views::BubbleDialogDelegateView)
 
+ public:
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

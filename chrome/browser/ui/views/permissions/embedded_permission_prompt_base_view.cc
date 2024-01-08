@@ -252,3 +252,6 @@ void EmbeddedPermissionPromptBaseView::AddButton(
 
   buttons_container.AddChildView(std::move(button_view));
 }
+
+BEGIN_METADATA(EmbeddedPermissionPromptBaseView)
+END_METADATA

@@ -32,8 +32,9 @@ class ReadAnythingContainerView
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
       public ReadAnythingSidePanelController::Observer {
+  METADATA_HEADER(ReadAnythingContainerView, views::View)
+
  public:
-  METADATA_HEADER(ReadAnythingContainerView);
   ReadAnythingContainerView(
       ReadAnythingCoordinator* coordinator,
       std::unique_ptr<ReadAnythingToolbarView> toolbar,

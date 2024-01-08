@@ -196,7 +196,7 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
   }
 }
 
-BEGIN_METADATA(TailoredSecurityUnconsentedModal, views::DialogDelegateView)
+BEGIN_METADATA(TailoredSecurityUnconsentedModal)
 END_METADATA
 
 }  // namespace safe_browsing

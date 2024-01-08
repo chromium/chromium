@@ -11,6 +11,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(EmbeddedPermissionPromptAskView,
                                       kAllowId);
@@ -86,3 +87,6 @@ std::u16string EmbeddedPermissionPromptAskView::GetMessageText() const {
                                     requests[0]->GetMessageTextFragment(),
                                     requests[1]->GetMessageTextFragment());
 }
+
+BEGIN_METADATA(EmbeddedPermissionPromptAskView)
+END_METADATA

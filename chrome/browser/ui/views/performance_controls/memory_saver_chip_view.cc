@@ -189,5 +189,5 @@ void MemorySaverChipView::OnMemorySaverModeChanged() {
   is_memory_saver_mode_enabled_ = manager->IsMemorySaverModeActive();
 }
 
-BEGIN_METADATA(MemorySaverChipView, PageActionIconView)
+BEGIN_METADATA(MemorySaverChipView)
 END_METADATA

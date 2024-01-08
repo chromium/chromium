@@ -18,8 +18,9 @@ class PrefService;
 class ReaderModeIconView : public PageActionIconView,
                            public dom_distiller::DistillabilityObserver,
                            public content::WebContentsObserver {
+  METADATA_HEADER(ReaderModeIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(ReaderModeIconView);
   ReaderModeIconView(CommandUpdater* command_updater,
                      IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                      PageActionIconView::Delegate* page_action_icon_delegate,

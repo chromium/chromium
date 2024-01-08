@@ -49,7 +49,7 @@ void ReadAnythingButtonView::Disable() {
   SetState(views::Button::ButtonState::STATE_DISABLED);
 }
 
-BEGIN_METADATA(ReadAnythingButtonView, views::View)
+BEGIN_METADATA(ReadAnythingButtonView)
 END_METADATA
 
 ReadAnythingButtonView::~ReadAnythingButtonView() = default;

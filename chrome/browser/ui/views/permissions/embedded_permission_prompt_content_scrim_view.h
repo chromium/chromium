@@ -30,8 +30,9 @@
 // `EmbeddedPermissionPromptBaseView`.
 class EmbeddedPermissionPromptContentScrimView : public views::View,
                                                  public views::WidgetObserver {
+  METADATA_HEADER(EmbeddedPermissionPromptContentScrimView, views::View)
+
  public:
-  METADATA_HEADER(EmbeddedPermissionPromptContentScrimView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kContentScrimViewId);
   EmbeddedPermissionPromptContentScrimView(
       base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate,

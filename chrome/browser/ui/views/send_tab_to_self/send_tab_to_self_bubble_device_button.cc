@@ -84,7 +84,7 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
 
 SendTabToSelfBubbleDeviceButton::~SendTabToSelfBubbleDeviceButton() = default;
 
-BEGIN_METADATA(SendTabToSelfBubbleDeviceButton, HoverButton)
+BEGIN_METADATA(SendTabToSelfBubbleDeviceButton)
 END_METADATA
 
 }  // namespace send_tab_to_self

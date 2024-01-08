@@ -37,8 +37,10 @@ class ProfilePickerForceSigninDialogDelegate
       public content::WebContentsDelegate,
       public ChromeWebModalDialogManagerDelegate,
       public web_modal::WebContentsModalDialogHost {
+  METADATA_HEADER(ProfilePickerForceSigninDialogDelegate,
+                  views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ProfilePickerForceSigninDialogDelegate);
   ProfilePickerForceSigninDialogDelegate(
       ProfilePickerForceSigninDialogHost* host,
       std::unique_ptr<views::WebView> web_view,

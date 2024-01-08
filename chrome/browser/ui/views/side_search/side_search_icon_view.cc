@@ -216,5 +216,5 @@ void SideSearchIconView::HidePageActionLabel() {
   ResetSlideAnimation(false);
 }
 
-BEGIN_METADATA(SideSearchIconView, PageActionIconView)
+BEGIN_METADATA(SideSearchIconView)
 END_METADATA

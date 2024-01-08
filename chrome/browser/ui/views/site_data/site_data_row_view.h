@@ -43,8 +43,9 @@ DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kSiteRowMenuItemClicked);
 // fallback icon), a hostname and a menu icon. The menu allows to change the
 // cookies content setting for the site or delete the site data.
 class SiteDataRowView : public views::View {
+  METADATA_HEADER(SiteDataRowView, views::View)
+
  public:
-  METADATA_HEADER(SiteDataRowView);
   SiteDataRowView(
       Profile* profile,
       const url::Origin& origin,

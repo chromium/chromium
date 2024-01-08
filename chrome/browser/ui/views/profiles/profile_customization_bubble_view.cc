@@ -93,7 +93,7 @@ void ProfileCustomizationBubbleView::OnCompletionButtonClicked(
   browser_view->MaybeShowProfileSwitchIPH();
 }
 
-BEGIN_METADATA(ProfileCustomizationBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ProfileCustomizationBubbleView)
 END_METADATA
 
 void DiceWebSigninInterceptorDelegate::ShowProfileCustomizationBubbleInternal(

@@ -86,5 +86,5 @@ BubbleSyncPromoSigninButtonView::BubbleSyncPromoSigninButtonView(
 
 BubbleSyncPromoSigninButtonView::~BubbleSyncPromoSigninButtonView() = default;
 
-BEGIN_METADATA(BubbleSyncPromoSigninButtonView, views::View)
+BEGIN_METADATA(BubbleSyncPromoSigninButtonView)
 END_METADATA

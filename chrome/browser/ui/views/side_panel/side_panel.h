@@ -20,14 +20,14 @@ class BrowserView;
 class SidePanel : public views::AccessiblePaneView,
                   public views::ViewObserver,
                   public views::ResizeAreaDelegate {
+  METADATA_HEADER(SidePanel, views::AccessiblePaneView)
+
  public:
   // Determines the side from which the side panel will appear.
   // LTR / RTL conversions are handled in
   // BrowserViewLayout::LayoutSidePanelView. As such, left will always be on the
   // left side of the browser regardless of LTR / RTL mode.
   enum HorizontalAlignment { kAlignLeft = 0, kAlignRight };
-
-  METADATA_HEADER(SidePanel);
   explicit SidePanel(BrowserView* browser_view,
                      HorizontalAlignment horizontal_alignment =
                          HorizontalAlignment::kAlignRight);

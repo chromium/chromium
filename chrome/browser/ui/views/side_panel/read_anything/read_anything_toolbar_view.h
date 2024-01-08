@@ -38,8 +38,9 @@ class ReadAnythingToolbarView
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
       public ReadAnythingSidePanelController::Observer {
+  METADATA_HEADER(ReadAnythingToolbarView, views::View)
+
  public:
-  METADATA_HEADER(ReadAnythingToolbarView);
   class Delegate {
    public:
     virtual void OnFontSizeChanged(bool increase) = 0;

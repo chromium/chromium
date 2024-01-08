@@ -24,9 +24,9 @@ class Profile;
 // The front end for Plugin VM, shown the first time the user launches it.
 class PluginVmInstallerView : public views::BubbleDialogDelegateView,
                               public plugin_vm::PluginVmInstaller::Observer {
- public:
-  METADATA_HEADER(PluginVmInstallerView);
+  METADATA_HEADER(PluginVmInstallerView, views::BubbleDialogDelegateView)
 
+ public:
   explicit PluginVmInstallerView(Profile* profile);
 
   PluginVmInstallerView(const PluginVmInstallerView&) = delete;

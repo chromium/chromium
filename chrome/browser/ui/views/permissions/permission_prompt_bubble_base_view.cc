@@ -346,5 +346,5 @@ void PermissionPromptBubbleBaseView::RecordDecision(
       base::TimeTicks::Now() - permission_requested_time_);
 }
 
-BEGIN_METADATA(PermissionPromptBubbleBaseView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PermissionPromptBubbleBaseView)
 END_METADATA

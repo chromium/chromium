@@ -19,8 +19,9 @@ class WebView;
 // WebView into which is loaded a WebUI page which renders the actual dialog
 // content.
 class SearchEngineChoiceDialogView : public views::View {
+  METADATA_HEADER(SearchEngineChoiceDialogView, views::View)
+
  public:
-  METADATA_HEADER(SearchEngineChoiceDialogView);
   SearchEngineChoiceDialogView(
       Browser* browser,
       std::optional<gfx::Size> boundary_dimensions_for_test,

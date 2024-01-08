@@ -8,6 +8,7 @@
 #include <string>
 
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_base_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 
@@ -15,6 +16,9 @@ class Browser;
 // controlled by policy and can't be changed.
 class EmbeddedPermissionPromptPolicyView
     : public EmbeddedPermissionPromptBaseView {
+  METADATA_HEADER(EmbeddedPermissionPromptPolicyView,
+                  EmbeddedPermissionPromptBaseView)
+
  public:
   EmbeddedPermissionPromptPolicyView(
       Browser* browser,

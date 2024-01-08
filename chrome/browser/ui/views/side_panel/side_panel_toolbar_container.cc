@@ -348,5 +348,5 @@ SidePanelCoordinator* SidePanelToolbarContainer::GetSidePanelCoordinator() {
       browser_view_->browser());
 }
 
-BEGIN_METADATA(SidePanelToolbarContainer, ToolbarIconContainerView)
+BEGIN_METADATA(SidePanelToolbarContainer)
 END_METADATA

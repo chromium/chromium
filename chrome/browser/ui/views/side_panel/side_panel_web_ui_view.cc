@@ -83,5 +83,5 @@ bool SidePanelWebUIView::HandleKeyboardEvent(
       event, GetFocusManager());
 }
 
-BEGIN_METADATA(SidePanelWebUIView, views::WebView)
+BEGIN_METADATA(SidePanelWebUIView)
 END_METADATA

@@ -22,8 +22,9 @@ class SidePanelCoordinator;
 // Container for side panel button and pinned side panel entries shown in the
 // toolbar.
 class SidePanelToolbarContainer : public ToolbarIconContainerView {
+  METADATA_HEADER(SidePanelToolbarContainer, ToolbarIconContainerView)
+
  public:
-  METADATA_HEADER(SidePanelToolbarContainer);
   explicit SidePanelToolbarContainer(BrowserView* browser_view);
   SidePanelToolbarContainer(const SidePanelToolbarContainer&) = delete;
   SidePanelToolbarContainer& operator=(const SidePanelToolbarContainer&) =
@@ -60,8 +61,9 @@ class SidePanelToolbarContainer : public ToolbarIconContainerView {
 
  private:
   class PinnedSidePanelToolbarButton : public ToolbarButton {
+    METADATA_HEADER(PinnedSidePanelToolbarButton, ToolbarButton)
+
    public:
-    METADATA_HEADER(PinnedSidePanelToolbarButton);
     PinnedSidePanelToolbarButton(BrowserView* browser_view,
                                  SidePanelEntry::Id id,
                                  std::u16string accessible_name,

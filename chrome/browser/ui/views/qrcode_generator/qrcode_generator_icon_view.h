@@ -15,8 +15,9 @@ namespace qrcode_generator {
 // The location bar icon to show the QR Code generator bubble, where the user
 // can generate a QR code for the current page or a selected image.
 class QRCodeGeneratorIconView : public PageActionIconView {
+  METADATA_HEADER(QRCodeGeneratorIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(QRCodeGeneratorIconView);
   QRCodeGeneratorIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

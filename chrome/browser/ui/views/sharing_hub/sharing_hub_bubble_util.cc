@@ -67,7 +67,7 @@ gfx::Size TitleWithBackButtonView::GetMinimumSize() const {
   return gfx::Size(0, 0);
 }
 
-BEGIN_METADATA(TitleWithBackButtonView, views::View)
+BEGIN_METADATA(TitleWithBackButtonView)
 END_METADATA
 
 }  // namespace sharing_hub

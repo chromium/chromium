@@ -20,9 +20,9 @@
 class StatusIconButtonLinux : public ui::StatusIconLinux,
                               public views::Button,
                               public views::ContextMenuController {
- public:
-  METADATA_HEADER(StatusIconButtonLinux);
+  METADATA_HEADER(StatusIconButtonLinux, views::Button)
 
+ public:
   StatusIconButtonLinux();
   StatusIconButtonLinux(const StatusIconButtonLinux&) = delete;
   StatusIconButtonLinux& operator=(const StatusIconButtonLinux&) = delete;

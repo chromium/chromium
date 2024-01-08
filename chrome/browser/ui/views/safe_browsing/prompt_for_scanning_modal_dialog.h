@@ -21,9 +21,9 @@ namespace safe_browsing {
 // A tab modal dialog that provides more information to the user about the
 // prompt for deep scanning.
 class PromptForScanningModalDialog : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(PromptForScanningModalDialog);
+  METADATA_HEADER(PromptForScanningModalDialog, views::DialogDelegateView)
 
+ public:
   // Show this dialog for the given |web_contents|.
   static void ShowForWebContents(content::WebContents* web_contents,
                                  const std::u16string& filename,

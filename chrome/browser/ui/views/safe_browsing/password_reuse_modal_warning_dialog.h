@@ -28,8 +28,9 @@ class PasswordReuseModalWarningDialog
     : public views::DialogDelegateView,
       public ChromePasswordProtectionService::Observer,
       public content::WebContentsObserver {
+  METADATA_HEADER(PasswordReuseModalWarningDialog, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(PasswordReuseModalWarningDialog);
   PasswordReuseModalWarningDialog(content::WebContents* web_contents,
                                   ChromePasswordProtectionService* service,
                                   ReusedPasswordAccountType password_type,

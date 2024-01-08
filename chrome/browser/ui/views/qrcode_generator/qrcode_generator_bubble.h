@@ -39,8 +39,9 @@ namespace qrcode_generator {
 class QRCodeGeneratorBubble : public QRCodeGeneratorBubbleView,
                               public LocationBarBubbleDelegateView,
                               public views::TextfieldController {
+  METADATA_HEADER(QRCodeGeneratorBubble, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(QRCodeGeneratorBubble);
   QRCodeGeneratorBubble(views::View* anchor_view,
                         base::WeakPtr<content::WebContents> web_contents,
                         base::OnceClosure on_closing,

@@ -167,5 +167,5 @@ void SearchEngineChoiceDialogView::CloseView() {
   GetWidget()->Close();
 }
 
-BEGIN_METADATA(SearchEngineChoiceDialogView, views::View)
+BEGIN_METADATA(SearchEngineChoiceDialogView)
 END_METADATA

@@ -196,5 +196,5 @@ void ReaderModeIconView::OnResult(
   UMAHelper::StartTimerIfNeeded(web_contents, page_type);
 }
 
-BEGIN_METADATA(ReaderModeIconView, PageActionIconView)
+BEGIN_METADATA(ReaderModeIconView)
 END_METADATA

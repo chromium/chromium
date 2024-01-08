@@ -61,7 +61,7 @@ void ReadAnythingFontCombobox::SetDropdownColorIds(ui::ColorId background_color,
       selected_color);
 }
 
-BEGIN_METADATA(ReadAnythingFontCombobox, views::Combobox)
+BEGIN_METADATA(ReadAnythingFontCombobox)
 END_METADATA
 
 ReadAnythingFontCombobox::~ReadAnythingFontCombobox() = default;

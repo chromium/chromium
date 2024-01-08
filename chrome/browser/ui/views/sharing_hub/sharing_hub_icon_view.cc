@@ -129,7 +129,7 @@ void SharingHubIconView::MaybeAnimateSendingToast() {
   }
 }
 
-BEGIN_METADATA(SharingHubIconView, PageActionIconView)
+BEGIN_METADATA(SharingHubIconView)
 END_METADATA
 
 }  // namespace sharing_hub

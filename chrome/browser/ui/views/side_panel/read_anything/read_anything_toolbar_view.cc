@@ -306,5 +306,5 @@ ReadAnythingToolbarView::~ReadAnythingToolbarView() {
   }
 }
 
-BEGIN_METADATA(ReadAnythingToolbarView, views::View)
+BEGIN_METADATA(ReadAnythingToolbarView)
 END_METADATA

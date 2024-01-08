@@ -26,9 +26,9 @@ class BubbleDialogModelHost;
 class BatterySaverButton : public ToolbarButton,
                            public BatterySaverBubbleObserver,
                            public BatterySaverButtonControllerDelegate {
- public:
-  METADATA_HEADER(BatterySaverButton);
+  METADATA_HEADER(BatterySaverButton, ToolbarButton)
 
+ public:
   explicit BatterySaverButton(BrowserView* browser_view);
   ~BatterySaverButton() override;
 

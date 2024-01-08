@@ -32,8 +32,9 @@ namespace sharing_hub {
 // Dialog that displays a captured screenshot, and provides the option
 // to share or download.
 class ScreenshotCapturedBubble : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(ScreenshotCapturedBubble, LocationBarBubbleDelegateView)
+
  public:
-  METADATA_HEADER(ScreenshotCapturedBubble);
   ScreenshotCapturedBubble(views::View* anchor_view,
                            content::WebContents* web_contents,
                            const gfx::Image& image,

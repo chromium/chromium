@@ -70,9 +70,9 @@ constexpr int kInvalidCredentialLabelTopPadding = 3;
 // Label that may contain empty text.
 // Override is needed to configure accessibility node for an empty name.
 class MaybeEmptyLabel : public views::Label {
- public:
-  METADATA_HEADER(MaybeEmptyLabel);
+  METADATA_HEADER(MaybeEmptyLabel, views::Label)
 
+ public:
   MaybeEmptyLabel(const std::string& text, const CustomFont& font)
       : views::Label(base::UTF8ToUTF16(text), font) {}
 
@@ -90,7 +90,7 @@ class MaybeEmptyLabel : public views::Label {
   }
 };
 
-BEGIN_METADATA(MaybeEmptyLabel, views::Label)
+BEGIN_METADATA(MaybeEmptyLabel)
 END_METADATA
 
 TestParentPermissionDialogViewObserver* test_view_observer = nullptr;
@@ -750,7 +750,7 @@ void ParentPermissionDialogView::InitializeExtensionData(
   ShowDialogInternal();
 }
 
-BEGIN_METADATA(ParentPermissionDialogView, views::DialogDelegateView)
+BEGIN_METADATA(ParentPermissionDialogView)
 ADD_PROPERTY_METADATA(std::u16string, SelectedParentPermissionEmail)
 ADD_PROPERTY_METADATA(std::u16string, ParentPermissionCredential)
 ADD_READONLY_PROPERTY_METADATA(bool, InvalidCredentialReceived)

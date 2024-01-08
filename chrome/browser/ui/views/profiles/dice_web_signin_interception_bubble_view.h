@@ -30,8 +30,10 @@ class Profile;
 class DiceWebSigninInterceptionBubbleView
     : public views::BubbleDialogDelegateView,
       content::WebContentsDelegate {
+  METADATA_HEADER(DiceWebSigninInterceptionBubbleView,
+                  views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(DiceWebSigninInterceptionBubbleView);
   DiceWebSigninInterceptionBubbleView(
       const DiceWebSigninInterceptionBubbleView& other) = delete;
   DiceWebSigninInterceptionBubbleView& operator=(

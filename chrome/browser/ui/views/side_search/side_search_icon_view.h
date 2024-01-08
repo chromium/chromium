@@ -18,8 +18,9 @@ class Browser;
 // the side panel to the available SRP.
 class SideSearchIconView : public PageActionIconView,
                            public TabStripModelObserver {
+  METADATA_HEADER(SideSearchIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(SideSearchIconView);
   explicit SideSearchIconView(
       CommandUpdater* command_updater,
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,

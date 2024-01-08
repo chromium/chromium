@@ -438,7 +438,7 @@ void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
 }
 #endif
 
-BEGIN_METADATA(SigninViewControllerDelegateViews, views::DialogDelegateView)
+BEGIN_METADATA(SigninViewControllerDelegateViews)
 END_METADATA
 
 // --------------------------------------------------------------------

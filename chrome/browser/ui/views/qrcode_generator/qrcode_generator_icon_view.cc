@@ -107,7 +107,7 @@ bool QRCodeGeneratorIconView::ShouldShowLabel() const {
   return false;
 }
 
-BEGIN_METADATA(QRCodeGeneratorIconView, PageActionIconView)
+BEGIN_METADATA(QRCodeGeneratorIconView)
 END_METADATA
 
 }  // namespace qrcode_generator

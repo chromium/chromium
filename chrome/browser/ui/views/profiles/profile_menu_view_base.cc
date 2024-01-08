@@ -206,9 +206,9 @@ const ui::ImageModel ProfileManagementImageFromIcon(
 
 // TODO(crbug.com/1146998): Adjust button size to be 16x16.
 class CircularImageButton : public views::ImageButton {
- public:
-  METADATA_HEADER(CircularImageButton);
+  METADATA_HEADER(CircularImageButton, views::ImageButton)
 
+ public:
   CircularImageButton(PressedCallback callback,
                       const gfx::VectorIcon& icon,
                       const std::u16string& text,
@@ -304,7 +304,7 @@ class CircularImageButton : public views::ImageButton {
   SkColor themed_icon_color_;
 };
 
-BEGIN_METADATA(CircularImageButton, views::ImageButton)
+BEGIN_METADATA(CircularImageButton)
 END_METADATA
 
 class FeatureButtonIconView : public views::ImageView {
@@ -330,8 +330,9 @@ class FeatureButtonIconView : public views::ImageView {
 };
 
 class ProfileManagementFeatureButton : public HoverButton {
+  METADATA_HEADER(ProfileManagementFeatureButton, HoverButton)
+
  public:
-  METADATA_HEADER(ProfileManagementFeatureButton);
   ProfileManagementFeatureButton(PressedCallback callback,
                                  const gfx::VectorIcon& icon,
                                  const std::u16string& clickable_text)
@@ -347,12 +348,13 @@ class ProfileManagementFeatureButton : public HoverButton {
  private:
   const raw_ref<const gfx::VectorIcon> icon_;
 };
-BEGIN_METADATA(ProfileManagementFeatureButton, HoverButton)
+BEGIN_METADATA(ProfileManagementFeatureButton)
 END_METADATA
 
 class ProfileManagementIconView : public views::ImageView {
+  METADATA_HEADER(ProfileManagementIconView, views::ImageView)
+
  public:
-  METADATA_HEADER(ProfileManagementIconView);
   explicit ProfileManagementIconView(const gfx::VectorIcon& icon)
       : icon_(icon) {}
   ~ProfileManagementIconView() override = default;
@@ -367,12 +369,14 @@ class ProfileManagementIconView : public views::ImageView {
   const raw_ref<const gfx::VectorIcon> icon_;
 };
 
-BEGIN_METADATA(ProfileManagementIconView, views::ImageView)
+BEGIN_METADATA(ProfileManagementIconView)
 END_METADATA
 
 // AvatarImageView is used to ensure avatar adornments are kept in sync with
 // current theme colors.
 class AvatarImageView : public views::ImageView {
+  METADATA_HEADER(AvatarImageView, views::ImageView)
+
  public:
   AvatarImageView(const ui::ImageModel& avatar_image,
                   const ProfileMenuViewBase* root_view)
@@ -424,9 +428,13 @@ class AvatarImageView : public views::ImageView {
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
+BEGIN_METADATA(AvatarImageView)
+END_METADATA
+
 class SyncButton : public HoverButton {
+  METADATA_HEADER(SyncButton, HoverButton)
+
  public:
-  METADATA_HEADER(SyncButton);
   SyncButton(PressedCallback callback,
              ProfileMenuViewBase* root_view,
              const std::u16string& clickable_text)
@@ -445,12 +453,13 @@ class SyncButton : public HoverButton {
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
-BEGIN_METADATA(SyncButton, HoverButton)
+BEGIN_METADATA(SyncButton)
 END_METADATA
 
 class SyncImageView : public views::ImageView {
+  METADATA_HEADER(SyncImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(SyncImageView);
   explicit SyncImageView(const ProfileMenuViewBase* root_view)
       : root_view_(root_view) {}
 
@@ -465,7 +474,7 @@ class SyncImageView : public views::ImageView {
   raw_ptr<const ProfileMenuViewBase> root_view_;
 };
 
-BEGIN_METADATA(SyncImageView, views::ImageView)
+BEGIN_METADATA(SyncImageView)
 END_METADATA
 
 void BuildProfileTitleAndSubtitle(views::View* parent,
@@ -1214,6 +1223,6 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
       this};
 };
 
-BEGIN_METADATA(ProfileMenuViewBase, views::BubbleDialogDelegateView)
+BEGIN_METADATA(ProfileMenuViewBase)
 ADD_READONLY_PROPERTY_METADATA(gfx::ImageSkia, SyncIcon)
 END_METADATA

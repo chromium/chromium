@@ -219,5 +219,5 @@ content::WebContents* PrivacySandboxDialogView::GetWebContentsForTesting() {
   return web_view_->GetWebContents();
 }
 
-BEGIN_METADATA(PrivacySandboxDialogView, views::View)
+BEGIN_METADATA(PrivacySandboxDialogView)
 END_METADATA

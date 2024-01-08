@@ -26,8 +26,9 @@ namespace sharing_hub {
 //   +-----------------------------+
 // The title, URL, and icon are all fixed at construction time.
 class PreviewView : public views::View {
+  METADATA_HEADER(PreviewView, views::View)
+
  public:
-  METADATA_HEADER(PreviewView);
   explicit PreviewView(share::ShareAttempt attempt);
   ~PreviewView() override;
 

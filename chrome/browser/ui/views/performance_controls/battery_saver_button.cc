@@ -126,5 +126,5 @@ void BatterySaverButton::CloseFeaturePromo(
       feature_engagement::kIPHBatterySaverModeFeature, close_reason);
 }
 
-BEGIN_METADATA(BatterySaverButton, ToolbarButton)
+BEGIN_METADATA(BatterySaverButton)
 END_METADATA
