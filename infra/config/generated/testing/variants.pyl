@@ -41,7 +41,7 @@
     'identifier': 'BRYA_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'brya',
-      'cros_img': 'brya-release/R119-15633.72.0',
+      'cros_img': 'brya-release/R120-15662.64.0',
       'dut_pool': 'chrome',
     },
   },
@@ -70,7 +70,7 @@
     'identifier': 'DEDEDE_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'dedede',
-      'cros_img': 'dedede-release/R119-15633.72.0',
+      'cros_img': 'dedede-release/R120-15662.64.0',
     },
   },
   'CROS_FIZZ_RELEASE_BETA': {
@@ -101,7 +101,7 @@
     'identifier': 'FIZZ_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'fizz',
-      'cros_img': 'fizz-release/R119-15633.72.0',
+      'cros_img': 'fizz-release/R120-15662.64.0',
       'dut_pool': 'chrome',
     },
   },
@@ -133,7 +133,7 @@
     'identifier': 'GUYBRUSH_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'guybrush',
-      'cros_img': 'guybrush-release/R119-15633.72.0',
+      'cros_img': 'guybrush-release/R120-15662.64.0',
       'dut_pool': 'chrome',
     },
   },
@@ -205,7 +205,7 @@
     'identifier': 'PUFF_RELEASE_STABLE',
     'skylab': {
       'cros_board': 'puff',
-      'cros_img': 'puff-release/R120-15662.16.0',
+      'cros_img': 'puff-release/R120-15662.64.0',
       'dut_pool': 'chrome',
     },
   },

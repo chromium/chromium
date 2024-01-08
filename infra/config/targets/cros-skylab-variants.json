@@ -39,8 +39,8 @@
   "CROS_BRYA_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "brya",
-      "cros_chrome_version": "119.0.6045.214",
-      "cros_img": "brya-release/R119-15633.72.0",
+      "cros_chrome_version": "120.0.6099.203",
+      "cros_img": "brya-release/R120-15662.64.0",
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -75,8 +75,8 @@
   "CROS_DEDEDE_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "dedede",
-      "cros_chrome_version": "119.0.6045.214",
-      "cros_img": "dedede-release/R119-15633.72.0"
+      "cros_chrome_version": "120.0.6099.203",
+      "cros_img": "dedede-release/R120-15662.64.0"
     },
     "enabled": true,
     "identifier": "DEDEDE_RELEASE_STABLE"
@@ -113,8 +113,8 @@
   "CROS_FIZZ_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "fizz",
-      "cros_chrome_version": "119.0.6045.214",
-      "cros_img": "fizz-release/R119-15633.72.0",
+      "cros_chrome_version": "120.0.6099.203",
+      "cros_img": "fizz-release/R120-15662.64.0",
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -152,8 +152,8 @@
   "CROS_GUYBRUSH_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "guybrush",
-      "cros_chrome_version": "119.0.6045.214",
-      "cros_img": "guybrush-release/R119-15633.72.0",
+      "cros_chrome_version": "120.0.6099.203",
+      "cros_img": "guybrush-release/R120-15662.64.0",
       "dut_pool": "chrome"
     },
     "enabled": true,
@@ -191,8 +191,8 @@
   "CROS_PUFF_RELEASE_STABLE": {
     "skylab": {
       "cros_board": "puff",
-      "cros_chrome_version": "120.0.6099.25",
-      "cros_img": "puff-release/R120-15662.16.0",
+      "cros_chrome_version": "120.0.6099.203",
+      "cros_img": "puff-release/R120-15662.64.0",
       "dut_pool": "chrome"
     },
     "enabled": true,
