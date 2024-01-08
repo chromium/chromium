@@ -216,7 +216,8 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
   /**
    * @suppress {missingProperties}
    */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
     // Allow opening advanced options only if it is a meet device or device
     // requisition is configurable.
     if (this.isMeet_ || this.isDeviceRequisitionConfigurable_) {
