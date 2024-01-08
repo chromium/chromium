@@ -770,8 +770,7 @@ void LogPinnedTabsUsedForDefaultBrowserPromo() {
 }
 
 bool HasRecentFirstPartyIntentLaunchesAndRecordsCurrentLaunch() {
-  const base::TimeDelta max_session_time =
-      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+  const base::TimeDelta max_session_time = base::Hours(6);
 
   if (HasRecordedEventForKeyLessThanDelay(
           kTimestampAppLastOpenedViaFirstPartyIntent,
@@ -803,8 +802,7 @@ bool HasRecentValidURLPastesAndRecordsCurrentPaste() {
 }
 
 bool HasRecentTimestampForKey(NSString* eventKey) {
-  const base::TimeDelta max_session_time =
-      base::Seconds(GetFeedUnseenRefreshThresholdInSeconds());
+  const base::TimeDelta max_session_time = base::Hours(6);
 
   if (HasRecordedEventForKeyLessThanDelay(eventKey, max_session_time)) {
     return YES;
