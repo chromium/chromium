@@ -22,7 +22,7 @@ class EditorTextActuator : public orca::mojom::TextActuator {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual void OnTextInserted() = 0;
+    virtual void OnTextInsertionRequested() = 0;
     virtual void ProcessConsentAction(ConsentAction consent_action) = 0;
     virtual void ShowUI() = 0;
     virtual void CloseUI() = 0;

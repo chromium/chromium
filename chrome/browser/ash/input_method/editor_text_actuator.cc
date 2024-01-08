@@ -39,7 +39,7 @@ void EditorTextActuator::InsertText(const std::string& text) {
   // We queue the text to be inserted here rather then insert it directly into
   // the input.
   inserter_.InsertTextOnNextFocus(text);
-  delegate_->OnTextInserted();
+  delegate_->OnTextInsertionRequested();
 }
 
 void EditorTextActuator::ApproveConsent() {
