@@ -101,10 +101,12 @@ absl::optional<base::Value::Dict> ReadJSONManifest(
   JSONFileValueDeserializer deserializer(manifest_path);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (!root.get())
+  if (!root.get()) {
     return absl::nullopt;
-  if (!root->is_dict())
+  }
+  if (!root->is_dict()) {
     return absl::nullopt;
+  }
   return std::move(*root).TakeDict();
 }
 
@@ -113,8 +115,9 @@ absl::optional<base::Value::Dict> ReadPnaclManifest(
     const base::FilePath& unpack_path) {
   base::FilePath manifest_path =
       GetPlatformDir(unpack_path).AppendASCII("pnacl_public_pnacl_json");
-  if (!base::PathExists(manifest_path))
+  if (!base::PathExists(manifest_path)) {
     return absl::nullopt;
+  }
   return ReadJSONManifest(manifest_path);
 }
 

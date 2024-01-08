@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/component_updater/real_time_url_checks_allowlist_component_installer.h"
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
 #include "components/component_updater/mock_component_updater_service.h"

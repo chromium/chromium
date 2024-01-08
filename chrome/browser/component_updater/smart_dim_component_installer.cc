@@ -201,10 +201,11 @@ void RegisterSmartDimComponent(ComponentUpdateService* cus,
     return;
   }
 
-  if (expected_version == kDefaultVersion)
+  if (expected_version == kDefaultVersion) {
     LogComponentVersionType(ComponentVersionType::kDefault);
-  else
+  } else {
     LogComponentVersionType(ComponentVersionType::kExperimental);
+  }
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<SmartDimComponentInstallerPolicy>(expected_version));

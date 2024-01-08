@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_COMPONENT_UPDATER_REAL_TIME_URL_CHECKS_ALLOWLIST_COMPONENT_INSTALLER_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
-
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/embedder_support/origin_trials/pref_names.h"

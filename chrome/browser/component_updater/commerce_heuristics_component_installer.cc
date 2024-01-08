@@ -66,8 +66,9 @@ base::FilePath GetCommerceCartExtractionScriptInstalledPath(
 
 void LoadHeuristicFilesFromDisk(const base::Version& version,
                                 const base::FilePath& install_dir) {
-  if (install_dir.empty())
+  if (install_dir.empty()) {
     return;
+  }
 
   const base::FilePath& commerce_hint_file_path =
       GetCommerceHintHeuristicsInstalledPath(install_dir);

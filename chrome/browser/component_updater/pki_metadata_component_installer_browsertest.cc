@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/component_updater/pki_metadata_component_installer.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -16,7 +18,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -145,8 +146,9 @@ class PKIMetadataComponentUpdaterTest
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
                        ReloadsPKIMetadataConfigAfterCrash) {
   // Network service is not running out of process, so cannot be crashed.
-  if (!content::IsOutOfProcessNetworkService())
+  if (!content::IsOutOfProcessNetworkService()) {
     return;
+  }
 
   // CT enforcement is disabled by default on tests. Override this behaviour.
   SetRequireCTForTesting();
