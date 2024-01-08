@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/ui/ntp/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ui/ntp/metrics/feed_refresh_state_tracker.h"
 
+class DiscoverFeedRefresher;
 @protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageMetricsDelegate;
@@ -33,6 +34,9 @@ class Time;
 
 // Whether or not the feed is currently being shown on the Start Surface.
 @property(nonatomic, assign) BOOL isShownOnStartSurface;
+
+// Object that can refresh the feed.
+@property(nonatomic, assign) DiscoverFeedRefresher* feedRefresher;
 
 // Delegate for reporting feed actions to the NTP metrics recorder.
 @property(nonatomic, weak) id<NewTabPageMetricsDelegate> NTPMetricsDelegate;
