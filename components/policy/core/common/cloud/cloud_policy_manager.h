@@ -44,7 +44,7 @@ class POLICY_EXPORT CloudPolicyManager
   CloudPolicyManager(
       const std::string& policy_type,
       const std::string& settings_entity_id,
-      CloudPolicyStore* cloud_policy_store,
+      std::unique_ptr<CloudPolicyStore> cloud_policy_store,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
@@ -104,8 +104,8 @@ class POLICY_EXPORT CloudPolicyManager
   // Convenience accessors to core() components.
   CloudPolicyClient* client() { return core_.client(); }
   const CloudPolicyClient* client() const { return core_.client(); }
-  CloudPolicyStore* store() { return core_.store(); }
-  const CloudPolicyStore* store() const { return core_.store(); }
+  CloudPolicyStore* store() { return store_.get(); }
+  const CloudPolicyStore* store() const { return store_.get(); }
   CloudPolicyService* service() { return core_.service(); }
   const CloudPolicyService* service() const { return core_.service(); }
 
@@ -113,6 +113,7 @@ class POLICY_EXPORT CloudPolicyManager
   // Completion handler for policy refresh operations.
   void OnRefreshComplete(bool success);
 
+  std::unique_ptr<CloudPolicyStore> store_;
   CloudPolicyCore core_;
   std::unique_ptr<ComponentCloudPolicyService> component_policy_service_;
 

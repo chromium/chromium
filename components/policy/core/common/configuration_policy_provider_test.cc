@@ -221,6 +221,8 @@ void ConfigurationPolicyProviderTest::SetUp() {
 }
 
 void ConfigurationPolicyProviderTest::TearDown() {
+  test_harness_->TearDown();
+
   // Give providers the chance to clean up after themselves on the file thread.
   provider_->Shutdown();
   provider_.reset();

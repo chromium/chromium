@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_MOCK_CLOUD_POLICY_MANAGER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_MOCK_CLOUD_POLICY_MANAGER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
@@ -19,7 +21,7 @@ class CloudPolicyStore;
 class MockCloudPolicyManager : public CloudPolicyManager {
  public:
   MockCloudPolicyManager(
-      CloudPolicyStore* store,
+      std::unique_ptr<CloudPolicyStore> store,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
   MockCloudPolicyManager(const MockCloudPolicyManager&) = delete;

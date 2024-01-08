@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -29,7 +30,7 @@ class SchemaRegistry;
 class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
  public:
   ProfileCloudPolicyManager(
-      std::unique_ptr<ProfileCloudPolicyStore> store,
+      std::unique_ptr<ProfileCloudPolicyStore> profile_store,
       const base::FilePath& component_policy_cache_path,
       std::unique_ptr<CloudExternalDataManager> external_data_manager,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
@@ -63,7 +64,7 @@ class POLICY_EXPORT ProfileCloudPolicyManager : public CloudPolicyManager {
   void DisconnectAndRemovePolicy() override;
 
  private:
-  std::unique_ptr<ProfileCloudPolicyStore> store_;
+  raw_ptr<ProfileCloudPolicyStore> profile_store_;
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
   const base::FilePath component_policy_cache_path_;

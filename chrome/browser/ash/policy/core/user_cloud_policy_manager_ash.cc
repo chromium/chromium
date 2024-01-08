@@ -140,11 +140,10 @@ UserCloudPolicyManagerAsh::UserCloudPolicyManagerAsh(
     : CloudPolicyManager(
           dm_protocol::kChromeUserPolicyType,
           std::string(),
-          store.get(),
+          std::move(store),
           task_runner,
           base::BindRepeating(content::GetNetworkConnectionTracker)),
       profile_(profile),
-      store_(std::move(store)),
       external_data_manager_(std::move(external_data_manager)),
       component_policy_cache_path_(component_policy_cache_path),
       waiting_for_policy_fetch_(enforcement_type ==

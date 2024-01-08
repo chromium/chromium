@@ -77,6 +77,9 @@ class PolicyProviderTestHarness {
   // Actions to run at gtest SetUp() time.
   virtual void SetUp() = 0;
 
+  // Actions to run at gtest TearDown() time.
+  virtual void TearDown() {}
+
   // Create a new policy provider.
   virtual ConfigurationPolicyProvider* CreateProvider(
       SchemaRegistry* registry,

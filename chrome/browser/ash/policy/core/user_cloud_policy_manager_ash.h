@@ -257,9 +257,6 @@ class UserCloudPolicyManagerAsh
   // Profile associated with the current user.
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  // Owns the store, note that CloudPolicyManager just keeps a plain pointer.
-  std::unique_ptr<CloudPolicyStore> store_;
-
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
