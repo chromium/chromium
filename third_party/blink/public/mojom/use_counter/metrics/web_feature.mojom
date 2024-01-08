@@ -4098,6 +4098,10 @@ enum WebFeature {
   kCredentialManagerCrossOriginPublicKeyCreateRequest = 4758,
   kViewTransitionNameAuto = 4759,
   kV8WasmJavaScriptPromiseIntegration = 4760,
+  kWindowMinimize = 4761,
+  kWindowMaximize = 4762,
+  kWindowRestore = 4763,
+  kWindowSetResizable = 4764,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

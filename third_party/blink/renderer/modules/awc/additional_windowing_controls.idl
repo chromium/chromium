@@ -11,8 +11,19 @@
   ImplementedAs=AdditionalWindowingControls,
   RuntimeEnabled=DesktopPWAsAdditionalWindowingControls
 ] partial interface Window {
-  [CallWith=ScriptState, RaisesException] Promise<undefined> maximize();
-  [CallWith=ScriptState, RaisesException] Promise<undefined> minimize();
-  [CallWith=ScriptState, RaisesException] Promise<undefined> restore();
-  [CallWith=ScriptState, RaisesException] Promise<undefined> setResizable(boolean resizable);
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=WindowMaximize
+  ] Promise<undefined> maximize();
+
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=WindowMinimize
+  ] Promise<undefined> minimize();
+
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=WindowRestore
+  ] Promise<undefined> restore();
+
+  [
+    CallWith=ScriptState, RaisesException, MeasureAs=WindowSetResizable
+  ] Promise<undefined> setResizable(boolean resizable);
 };

@@ -18669,6 +18669,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4758" label="CredentialManagerCrossOriginPublicKeyCreateRequest"/>
   <int value="4759" label="ViewTransitionNameAuto"/>
   <int value="4760" label="V8WasmJavaScriptPromiseIntegration"/>
+  <int value="4761" label="WindowMinimize"/>
+  <int value="4762" label="WindowMaximize"/>
+  <int value="4763" label="WindowRestore"/>
+  <int value="4764" label="WindowSetResizable"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">
