@@ -38,8 +38,9 @@ std::string GetChoiceListJSON(Profile& profile) {
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
 
-    const std::u16string icon_path = GetGeneratedIconPath(
-        choice->keyword(), /*parent_directory_path=*/u"images/");
+    const std::string_view icon_path =
+        GetSearchEngineGeneratedIconPath(choice->keyword());
+    CHECK(!icon_path.empty());
     choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
     choice_value.Set("iconPath", icon_path);
@@ -92,8 +93,6 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
                              IDS_SEARCH_ENGINE_CHOICE_FAKE_OMNIBOX_TEXT);
   source->AddLocalizedString("moreButtonText",
                              IDS_SEARCH_ENGINE_CHOICE_MORE_BUTTON);
-
-  AddGeneratedIconResources(source, /*directory=*/"images/");
   source->AddResourcePath("images/left_illustration.svg",
                           IDR_SIGNIN_IMAGES_SHARED_LEFT_BANNER_SVG);
   source->AddResourcePath("images/left_illustration_dark.svg",
