@@ -2389,15 +2389,15 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
   }
 
   // Create a copy of the current form to fill and send to the renderer.
-  FormData result = form;
-  CHECK_EQ(result.fields.size(), form_structure->field_count());
+  FormData result_form = form;
+  CHECK_EQ(result_form.fields.size(), form_structure->field_count());
   for (size_t i = 0; i < form_structure->field_count(); ++i) {
     // On the renderer, the section is used regardless of the autofill status.
-    result.fields[i].section = form_structure->field(i)->section;
+    result_form.fields[i].section = form_structure->field(i)->section;
   }
 
   std::vector<FieldFillingSkipReason> skip_reasons = GetFieldFillingSkipReasons(
-      result, *form_structure, field, autofill_trigger_field->section,
+      result_form, *form_structure, field, autofill_trigger_field->section,
       trigger_details.field_types_to_fill,
       filling_context ? &filling_context->type_groups_originally_filled
                       : nullptr,
@@ -2412,8 +2412,8 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       FieldFillingSkipReason::kNotInFilledSection,
       FieldFillingSkipReason::kFormChanged,
       FieldFillingSkipReason::kNotFocused};
-  CHECK_EQ(skip_reasons.size(), result.fields.size());
-  for (size_t i = 0; i < result.fields.size(); ++i) {
+  CHECK_EQ(skip_reasons.size(), result_form.fields.size());
+  for (size_t i = 0; i < result_form.fields.size(); ++i) {
     AutofillField* autofill_field = form_structure->field(i);
 
     if (!pre_ukm_logging_skips.contains(skip_reasons[i]) &&
@@ -2423,7 +2423,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
               *form_structure, *autofill_field,
               !autofill_field->IsSelectElement());
     }
-    const bool has_value_before = !result.fields[i].value.empty();
+    const bool has_value_before = !result_form.fields[i].value.empty();
     // Log when the suggestion is selected and log on non-checkable fields that
     // skip filling.
     if (skip_reasons[i] != FieldFillingSkipReason::kNotSkipped) {
@@ -2453,29 +2453,31 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
     // but will still be autofilled).
     const bool should_notify =
         !is_credit_card &&
-        (result.fields[i].SameFieldAs(field) ||
-         result.fields[i].IsSelectOrSelectListElement() || !has_value_before);
+        (result_form.fields[i].SameFieldAs(field) ||
+         result_form.fields[i].IsSelectOrSelectListElement() ||
+         !has_value_before);
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
         filling_context ? filling_context->forced_fill_values
                         : std::map<FieldGlobalId, std::u16string>();
 
-    // Fill the non-empty value from |profile_or_credit_card| into the |result|
-    // form, which will be sent to the renderer. FillFieldWithValue() may also
-    // fill a field if it had been autofilled or manually filled before, and
-    // also returns true in such a case; however, such fields don't reach this
-    // code.
-    const bool is_newly_autofilled = FillField(
-        *autofill_field, profile_or_credit_card, forced_fill_values,
-        result.fields[i], should_notify, optional_cvc ? *optional_cvc : u"",
-        data_util::DetermineGroups(*form_structure), action_persistence,
-        &failure_to_fill);
+    // Fill the non-empty value from `profile_or_credit_card` into the
+    // `result_form` form, which will be sent to the renderer.
+    // FillFieldWithValue() may also fill a field if it had been autofilled or
+    // manually filled before, and also returns true in such a case; however,
+    // such fields don't reach this code.
+    const bool is_newly_autofilled =
+        FillField(*autofill_field, profile_or_credit_card, forced_fill_values,
+                  result_form.fields[i], should_notify,
+                  optional_cvc ? *optional_cvc : u"",
+                  data_util::DetermineGroups(*form_structure),
+                  action_persistence, &failure_to_fill);
     if (is_newly_autofilled)
-      newly_filled_field_ids.insert(result.fields[i].global_id());
+      newly_filled_field_ids.insert(result_form.fields[i].global_id());
 
-    const bool has_value_after = !result.fields[i].value.empty();
+    const bool has_value_after = !result_form.fields[i].value.empty();
     const bool is_autofilled_before = form.fields[i].is_autofilled;
-    const bool is_autofilled_after = result.fields[i].is_autofilled;
+    const bool is_autofilled_after = result_form.fields[i].is_autofilled;
 
     // Log when the suggestion is selected and log on non-checkable fields that
     // have been filled.
@@ -2501,12 +2503,12 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
                i, has_value_before, has_value_after, is_autofilled_before,
                is_autofilled_after, failure_to_fill.c_str());
 
-    if (!autofill_field->IsFocusable() && result.fields[i].is_autofilled) {
+    if (!autofill_field->IsFocusable() && result_form.fields[i].is_autofilled) {
       AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
     }
   }
   if (could_attempt_refill) {
-    filling_context->filled_form = result;
+    filling_context->filled_form = result_form;
   }
 
   autofilled_form_signatures_.push_front(form_structure->form_signature());
@@ -2522,7 +2524,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       });
   base::flat_set<FieldGlobalId> safe_fields =
       driver().ApplyFormAction(mojom::ActionType::kFill, action_persistence,
-                               result, field.origin, field_types);
+                               result_form, field.origin, field_types);
   client().DidFillOrPreviewForm(action_persistence,
                                 trigger_details.trigger_source, is_refill);
 
@@ -2543,7 +2545,7 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       safe_newly_filled_fields.old_values.push_back(
           form.FindFieldByGlobalId(newly_filled_field_id));
       safe_newly_filled_fields.new_values.push_back(
-          result.FindFieldByGlobalId(newly_filled_field_id));
+          result_form.FindFieldByGlobalId(newly_filled_field_id));
       AutofillField* newly_filled_field =
           form_structure->GetFieldById(newly_filled_field_id);
       CHECK(newly_filled_field);
@@ -2566,10 +2568,10 @@ void BrowserAutofillManager::FillOrPreviewDataModelForm(
       continue;
     }
     // Find and report index of fields that were not filled.
-    auto it = base::ranges::find(result.fields, newly_filled_field_id,
+    auto it = base::ranges::find(result_form.fields, newly_filled_field_id,
                                  &FormFieldData::global_id);
-    if (it != result.fields.end()) {
-      size_t index = it - result.fields.begin();
+    if (it != result_form.fields.end()) {
+      size_t index = it - result_form.fields.begin();
       std::string field_number = base::StringPrintf("Field %zu", index);
       LOG_AF(buffer) << Tr{} << field_number
                      << "Actually did not fill field because of the iframe "
