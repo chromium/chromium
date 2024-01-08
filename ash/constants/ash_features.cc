@@ -1980,7 +1980,7 @@ BASE_FEATURE(kOobeQuickStart,
 // Enables or disables search customizable shortcuts in launcher.
 BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables sending feedback for Orca.
 BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);

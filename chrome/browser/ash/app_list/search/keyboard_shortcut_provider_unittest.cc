@@ -78,16 +78,24 @@ std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedStates(
 
 }  // namespace
 
+// TODO(longbowei): Remove KeyboardShortcutProviderTest when deprecating old
+// shortcut app.
 class KeyboardShortcutProviderTest : public ChromeAshTestBase,
                                      public testing::WithParamInterface<bool> {
  public:
   KeyboardShortcutProviderTest() {
     if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{search_features::
+                                    kLauncherFuzzyMatchAcrossProviders},
+          /*disabled_features=*/{
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          search_features::kLauncherFuzzyMatchAcrossProviders);
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{},
+          /*disabled_features=*/{
+              search_features::kLauncherFuzzyMatchAcrossProviders,
+              ash::features::kSearchCustomizableShortcutsInLauncher});
     }
   }
 
