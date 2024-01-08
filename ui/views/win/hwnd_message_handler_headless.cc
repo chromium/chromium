@@ -8,9 +8,11 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
+#include "ui/views/win/hwnd_util.h"
 
 namespace views {
 namespace {
@@ -170,8 +172,33 @@ void HWNDMessageHandlerHeadless::SetSize(const gfx::Size& size) {
 }
 
 void HWNDMessageHandlerHeadless::CenterWindow(const gfx::Size& size) {
-  // TODO(kvitekp): Check if this is used to position modal child windows.
-  NOTIMPLEMENTED_LOG_ONCE();
+  HWND parent = ::GetParent(hwnd());
+  if (!::IsWindow(parent)) {
+    parent = ::GetWindow(hwnd(), GW_OWNER);
+  }
+
+  gfx::Rect center_bounds = views::GetHeadlessWindowBounds(parent);
+  if (center_bounds.IsEmpty()) {
+    // No parent or no parent rect. Since in headless mode there is no monitor
+    // to center the window over, just assume the window size and leave.
+    SetSize(size);
+    return;
+  }
+
+  // This mimics the code in gfx::CenterAndSizeWindow() which we cannot use
+  // in headless mode because it operates on HWNDs.
+  int x = center_bounds.x();
+  if (center_bounds.width() > size.width()) {
+    x += (center_bounds.width() - size.width()) / 2;
+  }
+
+  int y = center_bounds.y();
+  if (center_bounds.height() > size.height()) {
+    y += (center_bounds.height() - size.height()) / 2;
+  }
+
+  gfx::Rect window_bounds(gfx::Point(x, y), size);
+  SetBoundsInternal(window_bounds, /*force_size_changed=*/false);
 }
 
 void HWNDMessageHandlerHeadless::SetRegion(HRGN region) {}
@@ -368,8 +395,9 @@ void HWNDMessageHandlerHeadless::SetFullscreen(bool fullscreen,
 }
 
 void HWNDMessageHandlerHeadless::SizeConstraintsChanged() {
-  // TODO(kvitekp): Check if we need to handle this.
-  NOTIMPLEMENTED_LOG_ONCE();
+  // Base class method updates platform window style bits WS_THICKFRAME and
+  // WS_MIN/MAXIMIZEBOX according to the delegate's window sizing expectations.
+  // Ignored in headless mode since we don't touch underlying platform window.
 }
 
 void HWNDMessageHandlerHeadless::SetHeadlessWindowBounds(

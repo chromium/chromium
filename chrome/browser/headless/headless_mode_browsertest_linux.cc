@@ -4,6 +4,7 @@
 
 #include "chrome/browser/headless/headless_mode_browsertest.h"
 
+#include "chrome/browser/headless/headless_mode_browsertest_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,8 +18,9 @@
 
 namespace headless {
 
-// static
-bool HeadlessModeBrowserTest::IsPlatformWindowVisible(views::Widget* widget) {
+namespace test {
+
+bool IsPlatformWindowVisible(views::Widget* widget) {
   CHECK(widget);
 
   gfx::NativeWindow native_window = widget->GetNativeWindow();
@@ -33,6 +35,24 @@ bool HeadlessModeBrowserTest::IsPlatformWindowVisible(views::Widget* widget) {
 
   return platform_window->IsVisible();
 }
+
+gfx::Rect GetPlatformWindowExpectedBounds(views::Widget* widget) {
+  CHECK(widget);
+
+  gfx::NativeWindow native_window = widget->GetNativeWindow();
+  CHECK(native_window);
+
+  aura::WindowTreeHostPlatform* host =
+      static_cast<aura::WindowTreeHostPlatform*>(native_window->GetHost());
+  CHECK(host);
+
+  ui::PlatformWindow* platform_window = host->platform_window();
+  CHECK(platform_window);
+
+  return platform_window->GetBoundsInPixels();
+}
+
+}  // namespace test
 
 namespace {
 

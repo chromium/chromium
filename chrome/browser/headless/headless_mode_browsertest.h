@@ -16,10 +16,6 @@ namespace content {
 class WebContents;
 }
 
-namespace views {
-class Widget;
-}
-
 namespace headless {
 
 class HeadlessModeBrowserTest : public InProcessBrowserTest {
@@ -35,10 +31,6 @@ class HeadlessModeBrowserTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
-
-  // Returns the visibility state of the platform window associated with the
-  // widget. This method has platform specific implementations.
-  static bool IsPlatformWindowVisible(views::Widget* widget);
 
  protected:
   bool headful_mode() const { return headful_mode_; }

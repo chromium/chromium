@@ -31,6 +31,9 @@ VIEWS_EXPORT gfx::Rect GetWindowBoundsForClientBounds(
     View* view,
     const gfx::Rect& client_bounds);
 
+// Returns the headless window bounds for the specified HWND.
+VIEWS_EXPORT gfx::Rect GetHeadlessWindowBounds(HWND window);
+
 // Shows |window|'s system menu (at a specified |point| in screen physical
 // coordinates).
 VIEWS_EXPORT void ShowSystemMenuAtScreenPixelLocation(HWND window,
