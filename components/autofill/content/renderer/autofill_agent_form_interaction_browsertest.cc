@@ -4,11 +4,13 @@
 
 #include <string>
 
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -25,13 +27,24 @@ namespace {
 
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::InSequence;
 using ::testing::MockFunction;
+using ::testing::Not;
 
 // Returns a matcher that matches a `FormFieldData::id_attribute`.
 auto HasFieldIdAttribute(std::u16string id_attribute) {
   return Field("id_attribute", &FormFieldData::id_attribute, id_attribute);
+}
+
+// Returns a matcher that matches a `FormFieldData::form_control_type`.
+auto HasType(FormControlType type) {
+  return Field(&FormFieldData::form_control_type, type);
+}
+
+auto IsContentEditable() {
+  return HasType(FormControlType::kContentEditable);
 }
 
 // TODO(crbug.com/1496382): Clean up these functions once
@@ -267,6 +280,93 @@ TEST_F(AutofillAgentFormInteractionTest, TapNearEdge) {
   gfx::Rect element_bounds = GetElementBounds("text_1");
   SimulateRectTap(element_bounds -
                   gfx::Vector2d(element_bounds.width() / 2 + 1, 0));
+}
+
+class AutofillAgentContentEditableInteractionTest
+    : public test::AutofillRendererTest {
+ public:
+  AutofillAgentContentEditableInteractionTest() {
+    scoped_features_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillContentEditables},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+// Tests that left clicking on an contenteditable triggers AskForValuesToFill.
+TEST_F(AutofillAgentContentEditableInteractionTest, LeftClick) {
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          Field(&FormData::fields, ElementsAre(IsContentEditable())),
+          IsContentEditable(), _,
+          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
+      .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+
+  LoadHTML("<body><div id=ce contenteditable></body>");
+  WaitForFormsSeen();
+  SimulateElementClickAndWait("ce");
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Tests that unfocusing a contenteditable triggers a call to
+// `AutofillDriver::HidePopup()`.
+// The test is not enabled on Android because the keyboard accessory has
+// different hiding logic for which `HidePopup` is not called.
+TEST_F(AutofillAgentContentEditableInteractionTest,
+       LossOfFocusOfContentEditableTriggersHideAutofillPopup) {
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            Field(&FormData::fields, ElementsAre(IsContentEditable())),
+            IsContentEditable(), _,
+            mojom::AutofillSuggestionTriggerSource::kContentEditableClicked));
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(autofill_driver(), HidePopup);
+  }
+
+  LoadHTML("<body><div id=ce contenteditable></div>");
+  WaitForFormsSeen();
+  SimulateElementClickAndWait("ce");
+  check.Call();
+  ChangeFocusToNull(GetMainFrame()->GetDocument());
+}
+#endif
+
+// Tests that clicking on a contenteditable form is ignored.
+TEST_F(AutofillAgentContentEditableInteractionTest,
+       ClickOnContentEditableFormIsIgnored) {
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
+
+  LoadHTML("<body><form id=ce contenteditable></form>");
+  WaitForFormsSeen();
+  SimulateElementClickAndWait("ce");
+}
+
+// Tests that clicking on a contenteditable form element triggers
+// AskForValuesToFill for the form element and not the contenteditable.
+TEST_F(AutofillAgentContentEditableInteractionTest,
+       ClickOnContentEditableFormControlIsTreatedAsFormControl) {
+  MockFunction<void()> check;
+  {
+    InSequence s;
+    EXPECT_CALL(autofill_driver(), FormsSeen);
+    EXPECT_CALL(check, Call);
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(_, Not(IsContentEditable()), _, _))
+        .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+  }
+
+  LoadHTML("<body><textarea id=ce contenteditable></textarea>");
+  WaitForFormsSeen();
+  check.Call();
+  SimulateElementClickAndWait("ce");
 }
 
 }  // namespace autofill

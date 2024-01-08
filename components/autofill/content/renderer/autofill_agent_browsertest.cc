@@ -49,16 +49,6 @@ using ::testing::NiceMock;
 using ::testing::Optional;
 using ::testing::SizeIs;
 
-constexpr int kExpectedCallsToHandleFocusChangeComplete =
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/1490581): Android calls HandleFocusChangeComplete()
-    // twice, once from FocusedElementChanged() and once from
-    // DidReceiveLeftMouseDownOrGestureTapInNode().
-    2;
-#else
-    1;
-#endif
-
 class MockFormTracker : public FormTracker {
  public:
   using FormTracker::FormTracker;
@@ -93,9 +83,12 @@ auto HasNumChildFrames(size_t num) {
 
 // Matches a container with a single element which (the element) matches all
 // |element_matchers|.
-template <typename... Matchers>
-auto HasSingleElementWhich(Matchers... element_matchers) {
+auto HasSingleElementWhich(auto... element_matchers) {
   return AllOf(SizeIs(1), ElementsAre(AllOf(element_matchers...)));
+}
+
+auto HasType(FormControlType type) {
+  return Field(&FormFieldData::form_control_type, type);
 }
 
 // TODO(crbug.com/63573): Add many more test cases.
@@ -211,70 +204,6 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerFormExtractionWithResponse) {
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
   EXPECT_CALL(mock_callback, Run(true));
   task_environment_.FastForwardBy(AutofillAgent::kFormsSeenThrottle / 2);
-}
-
-auto HasType(FormControlType type) {
-  return Field(&FormFieldData::form_control_type, type);
-}
-
-TEST_F(AutofillAgentTestWithFeatures,
-       FocusOnContentEditableTriggersAskForValuesToFill) {
-  const auto is_content_editable = HasType(FormControlType::kContentEditable);
-  LoadHTML("<body><div id=ce contenteditable></body>");
-  WaitForFormsSeen();
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          Field(&FormData::fields, ElementsAre(is_content_editable)),
-          is_content_editable, _,
-          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
-      .Times(kExpectedCallsToHandleFocusChangeComplete);
-  SimulateElementClick("ce");
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-// Tests that unfocusing a contenteditable triggers a call to
-// `AutofillDriver::HidePopup()`.
-// The test is not enabled on Android because the keyboard accessory has
-// different hiding logic for which `HidePopup` is not called.
-TEST_F(AutofillAgentTestWithFeatures,
-       LossOfFocusOfContentEditableTriggersHideAutofillPopup) {
-  const auto is_content_editable = HasType(FormControlType::kContentEditable);
-  LoadHTML("<body><div id=ce contenteditable></div>");
-  WaitForFormsSeen();
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          Field(&FormData::fields, ElementsAre(is_content_editable)),
-          is_content_editable, _,
-          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked));
-  EXPECT_CALL(autofill_driver(), HidePopup);
-  SimulateElementClick("ce");
-  ChangeFocusToNull(GetMainFrame()->GetDocument());
-}
-#endif
-
-TEST_F(AutofillAgentTestWithFeatures, FocusOnContentEditableFormIsIgnored) {
-  LoadHTML("<body><form id=ce contenteditable></form>");
-  WaitForFormsSeen();
-  EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
-  SimulateElementClick("ce");
-}
-
-TEST_F(AutofillAgentTestWithFeatures,
-       FocusOnContentEditableFormControlIsIgnored) {
-  EXPECT_CALL(autofill_driver(), FormsSeen);
-  LoadHTML("<body><textarea id=ce contenteditable></textarea>");
-  WaitForFormsSeen();
-  EXPECT_CALL(autofill_driver(), AskForValuesToFill)
-      .Times(kExpectedCallsToHandleFocusChangeComplete);
-  EXPECT_CALL(
-      autofill_driver(),
-      AskForValuesToFill(
-          _, _, _,
-          mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
-      .Times(0);
-  SimulateElementClick("ce");
 }
 
 class AutofillAgentTestExtractForms : public AutofillAgentTestWithFeatures {
