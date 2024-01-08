@@ -33,7 +33,7 @@ base::flat_set<int64_t>* internal_display_ids() {
 // A list of bogus sizes in mm that should be ignored.
 // See crbug.com/136533. The first element maintains the minimum
 // size required to be valid size.
-const int kInvalidDisplaySizeList[][2] = {
+constexpr int kInvalidDisplaySizeList[][2] = {
     {40, 30},
     {50, 40},
     {160, 90},
