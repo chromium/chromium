@@ -275,7 +275,11 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
   DCHECK(dec_surface);
   DVLOGF(4);
   if (!output_queue_) {
-    if (!input_queue_->PrepareBuffers()) {
+    // TODO(frkoenig): There only needs to be a single buffer in order to
+    // decode. This should be investigated later to see if additional buffers
+    // provide better performance.
+    constexpr size_t kInputBuffers = 1;
+    if (!input_queue_->PrepareBuffers(kInputBuffers)) {
       return false;
     }
     input_queue_->StartStreaming();
@@ -291,7 +295,16 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
       return false;
     }
 
-    if (!output_queue_->PrepareBuffers()) {
+    // There needs to be two additional buffers. One for the video frame being
+    // decoded, and one for our client (presumably an ImageProcessor).
+    constexpr size_t kAdditionalOutputBuffers = 2;
+    const size_t num_buffers =
+        decoder_->GetNumReferenceFrames() + kAdditionalOutputBuffers;
+    // Verify |num_buffers| has a reasonable value. Anecdotally
+    // 16 is the largest amount of reference frames seen, on an ITU-T H.264 test
+    // vector (CAPCM*1_Sand_E.h264).
+    CHECK_LE(num_buffers, 32u);
+    if (!output_queue_->PrepareBuffers(num_buffers)) {
       return false;
     }
 

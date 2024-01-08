@@ -31,14 +31,14 @@ class MEDIA_GPU_EXPORT BaseQueue {
   BaseQueue& operator=(const BaseQueue&);
   virtual ~BaseQueue() = 0;
 
-  virtual bool PrepareBuffers() = 0;
+  virtual bool PrepareBuffers(size_t num_buffers) = 0;
   bool DeallocateBuffers();
   bool StartStreaming();
   bool StopStreaming();
   uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
 
  protected:
-  bool AllocateBuffers(uint32_t num_planes);
+  bool AllocateBuffers(uint32_t num_planes, size_t num_buffers);
   virtual std::string Description() = 0;
   void ReturnBuffer(uint32_t index);
   absl::optional<uint32_t> GetFreeBufferIndex();
@@ -53,9 +53,6 @@ class MEDIA_GPU_EXPORT BaseQueue {
   // will be used more often than if it was a ring buffer. Using a set
   // enforces the elements be unique.
   std::set<uint32_t> free_buffer_indices_;
-
- private:
-  virtual uint32_t BufferMinimumCount() = 0;
 };
 
 class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
@@ -70,7 +67,7 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
                                  const void* data,
                                  size_t length,
                                  uint64_t frame_id);
-  bool PrepareBuffers() override;
+  bool PrepareBuffers(size_t num_buffers) override;
 
   // Add buffers that have been dequeued into the list of buffers available
   // to be used again.
@@ -79,7 +76,6 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
  private:
   bool SetupFormat(const gfx::Size resolution);
   std::string Description() override;
-  uint32_t BufferMinimumCount() override;
 
   VideoCodec codec_;
 };
@@ -98,7 +94,7 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   bool NegotiateFormat();
 
   // Allocate and prepare the buffers that will store the decoded raw frames.
-  bool PrepareBuffers() override;
+  bool PrepareBuffers(size_t num_buffers) override;
 
   // After a buffer has been used it needs to be returned to the pool of
   // available buffers. The client tracks using buffers using |frame_id|.
@@ -124,8 +120,6 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   scoped_refptr<VideoFrame> CreateVideoFrame(uint32_t index);
 
   std::string Description() override;
-
-  uint32_t BufferMinimumCount() override;
 
   BufferFormat buffer_format_;
 
