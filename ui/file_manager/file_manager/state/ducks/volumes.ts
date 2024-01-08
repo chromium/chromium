@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {isOneDriveId, isSameEntry, sortEntries} from '../../common/js/entry_utils.js';
 import {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';
 import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
 import {type FileKey, PropStatus, type State, type Volume, type VolumeId} from '../../state/state.js';

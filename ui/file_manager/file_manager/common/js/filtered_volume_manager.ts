@@ -5,12 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
+import {VolumeInfoList} from '../../background/js/volume_info_list.js';
 import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeInfoList} from '../../externs/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent, VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
-import {ArrayDataModel, type SpliceEvent} from './array_data_model.js';
+import {type SpliceEvent} from './array_data_model.js';
 import {FilesEventTarget} from './files_event_target.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
@@ -22,13 +22,12 @@ import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './v
  * The inner list ownership is shared between FilteredVolumeInfoList and
  * FilteredVolumeManager to enforce these constraints.
  */
-export class FilteredVolumeInfoList extends
-    ArrayDataModel<VolumeInfo> implements VolumeInfoList {
-  add(_volumeInfo: any) {
+export class FilteredVolumeInfoList extends VolumeInfoList {
+  override add(_volumeInfo: any) {
     throw new Error('FilteredVolumeInfoList.add not allowed in foreground');
   }
 
-  remove(_volumeInfo: any) {
+  override remove(_volumeInfo: any) {
     throw new Error('FilteredVolumeInfoList.remove not allowed in foreground');
   }
 
@@ -55,7 +54,7 @@ const MEDIA_STORE_VOLUME_TYPES: VolumeType[] = [
 export class FilteredVolumeManager extends
     FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
   // VolumeManager.volumeInfoList property accessed by callers.
-  volumeInfoList = new FilteredVolumeInfoList([]);
+  volumeInfoList = new FilteredVolumeInfoList();
 
   private volumeManager_: VolumeManager|null = null;
 

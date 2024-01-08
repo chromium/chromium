@@ -5,6 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import type {SpliceEvent} from '../../common/js/array_data_model.js';
 import {Aggregator, AsyncQueue} from '../../common/js/async_util.js';
 import {isModal} from '../../common/js/dialog_type.js';
@@ -16,7 +17,6 @@ import {recordMediumCount, recordUserAction} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
 import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';

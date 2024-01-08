@@ -165,8 +165,8 @@ export class NavigationModelAndroidAppItem extends NavigationModelItem {
 export class NavigationModelVolumeItem extends NavigationModelItem {
   /**
    * @param {string} label Label.
-   * @param {!import('../../externs/volume_info.js').VolumeInfo} volumeInfo
-   *     Volume info for the volume. Cannot be null.
+   * @param {!import('../../background/js/volume_info.js').VolumeInfo}
+   *     volumeInfo Volume info for the volume. Cannot be null.
    */
   constructor(label, volumeInfo) {
     super(label, NavigationModelItemType.VOLUME);

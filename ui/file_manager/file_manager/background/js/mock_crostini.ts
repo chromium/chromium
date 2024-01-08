@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Crostini} from '../../background/js/crostini.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
+
+import {Crostini} from './crostini.js';
 
 /**
  * Crostini shared path state handler.

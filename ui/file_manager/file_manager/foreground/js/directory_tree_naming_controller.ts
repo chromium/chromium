@@ -4,11 +4,11 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isSameEntry} from '../../common/js/entry_utils.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import {readSubDirectoriesForRenamedEntry} from '../../state/ducks/all_entries.js';
 import {getStore} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';

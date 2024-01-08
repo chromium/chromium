@@ -22,7 +22,7 @@
  * https://developer.mozilla.org/en-US/docs/Web/API/FileSystemDirectoryReader
  */
 
-import type {VolumeInfo} from '../../externs/volume_info.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 
 import {isSameEntry} from './entry_utils.js';
 import {vmTypeToIconName} from './icon_util.js';

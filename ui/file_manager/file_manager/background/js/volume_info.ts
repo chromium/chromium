@@ -8,14 +8,12 @@ import {FakeEntry, FakeEntryImpl, FilesAppEntry} from '../../common/js/files_app
 import {isDriveFsBulkPinningEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import {COMPUTERS_DIRECTORY_NAME, FileSystemType, RootType, SHARED_DRIVES_DIRECTORY_NAME, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
  * flush storage", or "mounted zip archive" etc.
  */
-export class VolumeInfoImpl implements VolumeInfo {
+export class VolumeInfo {
   private displayRoot_: DirectoryEntry|null = null;
   private sharedDriveDisplayRoot_: DirectoryEntry|null = null;
   private computersDisplayRoot_: DirectoryEntry|null = null;
@@ -268,7 +266,7 @@ export class VolumeInfoImpl implements VolumeInfo {
       return Promise.reject(this.error);
     }
 
-    return VolumeInfoImpl
+    return VolumeInfo
         .resolveFileSystemUrl_(
             this.fileSystem_.root.toURL() + SHARED_DRIVES_DIRECTORY_NAME)
         .then(
@@ -296,7 +294,7 @@ export class VolumeInfoImpl implements VolumeInfo {
       return Promise.reject(this.error);
     }
 
-    return VolumeInfoImpl
+    return VolumeInfo
         .resolveFileSystemUrl_(
             this.fileSystem_.root.toURL() + COMPUTERS_DIRECTORY_NAME)
         .then(
@@ -326,7 +324,7 @@ export class VolumeInfoImpl implements VolumeInfo {
     // For Drive, we need to resolve.
     const displayRootURL = this.fileSystem_.root.toURL() + 'root';
     const [displayRoot] = await Promise.all([
-      VolumeInfoImpl.resolveFileSystemUrl_(displayRootURL),
+      VolumeInfo.resolveFileSystemUrl_(displayRootURL),
       this.resolveSharedDrivesRoot_(),
       this.resolveComputersRoot_(),
     ]);

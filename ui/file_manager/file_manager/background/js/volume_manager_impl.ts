@@ -10,14 +10,13 @@ import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {promisify, timeoutPromise} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {EntryLocation} from './entry_location_impl.js';
-import {VolumeInfoImpl} from './volume_info_impl.js';
-import {VolumeInfoListImpl} from './volume_info_list_impl.js';
+import {VolumeInfo} from './volume_info.js';
+import {VolumeInfoList} from './volume_info_list.js';
 
 
 /**
@@ -107,7 +106,7 @@ export async function createVolumeInfo(
              TIMEOUT_STR_REQUEST_FILE_SYSTEM + ': ' + volumeMetadata.volumeId)
       .then(rootDirectoryEntry => {
         console.debug(`Got file system '${volumeMetadata.volumeId}'`);
-        return new VolumeInfoImpl(
+        return new VolumeInfo(
             volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
             rootDirectoryEntry.filesystem, volumeMetadata.mountCondition,
             volumeMetadata.deviceType, volumeMetadata.devicePath,
@@ -134,7 +133,7 @@ export async function createVolumeInfo(
 
         // TODO(crbug/847729): Report a mount error via UMA.
 
-        return new VolumeInfoImpl(
+        return new VolumeInfo(
             volumeMetadata.volumeType as VolumeType, volumeMetadata.volumeId,
             null,  // File system is not found.
             volumeMetadata.mountCondition, volumeMetadata.deviceType,
@@ -163,7 +162,7 @@ interface Request {
  */
 export class VolumeManagerImpl extends
     FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
-  volumeInfoList = new VolumeInfoListImpl();
+  volumeInfoList = new VolumeInfoList();
 
   /**
    * The list of archives requested to mount. We will show contents once
@@ -505,8 +504,7 @@ export class VolumeManagerImpl extends
         return volumeInfo;
       }
       // Additionally, check fake entries.
-      for (const key in volumeInfo.fakeEntries) {
-        const fakeEntry = volumeInfo.fakeEntries[key];
+      for (const fakeEntry of Object.values(volumeInfo.fakeEntries)) {
         if (isSameEntry(fakeEntry, entry)) {
           return volumeInfo;
         }

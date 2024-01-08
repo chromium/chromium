@@ -10,12 +10,11 @@ import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
 import {FileSystemType, getRootTypeFromVolumeType, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
 import {EntryLocation} from './entry_location_impl.js';
-import {VolumeInfoImpl} from './volume_info_impl.js';
-import {VolumeInfoListImpl} from './volume_info_list_impl.js';
+import {VolumeInfo} from './volume_info.js';
+import {VolumeInfoList} from './volume_info_list.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 import {VolumeManagerImpl} from './volume_manager_impl.js';
 
@@ -29,7 +28,7 @@ let volumeManagerInstance: VolumeManager|null = null;
  */
 export class MockVolumeManager extends
     FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
-  volumeInfoList = new VolumeInfoListImpl();
+  volumeInfoList = new VolumeInfoList();
   driveConnectionState: chrome.fileManagerPrivate.DriveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
   };
@@ -212,7 +211,7 @@ export class MockVolumeManager extends
 
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
-    const volumeInfo = new VolumeInfoImpl(
+    const volumeInfo = new VolumeInfo(
         type,
         volumeId,
         fileSystem,

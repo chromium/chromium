@@ -1408,8 +1408,8 @@ class VolumeItem extends DirectoryItem {
   /**
    * Set up icon of this volume item.
    * @param {Element} icon Icon element to be setup.
-   * @param {import('../../../externs/volume_info.js').VolumeInfo} volumeInfo
-   *     VolumeInfo determines the icon type.
+   * @param {import('../../../background/js/volume_info.js').VolumeInfo}
+   *     volumeInfo VolumeInfo determines the icon type.
    * @private
    */
   setupIcon_(icon, volumeInfo) {
@@ -1465,7 +1465,7 @@ class VolumeItem extends DirectoryItem {
   }
 
   /**
-   * @type {!import('../../../externs/volume_info.js').VolumeInfo}
+   * @type {!import('../../../background/js/volume_info.js').VolumeInfo}
    */
   get volumeInfo() {
     return this.volumeInfo_;
@@ -1767,8 +1767,8 @@ export class DriveVolumeItem extends VolumeItem {
     // @ts-ignore: error TS2341: Property 'fakeEntriesVisible_' is private and
     // only accessible within class 'DirectoryTree'.
     if (this.parentTree_.fakeEntriesVisible_) {
-      for (const key in this.volumeInfo_.fakeEntries) {
-        fakeEntries.push(this.volumeInfo_.fakeEntries[key]);
+      for (const fakeEntry of Object.values(this.volumeInfo_.fakeEntries)) {
+        fakeEntries.push(fakeEntry);
       }
       // This list is sorted by URL on purpose.
       fakeEntries.sort((a, b) => {
@@ -2694,6 +2694,7 @@ export class DirectoryTree extends Tree {
             this.selectedItem = null;
           }
         },
+        /** @param {any} error */
         (error) => {
           console.warn('Failed to select by entry due to', error);
         });

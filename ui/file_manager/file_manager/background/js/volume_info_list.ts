@@ -7,11 +7,10 @@
  */
 
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
-import type {VolumeInfoList} from '../../externs/volume_info_list.js';
 
-export class VolumeInfoListImpl extends ArrayDataModel<VolumeInfo> implements
-    VolumeInfoList {
+import type {VolumeInfo} from './volume_info.js';
+
+export class VolumeInfoList extends ArrayDataModel<VolumeInfo> {
   constructor() {
     super([]);
   }

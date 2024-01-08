@@ -9,13 +9,13 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../../common/js/api.js';
 import {createDOMError} from '../../common/js/dom_utils.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {getFileErrorString, str, strf} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {FileSystemType, FileSystemTypeVolumeNameLengthLimit} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 
 /**
  * Verifies name for file, folder, or removable root to be created or renamed.

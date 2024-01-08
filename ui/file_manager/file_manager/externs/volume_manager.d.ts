@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import type {EntryLocation} from '../background/js/entry_location_impl.js';
+import type {VolumeInfo} from '../background/js/volume_info.js';
+import type {VolumeInfoList} from '../background/js/volume_info_list.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../common/js/files_app_entry_interfaces.js';
 import type {CustomEventMap, FilesEventTarget} from '../common/js/files_event_target.js';
 import type {VolumeType} from '../common/js/volume_manager_types.js';
-
-import type {VolumeInfo} from './volume_info.js';
-import type {VolumeInfoList} from './volume_info_list.js';
 
 
 export type DeviceConnectionChangedEvent = CustomEvent<undefined>&{

@@ -7,6 +7,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 
 import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {getDirectory, getDisallowedTransfers, getFile, getParentEntry, grantAccess, startIOTask} from '../../common/js/api.js';
 import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, queryRequiredElement} from '../../common/js/dom_utils.js';
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
@@ -19,7 +20,6 @@ import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import type {FileKey} from '../../state/state.js';
 import {getFileData, getStore} from '../../state/store.js';

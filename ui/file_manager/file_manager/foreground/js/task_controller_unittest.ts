@@ -8,6 +8,7 @@ import {assertDeepEquals, assertEquals, assertNotReached, assertTrue} from 'chro
 
 import {createCrostiniForTest} from '../../background/js/mock_crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {isSameEntries} from '../../common/js/entry_utils.js';
@@ -15,7 +16,6 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';

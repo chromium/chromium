@@ -9,7 +9,6 @@ import {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordInterval} from '../../common/js/metrics.js';
 import {isInGuestMode} from '../../common/js/util.js';
 import {ARCHIVE_OPENED_EVENT_TYPE, Source, VOLUME_ALREADY_MOUNTED, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeAlreadyMountedEvent, VolumeManager} from '../../externs/volume_manager.js';
 
 import {AppWindowWrapper} from './app_window_wrapper.js';
@@ -17,6 +16,7 @@ import {Crostini} from './crostini.js';
 import {DriveSyncHandlerImpl} from './drive_sync_handler.js';
 import {FileOperationHandler} from './file_operation_handler.js';
 import {ProgressCenter} from './progress_center.js';
+import type {VolumeInfo} from './volume_info.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 
 /**

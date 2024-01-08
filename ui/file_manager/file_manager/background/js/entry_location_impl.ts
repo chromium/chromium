@@ -4,7 +4,8 @@
 
 import {isRecentRootType} from '../../common/js/entry_utils.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {VolumeInfo} from '../../externs/volume_info.js';
+
+import type {VolumeInfo} from './volume_info.js';
 
 /**
  * Location information which shows where the path points in FileManager's

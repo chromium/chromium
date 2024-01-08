@@ -11,7 +11,7 @@ import {assertRejected, waitUntil} from '../../common/js/test_error_reporting.js
 import {FileSystemType, RootType, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
-import {VolumeInfoImpl} from './volume_info_impl.js';
+import {VolumeInfo} from './volume_info.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
 import {createVolumeInfo, VolumeManagerImpl} from './volume_manager_impl.js';
 
@@ -522,7 +522,7 @@ export async function testGetLocationInfo(done: VoidCallback) {
 export async function testWhenReady(done: VoidCallback) {
   const volumeManager = await volumeManagerFactory.getInstance();
   const promiseBeforeAdd = volumeManager.whenVolumeInfoReady('volumeId');
-  const volumeInfo = new VolumeInfoImpl(
+  const volumeInfo = new VolumeInfo(
       /* volumeType */ VolumeType.MY_FILES,
       /* volumeId */ 'volumeId',
       /* fileSystem */ null,
@@ -642,7 +642,7 @@ export async function testErrorInitializingVolume(done: VoidCallback) {
 }
 
 /**
- * Tests VolumeInfoImpl doesn't raise exception if null is passed for
+ * Tests VolumeInfo doesn't raise exception if null is passed for
  * filesystem. crbug.com/1041340
  */
 export async function testDriveWithNullFilesystem(done: VoidCallback) {
@@ -658,7 +658,7 @@ export async function testDriveWithNullFilesystem(done: VoidCallback) {
 
   // Create a VolumeInfo with null filesystem, in the same way that happens on
   // createVolumeInfo().
-  const volumeInfo = new VolumeInfoImpl(
+  const volumeInfo = new VolumeInfo(
       driveVolumeMetadata.volumeType as VolumeType,
       driveVolumeMetadata.volumeId,
       null,  // File system is not found.
