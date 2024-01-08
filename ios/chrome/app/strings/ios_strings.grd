@@ -4021,6 +4021,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET" desc="Accessibility action to expand the search engine description.">
         Tap to expand
       </message>
+      <message name="IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_SNIPPET_COLLAPSED" desc="Accessibility feedback after the user collapses the chevron to hide the search engine snippet.">
+        Collapsed
+      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
       </message>
