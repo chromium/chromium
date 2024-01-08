@@ -101,6 +101,8 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
+#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
+#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -248,7 +250,10 @@
 
 @end
 
-@implementation NewTabPageCoordinator
+@implementation NewTabPageCoordinator {
+  // Coordinator in charge of handling sharing use cases.
+  SharingCoordinator* _sharingCoordinator;
+}
 
 // Synthesize NewTabPageConfiguring properties.
 @synthesize shouldScrollIntoFeed = _shouldScrollIntoFeed;
@@ -399,6 +404,9 @@
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
+
+  [_sharingCoordinator stop];
+  _sharingCoordinator = nil;
 
   self.started = NO;
 }
@@ -978,6 +986,21 @@
 
 - (void)contentSuggestionsWasUpdated {
   [self.NTPViewController updateHeightAboveFeed];
+}
+
+- (void)shareURL:(const GURL&)URL
+           title:(NSString*)title
+        fromView:(UIView*)view {
+  SharingParams* params =
+      [[SharingParams alloc] initWithURL:URL
+                                   title:title
+                                scenario:SharingScenario::MostVisitedEntry];
+  _sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.NTPViewController
+                         browser:self.browser
+                          params:params
+                      originView:view];
+  [_sharingCoordinator start];
 }
 
 #pragma mark - FeedSignInPromoDelegate

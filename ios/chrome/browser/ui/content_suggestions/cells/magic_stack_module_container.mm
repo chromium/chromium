@@ -10,15 +10,25 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -53,69 +63,38 @@ const CGFloat kSeparatorHeight = 0.5;
 @end
 
 @implementation MagicStackModuleContainer {
-  id<MagicStackModuleContainerDelegate> _delegate;
   UILabel* _title;
   UILabel* _subtitle;
   BOOL _isPlaceholder;
   UIButton* _seeMoreButton;
+  UIView* _contentView;
+  UIView* _separator;
+  UIStackView* _stackView;
+  UIImageView* _placeholderImage;
+  UIStackView* _titleStackView;
 }
 
-- (instancetype)initWithType:(ContentSuggestionsModuleType)type {
-  self = [super initWithFrame:CGRectZero];
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
   if (self) {
-  }
-  return self;
-}
-
-- (instancetype)initAsPlaceholder {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    _isPlaceholder = YES;
-    self.layer.cornerRadius = kCornerRadius;
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-
-    UIImageView* placeholderImage = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"magic_stack_placeholder_module"]];
-    placeholderImage.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:placeholderImage];
-    AddSameConstraints(placeholderImage, self);
-  }
-  return self;
-}
-
-- (instancetype)initWithContentView:(UIView*)contentView
-                               type:(ContentSuggestionsModuleType)type
-                           delegate:
-                               (id<MagicStackModuleContainerDelegate>)delegate {
-  self = [super initWithFrame:CGRectZero];
-  if (self) {
-    _type = type;
-    _delegate = delegate;
     self.layer.cornerRadius = kCornerRadius;
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    if ([self allowsLongPress]) {
-      [self addInteraction:[[UIContextMenuInteraction alloc]
-                               initWithDelegate:self]];
-    }
 
-    UIStackView* titleStackView = [[UIStackView alloc] init];
-    titleStackView.alignment = UIStackViewAlignmentCenter;
-    titleStackView.axis = UILayoutConstraintAxisHorizontal;
-    titleStackView.distribution = UIStackViewDistributionFill;
+    _titleStackView = [[UIStackView alloc] init];
+    _titleStackView.alignment = UIStackViewAlignmentTop;
+    _titleStackView.axis = UILayoutConstraintAxisHorizontal;
+    _titleStackView.distribution = UIStackViewDistributionFill;
     // Resist Vertical expansion so all titles are the same height, allowing
     // content view to fill the rest of the module space.
-    [titleStackView setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                      forAxis:UILayoutConstraintAxisVertical];
+    [_titleStackView setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                       forAxis:UILayoutConstraintAxisVertical];
 
     _title = [[UILabel alloc] init];
-    _title.text = [MagicStackModuleContainer titleStringForModule:type];
     _title.font = [MagicStackModuleContainer fontForTitle];
     _title.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    _title.numberOfLines = 0;
+    _title.numberOfLines = 1;
     _title.lineBreakMode = NSLineBreakByWordWrapping;
     _title.accessibilityTraits |= UIAccessibilityTraitHeader;
-    _title.accessibilityIdentifier =
-        [MagicStackModuleContainer accessibilityIdentifierForModule:type];
     [_title setContentHuggingPriority:UILayoutPriorityDefaultLow
                               forAxis:UILayoutConstraintAxisHorizontal];
     [_title
@@ -125,111 +104,87 @@ const CGFloat kSeparatorHeight = 0.5;
     [_title
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:UILayoutConstraintAxisVertical];
-    [titleStackView addArrangedSubview:_title];
-    // `setContentHuggingPriority:` does not guarantee that titleStackView
+    [_titleStackView addArrangedSubview:_title];
+    // `setContentHuggingPriority:` does not guarantee that _titleStackView
     // completely resists vertical expansion since UIStackViews do not have
     // intrinsic contentSize. Constraining the title label to the StackView will
     // ensure contentView expands.
     [NSLayoutConstraint activateConstraints:@[
-      [_title.bottomAnchor constraintEqualToAnchor:titleStackView.bottomAnchor]
+      [_title.topAnchor constraintEqualToAnchor:_titleStackView.topAnchor]
     ]];
 
-    if ([self shouldShowSeeMore]) {
-      UIButton* showMoreButton = [[UIButton alloc] init];
-      [showMoreButton
-          setTitle:l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_SEE_MORE)
-          forState:UIControlStateNormal];
-      [showMoreButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                           forState:UIControlStateNormal];
-      [showMoreButton.titleLabel
-          setFont:[UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]];
-      showMoreButton.titleLabel.numberOfLines = 2;
-      showMoreButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-      showMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
-      showMoreButton.contentHorizontalAlignment =
-          UIControlContentHorizontalAlignmentTrailing;
-      [showMoreButton
-          setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-      [showMoreButton addTarget:self
-                         action:@selector(seeMoreButtonWasTapped:)
-               forControlEvents:UIControlEventTouchUpInside];
-      [showMoreButton
-          setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                            forAxis:UILayoutConstraintAxisHorizontal];
-      [titleStackView addArrangedSubview:showMoreButton];
-      showMoreButton.accessibilityIdentifier = showMoreButton.titleLabel.text;
-      _seeMoreButton = showMoreButton;
-    } else if ([self shouldShowSubtitle]) {
-      // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
-      // config in its initializer so the container can build itself from a
-      // passed config/state object.
-      NSString* subtitle = [delegate subtitleStringForModule:type];
+    _seeMoreButton = [[UIButton alloc] init];
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
+    buttonConfiguration.titleLineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary* attributes = @{
+      NSFontAttributeName :
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+    };
+    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+        initWithString:l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_SEE_MORE)
+            attributes:attributes];
+    buttonConfiguration.attributedTitle = attributedTitle;
+    _seeMoreButton.configuration = buttonConfiguration;
+    [_seeMoreButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                         forState:UIControlStateNormal];
+    _seeMoreButton.titleLabel.numberOfLines = 2;
+    _seeMoreButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+    _seeMoreButton.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentTrailing;
+    [_seeMoreButton
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_seeMoreButton addTarget:self
+                       action:@selector(seeMoreButtonWasTapped:)
+             forControlEvents:UIControlEventTouchUpInside];
+    [_seeMoreButton setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+    [_titleStackView addArrangedSubview:_seeMoreButton];
+    _seeMoreButton.accessibilityIdentifier = _seeMoreButton.titleLabel.text;
+    _seeMoreButton.hidden = YES;
 
-      _subtitle = [[UILabel alloc] init];
-      _subtitle.text = subtitle;
-      _subtitle.font = [MagicStackModuleContainer fontForSubtitle];
-      _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      _subtitle.numberOfLines = 0;
-      _subtitle.lineBreakMode = NSLineBreakByWordWrapping;
-      _subtitle.accessibilityTraits |= UIAccessibilityTraitHeader;
-      _subtitle.accessibilityIdentifier = subtitle;
-      [_subtitle setContentHuggingPriority:UILayoutPriorityRequired
-                                   forAxis:UILayoutConstraintAxisHorizontal];
-      [_subtitle
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-      _subtitle.textAlignment =
-          UseRTLLayout() ? NSTextAlignmentLeft : NSTextAlignmentRight;
-
-      [titleStackView addArrangedSubview:_subtitle];
-    }
-
-    UIStackView* stackView = [[UIStackView alloc] init];
-    stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    stackView.alignment = UIStackViewAlignmentFill;
-    stackView.axis = UILayoutConstraintAxisVertical;
-    stackView.spacing = kContentVerticalSpacing;
-    stackView.distribution = UIStackViewDistributionFill;
-    [stackView addSubview:contentView];
-    if ([_title.text length] > 0) {
-      [stackView addArrangedSubview:titleStackView];
-    }
-    if ([self shouldShowSeparator]) {
-      UIView* separator = [[UIView alloc] init];
-      [separator setContentHuggingPriority:UILayoutPriorityDefaultHigh
-                                   forAxis:UILayoutConstraintAxisVertical];
-      separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
-      [stackView addArrangedSubview:separator];
-      [NSLayoutConstraint activateConstraints:@[
-        [separator.heightAnchor
-            constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
-        [separator.leadingAnchor
-            constraintEqualToAnchor:stackView.leadingAnchor],
-        [separator.trailingAnchor
-            constraintEqualToAnchor:stackView.trailingAnchor],
-      ]];
-    }
-    [stackView addArrangedSubview:contentView];
-
-    NSMutableArray* accessibilityElements =
-        [[NSMutableArray alloc] initWithObjects:_title, nil];
-    if ([self shouldShowSeeMore]) {
-      [accessibilityElements addObject:_seeMoreButton];
-    }
-    [accessibilityElements addObject:contentView];
-    if ([self shouldShowSubtitle]) {
-      [accessibilityElements addObject:_subtitle];
-    }
-    self.accessibilityElements = accessibilityElements;
-
-    // Configures `contentView` to be the view willing to expand if needed to
-    // fill extra vertical space in the container.
-    [contentView
+    _subtitle = [[UILabel alloc] init];
+    _subtitle.font = [MagicStackModuleContainer fontForSubtitle];
+    _subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _subtitle.numberOfLines = 0;
+    _subtitle.lineBreakMode = NSLineBreakByWordWrapping;
+    _subtitle.accessibilityTraits |= UIAccessibilityTraitHeader;
+    [_subtitle setContentHuggingPriority:UILayoutPriorityRequired
+                                 forAxis:UILayoutConstraintAxisHorizontal];
+    [_subtitle
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
-                                        forAxis:UILayoutConstraintAxisVertical];
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    _subtitle.textAlignment =
+        UseRTLLayout() ? NSTextAlignmentLeft : NSTextAlignmentRight;
+    [_titleStackView addArrangedSubview:_subtitle];
+
+    _stackView = [[UIStackView alloc] init];
+    _stackView.translatesAutoresizingMaskIntoConstraints = NO;
+    _stackView.alignment = UIStackViewAlignmentFill;
+    _stackView.axis = UILayoutConstraintAxisVertical;
+    _stackView.spacing = kContentVerticalSpacing;
+    _stackView.distribution = UIStackViewDistributionFill;
+
+    [_stackView addArrangedSubview:_titleStackView];
+
+    _separator = [[UIView alloc] init];
+    [_separator setContentHuggingPriority:UILayoutPriorityDefaultHigh
+                                  forAxis:UILayoutConstraintAxisVertical];
+    _separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+    [_stackView addArrangedSubview:_separator];
+    [NSLayoutConstraint activateConstraints:@[
+      [_separator.heightAnchor
+          constraintEqualToConstant:AlignValueToPixel(kSeparatorHeight)],
+      [_separator.leadingAnchor
+          constraintEqualToAnchor:_stackView.leadingAnchor],
+      [_separator.trailingAnchor
+          constraintEqualToAnchor:_stackView.trailingAnchor],
+    ]];
+
     // Ensures that the modules conforms to a height of kModuleMaxHeight. For
     // the MVT when it lives outside of the Magic Stack to stay as close to its
     // intrinsic size as possible, the constraint is configured to be less than
@@ -245,10 +200,122 @@ const CGFloat kSeparatorHeight = 0.5;
       ]];
     }
 
-    [self addSubview:stackView];
-    AddSameConstraintsWithInsets(stackView, self, [self contentMargins]);
+    [self addSubview:_stackView];
+    AddSameConstraintsWithInsets(_stackView, self, [self contentMargins]);
   }
   return self;
+}
+
+- (instancetype)initWithContentView:(UIView*)contentView
+                               type:(ContentSuggestionsModuleType)type
+                           delegate:
+                               (id<MagicStackModuleContainerDelegate>)delegate {
+  if (self = [self initWithFrame:CGRectZero]) {
+    _type = type;
+    _delegate = delegate;
+    if ([self allowsLongPress]) {
+      [self addInteraction:[[UIContextMenuInteraction alloc]
+                               initWithDelegate:self]];
+    }
+
+    _title.text = [MagicStackModuleContainer titleStringForModule:_type];
+    _title.accessibilityIdentifier =
+        [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
+
+    _seeMoreButton.hidden = ![self shouldShowSeeMore];
+
+    if ([self shouldShowSubtitle]) {
+      // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
+      // config in its initializer so the container can build itself from a
+      // passed config/state object.
+      NSString* subtitle = [_delegate subtitleStringForModule:_type];
+      _subtitle.text = subtitle;
+      _subtitle.accessibilityIdentifier = subtitle;
+    }
+
+    _title.hidden = [_title.text length] == 0;
+
+    _separator.hidden = ![self shouldShowSeparator];
+
+    _contentView = contentView;
+    [_stackView addArrangedSubview:_contentView];
+
+    // Configures `contentView` to be the view willing to expand if needed to
+    // fill extra vertical space in the container.
+    [_contentView
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:UILayoutConstraintAxisVertical];
+
+    NSMutableArray* accessibilityElements =
+        [[NSMutableArray alloc] initWithObjects:_title, nil];
+    if ([self shouldShowSeeMore]) {
+      [accessibilityElements addObject:_seeMoreButton];
+    } else if ([self shouldShowSubtitle]) {
+      [accessibilityElements addObject:_subtitle];
+    }
+    [accessibilityElements addObject:_contentView];
+    self.accessibilityElements = accessibilityElements;
+  }
+  return self;
+}
+
+- (void)configureWithConfig:(MagicStackModule*)config {
+  if (config.type == ContentSuggestionsModuleType::kPlaceholder) {
+    _isPlaceholder = YES;
+    _placeholderImage = [[UIImageView alloc]
+        initWithImage:[UIImage imageNamed:@"magic_stack_placeholder_module"]];
+    _placeholderImage.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_placeholderImage];
+    AddSameConstraints(_placeholderImage, self);
+    [self bringSubviewToFront:_placeholderImage];
+    _separator.hidden = YES;
+    return;
+  }
+  _type = config.type;
+  if ([self allowsLongPress]) {
+    [self addInteraction:[[UIContextMenuInteraction alloc]
+                             initWithDelegate:self]];
+  }
+
+  _title.text = [MagicStackModuleContainer titleStringForModule:_type];
+  _title.accessibilityIdentifier =
+      [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
+
+  _seeMoreButton.hidden = ![self shouldShowSeeMore];
+
+  if ([self shouldShowSubtitle]) {
+    // TODO(crbug.com/1474992): Update MagicStackModuleContainer to take an id
+    // config in its initializer so the container can build itself from a
+    // passed config/state object.
+    NSString* subtitle = [_delegate subtitleStringForModule:_type];
+    _subtitle.text = subtitle;
+    _subtitle.accessibilityIdentifier = subtitle;
+  }
+
+  if ([_title.text length] == 0) {
+    [_titleStackView removeFromSuperview];
+  }
+
+  _separator.hidden = ![self shouldShowSeparator];
+
+  _contentView = [self contentViewForConfig:config];
+  [_stackView addArrangedSubview:_contentView];
+
+  // Configures `contentView` to be the view willing to expand if needed to
+  // fill extra vertical space in the container.
+  [_contentView
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                      forAxis:UILayoutConstraintAxisVertical];
+
+  NSMutableArray* accessibilityElements =
+      [[NSMutableArray alloc] initWithObjects:_title, nil];
+  if ([self shouldShowSeeMore]) {
+    [accessibilityElements addObject:_seeMoreButton];
+  } else if ([self shouldShowSubtitle]) {
+    [accessibilityElements addObject:_subtitle];
+  }
+  [accessibilityElements addObject:_contentView];
+  self.accessibilityElements = accessibilityElements;
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
@@ -366,6 +433,66 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 #pragma mark - Helpers
+
+// Returns the module contents of `config`'s module type.
+- (UIView*)contentViewForConfig:(MagicStackModule*)config {
+  switch (config.type) {
+    case ContentSuggestionsModuleType::kMostVisited: {
+      CGFloat horizontalSpacing =
+          ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
+      UIStackView* mostVisitedStackView = [[UIStackView alloc] init];
+      mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
+      mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
+      mostVisitedStackView.spacing = horizontalSpacing;
+      mostVisitedStackView.alignment = UIStackViewAlignmentTop;
+
+      MostVisitedTilesConfig* mvtConfig =
+          static_cast<MostVisitedTilesConfig*>(config);
+
+      NSInteger index = 0;
+      for (ContentSuggestionsMostVisitedItem* item in mvtConfig
+               .mostVisitedItems) {
+        ContentSuggestionsMostVisitedTileView* view =
+            [[ContentSuggestionsMostVisitedTileView alloc]
+                initWithConfiguration:item];
+        view.menuProvider = item.menuProvider;
+        view.accessibilityIdentifier = [NSString
+            stringWithFormat:
+                @"%@%li",
+                kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+                index];
+
+        __weak ContentSuggestionsMostVisitedItem* weakItem = item;
+        __weak ContentSuggestionsMostVisitedTileView* weakView = view;
+        void (^completion)(FaviconAttributes*) =
+            ^(FaviconAttributes* attributes) {
+              ContentSuggestionsMostVisitedTileView* strongView = weakView;
+              ContentSuggestionsMostVisitedItem* strongItem = weakItem;
+              if (!strongView || !strongItem) {
+                return;
+              }
+
+              strongItem.attributes = attributes;
+              [strongView.faviconView configureWithAttributes:attributes];
+            };
+        [mvtConfig.imageDataSource fetchFaviconForURL:item.URL
+                                           completion:completion];
+        UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+            initWithTarget:mvtConfig.commandHandler
+                    action:@selector(mostVisitedTileTapped:)];
+        view.tapRecognizer = tapRecognizer;
+        [view addGestureRecognizer:tapRecognizer];
+        tapRecognizer.enabled = YES;
+        [mostVisitedStackView addArrangedSubview:view];
+        index++;
+      }
+
+      return mostVisitedStackView;
+    }
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
   [_delegate seeMoreWasTappedForModuleType:_type];

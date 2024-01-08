@@ -9,7 +9,7 @@
 
 enum class ContentSuggestionsModuleType;
 @class ContentSuggestionsMostVisitedActionItem;
-@class ContentSuggestionsMostVisitedItem;
+@class MostVisitedTilesConfig;
 @class ContentSuggestionsReturnToRecentTabItem;
 @class ContentSuggestionsWhatsNewItem;
 @class QuerySuggestionConfig;
@@ -54,9 +54,8 @@ struct MagicStackOrderChange {
 - (void)hideReturnToRecentTabTile;
 
 // Indicates to the consumer the current Most Visited tiles to show with
-// `configs`.
-- (void)setMostVisitedTilesWithConfigs:
-    (NSArray<ContentSuggestionsMostVisitedItem*>*)configs;
+// `config`.
+- (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config;
 
 // Indicates to the consumer the current Shortcuts tiles to show with `configs`.
 - (void)setShortcutTilesWithConfigs:

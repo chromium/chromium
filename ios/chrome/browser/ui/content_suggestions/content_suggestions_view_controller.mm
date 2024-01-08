@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/multi_row_container_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/parcel_tracking_view.h"
@@ -44,6 +45,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
@@ -193,6 +195,7 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   NSLayoutConstraint* _shortcutsStackviewHeightAnchor;
   // The most recently selected MagicStack module's page index.
   NSUInteger _magicStackPage;
+  MostVisitedTilesConfig* _mostVisitedTileConfig;
 }
 
 - (instancetype)init {
@@ -255,9 +258,13 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
                 : content_suggestions::kReturnToRecentTabSectionBottomMargin];
     [self layoutReturnToRecentTabTile];
   }
-  if ([self.mostVisitedViews count] > 0) {
-    [self createAndInsertMostVisitedModule];
-    [self populateMostVisitedModule];
+  if (_mostVisitedTileConfig) {
+    if (!IsMagicStackEnabled()) {
+      [self createAndInsertMostVisitedModule];
+      [self populateMostVisitedModule];
+    } else if (!ShouldPutMostVisitedSitesInMagicStack()) {
+      [self createAndInsertMostVisitedModule];
+    }
   }
   if (_savedSetUpListItems) {
     [self showSetUpListWithItems:_savedSetUpListItems];
@@ -401,66 +408,90 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
   self.returnToRecentTabTile = nil;
 }
 
-- (void)setMostVisitedTilesWithConfigs:
-    (NSArray<ContentSuggestionsMostVisitedItem*>*)configs {
-  if (!configs) {
-    return;
-  }
-  if ([self.mostVisitedViews count]) {
-    for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
-      [view removeFromSuperview];
+- (void)setMostVisitedTilesConfig:(MostVisitedTilesConfig*)config {
+  _mostVisitedTileConfig = config;
+  if (IsMagicStackEnabled()) {
+    if (self.mostVisitedModuleContainer) {
+      [self.mostVisitedModuleContainer removeFromSuperview];
     }
-    [self.mostVisitedViews removeAllObjects];
-    [self.mostVisitedTapRecognizers removeAllObjects];
+    self.mostVisitedModuleContainer =
+        [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
+    [self.mostVisitedModuleContainer
+        configureWithConfig:_mostVisitedTileConfig];
+    // If viewDidLoad has been called before the first valid Most Visited Tiles
+    // are available, construct `mostVisitedStackView`.
+    if (self.verticalStackView) {
+      [self createAndInsertMostVisitedModule];
+    }
+
+    for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
+             .mostVisitedItems) {
+      [self.contentSuggestionsMetricsRecorder
+          recordMostVisitedTileShown:item
+                             atIndex:item.index];
+    }
+    if ([self hasMagicStackLoaded]) {
+      [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
+                                              kMostVisited];
+    }
   } else {
-    self.mostVisitedViews = [NSMutableArray array];
-  }
-
-  if ([configs count] == 0) {
-    // No Most Visited Tiles to show. Remove module.
-    [self.mostVisitedStackView removeFromSuperview];
-    return;
-  }
-  NSInteger index = 0;
-  for (ContentSuggestionsMostVisitedItem* item in configs) {
-    ContentSuggestionsMostVisitedTileView* view =
-        [[ContentSuggestionsMostVisitedTileView alloc]
-            initWithConfiguration:item];
-    view.menuProvider = self.menuProvider;
-    view.accessibilityIdentifier = [NSString
-        stringWithFormat:
-            @"%@%li",
-            kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix, index];
-
-    __weak ContentSuggestionsMostVisitedItem* weakItem = item;
-    __weak ContentSuggestionsMostVisitedTileView* weakView = view;
-    void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
-      ContentSuggestionsMostVisitedTileView* strongView = weakView;
-      ContentSuggestionsMostVisitedItem* strongItem = weakItem;
-      if (!strongView || !weakItem) {
-        return;
+    if ([self.mostVisitedViews count]) {
+      for (ContentSuggestionsMostVisitedTileView* view in self
+               .mostVisitedViews) {
+        [view removeFromSuperview];
       }
+      [self.mostVisitedViews removeAllObjects];
+      [self.mostVisitedTapRecognizers removeAllObjects];
+    } else {
+      self.mostVisitedViews = [NSMutableArray array];
+    }
 
-      strongItem.attributes = attributes;
-      [strongView.faviconView configureWithAttributes:attributes];
-    };
-    [self.imageDataSource fetchFaviconForURL:item.URL completion:completion];
-    [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
-                                                               atIndex:index];
-    [self.mostVisitedViews addObject:view];
-    index++;
+    if ([_mostVisitedTileConfig.mostVisitedItems count] == 0) {
+      // No Most Visited Tiles to show. Remove module.
+      [self.mostVisitedStackView removeFromSuperview];
+      return;
+    }
+    NSInteger index = 0;
+    for (ContentSuggestionsMostVisitedItem* item in _mostVisitedTileConfig
+             .mostVisitedItems) {
+      ContentSuggestionsMostVisitedTileView* view =
+          [[ContentSuggestionsMostVisitedTileView alloc]
+              initWithConfiguration:item];
+      view.menuProvider = self.menuProvider;
+      view.accessibilityIdentifier = [NSString
+          stringWithFormat:
+              @"%@%li",
+              kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
+              index];
+
+      __weak ContentSuggestionsMostVisitedItem* weakItem = item;
+      __weak ContentSuggestionsMostVisitedTileView* weakView = view;
+      void (^completion)(FaviconAttributes*) =
+          ^(FaviconAttributes* attributes) {
+            ContentSuggestionsMostVisitedTileView* strongView = weakView;
+            ContentSuggestionsMostVisitedItem* strongItem = weakItem;
+            if (!strongView || !weakItem) {
+              return;
+            }
+
+            strongItem.attributes = attributes;
+            [strongView.faviconView configureWithAttributes:attributes];
+          };
+      [self.imageDataSource fetchFaviconForURL:item.URL completion:completion];
+      [self.contentSuggestionsMetricsRecorder recordMostVisitedTileShown:item
+                                                                 atIndex:index];
+      [self.mostVisitedViews addObject:view];
+      index++;
+    }
+    // If viewDidLoad has been called before the first valid Most Visited Tiles
+    // are available, construct `mostVisitedStackView`.
+    if (self.verticalStackView && !self.mostVisitedStackView) {
+      [self createAndInsertMostVisitedModule];
+    }
+    [self populateMostVisitedModule];
   }
-  // If viewDidLoad has been called before the first valid Most Visited Tiles
-  // are available, construct `mostVisitedStackView`.
-  if (self.verticalStackView && !self.mostVisitedStackView) {
-    [self createAndInsertMostVisitedModule];
-  }
-  [self populateMostVisitedModule];
+
   [self.contentSuggestionsMetricsRecorder recordMostVisitedTilesShown];
-  if (IsMagicStackEnabled() && [self hasMagicStackLoaded]) {
-    [self logTopModuleImpressionForType:ContentSuggestionsModuleType::
-                                            kMostVisited];
-  }
   // Trigger a relayout so that the MVTs will be counted in the Content
   // Suggestions height. Upon app startup when this is often added
   // asynchronously as the NTP is constructing the entire surface, so accurate
@@ -1093,10 +1124,6 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
     insertionIndex++;
   }
   if (IsMagicStackEnabled()) {
-    self.mostVisitedModuleContainer = [[MagicStackModuleContainer alloc]
-        initWithContentView:self.mostVisitedStackView
-                       type:ContentSuggestionsModuleType::kMostVisited
-                   delegate:self];
     if (ShouldPutMostVisitedSitesInMagicStack()) {
       // Only add it to the Magic Stack here if it is after the inital
       // construction of the Magic Stack.
@@ -1390,10 +1417,14 @@ const base::TimeDelta kSetUpListHideAnimationDuration = base::Milliseconds(250);
 - (void)populateMagicStackWithPlaceholders {
   CHECK(_magicStack);
   CHECK([_magicStack.arrangedSubviews count] == 0);
-  [_magicStack
-      addArrangedSubview:[[MagicStackModuleContainer alloc] initAsPlaceholder]];
-  [_magicStack
-      addArrangedSubview:[[MagicStackModuleContainer alloc] initAsPlaceholder]];
+
+  for (int i = 0; i < 2; i++) {
+    PlaceholderConfig* config = [[PlaceholderConfig alloc] init];
+    MagicStackModuleContainer* moduleContainer =
+        [[MagicStackModuleContainer alloc] init];
+    [moduleContainer configureWithConfig:config];
+    [_magicStack addArrangedSubview:moduleContainer];
+  }
 }
 
 // Returns the index position `moduleType` should be placed in the Magic Stack.

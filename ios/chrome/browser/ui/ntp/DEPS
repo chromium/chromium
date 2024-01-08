@@ -13,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/ui/start_surface",
   "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/toolbar/public",
+  "+ios/chrome/browser/ui/sharing",
 ]
 
 specific_include_rules = {

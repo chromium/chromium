@@ -29,7 +29,8 @@ enum class ContentSuggestionsModuleType {
   kParcelTracking = 11,
   kParcelTrackingSeeMore = 12,
   kSetUpListContentNotification = 13,
-  kMaxValue = kSetUpListContentNotification,
+  kPlaceholder = 14,
+  kMaxValue = kPlaceholder,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 

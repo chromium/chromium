@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_menu_provider.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
 namespace commerce {
@@ -47,6 +48,7 @@ class PrefRegistrySyncable;
 @protocol ApplicationCommands;
 class AuthenticationService;
 class Browser;
+@class BrowserActionFactory;
 @protocol BrowserCoordinatorCommands;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
@@ -66,6 +68,7 @@ class WebStateList;
     : NSObject <ContentSuggestionsCommands,
                 ContentSuggestionsImageDataSource,
                 ContentSuggestionsGestureCommands,
+                ContentSuggestionsMenuProvider,
                 StartSurfaceRecentTabObserving>
 
 // Default initializer.
@@ -126,6 +129,9 @@ class WebStateList;
 // Service.
 @property(nonatomic, assign)
     segmentation_platform::SegmentationPlatformService* segmentationService;
+
+// Action factory for mediator.
+@property(nonatomic, strong) BrowserActionFactory* actionFactory;
 
 // Disconnects the mediator.
 - (void)disconnect;

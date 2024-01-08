@@ -144,7 +144,6 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/push_notification:confirmation_presenter",
     "//ios/chrome/browser/ui/reading_list",
     "//ios/chrome/browser/ui/settings/safety_check:constants",
-    "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
     "//ios/chrome/browser/ui/whats_new:util",
@@ -205,6 +204,7 @@ source_set("constants") {
 
 source_set("public") {
   sources = [
+    "content_suggestions_commands.h",
     "content_suggestions_image_data_source.h",
     "content_suggestions_menu_provider.h",
   ]
@@ -212,7 +212,6 @@ source_set("public") {
 
 source_set("content_suggestions_ui") {
   sources = [
-    "content_suggestions_commands.h",
     "content_suggestions_consumer.h",
     "content_suggestions_view_controller.h",
     "content_suggestions_view_controller.mm",
@@ -257,6 +256,7 @@ source_set("content_suggestions_ui") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
     "//ios/chrome/browser/ui/content_suggestions/safety_check",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list",
