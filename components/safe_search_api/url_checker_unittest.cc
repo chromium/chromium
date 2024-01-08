@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
@@ -55,8 +56,8 @@ ClientClassification ToAPIClassification(Classification classification,
 
 auto Recorded(const std::map<CacheAccessStatus, int>& expected) {
   std::vector<base::Bucket> buckets_array;
-  std::transform(
-      expected.begin(), expected.end(), std::back_inserter(buckets_array),
+  base::ranges::transform(
+      expected, std::back_inserter(buckets_array),
       [](auto& entry) { return base::Bucket(entry.first, entry.second); });
   return base::BucketsInclude(buckets_array);
 }

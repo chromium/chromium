@@ -14,6 +14,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -120,8 +121,8 @@ void CrashpadIntegration::SetUp(const base::FilePath& crashpad_database_path) {
       << "Failed to read list of old pending reports. database='"
       << database_dir_ << '\'';
 
-  std::transform(
-      std::begin(old_reports), std::end(old_reports),
+  base::ranges::transform(
+      old_reports,
       std::inserter(ids_of_old_reports_, std::end(ids_of_old_reports_)),
       [](const crashpad::CrashReportDatabase::Report& report) {
         return report.uuid;

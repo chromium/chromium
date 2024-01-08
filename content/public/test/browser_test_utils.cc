@@ -20,6 +20,7 @@
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
@@ -1836,8 +1837,8 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 std::vector<WebContents*> GetAllWebContents() {
   std::vector<WebContentsImpl*> all_wci = WebContentsImpl::GetAllWebContents();
   std::vector<WebContents*> all_wc;
-  std::transform(all_wci.cbegin(), all_wci.cend(), std::back_inserter(all_wc),
-                 [](WebContentsImpl* wc) { return wc; });
+  base::ranges::transform(all_wci, std::back_inserter(all_wc),
+                          [](WebContentsImpl* wc) { return wc; });
 
   return all_wc;
 }
