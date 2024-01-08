@@ -112,6 +112,8 @@ class CONTENT_EXPORT ServiceWorkerContext {
   using StartServiceWorkerForNavigationHintCallback = base::OnceCallback<void(
       StartServiceWorkerForNavigationHintResult result)>;
 
+  using WarmUpServiceWorkerCallback = base::OnceClosure;
+
   using StartWorkerCallback = base::OnceCallback<
       void(int64_t version_id, int process_id, int thread_id)>;
 
@@ -263,6 +265,15 @@ class CONTENT_EXPORT ServiceWorkerContext {
       const GURL& document_url,
       const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) = 0;
+
+  // Warms up the service worker for `document_url` and `key`. Called when a
+  // navigation to that URL is predicted to occur soon. Unlike
+  // StartServiceWorkerForNavigationHint, this function doesn't evaluate the
+  // service worker script. Instead, this function prepares renderer process,
+  // mojo connections, loading scripts from disk without evaluating the script.
+  virtual void WarmUpServiceWorker(const GURL& document_url,
+                                   const blink::StorageKey& key,
+                                   WarmUpServiceWorkerCallback callback) = 0;
 
   // Stops all running workers on the given `key`.
   virtual void StopAllServiceWorkersForStorageKey(

@@ -711,7 +711,7 @@ void ServiceWorkerContextCore::WaitForRegistrationsInitializedForTest() {
 void ServiceWorkerContextCore::AddWarmUpRequest(
     const GURL& document_url,
     const blink::StorageKey& key,
-    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback) {
+    ServiceWorkerContext::WarmUpServiceWorkerCallback callback) {
   const size_t kRequestQueueLength =
       blink::features::kSpeculativeServiceWorkerWarmUpRequestQueueLength.Get();
 

@@ -142,6 +142,13 @@ void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(
   start_service_worker_for_navigation_hint_called_ = true;
 }
 
+void FakeServiceWorkerContext::WarmUpServiceWorker(
+    const GURL& document_url,
+    const blink::StorageKey& key,
+    WarmUpServiceWorkerCallback callback) {
+  NOTREACHED();
+}
+
 void FakeServiceWorkerContext::StartServiceWorkerAndDispatchMessage(
     const GURL& scope,
     const blink::StorageKey& key,

@@ -98,6 +98,9 @@ class FakeServiceWorkerContext : public ServiceWorkerContext {
       const GURL& document_url,
       const blink::StorageKey& key,
       StartServiceWorkerForNavigationHintCallback callback) override;
+  void WarmUpServiceWorker(const GURL& document_url,
+                           const blink::StorageKey& key,
+                           WarmUpServiceWorkerCallback callback) override;
   void StopAllServiceWorkersForStorageKey(
       const blink::StorageKey& key) override;
   void StopAllServiceWorkers(base::OnceClosure callback) override;

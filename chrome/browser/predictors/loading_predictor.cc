@@ -15,9 +15,13 @@
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/common/origin_util.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/cpp/request_destination.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -90,6 +94,44 @@ bool IsPreconnectExpensive() {
 #endif
 }
 
+void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kSpeculativeServiceWorkerWarmUp)) {
+    return;
+  }
+
+  if (!profile) {
+    return;
+  }
+
+  content::StoragePartition* storage_partition =
+      profile->GetDefaultStoragePartition();
+
+  if (!storage_partition) {
+    return;
+  }
+
+  content::ServiceWorkerContext* service_worker_context =
+      storage_partition->GetServiceWorkerContext();
+
+  if (!service_worker_context) {
+    return;
+  }
+
+  if (!content::OriginCanAccessServiceWorkers(url)) {
+    return;
+  }
+
+  const blink::StorageKey key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
+
+  if (!service_worker_context->MaybeHasRegistrationForStorageKey(key)) {
+    return;
+  }
+
+  service_worker_context->WarmUpServiceWorker(url, key, base::DoNothing());
+}
+
 }  // namespace
 
 LoadingPredictor::LoadingPredictor(const LoadingPredictorConfig& config,
@@ -117,6 +159,8 @@ bool LoadingPredictor::PrepareForPageLoad(
     absl::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
+
+  MaybeWarmUpServiceWorker(url, profile_);
 
   if (origin == HintOrigin::OMNIBOX) {
     // Omnibox hints are lightweight and need a special treatment.

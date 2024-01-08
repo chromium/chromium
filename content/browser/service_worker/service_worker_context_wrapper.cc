@@ -916,7 +916,7 @@ void ServiceWorkerContextWrapper::StartServiceWorkerForNavigationHint(
 void ServiceWorkerContextWrapper::WarmUpServiceWorker(
     const GURL& document_url,
     const blink::StorageKey& key,
-    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback) {
+    WarmUpServiceWorkerCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!context_core_) {
@@ -1658,7 +1658,7 @@ void ServiceWorkerContextWrapper::DidStartServiceWorkerForNavigationHint(
 }
 
 void ServiceWorkerContextWrapper::DidFindRegistrationForWarmUp(
-    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback,
+    WarmUpServiceWorkerCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
   TRACE_EVENT1("ServiceWorker", "DidFindRegistrationForWarmUp", "status",
@@ -1686,7 +1686,7 @@ void ServiceWorkerContextWrapper::DidFindRegistrationForWarmUp(
 
 void ServiceWorkerContextWrapper::DidWarmUpServiceWorker(
     const GURL& scope,
-    ServiceWorkerContextCore::WarmUpServiceWorkerCallback callback,
+    WarmUpServiceWorkerCallback callback,
     blink::ServiceWorkerStatusCode code) {
   TRACE_EVENT2("ServiceWorker", "DidWarmUpServiceWorker", "url", scope.spec(),
                "code", blink::ServiceWorkerStatusToString(code));

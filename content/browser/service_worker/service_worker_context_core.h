@@ -75,12 +75,12 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                               int64_t registration_id)>;
   using UnregistrationCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
-  using WarmUpServiceWorkerCallback = base::OnceCallback<void()>;
   using ContainerHostByClientUUIDMap =
       std::map<std::string, std::unique_ptr<ServiceWorkerContainerHost>>;
-
   using WarmUpRequest =
-      std::tuple<GURL, blink::StorageKey, WarmUpServiceWorkerCallback>;
+      std::tuple<GURL,
+                 blink::StorageKey,
+                 ServiceWorkerContext::WarmUpServiceWorkerCallback>;
 
   // Iterates over ServiceWorkerContainerHost objects in the
   // ContainerHostByClientUUIDMap.
@@ -415,9 +415,10 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   // `warm_up_requests_` queue size exceeds the limit, then the older entries
   // will be removed from the queue, and the removed entry's callbacks will be
   // triggered.
-  void AddWarmUpRequest(const GURL& document_url,
-                        const blink::StorageKey& key,
-                        WarmUpServiceWorkerCallback callback);
+  void AddWarmUpRequest(
+      const GURL& document_url,
+      const blink::StorageKey& key,
+      ServiceWorkerContext::WarmUpServiceWorkerCallback callback);
 
   absl::optional<WarmUpRequest> PopNextWarmUpRequest();
   bool IsWaitingForWarmUp(const blink::StorageKey& key) const;
