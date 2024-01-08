@@ -21,20 +21,6 @@ crbug.com/1401767 external/wpt/html/semantics/forms/the-selectlist-element/selec
 # Timeouts
 fast/loader/iframe-navigation-stealing-focus.html [ Skip ]
 
-# Intentional failures for focusless spatial navigation.
-# Focusless spatial navigation is intentionally disabled when accessibility is turned on.
-# * On bots without --force-renderer-accessibility, the tests are able to reset the accessibility context
-#   and run without any accessibility, in which case the tests pass.
-#   See https://crrev.com/c/1620345.
-# * On bots with --force-renderer-accessibiity, the tests will fail because of the check in
-#   IsInAccessibilityMode() In spatial_navigation_controller.cc.
-#   As this is intentional it is good to test as well via --force-renderer-accessibility.
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-basic-movement.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-dont-send-keyboard-events.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-exit-focus.html [ Failure ]
-crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-enter-from-interest.html [ Failure ]
-virtual/focusless-spat-nav/fast/spatial-navigation/focusless/snav-focusless-navigate-from-focus.html [ Failure ]
-
 # Intentional skips for media tests using proprietary codecs.
 # The linux-blink-web-tests-force-accessibility-rel bot compiles without proprietary codecs.
 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?adts_aac [ Skip ]

@@ -316,7 +316,6 @@
     {
       name: "spatialNavigationEnabled",
       initial: false,
-      invalidate: ["SpatialNavigation"],
     },
 
     // This setting adds a means to enable/disable touch initiated drag & drop. If

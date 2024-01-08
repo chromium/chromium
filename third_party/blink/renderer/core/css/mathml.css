@@ -59,11 +59,6 @@ math[display="inline" i] {
   math-style: compact;
 }
 
-:-internal-spatial-navigation-interest {
-    outline: auto 1px -webkit-focus-ring-color;
-    box-shadow: none !important;
-}
-
 :focus {
     outline: auto 1px -webkit-focus-ring-color;
 }

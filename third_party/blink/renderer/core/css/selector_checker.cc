@@ -1894,9 +1894,6 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoSpatialNavigationFocus:
       DCHECK(is_ua_rule_);
       return MatchesSpatialNavigationFocusPseudoClass(element);
-    case CSSSelector::kPseudoSpatialNavigationInterest:
-      DCHECK(is_ua_rule_);
-      return MatchesSpatialNavigationInterestPseudoClass(element);
     case CSSSelector::kPseudoHasDatalist:
       DCHECK(is_ua_rule_);
       return MatchesHasDatalistPseudoClass(element);
@@ -2394,25 +2391,6 @@ bool SelectorChecker::MatchesFocusVisiblePseudoClass(const Element& element) {
 
   return (always_show_focus || is_text_input || !last_focus_from_mouse ||
           had_keyboard_event);
-}
-
-// static
-bool SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(
-    const Element& element) {
-  if (!IsSpatialNavigationEnabled(element.GetDocument().GetFrame())) {
-    return false;
-  }
-
-  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
-    return false;
-  }
-
-  DCHECK(element.GetDocument().GetPage());
-  Element* interested_element = element.GetDocument()
-                                    .GetPage()
-                                    ->GetSpatialNavigationController()
-                                    .GetInterestedElement();
-  return interested_element && *interested_element == element;
 }
 
 namespace {

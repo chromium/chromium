@@ -3546,23 +3546,6 @@ void Internals::setInitialFocus(bool reverse) {
               : mojom::blink::FocusType::kForward);
 }
 
-Element* Internals::interestedElement() {
-  if (!GetFrame() || !GetFrame()->GetPage())
-    return nullptr;
-
-  if (!RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
-    return To<LocalFrame>(
-               GetFrame()->GetPage()->GetFocusController().FocusedOrMainFrame())
-        ->GetDocument()
-        ->ActiveElement();
-  }
-
-  return GetFrame()
-      ->GetPage()
-      ->GetSpatialNavigationController()
-      .GetInterestedElement();
-}
-
 bool Internals::isActivated() {
   if (!GetFrame())
     return false;

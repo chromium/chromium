@@ -503,8 +503,6 @@ class Internals final : public ScriptWrappable {
   void setFocused(bool);
   void setInitialFocus(bool);
 
-  Element* interestedElement();
-
   // Check if frame associated with current internals object is
   // active or not.
   bool isActivated();

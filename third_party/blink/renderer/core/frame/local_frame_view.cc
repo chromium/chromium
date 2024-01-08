@@ -1839,14 +1839,6 @@ Color LocalFrameView::DocumentBackgroundColor() {
 void LocalFrameView::WillBeRemovedFromFrame() {
   if (paint_artifact_compositor_)
     paint_artifact_compositor_->WillBeRemovedFromFrame();
-
-  if (Settings* settings = frame_->GetSettings()) {
-    DCHECK(frame_->GetPage());
-    if (settings->GetSpatialNavigationEnabled()) {
-      frame_->GetPage()->GetSpatialNavigationController().DidDetachFrameView(
-          *this);
-    }
-  }
 }
 
 bool LocalFrameView::IsUpdatingLifecycle() const {

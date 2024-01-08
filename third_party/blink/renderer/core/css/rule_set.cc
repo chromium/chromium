@@ -286,7 +286,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
-        case CSSSelector::kPseudoSpatialNavigationInterest:
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
@@ -495,9 +494,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
         });
       }
       AddToRuleSet(link_pseudo_class_rules_, rule_data);
-      return;
-    case CSSSelector::kPseudoSpatialNavigationInterest:
-      AddToRuleSet(spatial_navigation_interest_class_rules_, rule_data);
       return;
     case CSSSelector::kPseudoFocus:
       if (bucket_coverage == BucketCoverage::kCompute) {
@@ -934,14 +930,8 @@ void RuleSet::AddFilteredRulesFromOtherSet(
     AddFilteredRulesFromOtherBucket(other, other.focus_pseudo_class_rules_,
                                     only_include, &focus_pseudo_class_rules_);
     AddFilteredRulesFromOtherBucket(
-        other, other.spatial_navigation_interest_class_rules_, only_include,
-        &spatial_navigation_interest_class_rules_);
-    AddFilteredRulesFromOtherBucket(
         other, other.focus_visible_pseudo_class_rules_, only_include,
         &focus_visible_pseudo_class_rules_);
-    AddFilteredRulesFromOtherBucket(
-        other, other.spatial_navigation_interest_class_rules_, only_include,
-        &spatial_navigation_interest_class_rules_);
     AddFilteredRulesFromOtherBucket(other, other.universal_rules_, only_include,
                                     &universal_rules_);
     AddFilteredRulesFromOtherBucket(other, other.shadow_host_rules_,
@@ -1273,7 +1263,6 @@ void RuleSet::CompactRules() {
   focus_pseudo_class_rules_.shrink_to_fit();
   selector_fragment_anchor_rules_.shrink_to_fit();
   focus_visible_pseudo_class_rules_.shrink_to_fit();
-  spatial_navigation_interest_class_rules_.shrink_to_fit();
   universal_rules_.shrink_to_fit();
   shadow_host_rules_.shrink_to_fit();
   part_pseudo_rules_.shrink_to_fit();
@@ -1346,7 +1335,6 @@ void RuleSet::AssertRuleListsSorted() const {
   DCHECK(IsRuleListSorted(focus_pseudo_class_rules_));
   DCHECK(IsRuleListSorted(selector_fragment_anchor_rules_));
   DCHECK(IsRuleListSorted(focus_visible_pseudo_class_rules_));
-  DCHECK(IsRuleListSorted(spatial_navigation_interest_class_rules_));
   DCHECK(IsRuleListSorted(universal_rules_));
   DCHECK(IsRuleListSorted(shadow_host_rules_));
   DCHECK(IsRuleListSorted(part_pseudo_rules_));
@@ -1392,7 +1380,6 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(focus_pseudo_class_rules_);
   visitor->Trace(selector_fragment_anchor_rules_);
   visitor->Trace(focus_visible_pseudo_class_rules_);
-  visitor->Trace(spatial_navigation_interest_class_rules_);
   visitor->Trace(universal_rules_);
   visitor->Trace(shadow_host_rules_);
   visitor->Trace(part_pseudo_rules_);

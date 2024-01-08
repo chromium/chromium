@@ -322,11 +322,6 @@ interface Internals {
     void setFocused(boolean focused);
     void setInitialFocus(boolean reverse);
 
-    // When the FocuslessSpatialNavigation feature is enabled, spatial
-    // navigation moves "interest" around a page, rather than focus. This
-    // attribute returns the currently interested element on the page.
-    readonly attribute Element? interestedElement;
-
     // Returns true if page associated with current internals object is
     // active.
     boolean isActivated();

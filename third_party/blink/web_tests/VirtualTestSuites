@@ -731,15 +731,6 @@
     "expires": "never"
   },
   {
-    "prefix": "focusless-spat-nav",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
-    "args": ["--enable-blink-features=FocuslessSpatialNavigation",
-             "--enable-spatial-navigation",
-             "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "fsa-incognito",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/file-system-access", "external/wpt/fs"],

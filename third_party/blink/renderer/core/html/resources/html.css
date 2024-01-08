@@ -1216,11 +1216,6 @@ nobr {
     outline: Highlight 3px solid;
 }
 
-:-internal-spatial-navigation-interest {
-    outline: auto 1px -webkit-focus-ring-color !important;
-    box-shadow: none !important
-}
-
 :focus-visible {
     outline: auto 1px -webkit-focus-ring-color
 }

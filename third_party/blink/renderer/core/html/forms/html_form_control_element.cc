@@ -316,10 +316,6 @@ bool HTMLFormControlElement::SupportsFocus(UpdateBehavior) const {
 
 bool HTMLFormControlElement::IsKeyboardFocusable(
     UpdateBehavior update_behavior) const {
-  if (RuntimeEnabledFeatures::FocuslessSpatialNavigationEnabled()) {
-    return HTMLElement::IsKeyboardFocusable(update_behavior);
-  }
-
   // Form control elements are always keyboard focusable if they are focusable
   // at all, and don't have a negative tabindex set.
   return IsFocusable(update_behavior) && tabIndex() >= 0;

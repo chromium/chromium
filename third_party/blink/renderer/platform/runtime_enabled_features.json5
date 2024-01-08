@@ -1828,11 +1828,6 @@
       origin_trial_feature_name: "Focusgroup",
     },
     {
-      name: "FocuslessSpatialNavigation",
-      base_feature: "none",
-      settable_from_internals: true,
-    },
-    {
       name: "FocusStyleInvalidationOnPageActivation",
       status: "stable",
     },

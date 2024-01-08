@@ -5468,9 +5468,6 @@ void Document::NotifyFocusedElementChanged(Element* old_focused_element,
     GetFrame()->Client()->FocusedElementChanged(new_focused_element);
 
     GetPage()->GetChromeClient().SetKeyboardFocusURL(new_focused_element);
-
-    if (GetSettings()->GetSpatialNavigationEnabled())
-      GetPage()->GetSpatialNavigationController().FocusedNodeChanged(this);
   }
 
   blink::NotifyPriorityScrollAnchorStatusChanged(old_focused_element,

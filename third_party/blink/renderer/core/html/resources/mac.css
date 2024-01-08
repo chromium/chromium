@@ -37,11 +37,6 @@ button {
     padding: 1px 7px 2px;
 }
 
-:-internal-spatial-navigation-interest {
-    outline: auto 5px -webkit-focus-ring-color;
-    box-shadow: none !important
-}
-
 :focus-visible {
     outline: auto 5px -webkit-focus-ring-color
 }

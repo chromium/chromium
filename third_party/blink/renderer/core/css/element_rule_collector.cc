@@ -870,17 +870,6 @@ DISABLE_CFI_PERF bool ElementRuleCollector::CollectMatchingRulesInternal(
       }
     }
   }
-  if (SelectorChecker::MatchesSpatialNavigationInterestPseudoClass(element)) {
-    for (const auto bundle : match_request.AllRuleSets()) {
-      if (CollectMatchingRulesForList<stop_at_first_match>(
-              bundle.rule_set->SpatialNavigationInterestPseudoClassRules(),
-              match_request, bundle.rule_set, bundle.style_sheet_index,
-              checker) &&
-          stop_at_first_match) {
-        return true;
-      }
-    }
-  }
   if (element.GetDocument().documentElement() == element) {
     for (const auto bundle : match_request.AllRuleSets()) {
       if (CollectMatchingRulesForList<stop_at_first_match>(

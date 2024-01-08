@@ -13,7 +13,6 @@ namespace blink {
 
 struct FocusCandidate;
 class KeyboardEvent;
-class LocalFrameView;
 class Node;
 class Page;
 struct PhysicalRect;
@@ -35,16 +34,6 @@ class CORE_EXPORT SpatialNavigationController final
   // Called when the enter key is released to clear local state because we don't
   // get a consistent event stream when the Enter key is partially handled.
   void ResetEnterKeyState();
-
-  // Returns the element that's currently interested. i.e. the Element that's
-  // currently indicated to the user.
-  Element* GetInterestedElement() const;
-
-  void DidDetachFrameView(const LocalFrameView&);
-
-  void OnSpatialNavigationSettingChanged();
-  void FocusedNodeChanged(Document*);
-  void FullscreenStateChanged(Element* element);
 
   void Trace(Visitor*) const;
 
@@ -94,11 +83,12 @@ class CORE_EXPORT SpatialNavigationController final
   // Returns true if the element should be considered for navigation.
   bool IsValidCandidate(const Element* element) const;
 
+  // Returns the element that's currently interested. i.e. the Element that's
+  // currently indicated to the user.
+  Element* GetInterestedElement() const;
+
   Element* GetFocusedElement() const;
 
-  // The currently indicated element or nullptr if no node is indicated by
-  // spatial navigation.
-  WeakMember<Element> interest_element_;
   Member<Page> page_;
 
   // We need to track whether the enter key has been handled in down or press to

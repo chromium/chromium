@@ -397,7 +397,6 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoSingleButton:
     case kPseudoSlotted:
     case kPseudoSpatialNavigationFocus:
-    case kPseudoSpatialNavigationInterest:
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
@@ -460,8 +459,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
      CSSSelector::kPseudoHostHasAppearance},
     {"-internal-spatial-navigation-focus",
      CSSSelector::kPseudoSpatialNavigationFocus},
-    {"-internal-spatial-navigation-interest",
-     CSSSelector::kPseudoSpatialNavigationInterest},
     {"-internal-video-persistent", CSSSelector::kPseudoVideoPersistent},
     {"-internal-video-persistent-ancestor",
      CSSSelector::kPseudoVideoPersistentAncestor},
@@ -780,7 +777,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
     case kPseudoSpatialNavigationFocus:
-    case kPseudoSpatialNavigationInterest:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
       if (mode != kUASheetMode) {
@@ -1311,7 +1307,6 @@ static bool ValidateSubSelector(const CSSSelector* selector) {
     case CSSSelector::kPseudoHostContext:
     case CSSSelector::kPseudoNot:
     case CSSSelector::kPseudoSpatialNavigationFocus:
-    case CSSSelector::kPseudoSpatialNavigationInterest:
     case CSSSelector::kPseudoHasDatalist:
     case CSSSelector::kPseudoIsHtml:
     case CSSSelector::kPseudoListBox:

@@ -82,19 +82,23 @@
                   document.getElementById("unobscured_at_outside_of_viewport"),
                   "Element's visible part that located at outside of viewport should not be accounted.");
 
-    assert_equals(window.internals.interestedElement,
-                  document.querySelector("iframe").contentDocument.getElementById("body_in_iframe"),
+    const iframe_document = document.querySelector("iframe").contentDocument;
+    assert_true(iframe_document.hasFocus(), "iframe should receive focus when navigating inside it");
+
+    assert_equals(iframe_document.activeElement,
+                  iframe_document.getElementById("body_in_iframe"),
                   "Body element should be focused first, when we navigate to visible iframe.");
 
     snav.triggerMove('Down');
-    assert_equals(window.internals.interestedElement,
-                  document.querySelector("iframe").contentDocument.getElementById("link_in_iframe"),
+    assert_equals(iframe_document.activeElement,
+                  iframe_document.getElementById("link_in_iframe"),
                   "Focus should be moved to unobscured element in iframe.");
 
     snav.triggerMove('Down');
-    assert_equals(window.internals.interestedElement,
+    assert_equals(document.activeElement,
                   document.getElementById("end"),
                   "Focus should escape from iframe.");
+    assert_false(iframe_document.hasFocus(), "iframe should lose focus when navigating out of it");
 
     t.done();
   });
