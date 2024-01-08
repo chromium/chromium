@@ -233,7 +233,7 @@ std::tuple<int, int, int> GetWindowAndTabCount(
       restore_data.app_id_to_launch_list();
   for (const auto& [app_id, launch_list] : launch_list_map) {
     for (const auto& [window_id, app_restore_data] : launch_list) {
-      const absl::optional<std::vector<GURL>>& urls = app_restore_data->urls;
+      const std::optional<std::vector<GURL>>& urls = app_restore_data->urls;
       // Url field could be empty if the app is not the browser, or if from full
       // restore. We check the app type also in case the url field is not set up
       // correctly.
