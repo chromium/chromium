@@ -25,11 +25,11 @@ import {
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
-import type {EventManager} from '../events/EventManager.js';
 import type {NetworkStorage} from '../network/NetworkStorage.js';
 import type {PreloadScriptStorage} from '../script/PreloadScriptStorage.js';
 import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import {BrowsingContextImpl, serializeOrigin} from './BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';

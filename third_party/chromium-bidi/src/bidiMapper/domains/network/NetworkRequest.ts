@@ -32,7 +32,7 @@ import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {Result} from '../../../utils/result.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
-import type {EventManager} from '../events/EventManager.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import type {NetworkStorage} from './NetworkStorage.js';
 import {

@@ -24,7 +24,7 @@ import type {Protocol} from 'devtools-protocol';
 
 import type {Network} from '../../../protocol/protocol.js';
 import type {CdpTarget} from '../context/CdpTarget.js';
-import type {EventManager} from '../events/EventManager.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import {NetworkRequest} from './NetworkRequest.js';
 import type {NetworkStorage} from './NetworkStorage.js';

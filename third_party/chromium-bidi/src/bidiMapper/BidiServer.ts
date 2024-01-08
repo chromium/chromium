@@ -27,11 +27,11 @@ import type {IBidiParser} from './BidiParser.js';
 import type {IBidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
+import {RealmStorage} from './domains/script/RealmStorage.js';
 import {
   EventManager,
   EventManagerEvents,
-} from './domains/events/EventManager.js';
-import {RealmStorage} from './domains/script/RealmStorage.js';
+} from './domains/session/EventManager.js';
 import type {OutgoingMessage} from './OutgoingMessage.js';
 
 type BidiServerEvent = {

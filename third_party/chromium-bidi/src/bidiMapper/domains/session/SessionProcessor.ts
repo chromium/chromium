@@ -20,7 +20,8 @@ import type {
   EmptyResult,
   Session,
 } from '../../../protocol/protocol.js';
-import type {EventManager} from '../events/EventManager.js';
+
+import type {EventManager} from './EventManager.js';
 
 export class SessionProcessor {
   #eventManager: EventManager;

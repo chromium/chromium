@@ -34,13 +34,13 @@ import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
-import type {EventManager} from './domains/events/EventManager.js';
 import {InputProcessor} from './domains/input/InputProcessor.js';
 import {NetworkProcessor} from './domains/network/NetworkProcessor.js';
 import {NetworkStorage} from './domains/network/NetworkStorage.js';
 import {PreloadScriptStorage} from './domains/script/PreloadScriptStorage.js';
 import type {RealmStorage} from './domains/script/RealmStorage.js';
 import {ScriptProcessor} from './domains/script/ScriptProcessor.js';
+import type {EventManager} from './domains/session/EventManager.js';
 import {SessionProcessor} from './domains/session/SessionProcessor.js';
 import {OutgoingMessage} from './OutgoingMessage.js';
 

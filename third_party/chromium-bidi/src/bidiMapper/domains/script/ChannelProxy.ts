@@ -21,7 +21,7 @@ import {Protocol} from 'devtools-protocol';
 import {ChromiumBidi, Script} from '../../../protocol/protocol.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
-import type {EventManager} from '../events/EventManager.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import type {Realm} from './Realm.js';
 

@@ -32,9 +32,9 @@ import {assert} from '../../../utils/assert.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
 import {inchesFromCm} from '../../../utils/unitConversions.js';
-import type {EventManager} from '../events/EventManager.js';
 import {Realm} from '../script/Realm.js';
 import type {RealmStorage} from '../script/RealmStorage.js';
+import type {EventManager} from '../session/EventManager.js';
 
 import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import type {CdpTarget} from './CdpTarget.js';
