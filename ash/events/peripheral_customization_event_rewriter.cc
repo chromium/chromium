@@ -300,14 +300,19 @@ GetRemappingActionFromMouseSettings(const mojom::Button& button,
       settings.button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (button_remapping_iter != settings.button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping = *(*button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto result = PeripheralCustomizationEventRewriter::RemappingActionResult(
-        *((*button_remapping_iter)->remapping_action),
+        *button_remapping.remapping_action,
         PeripheralCustomizationEventRewriter::
             PeripheralCustomizationMetricsType::kMouse);
-    return std::move(result);
+    return result;
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 std::optional<PeripheralCustomizationEventRewriter::RemappingActionResult>
@@ -318,9 +323,15 @@ GetRemappingActionFromGraphicsTabletSettings(
       settings.pen_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (pen_button_remapping_iter != settings.pen_button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping =
+        *(*pen_button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto pen_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
-            *(*pen_button_remapping_iter)->remapping_action,
+            *button_remapping.remapping_action,
             PeripheralCustomizationEventRewriter::
                 PeripheralCustomizationMetricsType::kGraphicsTabletPen);
     return std::move(pen_action);
@@ -330,15 +341,21 @@ GetRemappingActionFromGraphicsTabletSettings(
       settings.tablet_button_remappings, button,
       [](const mojom::ButtonRemappingPtr& entry) { return *entry->button; });
   if (tablet_button_remapping_iter != settings.tablet_button_remappings.end()) {
+    const mojom::ButtonRemapping& button_remapping =
+        *(*tablet_button_remapping_iter);
+    if (!button_remapping.remapping_action) {
+      return std::nullopt;
+    }
+
     auto tablet_action =
         PeripheralCustomizationEventRewriter::RemappingActionResult(
-            *(*tablet_button_remapping_iter)->remapping_action,
+            *button_remapping.remapping_action,
             PeripheralCustomizationEventRewriter::
                 PeripheralCustomizationMetricsType::kGraphicsTablet);
     return std::move(tablet_action);
   }
 
-  return absl::nullopt;
+  return std::nullopt;
 }
 
 int GetRemappedModifiersFromMouseSettings(
