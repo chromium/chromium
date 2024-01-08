@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "build/build_config.h"
-#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-
 #include <memory>
 #include <vector>
 
@@ -14,10 +10,12 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
@@ -28,12 +26,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -50,7 +48,6 @@
 #include "components/services/app_service/public/cpp/intent_test_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,25 +61,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-namespace mojo {
-
-template <>
-struct TypeConverter<arc::mojom::ArcPackageInfoPtr,
-                     arc::mojom::ArcPackageInfo> {
-  static arc::mojom::ArcPackageInfoPtr Convert(
-      const arc::mojom::ArcPackageInfo& package_info) {
-    return package_info.Clone();
-  }
-};
-
-}  // namespace mojo
-
 namespace {
-
-using content::RenderFrameHost;
-using content::test::PrerenderHostObserver;
-using content::test::PrerenderHostRegistryObserver;
-using content::test::PrerenderTestHelper;
 
 const char kTestAppActivity[] = "abcdefg";
 
@@ -135,17 +114,11 @@ class WidgetDestroyedWaiter : public views::WidgetObserver {
 
 }  // namespace
 
-class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
-                                                  public BrowserListObserver {
+class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest {
  public:
   IntentPickerBubbleViewBrowserTestChromeOS() {
     // TODO(crbug.com/1357905): Run relevant tests against the updated UI.
     feature_list_.InitAndDisableFeature(apps::features::kLinkCapturingUiUpdate);
-    BrowserList::AddObserver(this);
-  }
-
-  ~IntentPickerBubbleViewBrowserTestChromeOS() override {
-    BrowserList::RemoveObserver(this);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -299,19 +272,6 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
             base::Unretained(this)));
   }
 
-  void WaitForBrowserAdded() {
-    base::RunLoop run_loop;
-    on_browser_added_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    if (on_browser_added_callback_) {
-      std::move(on_browser_added_callback_).Run();
-    }
-  }
-
   bool bubble_closed() { return bubble_closed_; }
 
   void CheckStayInChrome() {
@@ -377,7 +337,6 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
   FakeIconLoader icon_loader_;
   bool bubble_closed_ = false;
-  base::OnceClosure on_browser_added_callback_;
 };
 
 // Test that the intent picker bubble will show for ARC apps.
@@ -778,76 +737,4 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   ui_test_utils::NavigateToURL(&params);
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
-}
-
-class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
-    : public IntentPickerBubbleViewBrowserTestChromeOS {
- public:
-  IntentPickerBubbleViewPrerenderingBrowserTestChromeOS()
-      : prerender_helper_(base::BindRepeating(
-            &IntentPickerBubbleViewPrerenderingBrowserTestChromeOS::
-                web_contents,
-            base::Unretained(this))) {}
-  ~IntentPickerBubbleViewPrerenderingBrowserTestChromeOS() override = default;
-
- protected:
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  PrerenderTestHelper prerender_helper_;
-};
-
-// Simulates prerendering an app URL that the user has opted into always
-// launching an app window for. In this case, the prerender should be canceled
-// and the app shouldn't be opened.
-// TODO(https://crbug.com/1428425): flakily times out
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
-                       DISABLED_AppLaunchURLCancelsPrerendering) {
-  // Prerendering is currently limited to same-origin pages so we need to start
-  // it from an arbitrary page on the same origin, rather than about:blank.
-  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
-  const GURL kAppUrl = InScopeAppUrl();
-  const std::string kAppName = "test_name";
-  const auto kAppId = InstallWebApp(kAppName, kAppUrl);
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
-
-  // Setup: navigate to the app URL and persist the "Open App" setting. Then
-  // close the app.
-  {
-    NavigateAndWaitForIconUpdate(kAppUrl);
-    ClickIconToShowBubble();
-
-    // Check "Remember my choice" and choose "Open App".
-    ASSERT_TRUE(remember_selection_checkbox());
-    ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
-    remember_selection_checkbox()->SetChecked(true);
-    ASSERT_TRUE(intent_picker_bubble());
-    intent_picker_bubble()->AcceptDialog();
-    ASSERT_TRUE(VerifyPWALaunched(kAppId));
-    Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-    chrome::CloseWindow(app_browser);
-    ui_test_utils::WaitForBrowserToClose(app_browser);
-    ASSERT_FALSE(VerifyPWALaunched(kAppId));
-  }
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kInitialUrl));
-
-  // Trigger a prerender of the app URL.
-  PrerenderHostObserver host_observer(*web_contents(), kAppUrl);
-  prerender_helper_.AddPrerenderAsync(kAppUrl);
-  host_observer.WaitForDestroyed();
-
-  // The app must not have been launched.
-  EXPECT_FALSE(VerifyPWALaunched(kAppId));
-
-  // However, a standard user navigation should launch the app as usual.
-  NavigateParams params_new(browser(), kAppUrl,
-                            ui::PageTransition::PAGE_TRANSITION_LINK);
-  Navigate(&params_new);
-  WaitForBrowserAdded();
-  EXPECT_TRUE(VerifyPWALaunched(kAppId));
 }
