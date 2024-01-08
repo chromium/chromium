@@ -8199,13 +8199,14 @@ TEST_F(AutofillMetricsSeamlessnessTest, CreditCardFormRecordOnIFrames) {
         {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kRankInFieldSignatureGroupName, 1},
         {UFIT::kHeuristicTypeName, field_types[i]},
-        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+        {UFIT::kHeuristicTypeLegacyName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeDefaultName, field_types[i]},
         {UFIT::kHeuristicTypeExperimentalName, field_types[i]},
         {UFIT::kHeuristicTypeNextGenName, field_types[i]},
-        {UFIT::kFieldLogEventCountName, field_log_events_count + 5},
+        {UFIT::kFieldLogEventCountName, field_log_events_count + 4},
 #else
+        {UFIT::kHeuristicTypeLegacyName, field_types[i]},
         {UFIT::kHeuristicTypeDefaultName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeExperimentalName, UNKNOWN_TYPE},
         {UFIT::kHeuristicTypeNextGenName, UNKNOWN_TYPE},
