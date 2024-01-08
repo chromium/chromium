@@ -56,6 +56,7 @@ class QuickStartController
   enum class AbortFlowReason {
     USER_CLICKED_BACK,
     USER_CLICKED_CANCEL,
+    ENTERPRISE_ENROLLMENT,
     QUICK_START_FLOW_COMPLETE,
     ERROR,
   };
@@ -112,8 +113,8 @@ class QuickStartController
   void DetermineEntryPointVisibility(
       EntryPointButtonVisibilityCallback callback);
 
-  // Invoked by the frontend whenever the user cancels the flow, the flow
-  // completes, or we encounter an error.
+  // Invoked by the frontend whenever the user cancels the flow or proceeds with
+  // enterprise enrollment, the flow completes, or we encounter an error.
   void AbortFlow(AbortFlowReason reason);
 
   // Whether QuickStart is ongoing and orchestrating the flow.

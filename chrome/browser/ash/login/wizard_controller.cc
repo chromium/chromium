@@ -1046,11 +1046,16 @@ void WizardController::ShowEnterOldPasswordScreen() {
 }
 
 void WizardController::ShowEnrollmentScreen() {
+  if (wizard_context_->quick_start_setup_ongoing) {
+    quickstart_controller_->AbortFlow(
+        quick_start::QuickStartController::AbortFlowReason::
+            ENTERPRISE_ENROLLMENT);
+  }
   // Update the enrollment configuration and start the screen.
   GetLoginDisplayHost()->GetOobeMetricsHelper()->RecordEnrollingUserType();
   prescribed_enrollment_config_ =
       policy::EnrollmentConfig::GetPrescribedEnrollmentConfig();
-  StartEnrollmentScreen(false);
+  StartEnrollmentScreen(/*force_interactive=*/false);
 }
 
 void WizardController::ShowDemoModePreferencesScreen() {
