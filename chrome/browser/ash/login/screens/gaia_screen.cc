@@ -198,6 +198,7 @@ void GaiaScreen::ShowImpl() {
   // Continue QuickStart flow if there is an ongoing setup.
   if (context()->quick_start_setup_ongoing) {
     exit_callback_.Run(Result::QUICK_START_ONGOING);
+    return;
   }
 
   if (!backlights_forced_off_observation_.IsObserving()) {
