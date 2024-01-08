@@ -135,7 +135,7 @@ namespace identity {
 
     // Gets an OAuth2 access token using the client ID and scopes
     // specified in the <a
-    // href="app_identity.html#update_manifest"><code>oauth2</code>
+    // href="/docs/apps/app_identity#update_manifest"><code>oauth2</code>
     // section of manifest.json</a>.
     //
     // The Identity API caches access tokens in memory, so it's ok to

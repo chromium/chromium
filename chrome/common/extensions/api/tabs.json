@@ -827,7 +827,7 @@
       {
         "name": "captureVisibleTab",
         "type": "function",
-        "description": "Captures the visible area of the currently active tab in the specified window. In order to call this method, the extension must have either the <a href='declare_permissions'>&lt;all_urls&gt;</a> permission or the <a href='activeTab'>activeTab</a> permission. In addition to sites that extensions can normally access, this method allows extensions to capture sensitive sites that are otherwise restricted, including chrome:-scheme pages, other extensions' pages, and data: URLs. These sensitive sites can only be captured with the activeTab permission. File URLs may be captured only if the extension has been granted file access.",
+        "description": "Captures the visible area of the currently active tab in the specified window. In order to call this method, the extension must have either the <a href='develop/concepts/declare-permissions'>&lt;all_urls&gt;</a> permission or the <a href='develop/concepts/activeTab'>activeTab</a> permission. In addition to sites that extensions can normally access, this method allows extensions to capture sensitive sites that are otherwise restricted, including chrome:-scheme pages, other extensions' pages, and data: URLs. These sensitive sites can only be captured with the activeTab permission. File URLs may be captured only if the extension has been granted file access.",
         "parameters": [
           {
             "type": "integer",
@@ -857,7 +857,7 @@
         "name": "executeScript",
         "deprecated": "Replaced by $(ref:scripting.executeScript) in Manifest V3.",
         "type": "function",
-        "description": "Injects JavaScript code into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects JavaScript code into a page. For details, see the <a href='develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to run the script; defaults to the active tab of the current window."},
           {
@@ -885,7 +885,7 @@
         "name": "insertCSS",
         "deprecated": "Replaced by $(ref:scripting.insertCSS) in Manifest V3.",
         "type": "function",
-        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='develop/concepts/content-scripts#programmatic'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to insert the CSS; defaults to the active tab of the current window."},
           {

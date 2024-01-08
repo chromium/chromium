@@ -5,7 +5,7 @@
 [
   {
     "namespace": "history",
-    "description": "Use the <code>chrome.history</code> API to interact with the browser's record of visited pages. You can add, remove, and query for URLs in the browser's history. To override the history page with your own version, see <a href='override'>Override Pages</a>.",
+    "description": "Use the <code>chrome.history</code> API to interact with the browser's record of visited pages. You can add, remove, and query for URLs in the browser's history. To override the history page with your own version, see <a href='develop/ui/override-chrome-pages'>Override Pages</a>.",
     "types": [
       {
         "id": "TransitionType",

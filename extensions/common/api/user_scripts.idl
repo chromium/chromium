@@ -38,8 +38,8 @@ namespace userScripts {
     // frame is matched.
     boolean? allFrames;
     // Excludes pages that this user script would otherwise be injected into.
-    // See <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // See <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on
+    // the syntax of these strings.
     DOMString[]? excludeMatches;
     // The ID of the user script specified in the API call. This property must
     // not start with a '_' as it's reserved as a prefix for generated script
@@ -55,7 +55,7 @@ namespace userScripts {
     // injected into matching pages.
     ScriptSource[] js;
     // Specifies which pages this user script will be injected into. See
-    // <a href="match_patterns">Match Patterns</a> for more details on the
+    // <a href="develop/concepts/match-patterns">Match Patterns</a> for more details on the
     // syntax of these strings. This property must be specified for
     // ${ref:register}.
     DOMString[]? matches;

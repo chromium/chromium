@@ -28,12 +28,12 @@ namespace contentScripts {
   // Describes a content script to be injected into a web page.
   dictionary ContentScript {
     // Specifies which pages this content script will be injected into. See
-    // <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+    // details on the syntax of these strings.
     DOMString[] matches;
     // Excludes pages that this content script would otherwise be injected into.
-    // See <a href="match_patterns">Match Patterns</a> for more details on the
-    // syntax of these strings.
+    // See <a href="develop/concepts/match-patterns">Match Patterns</a> for more
+    // details on the syntax of these strings.
     DOMString[]? exclude_matches;
     // The list of CSS files to be injected into matching pages. These are
     // injected in the order they appear in this array, before any DOM is

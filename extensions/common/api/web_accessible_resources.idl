@@ -10,8 +10,8 @@
     DOMString[] resources;
 
     // List of <a
-    // href="https://developer.chrome.com/docs/extensions/mv3/match_patterns/">match
-    // patterns</a> to which "resources" are accessible. These patterns should
+    // href="https://developer.chrome.com/docs/extensions/develop/concepts/match-patterns">
+    // match patterns</a> to which "resources" are accessible. These patterns should
     // have an effective path of "*". Each match will be checked against the
     // initiating origin.
     DOMString[]? matches;
