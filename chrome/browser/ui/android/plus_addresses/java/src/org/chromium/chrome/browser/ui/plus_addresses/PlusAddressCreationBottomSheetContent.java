@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -57,6 +58,9 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         // these back to the android view XML.
         TextView modalTitleView = mContentView.findViewById(R.id.plus_address_notice_title);
         modalTitleView.setText(modalTitle);
+
+        ImageView logoView = (ImageView) mContentView.findViewById(R.id.plus_address_logo);
+        logoView.setImageResource(R.drawable.plus_addresses_logo);
 
         NoUnderlineClickableSpan settingsLink =
                 new NoUnderlineClickableSpan(
