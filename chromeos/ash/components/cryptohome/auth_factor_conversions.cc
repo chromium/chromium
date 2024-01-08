@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 
@@ -242,9 +241,7 @@ void SerializeAuthInput(const AuthFactorRef& ref,
         proto_input->set_recovery_response(recovery_auth.recovery_data);
       } else {
         const auto& recovery_creation = auth_input.GetRecoveryCreationInput();
-        const bool result = base::HexStringToString(
-            recovery_creation.pub_key, proto_input->mutable_mediator_pub_key());
-        CHECK(result);
+        proto_input->set_mediator_pub_key(recovery_creation.pub_key);
         proto_input->set_user_gaia_id(recovery_creation.user_gaia_id);
         proto_input->set_device_user_id(recovery_creation.device_user_id);
       }

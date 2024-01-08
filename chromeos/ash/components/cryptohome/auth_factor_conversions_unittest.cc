@@ -108,6 +108,20 @@ TEST_F(AuthFactorConversionsTest, MetadataConversion) {
   EXPECT_EQ(pin_hash_info->algorithm,
             KnowledgeFactorHashAlgorithmWrapper::kPbkdf2Aes2561234);
   EXPECT_EQ(pin_hash_info->salt, kHashInfoSalt);
+
+  cryptohome::AuthFactor recovery(
+      AuthFactorRef(cryptohome::AuthFactorType::kRecovery,
+                    KeyLabel{"fake-recovery-label"}),
+      AuthFactorCommonMetadata(), CryptohomeRecoveryMetadata{"hsm-public-key"});
+  user_data_auth::AuthFactor recovery_proto;
+  cryptohome::SerializeAuthFactor(recovery, &recovery_proto);
+
+  auto deserialized_recovery = cryptohome::DeserializeAuthFactor(
+      recovery_proto, /*fallback_type=*/cryptohome::AuthFactorType::kPassword);
+  EXPECT_EQ(deserialized_recovery.ref(), recovery.ref());
+  EXPECT_EQ(
+      deserialized_recovery.GetCryptohomeRecoveryMetadata().mediator_pub_key,
+      recovery.GetCryptohomeRecoveryMetadata().mediator_pub_key);
 }
 
 }  // namespace
