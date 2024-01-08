@@ -11,6 +11,7 @@
 #include "base/big_endian.h"
 #include "base/rand_util.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/hpack/hpack_constants.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/recording_headers_handler.h"
 
 namespace spdy {
 
@@ -138,8 +139,14 @@ std::string HpackFuzzUtil::HeaderBlockPrefix(size_t block_size) {
 // static
 void HpackFuzzUtil::InitializeFuzzerContext(FuzzerContext* context) {
   context->first_stage = std::make_unique<HpackDecoderAdapter>();
+  context->first_stage_handler = std::make_unique<RecordingHeadersHandler>();
+  context->first_stage->HandleControlFrameHeadersStart(
+      context->first_stage_handler.get());
   context->second_stage = std::make_unique<HpackEncoder>();
   context->third_stage = std::make_unique<HpackDecoderAdapter>();
+  context->third_stage_handler = std::make_unique<RecordingHeadersHandler>();
+  context->third_stage->HandleControlFrameHeadersStart(
+      context->third_stage_handler.get());
 }
 
 // static
@@ -156,7 +163,7 @@ bool HpackFuzzUtil::RunHeaderBlockThroughFuzzerStages(
   }
   // Second stage: Re-encode the decoded header block. This must succeed.
   std::string second_stage_out = context->second_stage->EncodeHeaderBlock(
-      context->first_stage->decoded_block());
+      context->first_stage_handler->decoded_block());
 
   // Third stage: Expect a decoding of the re-encoded block to succeed, but
   // don't require it. It's possible for the stage-two encoder to produce an

@@ -111,7 +111,7 @@ TEST(HpackFuzzUtilTest, PassValidInputThroughAllStages) {
   expect[":scheme"] = "http";
   expect[":path"] = "/";
   expect[":authority"] = "www.example.com";
-  EXPECT_EQ(expect, context.third_stage->decoded_block());
+  EXPECT_EQ(expect, context.third_stage_handler->decoded_block());
 }
 
 TEST(HpackFuzzUtilTest, ValidFuzzExamplesRegressionTest) {
