@@ -7,13 +7,19 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/model/picker_search_results.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace views {
+class ScrollView;
+}  // namespace views
+
 namespace ash {
 
 class PickerSearchResult;
+class PickerSectionView;
 
 class ASH_EXPORT PickerSearchResultsView : public views::View {
  public:
@@ -31,13 +37,25 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
   // Replaces the current search results with `results`.
   void SetSearchResults(const PickerSearchResults& results);
 
-  // views::View:
-  bool OnMousePressed(const ui::MouseEvent& event) override;
-  void OnMouseReleased(const ui::MouseEvent& event) override;
+  base::span<const raw_ptr<PickerSectionView>> section_views_for_testing()
+      const {
+    return section_views_;
+  }
 
  private:
+  // Runs `select_search_result_callback_` on `result`. Note that only one
+  // result can be selected (and subsequently calling this method will do
+  // nothing).
+  void SelectSearchResult(const PickerSearchResult& result);
+
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;
+
+  // The scroll view that contains all the section_views_.
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+
+  // The views for each section of results.
+  std::vector<raw_ptr<PickerSectionView>> section_views_;
 };
 
 }  // namespace ash

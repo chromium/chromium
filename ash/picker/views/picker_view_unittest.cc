@@ -7,17 +7,21 @@
 #include <optional>
 
 #include "ash/picker/model/picker_search_results.h"
+#include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
+#include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_user_education_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view.h"
 #include "ash/test/test_ash_web_view_factory.h"
+#include "ash/test/view_drawn_waiter.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -28,6 +32,8 @@ namespace {
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Truly;
@@ -177,10 +183,19 @@ TEST_F(PickerViewTest, LeftClickSearchResultSelectsResult) {
   PickerView* view = GetPickerViewFromWidget(*widget);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
   ASSERT_TRUE(future.Wait());
+  ASSERT_THAT(
+      view->search_results_view_for_testing().section_views_for_testing(),
+      Not(IsEmpty()));
+  ASSERT_THAT(view->search_results_view_for_testing()
+                  .section_views_for_testing()[0]
+                  ->item_views_for_testing(),
+              Not(IsEmpty()));
 
-  // TODO(b/316935667): Actually click on a result item instead of the whole
-  // view.
-  LeftClickOn(&view->search_results_view_for_testing());
+  PickerItemView* result_view = view->search_results_view_for_testing()
+                                    .section_views_for_testing()[0]
+                                    ->item_views_for_testing()[0];
+  ViewDrawnWaiter().Wait(result_view);
+  LeftClickOn(result_view);
 
   EXPECT_THAT(delegate.last_inserted_result(),
               Optional(Property(&PickerSearchResult::text, Eq(u"result"))));
