@@ -121,7 +121,8 @@ class PLATFORM_EXPORT MediaStreamSource final
 
   void SetAudioProcessingProperties(EchoCancellationMode echo_cancellation_mode,
                                     bool auto_gain_control,
-                                    bool noise_supression);
+                                    bool noise_supression,
+                                    bool voice_isolation);
 
   void GetSettings(MediaStreamTrackPlatform::Settings&);
 
@@ -136,6 +137,7 @@ class PLATFORM_EXPORT MediaStreamSource final
     Vector<String> echo_cancellation_type;
     Vector<bool> auto_gain_control;
     Vector<bool> noise_suppression;
+    Vector<bool> voice_isolation;
     Vector<int32_t> sample_size;
     Vector<int32_t> channel_count;
     Vector<int32_t> sample_rate;
@@ -212,6 +214,7 @@ class PLATFORM_EXPORT MediaStreamSource final
   absl::optional<EchoCancellationMode> echo_cancellation_mode_;
   absl::optional<bool> auto_gain_control_;
   absl::optional<bool> noise_supression_;
+  absl::optional<bool> voice_isolation_;
 };
 
 typedef HeapVector<Member<MediaStreamSource>> MediaStreamSourceVector;

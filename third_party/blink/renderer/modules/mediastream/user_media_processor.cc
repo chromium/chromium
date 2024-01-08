@@ -214,9 +214,12 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
         break;
     }
 
+    // TODO(b/218593870): Replace property for voice isolation with value
+    // matching the platform.
     source->SetAudioProcessingProperties(echo_cancellation_mode,
                                          properties.goog_auto_gain_control,
-                                         properties.goog_noise_suppression);
+                                         properties.goog_noise_suppression,
+                                         /*voice_isolation=*/false);
   } else {
     // If the source is not a processed source, it could still support system
     // echo cancellation. Surface that if it does.
@@ -227,7 +230,8 @@ void SurfaceAudioProcessingSettings(MediaStreamSource* source) {
             ? MediaStreamSource::EchoCancellationMode::kSystem
             : MediaStreamSource::EchoCancellationMode::kDisabled;
 
-    source->SetAudioProcessingProperties(echo_cancellation_mode, false, false);
+    source->SetAudioProcessingProperties(echo_cancellation_mode, false, false,
+                                         false);
   }
 }
 

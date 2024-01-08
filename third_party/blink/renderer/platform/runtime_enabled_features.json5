@@ -2361,6 +2361,10 @@
       implied_by: ["MediaCaptureBackgroundBlur"],
       base_feature: "none",
     },
+    {
+      name: "MediaCaptureVoiceIsolation",
+      status: "experimental",
+    },
     // Set to reflect the MediaCastOverlayButton feature.
     {
       name: "MediaCastOverlayButton",

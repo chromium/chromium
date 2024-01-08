@@ -9,16 +9,18 @@
 
 // If a constraint is specified, it should come back in getConstraints().
 promise_test(function() {
-  return navigator.mediaDevices.getUserMedia({audio: { echoCancellation: { exact: true}, autoGainControl: { exact: true }, noiseSuppression: { exact: true }}})
+  return navigator.mediaDevices.getUserMedia({audio: { echoCancellation: { exact: true}, autoGainControl: { exact: true }, noiseSuppression: { exact: true }, voiceIsolation: { exact: true }}})
       .then(function(s) {
     constraints = s.getAudioTracks()[0].getConstraints();
-    assert_equals(Object.keys(constraints).length, 3);
+    assert_equals(Object.keys(constraints).length, 4);
     assert_true(constraints.hasOwnProperty('echoCancellation'));
     assert_true(constraints.echoCancellation.exact);
     assert_true(constraints.hasOwnProperty('autoGainControl'));
     assert_true(constraints.autoGainControl.exact);
     assert_true(constraints.hasOwnProperty('noiseSuppression'));
     assert_true(constraints.noiseSuppression.exact);
+    assert_true(constraints.hasOwnProperty('voiceIsolation'));
+    assert_true(constraints.voiceIsolation.exact);
   });
 }, 'A set constraint is returned on getConstraints');
 
@@ -73,6 +75,7 @@ promise_test(function() {
     echoCancellation: { ideal: false },
     autoGainControl: { ideal: false },
     noiseSuppression: { ideal: false },
+    voiceIsolation: { ideal: false },
     latency: { ideal: 0.22 },
     channelCount: { ideal: 2 },
     deviceId: { ideal: ["foo", "fooz"] },
@@ -158,6 +161,11 @@ constraintSyntaxTest('noiseSuppression with simple boolean value', { noiseSuppre
 constraintSyntaxTest('noiseSuppression with ideal boolean value', { noiseSuppression: { ideal: true }});
 constraintSyntaxTestWithChange('noiseSuppression with exact unwrapped boolean value',
     { noiseSuppression: { exact: true } }, { noiseSuppression: true });
+
+constraintSyntaxTest('voiceIsolation with simple boolean value', { voiceIsolation: true });
+constraintSyntaxTest('voiceIsolation with ideal boolean value', { voiceIsolation: { ideal: true }});
+constraintSyntaxTestWithChange('voiceIsolation with exact unwrapped boolean value',
+    { voiceIsolation: { exact: true } }, { voiceIsolation: true });
 
 </script>
 </body>

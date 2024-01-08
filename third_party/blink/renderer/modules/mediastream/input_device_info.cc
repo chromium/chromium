@@ -98,6 +98,7 @@ MediaTrackCapabilities* InputDeviceInfo::getCapabilities() const {
     capabilities->setEchoCancellation({true, false});
     capabilities->setAutoGainControl({true, false});
     capabilities->setNoiseSuppression({true, false});
+    capabilities->setVoiceIsolation({true, false});
     // Sample size.
     LongRange* sample_size = LongRange::Create();
     sample_size->setMin(
