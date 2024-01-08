@@ -495,6 +495,19 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_EQ(*response_received_, expected_response);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
   EXPECT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_SUCCESS);
 
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
@@ -813,6 +826,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  ASSERT_FALSE(log_entry_received_);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -1286,6 +1300,22 @@ TEST_F(OnDeviceModelServiceControllerTest, RetractUnsafeContent) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  // Although we send an error, we should be sending a log entry back so the
+  // filtering can be logged.
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
@@ -1345,6 +1375,22 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
   EXPECT_EQ(
       *response_error_,
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  // Although we send an error, we should be sending a log entry back so the
+  // filtering can be logged.
+  ASSERT_TRUE(log_entry_received_);
+  EXPECT_GT(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_EQ(log_entry_received_->log_ai_data_request()
+                ->model_execution_info()
+                .on_device_model_execution_info()
+                .execution_infos(0)
+                .response()
+                .on_device_model_service_response()
+                .status(),
+            proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, UsePreviousResponseForRewrite) {

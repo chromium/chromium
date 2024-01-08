@@ -143,6 +143,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       return start != base::TimeTicks();
     }
 
+    // Returns the mutable on-device model service response for logging.
+    proto::OnDeviceModelServiceResponse* MutableLoggedResponse();
+
     // Resets all state related to a request.
     void ResetRequestState();
 
@@ -163,7 +166,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     base::OneShotTimer timer_for_first_response;
     // Used to log the result of ExecuteModel().
     std::unique_ptr<ExecuteModelHistogramLogger> histogram_logger;
-    // Used to log execution information.
+    // Used to log execution information for the request.
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request;
   };
 
