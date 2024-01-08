@@ -587,7 +587,7 @@ using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
   }
 
   // Log browser cold start for default browser promo experiment stats.
-  if (scenes.count != 0 && scenes[0].appState.mainBrowserState) {
+  if (scenes.count != 0) {
     LogBrowserLaunched(startupInformation.isColdStart);
   }
 
