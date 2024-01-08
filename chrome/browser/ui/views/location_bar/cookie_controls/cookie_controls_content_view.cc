@@ -271,5 +271,5 @@ void CookieControlsContentView::NotifyFeedbackButtonPressedCallback() {
   feedback_button_callback_list_.Notify();
 }
 
-BEGIN_METADATA(CookieControlsContentView, views::View)
+BEGIN_METADATA(CookieControlsContentView)
 END_METADATA

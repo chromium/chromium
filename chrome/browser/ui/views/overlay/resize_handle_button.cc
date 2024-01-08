@@ -131,5 +131,5 @@ void ResizeHandleButton::UpdateImageForQuadrant() {
                 ui::ImageModel::FromImageSkia(icon));
 }
 
-BEGIN_METADATA(ResizeHandleButton, views::ImageButton)
+BEGIN_METADATA(ResizeHandleButton)
 END_METADATA

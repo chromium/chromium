@@ -278,7 +278,7 @@ std::u16string CastDialogSinkView::GetStopButtonAccessibleName() const {
 
 CastDialogSinkView::~CastDialogSinkView() = default;
 
-BEGIN_METADATA(CastDialogSinkView, views::View)
+BEGIN_METADATA(CastDialogSinkView)
 END_METADATA
 
 }  // namespace media_router

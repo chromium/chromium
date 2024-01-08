@@ -345,6 +345,6 @@ void ContentSettingImageView::AnimationEnded(const gfx::Animation* animation) {
   }
 }
 
-BEGIN_METADATA(ContentSettingImageView, IconLabelBubbleView)
+BEGIN_METADATA(ContentSettingImageView)
 ADD_PROPERTY_METADATA(std::optional<SkColor>, IconColor)
 END_METADATA

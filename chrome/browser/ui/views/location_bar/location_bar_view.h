@@ -77,9 +77,9 @@ class LocationBarView : public LocationBar,
                         public device::GeolocationManager::PermissionObserver,
 #endif
                         public PageActionIconView::Delegate {
- public:
-  METADATA_HEADER(LocationBarView);
+  METADATA_HEADER(LocationBarView, views::View)
 
+ public:
   class Delegate {
    public:
     // Should return the current web contents.

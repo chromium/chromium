@@ -1633,7 +1633,7 @@ bool LocationBarView::GetPopupMode() const {
   return is_popup_mode_;
 }
 
-BEGIN_METADATA(LocationBarView, views::View)
+BEGIN_METADATA(LocationBarView)
 ADD_READONLY_PROPERTY_METADATA(int, BorderRadius)
 ADD_READONLY_PROPERTY_METADATA(gfx::Point, OmniboxViewOrigin)
 ADD_PROPERTY_METADATA(std::u16string, ImePrefixAutocompletion)

@@ -43,8 +43,9 @@ class PresentationReceiverWindowView final
       public ExclusiveAccessContext,
       public ExclusiveAccessBubbleViewsContext,
       public ui::AcceleratorProvider {
+  METADATA_HEADER(PresentationReceiverWindowView, views::WidgetDelegateView)
+
  public:
-  METADATA_HEADER(PresentationReceiverWindowView);
   PresentationReceiverWindowView(PresentationReceiverWindowFrame* frame,
                                  PresentationReceiverWindowDelegate* delegate);
   PresentationReceiverWindowView(const PresentationReceiverWindowView&) =

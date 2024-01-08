@@ -216,5 +216,5 @@ void RequestPinView::SetErrorMessage(
   textfield_->SetInvalid(true);
 }
 
-BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
+BEGIN_METADATA(RequestPinView)
 END_METADATA

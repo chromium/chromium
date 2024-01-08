@@ -35,5 +35,5 @@ void HangUpButton::UpdateImage() {
                     kColorPipWindowHangUpButtonForeground, icon_size));
 }
 
-BEGIN_METADATA(HangUpButton, OverlayWindowImageButton)
+BEGIN_METADATA(HangUpButton)
 END_METADATA

@@ -134,8 +134,9 @@ void PlaceholderImageSource::Draw(gfx::Canvas* canvas) {
 // RoundedCornerImageView:
 
 class RoundedCornerImageView : public views::ImageView {
+  METADATA_HEADER(RoundedCornerImageView, views::ImageView)
+
  public:
-  METADATA_HEADER(RoundedCornerImageView);
   RoundedCornerImageView() = default;
   RoundedCornerImageView(const RoundedCornerImageView&) = delete;
   RoundedCornerImageView& operator=(const RoundedCornerImageView&) = delete;
@@ -158,7 +159,7 @@ void RoundedCornerImageView::OnPaint(gfx::Canvas* canvas) {
   ImageView::OnPaint(canvas);
 }
 
-BEGIN_METADATA(RoundedCornerImageView, views::ImageView)
+BEGIN_METADATA(RoundedCornerImageView)
 END_METADATA
 
 }  // namespace
@@ -593,5 +594,5 @@ void OmniboxMatchCellView::SetTailSuggestCommonPrefixWidth(
   tail_suggest_common_prefix_width_ = render_text->GetStringSize().width();
 }
 
-BEGIN_METADATA(OmniboxMatchCellView, views::View)
+BEGIN_METADATA(OmniboxMatchCellView)
 END_METADATA

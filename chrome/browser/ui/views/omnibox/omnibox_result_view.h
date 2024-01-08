@@ -41,8 +41,9 @@ class ImageButton;
 }  // namespace views
 
 class OmniboxResultView : public views::View {
+  METADATA_HEADER(OmniboxResultView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxResultView);
   OmniboxResultView(OmniboxPopupViewViews* popup_view, size_t model_index);
   OmniboxResultView(const OmniboxResultView&) = delete;
   OmniboxResultView& operator=(const OmniboxResultView&) = delete;

@@ -24,9 +24,9 @@ enum SecurityLevel;
 // page security status (after navigation has completed), or extension name (if
 // the URL is a chrome-extension:// URL).
 class LocationIconView : public IconLabelBubbleView {
- public:
-  METADATA_HEADER(LocationIconView);
+  METADATA_HEADER(LocationIconView, IconLabelBubbleView)
 
+ public:
   class Delegate {
    public:
     using IconFetchedCallback =

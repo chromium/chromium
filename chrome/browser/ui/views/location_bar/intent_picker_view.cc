@@ -82,6 +82,6 @@ const gfx::VectorIcon& IntentPickerView::GetVectorIcon() const {
              : kOpenInNewIcon;
 }
 
-BEGIN_METADATA(IntentPickerView, PageActionIconView)
+BEGIN_METADATA(IntentPickerView)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowIcon)
 END_METADATA

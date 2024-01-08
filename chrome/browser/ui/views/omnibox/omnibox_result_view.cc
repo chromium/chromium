@@ -72,8 +72,9 @@
 namespace {
 
 class OmniboxRemoveSuggestionButton : public views::ImageButton {
+  METADATA_HEADER(OmniboxRemoveSuggestionButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(OmniboxRemoveSuggestionButton);
   explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
@@ -94,7 +95,7 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
   }
 };
 
-BEGIN_METADATA(OmniboxRemoveSuggestionButton, views::ImageButton)
+BEGIN_METADATA(OmniboxRemoveSuggestionButton)
 END_METADATA
 
 }  // namespace
@@ -103,9 +104,9 @@ END_METADATA
 // OmniboxResultSelectionIndicator
 
 class OmniboxResultSelectionIndicator : public views::View {
- public:
-  METADATA_HEADER(OmniboxResultSelectionIndicator);
+  METADATA_HEADER(OmniboxResultSelectionIndicator, views::View)
 
+ public:
   const bool cr2023_expanded_state_colors_enabled =
       omnibox::IsOmniboxCr23CustomizeGuardedFeatureEnabled(
           omnibox::kExpandedStateColors);
@@ -153,7 +154,7 @@ class OmniboxResultSelectionIndicator : public views::View {
   }
 };
 
-BEGIN_METADATA(OmniboxResultSelectionIndicator, views::View)
+BEGIN_METADATA(OmniboxResultSelectionIndicator)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -732,7 +733,7 @@ DEFINE_ENUM_CONVERTERS(OmniboxPartState,
                        {OmniboxPartState::HOVERED, u"HOVERED"},
                        {OmniboxPartState::SELECTED, u"SELECTED"})
 
-BEGIN_METADATA(OmniboxResultView, views::View)
+BEGIN_METADATA(OmniboxResultView)
 ADD_READONLY_PROPERTY_METADATA(bool, MatchSelected)
 ADD_READONLY_PROPERTY_METADATA(OmniboxPartState, ThemeState)
 ADD_READONLY_PROPERTY_METADATA(gfx::Image, Icon)

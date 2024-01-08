@@ -150,5 +150,5 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
   return false;
 }
 
-BEGIN_METADATA(CookieControlsBubbleViewImpl, views::BubbleDialogDelegateView)
+BEGIN_METADATA(CookieControlsBubbleViewImpl)
 END_METADATA

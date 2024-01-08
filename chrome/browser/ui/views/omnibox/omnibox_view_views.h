@@ -64,9 +64,9 @@ class OmniboxViewViews
       public views::TextfieldController,
       public ui::CompositorObserver,
       public TemplateURLServiceObserver {
- public:
-  METADATA_HEADER(OmniboxViewViews);
+  METADATA_HEADER(OmniboxViewViews, views::Textfield)
 
+ public:
   // Max width of the gradient mask used to smooth ElideAnimation edges.
   static const int kSmoothingGradientMaxWidth = 15;
 

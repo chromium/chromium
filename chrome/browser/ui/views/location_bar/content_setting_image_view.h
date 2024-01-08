@@ -38,8 +38,9 @@ class BubbleDialogDelegateView;
 // blocking, geolocation).
 class ContentSettingImageView : public IconLabelBubbleView,
                                 public views::WidgetObserver {
+  METADATA_HEADER(ContentSettingImageView, IconLabelBubbleView)
+
  public:
-  METADATA_HEADER(ContentSettingImageView);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMediaActivityIndicatorElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiActivityIndicatorElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMidiSysexActivityIndicatorElementId);

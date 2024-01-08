@@ -21,8 +21,9 @@ class Button;
 
 // A view to contain the button row within a result view.
 class OmniboxSuggestionButtonRowView : public views::View {
+  METADATA_HEADER(OmniboxSuggestionButtonRowView, views::View)
+
  public:
-  METADATA_HEADER(OmniboxSuggestionButtonRowView);
   explicit OmniboxSuggestionButtonRowView(OmniboxPopupViewViews* popup_view,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =

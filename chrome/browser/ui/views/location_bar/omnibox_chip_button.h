@@ -23,9 +23,10 @@
 // UI component for chip button located in the omnibox. A button with an icon
 // and text, with rounded corners.
 class OmniboxChipButton : public views::MdTextButton {
+  METADATA_HEADER(OmniboxChipButton, views::MdTextButton)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kChipElementId);
-  METADATA_HEADER(OmniboxChipButton);
   explicit OmniboxChipButton(PressedCallback callback);
   OmniboxChipButton(const OmniboxChipButton& button) = delete;
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;

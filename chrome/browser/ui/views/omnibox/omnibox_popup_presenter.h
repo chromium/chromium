@@ -28,8 +28,9 @@ class OmniboxPopupPresenter : public views::WebView,
                               public views::WidgetObserver,
                               public OmniboxWebUIPopupChangeObserver,
                               public views::ViewObserver {
+  METADATA_HEADER(OmniboxPopupPresenter, views::WebView)
+
  public:
-  METADATA_HEADER(OmniboxPopupPresenter);
   explicit OmniboxPopupPresenter(LocationBarView* location_bar_view,
                                  OmniboxController* controller);
   OmniboxPopupPresenter(const OmniboxPopupPresenter&) = delete;

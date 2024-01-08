@@ -143,6 +143,6 @@ void SelectedKeywordView::SetLabelForCurrentWidth() {
   SetLabel(use_full_label ? full_label_.GetText() : partial_label_.GetText());
 }
 
-BEGIN_METADATA(SelectedKeywordView, IconLabelBubbleView)
+BEGIN_METADATA(SelectedKeywordView)
 ADD_PROPERTY_METADATA(std::u16string, Keyword)
 END_METADATA

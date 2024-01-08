@@ -61,5 +61,5 @@ void SkipAdLabelButton::OnThemeChanged() {
   SetTextColor(views::Button::STATE_DISABLED, foreground_color);
 }
 
-BEGIN_METADATA(SkipAdLabelButton, views::LabelButton)
+BEGIN_METADATA(SkipAdLabelButton)
 END_METADATA

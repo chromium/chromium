@@ -58,5 +58,5 @@ void CloseImageButton::SetPosition(
                  kCloseButtonMargin));
 }
 
-BEGIN_METADATA(CloseImageButton, OverlayWindowImageButton)
+BEGIN_METADATA(CloseImageButton)
 END_METADATA

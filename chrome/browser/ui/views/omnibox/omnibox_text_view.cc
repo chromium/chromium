@@ -313,7 +313,7 @@ void OmniboxTextView::OnStyleChanged() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(OmniboxTextView, views::View)
+BEGIN_METADATA(OmniboxTextView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 ADD_READONLY_PROPERTY_METADATA(int, LineHeight)
 END_METADATA

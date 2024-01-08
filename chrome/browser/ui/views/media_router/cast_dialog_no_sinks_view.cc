@@ -124,7 +124,7 @@ void CastDialogNoSinksView::SetHelpIconView() {
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STATUS_NO_DEVICES_FOUND));
 }
 
-BEGIN_METADATA(CastDialogNoSinksView, views::View)
+BEGIN_METADATA(CastDialogNoSinksView)
 END_METADATA
 
 }  // namespace media_router

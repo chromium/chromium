@@ -110,8 +110,9 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 // View at the top of the frame which paints transparent pixels to make a hole
 // so that the location bar shows through.
 class TopBackgroundView : public views::View {
+  METADATA_HEADER(TopBackgroundView, views::View)
+
  public:
-  METADATA_HEADER(TopBackgroundView);
   explicit TopBackgroundView(const LocationBarView* location_bar)
       : location_bar_(location_bar) {}
 
@@ -170,7 +171,7 @@ class TopBackgroundView : public views::View {
   raw_ptr<const LocationBarView> location_bar_;
 };
 
-BEGIN_METADATA(TopBackgroundView, views::View)
+BEGIN_METADATA(TopBackgroundView)
 END_METADATA
 
 // Insets used to position |contents_| within |contents_host_|.
@@ -320,5 +321,5 @@ void RoundedOmniboxResultsFrame::OnMouseEvent(ui::MouseEvent* event) {
 
 #endif  // !USE_AURA
 
-BEGIN_METADATA(RoundedOmniboxResultsFrame, views::View)
+BEGIN_METADATA(RoundedOmniboxResultsFrame)
 END_METADATA

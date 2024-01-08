@@ -33,8 +33,9 @@ namespace media_router {
 // `stop_pressed_callback` when pressed, and the freeze_button_ triggers
 // `freeze_pressed_callback` when pressed.
 class CastDialogSinkView : public views::View {
+  METADATA_HEADER(CastDialogSinkView, views::View)
+
  public:
-  METADATA_HEADER(CastDialogSinkView);
   CastDialogSinkView(Profile* profile,
                      const UIMediaSink& sink,
                      views::Button::PressedCallback sink_pressed_callback,

@@ -15,8 +15,9 @@ class LocationBarView;
 
 // A class that wraps a Widget's content view to provide a custom results frame.
 class RoundedOmniboxResultsFrame : public views::View {
+  METADATA_HEADER(RoundedOmniboxResultsFrame, views::View)
+
  public:
-  METADATA_HEADER(RoundedOmniboxResultsFrame);
   RoundedOmniboxResultsFrame(views::View* contents,
                              LocationBarView* location_bar);
   RoundedOmniboxResultsFrame(const RoundedOmniboxResultsFrame&) = delete;

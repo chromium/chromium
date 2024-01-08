@@ -12,9 +12,9 @@
 
 // A button representing a back-to-tab button.
 class BackToTabLabelButton : public views::LabelButton {
- public:
-  METADATA_HEADER(BackToTabLabelButton);
+  METADATA_HEADER(BackToTabLabelButton, views::LabelButton)
 
+ public:
   explicit BackToTabLabelButton(PressedCallback callback);
   BackToTabLabelButton(const BackToTabLabelButton&) = delete;
   BackToTabLabelButton& operator=(const BackToTabLabelButton&) = delete;

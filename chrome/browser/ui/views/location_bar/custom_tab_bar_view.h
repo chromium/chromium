@@ -41,8 +41,9 @@ class CustomTabBarView : public views::AccessiblePaneView,
                          public views::ContextMenuController,
                          public IconLabelBubbleView::Delegate,
                          public LocationIconView::Delegate {
+  METADATA_HEADER(CustomTabBarView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(CustomTabBarView);
   CustomTabBarView(BrowserView* browser_view,
                    LocationBarView::Delegate* delegate);
   CustomTabBarView(const CustomTabBarView&) = delete;

@@ -1954,7 +1954,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }
 
-BEGIN_METADATA(OmniboxViewViews, views::Textfield)
+BEGIN_METADATA(OmniboxViewViews)
 ADD_READONLY_PROPERTY_METADATA(bool, SelectionAtEnd)
 ADD_READONLY_PROPERTY_METADATA(int, TextWidth)
 ADD_READONLY_PROPERTY_METADATA(int, UnelidedTextWidth)

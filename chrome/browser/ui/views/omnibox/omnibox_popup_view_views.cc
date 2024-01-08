@@ -639,7 +639,7 @@ void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 }
 
-BEGIN_METADATA(OmniboxPopupViewViews, views::View)
+BEGIN_METADATA(OmniboxPopupViewViews)
 ADD_PROPERTY_METADATA(size_t, SelectedIndex)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, TargetBounds)
 END_METADATA

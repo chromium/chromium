@@ -132,9 +132,9 @@ T* AddChildView(std::vector<std::unique_ptr<views::View>>* views,
 }
 
 class WindowBackgroundView : public views::View {
- public:
-  METADATA_HEADER(WindowBackgroundView);
+  METADATA_HEADER(WindowBackgroundView, views::View)
 
+ public:
   WindowBackgroundView() = default;
   WindowBackgroundView(const WindowBackgroundView&) = delete;
   WindowBackgroundView& operator=(const WindowBackgroundView&) = delete;
@@ -146,13 +146,13 @@ class WindowBackgroundView : public views::View {
   }
 };
 
-BEGIN_METADATA(WindowBackgroundView, views::View)
+BEGIN_METADATA(WindowBackgroundView)
 END_METADATA
 
 class ControlsBackgroundView : public views::View {
- public:
-  METADATA_HEADER(ControlsBackgroundView);
+  METADATA_HEADER(ControlsBackgroundView, views::View)
 
+ public:
   ControlsBackgroundView() = default;
   ControlsBackgroundView(const ControlsBackgroundView&) = delete;
   ControlsBackgroundView& operator=(const ControlsBackgroundView&) = delete;
@@ -168,13 +168,15 @@ class ControlsBackgroundView : public views::View {
   }
 };
 
-BEGIN_METADATA(ControlsBackgroundView, views::View)
+BEGIN_METADATA(ControlsBackgroundView)
 END_METADATA
 
 }  // namespace
 
 // OverlayWindow implementation of NonClientFrameView.
 class OverlayWindowFrameView : public views::NonClientFrameView {
+  METADATA_HEADER(OverlayWindowFrameView, views::NonClientFrameView)
+
  public:
   explicit OverlayWindowFrameView(views::Widget* widget) : widget_(widget) {}
 
@@ -228,6 +230,9 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
  private:
   raw_ptr<views::Widget> widget_;
 };
+
+BEGIN_METADATA(OverlayWindowFrameView)
+END_METADATA
 
 // OverlayWindow implementation of WidgetDelegate.
 class OverlayWindowWidgetDelegate : public views::WidgetDelegate {

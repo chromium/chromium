@@ -99,5 +99,5 @@ void BackToTabLabelButton::UpdateSizingAndPosition() {
                  (window_size_->height() / 2) - (size().height() / 2)));
 }
 
-BEGIN_METADATA(BackToTabLabelButton, views::LabelButton)
+BEGIN_METADATA(BackToTabLabelButton)
 END_METADATA
