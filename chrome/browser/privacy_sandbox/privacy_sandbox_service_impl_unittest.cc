@@ -912,7 +912,6 @@ TEST_F(PrivacySandboxServiceTest,
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/false,
       /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -932,7 +931,6 @@ TEST_F(PrivacySandboxServiceTest,
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*user_cookie_exceptions=*/{},
@@ -951,7 +949,6 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
                        std::make_unique<base::Value>(true));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -970,7 +967,6 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
                        std::make_unique<base::Value>(false));
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1106,7 +1102,6 @@ TEST_F(PrivacySandboxServiceTest,
       {}, {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1149,7 +1144,6 @@ TEST_F(PrivacySandboxServiceTest,
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1184,7 +1178,6 @@ TEST_F(PrivacySandboxServiceTest,
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1218,7 +1211,6 @@ TEST_F(PrivacySandboxServiceTest,
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1340,7 +1332,6 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       /*disabled_features=*/{});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1393,7 +1384,6 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},

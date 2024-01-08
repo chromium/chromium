@@ -292,7 +292,6 @@ struct CookieContentSettingException {
 void SetupTestState(
     sync_preferences::TestingPrefServiceSyncable* testing_pref_service,
     HostContentSettingsMap* map,
-    bool privacy_sandbox_enabled,
     bool block_third_party_cookies,
     ContentSetting default_cookie_setting,
     const std::vector<CookieContentSettingException>& user_cookie_exceptions,

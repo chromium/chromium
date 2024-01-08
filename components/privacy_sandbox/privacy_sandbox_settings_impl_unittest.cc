@@ -209,7 +209,6 @@ TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
   // of any other profile state.
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/false,
       /*block_third_party_cookies=*/true,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
       /*user_cookie_exceptions=*/
@@ -596,7 +595,6 @@ TEST_F(
     // bypass.
     privacy_sandbox_test_util::SetupTestState(
         prefs(), host_content_settings_map(),
-        /*privacy_sandbox_enabled=*/false,
         /*block_third_party_cookies=*/false,
         /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
         /*user_cookie_exceptions=*/{},
@@ -631,7 +629,6 @@ TEST_F(
     // Disallowed due to user's exception, therefore cannot bypass.
     privacy_sandbox_test_util::SetupTestState(
         prefs(), host_content_settings_map(),
-        /*privacy_sandbox_enabled=*/false,
         /*block_third_party_cookies=*/false,
         /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
         /*user_cookie_exceptions=*/
@@ -1869,7 +1866,6 @@ TEST_P(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
 TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
@@ -1921,7 +1917,6 @@ TEST_P(PrivacySandboxAttestationsTest, SetOverrideFromFlags) {
   };
   privacy_sandbox_test_util::SetupTestState(
       prefs(), host_content_settings_map(),
-      /*privacy_sandbox_enabled=*/true,
       /*block_third_party_cookies=*/false,
       /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
       /*user_cookie_exceptions=*/{},
