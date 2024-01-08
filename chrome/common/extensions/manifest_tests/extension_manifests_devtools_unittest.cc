@@ -29,7 +29,9 @@ TEST_F(DevToolsPageManifestTest, DevToolsExtensions) {
   EXPECT_EQ(extension->url().spec() + "devtools.html",
             extensions::chrome_manifest_urls::GetDevToolsPage(extension.get())
                 .spec());
-  EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
+  EXPECT_TRUE(extension->permissions_data()
+                  ->active_permissions()
+                  .HasEffectiveAccessToAllHosts());
 }
 
 TEST_F(DevToolsPageManifestTest, DevToolsPageAbsoluteUrl) {

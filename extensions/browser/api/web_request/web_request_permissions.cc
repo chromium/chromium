@@ -168,7 +168,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
       return GetHostAccessForURL(*extension, initiator->GetURL(), tab_id);
     }
     case WebRequestPermissions::REQUIRE_ALL_URLS:
-      return extension->permissions_data()->HasEffectiveAccessToAllHosts()
+      return extension->permissions_data()
+                     ->active_permissions()
+                     .HasEffectiveAccessToAllHosts()
                  ? PermissionsData::PageAccess::kAllowed
                  : PermissionsData::PageAccess::kDenied;
   }

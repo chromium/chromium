@@ -3124,7 +3124,9 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
   const Extension* extension = last_loaded_extension();
   ASSERT_TRUE(extension);
 
-  EXPECT_TRUE(extension->permissions_data()->HasEffectiveAccessToAllHosts());
+  EXPECT_TRUE(extension->permissions_data()
+                  ->active_permissions()
+                  .HasEffectiveAccessToAllHosts());
 
   // Withhold access to all hosts.
   ScriptingPermissionsModifier scripting_modifier(

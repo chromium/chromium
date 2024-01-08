@@ -307,8 +307,11 @@ bool WebRequestRulesRegistry::HostPermissionsChecker(
     const Extension* extension,
     const WebRequestActionSet* actions,
     std::string* error) {
-  if (extension->permissions_data()->HasEffectiveAccessToAllHosts())
+  if (extension->permissions_data()
+          ->active_permissions()
+          .HasEffectiveAccessToAllHosts()) {
     return true;
+  }
 
   // Without the permission for all URLs, actions with the STRATEGY_DEFAULT
   // should not be registered, they would never be able to execute.
