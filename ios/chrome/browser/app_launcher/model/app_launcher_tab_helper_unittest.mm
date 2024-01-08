@@ -607,7 +607,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
   EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
 }
 
-// Tests that URLs with Chrome Bundle schemes are blocked on iframes.
+// Tests that URLs with Chrome Bundle schemes are blocked on main frames and
+// iframes.
 // TODO(crbug.com/1172516): The test fails on device.
 #if TARGET_IPHONE_SIMULATOR
 #define MAYBE_ChromeBundleUrlScheme ChromeBundleUrlScheme
@@ -618,6 +619,8 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
   // Get the test bundle URL Scheme.
   NSString* scheme = [[ChromeAppConstants sharedInstance] bundleURLScheme];
   NSString* url = [NSString stringWithFormat:@"%@://www.google.com", scheme];
+
+  // Verify that the URL is blocked on iframes.
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/false,
                                       /*target_frame_is_cross_origin=*/false,
@@ -630,12 +633,12 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_ChromeBundleUrlScheme) {
                                       /*is_user_initiated=*/true));
   EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 
-  // Chrome Bundle URL scheme is only allowed from main frames.
+  // Verify that the URL is blocked on main frames.
   EXPECT_FALSE(TestShouldAllowRequest(url,
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
                                       /*is_user_initiated=*/true));
-  EXPECT_EQ(1U, delegate_.GetAppLaunchCount());
+  EXPECT_EQ(0U, delegate_.GetAppLaunchCount());
 }
 
 // Tests that ShouldAllowRequest updates the reading list correctly for non-link
