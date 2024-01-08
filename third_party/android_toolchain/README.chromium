@@ -39,3 +39,4 @@ Local Modifications:
   case-insensitive filesystems (e.g. usr/include/netfilter/xt_CONNMARK.h).
 
 Downloaded from: https://developer.android.com/ndk/downloads/index.html
+Reference Docs: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md
