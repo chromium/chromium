@@ -664,4 +664,8 @@ int TimeUntilShowingCompactedSetUpList();
 // Helper for whether the external action handling flag is enabled.
 bool IsExternalActionSchemeHandlingEnabled();
 
+// Kill switch for disabling the navigations when the application is in
+// foreground inactive state after opening an external app.
+BASE_DECLARE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

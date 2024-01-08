@@ -838,3 +838,7 @@ int TimeUntilShowingCompactedSetUpList() {
 bool IsExternalActionSchemeHandlingEnabled() {
   return base::FeatureList::IsEnabled(kIOSExternalActionURLs);
 }
+
+BASE_FEATURE(kInactiveNavigationAfterAppLaunchKillSwitch,
+             "kInactiveNavigationAfterAppLaunchKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);

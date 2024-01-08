@@ -28,10 +28,15 @@ class AppLauncherTabHelperDelegate {
   // Launches application that has `url` if possible (optionally after
   // confirming via dialog). Completion is called with a boolean indicating if
   // the opening was successful.
+  // `completion` is called when the external application is launched. The
+  // parameter indicates if the launch was successful.
+  // If the launch was successful, `back_to_app_completion` is called on next
+  // scene activation.
   virtual void LaunchAppForTabHelper(
       AppLauncherTabHelper* tab_helper,
       const GURL& url,
-      base::OnceCallback<void(bool)> completion) = 0;
+      base::OnceCallback<void(bool)> completion,
+      base::OnceCallback<void()> back_to_app_completion) = 0;
 
   // Alerts the user that there have been repeated attempts to launch
   // the application. `completion` is called with the user's response on whether
