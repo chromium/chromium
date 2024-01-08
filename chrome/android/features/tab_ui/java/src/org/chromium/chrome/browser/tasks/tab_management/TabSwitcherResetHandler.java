@@ -28,16 +28,24 @@ interface TabSwitcherResetHandler {
      * @param tabs The {@link List<PseudoTab>} to show the tabs for in the grid.
      * @param quickMode Whether to skip capturing the selected live tab for the thumbnail.
      * @return Whether the {@link TabListRecyclerView} can be shown quickly.
+     * @deprecated Use resetWithTabList instead to minimize the surface area of PseudoTab which
+     *     should be removed with instant start. See https://crbug.com/1413207.
      */
     boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode);
 
-    /** Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}. */
+    /**
+     * Release the thumbnail {@link Bitmap} but keep the {@link TabGridView}.
+     *
+     * @deprecated Remove once Hub launches as this will be unused. See https://crbug.com/1516738.
+     */
     void softCleanup();
 
     /**
      * Hard cleanup and reset the full tab list to null. Also check to see if there are any not
      * viewed price drops when the user leaves the tab switcher. This is done only before the
      * coordinator is destroyed to reduce the amount of calls to ShoppingPersistedTabData.
+     *
+     * @deprecated Remove once Hub launches as this will be unused. See https://crbug.com/1516738.
      */
     void hardCleanup();
 }

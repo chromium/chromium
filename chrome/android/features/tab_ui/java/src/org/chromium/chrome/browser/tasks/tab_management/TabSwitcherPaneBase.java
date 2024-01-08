@@ -30,20 +30,27 @@ import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 import org.chromium.ui.base.DeviceFormFactor;
 
+import java.util.List;
+
 /**
  * An abstract {@link Pane} representing a tab switcher for shared logic between the normal and
  * incognito modes.
  */
-public abstract class TabSwitcherPaneBase implements Pane {
+public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandler {
     protected final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonDataSupplier =
             new ObservableSupplierImpl<>();
     protected final ObservableSupplierImpl<FullButtonData> mNewTabButtonDataSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
+            new ObservableSupplierImpl<>();
+    private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>();
 
     private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
@@ -73,8 +80,8 @@ public abstract class TabSwitcherPaneBase implements Pane {
     private final ViewGroup mRootView;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
     private final TabSwitcherPaneCoordinatorFactory mFactory;
+    private final boolean mIsIncognito;
 
-    private boolean mIsVisible;
     private boolean mNativeInitialized;
     private OnClickListener mNewTabButtonClickListener;
 
@@ -85,15 +92,18 @@ public abstract class TabSwitcherPaneBase implements Pane {
      * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
      * @param newTabButtonContentDescriptionRes The resource for the new tab button content
      *     description.
+     * @param isIncognito Whether the pane is incognito.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
             @NonNull OnClickListener newTabButtonClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @StringRes int newTabButtonContentDescriptionRes) {
+            @StringRes int newTabButtonContentDescriptionRes,
+            boolean isIncognito) {
         mFactory = factory;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
+        mIsIncognito = isIncognito;
 
         mNewTabButtonDataSupplier.set(
                 new DelegateButtonData(
@@ -104,6 +114,8 @@ public abstract class TabSwitcherPaneBase implements Pane {
                         () -> newTabButtonClickListener.onClick(null)));
 
         mRootView = new FrameLayout(context);
+        mIsVisibleSupplier.set(false);
+        mIsAnimatingSupplier.set(false);
     }
 
     @Override
@@ -124,9 +136,10 @@ public abstract class TabSwitcherPaneBase implements Pane {
         // WARM/COLD signals being posted this can lead to multiple HOT panes for a brief period.
         // In this case multiple HOT panes might listen for the same menu event leading to a
         // collision.
-        mIsVisible = loadHint == LoadHint.HOT;
+        boolean isVisible = loadHint == LoadHint.HOT;
+        mIsVisibleSupplier.set(isVisible);
 
-        if (mIsVisible) {
+        if (isVisible) {
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     mMenuOrKeyboardActionHandler);
         } else {
@@ -149,7 +162,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with shrink animator.
+        // TODO(crbug/1505772): Replace with shrink animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
@@ -158,7 +171,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with expand animator.
+        // TODO(crbug/1505772): Replace with expand animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
@@ -174,6 +187,22 @@ public abstract class TabSwitcherPaneBase implements Pane {
     @Override
     public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressChangedSupplier;
+    }
+
+    @Override
+    public boolean resetWithTabs(@Nullable List<PseudoTab> tabs, boolean quickMode) {
+        assert false : "Not reached.";
+        return true;
+    }
+
+    @Override
+    public void softCleanup() {
+        assert false : "Not reached.";
+    }
+
+    @Override
+    public void hardCleanup() {
+        assert false : "Not reached.";
     }
 
     public void initWithNative() {
@@ -224,7 +253,7 @@ public abstract class TabSwitcherPaneBase implements Pane {
     }
 
     protected boolean isVisible() {
-        return mIsVisible;
+        return mIsVisibleSupplier.get();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -236,7 +265,14 @@ public abstract class TabSwitcherPaneBase implements Pane {
     void createTabSwitcherPaneCoordinator() {
         if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
 
-        @NonNull TabSwitcherPaneCoordinator coordinator = mFactory.create(mRootView);
+        @NonNull
+        TabSwitcherPaneCoordinator coordinator =
+                mFactory.create(
+                        mRootView,
+                        /* resetHandler= */ this,
+                        mIsVisibleSupplier,
+                        mIsAnimatingSupplier,
+                        mIsIncognito);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         if (mNativeInitialized) {
             coordinator.initWithNative();

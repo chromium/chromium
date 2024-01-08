@@ -166,6 +166,7 @@ public interface TabManagementDelegate {
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
      *
      * @param activity The {@link Activity} that hosts the pane.
+     * @param lifecycleDispatcher The lifecycle dispatcher for the activity.
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
      * @param tabContentManager For management of thumbnails.

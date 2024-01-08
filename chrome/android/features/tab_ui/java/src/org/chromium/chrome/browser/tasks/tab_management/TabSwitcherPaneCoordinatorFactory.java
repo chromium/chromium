@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
@@ -19,7 +21,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -48,6 +52,7 @@ public class TabSwitcherPaneCoordinatorFactory {
 
     /**
      * @param activity The {@link Activity} that hosts the pane.
+     * @param lifecycleDispatcher The lifecycle dispatcher for the activity.
      * @param profileProviderSupplier The supplier for profiles.
      * @param tabModelSelector For access to {@link TabModel}.
      * @param tabContentManager For management of thumbnails.
@@ -96,12 +101,37 @@ public class TabSwitcherPaneCoordinatorFactory {
      * those supplied through this method.
      *
      * @param parentView The view to use as a parent.
+     * @param resetHandler The reset handler to drive updates.
+     * @param isVisibleSupplier Supplies visibility information to the tab switcher.
+     * @param isAnimatingSupplier Supplies animation information to the tab switcher.
+     * @param isIncognito Whether this is for the incognito tab switcher.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
-    TabSwitcherPaneCoordinator create(@NonNull ViewGroup parentView) {
-        // TODO(crbug/1505772): Forward the args into the coordinator (along with incognito
-        // information).
-        return new TabSwitcherPaneCoordinator(parentView);
+    TabSwitcherPaneCoordinator create(
+            @NonNull ViewGroup parentView,
+            @NonNull TabSwitcherResetHandler resetHandler,
+            @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
+            @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
+            boolean isIncognito) {
+        return new TabSwitcherPaneCoordinator(
+                mActivity,
+                mLifecycleDispatcher,
+                mProfileProviderSupplier,
+                createTabModelFilterSupplier(isIncognito),
+                () -> mTabModelSelector.getModel(false),
+                mTabContentManager,
+                mTabCreatorManager,
+                mTitleProvider,
+                mBrowserControlsStateProvider,
+                mMultiWindowModeStateDispatcher,
+                mScrimCoordinator,
+                mSnackbarManager,
+                mModalDialogManager,
+                parentView,
+                resetHandler,
+                isVisibleSupplier,
+                isAnimatingSupplier,
+                mMode);
     }
 
     /** Returns the {@link TabListMode} of the produced {@link TabListCoordinator}s. */
@@ -142,5 +172,28 @@ public class TabSwitcherPaneCoordinatorFactory {
                 delegate,
                 coordinator,
                 activity.getColor(R.color.omnibox_focused_fading_background_color));
+    }
+
+    @VisibleForTesting
+    ObservableSupplier<TabModelFilter> createTabModelFilterSupplier(boolean isIncognito) {
+        ObservableSupplierImpl<TabModelFilter> tabModelFilterSupplier =
+                new ObservableSupplierImpl<>();
+        TabModelSelector selector = mTabModelSelector;
+        if (selector.isTabStateInitialized()) {
+            tabModelFilterSupplier.set(
+                    selector.getTabModelFilterProvider().getTabModelFilter(isIncognito));
+        } else {
+            selector.addObserver(
+                    new TabModelSelectorObserver() {
+                        @Override
+                        public void onTabStateInitialized() {
+                            tabModelFilterSupplier.set(
+                                    selector.getTabModelFilterProvider()
+                                            .getTabModelFilter(isIncognito));
+                            selector.removeObserver(this);
+                        }
+                    });
+        }
+        return tabModelFilterSupplier;
     }
 }

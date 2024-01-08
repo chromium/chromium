@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
@@ -105,7 +106,7 @@ public class TabSwitcherPaneUnitTest {
                             return mTabSwitcherPaneCoordinator;
                         })
                 .when(mTabSwitcherPaneCoordinatorFactory)
-                .create(any());
+                .create(any(), any(), any(), any(), anyBoolean());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);

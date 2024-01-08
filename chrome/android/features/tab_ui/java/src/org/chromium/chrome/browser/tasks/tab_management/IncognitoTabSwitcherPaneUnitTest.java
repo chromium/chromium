@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
@@ -85,7 +86,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
                             return mTabSwitcherPaneCoordinator;
                         })
                 .when(mTabSwitcherPaneCoordinatorFactory)
-                .create(any());
+                .create(any(), any(), any(), any(), anyBoolean());
 
         when(mTabModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
 

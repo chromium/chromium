@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
@@ -57,7 +58,8 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                 factory,
                 newTabButtonClickListener,
                 menuOrKeyboardActionController,
-                org.chromium.chrome.browser.toolbar.R.string.button_new_tab);
+                R.string.button_new_tab,
+                /* isIncognito= */ false);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabSwitcherPaneDrawableCoordinator = tabSwitcherDrawableCoordinator;
@@ -86,6 +88,12 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public @PaneId int getPaneId() {
         return PaneId.TAB_SWITCHER;
+    }
+
+    @Override
+    public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
+        // TODO(crbug/1505772): Implement.
+        return true;
     }
 
     private void onProfileProviderAvailable(@NonNull ProfileProvider profileProvider) {

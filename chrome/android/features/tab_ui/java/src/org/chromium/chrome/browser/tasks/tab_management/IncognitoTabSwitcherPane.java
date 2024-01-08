@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -96,7 +97,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 factory,
                 newTabButtonClickListener,
                 menuOrKeyboardActionController,
-                org.chromium.chrome.browser.toolbar.R.string.button_new_incognito_tab);
+                R.string.button_new_incognito_tab,
+                /* isIncognito= */ true);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
 
@@ -149,6 +151,12 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     @Override
     public @PaneId int getPaneId() {
         return PaneId.INCOGNITO_TAB_SWITCHER;
+    }
+
+    @Override
+    public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
+        // TODO(crbug/1505772): Implement.
+        return true;
     }
 
     private IncognitoTabModel getIncognitoTabModel() {
