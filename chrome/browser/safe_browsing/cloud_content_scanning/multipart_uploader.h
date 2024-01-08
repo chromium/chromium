@@ -142,12 +142,12 @@ class MultipartUploadRequest {
                                   const std::string& data);
 
   // Called whenever a net request finishes (on success or failure).
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Called whenever a net request finishes (on success or failure).
   void RetryOrFinish(int net_error,
                      int response_code,
-                     std::unique_ptr<std::string> response_body);
+                     std::optional<std::string> response_body);
 
   // Called to send a single request. Is overridden in tests.
   virtual void SendRequest();
