@@ -173,7 +173,7 @@ void SystemStateDataCollector::OnGotAllExtraLogs(
   // https://chromium.googlesource.com/chromiumos/docs/+/master/dbus_in_chrome.md#using-system-daemons_d_bus-services).
   // `debugd_client` will run the callback on original thread (see
   // dbus/object_proxy.h for more details).
-  debugd_client->GetFeedbackLogsV2(
+  debugd_client->GetFeedbackLogs(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user ? user->GetAccountId() : EmptyAccountId()),
       included_log_types,

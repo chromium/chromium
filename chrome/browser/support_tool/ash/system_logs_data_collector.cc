@@ -168,7 +168,7 @@ void SystemLogsDataCollector::CollectDataAndDetectPII(
 
   // `debugd_client` will run the callback on original thread (see
   // dbus/object_proxy.h for more details).
-  debugd_client->GetFeedbackLogsV2(
+  debugd_client->GetFeedbackLogs(
       cryptohome::CreateAccountIdentifierFromAccountId(
           user ? user->GetAccountId() : EmptyAccountId()),
       included_log_types,
