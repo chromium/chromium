@@ -34,15 +34,17 @@ class PlayerMediator implements InteractionHandler {
             new PlaybackListener() {
                 @Override
                 public void onPlaybackDataChanged(PlaybackData data) {
-                    setPlaybackState(data.state());
-                    mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
-                    mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
-                    float percent =
-                            (float) data.absolutePositionNanos()
-                                    / (float) data.totalDurationNanos();
-                    mModel.set(PlayerProperties.PROGRESS, percent);
-                    mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
-                    mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
+                    if (!isHiddenAndPlaying()) {
+                        setPlaybackState(data.state());
+                        mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                        mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
+                        float percent =
+                                (float) data.absolutePositionNanos()
+                                        / (float) data.totalDurationNanos();
+                        mModel.set(PlayerProperties.PROGRESS, percent);
+                        mModel.set(PlayerProperties.ELAPSED_NANOS, data.absolutePositionNanos());
+                        mModel.set(PlayerProperties.DURATION_NANOS, data.totalDurationNanos());
+                    }
                 }
             };
     private final OnSeekBarChangeListener mSeekBarChangeListener =
@@ -155,6 +157,14 @@ class PlayerMediator implements InteractionHandler {
     @Override
     public void onVoiceSelected(PlaybackVoice voice) {
         mDelegate.setVoiceOverrideAndApplyToPlayback(voice);
+    }
+
+    private boolean isHiddenAndPlaying() {
+        return mModel.get(PlayerProperties.HIDDEN_AND_PLAYING);
+    }
+
+    void setHiddenAndPlaying(boolean value) {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, value);
     }
 
     @Override

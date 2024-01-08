@@ -128,8 +128,10 @@ public class PlayerCoordinator implements Player {
         mMiniPlayer.dismiss(true);
     }
 
-    void restoreMiniPlayer() {
+    @Override
+    public void restoreMiniPlayer() {
         mMiniPlayer.show(true);
+        mMediator.setHiddenAndPlaying(false);
     }
 
     @Override
@@ -140,6 +142,14 @@ public class PlayerCoordinator implements Player {
         mMediator.setPlaybackState(PlaybackListener.State.STOPPED);
         mMiniPlayer.dismiss(true);
         mExpandedPlayer.dismiss();
+        mMediator.setHiddenAndPlaying(false);
+    }
+
+    @Override
+    public void hidePlayers() {
+        mMiniPlayer.dismiss(true);
+        mExpandedPlayer.dismiss();
+        mMediator.setHiddenAndPlaying(true);
     }
 
     /** To be called when the close button is clicked. */

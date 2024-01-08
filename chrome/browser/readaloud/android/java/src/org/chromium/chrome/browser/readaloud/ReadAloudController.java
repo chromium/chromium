@@ -816,6 +816,24 @@ public class ReadAloudController
         }
     }
 
+    /** Show mini player if there is an active playback. */
+    public void maybeShowPlayer() {
+        if (mPlayback != null) {
+            mPlayerCoordinator.restoreMiniPlayer();
+        }
+    }
+
+    /**
+     * If there's an active playback, this method will hide the player (either the mini player or
+     * the expanded player - whichever is showing) without stopping audio. To bring back the player
+     * UI, call {@link #maybeShowPlayer() maybeShowPlayer}
+     */
+    public void maybeHidePlayer() {
+        if (mPlayback != null) {
+            mPlayerCoordinator.hidePlayers();
+        }
+    }
+
     // PlaybackListener methods
     @Override
     public void onPhraseChanged(PhraseTiming phraseTiming) {

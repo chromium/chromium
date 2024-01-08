@@ -178,6 +178,7 @@ public class PlayerCoordinatorUnitTest {
     public void testRestoreMiniPlayer() {
         mPlayerCoordinator.restoreMiniPlayer();
         verify(mMiniPlayer).show(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(false));
     }
 
     @Test
@@ -191,6 +192,21 @@ public class PlayerCoordinatorUnitTest {
         verify(mMediator).setPlayback(eq(null));
         verify(mMediator).setPlaybackState(eq(PlaybackListener.State.STOPPED));
         verify(mMiniPlayer).dismiss(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(false));
+    }
+
+    @Test
+    public void testHidePlayers() {
+        mPlayerCoordinator.playbackReady(mPlayback, PlaybackListener.State.PLAYING);
+
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+
+        mPlayerCoordinator.hidePlayers();
+        verify(mMediator).setPlayback(eq(mPlayback));
+        verify(mMediator).setPlaybackState(eq(PlaybackListener.State.PLAYING));
+        verify(mMiniPlayer).dismiss(eq(true));
+        verify(mMediator).setHiddenAndPlaying(eq(true));
     }
 
     @Test

@@ -678,6 +678,7 @@ public class ReadAloudControllerUnitTest {
         verify(mPlaybackHooks, times(1))
                 .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
         onPlaybackSuccess(mPlayback);
+
         mController.setHighlighterMode(2);
         verify(mHighlighter, times(1)).handleTabReloaded(mTab);
 
@@ -777,11 +778,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_whilePlaying_success() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -827,11 +825,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_whilePlaying_failure() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -852,11 +847,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPreviewVoice_previewDuringPreview() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         reset(mPlaybackHooks);
 
         // Preview a voice.
@@ -952,9 +944,7 @@ public class ReadAloudControllerUnitTest {
         // selected.
 
         // Set up playback and restorable state.
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
         reset(mPlaybackHooks);
         doReturn(List.of(new PlaybackVoice("en", "voiceA", "")))
                 .when(mPlaybackHooks)
@@ -993,11 +983,8 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testTranslationListenerRegistration() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
+
         assertEquals(1, mFakeTranslateBridge.getObserverCount());
 
         // stopping playback should unregister a listener
@@ -1008,11 +995,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testIsTranslatedChangedStopsPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Trigger isTranslated state changed. Playback should stop.
         mController
@@ -1024,11 +1007,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testSuccessfulTranslationStopsPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Finish translating (status code 0 means "no error"). Playback should stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 0);
@@ -1038,11 +1017,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testFailedTranslationDoesNotStopPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
 
         // Fail to translate (status code 1). Playback should not stop.
         mController.getTranslationObserverForTest().onPageTranslated("en", "es", 1);
@@ -1052,11 +1027,7 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testStoppingAnyPlayback() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
+        requestAndStartPlayback();
         verify(mPlayback).play();
 
         // request to stop any playback
@@ -1163,14 +1134,10 @@ public class ReadAloudControllerUnitTest {
     @Test
     public void testPlaybackStopsAndStateSavedWhenAppBackgrounded() {
         // Play tab.
-        mFakeTranslateBridge.setCurrentLanguage("en");
-        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
-        mController.playTab(mTab);
-        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
-        onPlaybackSuccess(mPlayback);
-        verify(mPlayback, times(1)).play();
-        var data = Mockito.mock(PlaybackData.class);
+        requestAndStartPlayback();
         // set progress
+        var data = Mockito.mock(PlaybackData.class);
+
         doReturn(2).when(data).paragraphIndex();
         doReturn(1000000L).when(data).positionInParagraphNanos();
         mController.onPlaybackDataChanged(data);
@@ -1407,6 +1374,45 @@ public class ReadAloudControllerUnitTest {
         verify(mPlayback).release();
         verify(mPlayerCoordinator).destroy();
         verify(mReadAloudFeaturesNatives).destroySyntheticTrial(eq(KNOWN_READABLE_TRIAL_PTR));
+    }
+
+    @Test
+    public void testMaybeShowPlayer() {
+        // no playback, request is a no op
+        mController.maybeShowPlayer();
+
+        verify(mPlayerCoordinator, never()).restoreMiniPlayer();
+
+        requestAndStartPlayback();
+        mController.maybeShowPlayer();
+
+        verify(mPlayerCoordinator).restoreMiniPlayer();
+    }
+
+    @Test
+    public void testMaybeHidePlayer() {
+        // no playback, request is a no op
+        mController.maybeHidePlayer();
+
+        verify(mPlayerCoordinator, never()).hidePlayers();
+
+        requestAndStartPlayback();
+        mController.maybeHidePlayer();
+
+        verify(mPlayerCoordinator).hidePlayers();
+    }
+
+    private void requestAndStartPlayback() {
+        mFakeTranslateBridge.setCurrentLanguage("en");
+        mTab.setGurlOverrideForTesting(new GURL("https://en.wikipedia.org/wiki/Google"));
+        mController.playTab(mTab);
+
+        verify(mPlaybackHooks, times(1))
+                .createPlayback(Mockito.any(), mPlaybackCallbackCaptor.capture());
+
+        onPlaybackSuccess(mPlayback);
+        verify(mPlayerCoordinator, times(1))
+                .playbackReady(eq(mPlayback), eq(PlaybackListener.State.PLAYING));
     }
 
     private void onPlaybackSuccess(Playback playback) {

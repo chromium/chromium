@@ -21,6 +21,7 @@ import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.ERROR
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PAUSED;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.PLAYING;
 import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.STOPPED;
+import static org.chromium.chrome.modules.readaloud.PlaybackListener.State.UNKNOWN;
 
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -151,6 +152,7 @@ public class PlayerMediatorUnitTest {
         doReturn(mPreviewPromise).when(mDelegate).previewVoice(any());
 
         mModel = Mockito.spy(new PropertyModel.Builder(PlayerProperties.ALL_KEYS).build());
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, false);
         mMediator = new PlayerMediator(mPlayerCoordinator, mDelegate, mModel);
         mOnSeekBarChangeListener = mMediator.getSeekBarChangeListener();
     }
@@ -504,6 +506,26 @@ public class PlayerMediatorUnitTest {
         verify(mPlayerCoordinator).voiceMenuClosed();
         assertEquals(STOPPED, mModel.get(PlayerProperties.VOICE_PREVIEW_PLAYBACK_STATE));
         verify(mPreviewPlayback).removeListener(eq(mPlaybackListenerCaptor.getValue()));
+    }
+
+    @Test
+    public void testNoStateUpdatesWhenHidden() {
+        mModel.set(PlayerProperties.HIDDEN_AND_PLAYING, true);
+        mMediator.setPlayback(mPlayback);
+        verify(mPlayback).addListener(mPlaybackListenerCaptor.capture());
+
+        assertEquals(UNKNOWN, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
+        assertEquals(0.0f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
+
+        mPlaybackData.mState = PLAYING;
+
+        mPlaybackData.mAbsolutePositionNanos = POSITION_NS;
+        mPlaybackData.mTotalDurationNanos = DURATION_NS;
+        mPlaybackListenerCaptor.getValue().onPlaybackDataChanged(mPlaybackData);
+
+        assertEquals(0.0f, (float) mModel.get(PlayerProperties.PROGRESS), /* delta= */ 1e-8f);
+
+        assertEquals(UNKNOWN, (int) mModel.get(PlayerProperties.PLAYBACK_STATE));
     }
 
     private void resetPlayback() {
