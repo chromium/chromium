@@ -654,7 +654,7 @@ bool IsSkiaGraphiteEnabled(const base::CommandLine* command_line) {
   if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
     return true;
   }
-#if !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
+#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN))
   // Disallow Graphite from being enabled via the base::Feature on
   // not-yet-supported platforms to avoid users experiencing undefined behavior,
   // including behavior that might prevent them from being able to return to
