@@ -831,8 +831,8 @@ chromium-metrics-reviews@google.com.
 <enum name="ExtendedFkeysModifier">
   <int value="0" label="Disabled"/>
   <int value="1" label="Alt"/>
-  <int value="3" label="Shift"/>
-  <int value="4" label="CtrlShift"/>
+  <int value="2" label="Shift"/>
+  <int value="3" label="CtrlShift"/>
 </enum>
 
 <enum name="FeatureUsageEvent">
