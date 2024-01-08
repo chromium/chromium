@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_
+#ifndef CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_
+#define CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_
 
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -40,4 +40,4 @@ class CONTENT_EXPORT WebTouchEventBuilder {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_
+#endif  // CONTENT_COMMON_INPUT_WEB_INPUT_EVENT_BUILDERS_IOS_H_

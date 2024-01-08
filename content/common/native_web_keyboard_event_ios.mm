@@ -4,7 +4,7 @@
 
 #include "content/public/common/input/native_web_keyboard_event.h"
 
-#include "content/browser/renderer_host/input/web_input_event_builders_ios.h"
+#include "content/common/input/web_input_event_builders_ios.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 

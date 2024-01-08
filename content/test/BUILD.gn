@@ -2816,9 +2816,7 @@ test("content_unittests") {
       "../browser/cocoa/system_hotkey_map_unittest.mm",
       "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
       "../browser/renderer_host/input/mouse_wheel_rails_filter_unittest_mac.cc",
-      "../browser/renderer_host/input/web_input_event_builders_mac_unittest.mm",
       "../browser/renderer_host/media/video_capture_devices_changed_observer_unittest.cc",
-      "../browser/renderer_host/native_web_keyboard_event_mac_unittest.mm",
       "../browser/renderer_host/render_widget_host_view_mac_editcommand_helper_unittest.mm",
       "../browser/renderer_host/render_widget_host_view_mac_unittest.mm",
       "../browser/renderer_host/text_input_client_mac_unittest.mm",
@@ -2826,7 +2824,9 @@ test("content_unittests") {
       "../browser/speech/tts_mac_unittest.mm",
       "../browser/web_contents/web_drag_dest_mac_unittest.mm",
       "../browser/web_contents/web_drag_source_mac_unittest.mm",
+      "../common/input/web_input_event_builders_mac_unittest.mm",
       "../common/mac/attributed_string_type_converters_unittest.mm",
+      "../common/native_web_keyboard_event_mac_unittest.mm",
       "../renderer/sandbox_mac_v2_unittest.mm",
     ]
   }
@@ -2874,10 +2874,10 @@ test("content_unittests") {
       "../browser/display_cutout/display_cutout_host_impl_unittest.cc",
       "../browser/display_cutout/safe_area_insets_host_impl_unittest.cc",
       "../browser/navigation_transitions/physics_model_unittest.cc",
-      "../browser/renderer_host/input/web_input_event_builders_android_unittest.cc",
       "../browser/web_contents/color_chooser_unittest.cc",
       "../common/android/cpu_time_metrics_unittest.cc",
       "../common/android/gin_java_bridge_value_unittest.cc",
+      "../common/input/web_input_event_builders_android_unittest.cc",
     ]
   }
 

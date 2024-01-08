@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
+#include "content/common/input/web_input_event_builders_mac.h"
 #include "base/check.h"
 
 #include <Carbon/Carbon.h>

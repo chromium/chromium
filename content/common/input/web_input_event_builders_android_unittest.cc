@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/renderer_host/input/web_input_event_builders_android.h"
+#include "content/common/input/web_input_event_builders_android.h"
 
 #include <android/input.h>
 #include <android/keycodes.h>
@@ -126,13 +126,14 @@ TEST(WebInputEventBuilderAndroidTest, DomKeyCtrlAlt) {
     WebKeyboardEvent web_event = CreateFakeWebKeyboardEvent(
         env, entry.key_code, WebKeyboardEvent::kAltKey, entry.alt_character);
     ui::DomKey expected_alt_dom_key;
-    if (entry.alt_character == 0)
+    if (entry.alt_character == 0) {
       expected_alt_dom_key = ui::DomKey::FromCharacter(entry.character);
-    else if (entry.alt_character & kCombiningAccent)
+    } else if (entry.alt_character & kCombiningAccent) {
       expected_alt_dom_key = ui::DomKey::DeadKeyFromCombiningCharacter(
           entry.alt_character & kCombiningAccentMask);
-    else
+    } else {
       expected_alt_dom_key = ui::DomKey::FromCharacter(entry.alt_character);
+    }
     EXPECT_EQ(expected_alt_dom_key, web_event.dom_key)
         << ui::KeycodeConverter::DomKeyToKeyString(web_event.dom_key);
 
@@ -151,8 +152,7 @@ TEST(WebInputEventBuilderAndroidTest, LastChannelKey) {
   JNIEnv* env = AttachCurrentThread();
 
   // AKEYCODE_LAST_CHANNEL (229) is not defined in minimum NDK.
-  WebKeyboardEvent web_event =
-      CreateFakeWebKeyboardEvent(env, 229, 0, 0);
+  WebKeyboardEvent web_event = CreateFakeWebKeyboardEvent(env, 229, 0, 0);
   EXPECT_EQ(229, web_event.native_key_code);
   EXPECT_EQ(ui::KeyboardCode::VKEY_UNKNOWN, web_event.windows_key_code);
   EXPECT_EQ(static_cast<int>(ui::DomCode::NONE), web_event.dom_code);

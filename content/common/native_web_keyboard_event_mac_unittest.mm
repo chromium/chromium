@@ -7,7 +7,7 @@
 #import <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
 
-#include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
+#include "content/common/input/web_input_event_builders_mac.h"
 #import "testing/gtest_mac.h"
 #include "ui/events/blink/web_input_event.h"
 

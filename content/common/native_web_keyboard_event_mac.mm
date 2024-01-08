@@ -6,7 +6,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include "content/browser/renderer_host/input/web_input_event_builders_mac.h"
+#include "content/common/input/web_input_event_builders_mac.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 
