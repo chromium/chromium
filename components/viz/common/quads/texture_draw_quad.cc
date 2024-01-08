@@ -131,17 +131,19 @@ void TextureDrawQuad::ExtendValue(base::trace_event::TracedValue* value) const {
 
 void TextureDrawQuad::set_vertex_opacity(float opacity) {
   if (opacity != 1.f) {
-    vertex_opacity.fill(opacity);
+    // We can never unset 'needs_blending' as it can be set manually.
     needs_blending = true;
   }
+  vertex_opacity.fill(opacity);
 }
 
 void TextureDrawQuad::set_vertex_opacity(base::span<const float, 4> opacity) {
   if (std::any_of(opacity.begin(), opacity.end(),
                   [](float opacity_value) { return opacity_value != 1.f; })) {
-    std::copy(opacity.begin(), opacity.end(), vertex_opacity.begin());
+    // We can never unset 'needs_blending' as it can be set manually.
     needs_blending = true;
   }
+  std::copy(opacity.begin(), opacity.end(), vertex_opacity.begin());
 }
 
 TextureDrawQuad::OverlayResources::OverlayResources() = default;
