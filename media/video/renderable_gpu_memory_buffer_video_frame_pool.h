@@ -21,9 +21,9 @@ class Size;
 }  // namespace gfx
 
 namespace gpu {
+class ClientSharedImage;
 class GpuMemoryBufferManager;
 class SharedImageInterface;
-struct Mailbox;
 struct SyncToken;
 }  // namespace gpu
 
@@ -51,31 +51,33 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
         gfx::BufferUsage usage) = 0;
 
     // Create a SharedImage representation of a plane of a GpuMemoryBuffer
-    // allocated by this interface. Populate `mailbox` and `sync_token`.
-    virtual void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                                   gfx::BufferPlane plane,
-                                   const gfx::ColorSpace& color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   uint32_t usage,
-                                   gpu::Mailbox& mailbox,
-                                   gpu::SyncToken& sync_token) = 0;
+    // allocated by this interface.
+    // Return a ClientSharedImage pointer. Populate `sync_token`.
+    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        gfx::BufferPlane plane,
+        const gfx::ColorSpace& color_space,
+        GrSurfaceOrigin surface_origin,
+        SkAlphaType alpha_type,
+        uint32_t usage,
+        gpu::SyncToken& sync_token) = 0;
 
     // Create a SharedImage representation with format `si_format` of a
-    // GpuMemoryBuffer allocated by this interface. Populate `mailbox` and
-    // `sync_token`.
-    virtual void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                                   const viz::SharedImageFormat& si_format,
-                                   const gfx::ColorSpace& color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   uint32_t usage,
-                                   gpu::Mailbox& mailbox,
-                                   gpu::SyncToken& sync_token) = 0;
+    // GpuMemoryBuffer allocated by this interface.
+    // Return a ClientSharedImage pointer. Populate `sync_token`.
+    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+        gfx::GpuMemoryBuffer* gpu_memory_buffer,
+        const viz::SharedImageFormat& si_format,
+        const gfx::ColorSpace& color_space,
+        GrSurfaceOrigin surface_origin,
+        SkAlphaType alpha_type,
+        uint32_t usage,
+        gpu::SyncToken& sync_token) = 0;
 
     // Destroy a SharedImage created by this interface.
-    virtual void DestroySharedImage(const gpu::SyncToken& sync_token,
-                                    const gpu::Mailbox& mailbox) = 0;
+    virtual void DestroySharedImage(
+        const gpu::SyncToken& sync_token,
+        scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
 
     virtual ~Context() = default;
   };

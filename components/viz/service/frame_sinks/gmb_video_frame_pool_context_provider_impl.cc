@@ -75,45 +75,47 @@ class GmbVideoFramePoolContext
         size, format, usage, gpu::kNullSurfaceHandle, nullptr);
   }
 
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         const SharedImageFormat& si_format,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      const SharedImageFormat& si_format,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     auto client_shared_image = sii_in_process_->CreateSharedImage(
         si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
         alpha_type, usage, "VizGmbVideoFramePool",
         gpu_memory_buffer->CloneHandle());
     CHECK(client_shared_image);
-    mailbox = client_shared_image->mailbox();
     sync_token = sii_in_process_->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
   // Create a SharedImage representation of a plane of a GpuMemoryBuffer
-  // allocated by this interface. Populate `mailbox` and `sync_token`.
-  void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
-                         gfx::BufferPlane plane,
-                         const gfx::ColorSpace& color_space,
-                         GrSurfaceOrigin surface_origin,
-                         SkAlphaType alpha_type,
-                         uint32_t usage,
-                         gpu::Mailbox& mailbox,
-                         gpu::SyncToken& sync_token) override {
+  // allocated by this interface. Return a ClientSharedImage pointer and
+  // populate `mailbox` and `sync_token`.
+  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gfx::BufferPlane plane,
+      const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
+      uint32_t usage,
+      gpu::SyncToken& sync_token) override {
     auto client_shared_image = sii_in_process_->CreateSharedImage(
         gpu_memory_buffer, gpu_memory_buffer_manager_, plane, color_space,
         surface_origin, alpha_type, usage, "VizGmbVideoFramePool");
     CHECK(client_shared_image);
-    mailbox = client_shared_image->mailbox();
     sync_token = sii_in_process_->GenVerifiedSyncToken();
+    return client_shared_image;
   }
 
   // Destroy a SharedImage created by this interface.
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          const gpu::Mailbox& mailbox) override {
-    sii_in_process_->DestroySharedImage(sync_token, mailbox);
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
+    sii_in_process_->DestroySharedImage(sync_token, std::move(shared_image));
   }
 
  private:

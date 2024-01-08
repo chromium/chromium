@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "gpu/GLES2/gl2extchromium.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -70,6 +71,7 @@ class FrameResources {
   const gfx::ColorSpace color_space_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
   gpu::MailboxHolder mailbox_holders_[VideoFrame::kMaxPlanes];
+  scoped_refptr<gpu::ClientSharedImage> shared_images_[VideoFrame::kMaxPlanes];
 };
 
 // The owner of the RenderableGpuMemoryBufferVideoFramePool::Client needs to be
@@ -151,10 +153,12 @@ FrameResources::FrameResources(scoped_refptr<InternalRefCountedPool> pool,
 
 FrameResources::~FrameResources() {
   auto* context = pool_->GetContext();
-  for (auto& holder : mailbox_holders_) {
-    if (holder.mailbox.IsZero())
+  for (unsigned int i = 0; i < VideoFrame::kMaxPlanes; ++i) {
+    if (!shared_images_[i]) {
       continue;
-    context->DestroySharedImage(holder.sync_token, holder.mailbox);
+    }
+    context->DestroySharedImage(mailbox_holders_[i].sync_token,
+                                std::move(shared_images_[i]));
   }
 }
 
@@ -208,10 +212,13 @@ bool FrameResources::Initialize() {
 #endif
 
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    context->CreateSharedImage(
+    shared_images_[0] = context->CreateSharedImage(
         gpu_memory_buffer_.get(), viz::MultiPlaneFormat::kNV12, color_space_,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-        mailbox_holders_[0].mailbox, mailbox_holders_[0].sync_token);
+        mailbox_holders_[0].sync_token);
+    if (shared_images_[0]) {
+      mailbox_holders_[0].mailbox = shared_images_[0]->mailbox();
+    }
     mailbox_holders_[0].texture_target = texture_target;
     return true;
   }
@@ -222,10 +229,13 @@ bool FrameResources::Initialize() {
                                                     gfx::BufferPlane::UV};
 
   for (size_t plane = 0; plane < kNumPlanes; ++plane) {
-    context->CreateSharedImage(
+    shared_images_[plane] = context->CreateSharedImage(
         gpu_memory_buffer_.get(), kPlanes[plane], color_space_,
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-        mailbox_holders_[plane].mailbox, mailbox_holders_[plane].sync_token);
+        mailbox_holders_[plane].sync_token);
+    if (shared_images_[plane]) {
+      mailbox_holders_[plane].mailbox = shared_images_[plane]->mailbox();
+    }
     mailbox_holders_[plane].texture_target = texture_target;
   }
   return true;
