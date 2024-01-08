@@ -68,6 +68,7 @@ group("build") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = switch_access_dir
+  clear_dest_dirs = [ "." ]
   deps = [
     ":ts_build",
     "../common:copied_files",
