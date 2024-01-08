@@ -88,7 +88,8 @@ public class BookmarkFolderPickerMediatorTest {
             new BookmarkId(/* id= */ 11, BookmarkType.READING_LIST);
 
     private final BookmarkItem mRootFolderItem =
-            new BookmarkItem(mRootFolderId, "Root", null, true, null, false, false, 0, false, 0);
+            new BookmarkItem(
+                    mRootFolderId, "Root", null, true, null, false, false, 0, false, 0, false);
     private final BookmarkItem mDesktopFolderItem =
             new BookmarkItem(
                     mDesktopFolderId,
@@ -100,7 +101,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mMobileFolderItem =
             new BookmarkItem(
                     mMobileFolderId,
@@ -112,7 +114,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mOtherFolderItem =
             new BookmarkItem(
                     mOtherFolderId,
@@ -124,7 +127,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mReadingListFolderItem =
             new BookmarkItem(
                     mReadingListFolderId,
@@ -136,7 +140,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mUserFolderItem =
             new BookmarkItem(
                     mUserFolderId,
@@ -148,7 +153,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mUserBookmarkItem =
             new BookmarkItem(
                     mUserBookmarkId,
@@ -160,7 +166,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mUserFolderItem2 =
             new BookmarkItem(
                     mUserFolderId2,
@@ -172,7 +179,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mUserBookmarkItem1 =
             new BookmarkItem(
                     mUserBookmarkId1,
@@ -184,7 +192,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mReadingListItem1 =
             new BookmarkItem(
                     mReadingListItemId1,
@@ -196,7 +205,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mReadingListItem2 =
             new BookmarkItem(
                     mReadingListItemId2,
@@ -208,7 +218,8 @@ public class BookmarkFolderPickerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
 
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private BookmarkModel mBookmarkModel;

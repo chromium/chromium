@@ -79,7 +79,8 @@ public class BookmarkUtilsTest {
                         true,
                         0,
                         false,
-                        0);
+                        0,
+                        false);
         doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
         assertFalse(BookmarkUtils.canAddFolderToParent(mBookmarkModel, managedBookmarkId));
     }
@@ -109,7 +110,8 @@ public class BookmarkUtilsTest {
                         true,
                         0,
                         false,
-                        0);
+                        0,
+                        false);
         doReturn(managedBookmarkItem).when(mBookmarkModel).getBookmarkById(managedBookmarkId);
         assertFalse(BookmarkUtils.canAddBookmarkToParent(mBookmarkModel, managedBookmarkId));
     }

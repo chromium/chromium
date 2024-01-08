@@ -81,7 +81,8 @@ public class ReadingListUtilsUnitTest {
                         /* isManaged= */ false,
                         /* dateAdded= */ 0,
                         /* read= */ false,
-                        /* dateLastOpened= */ 0);
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.READING_LIST);
@@ -116,7 +117,8 @@ public class ReadingListUtilsUnitTest {
                         /* isManaged= */ false,
                         /* dateAdded= */ 0,
                         /* read= */ false,
-                        /* dateLastOpened= */ 0);
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark).when(bookmarkModel).getBookmarkById(existingBookmarkId);
         BookmarkId newBookmarkId = new BookmarkId(0, BookmarkType.NORMAL);
@@ -151,7 +153,8 @@ public class ReadingListUtilsUnitTest {
                         /* isManaged= */ false,
                         /* dateAdded= */ 0,
                         /* read= */ false,
-                        /* dateLastOpened= */ 0);
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
         BookmarkId existingBookmarkId2 = new BookmarkId(2, BookmarkType.READING_LIST);
         BookmarkItem existingBookmark2 =
                 new BookmarkItem(
@@ -164,7 +167,8 @@ public class ReadingListUtilsUnitTest {
                         /* isManaged= */ false,
                         /* dateAdded= */ 0,
                         /* read= */ false,
-                        /* dateLastOpened= */ 0);
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ false);
         BookmarkModel bookmarkModel = Mockito.mock(BookmarkModel.class);
         doReturn(existingBookmark1).when(bookmarkModel).getBookmarkById(existingBookmarkId1);
         doReturn(existingBookmark2).when(bookmarkModel).getBookmarkById(existingBookmarkId2);

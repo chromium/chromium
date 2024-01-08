@@ -206,7 +206,8 @@ public class ImprovedBookmarkRowCoordinatorTest {
                         false,
                         0,
                         false,
-                        0);
+                        0,
+                        false);
         when(mBookmarkModel.getBookmarkById(folderId)).thenReturn(folder);
         PropertyModel model = mCoordinator.createBasePropertyModel(folderId);
 

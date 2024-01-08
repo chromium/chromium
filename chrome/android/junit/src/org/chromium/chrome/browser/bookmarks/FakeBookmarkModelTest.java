@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -90,6 +91,21 @@ public class FakeBookmarkModelTest {
 
         List<BookmarkId> expected = Arrays.asList(id);
         assertEquals(expected, mBookmarkModel.getChildIds(mBookmarkModel.getOtherFolderId()));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
+    public void testAddAccountReadingListBokmark() {
+        BookmarkId id =
+                mBookmarkModel.addToReadingList(
+                        mBookmarkModel.getAccountReadingListFolder(),
+                        "user account bookmark",
+                        new GURL("https://google.com"));
+
+        List<BookmarkId> expected = Arrays.asList(id);
+        assertEquals(
+                expected, mBookmarkModel.getChildIds(mBookmarkModel.getAccountReadingListFolder()));
+        assertTrue(mBookmarkModel.getBookmarkById(id).isAccountBookmark());
     }
 
     @Test

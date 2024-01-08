@@ -206,7 +206,8 @@ class BookmarkBridge {
                     /* isManaged= */ false,
                     /* dateAdded= */ 0L,
                     /* read= */ false,
-                    /* dateLastOpened= */ 0L);
+                    /* dateLastOpened= */ 0L,
+                    /* isAccountBookmark= */ false);
         }
 
         return BookmarkBridgeJni.get()
@@ -962,7 +963,8 @@ class BookmarkBridge {
             boolean isManaged,
             long dateAdded,
             boolean read,
-            long dateLastOpened) {
+            long dateLastOpened,
+            boolean isAccountBookmark) {
         return new BookmarkItem(
                 new BookmarkId(id, type),
                 title,
@@ -973,7 +975,8 @@ class BookmarkBridge {
                 isManaged,
                 dateAdded,
                 read,
-                dateLastOpened);
+                dateLastOpened,
+                isAccountBookmark);
     }
 
     @CalledByNative

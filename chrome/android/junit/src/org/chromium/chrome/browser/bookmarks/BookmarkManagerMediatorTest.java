@@ -215,7 +215,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mMobileFolderItem =
             new BookmarkItem(
                     mMobileFolderId,
@@ -227,7 +228,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mOtherFolderItem =
             new BookmarkItem(
                     mOtherFolderId,
@@ -239,16 +241,27 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mFolderItem1 =
             new BookmarkItem(
-                    mFolderId1, "Folder1", null, true, mRootFolderId, true, false, 0, false, 0);
+                    mFolderId1,
+                    "Folder1",
+                    null,
+                    true,
+                    mRootFolderId,
+                    true,
+                    false,
+                    0,
+                    false,
+                    0,
+                    false);
     private final BookmarkItem mFolderItem2 =
             new BookmarkItem(
-                    mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false, 0);
+                    mFolderId2, "Folder2", null, true, mFolderId1, true, false, 0, false, 0, false);
     private final BookmarkItem mFolderItem3 =
             new BookmarkItem(
-                    mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false, 0);
+                    mFolderId3, "Folder3", null, true, mFolderId1, true, false, 0, false, 0, false);
     private final BookmarkItem mBookmarkItem21 =
             new BookmarkItem(
                     mBookmarkId21,
@@ -260,7 +273,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mReadingListFolderItem =
             new BookmarkItem(
                     mReadingListFolderId,
@@ -272,7 +286,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mReadingListItem =
             new BookmarkItem(
                     mReadingListId,
@@ -284,7 +299,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
     private final BookmarkItem mPriceTrackedBookmarkItem =
             new BookmarkItem(
                     mPriceTrackedBookmarkId,
@@ -296,7 +312,8 @@ public class BookmarkManagerMediatorTest {
                     false,
                     0,
                     false,
-                    0);
+                    0,
+                    false);
 
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);

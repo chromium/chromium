@@ -68,20 +68,47 @@ public class FakeBookmarkModel extends BookmarkModel {
     private void setupTopLevelFolders() {
         // Setup the root folder structure.
         mRootFolderId =
-                addPermanentFolder(BookmarkType.NORMAL, /* parent= */ null, /* title= */ null);
-        mOtherFolderId = addPermanentFolder(BookmarkType.NORMAL, mRootFolderId, OTHER_FOLDER_TITLE);
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        /* parent= */ null,
+                        /* title= */ null,
+                        /* isAccountBookmark= */ false);
+        mOtherFolderId =
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        OTHER_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
         mDesktopFolderId =
-                addPermanentFolder(BookmarkType.NORMAL, mRootFolderId, DESKTOP_FOLDER_TITLE);
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        DESKTOP_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
         mMobileFolderId =
-                addPermanentFolder(BookmarkType.NORMAL, mRootFolderId, MOBILE_FOLDER_TITLE);
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mRootFolderId,
+                        MOBILE_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
         mPartnerFolderId =
-                addPermanentFolder(BookmarkType.NORMAL, mMobileFolderId, PARTNER_FOLDER_TITLE);
+                addPermanentFolder(
+                        BookmarkType.NORMAL,
+                        mMobileFolderId,
+                        PARTNER_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
         mLocalOrSyncableReadingListFolderId =
                 addPermanentFolder(
-                        BookmarkType.READING_LIST, mRootFolderId, READING_LIST_FOLDER_TITLE);
+                        BookmarkType.READING_LIST,
+                        mRootFolderId,
+                        READING_LIST_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
         mAccountReadingListFolderId =
                 addPermanentFolder(
-                        BookmarkType.READING_LIST, mRootFolderId, READING_LIST_FOLDER_TITLE);
+                        BookmarkType.READING_LIST,
+                        mRootFolderId,
+                        READING_LIST_FOLDER_TITLE,
+                        /* isAccountBookmark= */ false);
     }
 
     private BookmarkId addBookmark(
@@ -96,7 +123,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                 /* isFolder= */ true,
                 /* isEditable= */ true,
                 /* isManaged= */ false,
-                /* read= */ false);
+                /* read= */ false,
+                FakeBookmarkModel.this.isAccountBookmark(parent));
     }
 
     private BookmarkId addFolder(BookmarkId parent, String title) {
@@ -110,10 +138,12 @@ public class FakeBookmarkModel extends BookmarkModel {
                 /* isFolder= */ false,
                 /* isEditable= */ true,
                 /* isManaged= */ false,
-                /* read= */ false);
+                /* read= */ false,
+                FakeBookmarkModel.this.isAccountBookmark(parent));
     }
 
-    private BookmarkId addPermanentFolder(@BookmarkType int type, BookmarkId parent, String title) {
+    private BookmarkId addPermanentFolder(
+            @BookmarkType int type, BookmarkId parent, String title, boolean isAccountBookmark) {
         return addBookmarkItem(
                 type,
                 parent,
@@ -122,7 +152,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                 /* isFolder= */ true,
                 /* isEditable= */ false,
                 /* isManaged= */ false,
-                /* read= */ false);
+                /* read= */ false,
+                isAccountBookmark);
     }
 
     private BookmarkId addBookmarkItem(
@@ -133,9 +164,11 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean isFolder,
             boolean isEditable,
             boolean isManaged,
-            boolean read) {
+            boolean read,
+            boolean isAccountBookmark) {
         BookmarkId id = new BookmarkId(mNextNodeId++, type);
-        return addBookmarkItem(id, parent, title, url, isFolder, isEditable, isManaged, read);
+        return addBookmarkItem(
+                id, parent, title, url, isFolder, isEditable, isManaged, read, isAccountBookmark);
     }
 
     private BookmarkId addBookmarkItem(
@@ -146,7 +179,8 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean isFolder,
             boolean isEditable,
             boolean isManaged,
-            boolean read) {
+            boolean read,
+            boolean isAccountBookmark) {
         assert !mBookmarkIdToItemMap.containsKey(id);
         mBookmarkIdToItemMap.put(
                 id,
@@ -160,7 +194,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                         isManaged,
                         /* dateAdded= */ 0,
                         read,
-                        /* dateLastOpened= */ 0));
+                        /* dateLastOpened= */ 0,
+                        isAccountBookmark));
         return id;
     }
 
@@ -172,7 +207,8 @@ public class FakeBookmarkModel extends BookmarkModel {
             boolean isFolder,
             boolean isEditable,
             boolean isManaged,
-            boolean read) {
+            boolean read,
+            boolean isAccountBookmark) {
         assert mBookmarkIdToItemMap.containsKey(id);
         mBookmarkIdToItemMap.put(
                 id,
@@ -186,7 +222,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                         isManaged,
                         /* dateAdded= */ 0,
                         read,
-                        /* dateLastOpened= */ 0));
+                        /* dateLastOpened= */ 0,
+                        isAccountBookmark));
     }
 
     // BookmarkBridge.Natives implementation.
@@ -318,7 +355,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                     item.isFolder(),
                     item.isEditable(),
                     item.isManaged(),
-                    item.isRead());
+                    item.isRead(),
+                    item.isAccountBookmark());
         }
 
         @Override
@@ -333,7 +371,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                     item.isFolder(),
                     item.isEditable(),
                     item.isManaged(),
-                    item.isRead());
+                    item.isRead(),
+                    item.isAccountBookmark());
         }
 
         @Override
@@ -399,7 +438,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                     item.isFolder(),
                     item.isEditable(),
                     item.isManaged(),
-                    item.isRead());
+                    item.isRead(),
+                    item.isAccountBookmark());
         }
 
         @Override
@@ -426,7 +466,8 @@ public class FakeBookmarkModel extends BookmarkModel {
                     item.isFolder(),
                     item.isEditable(),
                     item.isManaged(),
-                    read);
+                    read,
+                    item.isAccountBookmark());
         }
 
         @Override
@@ -445,8 +486,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                 return true;
             }
 
-            BookmarkItem item = getBookmarkById(nativeBookmarkBridge, id.getId(), id.getType());
-            return isAccountBookmark(nativeBookmarkBridge, item.getParentId());
+            return false;
         }
 
         @Override
