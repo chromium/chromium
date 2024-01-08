@@ -12,7 +12,6 @@ js_type_check("closure_compile") {
   deps = [
     ":arc_vm_data_migration",
     ":checking_downloading_update",
-    ":offline_login",
     ":update_required_card",
   ]
 }
@@ -31,21 +30,6 @@ js_library("arc_vm_data_migration") {
     "../../components/dialogs:oobe_loading_dialog",
   ]
   extra_deps = [ ":web_components" ]
-}
-
-js_library("offline_login") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/offline_login.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_modal_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-  externs_list = [
-    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
-    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
 }
 
 js_library("update_required_card") {
