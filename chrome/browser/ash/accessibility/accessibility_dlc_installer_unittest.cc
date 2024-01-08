@@ -54,20 +54,28 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     return installer_->IsPumpkinInstalled();
   }
 
-  void OnInstalled(bool success) { install_succeeded_ = success; }
+  void OnInstalled(bool success, const std::string& root_path) {
+    install_succeeded_ = success;
+    dlc_root_path_ = root_path;
+  }
   void OnProgress(double progress) {}
   void OnError(const std::string& error) {
     install_failed_ = true;
     last_error_ = error;
   }
 
+  void SetDlcRootPath(const std::string& root_path) {
+    fake_dlcservice_client_.set_install_root_path(root_path);
+  }
+
   void SetInstallError() {
     fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
-  void SetDlcAlreadyInstalled() {
+  void SetDlcAlreadyInstalled(const std::string& root_path) {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
+    dlc_state.set_root_path(root_path);
     fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
@@ -95,6 +103,8 @@ class AccessibilityDlcInstallerTest : public testing::Test {
 
   bool install_failed() { return install_failed_; }
 
+  std::string dlc_root_path() { return dlc_root_path_; }
+
   std::string last_error() { return last_error_; }
 
  private:
@@ -105,6 +115,7 @@ class AccessibilityDlcInstallerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   bool install_succeeded_ = false;
   bool install_failed_ = false;
+  std::string dlc_root_path_ = std::string();
   std::string last_error_ = std::string();
 };
 
@@ -113,9 +124,13 @@ class AccessibilityDlcInstallerTest : public testing::Test {
 TEST_F(AccessibilityDlcInstallerTest, Install) {
   ASSERT_FALSE(install_succeeded());
   ASSERT_FALSE(IsPumpkinInstalled());
+
+  SetDlcRootPath("/fake/root/path");
   MaybeInstallPumpkinAndWait();
+
   ASSERT_TRUE(install_succeeded());
   ASSERT_TRUE(IsPumpkinInstalled());
+  ASSERT_EQ(dlc_root_path(), "/fake/root/path");
   ASSERT_FALSE(install_failed());
 
   ExpectSuccessHistogramCount(1);
@@ -143,10 +158,13 @@ TEST_F(AccessibilityDlcInstallerTest, InstallError) {
 TEST_F(AccessibilityDlcInstallerTest, AlreadyInstalled) {
   ASSERT_FALSE(install_succeeded());
   ASSERT_FALSE(IsPumpkinInstalled());
-  SetDlcAlreadyInstalled();
+
+  SetDlcAlreadyInstalled("/fake/root/path");
+
   MaybeInstallPumpkinAndWait();
   ASSERT_TRUE(install_succeeded());
   ASSERT_TRUE(IsPumpkinInstalled());
+  ASSERT_EQ(dlc_root_path(), "/fake/root/path");
   ASSERT_FALSE(install_failed());
   EXPECT_EQ("", last_error());
 

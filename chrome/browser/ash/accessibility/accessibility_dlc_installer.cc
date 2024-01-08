@@ -56,7 +56,7 @@ void AccessibilityDlcInstaller::MaybeInstallHelper(
     case dlcservice::DlcState_State_INSTALLED:
       installed_dlcs_.insert(type);
       CHECK(!on_installed_.is_null());
-      std::move(on_installed_).Run(true);
+      std::move(on_installed_).Run(true, dlc_state.root_path());
       return;
     default:
       break;
@@ -90,7 +90,7 @@ void AccessibilityDlcInstaller::OnInstalled(
 
   installed_dlcs_.insert(type);
   CHECK(!on_installed_.is_null());
-  std::move(on_installed_).Run(true);
+  std::move(on_installed_).Run(true, install_result.root_path);
 }
 
 void AccessibilityDlcInstaller::OnProgress(double progress) {

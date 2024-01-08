@@ -16,9 +16,9 @@ namespace ash {
 // This class encapsulates all logic involving the installation of accessibility
 // DLCs. It communicates install success, progress, and error using callbacks.
 class AccessibilityDlcInstaller {
-  // TODO(akihiroota): Add the install path as a callback parameter when we have
-  // a specific need for it.
-  using InstalledCallback = base::OnceCallback<void(const bool success)>;
+  using InstalledCallback =
+      base::OnceCallback<void(const bool success,
+                              const std::string& root_path)>;
   using ProgressCallback = base::RepeatingCallback<void(double progress)>;
   using ErrorCallback = base::OnceCallback<void(const std::string& error)>;
 

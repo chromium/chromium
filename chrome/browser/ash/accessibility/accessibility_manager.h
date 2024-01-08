@@ -575,7 +575,7 @@ class AccessibilityManager
   void CreateChromeVoxPanel();
 
   // Pumpkin-related methods.
-  void OnPumpkinInstalled(bool success);
+  void OnPumpkinInstalled(bool success, const std::string& root_path);
   void OnPumpkinError(const std::string& error);
   void OnPumpkinDataCreated(
       std::optional<::extensions::api::accessibility_private::PumpkinData>

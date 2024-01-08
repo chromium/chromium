@@ -145,9 +145,6 @@ const char kUserBluetoothBrailleDisplayAddress[] =
 // The name of the Brltty upstart job.
 constexpr char kBrlttyUpstartJobName[] = "brltty";
 
-// The path to the pumpkin DLC directory.
-constexpr char kPumpkinDlcRootPath[] = "/run/imageloader/pumpkin/package/root/";
-
 // The file name of a lite TTS voice.
 const char kTtsLiteFileName[] = "voice.zvoice";
 
@@ -2702,7 +2699,8 @@ void AccessibilityManager::InstallPumpkinForDictation(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AccessibilityManager::OnPumpkinInstalled(bool success) {
+void AccessibilityManager::OnPumpkinInstalled(bool success,
+                                              const std::string& root_path) {
   if (install_pumpkin_callback_.is_null()) {
     return;
   }
@@ -2714,7 +2712,7 @@ void AccessibilityManager::OnPumpkinInstalled(bool success) {
 
   is_pumpkin_installed_for_testing_ = success;
   base::FilePath base_pumpkin_path = dlc_path_for_test_.empty()
-                                         ? base::FilePath(kPumpkinDlcRootPath)
+                                         ? base::FilePath(root_path)
                                          : dlc_path_for_test_;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
