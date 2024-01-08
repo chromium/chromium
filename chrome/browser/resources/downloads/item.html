@@ -216,6 +216,9 @@
     text-decoration: none;
     text-overflow: ellipsis;
     white-space: nowrap;
+    /* Ellipsize beginning and preserve the end to always display the eTLD+1. */
+    direction: rtl;
+    text-align: left;
   }
 
   .is-active #url {
