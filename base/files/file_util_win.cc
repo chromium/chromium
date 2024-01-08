@@ -983,23 +983,26 @@ File FILEToFile(FILE* file_stream) {
   return File(ScopedPlatformFile(other_handle));
 }
 
-int ReadFile(const FilePath& filename, char* data, int max_size) {
+std::optional<uint64_t> ReadFile(const FilePath& filename, span<char> buffer) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   win::ScopedHandle file(CreateFile(filename.value().c_str(), GENERIC_READ,
                                     FILE_SHARE_READ | FILE_SHARE_WRITE, NULL,
                                     OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN,
                                     NULL));
-  if (!file.is_valid() || max_size < 0)
-    return -1;
-
-  DWORD read;
-  if (::ReadFile(file.get(), data, static_cast<DWORD>(max_size), &read, NULL)) {
-    // TODO(crbug.com/1333521): Change to return some type with a uint64_t size
-    // and eliminate this cast.
-    return checked_cast<int>(read);
+  if (!file.is_valid()) {
+    return std::nullopt;
   }
 
-  return -1;
+  // TODO(crbug.com/1333521): Consider supporting reading more than INT_MAX
+  // bytes.
+  DWORD bytes_to_read = static_cast<DWORD>(checked_cast<int>(buffer.size()));
+
+  DWORD bytes_read;
+  if (!::ReadFile(file.get(), buffer.data(), bytes_to_read, &bytes_read,
+                  nullptr)) {
+    return std::nullopt;
+  }
+  return bytes_read;
 }
 
 int WriteFile(const FilePath& filename, const char* data, int size) {
