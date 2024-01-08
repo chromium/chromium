@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {FakeEntry, FilesAppEntry} from '../common/js/files_app_entry_types.js';
 import type {FileSystemType, Source, VolumeType} from '../common/js/volume_manager_types.js';
-
-import {FakeEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
 
 /**
  * Represents each volume, such as "drive", "download directory", each "USB

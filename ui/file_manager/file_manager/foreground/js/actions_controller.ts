@@ -4,8 +4,8 @@
 
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry} from '../../common/js/entry_utils.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 

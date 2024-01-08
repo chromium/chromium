@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {TaskHistory} from '../../foreground/js/task_history.js';
 import type {FileData} from '../../state/state.js';
 

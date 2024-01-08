@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {isFakeEntry} from '../../common/js/entry_utils.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {getEntryLabel, getRootTypeLabel, str} from '../../common/js/translations.js';
 import {COMPUTERS_DIRECTORY_PATH, RootType, SHARED_DRIVES_DIRECTORY_PATH} from '../../common/js/volume_manager_types.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**

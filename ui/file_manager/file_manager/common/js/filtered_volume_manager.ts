@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeInfoList} from '../../externs/volume_info_list.js';
 import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent, VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';

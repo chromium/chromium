@@ -12,13 +12,13 @@ import {getFocusedTreeItem, htmlEscape, isDirectoryTree, isDirectoryTreeItem, qu
 import {convertURLsToEntries, entriesToURLs, getRootType, getTeamDriveName, isNonModifiable, isRecentRoot, isSameEntry, isSharedDriveEntry, isSiblingEntry, isTeamDriveRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getIcon, isEncrypted} from '../../common/js/file_type.js';
 import {getFileTypeForName} from '../../common/js/file_types_base.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../common/js/flags.js';
 import {ProgressCenterItem, ProgressItemState} from '../../common/js/progress_center_common.js';
 import {str, strf} from '../../common/js/translations.js';
 import {getEnabledTrashVolumeURLs, isAllTrashEntries, TrashEntry} from '../../common/js/trash.js';
 import {FileErrorToDomError, visitURL} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import type {FileKey} from '../../state/state.js';

@@ -4,9 +4,9 @@
 
 import {isDirectoryEntry, isNativeEntry, isSameEntry, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getType} from '../../common/js/file_type.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {strf} from '../../common/js/translations.js';
 import {TrashEntry} from '../../common/js/trash.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {FilesMetadataBox, type RawIfd} from '../elements/files_metadata_box.js';
 import {FilesQuickView} from '../elements/files_quick_view.js';

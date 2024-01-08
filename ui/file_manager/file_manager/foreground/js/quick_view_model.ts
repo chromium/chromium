@@ -5,7 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/event_target.js';
 
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 /**
  * Quick view model that doesn't fit into properties of quick view element.

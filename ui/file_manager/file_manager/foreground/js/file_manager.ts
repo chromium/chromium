@@ -21,7 +21,7 @@ import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
-import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FakeEntry, FakeEntryImpl, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {FilteredVolumeManager} from '../../common/js/filtered_volume_manager.js';
 import {isDlpEnabled, isGuestOsEnabled, isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
@@ -33,7 +33,6 @@ import {getLastVisitedURL, isInGuestMode, runningInBrowser} from '../../common/j
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
-import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';

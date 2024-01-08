@@ -8,6 +8,7 @@ import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
 import {str, strf} from '../../../common/js/translations.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
@@ -16,7 +17,6 @@ import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js'
 import {DirectoryTreeContainer} from '../../../containers/directory_tree_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {DialogType} from '../../../state/state.js';
 import {XfCloudPanel} from '../../../widgets/xf_cloud_panel.js';

@@ -21,7 +21,7 @@
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {parseTrashInfoFiles, startIOTask} from './api.js';

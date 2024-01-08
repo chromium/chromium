@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
-import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';

@@ -5,11 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {isComputersRoot, isFakeEntry, isSameEntry, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {str} from '../../common/js/translations.js';
 import {FileSystemType, getRootTypeFromVolumeType, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 

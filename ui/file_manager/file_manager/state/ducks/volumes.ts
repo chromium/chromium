@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 import {isOneDriveId, isSameEntry, sortEntries} from '../../common/js/entry_utils.js';
-import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {EntryList, FilesAppEntry, VolumeEntry} from '../../common/js/files_app_entry_types.js';
 import {isGuestOsEnabled, isSinglePartitionFormatEnabled} from '../../common/js/flags.js';
 import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';
 import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
-import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';

@@ -5,11 +5,11 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
+import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {FilesEventTarget} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {promisify, timeoutPromise} from '../../common/js/util.js';
 import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';

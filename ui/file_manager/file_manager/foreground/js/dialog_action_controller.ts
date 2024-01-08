@@ -5,11 +5,11 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {DialogType} from '../../state/state.js';
 

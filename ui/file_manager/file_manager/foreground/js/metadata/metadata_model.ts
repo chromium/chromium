@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {entriesToURLs} from '../../../common/js/entry_utils.js';
-import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
+import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {getStore} from '../../../state/store.js';
 

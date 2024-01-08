@@ -68,12 +68,6 @@ ts_files = [
   # 3-line header to avoid conflict.
   # Don't remove this.
   # These lines will be removed at the end of the TS migration.
-  # Externs:
-  "file_manager/externs/files_app_entry_interfaces.ts",
-
-  # 3-line header to avoid conflict.
-  # Don't remove this.
-  # These lines will be removed at the end of the TS migration.
   # Lib.
   "file_manager/lib/actions_producer.ts",
   "file_manager/lib/base_store.ts",

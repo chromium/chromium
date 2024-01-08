@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {Crostini} from '../../background/js/crostini.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 
 /**

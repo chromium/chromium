@@ -6,7 +6,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 import {getMediaViewRootTypeFromVolumeId, MediaViewRootType, RootType} from './volume_manager_types.js';
 

@@ -5,9 +5,9 @@
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
 import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameVolume, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashRootType} from '../../common/js/entry_utils.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import type {State} from '../../state/state.js';

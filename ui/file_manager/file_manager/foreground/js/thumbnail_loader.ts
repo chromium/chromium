@@ -8,7 +8,7 @@ import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chro
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {getMediaType, isImage, isPDF, isRaw, isVideo} from '../../common/js/file_type.js';
-import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 
 import type {ThumbnailMetadataItem} from './metadata/thumbnail_model.js';
 

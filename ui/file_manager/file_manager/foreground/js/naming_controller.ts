@@ -7,9 +7,9 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {getFile} from '../../common/js/api.js';
 import {getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isFakeEntry, isSameEntry} from '../../common/js/entry_utils.js';
+import type {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {strf} from '../../common/js/translations.js';
 import {FileErrorToDomError, UserCanceledError} from '../../common/js/util.js';
-import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 
 import type {FileFilter} from './directory_contents.js';
