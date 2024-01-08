@@ -285,6 +285,9 @@ export class Realm {
         };
       default:
         return {
+          // TODO: add proper owners.
+          //  https://github.com/GoogleChromeLabs/chromium-bidi/issues/1667
+          owners: [] as any as [Script.Realm],
           realm: this.realmId,
           origin: this.origin,
           type: this.type,

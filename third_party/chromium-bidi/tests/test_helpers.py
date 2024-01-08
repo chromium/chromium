@@ -19,6 +19,7 @@ import io
 import itertools
 import json
 import logging
+from collections.abc import Callable
 from typing import Literal
 
 from anys import (ANY_NUMBER, ANY_STR, AnyContains, AnyFullmatch, AnyGT, AnyLT,
@@ -157,13 +158,27 @@ async def wait_for_event(websocket, event_method: str) -> dict:
 async def wait_for_events(websocket, event_methods: list[str]) -> dict:
     """Wait and return any of the given event prefixes from BiDi server."""
     logger.info(f"Waiting for any of the events '{event_methods}'...")
+    return await wait_for_filtered_event(
+        websocket, lambda event_response: any([
+            event_response["method"].startswith(event_method)
+            for event_method in event_methods
+        ]))
+
+
+async def wait_for_filtered_event(
+        websocket, filter_lambda: Callable[[dict], bool]) -> dict:
+    """Wait and return any of the given event satisfying filter. Ignores """
     while True:
-        event_response = await read_JSON_message(websocket)
-        if "method" in event_response and any([
-                event_response["method"].startswith(event_method)
-                for event_method in event_methods
-        ]):
-            return event_response
+        message = await read_JSON_message(websocket)
+        if 'type' not in message or message['type'] != 'event':
+            # Ignore not event messages.
+            continue
+        try:
+            if filter_lambda(message):
+                return message
+        except KeyError:
+            # Ignore errors if message dones not contain expected fields.
+            pass
 
 
 ANY_NEW_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")

@@ -18,7 +18,7 @@ import pytest
 from anys import ANY_STR
 from syrupy.filters import props
 from test_helpers import (execute_command, get_tree, send_JSON_command,
-                          subscribe, wait_for_command, wait_for_event)
+                          subscribe, wait_for_command, wait_for_filtered_event)
 
 
 @pytest.mark.asyncio
@@ -418,16 +418,22 @@ async def test_scriptEvaluate_dedicated_worker(websocket, context_id, html,
             }
         })
 
-    # Wait for worker to be created
-    while True:
-        message = await wait_for_event(websocket, "script.realmCreated")
-        if message["params"] == {
-                "realm": ANY_STR,
-                "origin": worker_url,
-                "type": "dedicated-worker"
-        }:
-            realm = message["params"]["realm"]
-            break
+    # Wait for worker to be created.
+    worker_realm_created_event = await wait_for_filtered_event(
+        websocket, lambda e: e['method'] == 'script.realmCreated' and e[
+            'params']['type'] == 'dedicated-worker')
+
+    assert worker_realm_created_event == {
+        'type': 'event',
+        'method': 'script.realmCreated',
+        'params': {
+            'realm': ANY_STR,
+            'origin': worker_url,
+            'owners': [],
+            'type': 'dedicated-worker'
+        }
+    }
+    realm = worker_realm_created_event["params"]["realm"]
 
     # Set up a listener on the page.
     command_id = await send_JSON_command(
