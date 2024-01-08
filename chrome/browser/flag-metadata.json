@@ -2815,14 +2815,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "enable-get-debugd-logs-in-parallel",
-    "owners": [
-      "xiangdongkong@chromium.org",
-      "cros-feedback-app@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-global-vaapi-lock",
     "owners": [
       "jeffcchen@chromium.org",

@@ -762,12 +762,6 @@ BASE_FEATURE(kEnableExternalKeyboardsInDiagnostics,
              "EnableExternalKeyboardsInDiagnosticsApp",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables loading debug daemon logs for feedback in parallel to reduce client
-// side wait time.
-BASE_FEATURE(kEnableGetDebugdLogsInParallel,
-             "EnableGetDebugdLogsInParallel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables setting the device hostname.
 BASE_FEATURE(kEnableHostnameSetting,
              "EnableHostnameSetting",
