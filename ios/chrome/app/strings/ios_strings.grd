@@ -3131,10 +3131,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_DESCRIPTION" desc="Alert description in settings &gt; password confirming to the user that they can save all their local passwords to their account. [iOS Only]">
         {COUNT, plural,
-        =1 {You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}}
-        =2 {You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}}
-        =3 {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} other in your Google Account, {EMAIL}}
-        other {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}}}
+        =1 {You can save your password for {DOMAIN_ONE} in your Google Account, {EMAIL}.}
+        =2 {You can save your passwords for {DOMAIN_ONE} and {DOMAIN_TWO} in your Google Account, {EMAIL}.}
+        =3 {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} other in your Google Account, {EMAIL}.}
+        other {You can save your passwords for {DOMAIN_ONE}, {DOMAIN_TWO}, and {OTHER_DOMAINS_COUNT} others in your Google Account, {EMAIL}.}}
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_BULK_UPLOAD_PASSWORDS_ALERT_TITLE" desc="Alert title in settings &gt; password, confirming all local passwords will be saved to the user's account. [iOS Only]">
         {COUNT, plural,

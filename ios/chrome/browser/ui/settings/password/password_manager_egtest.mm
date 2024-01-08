@@ -3217,7 +3217,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your password for example1.com in your "
-                     @"Google Account, foo1@gmail.com";
+                     @"Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3249,7 +3249,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your passwords for example1.com and "
-                     @"example2.com in your Google Account, foo1@gmail.com";
+                     @"example2.com in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3284,7 +3284,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result = @"You can save your passwords for example1.com, "
                      @"example2.com, and 1 other "
-                     @"in your Google Account, foo1@gmail.com";
+                     @"in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
@@ -3321,7 +3321,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // Ensure the confirmation dialog appears with the correct patterned string.
   NSString* result =
       @"You can save your passwords for example1.com, example2.com, and 2 "
-      @"others in your Google Account, foo1@gmail.com";
+      @"others in your Google Account, foo1@gmail.com.";
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(result)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
