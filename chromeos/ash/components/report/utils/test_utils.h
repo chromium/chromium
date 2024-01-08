@@ -7,12 +7,8 @@
 
 #include "base/files/file_path.h"
 #include "chromeos/ash/components/dbus/private_computing/private_computing_service.pb.h"
-#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
 
 namespace ash::report::utils {
-
-// Number of test cases in the private membership regression test data library.
-static const int kPsmTestCaseSize = 10;
 
 // Number of test cases exist in the preserved file test data.
 static const int kPreservedFileTestCaseSize = 9;
@@ -33,13 +29,6 @@ static const char kFakeFirstActivateDate[] = "2022-50";
 
 bool ParseProtoFromFile(const base::FilePath& file_path,
                         google::protobuf::MessageLite* out_proto);
-
-private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData::
-    TestCase
-    GetPsmTestCase(
-        private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData*
-            test_data,
-        int test_idx);
 
 private_computing::PrivateComputingClientRegressionTestData::TestCase
 GetPreservedFileTestCase(

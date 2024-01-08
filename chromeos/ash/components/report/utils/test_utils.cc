@@ -7,8 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-namespace psm_rlwe = private_membership::rlwe;
-
 namespace ash::report::utils {
 
 namespace {
@@ -33,19 +31,6 @@ bool ParseProtoFromFile(const base::FilePath& file_path,
   }
 
   return out_proto->ParseFromString(file_content);
-}
-
-psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
-GetPsmTestCase(
-    private_membership::rlwe::PrivateMembershipRlweClientRegressionTestData*
-        test_data,
-    int test_idx) {
-  if (0 <= test_idx && test_idx < test_data->test_cases_size()) {
-    return test_data->test_cases().at(test_idx);
-  }
-
-  LOG(ERROR) << "Error finding test at index = " << test_idx;
-  return psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase();
 }
 
 private_computing::PrivateComputingClientRegressionTestData::TestCase
