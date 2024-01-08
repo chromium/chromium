@@ -8,9 +8,6 @@
 # Base name of the package.
 PACKAGE="google-chrome"
 
-# Base name of the snap package
-SNAPNAME="google-chrome"
-
 # Filename of the main executable (for generating launcher scripts, etc.)
 PROGNAME=chrome
 
