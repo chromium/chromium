@@ -46,7 +46,7 @@ build_webui("build") {
     "onboarding_landing_page.ts",
     "onboarding_network_page.ts",
     "onboarding_select_components_page.ts",
-    "onboarding_update_page.js",
+    "onboarding_update_page.ts",
     "onboarding_wait_for_manual_wp_disable_page.js",
     "onboarding_wp_disable_complete_page.js",
     "reboot_page.js",

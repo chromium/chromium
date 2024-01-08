@@ -10,14 +10,15 @@ import './shimless_rma_shared.css.js';
 import './base_page.js';
 import './icons.html.js';
 
-import {assert} from 'chrome://resources/ash/common/assert.js';
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_update_page.html.js';
-import {HardwareVerificationStatusObserverInterface, HardwareVerificationStatusObserverReceiver, OsUpdateObserverInterface, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult, UpdateErrorCode} from './shimless_rma.mojom-webui.js';
+import {HardwareVerificationStatusObserverReceiver, OsUpdateObserverReceiver, OsUpdateOperation, ShimlessRmaServiceInterface, StateResult, UpdateErrorCode} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, enableAllButtons, enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -26,33 +27,12 @@ import {disableAllButtons, enableAllButtons, enableNextButton, focusPageTitle} f
  * available on the device for the user to install before the RMA process.
  */
 
-const operationNameKeys = {
-  [OsUpdateOperation.kIdle]: 'onboardingUpdateIdle',
-  [OsUpdateOperation.kCheckingForUpdate]: 'onboardingUpdateChecking',
-  [OsUpdateOperation.kUpdateAvailable]: 'onboardingUpdateAvailable',
-  [OsUpdateOperation.kDownloading]: 'onboardingUpdateDownloading',
-  [OsUpdateOperation.kVerifying]: 'onboardingUpdateVerifying',
-  [OsUpdateOperation.kFinalizing]: 'onboardingUpdateFinalizing',
-  [OsUpdateOperation.kUpdatedNeedReboot]: 'onboardingUpdateReboot',
-  [OsUpdateOperation.kReportingErrorEvent]: 'onboardingUpdateError',
-  [OsUpdateOperation.kAttemptingRollback]: 'onboardingUpdateRollback',
-  [OsUpdateOperation.kDisabled]: 'onboardingUpdateDisabled',
-  [OsUpdateOperation.kNeedPermissionToUpdate]: 'onboardingUpdatePermission',
-};
+const OnboardingUpdatePageElementBase = I18nMixin(PolymerElement);
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingUpdatePageElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
-
-/** @polymer */
 export class OnboardingUpdatePageElement extends
     OnboardingUpdatePageElementBase {
   static get is() {
-    return 'onboarding-update-page';
+    return 'onboarding-update-page' as const;
   }
 
   static get template() {
@@ -62,24 +42,20 @@ export class OnboardingUpdatePageElement extends
   static get properties() {
     return {
       /**
-       * Set by shimless_rma.js.
-       * @type {boolean}
+       * Set by shimless_rma.ts.
        */
       allButtonsDisabled: Boolean,
 
-      /** @protected */
       currentVersionText: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       updateVersionButtonLabel: {
         type: String,
         value: '',
       },
 
-      /** @protected */
       updateInProgress: {
         type: Boolean,
         value: false,
@@ -87,7 +63,6 @@ export class OnboardingUpdatePageElement extends
             OnboardingUpdatePageElement.prototype.onUpdateInProgressChange,
       },
 
-      /** @protected */
       verificationFailedMessage: {
         type: String,
         value: '',
@@ -96,7 +71,6 @@ export class OnboardingUpdatePageElement extends
       /**
        * A string containing a list of the unqualified component identifiers
        * separated by new lines.
-       * @protected
        */
       unqualifiedComponentsText: {
         type: String,
@@ -104,7 +78,6 @@ export class OnboardingUpdatePageElement extends
       },
 
 
-      /** @protected */
       osUpdateEncounteredError: {
         type: Boolean,
         value: false,
@@ -112,42 +85,41 @@ export class OnboardingUpdatePageElement extends
     };
   }
 
+  allButtonsDisabled: boolean;
+  shimlessRmaService: ShimlessRmaServiceInterface;
+  isCompliant: boolean;
+  protected currentVersionText: string;
+  protected updateVersionButtonLabel: string;
+  protected updateInProgress: boolean;
+  protected verificationFailedMessage: TrustedHTML;
+  protected unqualifiedComponentsText: string;
+  protected osUpdateEncounteredError: boolean;
+  protected currentVersion: string;
+  protected osUpdateObserverReceiver: OsUpdateObserverReceiver|null;
+  protected hwVerificationObserverReceiver: HardwareVerificationStatusObserverReceiver|null;
+
   constructor() {
     super();
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
 
-    /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService = getShimlessRmaService();
-    /** @protected {string} */
     this.currentVersion = '';
-    /** @protected {?OsUpdateObserverReceiver} */
-    this.osUpdateObserverReceiver = new OsUpdateObserverReceiver(
-        /**
-         * @type {!OsUpdateObserverInterface}
-         */
-        (this));
+    this.osUpdateObserverReceiver = new OsUpdateObserverReceiver(this);
 
     this.shimlessRmaService.observeOsUpdateProgress(
         this.osUpdateObserverReceiver.$.bindNewPipeAndPassRemote());
 
     // We assume it's compliant until updated in onHardwareVerificationResult().
     this.isCompliant = true;
-    /** @protected {?HardwareVerificationStatusObserverReceiver} */
-    this.hwVerificationObserverReceiver =
-        new HardwareVerificationStatusObserverReceiver(
-            /**
-             * @type {!HardwareVerificationStatusObserverInterface}
-             */
-            (this));
+    this.hwVerificationObserverReceiver = new HardwareVerificationStatusObserverReceiver(this);
 
     this.shimlessRmaService.observeHardwareVerificationStatus(
         this.hwVerificationObserverReceiver.$.bindNewPipeAndPassRemote());
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
@@ -159,14 +131,11 @@ export class OnboardingUpdatePageElement extends
     focusPageTitle(this);
   }
 
-  /**
-   * @private
-   */
-  getCurrentVersionText() {
+  private getCurrentVersionText(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.shimlessRmaService.getCurrentOsVersion().then((res) => {
+    this.shimlessRmaService.getCurrentOsVersion().then((res: {version: string|null}) => {
       if (res.version != null) {
         this.currentVersion = res.version;
       } else {
@@ -177,30 +146,27 @@ export class OnboardingUpdatePageElement extends
     });
   }
 
-  /** @private */
-  getUpdateVersionNumber() {
+  private getUpdateVersionNumber(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.shimlessRmaService.checkForOsUpdates().then((res) => {
+    this.shimlessRmaService.checkForOsUpdates().then((res: {updateAvailable: boolean, version: string|null}) => {
       assert(res.updateAvailable);
       this.updateVersionButtonLabel =
-          this.i18n('updateVersionRestartLabel', res.version);
+          this.i18n('updateVersionRestartLabel', res?.version || '');
     });
   }
 
-  /** @private */
-  updateOs() {
+  private updateOs(): void {
     this.updateInProgress = true;
-    this.shimlessRmaService.updateOs().then((res) => {
+    this.shimlessRmaService.updateOs().then((res: {updateStarted: boolean}) => {
       if (!res.updateStarted) {
         this.updateInProgress = false;
       }
     });
   }
 
-  /** @protected */
-  onUpdateButtonClicked() {
+  protected onUpdateButtonClicked(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -208,8 +174,7 @@ export class OnboardingUpdatePageElement extends
     this.updateOs();
   }
 
-  /** @protected */
-  onRetryUpdateButtonClicked() {
+  protected onRetryUpdateButtonClicked(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -220,18 +185,14 @@ export class OnboardingUpdatePageElement extends
     this.updateOs();
   }
 
-  /** @return {!Promise<{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     return this.shimlessRmaService.updateOsSkipped();
   }
 
   /**
    * Implements OsUpdateObserver.onOsUpdateProgressUpdated()
-   * @param {!OsUpdateOperation} operation
-   * @param {number} progress
-   * @param {UpdateErrorCode} error
    */
-  onOsUpdateProgressUpdated(operation, progress, error) {
+  onOsUpdateProgressUpdated(operation: OsUpdateOperation, _progress: number, error: UpdateErrorCode): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -255,10 +216,8 @@ export class OnboardingUpdatePageElement extends
   /**
    * Implements
    * HardwareVerificationStatusObserver.onHardwareVerificationResult()
-   * @param {boolean} isCompliant
-   * @param {string} errorMessage
    */
-  onHardwareVerificationResult(isCompliant, errorMessage) {
+  onHardwareVerificationResult(isCompliant: boolean, errorMessage: string): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -270,8 +229,7 @@ export class OnboardingUpdatePageElement extends
     }
   }
 
-  /** @private */
-  setVerificationFailedMessage() {
+  private setVerificationFailedMessage(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -281,25 +239,25 @@ export class OnboardingUpdatePageElement extends
     // The #unqualifiedComponentsLink identifier is sourced from the string
     // attached to `osUpdateUnqualifiedComponentsTopText` in the related .grd
     // file.
-    const linkElement =
-        this.shadowRoot.querySelector('#unqualifiedComponentsLink');
+    const linkElement: HTMLAnchorElement|null =
+        this.shadowRoot!.querySelector('#unqualifiedComponentsLink');
+    assert(linkElement);
     linkElement.setAttribute('href', '#');
-    linkElement.addEventListener(
-        'click',
-        () => this.shadowRoot.querySelector('#unqualifiedComponentsDialog')
-                  .showModal());
+    const dialog: CrDialogElement|null = this.shadowRoot!.querySelector('#unqualifiedComponentsDialog');
+    assert(dialog);
+    linkElement.addEventListener('click', () => dialog.showModal());
   }
 
-  /** @private */
-  closeDialog() {
+  private closeDialog(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
-    this.shadowRoot.querySelector('#unqualifiedComponentsDialog').close();
+    const dialog: CrDialogElement|null = this.shadowRoot!.querySelector('#unqualifiedComponentsDialog');
+    assert(dialog);
+    dialog.close();
   }
 
-  /** @private */
-  onUpdateInProgressChange() {
+  private onUpdateInProgressChange(): void {
     if (!loadTimeData.getBoolean('osUpdateEnabled')) {
       return;
     }
@@ -310,12 +268,14 @@ export class OnboardingUpdatePageElement extends
     }
   }
 
-  /**
-   * @return {boolean}
-   * @protected
-   */
-  shouldShowUpdateInstructions() {
+  protected shouldShowUpdateInstructions(): boolean {
     return !this.updateInProgress && !this.osUpdateEncounteredError;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingUpdatePageElement.is]: OnboardingUpdatePageElement;
   }
 }
 
