@@ -210,9 +210,7 @@ class GlProcessor : public ImageToTensorConverter {
 
   absl::Status ExtractSubRect(const mediapipe::GlTexture& texture,
                               const RotatedRect& sub_rect,
-                              bool flip_horizontally,
-                              float alpha,
-                              float beta,
+                              bool flip_horizontally, float alpha, float beta,
                               const Tensor::Shape& output_shape,
                               Tensor::OpenGlTexture2dView* output) {
     const int output_height = output_shape.dims[1];

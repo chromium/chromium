@@ -13,20 +13,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#ifndef MEDIAPIPE_TASKS_C_COMPONENTS_CONTAINERS_LANGUAGE_DETECTION_RESULT_CONVERTER_H_
-#define MEDIAPIPE_TASKS_C_COMPONENTS_CONTAINERS_LANGUAGE_DETECTION_RESULT_CONVERTER_H_
+#include "mediapipe/tasks/c/components/containers/rect_converter.h"
 
-#include "mediapipe/tasks/c/text/language_detector/language_detector.h"
-#include "mediapipe/tasks/cc/text/language_detector/language_detector.h"
+#include "mediapipe/tasks/c/components/containers/rect.h"
+#include "mediapipe/tasks/cc/components/containers/rect.h"
 
 namespace mediapipe::tasks::c::components::containers {
 
-void CppConvertToLanguageDetectionResult(
-    const mediapipe::tasks::text::language_detector::LanguageDetectorResult& in,
-    LanguageDetectorResult* out);
+// Converts a C++ Rect to a C Rect.
+void CppConvertToRect(const mediapipe::tasks::components::containers::Rect& in,
+                      struct MPRect* out) {
+  out->left = in.left;
+  out->top = in.top;
+  out->right = in.right;
+  out->bottom = in.bottom;
+}
 
-void CppCloseLanguageDetectionResult(LanguageDetectorResult* in);
+// Converts a C++ RectF to a C RectF.
+void CppConvertToRectF(
+    const mediapipe::tasks::components::containers::RectF& in, MPRectF* out) {
+  out->left = in.left;
+  out->top = in.top;
+  out->right = in.right;
+  out->bottom = in.bottom;
+}
 
 }  // namespace mediapipe::tasks::c::components::containers
-
-#endif  // MEDIAPIPE_TASKS_C_COMPONENTS_CONTAINERS_LANGUAGE_DETECTION_RESULT_CONVERTER_H_

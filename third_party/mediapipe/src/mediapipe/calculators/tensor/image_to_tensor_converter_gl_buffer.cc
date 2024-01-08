@@ -56,11 +56,8 @@ class SubRectExtractorGl {
   // pixels as alpha * x + beta and resizes result into destination.
   absl::Status ExtractSubRectToBuffer(
       const tflite::gpu::gl::GlTexture& texture,
-      const tflite::gpu::HW& texture_size,
-      const RotatedRect& sub_rect,
-      bool flip_horizontally,
-      float alpha,
-      float beta,
+      const tflite::gpu::HW& texture_size, const RotatedRect& sub_rect,
+      bool flip_horizontally, float alpha, float beta,
       const tflite::gpu::HW& destination_size,
       tflite::gpu::gl::CommandQueue* command_queue,
       tflite::gpu::gl::GlBuffer* destination);
@@ -156,11 +153,8 @@ void main() {
 
 absl::Status SubRectExtractorGl::ExtractSubRectToBuffer(
     const tflite::gpu::gl::GlTexture& texture,
-    const tflite::gpu::HW& texture_size,
-    const RotatedRect& texture_sub_rect,
-    bool flip_horizontally,
-    float alpha,
-    float beta,
+    const tflite::gpu::HW& texture_size, const RotatedRect& texture_sub_rect,
+    bool flip_horizontally, float alpha, float beta,
     const tflite::gpu::HW& destination_size,
     tflite::gpu::gl::CommandQueue* command_queue,
     tflite::gpu::gl::GlBuffer* destination) {

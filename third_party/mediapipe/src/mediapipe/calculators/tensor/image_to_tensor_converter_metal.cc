@@ -179,10 +179,8 @@ class SubRectExtractorMetal {
   }
 
   absl::Status Execute(id<MTLTexture> input_texture,
-                       const RotatedRect& sub_rect,
-                       bool flip_horizontally,
-                       float alpha,
-                       float beta,
+                       const RotatedRect& sub_rect, bool flip_horizontally,
+                       float alpha, float beta,
                        const tflite::gpu::HW& destination_size,
                        id<MTLCommandBuffer> command_buffer,
                        id<MTLBuffer> destination) {
@@ -213,9 +211,7 @@ class SubRectExtractorMetal {
 
   absl::Status InternalExecute(id<MTLTexture> input_texture,
                                const RotatedRect& sub_rect,
-                               bool flip_horizontally,
-                               float alpha,
-                               float beta,
+                               bool flip_horizontally, float alpha, float beta,
                                const tflite::gpu::HW& destination_size,
                                id<MTLCommandBuffer> command_buffer,
                                id<MTLTexture> output_texture) {

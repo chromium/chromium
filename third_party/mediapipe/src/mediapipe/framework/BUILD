@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 load("//mediapipe/framework/port:build_config.bzl", "mediapipe_proto_library")
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
@@ -194,6 +193,7 @@ cc_library(
     visibility = [
         ":mediapipe_internal",
         "//speech/videos/mediapipe/calculator:__pkg__",
+        "//vr/stargate/starcam:__pkg__",
     ],
     deps = [
         ":calculator_state",
@@ -237,6 +237,7 @@ cc_library(
     visibility = [
         ":mediapipe_internal",
         "//speech/videos/mediapipe/calculator:__pkg__",
+        "//vr/stargate/starcam:__pkg__",
     ],
     deps = [
         ":calculator_cc_proto",
@@ -368,6 +369,7 @@ cc_library(
         "@com_google_absl//absl/container:flat_hash_set",
         "@com_google_absl//absl/log:absl_check",
         "@com_google_absl//absl/log:absl_log",
+        "@com_google_absl//absl/log:check",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/status:statusor",

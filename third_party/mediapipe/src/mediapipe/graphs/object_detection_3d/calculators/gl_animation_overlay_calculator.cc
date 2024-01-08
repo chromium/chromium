@@ -19,6 +19,8 @@
 #include <iostream>
 #endif
 
+#include <cstdint>
+
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
 #include "mediapipe/framework/calculator_framework.h"
@@ -86,11 +88,11 @@ static const float kModelMatrix[] = {0.83704215,  -0.36174262, 0.41049102, 0.0,
 //     VERTICES
 //     TEXTURE_COORDS
 //     INDICES
-//     The header consists of 3 int32 lengths, the sizes of the vertex data,
+//     The header consists of 3 int32_t lengths, the sizes of the vertex data,
 //     the texcoord data, and the index data, respectively. Let us call those
 //     N1, N2, and N3. Then we expect N1 float32's for vertex information
 //     (x1,y1,z1,x2,y2,z2,etc.), followed by N2 float32's for texcoord
-//     information (u1,v1,u2,v2,u3,v3,etc.), followed by N3 shorts/int16's
+//     information (u1,v1,u2,v2,u3,v3,etc.), followed by N3 shorts/int16_t's
 //     for triangle indices (a1,b1,c1,a2,b2,c2,etc.).
 //   CAMERA_PARAMETERS_PROTO_STRING (String, optional):
 //     Serialized proto std::string of CameraParametersProto. We need this to
@@ -391,7 +393,7 @@ bool GlAnimationOverlayCalculator::LoadAnimationAndroid(
 
   // And now, while we are able to stream in more frames, we do so.
   frame_count_ = 0;
-  int32 lengths[3];
+  int32_t lengths[3];
   while (ReadBytesFromAsset(asset, (void *)lengths, sizeof(lengths[0]) * 3)) {
     // About to start reading the next animation frame.  Stream it in here.
     // Each frame stores first the object counts of its three arrays
@@ -415,9 +417,9 @@ bool GlAnimationOverlayCalculator::LoadAnimationAndroid(
     }
     // Try to read in indices (2-byte shorts)
     triangle_mesh.index_count = lengths[2];
-    triangle_mesh.triangle_indices.reset(new int16[lengths[2]]);
+    triangle_mesh.triangle_indices.reset(new int16_t[lengths[2]]);
     if (!ReadBytesFromAsset(asset, (void *)triangle_mesh.triangle_indices.get(),
-                            sizeof(int16) * lengths[2])) {
+                            sizeof(int16_t) * lengths[2])) {
       ABSL_LOG(ERROR) << "Failed to read indices for frame " << frame_count_;
       return false;
     }

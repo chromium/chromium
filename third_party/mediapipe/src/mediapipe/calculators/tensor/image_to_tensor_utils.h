@@ -102,8 +102,7 @@ absl::StatusOr<ValueTransformation> GetValueRangeTransformation(
 // @flip_horizontally - we need to flip the output buffer.
 // @matrix - 4x4 matrix (array of 16 elements) to populate
 void GetRotatedSubRectToRectTransformMatrix(const RotatedRect& sub_rect,
-                                            int rect_width,
-                                            int rect_height,
+                                            int rect_width, int rect_height,
                                             bool flip_horizontally,
                                             std::array<float, 16>* matrix);
 
@@ -122,11 +121,8 @@ void GetRotatedSubRectToRectTransformMatrix(const RotatedRect& sub_rect,
 // @flip_horizontally - we need to flip the output buffer.
 // @matrix - 4x4 matrix (array of 16 elements) to populate
 void GetTransposedRotatedSubRectToRectTransformMatrix(
-    const RotatedRect& sub_rect,
-    int rect_width,
-    int rect_height,
-    bool flip_horizontally,
-    std::array<float, 16>* matrix);
+    const RotatedRect& sub_rect, int rect_width, int rect_height,
+    bool flip_horizontally, std::array<float, 16>* matrix);
 
 // Validates the output dimensions set in the option proto. The input option
 // proto is expected to have to following fields:
