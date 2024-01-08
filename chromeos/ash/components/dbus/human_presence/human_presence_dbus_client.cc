@@ -207,7 +207,7 @@ class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
                                       base::DoNothing());
   }
 
-  const raw_ptr<dbus::ObjectProxy, ExperimentalAsh> human_presence_proxy_;
+  const raw_ptr<dbus::ObjectProxy> human_presence_proxy_;
 
   base::ObserverList<Observer> observers_;
 

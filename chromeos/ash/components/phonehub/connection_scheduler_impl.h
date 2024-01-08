@@ -51,9 +51,8 @@ class ConnectionSchedulerImpl : public ConnectionScheduler,
   base::TimeDelta GetCurrentBackoffDelayTimeForTesting();
   int GetBackoffFailureCountForTesting();
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<FeatureStatusProvider, ExperimentalAsh> feature_status_provider_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<FeatureStatusProvider> feature_status_provider_;
   raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
   // Provides us the backoff timers for RequestConnection().
   net::BackoffEntry retry_backoff_;

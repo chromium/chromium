@@ -40,13 +40,11 @@ class CampaignsMatcher {
   bool Matched(const Targetings* targetings) const;
 
   // Owned by CampaignsManager.
-  raw_ptr<const CampaignsPerSlot, ExperimentalAsh> proactive_campaigns_ =
-      nullptr;
-  raw_ptr<const CampaignsPerSlot, ExperimentalAsh> reactive_campaigns_ =
-      nullptr;
-  raw_ptr<CampaignsManagerClient, ExperimentalAsh> client_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
+  raw_ptr<const CampaignsPerSlot> proactive_campaigns_ = nullptr;
+  raw_ptr<const CampaignsPerSlot> reactive_campaigns_ = nullptr;
+  raw_ptr<CampaignsManagerClient> client_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 };
 
 }  // namespace growth

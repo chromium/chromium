@@ -148,11 +148,10 @@ class SoftwareFeatureManagerImpl : public SoftwareFeatureManager {
   void OnErrorResponse(NetworkRequestError response);
   void OnSetFeatureStatusError(NetworkRequestError response);
 
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> crypt_auth_client_factory_;
+  raw_ptr<CryptAuthClientFactory> crypt_auth_client_factory_;
 
   // Non-null only when v2 DeviceSync is enabled.
-  raw_ptr<CryptAuthFeatureStatusSetter, ExperimentalAsh>
-      feature_status_setter_ = nullptr;
+  raw_ptr<CryptAuthFeatureStatusSetter> feature_status_setter_ = nullptr;
 
   std::unique_ptr<CryptAuthClient> current_cryptauth_client_;
   std::unique_ptr<Request> current_request_;

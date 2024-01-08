@@ -32,8 +32,7 @@ class HostScanDevicePrioritizerImpl : public HostScanDevicePrioritizer {
       multidevice::RemoteDeviceRefList* remote_devices) const override;
 
  private:
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
+  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
 };
 
 }  // namespace tether

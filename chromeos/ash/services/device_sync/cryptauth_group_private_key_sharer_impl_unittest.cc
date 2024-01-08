@@ -285,7 +285,7 @@ class DeviceSyncCryptAuthGroupPrivateKeySharerImplTest
   std::unique_ptr<MockCryptAuthClientFactory> client_factory_;
   std::unique_ptr<FakeCryptAuthEciesEncryptorFactory>
       fake_cryptauth_ecies_encryptor_factory_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_;
 
   std::unique_ptr<CryptAuthGroupPrivateKeySharer> sharer_;
 };

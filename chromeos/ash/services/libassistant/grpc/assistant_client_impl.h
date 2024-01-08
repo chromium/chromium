@@ -111,7 +111,7 @@ class AssistantClientImpl : public AssistantClient {
 
   // Entry point for Libassistant V2 APIs, through which V2 methods can be
   // invoked. Created and owned by |GrpcServicesInitializer|.
-  const raw_ref<GrpcLibassistantClient, ExperimentalAsh> libassistant_client_;
+  const raw_ref<GrpcLibassistantClient> libassistant_client_;
 
   // Invoked when all LibAssistant services are ready to query.
   base::OnceClosure services_ready_callback_;

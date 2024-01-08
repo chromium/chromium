@@ -92,7 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) UseCaseParameters {
   const std::string high_entropy_seed_;
 
   // Persists fresnel pref key/value pairs over device restarts.
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Pointer to the abstract class used to generate the PSM RLWE client.
   // Lifetime of pointer is maintained by ReportController class.

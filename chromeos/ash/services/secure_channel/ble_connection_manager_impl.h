@@ -91,7 +91,7 @@ class BleConnectionManagerImpl : public BleConnectionManager,
     void RecordEffectiveSuccessRateMetrics(bool will_continue_to_retry);
 
     const ConnectionRole connection_role_;
-    raw_ptr<base::Clock, ExperimentalAsh> clock_;
+    raw_ptr<base::Clock> clock_;
 
     // Set to the current time when this object is created and updated whenever
     // Reset() is called.
@@ -205,10 +205,9 @@ class BleConnectionManagerImpl : public BleConnectionManager,
       const std::string& remote_device_id);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
-  raw_ptr<BleScanner, ExperimentalAsh> ble_scanner_;
-  raw_ptr<SecureChannelDisconnector, ExperimentalAsh>
-      secure_channel_disconnector_;
+  raw_ptr<base::Clock> clock_;
+  raw_ptr<BleScanner> ble_scanner_;
+  raw_ptr<SecureChannelDisconnector> secure_channel_disconnector_;
 
   std::unique_ptr<BleAdvertiser> ble_advertiser_;
 

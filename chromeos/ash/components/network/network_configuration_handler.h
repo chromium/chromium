@@ -228,11 +228,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConfigurationHandler
       network_handler::ErrorCallback error_callback);
 
   // Unowned associated Network*Handlers (global or test instance).
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<NetworkDeviceHandler, DanglingUntriaged | ExperimentalAsh>
-      network_device_handler_;
+  raw_ptr<NetworkDeviceHandler, DanglingUntriaged> network_device_handler_;
 
   // Map of in-progress deleter instances.
   std::map<std::string, std::unique_ptr<ProfileEntryDeleter>>

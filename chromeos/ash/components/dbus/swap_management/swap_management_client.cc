@@ -102,7 +102,7 @@ class SwapManagementClientImpl : public SwapManagementClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> swap_management_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> swap_management_proxy_ = nullptr;
   base::WeakPtrFactory<SwapManagementClientImpl> weak_ptr_factory_{this};
 };
 

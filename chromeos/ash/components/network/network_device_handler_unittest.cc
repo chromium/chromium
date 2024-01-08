@@ -144,8 +144,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::string result_;
-  raw_ptr<ShillDeviceClient, DanglingUntriaged | ExperimentalAsh>
-      fake_device_client_ = nullptr;
+  raw_ptr<ShillDeviceClient, DanglingUntriaged> fake_device_client_ = nullptr;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

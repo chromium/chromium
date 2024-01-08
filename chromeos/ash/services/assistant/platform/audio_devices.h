@@ -70,7 +70,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AudioDevices {
   base::ObserverList<Observer> observers_;
 
   // Owned by |AssistantManagerServiceImpl|.
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
 
   std::string locale_;
   std::optional<uint64_t> hotword_device_id_;

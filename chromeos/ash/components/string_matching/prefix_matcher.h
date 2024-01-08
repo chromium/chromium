@@ -109,8 +109,8 @@ class PrefixMatcher {
                                      size_t text_pos,
                                      MatchInfo& token_match_info);
 
-  const raw_ref<const TokenizedString, ExperimentalAsh> query_;
-  const raw_ref<const TokenizedString, ExperimentalAsh> text_;
+  const raw_ref<const TokenizedString> query_;
+  const raw_ref<const TokenizedString> text_;
 
   double relevance_ = prefix_matcher_constants::kNoMatchScore;
   Hits hits_;

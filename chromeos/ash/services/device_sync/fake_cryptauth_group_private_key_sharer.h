@@ -98,8 +98,7 @@ class FakeCryptAuthGroupPrivateKeySharerFactory
 
   std::vector<raw_ptr<FakeCryptAuthGroupPrivateKeySharer, VectorExperimental>>
       instances_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> last_client_factory_ =
-      nullptr;
+  raw_ptr<CryptAuthClientFactory> last_client_factory_ = nullptr;
 };
 
 }  // namespace device_sync

@@ -107,7 +107,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
 
  private:
   bool is_running_ = false;
-  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<const Delegate> delegate_;
 
   // Points to the `SimpleGeolocationProvider::GetInstance()` throughout the
   // object lifecycle. Overridden in unit tests.
@@ -117,7 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
 
   const ApplyTimeZoneCallback apply_timezone_;
   const DelayNetworkCallClosure delay_network_call_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 

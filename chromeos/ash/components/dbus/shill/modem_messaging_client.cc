@@ -128,7 +128,7 @@ class ModemMessagingProxy {
         << "Connect to " << interface << " " << signal << " failed.";
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   std::string service_name_;
   SmsReceivedHandler sms_received_handler_;
 
@@ -193,7 +193,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ModemMessagingClientImpl
     return proxy_ptr;
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   ProxyMap proxies_;
 };
 

@@ -94,9 +94,9 @@ class GrandfatheredEasyUnlockHostDisabler
       std::optional<multidevice::RemoteDeviceRef> device);
   std::optional<multidevice::RemoteDeviceRef> GetEasyUnlockHostToDisable();
 
-  raw_ptr<HostBackendDelegate, ExperimentalAsh> host_backend_delegate_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<HostBackendDelegate> host_backend_delegate_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<base::OneShotTimer> timer_;
   std::optional<multidevice::RemoteDeviceRef> current_better_together_host_;
 

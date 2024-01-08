@@ -71,7 +71,7 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) SystemClockSyncObservation
   // SystemClockClient::Observer:
   void SystemClockUpdated() override;
 
-  const raw_ptr<SystemClockClient, ExperimentalAsh> system_clock_client_;
+  const raw_ptr<SystemClockClient> system_clock_client_;
 
   // The callback to be called when the system clock has been synchronized or
   // the timeout tracked by `timeout_timer_` has been reached.

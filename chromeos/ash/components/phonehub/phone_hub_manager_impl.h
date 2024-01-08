@@ -148,10 +148,9 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<FeatureSetupResponseProcessor>
       feature_setup_response_processor_;
   std::unique_ptr<PingManager> ping_manager_;
-  raw_ptr<eche_app::EcheConnectionStatusHandler, ExperimentalAsh>
+  raw_ptr<eche_app::EcheConnectionStatusHandler>
       eche_connection_status_handler_ = nullptr;
-  raw_ptr<eche_app::SystemInfoProvider, ExperimentalAsh> system_info_provider_ =
-      nullptr;
+  raw_ptr<eche_app::SystemInfoProvider> system_info_provider_ = nullptr;
 };
 
 }  // namespace phonehub

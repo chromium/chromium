@@ -187,9 +187,9 @@ class CryptAuthMetadataSyncerImpl : public CryptAuthMetadataSyncer {
   base::TimeTicks last_state_change_timestamp_;
 
   State state_ = State::kNotStarted;
-  raw_ptr<const CryptAuthKey, ExperimentalAsh> initial_group_key_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<const CryptAuthKey> initial_group_key_;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

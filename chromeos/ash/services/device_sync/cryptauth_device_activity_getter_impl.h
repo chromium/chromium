@@ -99,7 +99,7 @@ class CryptAuthDeviceActivityGetterImpl : public CryptAuthDeviceActivityGetter {
 
   std::string instance_id_;
   std::string instance_id_token_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<CryptAuthClientFactory> client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 

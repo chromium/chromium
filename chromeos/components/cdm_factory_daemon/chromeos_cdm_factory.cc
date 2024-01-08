@@ -97,7 +97,7 @@ class SingletonCdmContextRef : public media::CdmContextRef {
   }
 
  private:
-  raw_ptr<media::CdmContext, ExperimentalAsh> cdm_context_;
+  raw_ptr<media::CdmContext> cdm_context_;
 };
 
 void GetHwKeyDataProxy(const std::string& key_id,

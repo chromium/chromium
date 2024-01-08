@@ -523,9 +523,8 @@ class EnterpriseESimFeatureUsageMetrics
   void StopUsage() { feature_usage_metrics_->StopSuccessfulUsage(); }
 
  private:
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_ = nullptr;
   std::unique_ptr<feature_usage::FeatureUsageMetrics> feature_usage_metrics_;
 };

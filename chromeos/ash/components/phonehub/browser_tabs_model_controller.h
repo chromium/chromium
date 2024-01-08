@@ -40,13 +40,10 @@ class BrowserTabsModelController
 
   void UpdateBrowserTabsModel();
 
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   BrowserTabsModel cached_model_;
-  raw_ptr<BrowserTabsModelProvider, ExperimentalAsh>
-      browser_tabs_model_provider_;
-  raw_ptr<MutablePhoneModel, DanglingUntriaged | ExperimentalAsh>
-      mutable_phone_model_;
+  raw_ptr<BrowserTabsModelProvider> browser_tabs_model_provider_;
+  raw_ptr<MutablePhoneModel, DanglingUntriaged> mutable_phone_model_;
 };
 
 }  // namespace phonehub

@@ -28,7 +28,7 @@ class AsyncServiceDriver {
 
  protected:
   // Owned by |GrpcServicesInitializer|.
-  raw_ptr<grpc::ServerBuilder, ExperimentalAsh> server_builder_;
+  raw_ptr<grpc::ServerBuilder> server_builder_;
 };
 
 }  // namespace ash::libassistant

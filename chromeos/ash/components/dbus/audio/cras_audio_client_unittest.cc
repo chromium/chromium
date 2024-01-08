@@ -710,7 +710,7 @@ class CrasAudioClientTest : public testing::Test {
   // The name of the method which is expected to be called.
   std::string expected_method_name_;
   // The response which the mock cras proxy returns.
-  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh> response_;
+  raw_ptr<dbus::Response, DanglingUntriaged> response_;
   // A callback to intercept and check the method call arguments.
   ArgumentCheckCallback argument_checker_;
 

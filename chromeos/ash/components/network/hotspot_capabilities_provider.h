@@ -136,10 +136,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotCapabilitiesProvider
       hotspot_config::mojom::HotspotAllowStatus::kDisallowedNoCellularUpstream};
 
   bool policy_allow_hotspot_ = true;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<HotspotAllowedFlagHandler, ExperimentalAsh>
-      hotspot_allowed_flag_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<HotspotAllowedFlagHandler> hotspot_allowed_flag_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   base::ObserverList<Observer> observer_list_;

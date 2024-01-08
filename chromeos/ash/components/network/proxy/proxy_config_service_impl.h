@@ -98,10 +98,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ProxyConfigServiceImpl
 
   // Not owned. NULL if tracking only local state prefs (e.g. in the system
   // request context or sign-in screen).
-  raw_ptr<PrefService, ExperimentalAsh> profile_prefs_;
+  raw_ptr<PrefService> profile_prefs_;
 
   // Not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_prefs_;
+  raw_ptr<PrefService> local_state_prefs_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 

@@ -202,21 +202,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularPolicyHandler
   InstallRetryReason HermesResponseStatusToRetryReason(
       HermesResponseStatus status) const;
 
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
-      cellular_esim_profile_handler_ = nullptr;
-  raw_ptr<CellularESimInstaller, ExperimentalAsh> cellular_esim_installer_ =
-      nullptr;
-  raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
-  raw_ptr<NetworkProfileHandler, ExperimentalAsh> network_profile_handler_ =
-      nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<CellularESimInstaller> cellular_esim_installer_ = nullptr;
+  raw_ptr<CellularInhibitor> cellular_inhibitor_ = nullptr;
+  raw_ptr<NetworkProfileHandler> network_profile_handler_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged>
       managed_cellular_pref_handler_ = nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler, DanglingUntriaged>
       managed_network_configuration_handler_ = nullptr;
 
   bool is_installing_ = false;

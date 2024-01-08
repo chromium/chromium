@@ -49,7 +49,7 @@ class DiscoveredDevicesProviderImpl : public DiscoveredDevicesProvider,
 
   std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices_;
 
-  raw_ptr<DeviceCache, ExperimentalAsh> device_cache_;
+  raw_ptr<DeviceCache> device_cache_;
 
   base::ScopedObservation<DeviceCache, DeviceCache::Observer>
       device_cache_observation_{this};

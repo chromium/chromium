@@ -172,8 +172,7 @@ class ConnectionManagerImplTest : public testing::Test {
                                         expected_count);
   }
 
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh>
-      mock_timer_;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> mock_timer_;
   multidevice::RemoteDeviceRef test_remote_device_;
   multidevice::RemoteDeviceRef test_local_device_;
   device_sync::FakeDeviceSyncClient fake_device_sync_client_;
@@ -181,8 +180,7 @@ class ConnectionManagerImplTest : public testing::Test {
   std::unique_ptr<FakeSecureChannelClient> fake_secure_channel_client_;
   std::unique_ptr<ConnectionManagerImpl> connection_manager_;
   FakeObserver fake_observer_;
-  raw_ptr<FakeConnectionAttempt, DanglingUntriaged | ExperimentalAsh>
-      fake_connection_attempt_;
+  raw_ptr<FakeConnectionAttempt, DanglingUntriaged> fake_connection_attempt_;
   std::unique_ptr<base::SimpleTestClock> test_clock_;
   base::HistogramTester histogram_tester_;
 };

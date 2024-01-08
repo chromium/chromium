@@ -77,8 +77,7 @@ class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
   const multidevice::RemoteDeviceRef test_remote_device_;
   const DataWithTimestamp fake_advertisement_;
 
-  raw_ptr<MockForegroundEidGenerator, DanglingUntriaged | ExperimentalAsh>
-      mock_eid_generator_;
+  raw_ptr<MockForegroundEidGenerator, DanglingUntriaged> mock_eid_generator_;
 
   std::unique_ptr<BleAdvertisementGenerator> generator_;
 };

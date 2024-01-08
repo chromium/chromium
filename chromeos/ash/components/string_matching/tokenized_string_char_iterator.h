@@ -72,8 +72,8 @@ class TokenizedStringCharIterator {
  private:
   void CreateTokenCharIterator();
 
-  const raw_ref<const TokenizedString::Tokens, ExperimentalAsh> tokens_;
-  const raw_ref<const TokenizedString::Mappings, ExperimentalAsh> mappings_;
+  const raw_ref<const TokenizedString::Tokens> tokens_;
+  const raw_ref<const TokenizedString::Mappings> mappings_;
 
   size_t current_token_;
   std::unique_ptr<base::i18n::UTF16CharIterator> current_token_iter_;

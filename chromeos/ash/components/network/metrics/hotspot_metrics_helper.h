@@ -254,18 +254,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotMetricsHelper
   // due to device is not cellular capable.
   std::optional<HotspotMetricsAllowStatus> GetMetricsAllowStatus();
 
-  raw_ptr<EnterpriseManagedMetadataStore, ExperimentalAsh>
-      enterprise_managed_metadata_store_ = nullptr;
-  raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
-      hotspot_capabilities_provider_ = nullptr;
-  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_ =
+  raw_ptr<EnterpriseManagedMetadataStore> enterprise_managed_metadata_store_ =
       nullptr;
-  raw_ptr<HotspotConfigurationHandler, ExperimentalAsh>
-      hotspot_configuration_handler_ = nullptr;
-  raw_ptr<HotspotEnabledStateNotifier, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HotspotCapabilitiesProvider> hotspot_capabilities_provider_ = nullptr;
+  raw_ptr<HotspotStateHandler> hotspot_state_handler_ = nullptr;
+  raw_ptr<HotspotConfigurationHandler> hotspot_configuration_handler_ = nullptr;
+  raw_ptr<HotspotEnabledStateNotifier, DanglingUntriaged>
       hotspot_enabled_state_notifier_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
 
   // A timer to wait for user connecting to their upstream cellular network
   // after login.

@@ -52,7 +52,7 @@ class ShillServiceClientTest : public ShillClientUnittestBase {
   }
 
  protected:
-  raw_ptr<ShillServiceClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<ShillServiceClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
 };
 

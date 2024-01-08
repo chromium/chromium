@@ -115,7 +115,7 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   void OnFetchSmsDetailsTimeout(const dbus::ObjectPath& sms_path);
   void SetLastActiveNetwork(const NetworkState* state) override;
 
-  raw_ptr<NetworkSmsHandler, ExperimentalAsh> host_;
+  raw_ptr<NetworkSmsHandler> host_;
   std::string service_name_;
   dbus::ObjectPath object_path_;
   base::OneShotTimer fetch_sms_details_timer_;

@@ -59,17 +59,15 @@ class TetherNetworkDisconnectionHandler : public NetworkStateHandlerObserver {
   void SetTaskRunnerForTesting(
       scoped_refptr<base::TaskRunner> test_task_runner);
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<NetworkConfigurationRemover, ExperimentalAsh>
-      network_configuration_remover_;
-  raw_ptr<DisconnectTetheringRequestSender, ExperimentalAsh>
+  raw_ptr<NetworkConfigurationRemover> network_configuration_remover_;
+  raw_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_;
-  raw_ptr<TetherSessionCompletionLogger, ExperimentalAsh>
-      tether_session_completion_logger_;
+  raw_ptr<TetherSessionCompletionLogger> tether_session_completion_logger_;
 
   scoped_refptr<base::TaskRunner> task_runner_;
   base::WeakPtrFactory<TetherNetworkDisconnectionHandler> weak_ptr_factory_{

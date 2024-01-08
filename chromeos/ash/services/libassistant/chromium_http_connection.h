@@ -95,7 +95,7 @@ class ChromiumHttpConnection
       const GURL& final_url,
       const network::mojom::URLResponseHead& response_header);
 
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   State state_ = State::NEW;
   bool has_last_chunk_ = false;

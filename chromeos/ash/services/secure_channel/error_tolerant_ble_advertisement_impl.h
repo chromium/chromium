@@ -87,7 +87,7 @@ class ErrorTolerantBleAdvertisementImpl
   }
 
   std::unique_ptr<DataWithTimestamp> advertisement_data_;
-  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_;
+  raw_ptr<BleSynchronizerBase> ble_synchronizer_;
 
   bool registration_in_progress_ = false;
   bool unregistration_in_progress_ = false;

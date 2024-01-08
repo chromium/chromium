@@ -322,7 +322,7 @@ class HermesEuiccClientImpl : public HermesEuiccClient {
     }
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   ObjectMap object_map_;
   base::WeakPtrFactory<HermesEuiccClientImpl> weak_ptr_factory_{this};
 };

@@ -101,26 +101,21 @@ class TetherConnectorImpl : public TetherConnector,
       const std::string& device_id,
       ConnectTetheringOperation::HostResponseErrorCode error_code);
 
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<WifiHotspotConnector, ExperimentalAsh> wifi_hotspot_connector_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
-  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
-      device_id_tether_network_guid_map_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
-  raw_ptr<NotificationPresenter, ExperimentalAsh> notification_presenter_;
-  raw_ptr<HostConnectionMetricsLogger, ExperimentalAsh>
-      host_connection_metrics_logger_;
-  raw_ptr<DisconnectTetheringRequestSender, ExperimentalAsh>
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<WifiHotspotConnector> wifi_hotspot_connector_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<TetherHostFetcher> tether_host_fetcher_;
+  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;
+  raw_ptr<HostScanCache> host_scan_cache_;
+  raw_ptr<NotificationPresenter> notification_presenter_;
+  raw_ptr<HostConnectionMetricsLogger> host_connection_metrics_logger_;
+  raw_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_;
-  raw_ptr<WifiHotspotDisconnector, ExperimentalAsh> wifi_hotspot_disconnector_;
+  raw_ptr<WifiHotspotDisconnector> wifi_hotspot_disconnector_;
 
   bool did_send_successful_request_ = false;
   std::string device_id_pending_connection_;

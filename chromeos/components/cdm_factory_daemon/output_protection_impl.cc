@@ -122,10 +122,9 @@ class DisplaySystemDelegateImpl
   }
 
  private:
-  raw_ptr<display::ContentProtectionManager, ExperimentalAsh>
+  raw_ptr<display::ContentProtectionManager>
       content_protection_manager_;  // Not owned.
-  raw_ptr<display::DisplayConfigurator, ExperimentalAsh>
-      display_configurator_;  // Not owned.
+  raw_ptr<display::DisplayConfigurator> display_configurator_;  // Not owned.
 };
 
 // These are reported to UMA server. Do not renumber or reuse values.

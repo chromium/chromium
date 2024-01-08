@@ -50,7 +50,7 @@ struct ValueEquals {
   bool operator()(const base::Value* second) const {
     return *first_ == *second;
   }
-  raw_ptr<const base::Value, ExperimentalAsh> first_;
+  raw_ptr<const base::Value> first_;
 };
 
 bool GetBoolValue(const base::Value::Dict& dict, const char* key) {

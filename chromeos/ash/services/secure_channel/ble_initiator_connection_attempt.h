@@ -60,7 +60,7 @@ class BleInitiatorConnectionAttempt
       const ConnectToDeviceOperation<BleInitiatorFailureType>::
           ConnectionFailedCallback& failure_callback) override;
 
-  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
+  raw_ptr<BleConnectionManager> ble_connection_manager_;
 };
 
 }  // namespace ash::secure_channel

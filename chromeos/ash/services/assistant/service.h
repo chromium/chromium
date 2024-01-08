@@ -182,8 +182,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) Service
   // so it is destroyed last.
   std::unique_ptr<ServiceContext> context_;
 
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<PrefService> pref_service_;
   std::unique_ptr<ScopedAshSessionObserver> scoped_ash_session_observer_;
   std::unique_ptr<AssistantManagerService> assistant_manager_service_;
   std::unique_ptr<base::OneShotTimer> token_refresh_timer_;

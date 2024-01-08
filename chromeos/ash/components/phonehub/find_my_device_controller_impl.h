@@ -33,8 +33,8 @@ class FindMyDeviceControllerImpl : public FindMyDeviceController {
 
   Status phone_ringing_status_ = Status::kRingingOff;
 
-  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
-  raw_ptr<UserActionRecorder, ExperimentalAsh> user_action_recorder_;
+  raw_ptr<MessageSender> message_sender_;
+  raw_ptr<UserActionRecorder> user_action_recorder_;
 };
 
 }  // namespace phonehub

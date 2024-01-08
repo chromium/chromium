@@ -227,7 +227,7 @@ class NetworkConfigurationHandler::ProfileEntryDeleter {
                                          false /* failed */);
   }
 
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh> owner_;  // Unowned
+  raw_ptr<NetworkConfigurationHandler> owner_;  // Unowned
   std::string service_path_;
   // Non empty if the service has to be removed only from a single profile. This
   // value is the profile path of the profile in question.

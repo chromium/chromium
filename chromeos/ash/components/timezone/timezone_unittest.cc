@@ -133,7 +133,7 @@ class TestTimeZoneAPILoaderFactory : public network::TestURLLoaderFactory {
   std::string response_;
   const size_t require_retries_;
   size_t attempts_ = 0;
-  raw_ptr<TimeZoneProvider, ExperimentalAsh> provider_;
+  raw_ptr<TimeZoneProvider> provider_;
 };
 
 class TimeZoneReceiver {

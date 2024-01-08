@@ -225,7 +225,7 @@ class SystemProxyClientImpl : public SystemProxyClient {
   AuthenticationRequiredCallback auth_required_callback_;
 
   // D-Bus proxy for the SystemProxy daemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<SystemProxyClientImpl> weak_factory_{this};
 };

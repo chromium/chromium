@@ -129,8 +129,8 @@ class ConnectionAttempt : public PendingConnectionRequestDelegate {
   }
 
  private:
-  raw_ptr<ConnectionAttemptDelegate, ExperimentalAsh> delegate_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<ConnectionAttemptDelegate> delegate_;
+  raw_ptr<base::Clock> clock_;
   const ConnectionAttemptDetails connection_attempt_details_;
   const base::Time start_attempt_timestamp_;
 

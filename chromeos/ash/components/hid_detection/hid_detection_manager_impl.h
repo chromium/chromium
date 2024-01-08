@@ -104,8 +104,7 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   std::optional<std::string> connected_pointer_id_;
   std::optional<std::string> connected_keyboard_id_;
 
-  raw_ptr<device::mojom::DeviceService, ExperimentalAsh> device_service_ =
-      nullptr;
+  raw_ptr<device::mojom::DeviceService> device_service_ = nullptr;
   std::unique_ptr<BluetoothHidDetector> bluetooth_hid_detector_;
   mojo::Remote<device::mojom::InputDeviceManager> input_device_manager_;
   mojo::AssociatedReceiver<device::mojom::InputDeviceManagerClient>

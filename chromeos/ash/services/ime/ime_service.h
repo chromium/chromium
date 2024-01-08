@@ -125,8 +125,7 @@ class ImeService : public mojom::ImeService,
   mojo::Remote<mojom::PlatformAccessProvider> platform_access_;
   mojo::ReceiverSet<mojom::InputEngineManager> manager_receivers_;
 
-  raw_ptr<ImeSharedLibraryWrapper, ExperimentalAsh> ime_shared_library_ =
-      nullptr;
+  raw_ptr<ImeSharedLibraryWrapper> ime_shared_library_ = nullptr;
 
   std::unique_ptr<FieldTrialParamsRetriever> field_trial_params_retriever_;
 };

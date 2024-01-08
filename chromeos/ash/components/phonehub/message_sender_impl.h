@@ -55,10 +55,8 @@ class MessageSenderImpl : public MessageSender {
   void SendMessage(proto::MessageType message_type,
                    const google::protobuf::MessageLite* request);
 
-  raw_ptr<secure_channel::ConnectionManager, ExperimentalAsh>
-      connection_manager_;
-  raw_ptr<PhoneHubUiReadinessRecorder, ExperimentalAsh>
-      phone_hub_ui_readiness_recorder_;
+  raw_ptr<secure_channel::ConnectionManager> connection_manager_;
+  raw_ptr<PhoneHubUiReadinessRecorder> phone_hub_ui_readiness_recorder_;
 };
 
 }  // namespace phonehub

@@ -160,16 +160,12 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   // the server and after local changes have been committed to the server.
   std::unique_ptr<syncer::ModelTypeStore> store_;
 
-  raw_ptr<SyncedNetworkUpdater, DanglingUntriaged | ExperimentalAsh>
-      synced_network_updater_;
-  raw_ptr<LocalNetworkCollector, DanglingUntriaged | ExperimentalAsh>
-      local_network_collector_;
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh>
-      network_configuration_handler_;
-  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged | ExperimentalAsh>
-      metrics_recorder_;
-  raw_ptr<TimerFactory, DanglingUntriaged | ExperimentalAsh> timer_factory_;
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
+  raw_ptr<SyncedNetworkUpdater, DanglingUntriaged> synced_network_updater_;
+  raw_ptr<LocalNetworkCollector, DanglingUntriaged> local_network_collector_;
+  raw_ptr<NetworkConfigurationHandler> network_configuration_handler_;
+  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged> metrics_recorder_;
+  raw_ptr<TimerFactory, DanglingUntriaged> timer_factory_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   base::WeakPtr<NetworkMetadataStore> network_metadata_store_;
 
   base::WeakPtrFactory<WifiConfigurationBridge> weak_ptr_factory_{this};

@@ -73,8 +73,8 @@ class SyncedBluetoothAddressTrackerImpl
   void ScheduleSyncIfAddressChanged();
   std::string GetAddress();
 
-  raw_ptr<CryptAuthScheduler, ExperimentalAsh> cryptauth_scheduler_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<CryptAuthScheduler> cryptauth_scheduler_;
+  raw_ptr<PrefService> pref_service_;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   std::vector<BluetoothAddressCallback> pending_callbacks_during_init_;

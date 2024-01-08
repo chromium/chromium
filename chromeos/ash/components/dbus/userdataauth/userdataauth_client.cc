@@ -457,7 +457,7 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
   }
 
   // D-Bus proxy for cryptohomed, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;

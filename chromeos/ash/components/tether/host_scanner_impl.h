@@ -118,24 +118,20 @@ class HostScannerImpl : public HostScanner,
   bool IsPotentialHotspotNotificationShowing();
   bool CanAvailableHostNotificationBeShown();
 
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
-  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
-  raw_ptr<HostScanDevicePrioritizer, ExperimentalAsh>
-      host_scan_device_prioritizer_;
-  raw_ptr<TetherHostResponseRecorder, ExperimentalAsh>
-      tether_host_response_recorder_;
-  raw_ptr<GmsCoreNotificationsStateTrackerImpl, ExperimentalAsh>
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<session_manager::SessionManager> session_manager_;
+  raw_ptr<TetherHostFetcher> tether_host_fetcher_;
+  raw_ptr<HostScanDevicePrioritizer> host_scan_device_prioritizer_;
+  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
+  raw_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;
-  raw_ptr<NotificationPresenter, ExperimentalAsh> notification_presenter_;
-  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
-      device_id_tether_network_guid_map_;
-  raw_ptr<HostScanCache, ExperimentalAsh> host_scan_cache_;
-  raw_ptr<ConnectionPreserver, ExperimentalAsh> connection_preserver_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<NotificationPresenter> notification_presenter_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;
+  raw_ptr<HostScanCache> host_scan_cache_;
+  raw_ptr<ConnectionPreserver> connection_preserver_;
+  raw_ptr<base::Clock> clock_;
 
   bool is_fetching_hosts_ = false;
   bool was_notification_showing_when_current_scan_started_ = false;

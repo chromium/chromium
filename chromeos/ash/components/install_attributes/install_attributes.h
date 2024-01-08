@@ -228,7 +228,7 @@ class COMPONENT_EXPORT(ASH_INSTALL_ATTRIBUTES) InstallAttributes {
   void OnClearStoredOwnerPassword(
       const ::tpm_manager::ClearStoredOwnerPasswordReply& reply);
 
-  raw_ptr<InstallAttributesClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<InstallAttributesClient, DanglingUntriaged>
       install_attributes_client_;
 
   base::WeakPtrFactory<InstallAttributes> weak_ptr_factory_{this};

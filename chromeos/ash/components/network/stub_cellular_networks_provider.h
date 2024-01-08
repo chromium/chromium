@@ -71,11 +71,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) StubCellularNetworksProvider
       const base::flat_set<std::string>* shill_iccids,
       NetworkStateHandler::ManagedStateList& network_list);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
-      cellular_esim_profile_handler_ = nullptr;
-  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<ManagedCellularPrefHandler, DanglingUntriaged>
       managed_cellular_pref_handler_ = nullptr;
 
   // Map which stores the GUID used for stubs created by this class. Each

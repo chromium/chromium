@@ -160,9 +160,9 @@ class AudioDevices::ScopedCrasAudioHandlerObserver
     parent_->SetAudioDevices(audio_devices);
   }
 
-  const raw_ptr<AudioDevices, ExperimentalAsh> parent_;
+  const raw_ptr<AudioDevices> parent_;
   // Owned by |AssistantManagerServiceImpl|.
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
   base::ScopedObservation<CrasAudioHandler, CrasAudioHandler::AudioObserver>
       scoped_observer_{this};
 };
@@ -217,7 +217,7 @@ class AudioDevices::HotwordModelUpdater {
         }));
   }
 
-  const raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_;
+  const raw_ptr<CrasAudioHandler> cras_audio_handler_;
   uint64_t hotword_device_;
   std::string locale_;
 

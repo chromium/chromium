@@ -165,7 +165,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) LoginPerformer
   void set_authenticator(scoped_refptr<Authenticator> authenticator);
 
   // Notifications receiver.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
  private:
   // Starts login completion of externally authenticated user.

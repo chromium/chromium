@@ -215,8 +215,8 @@ class HostConnectionMetricsLogger : public ActiveHost::Observer {
 
   void SetClockForTesting(base::Clock* test_clock);
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<base::Clock> clock_;
 
   base::Time connect_to_host_start_time_;
   std::string active_host_device_id_;

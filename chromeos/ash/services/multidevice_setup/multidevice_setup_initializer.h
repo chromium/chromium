@@ -144,16 +144,13 @@ class MultiDeviceSetupInitializer
 
   void InitializeImplementation();
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<AuthTokenValidator, ExperimentalAsh> auth_token_validator_;
-  raw_ptr<OobeCompletionTracker, ExperimentalAsh> oobe_completion_tracker_;
-  raw_ptr<AndroidSmsAppHelperDelegate, ExperimentalAsh>
-      android_sms_app_helper_delegate_;
-  raw_ptr<AndroidSmsPairingStateTracker, ExperimentalAsh>
-      android_sms_pairing_state_tracker_;
-  raw_ptr<const device_sync::GcmDeviceInfoProvider, ExperimentalAsh>
-      gcm_device_info_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<AuthTokenValidator> auth_token_validator_;
+  raw_ptr<OobeCompletionTracker> oobe_completion_tracker_;
+  raw_ptr<AndroidSmsAppHelperDelegate> android_sms_app_helper_delegate_;
+  raw_ptr<AndroidSmsPairingStateTracker> android_sms_pairing_state_tracker_;
+  raw_ptr<const device_sync::GcmDeviceInfoProvider> gcm_device_info_provider_;
   bool is_secondary_user_;
 
   std::unique_ptr<MultiDeviceSetupBase> multidevice_setup_impl_;

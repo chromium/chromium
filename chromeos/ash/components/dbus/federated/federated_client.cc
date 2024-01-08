@@ -58,8 +58,7 @@ class FederatedClientImpl : public FederatedClient {
     std::move(result_callback).Run(success);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> federated_service_proxy_ =
-      nullptr;
+  raw_ptr<dbus::ObjectProxy> federated_service_proxy_ = nullptr;
   // Must be last class member.
   base::WeakPtrFactory<FederatedClientImpl> weak_ptr_factory_{this};
 };

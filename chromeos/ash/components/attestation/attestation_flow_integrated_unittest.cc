@@ -71,7 +71,7 @@ class AttestationFlowIntegratedTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
   base::HistogramTester histogram_tester_;
 };
 

@@ -88,8 +88,8 @@ class FakeErrorTolerantBleAdvertisementFactory
     EXPECT_EQ(1u, num_deleted);
   }
 
-  raw_ptr<BluetoothHelper, ExperimentalAsh> bluetooth_helper_;
-  raw_ptr<BleSynchronizerBase, ExperimentalAsh> ble_synchronizer_base_;
+  raw_ptr<BluetoothHelper> bluetooth_helper_;
+  raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
 
   std::optional<DeviceIdPair> last_created_device_id_pair_;
   base::flat_map<DeviceIdPair, FakeErrorTolerantBleAdvertisement*>

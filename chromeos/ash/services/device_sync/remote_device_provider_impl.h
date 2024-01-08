@@ -105,11 +105,11 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
 
   // To get cryptauth::ExternalDeviceInfo needed to retrieve RemoteDevices. Null
   // if v1 DeviceSync is disabled.
-  raw_ptr<CryptAuthDeviceManager, ExperimentalAsh> v1_device_manager_;
+  raw_ptr<CryptAuthDeviceManager> v1_device_manager_;
 
   // Used to retrieve CryptAuthDevices from the last v2 DeviceSync. Null if v2
   // DeviceSync is disabled.
-  raw_ptr<CryptAuthV2DeviceManager, ExperimentalAsh> v2_device_manager_;
+  raw_ptr<CryptAuthV2DeviceManager> v2_device_manager_;
 
   // The email of the current user.
   const std::string user_email_;

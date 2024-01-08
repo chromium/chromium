@@ -42,7 +42,7 @@ class DeviceNameManagerImpl : public DeviceNameManager {
   bool DoesDeviceExist(const std::string& device_id) const;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 };
 
 }  // namespace ash::bluetooth_config

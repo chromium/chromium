@@ -113,7 +113,7 @@ class Euicc : public mojom::Euicc {
       const std::vector<CellularESimProfile>& esim_profile_states);
 
   // Reference to ESimManager that owns this Euicc.
-  raw_ptr<ESimManager, ExperimentalAsh> esim_manager_;
+  raw_ptr<ESimManager> esim_manager_;
   mojo::ReceiverSet<mojom::Euicc> receiver_set_;
   mojom::EuiccPropertiesPtr properties_;
   dbus::ObjectPath path_;

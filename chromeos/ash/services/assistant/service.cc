@@ -183,7 +183,7 @@ class ScopedAshSessionObserver {
  private:
   SessionController* controller() const { return SessionController::Get(); }
 
-  const raw_ptr<SessionActivationObserver, ExperimentalAsh> observer_;
+  const raw_ptr<SessionActivationObserver> observer_;
   const AccountId account_id_;
 };
 
@@ -238,8 +238,7 @@ class Service::Context : public ServiceContext {
   }
 
  private:
-  const raw_ptr<Service, ExperimentalAsh>
-      parent_;  // |this| is owned by |parent_|.
+  const raw_ptr<Service> parent_;  // |this| is owned by |parent_|.
 };
 
 Service::Service(std::unique_ptr<network::PendingSharedURLLoaderFactory>

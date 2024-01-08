@@ -469,7 +469,7 @@ class MockDiskMountManagerObserver : public DiskMountManager::Observer {
 
  private:
   // Pointer to the manager object to which this |Observer| is registered.
-  raw_ptr<const DiskMountManager, DanglingUntriaged | ExperimentalAsh> manager_;
+  raw_ptr<const DiskMountManager, DanglingUntriaged> manager_;
 
   // Records all invocations.
   std::vector<std::unique_ptr<ObserverEvent>> events_;
@@ -579,8 +579,7 @@ class DiskMountManagerTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<FakeCrosDisksClient, DanglingUntriaged | ExperimentalAsh>
-      fake_cros_disks_client_;
+  raw_ptr<FakeCrosDisksClient, DanglingUntriaged> fake_cros_disks_client_;
   std::unique_ptr<MockDiskMountManagerObserver> observer_;
 
  private:

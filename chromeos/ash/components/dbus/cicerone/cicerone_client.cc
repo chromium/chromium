@@ -1305,7 +1305,7 @@ class CiceroneClientImpl : public CiceroneClient {
     }
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> cicerone_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> cicerone_proxy_ = nullptr;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

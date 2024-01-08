@@ -44,7 +44,7 @@ class DisplayController::EventObserver : public DisplayConnectionObserver {
   }
 
  private:
-  const raw_ptr<DisplayController, ExperimentalAsh> parent_;
+  const raw_ptr<DisplayController> parent_;
 };
 
 DisplayController::DisplayController(

@@ -38,7 +38,7 @@ class LibassistantFactoryImpl : public LibassistantFactory {
   }
 
  private:
-  const raw_ptr<assistant_client::PlatformApi, ExperimentalAsh> platform_api_;
+  const raw_ptr<assistant_client::PlatformApi> platform_api_;
 };
 
 std::unique_ptr<LibassistantFactory> FactoryOrDefault(

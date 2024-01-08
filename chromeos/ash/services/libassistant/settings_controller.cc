@@ -95,8 +95,8 @@ class SettingsController::DeviceSettingsUpdater
     parent_->UpdateSettings(update.SerializeAsString(), base::DoNothing());
   }
 
-  const raw_ref<SettingsController, ExperimentalAsh> parent_;
-  const raw_ref<AssistantClient, ExperimentalAsh> assistant_client_;
+  const raw_ref<SettingsController> parent_;
+  const raw_ref<AssistantClient> assistant_client_;
 };
 
 // Sends a 'get settings' requests to Libassistant,

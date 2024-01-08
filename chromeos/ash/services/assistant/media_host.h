@@ -69,8 +69,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) MediaHost {
                 ExperimentalAsh>
       interaction_subscribers_;
   // Owned by our parent |AssistantManagerServiceImpl|.
-  raw_ptr<libassistant::mojom::MediaController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<libassistant::mojom::MediaController, DanglingUntriaged>
       libassistant_media_controller_ = nullptr;
 
   std::unique_ptr<AssistantMediaSession> media_session_;

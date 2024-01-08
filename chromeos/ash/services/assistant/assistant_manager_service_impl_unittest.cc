@@ -94,7 +94,7 @@ class FakeLibassistantServiceHost : public LibassistantServiceHost {
   void Stop() override { service_->Unbind(); }
 
  private:
-  raw_ptr<FakeLibassistantService, ExperimentalAsh> service_;
+  raw_ptr<FakeLibassistantService> service_;
 };
 
 class StateObserverMock : public AssistantManagerService::StateObserver {

@@ -425,19 +425,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   // Tracks whether cellular device is available or not.
   bool is_cellular_available_ = false;
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
+  raw_ptr<ManagedNetworkConfigurationHandler>
       managed_network_configuration_handler_ = nullptr;
 
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_ = nullptr;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_ = nullptr;
 
-  raw_ptr<CellularESimProfileHandler, ExperimentalAsh>
-      cellular_esim_profile_handler_ = nullptr;
+  raw_ptr<CellularESimProfileHandler> cellular_esim_profile_handler_ = nullptr;
 
   // A timer to wait for cellular initialization. This is useful
   // to avoid tracking intermediate states when cellular network is

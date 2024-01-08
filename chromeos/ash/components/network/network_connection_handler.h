@@ -249,7 +249,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandler {
   base::ObserverList<NetworkConnectionObserver, true>::Unchecked observers_;
 
   // Delegate used to start a connection to a tether network.
-  raw_ptr<TetherDelegate, ExperimentalAsh> tether_delegate_;
+  raw_ptr<TetherDelegate> tether_delegate_;
 
  private:
   // Only to be used by NetworkConnectionHandler implementation (and not by

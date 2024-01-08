@@ -66,7 +66,7 @@ class ServiceProvider
   mojo::Receiver<chromeos::mojo_service_manager::mojom::ServiceProvider>
       provider_{this};
   // The pointer to the implementation of the mojo interface.
-  const raw_ptr<MojoInterfaceType, ExperimentalAsh> impl_;
+  const raw_ptr<MojoInterfaceType> impl_;
   // The receiver set to keeps the connections from clients to access the mojo
   // service.
   mojo::ReceiverSet<MojoInterfaceType> service_receiver_set_;

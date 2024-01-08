@@ -115,7 +115,7 @@ class LzwPixelColorIndicesWriter {
 
   // Used for writing bytes to the GIF file and takes care of handling IO errors
   // and disk space / DriveFS quota issues.
-  const raw_ptr<GifFileWriter, ExperimentalAsh> gif_file_writer_;
+  const raw_ptr<GifFileWriter> gif_file_writer_;
 
   // See above background, we don't write the generated LZW codes directly to
   // the file, however we try to do further compression by writing only the bits

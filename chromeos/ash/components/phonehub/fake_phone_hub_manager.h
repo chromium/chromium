@@ -174,10 +174,9 @@ class FakePhoneHubManager : public PhoneHubManager {
       nullptr;
   raw_ptr<PhoneHubStructuredMetricsLogger>
       phone_hub_structured_metrics_logger_ = nullptr;
-  raw_ptr<eche_app::EcheConnectionStatusHandler,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<eche_app::EcheConnectionStatusHandler, DanglingUntriaged>
       eche_connection_status_handler_ = nullptr;
-  raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<eche_app::SystemInfoProvider, DanglingUntriaged>
       system_info_provider_ = nullptr;
   std::optional<base::Time> host_last_seen_timestamp_ = std::nullopt;
 };

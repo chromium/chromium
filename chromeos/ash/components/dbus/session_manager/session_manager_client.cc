@@ -1230,7 +1230,7 @@ class SessionManagerClientImpl : public SessionManagerClient {
     std::move(callback).Run(AdbSideloadResponseCode::SUCCESS, is_allowed);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> session_manager_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> session_manager_proxy_ = nullptr;
   std::unique_ptr<chromeos::BlockingMethodCaller> blocking_method_caller_;
   base::ObserverList<Observer>::Unchecked observers_{
       SessionManagerClient::kObserverListPolicy};

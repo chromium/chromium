@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // incomplete, i.e. missing id.
   void RegisterTrialForCampaign(const Campaign* campaign) const;
 
-  raw_ptr<CampaignsManagerClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<CampaignsManagerClient> client_ = nullptr;
 
   // True if campaigns are loaded.
   bool campaigns_loaded_ = false;

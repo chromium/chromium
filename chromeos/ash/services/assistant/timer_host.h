@@ -53,14 +53,13 @@ class TimerHost {
   bool IsStopped() const;
 
   // Owned by our parent |AssistantManagerServiceImpl|.
-  raw_ptr<libassistant::mojom::TimerController,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<libassistant::mojom::TimerController, DanglingUntriaged>
       libassistant_controller_ = nullptr;
   std::unique_ptr<TimerDelegateImpl> timer_delegate_;
 
   // Owned by the parent |Service| which will destroy |this| before
   // |context_|.
-  const raw_ref<ServiceContext, ExperimentalAsh> context_;
+  const raw_ref<ServiceContext> context_;
 };
 
 }  // namespace assistant

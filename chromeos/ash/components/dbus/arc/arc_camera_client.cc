@@ -55,7 +55,7 @@ class ArcCameraClientImpl : public ArcCameraClient {
     std::move(callback).Run(response);
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_;
+  raw_ptr<dbus::ObjectProxy> proxy_;
   base::WeakPtrFactory<ArcCameraClientImpl> weak_ptr_factory_{this};
 };
 

@@ -46,8 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) HotspotEnabledStateNotifier
   // HotspotStateHandler::Observer:
   void OnHotspotStatusChanged() override;
 
-  raw_ptr<HotspotController, ExperimentalAsh> hotspot_controller_;
-  raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;
+  raw_ptr<HotspotController> hotspot_controller_;
+  raw_ptr<HotspotStateHandler> hotspot_state_handler_;
   mojo::RemoteSet<hotspot_config::mojom::HotspotEnabledStateObserver>
       observers_;
 };

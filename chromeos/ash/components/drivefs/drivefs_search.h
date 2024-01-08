@@ -50,10 +50,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSearch {
       drive::FileError error,
       std::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
-  const raw_ptr<mojom::DriveFs, DanglingUntriaged | ExperimentalAsh> drivefs_;
-  const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
-      network_connection_tracker_;
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<const base::Clock> clock_;
   base::Time last_shared_with_me_response_;
 
   base::WeakPtrFactory<DriveFsSearch> weak_ptr_factory_{this};

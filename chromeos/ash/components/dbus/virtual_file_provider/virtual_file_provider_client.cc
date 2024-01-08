@@ -101,7 +101,7 @@ class VirtualFileProviderClientImpl : public VirtualFileProviderClient {
     std::move(callback).Run(std::move(fd));
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
 
   base::WeakPtrFactory<VirtualFileProviderClientImpl> weak_ptr_factory_{this};
 };

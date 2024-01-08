@@ -83,15 +83,13 @@ class FakeBleAdvertiserFactory : public BleAdvertiserImpl::Factory {
     return instance;
   }
 
-  raw_ptr<FakeBleAdvertiser, DanglingUntriaged | ExperimentalAsh> instance_ =
-      nullptr;
+  raw_ptr<FakeBleAdvertiser, DanglingUntriaged> instance_ = nullptr;
 
-  raw_ptr<FakeBluetoothHelper, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeBluetoothHelper, DanglingUntriaged>
       expected_fake_bluetooth_helper_;
-  raw_ptr<FakeBleSynchronizer, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeBleSynchronizer, DanglingUntriaged>
       expected_fake_ble_synchronizer_;
-  raw_ptr<FakeTimerFactory, DanglingUntriaged | ExperimentalAsh>
-      expected_fake_timer_factory_;
+  raw_ptr<FakeTimerFactory, DanglingUntriaged> expected_fake_timer_factory_;
 };
 
 class FakeWeaveClientConnectionFactory
@@ -135,11 +133,10 @@ class FakeWeaveClientConnectionFactory
 
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
       expected_mock_adapter_;
-  raw_ptr<device::MockBluetoothDevice, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<device::MockBluetoothDevice, DanglingUntriaged>
       expected_bluetooth_device_;
 
-  raw_ptr<FakeConnection, DanglingUntriaged | ExperimentalAsh>
-      last_created_instance_ = nullptr;
+  raw_ptr<FakeConnection, DanglingUntriaged> last_created_instance_ = nullptr;
 };
 
 class FakeSecureChannelFactory : public SecureChannel::Factory {
@@ -171,7 +168,7 @@ class FakeSecureChannelFactory : public SecureChannel::Factory {
     return instance;
   }
 
-  raw_ptr<FakeWeaveClientConnectionFactory, ExperimentalAsh>
+  raw_ptr<FakeWeaveClientConnectionFactory>
       fake_weave_client_connection_factory_;
 
   // This field is not a raw_ptr<> because it was filtered by the rewriter

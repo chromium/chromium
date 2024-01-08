@@ -33,9 +33,8 @@ class FeatureSetupResponseProcessor : public MessageReceiver::Observer {
   void OnFeatureSetupResponseReceived(
       proto::FeatureSetupResponse response) override;
 
-  raw_ptr<MessageReceiver, ExperimentalAsh> message_receiver_;
-  raw_ptr<MultideviceFeatureAccessManager, ExperimentalAsh>
-      multidevice_feature_access_manager_;
+  raw_ptr<MessageReceiver> message_receiver_;
+  raw_ptr<MultideviceFeatureAccessManager> multidevice_feature_access_manager_;
 };
 
 }  // namespace phonehub

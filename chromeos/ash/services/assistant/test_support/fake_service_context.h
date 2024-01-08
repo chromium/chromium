@@ -53,15 +53,15 @@ class FakeServiceContext : public ServiceContext {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
-  raw_ptr<AssistantStateBase, ExperimentalAsh> assistant_state_ = nullptr;
-  raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<AssistantStateBase> assistant_state_ = nullptr;
+  raw_ptr<chromeos::PowerManagerClient, DanglingUntriaged>
       power_manager_client_ = nullptr;
   std::string gaia_id_ = kGaiaId;
-  raw_ptr<AssistantAlarmTimerController, ExperimentalAsh>
-      assistant_alarm_timer_controller_ = nullptr;
-  raw_ptr<AssistantNotificationController, ExperimentalAsh>
-      assistant_notification_controller_ = nullptr;
-  raw_ptr<CrasAudioHandler, ExperimentalAsh> cras_audio_handler_ = nullptr;
+  raw_ptr<AssistantAlarmTimerController> assistant_alarm_timer_controller_ =
+      nullptr;
+  raw_ptr<AssistantNotificationController> assistant_notification_controller_ =
+      nullptr;
+  raw_ptr<CrasAudioHandler> cras_audio_handler_ = nullptr;
 };
 
 }  // namespace ash::assistant

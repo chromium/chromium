@@ -338,7 +338,7 @@ class AuthSessionAuthenticatorTest : public testing::Test,
       /*quit_closure=*/base::DoNothing()};
   scoped_refptr<AuthSessionAuthenticator> authenticator_;
   // Unowned (points to the object owned by `authenticator_`).
-  raw_ptr<MockSafeModeDelegate, ExperimentalAsh> safe_mode_delegate_ = nullptr;
+  raw_ptr<MockSafeModeDelegate> safe_mode_delegate_ = nullptr;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
 };

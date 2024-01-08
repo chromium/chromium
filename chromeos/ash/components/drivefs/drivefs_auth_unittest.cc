@@ -58,7 +58,7 @@ class AuthDelegateImpl : public DriveFsAuth::Delegate {
 
   bool IsMetricsCollectionEnabled() override { return false; }
 
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   const AccountId account_id_;
 };
 
@@ -107,8 +107,7 @@ class DriveFsAuthTest : public ::testing::Test {
 
   std::unique_ptr<AuthDelegateImpl> delegate_;
   std::unique_ptr<DriveFsAuth> auth_;
-  raw_ptr<base::MockOneShotTimer, DanglingUntriaged | ExperimentalAsh> timer_ =
-      nullptr;
+  raw_ptr<base::MockOneShotTimer, DanglingUntriaged> timer_ = nullptr;
 };
 
 TEST_F(DriveFsAuthTest, GetAccessToken_Success) {

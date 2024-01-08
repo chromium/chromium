@@ -105,7 +105,7 @@ class RmadClientImpl : public RmadClient {
   // Sends out the requests to verify if RMAD files exist on device.
   void StartCheckForRmadFiles();
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> rmad_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> rmad_proxy_ = nullptr;
   base::ObserverList<Observer, /*check_empty=*/true, /*allow_reentrancy=*/false>
       observers_;
 

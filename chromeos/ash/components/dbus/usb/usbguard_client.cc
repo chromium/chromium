@@ -116,8 +116,8 @@ class UsbguardClientImpl : public UsbguardClient {
         << "Failed to connect to usbguard signal: " << signal_name;
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_ = nullptr;
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> usbguard_proxy_ = nullptr;
+  raw_ptr<dbus::Bus> bus_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> usbguard_proxy_ = nullptr;
   base::ObserverList<UsbguardObserver> observers_;
 
   // Note: This should remain the last member so it'll be destroyed and

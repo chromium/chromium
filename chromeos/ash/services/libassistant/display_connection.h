@@ -58,10 +58,10 @@ class DisplayConnection
 
   void FillDisplayRequest(::assistant::display::DisplayRequest& dr);
 
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
 
   // Owned by the parent which also owns `this`.
-  const raw_ptr<DisplayConnectionObserver, ExperimentalAsh> observer_;
+  const raw_ptr<DisplayConnectionObserver> observer_;
 
   // Whether Assistant feedback UI is enabled.
   const bool feedback_ui_enabled_;

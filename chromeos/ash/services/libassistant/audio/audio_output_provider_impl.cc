@@ -136,7 +136,7 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
     }
   }
 
-  raw_ptr<AudioOutputProviderImpl, ExperimentalAsh> audio_output_provider_impl_
+  raw_ptr<AudioOutputProviderImpl> audio_output_provider_impl_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   scoped_refptr<AudioOutputProviderImpl::AudioDecoderFactoryManager>
       audio_decoder_factory_manager_ GUARDED_BY_CONTEXT(main_sequence_checker_);
@@ -145,8 +145,8 @@ class AudioOutputImpl : public assistant_client::AudioOutput {
 
   mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory_
       GUARDED_BY_CONTEXT(main_sequence_checker_);
-  const raw_ptr<mojom::AudioOutputDelegate, ExperimentalAsh>
-      audio_output_delegate_ GUARDED_BY_CONTEXT(main_sequence_checker_);
+  const raw_ptr<mojom::AudioOutputDelegate> audio_output_delegate_
+      GUARDED_BY_CONTEXT(main_sequence_checker_);
 
   // Accessed from both Libassistant and main sequence, so should remain
   // |const|.

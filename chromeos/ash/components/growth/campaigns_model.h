@@ -159,7 +159,7 @@ class TargetingBase {
 
   // The dictionary that contains targeting definition. Owned by
   // `CampaignsManager`.
-  raw_ptr<const Targeting, ExperimentalAsh> targeting_;
+  raw_ptr<const Targeting> targeting_;
   // The targeting path.
   const char* targeting_path_;
 };
@@ -230,7 +230,7 @@ class SchedulingTargeting {
   const base::Time GetEndTime() const;
 
  private:
-  raw_ptr<const base::Value::Dict, ExperimentalAsh> scheduling_dict_;
+  raw_ptr<const base::Value::Dict> scheduling_dict_;
 };
 
 // Wrapper around scheduling targeting dictionary.

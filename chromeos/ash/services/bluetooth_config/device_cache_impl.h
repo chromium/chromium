@@ -138,8 +138,8 @@ class DeviceCacheImpl : public DeviceCache,
       const device::BluetoothDevice* device);
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<DeviceNameManager, ExperimentalAsh> device_name_manager_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<DeviceNameManager> device_name_manager_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;

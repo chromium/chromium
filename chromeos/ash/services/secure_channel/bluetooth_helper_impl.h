@@ -72,7 +72,7 @@ class BluetoothHelperImpl : public BluetoothHelper {
       std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
       std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator);
 
-  raw_ptr<multidevice::RemoteDeviceCache, ExperimentalAsh> remote_device_cache_;
+  raw_ptr<multidevice::RemoteDeviceCache> remote_device_cache_;
   std::unique_ptr<BackgroundEidGenerator> background_eid_generator_;
   std::unique_ptr<ForegroundEidGenerator> foreground_eid_generator_;
 };

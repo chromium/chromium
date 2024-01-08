@@ -146,11 +146,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) MultitaskMenuNudgeController
   base::Time nudge_shown_time_;
 
   // The app window that the nudge is associated with.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
 
   // The view that the nudge will be anchored to. It is the maximize or resize
   // button on `window_`'s frame. Null in tablet mode.
-  raw_ptr<views::View, ExperimentalAsh> anchor_view_ = nullptr;
+  raw_ptr<views::View> anchor_view_ = nullptr;
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};

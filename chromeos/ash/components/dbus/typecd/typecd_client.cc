@@ -41,7 +41,7 @@ class TypecdClientImpl : public TypecdClient {
                          const std::string& signal_name,
                          bool success);
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> typecd_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> typecd_proxy_ = nullptr;
   base::WeakPtrFactory<TypecdClientImpl> weak_ptr_factory_{this};
 };
 

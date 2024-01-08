@@ -195,7 +195,7 @@ class RPCState : public chromeos::libassistant::GrpcClientCQTag {
   // An instance used by an async gRPC client to manage asynchronous rpc
   // operations. An RPC call is bound to a CompletionQueue when performed
   // using the stub.
-  raw_ptr<grpc::CompletionQueue, ExperimentalAsh> cq_ = nullptr;
+  raw_ptr<grpc::CompletionQueue> cq_ = nullptr;
 
   // An instance used by a gRPC client to invoke rpc methods implemented in
   // the server.

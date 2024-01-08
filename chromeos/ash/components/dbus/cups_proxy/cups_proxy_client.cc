@@ -58,7 +58,7 @@ class CupsProxyClientImpl : public CupsProxyClient {
   }
 
  private:
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> daemon_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> daemon_proxy_ = nullptr;
 
   // Passes the success/failure of |dbus_response| on to |result_callback|.
   void OnBootstrapMojoConnectionResponse(

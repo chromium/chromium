@@ -58,7 +58,7 @@ class OsInstallClientImpl : public OsInstallClient {
                              const std::string& signal_name,
                              bool success);
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
   base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<OsInstallClientImpl> weak_factory_{this};

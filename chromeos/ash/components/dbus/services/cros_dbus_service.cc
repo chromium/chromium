@@ -85,7 +85,7 @@ class CrosDBusServiceImpl : public CrosDBusService {
 
   bool service_started_;
   base::PlatformThreadId origin_thread_id_;
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   std::string service_name_;
   dbus::ObjectPath object_path_;
   scoped_refptr<dbus::ExportedObject> exported_object_;

@@ -59,11 +59,10 @@ class NetworkConnectionHandlerTetherDelegate
   void OnRequestSuccess(int request_num);
   void OnRequestError(int request_num, const std::string& error_name);
 
-  raw_ptr<NetworkConnectionHandler, ExperimentalAsh>
-      network_connection_handler_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<TetherConnector, ExperimentalAsh> tether_connector_;
-  raw_ptr<TetherDisconnector, ExperimentalAsh> tether_disconnector_;
+  raw_ptr<NetworkConnectionHandler> network_connection_handler_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<TetherConnector> tether_connector_;
+  raw_ptr<TetherDisconnector> tether_disconnector_;
 
   // Cache request callbacks in a map so that if the callbacks do not occur by
   // the time the object is deleted, all callbacks are invoked.

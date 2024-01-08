@@ -141,7 +141,7 @@ class FakeSoftwareFeatureManager : public SoftwareFeatureManager {
       base::OnceCallback<void(NetworkRequestError)> error_callback) override;
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
   std::vector<std::unique_ptr<SetSoftwareFeatureStateArgs>>
       set_software_feature_state_calls_;

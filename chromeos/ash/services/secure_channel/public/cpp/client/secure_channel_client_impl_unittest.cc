@@ -85,8 +85,7 @@ class FakeClientChannelImplFactory : public ClientChannelImpl::Factory {
   }
 
  private:
-  raw_ptr<ClientChannel, DanglingUntriaged | ExperimentalAsh>
-      last_client_channel_created_;
+  raw_ptr<ClientChannel, DanglingUntriaged> last_client_channel_created_;
 };
 
 class TestConnectionAttemptDelegate : public ConnectionAttempt::Delegate {
@@ -214,8 +213,7 @@ class SecureChannelClientImplTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
 
-  raw_ptr<FakeSecureChannel, DanglingUntriaged | ExperimentalAsh>
-      fake_secure_channel_;
+  raw_ptr<FakeSecureChannel, DanglingUntriaged> fake_secure_channel_;
   std::unique_ptr<FakeSecureChannelInitializerFactory>
       fake_secure_channel_initializer_factory_;
   std::unique_ptr<FakeConnectionAttemptFactory>

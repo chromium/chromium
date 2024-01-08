@@ -36,7 +36,7 @@ class FakeLibassistantFactory : public LibassistantFactory {
  private:
   std::unique_ptr<chromeos::assistant::FakeAssistantManager>
       pending_assistant_manager_;
-  raw_ptr<chromeos::assistant::FakeAssistantManager, ExperimentalAsh>
+  raw_ptr<chromeos::assistant::FakeAssistantManager>
       current_assistant_manager_ = nullptr;
 
   // Config passed to LibAssistant when it was started.

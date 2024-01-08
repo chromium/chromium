@@ -168,10 +168,9 @@ class CryptAuthSchedulerImpl : public CryptAuthScheduler,
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
+  raw_ptr<base::Clock> clock_ = nullptr;
   cryptauthv2::ClientDirective client_directive_;
   base::flat_map<RequestType, std::unique_ptr<base::OneShotTimer>>
       request_timers_;

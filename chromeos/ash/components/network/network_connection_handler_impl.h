@@ -184,18 +184,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionHandlerImpl
       CellularConfigurationFailureType failure_type);
 
   // Local references to the associated handler instances.
-  raw_ptr<NetworkCertLoader, ExperimentalAsh> network_cert_loader_ = nullptr;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_ =
-      nullptr;
+  raw_ptr<NetworkCertLoader> network_cert_loader_ = nullptr;
+  raw_ptr<NetworkStateHandler> network_state_handler_ = nullptr;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<NetworkConfigurationHandler, ExperimentalAsh> configuration_handler_ =
-      nullptr;
-  raw_ptr<ManagedNetworkConfigurationHandler,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<NetworkConfigurationHandler> configuration_handler_ = nullptr;
+  raw_ptr<ManagedNetworkConfigurationHandler, DanglingUntriaged>
       managed_configuration_handler_ = nullptr;
-  raw_ptr<CellularConnectionHandler, ExperimentalAsh>
-      cellular_connection_handler_ = nullptr;
+  raw_ptr<CellularConnectionHandler> cellular_connection_handler_ = nullptr;
 
   // Map of pending connect requests, used to prevent repeated attempts while
   // waiting for Shill and to trigger callbacks on eventual success or failure.

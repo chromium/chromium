@@ -40,10 +40,9 @@ class NotificationManagerImpl
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
 
-  raw_ptr<MessageSender, ExperimentalAsh> message_sender_;
-  raw_ptr<UserActionRecorder, ExperimentalAsh> user_action_recorder_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<MessageSender> message_sender_;
+  raw_ptr<UserActionRecorder> user_action_recorder_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
   std::optional<multidevice_setup::mojom::FeatureState>
       notifications_feature_status_;
 };

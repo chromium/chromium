@@ -178,7 +178,7 @@ class MediaAnalyticsClientImpl : public MediaAnalyticsClient {
     std::move(callback).Run(std::move(diagnostics));
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> dbus_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observer_list_;
   base::WeakPtrFactory<MediaAnalyticsClientImpl> weak_ptr_factory_{this};
 };

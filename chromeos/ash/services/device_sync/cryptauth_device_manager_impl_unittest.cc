@@ -428,7 +428,7 @@ class TestCryptAuthDeviceManager : public CryptAuthDeviceManagerImpl {
  private:
   // Ownership is passed to |CryptAuthDeviceManager| super class when
   // SetSyncSchedulerForTest() is called.
-  raw_ptr<MockSyncScheduler, ExperimentalAsh> scoped_sync_scheduler_;
+  raw_ptr<MockSyncScheduler> scoped_sync_scheduler_;
 
   // Stores the pointer of |scoped_sync_scheduler_| after ownership is passed to
   // the super class.

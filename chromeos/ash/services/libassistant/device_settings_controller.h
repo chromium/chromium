@@ -72,7 +72,7 @@ class DeviceSettingsController
   void AddSetting(std::unique_ptr<Setting> setting);
 
   std::vector<std::unique_ptr<Setting>> settings_;
-  raw_ptr<AssistantClient, ExperimentalAsh> assistant_client_ = nullptr;
+  raw_ptr<AssistantClient> assistant_client_ = nullptr;
   mojo::Remote<mojom::DeviceSettingsDelegate> remote_;
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<DeviceSettingsController> weak_factory_{this};

@@ -107,9 +107,8 @@ class ZramWritebackControllerTest : public testing::Test {
 
  private:
   // Capture only for the mock.
-  raw_ptr<MockZramWritebackPolicy, DanglingUntriaged | ExperimentalAsh> policy_;
-  raw_ptr<MockZramWritebackBackend, DanglingUntriaged | ExperimentalAsh>
-      backend_;
+  raw_ptr<MockZramWritebackPolicy, DanglingUntriaged> policy_;
+  raw_ptr<MockZramWritebackBackend, DanglingUntriaged> backend_;
 
   std::unique_ptr<ZramWritebackController> controller_;
 

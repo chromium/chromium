@@ -89,8 +89,7 @@ class ActionService : public AsyncServiceDriver {
   // AsyncServiceDriver:
   void StartCQ(::grpc::ServerCompletionQueue* cq) override;
 
-  raw_ptr<assistant_client::ActionModule, ExperimentalAsh> action_module_ =
-      nullptr;
+  raw_ptr<assistant_client::ActionModule> action_module_ = nullptr;
 
   // Map with the concatenated |convesation_id| and |interaction_id| from
   // |HandleActionRequest| as the key. The value is a pair of the action name
@@ -102,8 +101,7 @@ class ActionService : public AsyncServiceDriver {
       alive_actions_;
 
   // Owned by `GrpcServicesInitializer`.
-  raw_ptr<GrpcLibassistantClient, ExperimentalAsh> libassistant_client_ =
-      nullptr;
+  raw_ptr<GrpcLibassistantClient> libassistant_client_ = nullptr;
 
   const std::string assistant_service_address_;
 

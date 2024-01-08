@@ -142,12 +142,12 @@ class CryptAuthV2EnrollmentManagerImpl
   void AddV1UserKeyPairToRegistryIfNecessary();
 
   cryptauthv2::ClientAppMetadata client_app_metadata_;
-  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_;
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
-  raw_ptr<CryptAuthGCMManager, ExperimentalAsh> gcm_manager_;
-  raw_ptr<CryptAuthScheduler, ExperimentalAsh> scheduler_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<CryptAuthKeyRegistry> key_registry_;
+  raw_ptr<CryptAuthClientFactory> client_factory_;
+  raw_ptr<CryptAuthGCMManager> gcm_manager_;
+  raw_ptr<CryptAuthScheduler> scheduler_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<base::Clock> clock_;
 
   bool initial_v1_and_v2_user_key_pairs_disagree_ = false;
 

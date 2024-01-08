@@ -335,8 +335,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION) AttestationFlow {
       CertificateCallback callback,
       const ::attestation::FinishCertificateRequestReply& reply);
 
-  raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
-      attestation_client_;
+  raw_ptr<AttestationClient, DanglingUntriaged> attestation_client_;
   std::unique_ptr<ServerProxy> server_proxy_;
 
   base::TimeDelta ready_timeout_;

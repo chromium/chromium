@@ -72,7 +72,7 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
                                    const std::string& unwrap_result);
 
   // Not owned by this instance.
-  raw_ptr<EasyUnlockClient, ExperimentalAsh> dbus_client_;
+  raw_ptr<EasyUnlockClient> dbus_client_;
 
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
 };

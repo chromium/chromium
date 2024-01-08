@@ -1655,7 +1655,7 @@ class PpdMetadataManagerBase : public ::testing::Test {
   base::SimpleTestClock clock_;
   // Class under test.
   std::unique_ptr<PpdMetadataManager> manager_;
-  raw_ptr<FakePrinterConfigCache, ExperimentalAsh> cache_;
+  raw_ptr<FakePrinterConfigCache> cache_;
 };
 
 class PpdMetadataManagerForStagingChannelTest : public PpdMetadataManagerBase {

@@ -156,16 +156,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   bool network_properties_changed_;
 
   // Unowned associated (global or test) instance.
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Unowned associated (global or test) instance.
-  raw_ptr<ManagedNetworkConfigurationHandler, ExperimentalAsh>
-      managed_network_config_handler_;
+  raw_ptr<ManagedNetworkConfigurationHandler> managed_network_config_handler_;
 
   // Can be set for testing.
-  raw_ptr<base::Clock, ExperimentalAsh> testing_clock_;
+  raw_ptr<base::Clock> testing_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

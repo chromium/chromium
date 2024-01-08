@@ -390,7 +390,7 @@ class ShillServiceClientImpl : public ShillServiceClient {
         std::move(callback));
   }
 
-  raw_ptr<dbus::Bus, ExperimentalAsh> bus_;
+  raw_ptr<dbus::Bus> bus_;
   HelperMap helpers_;
   base::WeakPtrFactory<ShillServiceClientImpl> weak_ptr_factory_{this};
 };

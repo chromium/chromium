@@ -78,7 +78,7 @@ class AttestationFlowTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<base::RunLoop, ExperimentalAsh> run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 };
 
 // Same as `AttestationFlowTest` except this is used to run death tests in

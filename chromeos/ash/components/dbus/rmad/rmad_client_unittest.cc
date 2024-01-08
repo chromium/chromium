@@ -221,12 +221,11 @@ class RmadClientTest : public testing::Test {
   // |client_|.
   std::map<std::string, dbus::ObjectProxy::SignalCallback> signal_callbacks_;
 
-  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<RmadClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  raw_ptr<dbus::Response, DanglingUntriaged | ExperimentalAsh> response_ =
-      nullptr;
+  raw_ptr<dbus::Response, DanglingUntriaged> response_ = nullptr;
   // Mock D-Bus objects for |client_| to interact with.
   scoped_refptr<dbus::MockBus> mock_bus_;
   scoped_refptr<dbus::MockObjectProxy> mock_proxy_;
@@ -369,7 +368,7 @@ class TestObserver : public RmadClient::Observer {
   }
 
  private:
-  raw_ptr<RmadClient, ExperimentalAsh> client_;  // Not owned.
+  raw_ptr<RmadClient> client_;  // Not owned.
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;

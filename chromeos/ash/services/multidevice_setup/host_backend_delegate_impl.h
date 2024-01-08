@@ -97,10 +97,9 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
       bool attempted_to_enable,
       device_sync::mojom::NetworkRequestResult result_code);
 
-  raw_ptr<EligibleHostDevicesProvider, ExperimentalAsh>
-      eligible_host_devices_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
+  raw_ptr<EligibleHostDevicesProvider> eligible_host_devices_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // The most-recent snapshot of the host on the back-end.

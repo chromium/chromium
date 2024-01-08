@@ -98,7 +98,7 @@ class NearbyConnection : public Connection,
   // Called when a FilePayloadListener remote endpoint is disconnected.
   void OnFilePayloadListenerRemoteDisconnected();
 
-  raw_ptr<mojom::NearbyConnector, ExperimentalAsh> nearby_connector_;
+  raw_ptr<mojom::NearbyConnector> nearby_connector_;
   mojo::Receiver<mojom::NearbyMessageReceiver> message_receiver_{this};
   mojo::Remote<mojom::NearbyMessageSender> message_sender_;
   mojo::Remote<mojom::NearbyFilePayloadHandler> file_payload_handler_;

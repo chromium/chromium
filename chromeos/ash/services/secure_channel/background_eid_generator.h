@@ -74,7 +74,7 @@ class BackgroundEidGenerator {
       const std::vector<cryptauth::BeaconSeed>& beacon_seeds) const;
 
   std::unique_ptr<RawEidGenerator> raw_eid_generator_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace ash::secure_channel

@@ -54,15 +54,13 @@ class TetherDisconnectorImpl : public TetherDisconnector {
                                       base::OnceClosure success_callback,
                                       StringErrorCallback error_callback);
 
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<WifiHotspotDisconnector, ExperimentalAsh> wifi_hotspot_disconnector_;
-  raw_ptr<DisconnectTetheringRequestSender, ExperimentalAsh>
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<WifiHotspotDisconnector> wifi_hotspot_disconnector_;
+  raw_ptr<DisconnectTetheringRequestSender>
       disconnect_tethering_request_sender_;
-  raw_ptr<TetherConnector, ExperimentalAsh> tether_connector_;
-  raw_ptr<DeviceIdTetherNetworkGuidMap, ExperimentalAsh>
-      device_id_tether_network_guid_map_;
-  raw_ptr<TetherSessionCompletionLogger, ExperimentalAsh>
-      tether_session_completion_logger_;
+  raw_ptr<TetherConnector> tether_connector_;
+  raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;
+  raw_ptr<TetherSessionCompletionLogger> tether_session_completion_logger_;
 
   base::WeakPtrFactory<TetherDisconnectorImpl> weak_ptr_factory_{this};
 };

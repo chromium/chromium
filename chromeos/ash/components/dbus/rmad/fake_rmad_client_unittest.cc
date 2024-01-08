@@ -49,7 +49,7 @@ class FakeRmadClientTest : public testing::Test {
     return google::protobuf::down_cast<FakeRmadClient*>(client_.get());
   }
 
-  raw_ptr<RmadClient, DanglingUntriaged | ExperimentalAsh> client_ =
+  raw_ptr<RmadClient, DanglingUntriaged> client_ =
       nullptr;  // Unowned convenience pointer.
   // A message loop to emulate asynchronous behavior.
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -167,7 +167,7 @@ class TestObserver : public RmadClient::Observer {
   }
 
  private:
-  raw_ptr<RmadClient, ExperimentalAsh> client_;  // Not owned.
+  raw_ptr<RmadClient> client_;  // Not owned.
   int num_error_ = 0;
   rmad::RmadErrorCode last_error_ = rmad::RmadErrorCode::RMAD_ERROR_NOT_SET;
   int num_calibration_progress_ = 0;

@@ -183,7 +183,7 @@ class PatchPanelClientImpl : public PatchPanelClient {
   }
 
   // D-Bus proxy for the PatchPanel daemon, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> patchpanel_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> patchpanel_proxy_ = nullptr;
 
   // List of observers for dbus signals.
   base::ObserverList<Observer> observer_list_;

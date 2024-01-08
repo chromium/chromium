@@ -94,7 +94,7 @@ class DevicePairingHandlerImpl
   bool is_canceling_pairing_ = false;
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
-  raw_ptr<FastPairDelegate, ExperimentalAsh> fast_pair_delegate_;
+  raw_ptr<FastPairDelegate> fast_pair_delegate_;
 
   base::WeakPtrFactory<DevicePairingHandlerImpl> weak_ptr_factory_{this};
 };

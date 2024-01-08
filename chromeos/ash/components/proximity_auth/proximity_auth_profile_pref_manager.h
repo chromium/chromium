@@ -75,13 +75,13 @@ class ProximityAuthProfilePrefManager {
  private:
   // Contains perferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   // The account id of the current profile.
   AccountId account_id_;
 
   // Used to determine the FeatureState of Smart Lock.
-  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
+  raw_ptr<ash::multidevice_setup::MultiDeviceSetupClient>
       multidevice_setup_client_ = nullptr;
 
   base::WeakPtrFactory<ProximityAuthProfilePrefManager> weak_ptr_factory_{this};

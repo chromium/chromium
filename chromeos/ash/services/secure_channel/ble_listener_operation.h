@@ -82,7 +82,7 @@ class BleListenerOperation
       std::unique_ptr<AuthenticatedChannel> authenticated_channel);
   void OnConnectionFailure(BleListenerFailureType failure_type);
 
-  raw_ptr<BleConnectionManager, ExperimentalAsh> ble_connection_manager_;
+  raw_ptr<BleConnectionManager> ble_connection_manager_;
 
   bool is_attempt_active_ = false;
   base::WeakPtrFactory<BleListenerOperation> weak_ptr_factory_{this};

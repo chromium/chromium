@@ -39,7 +39,7 @@ class PciguardClientImpl : public PciguardClient {
                          const std::string& signal_name,
                          bool success);
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> pci_guard_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> pci_guard_proxy_ = nullptr;
   base::WeakPtrFactory<PciguardClientImpl> weak_ptr_factory_{this};
 };
 

@@ -65,8 +65,7 @@ class ConversationStateListenerImpl
                 ExperimentalAsh>
       conversation_observers_;
 
-  const raw_ptr<AudioInputController, ExperimentalAsh> audio_input_controller_ =
-      nullptr;
+  const raw_ptr<AudioInputController> audio_input_controller_ = nullptr;
 
   // The callbacks from Libassistant are called on a different sequence,
   // so this sequence checker ensures that no other methods are called on the

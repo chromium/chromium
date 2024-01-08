@@ -104,7 +104,7 @@ class LocalCameraClientObserver : public CameraClientObserver {
   }
 
  private:
-  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
 };
 
 // ash::system::StatisticsProvider::IsRunningOnVM() isn't available in unittest.

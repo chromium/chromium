@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ATTESTATION)
                              const ::attestation::GetCertificateReply& reply);
 
   ::attestation::ACAType aca_type_;
-  raw_ptr<AttestationClient, ExperimentalAsh> attestation_client_;
+  raw_ptr<AttestationClient> attestation_client_;
 
   base::TimeDelta ready_timeout_;
   base::TimeDelta retry_delay_;

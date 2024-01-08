@@ -65,7 +65,7 @@ class PendingConnectionRequest {
   }
 
  private:
-  raw_ptr<PendingConnectionRequestDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<PendingConnectionRequestDelegate> delegate_;
   ConnectionPriority connection_priority_;
 };
 

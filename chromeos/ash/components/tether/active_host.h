@@ -154,8 +154,8 @@ class ActiveHost {
       ActiveHostCallback active_host_callback,
       std::optional<multidevice::RemoteDeviceRef> active_host);
 
-  raw_ptr<TetherHostFetcher, ExperimentalAsh> tether_host_fetcher_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<TetherHostFetcher> tether_host_fetcher_;
+  raw_ptr<PrefService> pref_service_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

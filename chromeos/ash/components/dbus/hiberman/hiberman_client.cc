@@ -145,7 +145,7 @@ class HibermanClientImpl : public HibermanClient {
   std::string abort_reason_;
 
   // D-Bus proxy for hiberman, not owned.
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> proxy_ = nullptr;
   base::WeakPtrFactory<HibermanClientImpl> weak_factory_{this};
 };
 

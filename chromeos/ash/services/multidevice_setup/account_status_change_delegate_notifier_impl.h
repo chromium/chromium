@@ -138,12 +138,11 @@ class AccountStatusChangeDelegateNotifierImpl
   std::optional<mojom::HostStatus> host_status_from_most_recent_update_;
 
   mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<HostDeviceTimestampManager, ExperimentalAsh>
-      host_device_timestamp_manager_;
-  raw_ptr<OobeCompletionTracker, ExperimentalAsh> oobe_completion_tracker_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<HostDeviceTimestampManager> host_device_timestamp_manager_;
+  raw_ptr<OobeCompletionTracker> oobe_completion_tracker_;
+  raw_ptr<base::Clock> clock_;
 };
 
 }  // namespace multidevice_setup

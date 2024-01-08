@@ -75,7 +75,7 @@ class SingleClientProxy {
       base::OnceCallback<void(mojom::ConnectionMetadataPtr)> callback);
 
  private:
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace ash::secure_channel

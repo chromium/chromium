@@ -70,9 +70,9 @@ class TopLevelHostScanCache : public HostScanCache {
   void OnTimerFired(const std::string& tether_network_guid);
 
   std::unique_ptr<TimerFactory> timer_factory_;
-  raw_ptr<ActiveHost, ExperimentalAsh> active_host_;
-  raw_ptr<HostScanCache, ExperimentalAsh> network_host_scan_cache_;
-  raw_ptr<PersistentHostScanCache, ExperimentalAsh> persistent_host_scan_cache_;
+  raw_ptr<ActiveHost> active_host_;
+  raw_ptr<HostScanCache> network_host_scan_cache_;
+  raw_ptr<PersistentHostScanCache> persistent_host_scan_cache_;
 
   bool is_initializing_ = false;
   bool is_shutting_down_ = false;

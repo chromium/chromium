@@ -70,10 +70,8 @@ class NetworkTestHelper : public network_config::CrosNetworkConfigTestHelper {
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
 
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      primary_user_;
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh>
-      secondary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> secondary_user_;
 
   TestingPrefServiceSimple local_state_;
 };

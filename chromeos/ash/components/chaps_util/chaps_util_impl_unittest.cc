@@ -462,9 +462,9 @@ class FakeChapsSlotSession : public ChapsSlotSession {
   bool session_ok_ = true;
 
   // Unowned.
-  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
+  const raw_ptr<PK11SlotInfo> slot_;
   // Unowned.
-  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
+  const raw_ptr<PassedData> passed_data_;
 
   // Cached modulus of the generated public key so GetAttributeValue with
   // CKA_MODULUS is supported.
@@ -490,9 +490,9 @@ class FakeChapsSlotSessionFactory : public ChapsSlotSessionFactory {
 
  private:
   // Unowned.
-  const raw_ptr<PK11SlotInfo, ExperimentalAsh> slot_;
+  const raw_ptr<PK11SlotInfo> slot_;
   // Unowned.
-  const raw_ptr<PassedData, ExperimentalAsh> passed_data_;
+  const raw_ptr<PassedData> passed_data_;
 };
 
 // FakePkcs12Reader helper, by default it will call methods for the original

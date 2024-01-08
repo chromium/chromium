@@ -223,8 +223,7 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
 
   ~FakeDeviceLoader() override {}
 
-  raw_ptr<TestRemoteDeviceLoaderFactory, ExperimentalAsh>
-      remote_device_loader_factory_;
+  raw_ptr<TestRemoteDeviceLoaderFactory> remote_device_loader_factory_;
 
   void Load(RemoteDeviceCallback callback) override {
     remote_device_loader_factory_->QueueCallback(std::move(callback));

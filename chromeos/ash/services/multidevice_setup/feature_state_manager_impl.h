@@ -107,11 +107,10 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   // than UMA aggregation periods and don't change feature state.
   void LogFeatureStates() const;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<device_sync::DeviceSyncClient, ExperimentalAsh> device_sync_client_;
-  raw_ptr<AndroidSmsPairingStateTracker, ExperimentalAsh>
-      android_sms_pairing_state_tracker_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
+  raw_ptr<AndroidSmsPairingStateTracker> android_sms_pairing_state_tracker_;
   const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>
       global_state_feature_managers_;
 

@@ -191,14 +191,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsHost {
   // The path to the user's profile.
   const base::FilePath profile_path_;
 
-  const raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_;
-  const raw_ptr<MountObserver, DanglingUntriaged | ExperimentalAsh>
-      mount_observer_;
-  const raw_ptr<network::NetworkConnectionTracker, ExperimentalAsh>
-      network_connection_tracker_;
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
-  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
-      disk_mount_manager_;
+  const raw_ptr<Delegate, DanglingUntriaged> delegate_;
+  const raw_ptr<MountObserver, DanglingUntriaged> mount_observer_;
+  const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
+  const raw_ptr<const base::Clock> clock_;
+  const raw_ptr<ash::disks::DiskMountManager> disk_mount_manager_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
   std::unique_ptr<DriveFsAuth> account_token_delegate_;

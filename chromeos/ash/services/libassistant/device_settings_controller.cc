@@ -51,7 +51,7 @@ class Setting {
   DeviceSettingsDelegate& delegate() { return *delegate_; }
 
  private:
-  const raw_ref<DeviceSettingsDelegate, ExperimentalAsh> delegate_;
+  const raw_ref<DeviceSettingsDelegate> delegate_;
 };
 
 namespace {

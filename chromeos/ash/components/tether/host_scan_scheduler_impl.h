@@ -79,15 +79,15 @@ class HostScanSchedulerImpl : public HostScanScheduler,
       base::Clock* test_clock,
       scoped_refptr<base::TaskRunner> test_task_runner);
 
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
 
   NetworkStateHandlerScopedObservation network_state_handler_observer_{this};
 
-  raw_ptr<HostScanner, ExperimentalAsh> host_scanner_;
-  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<HostScanner> host_scanner_;
+  raw_ptr<session_manager::SessionManager> session_manager_;
 
   std::unique_ptr<base::OneShotTimer> host_scan_batch_timer_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::Time last_scan_batch_start_timestamp_;

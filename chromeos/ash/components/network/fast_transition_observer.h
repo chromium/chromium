@@ -35,7 +35,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
   // Callback used when prefs::kFastTransitionEnabled changes
   void OnPreferenceChanged(const std::string& pref_name);
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

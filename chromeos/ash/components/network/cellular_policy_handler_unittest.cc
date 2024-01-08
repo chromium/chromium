@@ -452,8 +452,7 @@ class CellularPolicyHandlerTest : public testing::Test {
 
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<CellularPolicyHandler, DanglingUntriaged | ExperimentalAsh>
-      cellular_policy_handler_;
+  raw_ptr<CellularPolicyHandler, DanglingUntriaged> cellular_policy_handler_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple device_prefs_;

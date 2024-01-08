@@ -1087,7 +1087,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       observer.OnPacketCaptureStopped();
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> debugdaemon_proxy_;
+  raw_ptr<dbus::ObjectProxy> debugdaemon_proxy_;
   std::unique_ptr<chromeos::PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;

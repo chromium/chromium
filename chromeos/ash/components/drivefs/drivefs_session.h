@@ -106,17 +106,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) DriveFsSession
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  const raw_ptr<base::OneShotTimer, ExperimentalAsh> timer_;
+  const raw_ptr<base::OneShotTimer> timer_;
   std::unique_ptr<DiskMounter> disk_mounter_;
   std::unique_ptr<DriveFsConnection> connection_;
-  const raw_ptr<MountObserver, ExperimentalAsh> observer_;
+  const raw_ptr<MountObserver> observer_;
 
   // The path where DriveFS is mounted.
   base::FilePath mount_path_;
 
   // Mojo interface to the DriveFS process.
-  raw_ptr<mojom::DriveFs, DanglingUntriaged | ExperimentalAsh> drivefs_ =
-      nullptr;
+  raw_ptr<mojom::DriveFs, DanglingUntriaged> drivefs_ = nullptr;
 
   bool drivefs_has_started_ = false;
   bool drivefs_has_terminated_ = false;

@@ -236,7 +236,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   static constexpr CK_FLAGS kOpenSessionFlags =
       CKF_RW_SESSION | CKF_SERIAL_SESSION;
 
-  raw_ptr<void, ExperimentalAsh> chaps_handle_ = nullptr;
+  raw_ptr<void> chaps_handle_ = nullptr;
   ChapsFunctions functions_;
 
   const CK_SLOT_ID slot_id_;

@@ -146,7 +146,7 @@ class DeviceToDeviceAuthenticator : public Authenticator,
   // The connection to the remote device. It is expected to be in the CONNECTED
   // state at all times during authentication.
   // Not owned, and must outlive this instance.
-  const raw_ptr<Connection, ExperimentalAsh> connection_;
+  const raw_ptr<Connection> connection_;
 
   // Handles SecureMessage crypto operations.
   std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate_;

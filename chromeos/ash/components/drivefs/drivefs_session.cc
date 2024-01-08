@@ -71,8 +71,7 @@ class DiskMounterImpl : public DiskMounter {
     std::move(callback_).Run(mount_point_->mount_path());
   }
 
-  const raw_ptr<ash::disks::DiskMountManager, ExperimentalAsh>
-      disk_mount_manager_;
+  const raw_ptr<ash::disks::DiskMountManager> disk_mount_manager_;
   base::OnceCallback<void(base::FilePath)> callback_;
   // The path passed to cros-disks to mount.
   std::string source_path_;

@@ -161,9 +161,9 @@ class CryptAuthV2EnrollerImpl : public CryptAuthV2Enroller {
 
   void FinishAttempt(CryptAuthEnrollmentResult::ResultCode result_code);
 
-  raw_ptr<CryptAuthKeyRegistry, ExperimentalAsh> key_registry_;
+  raw_ptr<CryptAuthKeyRegistry> key_registry_;
 
-  raw_ptr<CryptAuthClientFactory, ExperimentalAsh> client_factory_;
+  raw_ptr<CryptAuthClientFactory> client_factory_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

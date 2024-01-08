@@ -3785,7 +3785,7 @@ TEST_F(CrosNetworkConfigTest, RequestNetworkScan) {
           },
           &wifi_scanning_));
     }
-    raw_ptr<CrosNetworkConfig, ExperimentalAsh> cros_network_config_;
+    raw_ptr<CrosNetworkConfig> cros_network_config_;
     bool wifi_scanning_ = false;
   };
   ScanningObserver observer(cros_network_config());

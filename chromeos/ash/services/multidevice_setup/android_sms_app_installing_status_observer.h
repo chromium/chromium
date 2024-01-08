@@ -71,11 +71,10 @@ class AndroidSmsAppInstallingStatusObserver
   bool DoesFeatureStateAllowInstallation();
   void UpdatePwaInstallationState();
 
-  raw_ptr<HostStatusProvider, ExperimentalAsh> host_status_provider_;
-  raw_ptr<FeatureStateManager, ExperimentalAsh> feature_state_manager_;
-  raw_ptr<AndroidSmsAppHelperDelegate, ExperimentalAsh>
-      android_sms_app_helper_delegate_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<HostStatusProvider> host_status_provider_;
+  raw_ptr<FeatureStateManager> feature_state_manager_;
+  raw_ptr<AndroidSmsAppHelperDelegate> android_sms_app_helper_delegate_;
+  raw_ptr<PrefService> pref_service_;
   base::WeakPtrFactory<AndroidSmsAppInstallingStatusObserver> weak_ptr_factory_{
       this};
 };

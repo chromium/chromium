@@ -83,7 +83,7 @@ class HermesManagerClientImpl : public HermesManagerClient {
     }
   }
 
-  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> object_proxy_;
+  raw_ptr<dbus::ObjectProxy> object_proxy_;
   std::unique_ptr<Properties> properties_;
   base::WeakPtrFactory<HermesManagerClientImpl> weak_ptr_factory_{this};
 };

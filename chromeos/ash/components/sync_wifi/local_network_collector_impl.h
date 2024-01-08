@@ -110,11 +110,9 @@ class LocalNetworkCollectorImpl
   GetNetworkFromProto(const sync_pb::WifiConfigurationSpecifics& proto);
   void OnFixAutoconnectComplete(bool success, const std::string& error);
 
-  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<chromeos::network_config::mojom::CrosNetworkConfig, DanglingUntriaged>
       cros_network_config_;
-  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged | ExperimentalAsh>
-      metrics_recorder_;
+  raw_ptr<SyncedNetworkMetricsLogger, DanglingUntriaged> metrics_recorder_;
   mojo::Receiver<chromeos::network_config::mojom::CrosNetworkConfigObserver>
       cros_network_config_observer_receiver_{this};
   std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
