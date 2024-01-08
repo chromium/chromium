@@ -758,6 +758,23 @@ export class DirectoryTreePageObject {
   }
 
   /**
+   * Wait for the expand icon under the tree item to show by its label.
+   *
+   * @param {string} label Label of the tree item.
+   * @return {!Promise<void>}
+   */
+  async waitForItemExpandIconToShowByLabel(label) {
+    const expandIcon =
+        this.selectors_.expandIcon(this.selectors_.itemByLabel(label));
+    const element = await this.remoteCall_.waitForElementStyles(
+        this.appId_,
+        expandIcon,
+        ['visibility'],
+    );
+    chrome.test.assertEq('visible', element.styles['visibility']);
+  }
+
+  /**
    * Wait for the expand icon under the tree item to hide by its label.
    *
    * @param {string} label Label of the tree item.

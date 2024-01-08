@@ -400,7 +400,7 @@ export async function mountCrostini(
   // Mount crostini, and ensure real root and files are shown.
   await directoryTree.selectPlaceholderItemByType('crostini');
   await directoryTree.waitForItemByType('crostini');
-  const files = TestEntryInfo.getExpectedRows(BASIC_CROSTINI_ENTRY_SET);
+  const files = TestEntryInfo.getExpectedRows(initialEntries);
   await remoteCall.waitForFiles(appId, files);
 }
 

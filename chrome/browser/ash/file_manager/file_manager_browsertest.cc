@@ -1866,12 +1866,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("mountCrostini").NewDirectoryTree(),
+        TestCase("mountCrostiniWithSubFolder").NewDirectoryTree(),
         TestCase("enableDisableCrostini").NewDirectoryTree(),
         TestCase("sharePathWithCrostini")
             .NewDirectoryTree()
             .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),
         // Section end - browser tests for new directory tree
         TestCase("mountCrostini"),
+        TestCase("mountCrostiniWithSubFolder"),
         TestCase("enableDisableCrostini"),
         TestCase("sharePathWithCrostini")
             .FeatureIds({"screenplay-122c00f8-9842-4666-8ca0-b6bf47454551"}),

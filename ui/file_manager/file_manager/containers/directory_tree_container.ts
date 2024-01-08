@@ -604,9 +604,21 @@ export class DirectoryTreeContainer {
       element.expanded = true;
       return;
     }
-    // Only read the sub entries when it's the top level item (navigation root).
-    // For other items, its children will be read when it's expanded.
-    if (navigationRoot && navigationRoot.type !== NavigationType.SHORTCUT) {
+    // Check if we need to read sub directories to check directory children or
+    // not, we are doing this to see if we need to show expand icon or not.
+    let shouldCheckDirectoryChildren: boolean;
+    if (navigationRoot) {
+      // For navigation root items, we always check except for Shortcut items.
+      shouldCheckDirectoryChildren =
+          navigationRoot.type !== NavigationType.SHORTCUT;
+    } else {
+      // For other items, we only check if it's parent is expanded. Usually
+      // non-root item's children directory will be checked when expanded, but
+      // volume could be added when it's already expanded (e.g. Crostini/Android
+      // can be mounted when MyFiles is expanded).
+      shouldCheckDirectoryChildren = !!(element.parentItem?.expanded);
+    }
+    if (shouldCheckDirectoryChildren) {
       this.store_.dispatch(readSubDirectoriesToCheckDirectoryChildren(entry));
     }
   }
