@@ -24,6 +24,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/ValuesReturned.java",
   ]
   deps = [
+    "//base:base_cached_flags_java",
     "//base:base_java",
     "//build:chromeos_buildflags",
     "//build/android:build_java",

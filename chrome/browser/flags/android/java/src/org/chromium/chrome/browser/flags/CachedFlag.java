@@ -8,9 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Flag;
+import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +72,7 @@ public class CachedFlag extends Flag {
                     CachedFlagsSafeMode.getInstance()
                             .isEnabled(mFeatureName, preferenceName, mDefaultValue);
             if (flag == null) {
-                SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
+                SharedPreferencesManager prefs = CachedFlagsSharedPreferences.getInstance();
                 if (prefs.contains(preferenceName)) {
                     flag = prefs.readBoolean(preferenceName, false);
                 } else {
@@ -120,12 +119,12 @@ public class CachedFlag extends Flag {
     void cacheFeature() {
         boolean isEnabledInNative = ChromeFeatureList.isEnabled(mFeatureName);
 
-        ChromeSharedPreferences.getInstance()
+        CachedFlagsSharedPreferences.getInstance()
                 .writeBoolean(getSharedPreferenceKey(), isEnabledInNative);
     }
 
     String getSharedPreferenceKey() {
-        return ChromePreferenceKeys.FLAGS_CACHED.createKey(mFeatureName);
+        return CachedFlagsSharedPreferences.FLAGS_CACHED.createKey(mFeatureName);
     }
 
     /**
@@ -145,8 +144,8 @@ public class CachedFlag extends Flag {
     }
 
     public static void resetDiskForTesting() {
-        ChromeSharedPreferences.getInstance()
-                .removeKeysWithPrefix(ChromePreferenceKeys.FLAGS_CACHED);
+        CachedFlagsSharedPreferences.getInstance()
+                .removeKeysWithPrefix(CachedFlagsSharedPreferences.FLAGS_CACHED);
     }
 
     /** Create a Map of feature names -> {@link CachedFlag} from multiple lists of CachedFlags. */

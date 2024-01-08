@@ -4501,6 +4501,17 @@ if (is_android) {
     ]
   }
 
+  android_library("base_cached_flags_java") {
+    deps = [
+      ":base_java",
+      ":base_shared_preferences_java",
+      "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
+
+    sources = [ "android/java/src/org/chromium/base/cached_flags/CachedFlagsSharedPreferences.java" ]
+  }
+
   android_aidl("process_launcher_aidl") {
     import_include = [ "android/java/src" ]
     sources = [
