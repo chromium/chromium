@@ -14650,7 +14650,7 @@
             ]
         }
     ],
-    "ReadAloudReadabilityCheckOnly": [
+    "ReadAloudClankStudy": [
         {
             "platforms": [
                 "android"
@@ -14660,9 +14660,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ReadAloud"
-                    ],
-                    "disable_features": [
-                        "ReadAloudPlayback"
                     ]
                 }
             ]
