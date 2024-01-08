@@ -31,7 +31,7 @@ template <typename... Args>
                                                    const Args&... args) {
   // TODO(crbug.com/1371963): Implement in terms of `std::vformat()`,
   // `absl::FormatUntyped()`, or similar.
-  return StringPrintf(format.data(), args...);
+  return StringPrintf(std::string(format).c_str(), args...);
 }
 
 // If possible, guide users to use `StringPrintf()` instead of
