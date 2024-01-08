@@ -10,7 +10,7 @@ import {getKeyModifiers, queryRequiredElement} from '../../../common/js/dom_util
 import {getFileTypeForName} from '../../../common/js/file_types_base.js';
 import type {TypeList} from '../../../common/js/files_app_state.js';
 import {str} from '../../../common/js/translations.js';
-import {DialogType} from '../../../externs/ts/state.js';
+import {DialogType} from '../../../state/state.js';
 import {FileListModel} from '../file_list_model.js';
 
 /**

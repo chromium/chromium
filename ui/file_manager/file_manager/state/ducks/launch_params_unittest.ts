@@ -4,7 +4,7 @@
 
 import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {DialogType, type LaunchParams} from '../../externs/ts/state.js';
+import {DialogType, type LaunchParams} from '../../state/state.js';
 import {getEmptyState, getStore, type Store} from '../store.js';
 
 import {setLaunchParameters} from './launch_params.js';

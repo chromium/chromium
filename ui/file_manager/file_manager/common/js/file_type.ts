@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {FileData} from '../../externs/ts/state.js';
+import type {FileData} from '../../state/state.js';
 
 import {getFileTypeForName, getFinalExtension} from './file_types_base.js';
 import {FileExtensionType, MIME_TO_TYPE} from './file_types_data.js';

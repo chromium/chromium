@@ -12,8 +12,8 @@ import {isCrosComponentsEnabled} from '../../common/js/flags.js';
 import {str, strf} from '../../common/js/translations.js';
 import {canBulkPinningCloudPanelShow} from '../../common/js/util.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {type State} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
+import {type State} from '../../state/state.js';
 import {getStore, type Store} from '../../state/store.js';
 import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 

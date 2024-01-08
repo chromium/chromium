@@ -7,9 +7,9 @@ import '../widgets/xf_breadcrumb.js';
 import {recordUserAction} from '../common/js/metrics.js';
 import {str} from '../common/js/translations.js';
 import {SEARCH_RESULTS_KEY} from '../common/js/url_constants.js';
-import {type PathComponent, PropStatus, type State} from '../externs/ts/state.js';
 import {changeDirectory} from '../state/ducks/current_directory.js';
 import type {FileKey} from '../state/file_key.js';
+import {type PathComponent, PropStatus, type State} from '../state/state.js';
 import {getStore, getVolumeType, type Store} from '../state/store.js';
 import {type BreadcrumbClickedEvent, XfBreadcrumb} from '../widgets/xf_breadcrumb.js';
 

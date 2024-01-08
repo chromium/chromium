@@ -13,11 +13,11 @@ import {str} from '../../common/js/translations.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import {PropStatus} from '../../externs/ts/state.js';
 import {FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED, ODFS_EXTENSION_ID} from '../../foreground/js/constants.js';
 import {clearSearch, updateSearch} from '../../state/ducks/search.js';
 import {convertVolumeInfoAndMetadataToVolume} from '../../state/ducks/volumes.js';
 import {createFakeVolumeMetadata, setUpFileManagerOnWindow, setupStore} from '../../state/for_tests.js';
+import {PropStatus} from '../../state/state.js';
 import {getEmptyState, getStore} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';

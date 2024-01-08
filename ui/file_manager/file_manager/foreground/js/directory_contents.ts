@@ -17,9 +17,9 @@ import {createTrashReaders} from '../../common/js/trash.js';
 import {FileErrorToDomError} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {SearchLocation, type SearchOptions} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {getDefaultSearchOptions} from '../../state/ducks/search.js';
+import {SearchLocation, type SearchOptions} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
 import {ACTIONS_MODEL_METADATA_PREFETCH_PROPERTY_NAMES, CROSTINI_CONNECT_ERR, DLP_METADATA_PREFETCH_PROPERTY_NAMES, FILE_SELECTION_METADATA_PREFETCH_PROPERTY_NAMES, LIST_CONTAINER_METADATA_PREFETCH_PROPERTY_NAMES} from './constants.js';

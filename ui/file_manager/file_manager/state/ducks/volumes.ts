@@ -9,10 +9,10 @@ import {str} from '../../common/js/translations.js';
 import type {GetActionFactoryPayload} from '../../common/js/util.js';
 import {RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {type FileKey, PropStatus, type State, type Volume, type VolumeId} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {Slice} from '../../lib/base_store.js';
+import {type FileKey, PropStatus, type State, type Volume, type VolumeId} from '../../state/state.js';
 import {getEntry, getFileData} from '../store.js';
 
 import {cacheEntries, getMyFiles, updateFileDataInPlace} from './all_entries.js';

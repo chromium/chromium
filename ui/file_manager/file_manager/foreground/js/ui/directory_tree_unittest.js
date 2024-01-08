@@ -13,7 +13,7 @@ import {MockDirectoryEntry, MockFileSystem} from '../../../common/js/mock_entry.
 import {waitUntil} from '../../../common/js/test_error_reporting.js';
 import {str} from '../../../common/js/translations.js';
 import {RootType, VolumeType} from '../../../common/js/volume_manager_types.js';
-import {DialogType} from '../../../externs/ts/state.js';
+import {DialogType} from '../../../state/state.js';
 import {DirectoryModel} from '../directory_model.js';
 import {createFakeAndroidAppListModel} from '../fake_android_app_list_model.js';
 import {MetadataModel} from '../metadata/metadata_model.js';

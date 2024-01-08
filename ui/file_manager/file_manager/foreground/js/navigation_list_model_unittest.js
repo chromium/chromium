@@ -15,7 +15,7 @@ import {str} from '../../common/js/translations.js';
 import {TrashRootEntry} from '../../common/js/trash.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
+import {DialogType} from '../../state/state.js';
 
 import {AndroidAppListModel} from './android_app_list_model.js';
 import {ODFS_EXTENSION_ID} from './constants.js';

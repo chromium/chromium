@@ -10,8 +10,8 @@ import {str} from '../../common/js/translations.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
 import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
+import {DialogType} from '../../state/state.js';
 
 import type {FileFilter} from './directory_contents.js';
 import type {DirectoryModel} from './directory_model.js';

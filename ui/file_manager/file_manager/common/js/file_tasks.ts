@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {FileData} from '../../externs/ts/state.js';
 import {TaskHistory} from '../../foreground/js/task_history.js';
+import type {FileData} from '../../state/state.js';
 
 import {getIcon} from './file_type.js';
 import {str} from './translations.js';

@@ -15,11 +15,11 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {PropStatus, type State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {setUpFileManagerOnWindow} from '../../state/for_tests.js';
+import {PropStatus, type State} from '../../state/state.js';
 import {getEmptyState, getStore, waitForState} from '../../state/store.js';
 
 import {DirectoryModel} from './directory_model.js';

@@ -8,9 +8,9 @@ import {getTreeItemEntry, isFakeEntry, isInteractiveVolume, isSameEntry, isSameV
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import type {FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {State} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {State} from '../../state/state.js';
 import {getFileData} from '../../state/store.js';
 import {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';

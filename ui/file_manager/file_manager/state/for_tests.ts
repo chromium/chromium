@@ -7,7 +7,6 @@ import {assertDeepEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import type {Crostini} from '../background/js/crostini.js';
 import {MockVolumeManager} from '../background/js/mock_volume_manager.js';
 import {FilesAppDirEntry} from '../externs/files_app_entry_interfaces.js';
-import {DialogType, type FileKey, PropStatus, type State} from '../externs/ts/state.js';
 import type {VolumeInfo} from '../externs/volume_info.js';
 import {DirectoryTreeNamingController} from '../foreground/js/directory_tree_naming_controller.js';
 import {FakeFileSelectionHandler} from '../foreground/js/fake_file_selection_handler.js';
@@ -19,6 +18,7 @@ import type {FileManagerUI} from '../foreground/js/ui/file_manager_ui.js';
 
 import {type EntryMetadata, updateMetadata} from './ducks/all_entries.js';
 import {changeDirectory, updateDirectoryContent, updateSelection} from './ducks/current_directory.js';
+import {DialogType, type FileKey, PropStatus, type State} from './state.js';
 import {getEmptyState, getStore, type StateSelector, type Store, waitForState} from './store.js';
 
 /**

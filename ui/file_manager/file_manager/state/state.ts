@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import {MetadataItem} from '../../foreground/js/metadata/metadata_item.js';
-import {FilesAppEntry} from '../files_app_entry_interfaces.js';
+import {RootType, VolumeType} from '../common/js/volume_manager_types.js';
+import {FilesAppEntry} from '../externs/files_app_entry_interfaces.js';
+import {MetadataItem} from '../foreground/js/metadata/metadata_item.js';
 
 /**
  * List of dialog types.

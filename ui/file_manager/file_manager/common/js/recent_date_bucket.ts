@@ -6,7 +6,7 @@
  * @fileoverview Recent date bucket definition and util functions.
  */
 
-import {SearchRecency} from '../../externs/ts/state.js';
+import {SearchRecency} from '../../state/state.js';
 
 import {getLocaleBasedWeekStart} from './translations.js';
 

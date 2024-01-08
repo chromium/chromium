@@ -9,7 +9,7 @@ import {isSameEntry} from '../../common/js/entry_utils.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {State} from '../../externs/ts/state.js';
+import type {State} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
 import type {DirectoryChangeEvent} from './directory_model.js';

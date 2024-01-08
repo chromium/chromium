@@ -22,11 +22,11 @@ import {deleteIsForever, RestoreFailedType, RestoreFailedTypesUMA, RestoreFailed
 import {isNullOrUndefined, visitURL} from '../../common/js/util.js';
 import {FileSystemType, isRecentArcEntry, RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeInfo} from '../../externs/volume_info.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {readSubDirectories, updateFileData} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
+import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 import type {XfTree} from '../../widgets/xf_tree.js';
 import type {XfTreeItem} from '../../widgets/xf_tree_item.js';

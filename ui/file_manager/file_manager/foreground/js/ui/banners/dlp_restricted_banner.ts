@@ -4,7 +4,7 @@
 
 import {str} from '../../../../common/js/translations.js';
 import {RootType} from '../../../../common/js/volume_manager_types.js';
-import {DialogType} from '../../../../externs/ts/state.js';
+import {DialogType} from '../../../../state/state.js';
 
 import {getTemplate} from './dlp_restricted_banner.html.js';
 import {StateBanner} from './state_banner.js';

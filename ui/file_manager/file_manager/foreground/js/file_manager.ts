@@ -34,7 +34,6 @@ import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, RootType, VolumeType} from '../
 import {DirectoryTreeContainer} from '../../containers/directory_tree_container.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import {DialogType, PropStatus, SearchLocation} from '../../externs/ts/state.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {updateBulkPinProgress} from '../../state/ducks/bulk_pinning.js';
 import {updateDeviceConnectionState} from '../../state/ducks/device.js';
@@ -44,6 +43,7 @@ import {updatePreferences} from '../../state/ducks/preferences.js';
 import {getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {driveRootEntryListKey, trashRootKey} from '../../state/ducks/volumes.js';
+import {DialogType, PropStatus, SearchLocation} from '../../state/state.js';
 import {getEmptyState, getEntry, getStore} from '../../state/store.js';
 import {isXfTree} from '../../widgets/xf_tree_util.js';
 

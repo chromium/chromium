@@ -17,8 +17,8 @@ import {DirectoryTreeContainer} from '../../../containers/directory_tree_contain
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
 import {FilesAppEntry} from '../../../externs/files_app_entry_interfaces.js';
-import {DialogType} from '../../../externs/ts/state.js';
 import type {VolumeManager} from '../../../externs/volume_manager.js';
+import {DialogType} from '../../../state/state.js';
 import {XfCloudPanel} from '../../../widgets/xf_cloud_panel.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';
 import {XfDlpRestrictionDetailsDialog} from '../../../widgets/xf_dlp_restriction_details_dialog.js';
@@ -54,6 +54,7 @@ import {MultiMenu} from './multi_menu.js';
 import {MultiMenuButton} from './multi_menu_button.js';
 import {ProgressCenterPanel} from './progress_center_panel.js';
 import {ProvidersMenu} from './providers_menu.js';
+
 
 
 /**

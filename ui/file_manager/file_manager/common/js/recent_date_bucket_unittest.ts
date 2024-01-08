@@ -5,7 +5,7 @@
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {SearchRecency} from '../../externs/ts/state.js';
+import {SearchRecency} from '../../state/state.js';
 
 import {getEarliestTimestamp, getRecentDateBucket} from './recent_date_bucket.js';
 

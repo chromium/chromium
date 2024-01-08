@@ -12,9 +12,9 @@ import {recordEnum} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
+import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
 import type {AppStateController} from './app_state_controller.js';

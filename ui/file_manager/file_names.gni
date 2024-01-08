@@ -70,7 +70,6 @@ ts_files = [
   # These lines will be removed at the end of the TS migration.
   # Externs:
   "file_manager/externs/files_app_entry_interfaces.ts",
-  "file_manager/externs/ts/state.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.
@@ -87,6 +86,7 @@ ts_files = [
   # State.
   "file_manager/state/file_key.ts",
   "file_manager/state/store.ts",
+  "file_manager/state/state.ts",
 
   # 3-line header to avoid conflict.
   # Don't remove this.

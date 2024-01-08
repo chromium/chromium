@@ -10,8 +10,8 @@ import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordEnum} from '../../common/js/metrics.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
-import type {DialogType} from '../../externs/ts/state.js';
 import type {VolumeManager} from '../../externs/volume_manager.js';
+import type {DialogType} from '../../state/state.js';
 
 import type {ActionsController} from './actions_controller.js';
 import {DEFAULT_BRUSCHETTA_VM, DEFAULT_CROSTINI_VM, PLUGIN_VM} from './constants.js';
