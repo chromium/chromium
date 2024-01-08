@@ -247,6 +247,9 @@ class QuickStartController
   base::WeakPtrFactory<QuickStartController> weak_ptr_factory_{this};
 };
 
+std::ostream& operator<<(std::ostream& stream,
+                         const QuickStartController::UiState& ui_state);
+
 }  // namespace ash::quick_start
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICKSTART_CONTROLLER_H_

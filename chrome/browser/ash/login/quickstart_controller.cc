@@ -110,6 +110,7 @@ void QuickStartController::DetachFrontend(
 }
 
 void QuickStartController::UpdateUiState(UiState ui_state) {
+  QS_LOG(INFO) << "Updating UI state to " << ui_state;
   ui_state_ = ui_state;
   CHECK(!ui_delegates_.empty());
   for (auto& delegate : ui_delegates_) {
@@ -147,6 +148,7 @@ void QuickStartController::DetermineEntryPointVisibility(
 
 void QuickStartController::AbortFlow(AbortFlowReason reason) {
   CHECK(bootstrap_controller_);
+  QS_LOG(INFO) << "Aborting flow.";
 
   bootstrap_controller_->CloseOpenConnections(
       ConnectionClosedReasonFromAbortFlowReason(reason));
@@ -280,6 +282,12 @@ void QuickStartController::OnStatusChanged(
       return;
     case Step::ERROR:
       AbortFlow(AbortFlowReason::ERROR);
+      if (absl::holds_alternative<ErrorCode>(status.payload)) {
+        QS_LOG(ERROR) << absl::get<ErrorCode>(status.payload);
+      } else {
+        QS_LOG(ERROR) << "Missing ErrorCode.";
+      }
+
       // Triggers a screen exit if there is a UiDelegate driving the UI.
       if (!ui_delegates_.empty()) {
         CHECK(current_screen_ == QuickStartScreenHandler::kScreenId ||
@@ -461,6 +469,44 @@ void QuickStartController::TurnOnBluetooth() {
 bluetooth_config::mojom::BluetoothSystemState
 QuickStartController::get_bluetooth_system_state_for_testing() {
   return bluetooth_system_state_;
+}
+
+std::ostream& operator<<(std::ostream& stream,
+                         const QuickStartController::UiState& ui_state) {
+  switch (ui_state) {
+    case QuickStartController::UiDelegate::UiState::CONNECTING_TO_PHONE:
+      stream << "[connecting to phone]";
+      break;
+    case QuickStartController::UiDelegate::UiState::SHOWING_QR:
+      stream << "[showing QR]";
+      break;
+    case QuickStartController::UiDelegate::UiState::SHOWING_PIN:
+      stream << "[showing PIN]";
+      break;
+    case QuickStartController::UiDelegate::UiState::CONNECTING_TO_WIFI:
+      stream << "[connecting to WiFi]";
+      break;
+    case QuickStartController::UiDelegate::UiState::WIFI_CREDENTIALS_RECEIVED:
+      stream << "[WiFi credentials received]";
+      break;
+    case QuickStartController::UiDelegate::UiState::CONFIRM_GOOGLE_ACCOUNT:
+      stream << "[confirm Google account]";
+      break;
+    case QuickStartController::UiDelegate::UiState::SIGNING_IN:
+      stream << "[signing in]";
+      break;
+    case QuickStartController::UiDelegate::UiState::CREATING_ACCOUNT:
+      stream << "[creating account]";
+      break;
+    case QuickStartController::UiDelegate::UiState::SETUP_COMPLETE:
+      stream << "[setup complete]";
+      break;
+    case QuickStartController::UiDelegate::UiState::EXIT_SCREEN:
+      stream << "[exit screen]";
+      break;
+  }
+
+  return stream;
 }
 
 }  // namespace ash::quick_start
