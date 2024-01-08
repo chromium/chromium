@@ -212,8 +212,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mResourceManagerSupplier = resourceManagerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
-        mToolbarColorObserverManager =
-                new ToolbarColorObserverManager(mToolbarLayout.getContext(), mToolbarLayout);
+        mToolbarColorObserverManager = new ToolbarColorObserverManager(mToolbarLayout.getContext());
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
