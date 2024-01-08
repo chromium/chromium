@@ -454,7 +454,10 @@ enum class MoveToAccountStoreTrigger {
   // After saving a password locally, the user opted in to saving this and
   // future passwords in the account.
   kUserOptedInAfterSavingLocally = 3,
-  kMaxValue = kUserOptedInAfterSavingLocally,
+  // The user explicitly asked to move a password to account store from password
+  // details page.
+  kExplicitlyTriggeredForSinglePasswordInDetailsInSettings = 4,
+  kMaxValue = kExplicitlyTriggeredForSinglePasswordInDetailsInSettings,
 };
 
 // Used to record what exactly was updated during password editing flow.

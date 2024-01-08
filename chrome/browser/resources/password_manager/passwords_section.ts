@@ -25,6 +25,7 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MoveToAccountStoreTrigger} from './dialogs/move_passwords_dialog.js';
 import type {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
@@ -345,6 +346,11 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showNoPasswordsFound_(): boolean {
     return this.hideGroupsList_() && this.groups_.length > 0;
+  }
+
+  private getMovePasswordsDialogTrigger_(): MoveToAccountStoreTrigger {
+    return MoveToAccountStoreTrigger
+        .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS;
   }
 
   private onPasswordDetailsShown_(e: CustomEvent) {

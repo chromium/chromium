@@ -25,12 +25,17 @@ import {getTemplate} from './move_passwords_dialog.html.js';
  * numeric values should never be reused.
  * @enum {number}
  */
-export const MoveToAccountStoreTrigger = {
-  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD: 0,
-  EXPLICITLY_TRIGGERED_IN_SETTINGS: 1,
-  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS: 2,
-  COUNT: 3,
-};
+export enum MoveToAccountStoreTrigger {
+  // LINT.IfChange
+  SUCCESSFUL_LOGIN_WITH_PROFILE_STORE_PASSWORD = 0,
+  EXPLICITLY_TRIGGERED_IN_SETTINGS = 1,
+  EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS = 2,
+  USER_OPTED_IN_AFTER_SAVING_LOCALLY = 3,
+  EXPLICITLY_TRIGGERED_FOR_SINGLE_PASSWORD_IN_DETAILS_IN_SETTINGS = 4,
+  COUNT = 5,
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/password/enums.xml)
+}
+
 
 export interface MovePasswordsDialogElement {
   $: {
@@ -65,22 +70,27 @@ export class MovePasswordsDialogElement extends MovePasswordsDialogElementBase {
 
       selectedPasswordIds_: {
         type: Array,
-        valie: () => [],
+        value: () => [],
+      },
+
+      trigger: {
+        type: MoveToAccountStoreTrigger,
+        value: MoveToAccountStoreTrigger
+                   .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS,
       },
     };
   }
 
   passwords: chrome.passwordsPrivate.PasswordUiEntry[];
   private selectedPasswordIds_: number[];
+  private trigger: MoveToAccountStoreTrigger;
 
   override connectedCallback() {
     super.connectedCallback();
 
     chrome.metricsPrivate.recordEnumerationValue(
         'PasswordManager.AccountStorage.MoveToAccountStoreFlowOffered',
-        MoveToAccountStoreTrigger
-            .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS,
-        MoveToAccountStoreTrigger.COUNT);
+        this.trigger, MoveToAccountStoreTrigger.COUNT);
 
     this.selectedPasswordIds_ = this.passwords.map(item => item.id);
     PasswordManagerImpl.getInstance()

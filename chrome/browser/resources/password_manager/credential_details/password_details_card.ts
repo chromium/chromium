@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
@@ -15,6 +16,7 @@ import '../dialogs/edit_password_dialog.js';
 import '../dialogs/multi_store_delete_password_dialog.js';
 import '../sharing/share_password_flow.js';
 import '../sharing/metrics_utils.js';
+import '../dialogs/move_single_password_dialog.js';
 
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
@@ -90,6 +92,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
 
       showEditPasswordDialog_: Boolean,
       showDeletePasswordDialog_: Boolean,
+      showMovePasswordDialog_: Boolean,
+
 
       showShareButton_: {
         type: Boolean,
@@ -115,12 +119,22 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
           return loadTimeData.getBoolean('enableSendPasswords');
         },
       },
+
+      enableButterOnDesktopFollowup_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableButterOnDesktopFollowup');
+        },
+      },
+
+      isUsingAccountStore: Boolean,
     };
   }
 
   password: chrome.passwordsPrivate.PasswordUiEntry;
   groupName: string;
   iconUrl: string;
+  isUsingAccountStore: boolean;
   private toastMessage_: string;
   private showEditPasswordDialog_: boolean;
   private passwordSharingDisabled_: boolean;
@@ -128,6 +142,8 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   private showShareFlow_: boolean;
   private showShareButton_: boolean;
   private enableSendPasswords_: boolean;
+  private showMovePasswordDialog_: boolean;
+  private enableButterOnDesktopFollowup_: boolean;
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -281,6 +297,25 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
         this.i18n(
             'passwordDetailsCardDeleteButtonNoUsernameAriaLabel',
             this.getCredentialTypeString_());
+  }
+
+  private computeMovePasswordText_(): TrustedHTML {
+    return this.i18nAdvanced('moveSinglePassword');
+  }
+
+  private movePasswordClicked_(e: Event): void {
+    e.preventDefault();
+    this.showMovePasswordDialog_ = true;
+  }
+
+  private showMovePasswordEntry_(): boolean {
+    return this.enableButterOnDesktopFollowup_ && this.isUsingAccountStore &&
+        this.password.storedIn ===
+        chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
+  }
+
+  private onMovePasswordDialogClose_(): void {
+    this.showMovePasswordDialog_ = false;
   }
 
   maybeRegisterSharingHelpBubble(): void {
