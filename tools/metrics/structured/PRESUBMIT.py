@@ -38,6 +38,8 @@ def CheckChange(input_api, output_api):
               STRUCTURED_OLD_XML +
               ' exists after formatting; please remove before upload.'))
 
+  errors.extend(input_api.canned_checks.RunPylint(input_api, output_api))
+
   return errors
 
 
