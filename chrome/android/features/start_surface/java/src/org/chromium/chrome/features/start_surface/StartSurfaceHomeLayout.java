@@ -171,6 +171,8 @@ public class StartSurfaceHomeLayout extends Layout {
     }
 
     private void onTabSelecting(int tabId) {
+        if (!mIsInitialized) return;
+
         TabModelUtils.selectTabById(mTabModelSelector, tabId, TabSelectionType.FROM_USER, false);
         startHiding();
     }
