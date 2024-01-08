@@ -30,6 +30,7 @@ namespace compose {
 class ComposeSessionBrowserTest : public InteractiveBrowserTest {
  public:
   void SetUp() override {
+    ComposeEnabling::SetEnabledForTesting(true);
     feature_list()->InitWithFeatures(
         {compose::features::kEnableCompose,
          optimization_guide::features::kOptimizationGuideModelExecution},

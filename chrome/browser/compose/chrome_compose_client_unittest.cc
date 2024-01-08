@@ -128,6 +128,7 @@ class MockComposeDialog : public compose::mojom::ComposeDialog {
 class ChromeComposeClientTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
+    ComposeEnabling::SetEnabledForTesting(true);
     BrowserWithTestWindowTest::SetUp();
 
     scoped_feature_list_.InitWithFeatures(
