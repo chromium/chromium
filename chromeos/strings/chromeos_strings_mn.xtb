@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Зохиогчдод зориулсан Chromebook-н шинэ цахим сэтгүүлийг хараарай</translation>
 <translation id="1270369111467284986">Дамжих портал гэж таамагласан</translation>
 <translation id="1290331692326790741">Муу дохио</translation>
+<translation id="1300115153046603471">APN нь өгөгдмөл бөгөөд <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Шинэчилж байна (<ph name="PERCENTAGE_VALUE" />% дууссан)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минут</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="584953448295717128">APN-г автоматаар илрүүлсэн.</translation>
 <translation id="5849570051105887917">Нүүр хуудас бэлтгэх код</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Уран зургийн галерейн цомог</translation>
 <translation id="5859969039821714932">Товчлол боломжгүй байна. <ph name="KEY" />-гүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">Дэлгэцийн зураг тааруулах</translation>
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
 <translation id="6535178685492749208">Та офлайн байна. Санал хүсэлтийг дараа нь илгээнэ.</translation>
+<translation id="6557784757915238407">APN нь <ph name="ATTACH" /> төрөл юм.</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6560196641871357166">Хурц тод</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">хөрвүүлэлт</translation>
 <translation id="7415801143053185905">HTTP-н маш өндөр хоцролт</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Энэ APN-г идэвхгүй болгох эсвэл хасах боломжгүй. Идэвхжүүлсэн <ph name="ATTACH" /> APN-г идэвхгүй болгосон эсвэл хассан болохыг баталгаажуулна уу.</translation>
 <translation id="7458970041932198923">Аватар зургийг харах болон тохируулахын тулд сүлжээнд холбогдож, хуудсыг дахин ачаална уу.</translation>
 <translation id="7469648432129124067">Портал илэрсэн</translation>
 <translation id="7481312909269577407">Forward</translation>

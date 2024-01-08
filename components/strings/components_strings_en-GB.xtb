@@ -604,6 +604,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2135799067377889518">Men's clothing</translation>
 <translation id="2137891579555018930">Waiting for permission…</translation>
 <translation id="213826338245044447">Mobile Bookmarks</translation>
+<translation id="2141000681034340397">Edit your input</translation>
 <translation id="214556005048008348">Cancel payment</translation>
 <translation id="2148613324460538318">Add Card</translation>
 <translation id="2148716181193084225">Today</translation>
@@ -1392,6 +1393,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3736520371357197498">If you understand the risks to your security, you may <ph name="BEGIN_LINK" />visit this unsafe site<ph name="END_LINK" /> before the dangerous programs have been removed.</translation>
 <translation id="3736739313435669994">You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Your browser is managed by your administrator.</translation>
+<translation id="3739842843727261045">Thumbs up submits feedback that you like these results</translation>
 <translation id="3740319564441798148">Long distance bus and rail</translation>
 <translation id="3740447166056383374">Review is required before copying</translation>
 <translation id="374325029554577103">Fitness Technology Products</translation>
@@ -2613,6 +2615,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6232271601416750929">Clean beauty</translation>
 <translation id="6234122620015464377">Trim after each document</translation>
 <translation id="6236290670123303279">Manage Settings</translation>
+<translation id="623825323736974198">Manage sites that will always stay active and won't have memory freed up from them</translation>
 <translation id="6240447795304464094">Google Pay logo</translation>
 <translation id="6240964651812394252">To use Google Password Manager with your operating system, relaunch Chrome and allow access to your computer's password manager. Your tabs will reopen after relaunching.</translation>
 <translation id="6241121617266208201">Hide suggestions</translation>
@@ -2776,6 +2779,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6529602333819889595">&amp;Redo Delete</translation>
 <translation id="6535751101619004418">Currencies and foreign exchange</translation>
 <translation id="6536221421038631327">Removing a Passpoint subscription from your <ph name="DEVICE_TYPE" /> will remove the associated networks. Contact '<ph name="FRIENDLY_NAME" />' to make changes to your subscription plan. <ph name="LEARN_MORE" /></translation>
+<translation id="6539092367496845964">Something went wrong. Try again later.</translation>
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
 <translation id="6540534463546766581">Mutual funds</translation>
 <translation id="6545864417968258051">Bluetooth scanning</translation>
@@ -4084,6 +4088,7 @@ Additional details:
 <translation id="9089260154716455634">Off-hours policy:</translation>
 <translation id="9090243919347147717">Attachments</translation>
 <translation id="9093723786115107672">Sleepwear</translation>
+<translation id="9094544726794842788">Thumbs down opens a form for submitting detailed feedback on why you dislike these results</translation>
 <translation id="9095388113577226029">More languages...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab and then Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="9096679202588811390">TV shows and programmes</translation>

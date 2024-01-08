@@ -936,6 +936,7 @@
 <translation id="813913629614996137">Inicijuojama...</translation>
 <translation id="8147028810663464959">Simbolio plotis yra viso dydžio</translation>
 <translation id="8151638057146502721">Konfigūruoti</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{Viena klaida.}one{# klaida.}few{# klaidos.}many{# klaidos.}other{# klaidų.}}</translation>
 <translation id="8154842056504218462">Pasirinkti visi įrašai.</translation>
 <translation id="8157684860301034423">Nepavyko nuskaityti programos informacijos.</translation>
 <translation id="8175731104491895765">Prancūzų k. (Belgija)</translation>
@@ -1028,6 +1029,7 @@
 <translation id="8787254343425541995">Leisti tarpinius serverius bendrai naudojamuose tinkluose</translation>
 <translation id="8790981080411996443">Augalus laistantis žmogus</translation>
 <translation id="8798099450830957504">Numatytasis</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{Vienas perspėjimas.}one{# perspėjimas.}few{# perspėjimai.}many{# perspėjimo.}other{# perspėjimų.}}</translation>
 <translation id="8808686172382650546">Katė</translation>
 <translation id="8810671769985673465">Nepavyko suglaudinti, yra elementas: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Ispanų k. (Ispanija)</translation>

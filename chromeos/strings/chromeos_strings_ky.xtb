@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Chromebook'тун авторлорго арналган жаңы санариптик журналын көрүңүз</translation>
 <translation id="1270369111467284986">Кирүү бети бар окшойт</translation>
 <translation id="1290331692326790741">Начар сигнал</translation>
+<translation id="1300115153046603471">APN түрү – default жана <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Жаңырууда (<ph name="PERCENTAGE_VALUE" />% аткарылды)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> мүнөт</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">Фаренгейт</translation>
 <translation id="584953448295717128">APN автоматтык түрдө аныкталды.</translation>
 <translation id="5849570051105887917">Баштапкы жабдуучунун коду</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Көркөм галерея альбому</translation>
 <translation id="5859969039821714932">Ыкчам баскыч жеткиликсиз. <ph name="KEY" /> баскычын кошпой жаңы ыкчам баскычын басыңыз.</translation>
 <translation id="5860033963881614850">Өчүк</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">Тушкагазды дал келтирүү</translation>
 <translation id="6527081081771465939">Белгисиз WiFi коопсуздук протоколу</translation>
 <translation id="6535178685492749208">Сиз офлайндасыз Пикир кийинчерээк жөнөтүлөт.</translation>
+<translation id="6557784757915238407">APN түрү – <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Планшет</translation>
 <translation id="6560196641871357166">Толкундуу</translation>
 <translation id="6564646048574748301">Басылып чыгарылган жок - Принтер жеткиликсиз</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">которуу</translation>
 <translation id="7415801143053185905">HTTP күтүү убакыты өтө жогору</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Бул APN'ди өчүрүү же алып салуу мүмкүн эмес. Иштетилген <ph name="ATTACH" /> APN'дер өчүрүлүп же алып салынганын текшериңиз.</translation>
 <translation id="7458970041932198923">Аватарларды көрүү жана коюу үчүн тармакка туташып, баракты кайра жүктөңүз.</translation>
 <translation id="7469648432129124067">Портал аныкталды</translation>
 <translation id="7481312909269577407">Багыттоо</translation>

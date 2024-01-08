@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Bótalle un ollo á nova revista dixital para creadores de Chromebook</translation>
 <translation id="1270369111467284986">Posible portal cativo</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
+<translation id="1300115153046603471">O APN é de tipo predeterminado e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" /> % completado)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">O APN detéctase automaticamente.</translation>
 <translation id="5849570051105887917">Código do fornecedor de orixe</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum da galería de arte</translation>
 <translation id="5859969039821714932">O atallo non está dispoñible. Preme un novo sen a tecla <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Non</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">Combinar co fondo de pantalla</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
 <translation id="6535178685492749208">Estás sen conexión. Os comentarios enviaranse máis tarde.</translation>
+<translation id="6557784757915238407">APN é de tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Superficie plana</translation>
 <translation id="6560196641871357166">Intenso</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP moi alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Non se puido desactivar ou quitar este APN. Asegúrate de que os APN <ph name="ATTACH" /> activados estean desactivados ou quitados.</translation>
 <translation id="7458970041932198923">Para ver e definir os avatares, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="7469648432129124067">Detectouse un portal</translation>
 <translation id="7481312909269577407">Adiante</translation>

@@ -936,6 +936,7 @@
 <translation id="813913629614996137">ກຳລັງລິເລີ່ມ...</translation>
 <translation id="8147028810663464959">ຄວາມກວ້າງຕົວອັກສອນເຕັມແລ້ວ</translation>
 <translation id="8151638057146502721">ປັບ​ຕັ້ງ​ຄ່າ</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{ຂໍ້ຜິດພາດ 1 ລາຍການ.}other{ຂໍ້ຜິດພາດ # ລາຍການ.}}</translation>
 <translation id="8154842056504218462">ເລືອກລາຍການທັງໝົດແລ້ວ</translation>
 <translation id="8157684860301034423">ກູ້ຂໍ້ມູນແອັບຄືນບໍ່ສຳເລັດ.</translation>
 <translation id="8175731104491895765">ພາສາຝຣັ່ງ (ເບວຢຽມ)</translation>
@@ -1028,6 +1029,7 @@
 <translation id="8787254343425541995">ອະນຸຍາດໃຫ້ພຣັອກຊີສໍາລັບເຄືອຂ່າຍແຊຣ໌ແລ້ວ</translation>
 <translation id="8790981080411996443">ຄົນຮົດນ້ຳຕົ້ນໄມ້</translation>
 <translation id="8798099450830957504">ຄ່າ​ມາດຕະຖານ</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{ຄຳເຕືອນ 1 ລາຍການ.}other{ຄຳເຕືອນ # ລາຍການ.}}</translation>
 <translation id="8808686172382650546">ແມວ</translation>
 <translation id="8810671769985673465">ການຊິບໄຟລ໌ບໍ່ສຳເລັດ,​ ມີລາຍການ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ພາສາສະແປນນິຊ (ສະເປນ)</translation>

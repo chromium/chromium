@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Разгледайте новото дигитално списание на Chromebook за създатели</translation>
 <translation id="1270369111467284986">Предполага се наличие на портал за удостоверяване</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
+<translation id="1300115153046603471">Името на точката за достъп (APN) е стандартно и за <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Актуализира се (<ph name="PERCENTAGE_VALUE" />% завършено)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минути</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">Фаренхайт</translation>
 <translation id="584953448295717128">Името на точката за достъп (APN) е открито автоматично.</translation>
 <translation id="5849570051105887917">Код на собствения доставчик</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Албум от художествената галерия</translation>
 <translation id="5859969039821714932">Клавишната комбинация не е налице. Натиснете нова клавишна комбинация без <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Изключено</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">Съответствие с тапета</translation>
 <translation id="6527081081771465939">Неизвестен протокол за сигурност на Wi-Fi</translation>
 <translation id="6535178685492749208">Офлайн сте. Отзивите ще се изпратят по-късно.</translation>
+<translation id="6557784757915238407">Името на точката за достъп (APN) е за <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Плосък скенер</translation>
 <translation id="6560196641871357166">Ярък</translation>
 <translation id="6564646048574748301">Неуспешно – няма връзка с принтера</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
 <translation id="7458970041932198923">Свържете се с мрежа и презаредете страницата, за да прегледате аватарите и да зададете такъв.</translation>
 <translation id="7469648432129124067">Открит е портал</translation>
 <translation id="7481312909269577407">Напред</translation>

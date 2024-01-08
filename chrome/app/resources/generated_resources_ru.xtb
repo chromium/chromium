@@ -370,7 +370,7 @@
 <translation id="1277020343994096713">Создайте PIN-код, который отличается от текущего.</translation>
 <translation id="1277597051786235230">&amp;Искать "<ph name="SEARCH_TERMS" />" в <ph name="SEARCH_ENGINE" /> на новой вкладке</translation>
 <translation id="1278859221870828664">Ознакомьтесь с условиями предоставления приложений и сервисов Google Play</translation>
-<translation id="127946606521051357">Устройство поблизости передает файлы</translation>
+<translation id="127946606521051357">Устройство поблизости делится контентом</translation>
 <translation id="1280965841156951489">Разрешить</translation>
 <translation id="1281746473742296584">{NUM_OF_FILES,plural, =1{Не удалось открыть файл.}one{Не удалось открыть файлы.}few{Не удалось открыть файлы.}many{Не удалось открыть файлы.}other{Не удалось открыть файлы.}}</translation>
 <translation id="1282311502488501110">Отмена</translation>

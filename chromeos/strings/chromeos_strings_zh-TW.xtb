@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">查看 Chromebook 為創作者提供的全新數位雜誌</translation>
 <translation id="1270369111467284986">可疑的網頁認證入口</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
+<translation id="1300115153046603471">APN 類型為預設和「<ph name="ATTACH" />」。</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">正在更新 (已完成 <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> 分鐘</translation>
@@ -449,6 +450,7 @@
 <translation id="4354430579665871434">鍵</translation>
 <translation id="4361257691546579041">APN 為預設類型。</translation>
 <translation id="437294888293595148">重設所有快速鍵</translation>
+<translation id="4376423484621194274">系統管理員不允許關閉「<ph name="APP_NAME" />」</translation>
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +651,7 @@
 <translation id="5843706793424741864">華氏</translation>
 <translation id="584953448295717128">系統會自動偵測 APN。</translation>
 <translation id="5849570051105887917">家用提供者代碼</translation>
+<translation id="5856267793478861942">「<ph name="ATTACH" />」(<ph name="IA" />)</translation>
 <translation id="5859603669299126575">畫廊中的相簿</translation>
 <translation id="5859969039821714932">無法使用這組快速鍵，請按不含 <ph name="KEY" /> 鍵的新快速鍵。</translation>
 <translation id="5860033963881614850">關閉</translation>
@@ -754,6 +757,7 @@
 <translation id="6526200165918397681">相符的桌布</translation>
 <translation id="6527081081771465939">Wi-Fi 安全通訊協定不明</translation>
 <translation id="6535178685492749208">你已經離線，系統稍後才會傳送意見回饋。</translation>
+<translation id="6557784757915238407">APN 類型為「<ph name="ATTACH" />」。</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6560196641871357166">色彩繽紛</translation>
 <translation id="6564646048574748301">失敗 - 無法連上印表機</translation>
@@ -867,6 +871,7 @@
 <translation id="741244894080940828">轉換</translation>
 <translation id="7415801143053185905">HTTP 延遲時間非常長</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">無法停用或移除這個 APN，請務必停用或移除已啟用的「<ph name="ATTACH" />」APN。</translation>
 <translation id="7458970041932198923">如要查看及設定顯示圖片，請連上網路並重新載入頁面。</translation>
 <translation id="7469648432129124067">已偵測到網路入口</translation>
 <translation id="7481312909269577407">往前</translation>

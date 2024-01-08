@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Dona un cop d'ull a la nova revista digital de Chromebook per a creadors</translation>
 <translation id="1270369111467284986">Possible portal captiu</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
+<translation id="1300115153046603471">L'APN és de tipus predeterminat i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">S'està actualitzant (<ph name="PERCENTAGE_VALUE" />% completat)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minuts</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">L'APN es detecta automàticament.</translation>
 <translation id="5849570051105887917">Codi del proveïdor domèstic</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Àlbum de la galeria d'art</translation>
 <translation id="5859969039821714932">La drecera no està disponible. Prem una drecera nova sense <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desactivat</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">Fes coincidir el fons de pantalla</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="6535178685492749208">No tens connexió. Els suggeriments s'enviaran més tard.</translation>
+<translation id="6557784757915238407">L'APN és de tipus <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Finestra plana</translation>
 <translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">conversió</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>
 <translation id="7469648432129124067">S'ha detectat un portal</translation>
 <translation id="7481312909269577407">Endavant</translation>

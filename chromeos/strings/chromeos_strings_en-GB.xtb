@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">Take a look at Chromebook's new digital magazine for creators</translation>
 <translation id="1270369111467284986">Captive portal suspected</translation>
 <translation id="1290331692326790741">Weak signal</translation>
+<translation id="1300115153046603471">APN is type default and <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Updating (<ph name="PERCENTAGE_VALUE" />% complete)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
@@ -649,6 +650,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">APN is automatically detected.</translation>
 <translation id="5849570051105887917">Home provider code</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Art gallery album</translation>
 <translation id="5859969039821714932">Shortcut not available. Press a new shortcut without <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Off</translation>
@@ -754,6 +756,7 @@
 <translation id="6526200165918397681">Match wallpaper</translation>
 <translation id="6527081081771465939">Unknown Wi-Fi security protocol</translation>
 <translation id="6535178685492749208">You're offline. Feedback will be sent later.</translation>
+<translation id="6557784757915238407">APN is type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">Failed – Printer unreachable</translation>
@@ -867,6 +870,7 @@
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Very high HTTP latency</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Can't disable or remove this APN. Make sure that enabled <ph name="ATTACH" /> APNs are disabled or removed.</translation>
 <translation id="7458970041932198923">Please connect to a network and reload the page to view and set avatars.</translation>
 <translation id="7469648432129124067">Portal detected</translation>
 <translation id="7481312909269577407">Forward</translation>

@@ -44,6 +44,7 @@
 <translation id="1264369926465113395">크리에이터를 위한 Chromebook 활용 방법을 소개하는 새로운 디지털 잡지를 확인하세요.</translation>
 <translation id="1270369111467284986">종속 포털로 의심됨</translation>
 <translation id="1290331692326790741">신호 약함</translation>
+<translation id="1300115153046603471">APN은 기본값 및 <ph name="ATTACH" /> 유형입니다.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">업데이트 중(<ph name="PERCENTAGE_VALUE" />% 완료)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" />분</translation>
@@ -650,6 +651,7 @@
 <translation id="5843706793424741864">화씨</translation>
 <translation id="584953448295717128">APN이 자동으로 감지되었습니다.</translation>
 <translation id="5849570051105887917">홈 공급자 코드</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" />(<ph name="IA" />)</translation>
 <translation id="5859603669299126575">아트 갤러리 앨범</translation>
 <translation id="5859969039821714932">단축키를 사용할 수 없습니다. <ph name="KEY" />을 누르지 않은 상태로 새 단축키를 누르세요.</translation>
 <translation id="5860033963881614850">사용 안함</translation>
@@ -755,6 +757,7 @@
 <translation id="6526200165918397681">배경화면 일치</translation>
 <translation id="6527081081771465939">알려지지 않은 Wi-Fi 보안 프로토콜입니다.</translation>
 <translation id="6535178685492749208">오프라인 상태입니다. 의견은 나중에 전송됩니다.</translation>
+<translation id="6557784757915238407">APN은 <ph name="ATTACH" /> 유형입니다.</translation>
 <translation id="65587193855025101">평판</translation>
 <translation id="6560196641871357166">생동감</translation>
 <translation id="6564646048574748301">실패 - 프린터에 연결할 수 없음</translation>
@@ -868,6 +871,7 @@
 <translation id="741244894080940828">변환</translation>
 <translation id="7415801143053185905">HTTPS 지연 시간 매우 높음</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">이 APN을 사용 중지하거나 삭제할 수 없습니다. 사용 설정된 <ph name="ATTACH" /> APN이 사용 중지되거나 삭제되었는지 확인하세요.</translation>
 <translation id="7458970041932198923">아바타를 보고 설정하려면 네트워크에 연결하고 페이지를 새로고침하세요.</translation>
 <translation id="7469648432129124067">포털 감지됨</translation>
 <translation id="7481312909269577407">앞으로</translation>
