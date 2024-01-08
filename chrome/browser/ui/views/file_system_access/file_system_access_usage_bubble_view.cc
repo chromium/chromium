@@ -127,9 +127,9 @@ int ComputeHeadingMessageFromUsage(
 // first few items, with a toggle button to expand a table below to contain the
 // full list of items.
 class CollapsibleListView : public views::View {
- public:
-  METADATA_HEADER(CollapsibleListView);
+  METADATA_HEADER(CollapsibleListView, views::View)
 
+ public:
   // How many rows to show in the expanded table without having to scroll.
   static constexpr int kExpandedTableRowCount = 3;
 
@@ -231,7 +231,7 @@ class CollapsibleListView : public views::View {
   raw_ptr<views::ToggleImageButton> expand_collapse_button_;
 };
 
-BEGIN_METADATA(CollapsibleListView, views::View)
+BEGIN_METADATA(CollapsibleListView)
 END_METADATA
 
 }  // namespace
@@ -480,3 +480,6 @@ void FileSystemAccessUsageBubbleView::ChildPreferredSizeChanged(
   LocationBarBubbleDelegateView::ChildPreferredSizeChanged(child);
   SizeToContents();
 }
+
+BEGIN_METADATA(FileSystemAccessUsageBubbleView)
+END_METADATA

@@ -30,9 +30,9 @@ class Profile;
 class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
                                    public extensions::ExtensionRegistryObserver,
                                    public views::TextfieldController {
- public:
-  METADATA_HEADER(ExtensionInstallDialogView);
+  METADATA_HEADER(ExtensionInstallDialogView, views::BubbleDialogDelegateView)
 
+ public:
   // The views::View::id of the ratings section in the dialog.
   static const int kRatingsViewId = 1;
 

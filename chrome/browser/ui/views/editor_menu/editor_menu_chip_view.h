@@ -15,9 +15,9 @@ struct PresetTextQuery;
 
 // A label button with an icon and a rounded rectangle border.
 class EditorMenuChipView : public views::MdTextButton {
- public:
-  METADATA_HEADER(EditorMenuChipView);
+  METADATA_HEADER(EditorMenuChipView, views::MdTextButton)
 
+ public:
   EditorMenuChipView(views::Button::PressedCallback callback,
                      const PresetTextQuery& preset_text_query);
   EditorMenuChipView(const EditorMenuChipView&) = delete;

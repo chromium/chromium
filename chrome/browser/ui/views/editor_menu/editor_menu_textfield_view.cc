@@ -149,7 +149,7 @@ void EditorMenuTextfieldView::OnTextfieldArrowButtonPressed() {
   delegate_->OnTextfieldArrowButtonPressed(textfield_->GetText());
 }
 
-BEGIN_METADATA(EditorMenuTextfieldView, views::View)
+BEGIN_METADATA(EditorMenuTextfieldView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

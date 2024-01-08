@@ -261,7 +261,7 @@ void EditorMenuPromoCardView::ResetPreTargetHandler() {
   pre_target_handler_.reset();
 }
 
-BEGIN_METADATA(EditorMenuPromoCardView, views::View)
+BEGIN_METADATA(EditorMenuPromoCardView)
 END_METADATA
 
 }  // namespace chromeos::editor_menu

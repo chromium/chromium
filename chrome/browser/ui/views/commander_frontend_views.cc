@@ -86,8 +86,9 @@ class CommanderFocusLossWatcher : public views::WidgetObserver {
 // A small shim to handle passing keyboard events back up to the browser.
 // Required for hotkeys to work.
 class CommanderWebView : public views::WebView {
+  METADATA_HEADER(CommanderWebView, views::WebView)
+
  public:
-  METADATA_HEADER(CommanderWebView);
   explicit CommanderWebView(content::BrowserContext* context)
       : views::WebView(context) {}
   bool HandleKeyboardEvent(
@@ -122,7 +123,7 @@ class CommanderWebView : public views::WebView {
   RAW_PTR_EXCLUSION views::View* owner_ = nullptr;
 };
 
-BEGIN_METADATA(CommanderWebView, views::WebView)
+BEGIN_METADATA(CommanderWebView)
 ADD_PROPERTY_METADATA(views::View*, Owner)
 END_METADATA
 

@@ -107,5 +107,5 @@ const gfx::VectorIcon& FileSystemAccessIconView::GetVectorIcon() const {
                            : vector_icons::kInsertDriveFileOutlineIcon;
 }
 
-BEGIN_METADATA(FileSystemAccessIconView, PageActionIconView)
+BEGIN_METADATA(FileSystemAccessIconView)
 END_METADATA

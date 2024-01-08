@@ -32,9 +32,9 @@ enum class EditorMenuMode { kWrite = 0, kRewrite };
 
 // A bubble style view to show Editor Menu.
 class EditorMenuView : public views::View, public views::WidgetObserver {
- public:
-  METADATA_HEADER(EditorMenuView);
+  METADATA_HEADER(EditorMenuView, views::View)
 
+ public:
   EditorMenuView(EditorMenuMode editor_menu_mode,
                  const PresetTextQueries& preset_text_queries,
                  const gfx::Rect& anchor_view_bounds,

@@ -26,8 +26,9 @@ class MessageBoxView;
 }
 
 class ExternalProtocolDialog : public views::DialogDelegateView {
+  METADATA_HEADER(ExternalProtocolDialog, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(ExternalProtocolDialog);
   // Show by calling ExternalProtocolHandler::RunExternalProtocolDialog().
   ExternalProtocolDialog(content::WebContents* web_contents,
                          const GURL& url,

@@ -12,8 +12,9 @@
 // Access API. Shows different icons for read access to directories and write
 // access to files or directories.
 class FileSystemAccessIconView : public PageActionIconView {
+  METADATA_HEADER(FileSystemAccessIconView, PageActionIconView)
+
  public:
-  METADATA_HEADER(FileSystemAccessIconView);
   FileSystemAccessIconView(
       IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
       PageActionIconView::Delegate* page_action_icon_delegate);
