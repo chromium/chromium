@@ -2539,6 +2539,15 @@ EXPORT_TEMPLATE void* PartitionRoot::AlignedAlloc<AllocFlags::kNone>(size_t,
 using ::partition_alloc::internal::PartitionAllocGetSlotStartAndSizeInBRPPool;
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocMallocHookOnBeforeForkInParent();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocMallocHookOnAfterForkInParent();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocMallocHookOnAfterForkInChild();
+#endif  // BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace partition_alloc
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ROOT_H_

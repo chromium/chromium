@@ -24,17 +24,8 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/shim/early_zone_registration_constants.h"
-
-namespace partition_alloc {
-
-// Defined in
-// partition_alloc/partition_root.cc
-void PartitionAllocMallocHookOnBeforeForkInParent();
-void PartitionAllocMallocHookOnAfterForkInParent();
-void PartitionAllocMallocHookOnAfterForkInChild();
-
-}  // namespace partition_alloc
 
 namespace allocator_shim {
 
