@@ -50,6 +50,9 @@ class TestCheckFreeze(unittest.TestCase):
       change = FakeChange()
       no_diffs = False
 
+      def LocalPaths(self):
+        return ['/src/testing/buildbot/PRESUBMIT_test.py']
+
     return FakeInputApi()
 
   def get_output_api(self):

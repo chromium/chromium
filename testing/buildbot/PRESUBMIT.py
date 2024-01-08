@@ -21,8 +21,14 @@ _FREEZE_END = 1704182400  # 2024/01/02 00:00 -0800
 def CheckFreeze(input_api, output_api):
   if _FREEZE_START <= input_api.time.time() < _FREEZE_END:
     footers = input_api.change.GitFootersFromDescription()
-    if _IGNORE_FREEZE_FOOTER not in footers:
 
+    # We don't want the files in the ../filters/ subdirectory to be
+    # subject to the freeze. Check to see if any files outside
+    # that directory are being changed.
+    has_non_filter_files = not all('filters' in f
+                                   for f in input_api.LocalPaths())
+
+    if has_non_filter_files and _IGNORE_FREEZE_FOOTER not in footers:
       def convert(t):
         ts = input_api.time.localtime(t)
         return input_api.time.strftime('%Y/%m/%d %H:%M %z', ts)
@@ -35,8 +41,10 @@ def CheckFreeze(input_api, output_api):
         report_type = output_api.PresubmitError
       return [
           report_type('There is a prod freeze in effect from {} until {},'
-                      ' files in //testing/buildbot cannot be modified'.format(
-                          convert(_FREEZE_START), convert(_FREEZE_END)))
+                      ' files in //testing/buildbot cannot be modified'
+                      ' (though files in //testing/buildbot/filters'
+                      ' can be).'.format(convert(_FREEZE_START),
+                                         convert(_FREEZE_END)))
       ]
 
   return []
