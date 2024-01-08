@@ -19,6 +19,8 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
+import {routes} from '../route.js';
+import {Route, RouteObserverMixin} from '../router.js';
 
 import {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_fledge_subpage.html.js';
@@ -33,7 +35,7 @@ export interface SettingsPrivacySandboxFledgeSubpageElement {
 const maxFledgeSitesCount: number = 15;
 
 const SettingsPrivacySandboxFledgeSubpageElementBase =
-    I18nMixin(PrefsMixin(PolymerElement));
+    RouteObserverMixin(I18nMixin(PrefsMixin(PolymerElement)));
 
 export class SettingsPrivacySandboxFledgeSubpageElement extends
     SettingsPrivacySandboxFledgeSubpageElementBase {
@@ -149,9 +151,13 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
+  }
 
-    HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-        TrustSafetyInteraction.OPENED_FLEDGE_SUBPAGE);
+  override currentRouteChanged(newRoute: Route) {
+    if (newRoute === routes.PRIVACY_SANDBOX_FLEDGE) {
+      HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
+          TrustSafetyInteraction.OPENED_FLEDGE_SUBPAGE);
+    }
   }
 
   private isFledgePrefManaged_(): boolean {
