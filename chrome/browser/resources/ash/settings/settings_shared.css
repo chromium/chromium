@@ -77,13 +77,13 @@ a[href] {
   color: var(--cr-link-color);
 }
 
-.primary-toggle {
-  color: var(--cr-secondary-text-color);
-  font-weight: 500;
+settings-toggle-button.primary-toggle {
+  color: var(--cros-sys-on_surface_variant);
+  font: var(--cros-button-2-font);
 }
 
-.primary-toggle[checked] {
-  color: var(--google-blue-500);
+settings-toggle-button.primary-toggle[checked] {
+  color: var(--cros-sys-primary);
 }
 
 collapse-radio-button,
