@@ -332,7 +332,7 @@ void DecommitSystemPagesInternal(
   }
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+bool DecommitAndZeroSystemPagesInternal(uintptr_t address,
                                         size_t length,
                                         PageTag page_tag) {
   int fd = -1;
@@ -349,11 +349,19 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address,
   void* ptr = reinterpret_cast<void*>(address);
   void* ret = mmap(ptr, length, PROT_NONE,
                    MAP_FIXED | MAP_ANONYMOUS | MAP_PRIVATE, fd, 0);
-  PA_CHECK(ptr == ret);
+  if (ret == MAP_FAILED) {
+    // Decomitting may create additional VMAs (e.g. if we're decommitting pages
+    // in the middle of a larger mapping) and so it can fail with ENOMEM if the
+    // limit of VMAs is exceeded.
+    PA_CHECK(errno == ENOMEM);
+    return false;
+  }
+  PA_CHECK(ret == ptr);
   // Since we just remapped the region, need to set is name again.
 #if defined(LINUX_NAME_REGION)
   NameRegion(ret, length, page_tag);
 #endif
+  return true;
 }
 
 void RecommitSystemPagesInternal(

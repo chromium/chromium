@@ -223,7 +223,7 @@ void DecommitSystemPagesInternal(
   DiscardSystemPagesInternal(address, length);
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+bool DecommitAndZeroSystemPagesInternal(uintptr_t address,
                                         size_t length,
                                         PageTag page_tag) {
   SetSystemPagesAccess(address, length,
@@ -231,6 +231,7 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address,
                            PageAccessibilityConfiguration::kInaccessible));
 
   DiscardSystemPagesInternal(address, length);
+  return true;
 }
 
 void RecommitSystemPagesInternal(

@@ -190,7 +190,7 @@ void DecommitSystemPagesInternal(
                            PageAccessibilityConfiguration::kInaccessible));
 }
 
-void DecommitAndZeroSystemPagesInternal(uintptr_t address,
+bool DecommitAndZeroSystemPagesInternal(uintptr_t address,
                                         size_t length,
                                         PageTag page_tag) {
   // https://docs.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree:
@@ -202,6 +202,7 @@ void DecommitAndZeroSystemPagesInternal(uintptr_t address,
   // for MEM_COMMIT: "The function also guarantees that when the caller later
   // initially accesses the memory, the contents will be zero."
   PA_CHECK(VirtualFree(reinterpret_cast<void*>(address), length, MEM_DECOMMIT));
+  return true;
 }
 
 void RecommitSystemPagesInternal(
