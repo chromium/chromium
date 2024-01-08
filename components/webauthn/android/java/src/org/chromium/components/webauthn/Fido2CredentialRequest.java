@@ -377,6 +377,17 @@ public class Fido2CredentialRequest
             mAppIdExtensionUsed = true;
         }
 
+        final String callerOriginString = convertOriginToString(origin);
+        if (!isChrome()) {
+            if (options.isConditional) {
+                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
+                return;
+            }
+            // TODO(crbug.com/1511193): handle non-conditional requests through CredMan or Play
+            // Services.
+            return;
+        }
+
         // Payments should still go through Google Play Services. Also, if the request has
         // pre-hashed PRF inputs then we cannot represent that in JSON and so can only forward to
         // Play Services.
@@ -430,7 +441,6 @@ public class Fido2CredentialRequest
             return;
         }
 
-        final String callerOriginString = convertOriginToString(origin);
         byte[] clientDataHash = maybeClientDataHash;
         if (payment != null
                 && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
@@ -1117,6 +1127,11 @@ public class Fido2CredentialRequest
         return PackageUtils.getPackageVersion("com.google.android.gms")
                         >= GMSCORE_MIN_VERSION_HYBRID_API
                 && DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ANDROID_HYBRID_CLIENT_UI);
+    }
+
+    private boolean isChrome() {
+        return WebauthnModeProvider.getInstance().getWebauthnMode()
+                == WebauthnModeProvider.WebauthnMode.CHROME;
     }
 
     @Override

@@ -277,7 +277,9 @@ public final class AuthenticatorImpl implements Authenticator {
     public void isConditionalMediationAvailable(
             final IsConditionalMediationAvailable_Response callback) {
         if (mGmsCorePackageVersion < GMSCORE_MIN_VERSION
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+                || WebauthnModeProvider.getInstance().getWebauthnMode()
+                        != WebauthnModeProvider.WebauthnMode.CHROME) {
             callback.call(false);
             return;
         }
