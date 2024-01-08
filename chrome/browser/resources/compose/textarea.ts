@@ -17,6 +17,7 @@ import {getTemplate} from './textarea.html.js';
 export interface ComposeTextareaElement {
   $: {
     editButtonContainer: HTMLElement,
+    editButton: HTMLElement,
     tooShortError: HTMLElement,
     tooLongError: HTMLElement,
     input: HTMLTextAreaElement,
@@ -83,6 +84,10 @@ export class ComposeTextareaElement extends PolymerElement {
 
   focusInput() {
     this.$.input.focus();
+  }
+
+  focusEditButton() {
+    this.$.editButton.focus();
   }
 
   private onEditClick_() {

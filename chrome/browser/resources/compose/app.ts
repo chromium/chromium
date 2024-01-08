@@ -69,6 +69,16 @@ export interface ComposeAppElement {
 
 const ComposeAppElementBase = I18nMixin(CrScrollableMixin(PolymerElement));
 
+// Enumerates trigger points of compose or regenerate calls.
+// Used to mark where a compose call was made so focus
+// can be restored to the respective element afterwards.
+enum TriggerElement {
+  SUBMIT_INPUT,  // For initial input or editing input.
+  TONE,
+  LENGTH,
+  REFRESH
+}
+
 export class ComposeAppElement extends ComposeAppElementBase {
   static get is() {
     return 'compose-app';
@@ -220,6 +230,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private submitted_: boolean;
   private undoEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
+  private lastTriggerElement_: TriggerElement;
 
   constructor() {
     super();
@@ -341,6 +352,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onCancelEditClick_() {
     this.isEditingSubmittedInput_ = false;
+    this.$.textarea.focusEditButton();
   }
 
   private onClose_(e: Event) {
@@ -382,6 +394,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onRefresh_() {
     this.rewrite_(/*style=*/ null);
+    this.lastTriggerElement_ = TriggerElement.REFRESH;
   }
 
   private onSubmit_() {
@@ -398,6 +411,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_.transitionOutSubmitFooter(bodyHeight, footerHeight);
     this.$.textarea.transitionToReadonly();
     this.compose_();
+    this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
   private onSubmitEdit_() {
@@ -412,6 +426,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.selectedLength_ = Length.kUnset;
     this.selectedTone_ = Tone.kUnset;
     this.compose_(true);
+    this.lastTriggerElement_ = TriggerElement.SUBMIT_INPUT;
   }
 
   private onAccept_() {
@@ -432,11 +447,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private onLengthChanged_() {
     this.selectedLength_ = Number(this.$.lengthMenu.value) as Length;
     this.rewrite_(/*style=*/ {length: this.selectedLength_});
+    this.lastTriggerElement_ = TriggerElement.LENGTH;
   }
 
   private onToneChanged_() {
     this.selectedTone_ = Number(this.$.toneMenu.value) as Tone;
     this.rewrite_(/*style=*/ {tone: this.selectedTone_});
+    this.lastTriggerElement_ = TriggerElement.TONE;
   }
 
   private onFooterClick_(e: Event) {
@@ -488,6 +505,19 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.undoEnabled_ = response.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
     this.requestUpdateScroll();
+    switch (this.lastTriggerElement_) {
+      case TriggerElement.SUBMIT_INPUT:
+        this.$.textarea.focusEditButton();
+        break;
+      case TriggerElement.REFRESH:
+        this.$.refreshButton.focus();
+        break;
+      case TriggerElement.LENGTH:
+        this.$.lengthMenu.focus();
+        break;
+      case TriggerElement.TONE:
+        this.$.toneMenu.focus();
+    }
   }
 
   private partialComposeResponseReceived_(partialResponse:
@@ -583,6 +613,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
         this.selectedLength_ = appState.selectedLength ?? Length.kUnset;
         this.selectedTone_ = appState.selectedTone ?? Tone.kUnset;
       }
+      this.$.undoButton.focus();
     } catch (error) {
       // Error (e.g., disconnected mojo pipe) from a rejected Promise.
       // Previously, we received a true `undo_available` field in either

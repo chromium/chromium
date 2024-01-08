@@ -203,8 +203,8 @@
   <div id="readonlyText">[[value]]</div>
   <div id="editButtonContainer"
       hidden$="[[!shouldShowEditIcon_(allowExitingReadonlyMode, readonly)]]">
-    <cr-icon-button iron-icon="compose:edit" title="$i18n{editButton}"
-        on-click="onEditClick_">
+    <cr-icon-button id="editButton" iron-icon="compose:edit"
+        title="$i18n{editButton}" on-click="onEditClick_">
     </cr-icon-button>
   </div>
 </div>
