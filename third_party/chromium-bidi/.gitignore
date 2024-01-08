@@ -9,6 +9,9 @@ logs/
 node_modules/
 out/
 wptreport*.json
+.vscode/*
+!.vscode/extensions.json
+!.vscode/*.template.json
 .ackrc
 .envrc
 .eslintcache
