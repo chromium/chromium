@@ -7430,6 +7430,11 @@ const char kQuickOfficeForceFileDownloadName[] =
 const char kQuickOfficeForceFileDownloadDescription[] =
     "Forces the Basic Office Editor to download files instead of intercepting "
     "navigations to document types it can handle.";
+
+const char kWebPrintingApiName[] = "Web Printing API";
+const char kWebPrintingApiDescription[] =
+    "Enable access to the Web Printing API. See "
+    "https://github.com/WICG/web-printing for details.";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)

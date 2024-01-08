@@ -10364,6 +10364,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(webapps::features::kCreateShortcutIgnoresManifest)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-web-printing-api", flag_descriptions::kWebPrintingApiName,
+     flag_descriptions::kWebPrintingApiDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(blink::features::kWebPrinting)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_ANDROID)
     {"ml-mobile-pwa-prompt", flag_descriptions::kMobilePWAInstallPromptMlName,
      flag_descriptions::kMobilePWAInstallPromptMlDescription, kOsAndroid,

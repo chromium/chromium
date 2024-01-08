@@ -4262,6 +4262,9 @@ extern const char kSyncChromeOSExplicitPassphraseSharingDescription[];
 extern const char kQuickOfficeForceFileDownloadName[];
 extern const char kQuickOfficeForceFileDownloadDescription[];
 
+extern const char kWebPrintingApiName[];
+extern const char kWebPrintingApiDescription[];
+
 extern const char kIgnoreUiGainsName[];
 extern const char kIgnoreUiGainsDescription[];
 
