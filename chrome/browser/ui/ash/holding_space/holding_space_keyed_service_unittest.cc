@@ -3085,8 +3085,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies that a Photoshop Web item will be added to the user's Holding Space
 // under expected circumstances.
-// TODO(crbug.com/1516029): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1516029): Flaky test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_AddPhotoshopWebItem DISABLED_AddPhotoshopWebItem
 #else
 #define MAYBE_AddPhotoshopWebItem AddPhotoshopWebItem
