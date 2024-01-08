@@ -608,6 +608,7 @@ crbug.com/626703 external/wpt/html/dom/elements/global-attributes/dir-auto-form-
 crbug.com/626703 external/wpt/svg/pservers/reftests/gradient-color-interpolation.svg [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Timeout ]
+crbug.com/626703 external/wpt/webdriver/tests/bidi/network/continue_with_auth/action.py [ Timeout ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/network/fail_request/invalid.py [ Timeout ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-landscape-001-print.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-page/page-orientation-on-portrait-001-print.html [ Failure ]

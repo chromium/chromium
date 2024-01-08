@@ -93,13 +93,6 @@ wheel: <
   >
 >
 wheel: <
-  name: "infra/python/wheels/pyyaml/${vpython_platform}"
-  version: "version:5.4.1.chromium.1"
-  match_tag: <
-    platform: "manylinux1_x86_64"
-  >
->
-wheel: <
   name: "infra/python/wheels/typing-inspect-py3"
   version: "version:0.7.1"
   match_tag: <
@@ -173,6 +166,11 @@ wheel: <
   not_match_tag <
     platform: "linux_arm64"
   >
+>
+# `pyyaml` is shared between `//third_party/wpt_tools/wpt/wpt` and `pytype`.
+wheel: <
+  name: "infra/python/wheels/pyyaml/${vpython_platform}"
+  version: "version:5.4.1.chromium.1"
 >
 
 # Used by various python unit tests.
