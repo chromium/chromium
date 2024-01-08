@@ -8,6 +8,8 @@ import android.content.Context;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Callback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 public class HubProvider {
     private final @NonNull LazyOneshotSupplier<HubManager> mHubManagerSupplier;
     private final @NonNull PaneListBuilder mPaneListBuilder;
+    private final Callback<Pane> mOnPaneFocused;
 
     /**
      * @param context The Android {@link Context} for the Hub.
@@ -45,11 +48,39 @@ public class HubProvider {
                             return HubManagerFactory.createHubManager(
                                     context, mPaneListBuilder, backPressManager, tabSupplier);
                         });
+
+        // Taken from IncognitoToggleTabLayout.
+        mOnPaneFocused =
+                pane -> {
+                    boolean isIncognito = pane.getPaneId() == PaneId.INCOGNITO_TAB_SWITCHER;
+                    TabModelSelector selector = tabModelSelectorSupplier.get();
+                    if (selector.isIncognitoSelected() == isIncognito) return;
+
+                    selector.commitAllTabClosures();
+                    selector.selectModel(isIncognito);
+                    if (isIncognito) {
+                        Integer tabCount = selector.getCurrentModelTabCountSupplier().get();
+                        RecordHistogram.recordBooleanHistogram(
+                                "Android.TabSwitcher.IncognitoClickedIsEmpty",
+                                tabCount == null ? true : tabCount.intValue() == 0);
+                    }
+                };
+        mHubManagerSupplier.onAvailable(
+                hubManager -> {
+                    hubManager
+                            .getPaneManager()
+                            .getFocusedPaneSupplier()
+                            .addObserver(mOnPaneFocused);
+                });
     }
 
     /** Destroys the {@link HubManager} it cannot be used again. */
     public void destroy() {
-        mHubManagerSupplier.get().destroy();
+        HubManager hubManager = mHubManagerSupplier.get();
+        if (hubManager == null) return;
+
+        hubManager.getPaneManager().getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
+        hubManager.destroy();
     }
 
     /** Returns the lazy supplier for {@link HubManager}. */
