@@ -274,7 +274,7 @@ function matchLabelsAndFields_(
  * @return {boolean} Whether there are fields and not too many fields in the
  *     form.
  */
-__gCrWeb.fill.formOrFieldsetsToFormData = function(
+function formOrFieldsetsToFormData(
     formElement, formControlElement, fieldsets, controlElements, iframeElements,
     extractMask, form, field) {
   // This should be a map from a control element to the AutofillFormFieldData.
@@ -369,7 +369,7 @@ __gCrWeb.fill.formOrFieldsetsToFormData = function(
     form['child_frames'].toJSON = null;
   }
   return true;
-};
+}
 
 /**
  * Fills |form| with the form data object corresponding to the
@@ -436,7 +436,7 @@ __gCrWeb.fill.webFormElementToFormData = function(
       __gCrWeb.form.getIframeElements(formElement) :
       [];
 
-  return __gCrWeb.fill.formOrFieldsetsToFormData(
+  return formOrFieldsetsToFormData(
       formElement, formControlElement, [] /* fieldsets */, controlElements,
       iframeElements, extractMask, form, field);
 };
@@ -618,8 +618,7 @@ __gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
       fieldsets.push(elements[i]);
     }
   }
-  return __gCrWeb.fill.extractAutofillableElementsFromSet(
-      unownedFieldsetChildren);
+  return extractAutofillableElementsFromSet(unownedFieldsetChildren);
 };
 
 
@@ -676,7 +675,7 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
     // TODO(crbug.com/1440471): Pass iframe elements.
-    return __gCrWeb.fill.formOrFieldsetsToFormData(
+    return formOrFieldsetsToFormData(
         null /* formElement*/, null /* formControlElement */, fieldsets,
         controlElements, /* iframeElements */[], extractMask, form,
         null /* field */);
@@ -696,7 +695,7 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     const keyword = keywords[index];
     if (title.includes(keyword) || path.includes(keyword)) {
       // TODO(crbug.com/1440471): Pass iframe elements.
-      return __gCrWeb.fill.formOrFieldsetsToFormData(
+      return formOrFieldsetsToFormData(
           null /* formElement*/, null /* formControlElement */, fieldsets,
           controlElements, /* iframeElements */[], extractMask, form,
           null /* field */);
@@ -717,7 +716,7 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
     return false;
   }
   // TODO(crbug.com/1440471): Pass iframe elements.
-  return __gCrWeb.fill.formOrFieldsetsToFormData(
+  return formOrFieldsetsToFormData(
       null /* formElement*/, null /* formControlElement */, fieldsets,
       controlElementsWithAutocomplete, /* iframeElements */[], extractMask,
       form, null /* field */);
@@ -736,7 +735,7 @@ __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
  * @param {Array<FormControlElement>} controlElements Set of control elements.
  * @return {Array<FormControlElement>} The array of autofillable elements.
  */
-__gCrWeb.fill.extractAutofillableElementsFromSet = function(controlElements) {
+function extractAutofillableElementsFromSet(controlElements) {
   const autofillableElements = [];
   for (let i = 0; i < controlElements.length; ++i) {
     const element = controlElements[i];
@@ -746,4 +745,4 @@ __gCrWeb.fill.extractAutofillableElementsFromSet = function(controlElements) {
     autofillableElements.push(element);
   }
   return autofillableElements;
-};
+}
