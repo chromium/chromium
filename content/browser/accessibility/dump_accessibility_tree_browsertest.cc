@@ -3102,9 +3102,18 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 // Flaky on Android and Fuchsia - crbug.com/1286650, crbug.com/1491059
-// crbug.com/1401767
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_AccessibilitySelectList DISABLED_AccessibilitySelectList
+#else
+#define MAYBE_AccessibilitySelectList AccessibilitySelectList
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilitySelectList) {
+                       MAYBE_AccessibilitySelectList) {
+  RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectList) {
   RunHtmlTest(FILE_PATH_LITERAL("selectlist.html"));
 }
 
