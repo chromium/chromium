@@ -77,6 +77,8 @@ namespace blink {
 
 namespace {
 
+const float kCTNormalWeightValue = 0.0;
+
 ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
     CTFontRef font,
     CTFontSymbolicTraits traits,
@@ -154,10 +156,14 @@ std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
 
   auto get_ct_font_weight = [](CTFontRef font) -> float {
     ScopedCFTypeRef<CFDictionaryRef> font_traits(CTFontCopyTraits(font));
-    CFNumberRef weight_num = GetValueFromDictionary<CFNumberRef>(
-        font_traits.get(), kCTFontWeightTrait);
-    float weight;
-    CFNumberGetValue(weight_num, kCFNumberFloatType, &weight);
+    float weight = kCTNormalWeightValue;
+    if (font_traits) {
+      CFNumberRef weight_num = GetValueFromDictionary<CFNumberRef>(
+          font_traits.get(), kCTFontWeightTrait);
+      if (weight_num) {
+        CFNumberGetValue(weight_num, kCFNumberFloatType, &weight);
+      }
+    }
     return weight;
   };
 

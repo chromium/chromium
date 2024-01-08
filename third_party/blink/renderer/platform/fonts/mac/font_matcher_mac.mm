@@ -56,6 +56,8 @@ namespace {
 const FourCharCode kWeightTag = 'wght';
 const FourCharCode kWidthTag = 'wdth';
 
+const int kCTNormalTraitsValue = 0;
+
 const NSFontTraitMask SYNTHESIZED_FONT_TRAITS =
     (NSBoldFontMask | NSItalicFontMask);
 
@@ -203,22 +205,28 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
       continue;
     }
 
+    int candidate_traits = kCTNormalTraitsValue;
+    int candidate_weight = kNormalWeightValue;
     ScopedCFTypeRef<CFDictionaryRef> traits_dict(CFCast<CFDictionaryRef>(
         CTFontDescriptorCopyAttribute(descriptor, kCTFontTraitsAttribute)));
+    if (traits_dict) {
+      CFNumberRef candidate_symbolic_traits_num =
+          GetValueFromDictionary<CFNumberRef>(traits_dict.get(),
+                                              kCTFontSymbolicTrait);
+      if (candidate_symbolic_traits_num) {
+        CFNumberGetValue(candidate_symbolic_traits_num, kCFNumberIntType,
+                         &candidate_traits);
+      }
 
-    CFNumberRef candidate_symbolic_traits_num =
-        GetValueFromDictionary<CFNumberRef>(traits_dict.get(),
-                                            kCTFontSymbolicTrait);
-    int candidate_traits;
-    CFNumberGetValue(candidate_symbolic_traits_num, kCFNumberIntType,
-                     &candidate_traits);
-
-    CFNumberRef candidate_weight_num = GetValueFromDictionary<CFNumberRef>(
-        traits_dict.get(), kCTFontWeightTrait);
-    float candidate_ct_weight;
-    CFNumberGetValue(candidate_weight_num, kCFNumberFloatType,
-                     &candidate_ct_weight);
-    int candidate_weight = ToCSSFontWeight(candidate_ct_weight);
+      CFNumberRef candidate_weight_num = GetValueFromDictionary<CFNumberRef>(
+          traits_dict.get(), kCTFontWeightTrait);
+      if (candidate_weight_num) {
+        float candidate_ct_weight;
+        CFNumberGetValue(candidate_weight_num, kCFNumberFloatType,
+                         &candidate_ct_weight);
+        candidate_weight = ToCSSFontWeight(candidate_ct_weight);
+      }
+    }
 
     if (!matched_font_in_family ||
         BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
