@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <concepts>
+#include <optional>
 
+#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
@@ -66,6 +68,62 @@ TEST(FunctionRef, Method) {
   };
   const S s(25);
   [&s](FunctionRef<int(const S*)> ref) { EXPECT_EQ(25, ref(&s)); }(&S::Method);
+}
+
+// If we construct from another `FunctionRef`, that should work fine, even if
+// the input is destroyed before we call the output. In other words, we should
+// reference the underlying callable, not the `FunctionRef`.
+//
+// We construct in a `noinline` function to maximize the chance that ASAN
+// notices the use-after-free if we get this wrong.
+NOINLINE void ConstructFromLValue(std::optional<FunctionRef<int()>>& ref) {
+  const auto return_17 = [] { return 17; };
+  FunctionRef<int()> other = return_17;
+  ref.emplace(other);
+}
+NOINLINE void ConstructFromConstLValue(std::optional<FunctionRef<int()>>& ref) {
+  const auto return_17 = [] { return 17; };
+  const FunctionRef<int()> other = return_17;
+  ref.emplace(other);
+}
+NOINLINE void ConstructFromRValue(std::optional<FunctionRef<int()>>& ref) {
+  const auto return_17 = [] { return 17; };
+  using Ref = FunctionRef<int()>;
+  ref.emplace(Ref(return_17));
+}
+NOINLINE void ConstructFromConstRValue(std::optional<FunctionRef<int()>>& ref) {
+  const auto return_17 = [] { return 17; };
+  using Ref = const FunctionRef<int()>;
+  ref.emplace(Ref(return_17));
+}
+TEST(FunctionRef, ConstructionFromOtherFunctionRefObjects) {
+  using Ref = FunctionRef<int()>;
+  std::optional<Ref> ref;
+
+  ConstructFromLValue(ref);
+  EXPECT_EQ(17, (*ref)());
+
+  ConstructFromConstLValue(ref);
+  EXPECT_EQ(17, (*ref)());
+
+  ConstructFromRValue(ref);
+  EXPECT_EQ(17, (*ref)());
+
+  ConstructFromConstRValue(ref);
+  EXPECT_EQ(17, (*ref)());
+
+  // It shouldn't be possible to construct from `FunctionRef` objects with
+  // differing signatures, even if they are compatible with `int()`.
+  static_assert(!std::constructible_from<Ref, FunctionRef<void()>>);
+  static_assert(!std::constructible_from<Ref, FunctionRef<int(int)>>);
+  static_assert(!std::constructible_from<Ref, FunctionRef<int64_t()>>);
+
+  // Check again with various qualifiers.
+  static_assert(!std::constructible_from<Ref, const FunctionRef<void()>>);
+  static_assert(!std::constructible_from<Ref, FunctionRef<void()>&>);
+  static_assert(!std::constructible_from<Ref, FunctionRef<void()>&&>);
+  static_assert(!std::constructible_from<Ref, const FunctionRef<void()>&>);
+  static_assert(!std::constructible_from<Ref, const FunctionRef<void()>&&>);
 }
 
 // `FunctionRef` allows functors with convertible return types to be adapted.
@@ -140,6 +198,23 @@ TEST(FunctionRef, ConstructionFromInexactMatches) {
   // functor, even with a compatible signature.
   static_assert(!std::constructible_from<FunctionRef<int32_t(int32_t)>,
                                          decltype(&functor)>);
+}
+
+TEST(FunctionRef, ConstructionFromAbslFunctionRef) {
+  // It shouldn't be possible to construct a `FunctionRef` from an
+  // `absl::FunctionRef`, whether the signatures are compatible or not.
+  using Ref = FunctionRef<int(int)>;
+  static_assert(!std::is_constructible_v<Ref, absl::FunctionRef<void()>>);
+  static_assert(!std::is_constructible_v<Ref, absl::FunctionRef<void(int)>>);
+  static_assert(!std::is_constructible_v<Ref, absl::FunctionRef<int(int)>>);
+
+  // Check again with various qualifiers.
+  using AbslRef = absl::FunctionRef<int(int)>;
+  static_assert(!std::is_constructible_v<Ref, const AbslRef>);
+  static_assert(!std::is_constructible_v<Ref, AbslRef&>);
+  static_assert(!std::is_constructible_v<Ref, AbslRef&&>);
+  static_assert(!std::is_constructible_v<Ref, const AbslRef&>);
+  static_assert(!std::is_constructible_v<Ref, const AbslRef&&>);
 }
 
 }  // namespace base

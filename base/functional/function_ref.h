@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/functional/bind_internal.h"
+#include "base/types/is_instantiation.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/abseil-cpp/absl/functional/function_ref.h"
 
@@ -72,7 +73,29 @@ class FunctionRef<R(Args...)> {
   // `ABSL_ATTRIBUTE_LIFETIME_BOUND` is important; since `FunctionRef` retains
   // only a reference to `functor`, `functor` must outlive `this`.
   template <typename Functor>
-    requires kCompatibleFunctor<Functor>
+    requires kCompatibleFunctor<Functor> &&
+             // Prevent this constructor from participating in overload
+             // resolution if the callable is itself an instantiation of the
+             // `FunctionRef` template.
+             //
+             // If the callable is a `FunctionRef` with exactly the same
+             // signature as us, then the copy constructor will be used instead,
+             // so this has no effect. (Note that if the constructor argument
+             // were `Functor&&`, this exclusion would be necessary to force the
+             // choice of the copy constructor over this one for non-const ref
+             // args; see https://stackoverflow.com/q/57909923.)
+             //
+             // If the callable is a `FunctionRef` with some other signature
+             // then we choose not to support binding to it at all. Conceivably
+             // we could teach our trampoline to deal with this, but this may be
+             // the sign of an object lifetime bug, and again it's not clear
+             // that this isn't just a mistake on the part of the user.
+             (!internal::is_instantiation_v<FunctionRef,
+                                            std::decay_t<Functor>>) &&
+             // For the same reason as the second case above, prevent
+             // construction from `absl::FunctionRef`.
+             (!internal::is_instantiation_v<absl::FunctionRef,
+                                            std::decay_t<Functor>>)
   // NOLINTNEXTLINE(google-explicit-constructor)
   FunctionRef(const Functor& functor ABSL_ATTRIBUTE_LIFETIME_BOUND)
       : wrapped_func_ref_(functor) {}
