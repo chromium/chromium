@@ -660,7 +660,14 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_TITLE_SAVE_TO_ACCOUNT)
           .SetInAnyContext(true)
           .SetBubbleArrow(HelpBubbleArrow::kBottomRight)
-          .SetBubbleIcon(&vector_icons::kCelebrationIcon)));
+          .SetBubbleIcon(&vector_icons::kCelebrationIcon)
+          .SetMetadata(
+              90, "dfried@google.com", "Test IPH.",
+              // These are not required features; they are just an example to
+              // ensure that the tester page formats this data correctly.
+              FeaturePromoSpecification::Metadata::FeatureSet{
+                  &feature_engagement::kIPHWebUiHelpBubbleTestFeature,
+                  &feature_engagement::kIPHDesktopTabGroupsNewGroupFeature})));
 
   // kIPHBatterySaverModeFeature:
   registry.RegisterFeature(std::move(

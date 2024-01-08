@@ -178,6 +178,16 @@ std::vector<std::string> GetSupportedPlatforms(
   return result;
 }
 
+std::vector<std::string> GetRequiredFeatures(
+    const user_education::FeaturePromoSpecification& spec) {
+  std::vector<std::string> result;
+  const auto& required_features = spec.metadata().required_features;
+  std::transform(required_features.begin(), required_features.end(),
+                 std::back_inserter(result),
+                 [](const base::Feature* feature) { return feature->name; });
+  return result;
+}
+
 // Takes a string resource which may have placeholder substitutions and/or
 // plural variations, and creates a single, readable exemplar string.
 //
@@ -375,7 +385,7 @@ void UserEducationInternalsPageHandlerImpl::GetTutorials(
           id, GetTutorialDescription(*description), id,
           GetTutorialTypeString(*description),
           GetTutorialMilestone(*description),
-          GetSupportedPlatforms(*description),
+          GetSupportedPlatforms(*description), std::vector<std::string>(),
           GetTutorialInstructions(*description),
           /*followed_by=*/"", std::vector<FeaturePromoDemoPageDataPtr>()));
     } else {
@@ -419,8 +429,8 @@ void UserEducationInternalsPageHandlerImpl::GetFeaturePromos(
           GetTitleFromFeaturePromoData(feature, spec),
           GetDescriptionFromFeaturePromoData(spec), feature->name,
           GetPromoTypeString(spec), spec.metadata().launch_milestone,
-          GetSupportedPlatforms(spec), GetPromoInstructions(spec),
-          GetPromoFollowedBy(spec),
+          GetSupportedPlatforms(spec), GetRequiredFeatures(spec),
+          GetPromoInstructions(spec), GetPromoFollowedBy(spec),
           GetPromoData(spec, storage_service, tracker)));
     }
   }

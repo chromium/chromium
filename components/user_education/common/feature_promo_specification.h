@@ -70,6 +70,7 @@ class FeaturePromoSpecification {
     Metadata(int launch_milestone,
              std::string owners,
              std::string triggering_condition_description,
+             base::flat_set<const base::Feature*> required_features = {},
              base::flat_set<Platforms> platforms = kAllDesktopPlatforms);
     Metadata();
     Metadata(Metadata&&) noexcept;
@@ -90,6 +91,11 @@ class FeaturePromoSpecification {
     // but a good description will help other people understand how the IPH is
     // implemented and when to expect it to appear.
     std::string triggering_condition_description;
+
+    // The set of non-IPH features that must be enabled in order for the IPH to
+    // be displayed.
+    using FeatureSet = base::flat_set<const base::Feature*>;
+    FeatureSet required_features;
 
     // The set of platforms the IPH can be displayed on.
     base::flat_set<Platforms> platforms = kAllDesktopPlatforms;

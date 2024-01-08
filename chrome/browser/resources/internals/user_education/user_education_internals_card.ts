@@ -80,6 +80,14 @@ class UserEducationInternalsCardElement extends PolymerElement {
     return this.promo.supportedPlatforms.join(', ');
   }
 
+  private showRequiredFeatures_() {
+    return this.promo.requiredFeatures.length;
+  }
+
+  private formatRequiredFeatures_() {
+    return this.promo.requiredFeatures.join(', ');
+  }
+
   private showInstructions_() {
     return this.promo.instructions.length;
   }

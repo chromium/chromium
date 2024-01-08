@@ -53,6 +53,9 @@ li {
   </p>
   <p><b>Type:</b> [[promo.type]]</p>
   <p><b>Platforms: </b>[[formatPlatforms_()]]</p>
+  <p hidden$="[[!showRequiredFeatures_()]]">
+    <b>Required features: </b>[[formatRequiredFeatures_()]]
+  </p>
   <cr-expand-button hidden$="[[!showInstructions_()]]"
       expanded="{{instructionsExpanded_}}">
     <div id="label"><b>Full Details</b></div>
@@ -61,13 +64,13 @@ li {
     <template is="dom-repeat" items="[[promo.instructions]]">
       <li>[[item]]</li>
     </template>
-      <li hidden$="[[!showFollowedBy_()]]">
-        Followed by
-        <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
-          [[promo.followedByInternalName]]
-        </a>
-      </li>
-    </ol>
+    <li hidden$="[[!showFollowedBy_()]]">
+      Followed by
+      <a href="#[[getFollowedByAnchor_()]]" on-click="scrollToFollowedBy_">
+        [[promo.followedByInternalName]]
+      </a>
+    </li>
+  </ol>
   <cr-expand-button hidden$="[[!showData_()]]" expanded="{{dataExpanded_}}">
     <div id="label"><b>Stored Data</b></div>
   </cr-expand-button>

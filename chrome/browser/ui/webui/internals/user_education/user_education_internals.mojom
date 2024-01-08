@@ -27,6 +27,9 @@ struct FeaturePromoDemoPageInfo {
   // The list of supported platforms as text strings. (This mirrors the use on
   // the flags page.)
   array<string> supported_platforms;
+  // The names of other non-IPH features that must be enabled for this promo to
+  // display successfully.
+  array<string> required_features;
   // A list of human-readable instructions on how to set the browser up so that
   // the tutorial or IPH can be run.
   array<string> instructions;

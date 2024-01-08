@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "components/strings/grit/components_strings.h"
@@ -86,11 +87,13 @@ FeaturePromoSpecification::Metadata::Metadata(
     int launch_milestone_,
     std::string owners_,
     std::string triggering_condition_description_,
+    base::flat_set<const base::Feature*> required_features_,
     base::flat_set<Platforms> platforms_)
     : launch_milestone(launch_milestone_),
       owners(std::move(owners_)),
       triggering_condition_description(
           std::move(triggering_condition_description_)),
+      required_features(std::move(required_features_)),
       platforms(std::move(platforms_)) {}
 
 FeaturePromoSpecification::Metadata::Metadata() = default;
