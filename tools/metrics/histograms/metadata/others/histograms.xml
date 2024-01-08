@@ -6175,17 +6175,6 @@ chromium-metrics-reviews@google.com.
   <token key="MessageType" variants="GridTabSwitcherMessageTypes"/>
 </histogram>
 
-<histogram name="Hardware.Concurrency" units="CPU cores"
-    expires_after="2021-12-12">
-  <owner>zmo@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Records the system hardware concurrency collected in the info collection GPU
-    process, once per UMA ping. For most systems, it is equivalent to the number
-    of CPU cores.
-  </summary>
-</histogram>
-
 <histogram name="Hardware.Display.Count.OnChange" units="units"
     expires_after="2024-05-19">
   <owner>sashamcintosh@chromium.org</owner>
