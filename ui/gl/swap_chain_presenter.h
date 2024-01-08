@@ -151,6 +151,15 @@ class SwapChainPresenter : public base::PowerStateObserver {
       absl::optional<gfx::Size>* dest_size,
       absl::optional<gfx::Rect>* target_rect) const;
 
+  void AdjustTargetToOptimalSizeIfNeededF(
+      const DCLayerOverlayParams& params,
+      const gfx::RectF& overlay_onscreen_rect,
+      gfx::SizeF* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::RectF* visual_clip_rect,
+      absl::optional<gfx::SizeF>* dest_size,
+      absl::optional<gfx::RectF>* target_rect) const;
+
   // If the swap chain size is very close to the screen size but not exactly the
   // same, the swap chain should be adjusted to fit the screen size in order to
   // get the full screen DWM optimizations.
@@ -161,6 +170,14 @@ class SwapChainPresenter : public base::PowerStateObserver {
       gfx::Size* swap_chain_size,
       gfx::Transform* visual_transform,
       gfx::Rect* visual_clip_rect) const;
+
+  bool AdjustTargetToFullScreenSizeIfNeededF(
+      const gfx::SizeF& monitor_size,
+      const DCLayerOverlayParams& params,
+      const gfx::RectF& overlay_onscreen_rect,
+      gfx::SizeF* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::RectF* visual_clip_rect) const;
 
   // If the returned optional |dest_size| and |target_rect| contain valid
   // values, it means this is a good overlay for full screen letterboxing after
@@ -180,8 +197,25 @@ class SwapChainPresenter : public base::PowerStateObserver {
       absl::optional<gfx::Size>* dest_size,
       absl::optional<gfx::Rect>* target_rect) const;
 
+  void AdjustTargetForFullScreenLetterboxingF(
+      const gfx::SizeF& monitor_size,
+      const DCLayerOverlayParams& params,
+      const gfx::RectF& overlay_onscreen_rect,
+      gfx::SizeF* swap_chain_size,
+      gfx::Transform* visual_transform,
+      gfx::RectF* visual_clip_rect,
+      absl::optional<gfx::SizeF>* dest_size,
+      absl::optional<gfx::RectF>* target_rect) const;
+
   // Returns optimal swap chain size for given layer.
   gfx::Size CalculateSwapChainSize(
+      const DCLayerOverlayParams& params,
+      gfx::Transform* visual_transform,
+      gfx::Rect* visual_clip_rect,
+      absl::optional<gfx::Size>* dest_size,
+      absl::optional<gfx::Rect>* target_rect) const;
+
+  gfx::Size CalculateSwapChainSizeF(
       const DCLayerOverlayParams& params,
       gfx::Transform* visual_transform,
       gfx::Rect* visual_clip_rect,
