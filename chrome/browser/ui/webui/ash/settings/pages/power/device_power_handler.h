@@ -73,7 +73,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
     void SetAdaptiveCharging(bool enabled);
 
    private:
-    raw_ptr<PowerHandler, ExperimentalAsh> handler_;  // Not owned.
+    raw_ptr<PowerHandler> handler_;  // Not owned.
   };
 
   explicit PowerHandler(PrefService* prefs);
@@ -163,7 +163,7 @@ class PowerHandler : public ::settings::SettingsPageUIHandler,
   // the idle behavior of the device when on |power_source|.
   bool IsIdleManaged(PowerSource power_source);
 
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService> prefs_;
 
   // Used to watch power management prefs for changes so the UI can be notified.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

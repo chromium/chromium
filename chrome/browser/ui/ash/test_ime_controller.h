@@ -22,7 +22,7 @@ class ImeControllerResetterForTest {
   ~ImeControllerResetterForTest();
 
  private:
-  const raw_ptr<ash::ImeController, ExperimentalAsh> instance_;
+  const raw_ptr<ash::ImeController> instance_;
 };
 
 class TestImeController : private ImeControllerResetterForTest,

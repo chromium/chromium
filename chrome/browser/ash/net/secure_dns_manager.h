@@ -47,7 +47,7 @@ class SecureDnsManager {
   void OnPrefChanged();
 
   PrefChangeRegistrar registrar_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // Maps secure DNS provider URL templates to their corresponding standard DNS
   // name servers. Providers that are either disabled or not applicable for the

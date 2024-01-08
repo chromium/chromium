@@ -110,8 +110,8 @@ class ArcVmDataMigrationNotifierTest : public ash::AshTestBase {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      testing_profile_ = nullptr;  // Owned by |profile_manager_|.
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_ =
+      nullptr;  // Owned by |profile_manager_|.
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 };
 

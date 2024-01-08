@@ -128,7 +128,7 @@ class SpeechRecognitionImpl
   std::map<std::string, std::unique_ptr<SpeechRecognitionEventObserverWrapper>>
       event_observer_wrappers_;
   mojo::ReceiverSet<ax::mojom::SpeechRecognition> receivers_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<content::BrowserContext> profile_ = nullptr;
   base::WeakPtrFactory<SpeechRecognitionImpl> weak_ptr_factory_{this};
 };
 

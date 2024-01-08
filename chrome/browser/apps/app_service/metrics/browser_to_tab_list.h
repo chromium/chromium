@@ -50,7 +50,7 @@ class BrowserToTabList {
     BrowserToTab(aura::Window* browser_window,
                  const base::UnguessableToken& tab_id,
                  const std::string& app_id);
-    raw_ptr<aura::Window, ExperimentalAsh> browser_window;
+    raw_ptr<aura::Window> browser_window;
     base::UnguessableToken tab_id;
     std::string app_id;
   };

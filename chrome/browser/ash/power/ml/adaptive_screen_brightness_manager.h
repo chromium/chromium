@@ -118,8 +118,8 @@ class AdaptiveScreenBrightnessManager
                           chromeos::PowerManagerClient::Observer>
       power_manager_client_observation_{this};
 
-  const raw_ptr<AccessibilityManager, ExperimentalAsh> accessibility_manager_;
-  const raw_ptr<MagnificationManager, ExperimentalAsh> magnification_manager_;
+  const raw_ptr<AccessibilityManager> accessibility_manager_;
+  const raw_ptr<MagnificationManager> magnification_manager_;
 
   const mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 

@@ -156,7 +156,7 @@ class AppServiceAppWindowShelfController
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_{this};
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
   std::unique_ptr<AppServiceInstanceRegistryHelper>
       app_service_instance_helper_;
   std::unique_ptr<AppServiceAppWindowArcTracker> arc_tracker_;

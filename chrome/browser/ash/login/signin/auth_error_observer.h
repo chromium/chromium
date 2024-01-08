@@ -53,7 +53,7 @@ class AuthErrorObserver : public KeyedService,
   // in the Primary / Sync account and not a Secondary Account.
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

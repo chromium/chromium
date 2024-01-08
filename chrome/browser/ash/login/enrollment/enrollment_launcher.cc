@@ -157,7 +157,7 @@ class EnrollmentLauncherImpl : public EnrollmentLauncher {
   // `callback` is a callback, that was passed to ClearAuth() before.
   void OnSigninProfileCleared(base::OnceClosure callback);
 
-  raw_ptr<EnrollmentStatusConsumer, ExperimentalAsh> status_consumer_;
+  raw_ptr<EnrollmentStatusConsumer> status_consumer_;
 
   // Returns either OAuth token or DM token needed for the device attribute
   // update permission request.

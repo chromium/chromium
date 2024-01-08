@@ -169,7 +169,7 @@ class NetworkScreenTest : public OobeBaseTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  raw_ptr<NetworkScreen, DanglingUntriaged | ExperimentalAsh> network_screen_;
+  raw_ptr<NetworkScreen, DanglingUntriaged> network_screen_;
   base::test::TestFuture<NetworkScreen::Result> screen_result_waiter_;
   std::unique_ptr<NetworkStateTestHelper> network_helper_;
 };

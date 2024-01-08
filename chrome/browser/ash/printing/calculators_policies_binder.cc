@@ -74,7 +74,7 @@ class PrefBinder : public CalculatorsPoliciesBinder {
   }
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 
@@ -111,7 +111,7 @@ class SettingsBinder : public CalculatorsPoliciesBinder {
   }
 
  private:
-  raw_ptr<CrosSettings, ExperimentalAsh> settings_;
+  raw_ptr<CrosSettings> settings_;
   std::list<base::CallbackListSubscription> subscriptions_;
 };
 

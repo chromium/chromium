@@ -537,7 +537,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     // BrowserManager must outlive this instance.
     ScopedKeepAlive(BrowserManager* manager, Feature feature);
 
-    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
+    raw_ptr<BrowserManager> manager_;
     Feature feature_;
   };
 
@@ -548,7 +548,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
     ~ScopedUnsetAllKeepAliveForTesting();
 
    private:
-    raw_ptr<BrowserManager, ExperimentalAsh> manager_;
+    raw_ptr<BrowserManager> manager_;
     std::set<BrowserManager::Feature> previous_keep_alive_features_;
   };
 

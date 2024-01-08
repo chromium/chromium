@@ -88,7 +88,7 @@ class LocaleChangeGuard : public session_manager::SessionManagerObserver,
 
   std::string from_locale_;
   std::string to_locale_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   bool reverted_ = false;
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

@@ -815,7 +815,7 @@ class DetachToBrowserTabDragControllerTest
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The root window for the event generator.
-  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> root_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged> root_ = nullptr;
 #endif
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<webapps::AppId> tabbed_app_id_;
@@ -3817,9 +3817,9 @@ class DraggedWindowObserver : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<DetachToBrowserTabDragControllerTest, ExperimentalAsh> test_;
+  raw_ptr<DetachToBrowserTabDragControllerTest> test_;
   // The dragged window.
-  raw_ptr<aura::Window, ExperimentalAsh> window_ = nullptr;
+  raw_ptr<aura::Window> window_ = nullptr;
   // The bounds that |window_| will change to when the drag ends.
   gfx::Rect end_bounds_;
   // The position that the mouse/touch event will move to when the drag ends.

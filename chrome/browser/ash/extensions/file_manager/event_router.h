@@ -325,7 +325,7 @@ class EventRouter
 
   std::map<base::FilePath, std::unique_ptr<FileWatcher>> file_watchers_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<SystemNotificationManager> notification_manager_;
   std::unique_ptr<DeviceEventRouter> device_event_router_;

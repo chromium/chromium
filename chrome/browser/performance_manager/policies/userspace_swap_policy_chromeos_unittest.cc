@@ -180,8 +180,7 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment browser_env_;
   std::unique_ptr<TestGraphImpl> graph_;
-  raw_ptr<MockUserspaceSwapPolicy, ExperimentalAsh> policy_ =
-      nullptr;  // Not owned.
+  raw_ptr<MockUserspaceSwapPolicy> policy_ = nullptr;  // Not owned.
 
   TestNodeWrapper<ProcessNodeImpl> process_node_;
   TestNodeWrapper<PageNodeImpl> page_node_;

@@ -130,7 +130,7 @@ class CopyOperation : public base::RefCountedThreadSafe<CopyOperation> {
         std::move(progress_callback_), std::move(callback_));
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<storage::FileSystemOperationContext> context_;
   const storage::FileSystemURL src_url_;
   const storage::FileSystemURL dest_url_;
@@ -235,7 +235,7 @@ class DeleteOperation : public base::RefCountedThreadSafe<DeleteOperation> {
     }
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const base::FilePath path_;
   base::FilePath drive_path_;
   Id id_ = Id::kNone;

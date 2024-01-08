@@ -118,14 +118,12 @@ class EcheAppManagerFactoryTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
-  raw_ptr<PhoneHubTray, DanglingUntriaged | ExperimentalAsh> phone_hub_tray_ =
-      nullptr;
-  raw_ptr<EcheAppManagerFactory, ExperimentalAsh> eche_app_manager_factory_ =
-      nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
+  raw_ptr<PhoneHubTray, DanglingUntriaged> phone_hub_tray_ = nullptr;
+  raw_ptr<EcheAppManagerFactory> eche_app_manager_factory_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();
@@ -173,10 +171,10 @@ class EcheAppManagerFactoryWithBackgroundTest : public ChromeAshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<EcheConnectionStatusHandler> connection_handler_;
   std::unique_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
-  raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
+  raw_ptr<EcheTray, DanglingUntriaged> eche_tray_ = nullptr;
   // Calling the factory constructor is enough to set it up.
   std::unique_ptr<TestAshWebViewFactory> test_web_view_factory_ =
       std::make_unique<TestAshWebViewFactory>();

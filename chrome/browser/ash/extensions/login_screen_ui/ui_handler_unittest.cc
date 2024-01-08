@@ -211,16 +211,13 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
 
   session_manager::SessionManager session_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<ash::StubInstallAttributes, ExperimentalAsh>
-      stub_install_attributes_ = nullptr;
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_ =
-      nullptr;
+  raw_ptr<ash::StubInstallAttributes> stub_install_attributes_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
   scoped_refptr<const extensions::Extension> extension_;
 
   TestLoginScreen test_login_screen_;
 
-  raw_ptr<FakeWindowFactory, DanglingUntriaged | ExperimentalAsh>
-      fake_window_factory_ = nullptr;
+  raw_ptr<FakeWindowFactory, DanglingUntriaged> fake_window_factory_ = nullptr;
 
   std::unique_ptr<UiHandler> ui_handler_;
 };

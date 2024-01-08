@@ -51,7 +51,7 @@ class RefreshRateController
 
   // Not owned.
   raw_ptr<display::DisplayConfigurator> display_configurator_;
-  const raw_ptr<PowerStatus, ExperimentalAsh> power_status_;
+  const raw_ptr<PowerStatus> power_status_;
   bool force_throttle_ = false;
 
   base::ScopedObservation<ash::PowerStatus, ash::PowerStatus::Observer>

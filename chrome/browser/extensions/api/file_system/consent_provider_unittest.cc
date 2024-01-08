@@ -129,7 +129,7 @@ class FileSystemApiConsentProviderTest : public testing::Test {
 
  protected:
   std::unique_ptr<TestingPrefServiceSimple> testing_pref_service_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       user_manager_;  // Owned by the scope enabler.
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_enabler_;
   content::BrowserTaskEnvironment task_environment_;

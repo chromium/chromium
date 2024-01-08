@@ -124,10 +124,8 @@ class FileSystemProviderFileStreamReader : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh>
-      profile_;  // Owned by TestingProfileManager.
-  raw_ptr<const FakeEntry, ExperimentalAsh>
-      fake_file_;  // Owned by FakePRovidedFileSystem.
+  raw_ptr<TestingProfile> profile_;  // Owned by TestingProfileManager.
+  raw_ptr<const FakeEntry> fake_file_;  // Owned by FakePRovidedFileSystem.
   storage::FileSystemURL file_url_;
   storage::FileSystemURL wrong_file_url_;
 };

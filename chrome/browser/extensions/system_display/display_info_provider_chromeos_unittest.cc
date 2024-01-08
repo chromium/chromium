@@ -198,7 +198,7 @@ class DisplayInfoProviderChromeosTest : public ChromeAshTestBase {
   std::unique_ptr<ash::CrosDisplayConfig> cros_display_config_;
 
  protected:
-  raw_ptr<DisplayInfoProvider, ExperimentalAsh> provider_;
+  raw_ptr<DisplayInfoProvider> provider_;
 };
 
 TEST_F(DisplayInfoProviderChromeosTest, GetBasic) {

@@ -58,8 +58,8 @@ class LockScreenProfileCreatorImpl : public LockScreenProfileCreator,
   // |profile| - the created profile - i.e. the lock screen profile.
   void OnProfileReady(const base::TimeTicks& start_time, Profile* profile);
 
-  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  const raw_ptr<Profile> primary_profile_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::ScopedObservation<ash::NoteTakingHelper,
                           ash::NoteTakingHelper::Observer>

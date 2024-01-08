@@ -89,7 +89,7 @@ class VolumeControllerTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<ash::CrasAudioHandler, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::CrasAudioHandler, DanglingUntriaged>
       audio_handler_;  // Not owned.
 };
 
@@ -200,8 +200,7 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   }
 
  private:
-  raw_ptr<SoundsManagerTestImpl, DanglingUntriaged | ExperimentalAsh>
-      sounds_manager_;
+  raw_ptr<SoundsManagerTestImpl, DanglingUntriaged> sounds_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(VolumeControllerSoundsTest, Simple) {

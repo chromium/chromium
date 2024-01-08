@@ -212,9 +212,9 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   // has resolved the current request.
   bool is_permission_dialog_visible_ = false;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  const raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
 };

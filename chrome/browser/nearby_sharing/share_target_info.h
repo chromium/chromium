@@ -91,7 +91,7 @@ class ShareTargetInfo {
  private:
   absl::optional<std::string> endpoint_id_;
   absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_ = nullptr;
+  raw_ptr<NearbyConnection> connection_ = nullptr;
   std::unique_ptr<TransferUpdateCallback> transfer_update_callback_;
   absl::optional<std::string> token_;
   std::unique_ptr<IncomingFramesReader> frames_reader_;

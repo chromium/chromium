@@ -147,14 +147,13 @@ class ZeroStateDriveProviderTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   TestSearchController search_controller_;
-  raw_ptr<ZeroStateDriveProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ZeroStateDriveProvider> provider_ = nullptr;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
-  raw_ptr<TestFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
-      nullptr;
+  raw_ptr<TestFileSuggestKeyedService> file_suggest_service_ = nullptr;
   // The mount point for drive files.
   std::unique_ptr<ScopedTestMountPoint> drive_fs_mount_point_;
 };

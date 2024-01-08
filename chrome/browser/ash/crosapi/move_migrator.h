@@ -341,7 +341,7 @@ class MoveMigrator : public BrowserDataMigratorImpl::MigratorDelegate {
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
 
   // Local state prefs, not owned.
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // `finished_callback_` should be called once migration is completed/failed.
   // Call this on UI thread.

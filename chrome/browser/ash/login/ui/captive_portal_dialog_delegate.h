@@ -68,11 +68,9 @@ class CaptivePortalDialogDelegate
   // b/292447218.
   base::WeakPtr<views::Widget> widget_ = nullptr;
 
-  raw_ptr<views::WebDialogView, ExperimentalAsh> view_ = nullptr;
-  raw_ptr<views::WebDialogView, DanglingUntriaged | ExperimentalAsh>
-      host_view_ = nullptr;
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
-      web_contents_ = nullptr;
+  raw_ptr<views::WebDialogView> view_ = nullptr;
+  raw_ptr<views::WebDialogView, DanglingUntriaged> host_view_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
 
   class ModalDialogManagerCleanup;
   std::unique_ptr<ModalDialogManagerCleanup> modal_dialog_manager_cleanup_;

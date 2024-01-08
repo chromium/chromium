@@ -285,7 +285,7 @@ class Adapter : public AlsReader::Observer,
       double old_brightness_percent,
       double new_brightness_percent) const;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::ScopedObservation<AlsReader, AlsReader::Observer>
       als_reader_observation_{this};
@@ -302,12 +302,12 @@ class Adapter : public AlsReader::Observer,
       power_manager_client_observation_{this};
 
   // Used to report daily metrics to UMA. This may be null in unit tests.
-  raw_ptr<MetricsReporter, ExperimentalAsh> metrics_reporter_;
+  raw_ptr<MetricsReporter> metrics_reporter_;
 
   Params params_;
 
   // This will be replaced by a mock tick clock during tests.
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // TODO(jiameng): refactor internal states and flags.
 

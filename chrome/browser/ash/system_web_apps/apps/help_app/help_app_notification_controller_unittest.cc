@@ -133,8 +133,7 @@ class HelpAppNotificationControllerTest : public BrowserWithTestWindowTest {
 
   PrefService* pref_service() { return pref_service_.get(); }
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
   int notification_count_ = 0;
   std::unique_ptr<HelpAppNotificationController>

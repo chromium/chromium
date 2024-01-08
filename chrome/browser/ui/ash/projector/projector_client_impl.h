@@ -104,7 +104,7 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   // Called when app registry becomes ready.
   void SetAppIsDisabled(bool disabled);
 
-  const raw_ptr<ash::ProjectorController, ExperimentalAsh> controller_;
+  const raw_ptr<ash::ProjectorController> controller_;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<SpeechRecognitionRecognizerClientImpl> speech_recognizer_;

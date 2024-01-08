@@ -100,8 +100,7 @@ class TempFileSystem {
   const std::string name_;
   const GURL appURL_;
   const url::Origin origin_;
-  const raw_ptr<storage::FileSystemContext, ExperimentalAsh>
-      file_system_context_;
+  const raw_ptr<storage::FileSystemContext> file_system_context_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -193,7 +192,7 @@ class FileManagerFileAPIUtilTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
 // Passes the |result| to the |output| pointer.

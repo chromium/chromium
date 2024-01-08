@@ -63,8 +63,8 @@ class ShelfAppUpdater {
 
  private:
   // Unowned pointers
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_SHELF_SHELF_APP_UPDATER_H_

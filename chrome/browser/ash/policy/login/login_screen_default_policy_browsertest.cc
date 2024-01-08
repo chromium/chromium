@@ -57,7 +57,7 @@ class LoginScreenDefaultPolicyBrowsertestBase
 
   void RefreshDevicePolicyAndWaitForPrefChange(const char* pref_name);
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> login_profile_;
+  raw_ptr<Profile, DanglingUntriaged> login_profile_;
 };
 
 class LoginScreenDefaultPolicyLoginScreenBrowsertest

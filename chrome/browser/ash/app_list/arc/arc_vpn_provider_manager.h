@@ -80,7 +80,7 @@ class ArcVpnProviderManager : public ArcAppListPrefs::Observer,
  private:
   void MaybeNotifyArcVpnProviderUpdate(const std::string& app_id);
 
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_app_list_prefs_;
+  const raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
 
   // List of observers.
   base::ObserverList<Observer> observer_list_;

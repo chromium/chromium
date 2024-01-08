@@ -83,7 +83,7 @@ class TaskManagerAsh : public mojom::TaskManager {
   std::map<base::UnguessableToken, mojo::Remote<mojom::TaskManagerProvider>>
       task_manager_providers_;
 
-  raw_ptr<Observer, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
 
   int64_t refresh_flags_ = task_manager::REFRESH_TYPE_NONE;
 

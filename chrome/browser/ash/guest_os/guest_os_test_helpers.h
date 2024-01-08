@@ -29,7 +29,7 @@ class MockMountProvider : public GuestOsMountProvider {
       base::FilePath mount_path,
       base::FilePath relative_path) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::GuestId container_id_;
 };
 }  // namespace guest_os

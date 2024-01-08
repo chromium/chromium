@@ -47,9 +47,8 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
   void OnWindowDestroying(aura::Window* window) override;
 
  private:
-  const raw_ref<BrowserAppInstanceRegistry, ExperimentalAsh>
-      browser_app_instance_registry_;
-  const raw_ref<InstanceRegistry, ExperimentalAsh> instance_registry_;
+  const raw_ref<BrowserAppInstanceRegistry> browser_app_instance_registry_;
+  const raw_ref<InstanceRegistry> instance_registry_;
 
   void OnInstance(const base::UnguessableToken& instance_id,
                   const std::string& app_id,

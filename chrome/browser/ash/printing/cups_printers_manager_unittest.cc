@@ -390,7 +390,7 @@ class FakePrintServersManager : public PrintServersManager {
   }
 
  private:
-  raw_ptr<Observer, ExperimentalAsh> observer_;
+  raw_ptr<Observer> observer_;
 };
 
 class CupsPrintersManagerTest : public testing::Test,
@@ -480,16 +480,15 @@ class CupsPrintersManagerTest : public testing::Test,
 
   // Backend fakes driving the CupsPrintersManager.
   FakeSyncedPrintersManager synced_printers_manager_;
-  raw_ptr<FakeEnterprisePrintersProvider, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeEnterprisePrintersProvider, DanglingUntriaged>
       enterprise_printers_provider_;  // Not owned.
-  raw_ptr<FakePrinterDetector, DanglingUntriaged | ExperimentalAsh>
-      usb_detector_;  // Not owned.
-  raw_ptr<FakePrinterDetector, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakePrinterDetector, DanglingUntriaged> usb_detector_;  // Not owned.
+  raw_ptr<FakePrinterDetector, DanglingUntriaged>
       zeroconf_detector_;  // Not owned.
   raw_ptr<FakeUsbPrinterNotificationController,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       usb_notif_controller_;  // Not owned.
-  raw_ptr<FakePrintServersManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakePrintServersManager, DanglingUntriaged>
       print_servers_manager_;  // Not owned.
   scoped_refptr<FakePpdProvider> ppd_provider_;
 

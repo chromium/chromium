@@ -27,7 +27,7 @@ class PluginVmUninstallerNotification {
   void ForceRedisplay();
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<message_center::Notification> notification_;
   base::WeakPtrFactory<PluginVmUninstallerNotification> weak_ptr_factory_{this};
 };

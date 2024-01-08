@@ -74,7 +74,7 @@ class MockUploadJob : public UploadJob {
 
  protected:
   const GURL upload_url_;
-  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<UploadJob::Delegate> delegate_;
   std::unique_ptr<UploadJob::ErrorCode> error_code_;
   bool add_datasegment_succeeds_;
 };

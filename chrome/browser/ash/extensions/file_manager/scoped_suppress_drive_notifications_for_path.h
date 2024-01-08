@@ -28,7 +28,7 @@ class ScopedSuppressDriveNotificationsForPath {
   ~ScopedSuppressDriveNotificationsForPath();
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::FilePath relative_drive_path_;
 };
 

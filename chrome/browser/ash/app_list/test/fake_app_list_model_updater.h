@@ -89,7 +89,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
   size_t update_image_count() const { return update_image_count_; }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   bool search_engine_is_google_ = false;
   std::vector<std::unique_ptr<ChromeAppListItem>> items_;

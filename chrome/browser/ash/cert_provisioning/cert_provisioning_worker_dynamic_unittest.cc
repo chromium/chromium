@@ -471,8 +471,8 @@ class CertProvisioningWorkerDynamicTest : public ::testing::Test {
   TestingPrefServiceSimple testing_pref_service_;
 
   StrictMock<MockCertProvisioningClient> cert_provisioning_client_;
-  raw_ptr<platform_keys::MockPlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::MockPlatformKeysService> platform_keys_service_ =
+      nullptr;
   std::unique_ptr<platform_keys::MockKeyPermissionsManager>
       key_permissions_manager_;
 };
@@ -2127,7 +2127,7 @@ class PrefServiceObserver {
   MOCK_METHOD(void, OnPrefValueUpdated, (const base::Value& value));
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> service_ = nullptr;
+  raw_ptr<PrefService> service_ = nullptr;
   const char* pref_name_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
   base::WeakPtrFactory<PrefServiceObserver> weak_factory_{this};

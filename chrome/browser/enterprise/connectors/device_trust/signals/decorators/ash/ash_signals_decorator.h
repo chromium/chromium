@@ -40,9 +40,8 @@ class AshSignalsDecorator : public SignalsDecorator {
       base::OnceClosure done_closure,
       crosapi::mojom::GetNetworkDetailsResultPtr result);
 
-  const raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh>
-      browser_policy_connector_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_;
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<policy::DeviceAttributes> attributes_;
 

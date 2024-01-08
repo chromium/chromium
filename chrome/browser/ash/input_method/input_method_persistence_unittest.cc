@@ -69,13 +69,11 @@ class InputMethodPersistenceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
       mock_user_prefs_;
   MockInputMethodManagerImpl mock_manager_;
   TestingProfileManager mock_profile_manager_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

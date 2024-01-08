@@ -164,12 +164,12 @@ class ArcAppIcon::DecodeRequest : public ImageDecoder::ImageRequest {
   void OnDecodeImageFailed() override;
 
  private:
-  const raw_ref<ArcAppIcon, ExperimentalAsh> host_;
+  const raw_ref<ArcAppIcon> host_;
   const ArcAppIconDescriptor descriptor_;
   const bool resize_allowed_;
   const bool retain_padding_;
-  const raw_ref<gfx::ImageSkia, ExperimentalAsh> image_skia_;
-  const raw_ref<std::map<ui::ResourceScaleFactor, base::Time>, ExperimentalAsh>
+  const raw_ref<gfx::ImageSkia> image_skia_;
+  const raw_ref<std::map<ui::ResourceScaleFactor, base::Time>>
       incomplete_scale_factors_;
 };
 

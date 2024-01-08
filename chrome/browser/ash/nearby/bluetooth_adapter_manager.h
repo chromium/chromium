@@ -44,7 +44,7 @@ class BluetoothAdapterManager {
   }
 
  private:
-  raw_ptr<device::BluetoothAdapter, ExperimentalAsh> device_bluetooth_adapter_;
+  raw_ptr<device::BluetoothAdapter> device_bluetooth_adapter_;
   std::unique_ptr<bluetooth::Adapter> bluetooth_adapter_;
   std::unique_ptr<mojo::Receiver<bluetooth::mojom::Adapter>>
       bluetooth_receiver_;

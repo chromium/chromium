@@ -102,8 +102,7 @@ class NearbyConnectorImpl : public NearbyConnector, public KeyedService {
       mojo::PendingRemote<mojom::NearbyFilePayloadHandler>
           file_payload_handler_remote);
 
-  raw_ptr<nearby::NearbyProcessManager, ExperimentalAsh>
-      nearby_process_manager_;
+  raw_ptr<nearby::NearbyProcessManager> nearby_process_manager_;
 
   // Reference to the Nearby utility process; null if we have not requested a
   // connection to the process (i.e., when there are no active connection

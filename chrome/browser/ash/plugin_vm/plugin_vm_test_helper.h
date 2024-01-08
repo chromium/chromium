@@ -66,7 +66,7 @@ class PluginVmTestHelper {
  private:
   void UpdateRegistry();
 
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
   vm_tools::apps::ApplicationList current_apps_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   base::test::ScopedFeatureList scoped_feature_list_;

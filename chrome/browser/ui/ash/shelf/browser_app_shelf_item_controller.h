@@ -79,8 +79,8 @@ class BrowserAppShelfItemController : public ash::ShelfItemDelegate,
   void OnLoadMediumIcon(apps::IconValuePtr icon_value);
   void OnLoadBittyIcon(apps::IconValuePtr icon_value);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ref<apps::BrowserAppInstanceRegistry, ExperimentalAsh> registry_;
+  raw_ptr<Profile> profile_;
+  const raw_ref<apps::BrowserAppInstanceRegistry> registry_;
 
   // ShelfContextMenu instance needs to be alive for the duration of the
   // GetMenuModel call.

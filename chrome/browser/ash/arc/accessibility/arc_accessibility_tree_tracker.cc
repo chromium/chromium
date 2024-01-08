@@ -167,7 +167,7 @@ class ArcAccessibilityTreeTracker::FocusChangeObserver
   }
 
  private:
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
   // Different from other inner classes, this doesn't use ScopedObservation
   // because exo::WMHelper can be destroyed earlier than this class.
 };
@@ -212,7 +212,7 @@ class ArcAccessibilityTreeTracker::WindowsObserver
   }
 
  private:
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };
@@ -255,7 +255,7 @@ class ArcAccessibilityTreeTracker::ChildWindowsObserver
   }
 
  private:
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
 };
@@ -284,7 +284,7 @@ class ArcAccessibilityTreeTracker::ArcInputMethodManagerServiceObserver
   base::ScopedObservation<ArcInputMethodManagerService,
                           ArcInputMethodManagerService::Observer>
       arc_imms_observation_{this};
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
 };
 
 class ArcAccessibilityTreeTracker::MojoConnectionObserver
@@ -311,7 +311,7 @@ class ArcAccessibilityTreeTracker::MojoConnectionObserver
                        ax::android::mojom::AccessibilityHelperHost>,
       ConnectionObserver<ax::android::mojom::AccessibilityHelperInstance>>
       helper_instance_connection_observation_{this};
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
 };
 
 // Observes (1) Addition and removal of ArcNotificationSurface, and
@@ -358,7 +358,7 @@ class ArcAccessibilityTreeTracker::NotificationObserver
       arc_notification_observation_{this};
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
-  raw_ptr<ArcAccessibilityTreeTracker, ExperimentalAsh> const owner_;
+  raw_ptr<ArcAccessibilityTreeTracker> const owner_;
 };
 
 class ArcAccessibilityTreeTracker::UmaRecorder {
@@ -488,8 +488,7 @@ class ArcAccessibilityTreeTracker::UmaRecorder {
 
   base::flat_map<ArcAccessibilityFeature, base::TimeTicks> start_time_;
   std::set<ArcAccessibilityFeature> enabled_features_;
-  raw_ptr<const ArcAccessibilityTreeTracker, ExperimentalAsh> const
-      tree_tracker_;
+  raw_ptr<const ArcAccessibilityTreeTracker> const tree_tracker_;
 };
 
 ArcAccessibilityTreeTracker::ArcAccessibilityTreeTracker(

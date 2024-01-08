@@ -67,8 +67,7 @@ class TestPdfOcrHandler : public PdfOcrHandler {
   using PdfOcrHandler::set_web_ui;
 
  private:
-  raw_ptr<TestScreenAIInstallState, ExperimentalAsh>
-      test_screen_ai_install_state_ = nullptr;
+  raw_ptr<TestScreenAIInstallState> test_screen_ai_install_state_ = nullptr;
 };
 
 }  // namespace

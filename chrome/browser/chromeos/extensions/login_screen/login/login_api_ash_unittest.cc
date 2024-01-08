@@ -123,8 +123,8 @@ class ScopedTestingProfile {
   TestingProfile* profile() { return profile_; }
 
  private:
-  const raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<TestingProfileManager, ExperimentalAsh> profile_manager_;
+  const raw_ptr<TestingProfile, DanglingUntriaged> profile_;
+  const raw_ptr<TestingProfileManager> profile_manager_;
 };
 
 ash::UserContext GetPublicUserContext(const std::string& email) {
@@ -197,7 +197,7 @@ class LoginApiUnittest : public ExtensionApiUnittest {
     return std::make_unique<ScopedTestingProfile>(profile, profile_manager());
   }
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged>
       fake_chrome_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ash::MockLoginDisplayHost> mock_login_display_host_;

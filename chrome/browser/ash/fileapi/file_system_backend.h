@@ -221,7 +221,7 @@ class FileSystemBackend : public storage::FileSystemBackend {
 
   // Globally visible mount points. System MountPonts instance should outlive
   // all FileSystemBackend instances, so raw pointer is safe.
-  raw_ptr<storage::ExternalMountPoints, ExperimentalAsh> system_mount_points_;
+  raw_ptr<storage::ExternalMountPoints> system_mount_points_;
 };
 
 }  // namespace ash

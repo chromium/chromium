@@ -83,10 +83,10 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
   virtual void PostTaskForStartSerialization() = 0;
 
   // The client used to upload logs to the server.
-  raw_ptr<CloudPolicyClient, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<CloudPolicyClient> client_ = nullptr;
 
   // Profile used to fetch the context attributes for report request.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // |true| if log upload has been requested and not completed yet.
   bool upload_requested_ = false;

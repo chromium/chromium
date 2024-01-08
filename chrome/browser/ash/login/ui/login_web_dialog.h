@@ -72,7 +72,7 @@ class LoginWebDialog : public ui::WebDialogDelegate {
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
  private:
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   gfx::NativeWindow parent_window_;
   gfx::NativeWindow dialog_window_;
 

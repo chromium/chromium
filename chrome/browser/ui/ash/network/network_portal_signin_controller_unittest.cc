@@ -63,7 +63,7 @@ class TestSigninController : public NetworkPortalSigninController {
   const std::string& tab_url() const { return tab_url_; }
 
  private:
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   std::string dialog_url_;
   std::string tab_url_;
 };

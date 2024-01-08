@@ -105,7 +105,7 @@ class UserspaceSwapPolicy : public GraphOwned,
   base::TimeTicks last_device_space_check_;
   uint64_t backing_store_available_bytes_ = 0;
 
-  raw_ptr<Graph, ExperimentalAsh> graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 
  private:
   // A helper method which sets the last trim time to the specified time.

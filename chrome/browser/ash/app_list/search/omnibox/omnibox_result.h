@@ -86,8 +86,8 @@ class OmniboxResult : public ChromeSearchResult,
   // Mojo.
   const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
   crosapi::mojom::SearchResultPtr search_result_;
   const std::u16string query_;
   std::unique_ptr<BitmapFetcher> bitmap_fetcher_;

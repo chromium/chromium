@@ -60,8 +60,8 @@ class HoldingSpaceKeyedServiceDelegate : public HoldingSpaceModelObserver {
   // Invoked when holding space persistence has been restored.
   virtual void OnPersistenceRestored();
 
-  const raw_ptr<HoldingSpaceKeyedService, ExperimentalAsh> service_;
-  const raw_ptr<HoldingSpaceModel, ExperimentalAsh> model_;
+  const raw_ptr<HoldingSpaceKeyedService> service_;
+  const raw_ptr<HoldingSpaceModel> model_;
 
   // If persistence is being restored.
   bool is_restoring_persistence_ = true;

@@ -152,7 +152,7 @@ class SharesheetBubbleView::SharesheetParentWidgetObserver
   }
 
  private:
-  raw_ptr<SharesheetBubbleView, ExperimentalAsh> owner_;
+  raw_ptr<SharesheetBubbleView> owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observer_{this};
 };
 

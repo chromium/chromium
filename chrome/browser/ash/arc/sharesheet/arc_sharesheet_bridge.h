@@ -44,10 +44,10 @@ class ArcSharesheetBridge : public KeyedService, public mojom::SharesheetHost {
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<ArcSharesheetBridge> weak_ptr_factory_{this};
 };

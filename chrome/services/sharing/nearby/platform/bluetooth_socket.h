@@ -75,7 +75,7 @@ class BluetoothSocket : public api::BluetoothSocket {
   // BluetoothSocket is expected to own it (within |remote_device_|). In this
   // case, |remote_device_ref_| is a reference to |remote_device_|.
   absl::optional<chrome::BluetoothDevice> remote_device_;
-  const raw_ref<api::BluetoothDevice, ExperimentalAsh> remote_device_ref_;
+  const raw_ref<api::BluetoothDevice> remote_device_ref_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::SharedRemote<bluetooth::mojom::Socket> socket_;

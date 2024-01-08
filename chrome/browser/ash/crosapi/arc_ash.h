@@ -95,7 +95,7 @@ class ArcAsh : public mojom::Arc,
   mojo::RemoteSet<mojom::ArcObserver> observers_;
 
   // profile_ should not be overridden.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 

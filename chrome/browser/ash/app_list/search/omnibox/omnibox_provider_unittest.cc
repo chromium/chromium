@@ -168,7 +168,7 @@ class OmniboxProviderTest : public testing::Test {
   std::unique_ptr<AppListControllerDelegate> list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
   std::unique_ptr<OmniboxProvider> provider_;
 };

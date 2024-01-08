@@ -104,7 +104,7 @@ class NearbyShareCertificateStorageImpl : public NearbyShareCertificateStorage {
 
   InitStatus init_status_ = InitStatus::kUninitialized;
   size_t num_initialize_attempts_ = 0;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<
       leveldb_proto::ProtoDatabase<nearby::sharing::proto::PublicCertificate>>
       db_;

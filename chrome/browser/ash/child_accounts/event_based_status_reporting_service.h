@@ -91,8 +91,7 @@ class EventBasedStatusReportingService
   // KeyedService:
   void Shutdown() override;
 
-  const raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
-      context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
   bool session_just_started_ = true;
 };
 

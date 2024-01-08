@@ -246,7 +246,7 @@ class EnrollmentScreen
                           NetworkError::ErrorReason reason);
 
   base::WeakPtr<EnrollmentScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_ = nullptr;
+  raw_ptr<ErrorScreen> error_screen_ = nullptr;
   ScreenExitCallback exit_callback_;
   std::optional<TpmStatusCallback> tpm_ownership_callback_for_testing_;
   policy::EnrollmentConfig config_;

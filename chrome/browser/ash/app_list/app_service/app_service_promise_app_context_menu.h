@@ -42,7 +42,7 @@ class AppServicePromiseAppContextMenu : public app_list::AppContextMenu {
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  const raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_;
+  const raw_ptr<apps::AppServiceProxy> proxy_;
 
   const raw_ref<const apps::PackageId> package_id_;
 };

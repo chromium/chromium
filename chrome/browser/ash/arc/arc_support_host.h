@@ -223,14 +223,14 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
 
   void DisconnectMessageHost();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   RequestOpenAppCallback request_open_app_callback_;
 
   // Not owned.
-  raw_ptr<TermsOfServiceDelegate, ExperimentalAsh> tos_delegate_ = nullptr;
+  raw_ptr<TermsOfServiceDelegate> tos_delegate_ = nullptr;
 
   // Not owned.
-  raw_ptr<ErrorDelegate, ExperimentalAsh> error_delegate_ = nullptr;
+  raw_ptr<ErrorDelegate> error_delegate_ = nullptr;
 
   // True, if ARC support app is requested to start, but the connection is not
   // yet established. Reset to false, when the app is started and the
@@ -238,7 +238,7 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   bool app_start_pending_ = false;
 
   // The instance is created and managed by Chrome.
-  raw_ptr<arc::ArcSupportMessageHost, ExperimentalAsh> message_host_ = nullptr;
+  raw_ptr<arc::ArcSupportMessageHost> message_host_ = nullptr;
 
   std::optional<display::ScopedOptionalDisplayObserver> display_observer_;
 

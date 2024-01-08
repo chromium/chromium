@@ -215,10 +215,9 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  raw_ptr<HermesManagerClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HermesManagerClient::TestInterface, DanglingUntriaged>
       hermes_manager_test_;
-  raw_ptr<HermesEuiccClient::TestInterface, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<HermesEuiccClient::TestInterface, DanglingUntriaged>
       hermes_euicc_test_;
   TestSystemTrayClient test_system_tray_client_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;

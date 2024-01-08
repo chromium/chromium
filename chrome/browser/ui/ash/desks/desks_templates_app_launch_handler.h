@@ -68,8 +68,7 @@ class DesksTemplatesAppLaunchHandler : public ash::AppLaunchHandler {
   bool IsBrowserAppInstalled(const std::string& app_name);
 
   // Cached convenience pointer to the desk template read handler.
-  const raw_ptr<app_restore::DeskTemplateReadHandler, ExperimentalAsh>
-      read_handler_;
+  const raw_ptr<app_restore::DeskTemplateReadHandler> read_handler_;
 
   // The ID of the specific launch this handler deals with.
   int32_t launch_id_ = 0;

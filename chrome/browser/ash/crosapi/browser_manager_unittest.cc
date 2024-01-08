@@ -313,7 +313,7 @@ class BrowserManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<MockBrowserLoader, ExperimentalAsh> browser_loader_ = nullptr;
+  raw_ptr<MockBrowserLoader> browser_loader_ = nullptr;
   std::unique_ptr<MockComponentUpdateService> component_update_service_;
   std::unique_ptr<BrowserManagerFake> fake_browser_manager_;
   raw_ptr<MockVersionServiceDelegate> version_service_delegate_;

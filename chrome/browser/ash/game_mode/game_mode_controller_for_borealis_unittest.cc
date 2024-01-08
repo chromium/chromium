@@ -37,7 +37,7 @@ class GameModeControllerForBorealisTest : public GameModeControllerTestBase {
 
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   std::unique_ptr<BorealisFeatures> features_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> borealis_service_fake_;
+  raw_ptr<BorealisServiceFake> borealis_service_fake_;
 };
 
 TEST_F(GameModeControllerForBorealisTest,

@@ -96,7 +96,7 @@ class LightProviderInterface {
  protected:
   explicit LightProviderInterface(AlsReader* als_reader);
 
-  raw_ptr<AlsReader, DanglingUntriaged | ExperimentalAsh> als_reader_;
+  raw_ptr<AlsReader, DanglingUntriaged> als_reader_;
 };
 
 }  // namespace auto_screen_brightness

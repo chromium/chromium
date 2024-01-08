@@ -161,8 +161,7 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
         extensions::AppWindow::FULLSCREEN_TYPE_OS, /*is_shelf_hidden=*/false);
   }
 
-  raw_ptr<extensions::AppWindow, DanglingUntriaged | ExperimentalAsh>
-      app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow, DanglingUntriaged> app_window_ = nullptr;
 };
 
 class ChromeNativeAppWindowViewsAuraPublicSessionAshBrowserTest

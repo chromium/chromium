@@ -206,12 +206,11 @@ class AppListClientImpl
 
   // Unowned pointer to the associated profile. May change if SetProfile is
   // called.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   // Unowned pointer to the model updater owned by AppListSyncableService. Will
   // change if |profile_| changes.
-  raw_ptr<AppListModelUpdater, ExperimentalAsh> current_model_updater_ =
-      nullptr;
+  raw_ptr<AppListModelUpdater> current_model_updater_ = nullptr;
 
   // Store the mappings between profiles and AppListModelUpdater instances.
   // In multi-profile mode, mojo callings from the Ash process to access the app
@@ -228,8 +227,7 @@ class AppListClientImpl
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};
 
-  raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_ =
-      nullptr;
+  raw_ptr<ash::AppListController> app_list_controller_ = nullptr;
 
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
 

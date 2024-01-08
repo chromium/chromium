@@ -83,8 +83,7 @@ class ServerBackedStateKeysBroker {
   // Stores newly-received state keys and notifies consumers.
   void StoreStateKeys(const std::vector<std::string>& state_keys);
 
-  raw_ptr<ash::SessionManagerClient, DanglingUntriaged | ExperimentalAsh>
-      session_manager_client_;
+  raw_ptr<ash::SessionManagerClient, DanglingUntriaged> session_manager_client_;
 
   // The current set of state keys.
   std::vector<std::string> state_keys_;

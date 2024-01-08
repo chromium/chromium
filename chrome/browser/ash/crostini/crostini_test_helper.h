@@ -76,7 +76,7 @@ class CrostiniTestHelper {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.

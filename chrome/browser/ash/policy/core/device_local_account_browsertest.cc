@@ -858,7 +858,7 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
     registry_->AddObserver(this);
   }
 
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> registry_;
+  raw_ptr<extensions::ExtensionRegistry> registry_;
   base::RunLoop run_loop_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observer_{this};

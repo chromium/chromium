@@ -36,7 +36,7 @@ struct TransitionNotificationParams {
       : arc_transition(arc_transition), notification_icon(notification_icon) {}
 
   ArcManagementTransition arc_transition;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> notification_icon;
+  raw_ptr<const gfx::VectorIcon> notification_icon;
 };
 
 }  // namespace

@@ -266,7 +266,7 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
   // This delegate instance is owned by the owner of
   // MinimumVersionPolicyHandler. The owner is responsible to make sure that the
   // delegate lives throughout the life of the policy handler.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // This represents the current minimum version requirement.
   // It is chosen as one of the configurations specified in the policy. It is
@@ -301,9 +301,9 @@ class MinimumVersionPolicyHandler : public BuildStateObserver,
 
   // Non-owning reference to CrosSettings. This class have shorter lifetime than
   // CrosSettings.
-  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<ash::CrosSettings> cros_settings_;
 
-  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<base::Clock> clock_;
 
   base::OnceClosure fetch_eol_callback_;
 

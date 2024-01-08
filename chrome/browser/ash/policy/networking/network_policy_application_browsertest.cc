@@ -187,7 +187,7 @@ class ServicePropertyValueWatcher : public ash::ShillPropertyChangedObserver {
     wait_for_value_state_.reset();
   }
 
-  const raw_ptr<ash::ShillServiceClient::TestInterface, ExperimentalAsh>
+  const raw_ptr<ash::ShillServiceClient::TestInterface>
       shill_service_client_test_;
 
   const std::string service_path_;
@@ -353,8 +353,7 @@ class CrosNetworkConfigGuidsAvailableWaiter
   }
 
   base::RunLoop run_loop_;
-  const raw_ptr<ash::network_config::CrosNetworkConfig, ExperimentalAsh>
-      cros_network_config_;
+  const raw_ptr<ash::network_config::CrosNetworkConfig> cros_network_config_;
   const std::set<std::string> expected_guids_;
 
   // Receiver for the CrosNetworkConfigObserver events.
@@ -801,17 +800,13 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
   }
 
   // Unowned pointers -- just pointers to the singleton instances.
-  raw_ptr<ash::ShillManagerClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ShillManagerClient::TestInterface, DanglingUntriaged>
       shill_manager_client_test_ = nullptr;
-  raw_ptr<ash::ShillServiceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ShillServiceClient::TestInterface, DanglingUntriaged>
       shill_service_client_test_ = nullptr;
-  raw_ptr<ash::ShillProfileClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ShillProfileClient::TestInterface, DanglingUntriaged>
       shill_profile_client_test_ = nullptr;
-  raw_ptr<ash::ShillDeviceClient::TestInterface,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::ShillDeviceClient::TestInterface, DanglingUntriaged>
       shill_device_client_test_ = nullptr;
 
   ash::ScopedStubInstallAttributes stub_install_attributes_;

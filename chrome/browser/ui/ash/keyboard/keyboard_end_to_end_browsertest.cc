@@ -101,8 +101,7 @@ class KeyboardEndToEndTest : public InProcessBrowserTest {
 
  protected:
   // Initialized in |SetUpOnMainThread|.
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
-      web_contents_;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_;
 
   explicit KeyboardEndToEndTest(const base::FilePath& test_file)
       : test_file_(test_file) {}

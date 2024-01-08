@@ -476,7 +476,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  raw_ptr<FakeZeroconfScannerDetector, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeZeroconfScannerDetector, DanglingUntriaged>
       fake_zeroconf_scanner_detector_;
 
   std::unique_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;

@@ -179,7 +179,7 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // reported to be visible.
   bool GetContinueSectionVisibility(Location location) const;
 
-  const raw_ptr<ash::AppListController, ExperimentalAsh> app_list_controller_;
+  const raw_ptr<ash::AppListController> app_list_controller_;
 
   base::ObserverList<Observer> observers_;
 

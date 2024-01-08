@@ -138,8 +138,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   raw_ptr<Browser> browser_ = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<policy::DlpRulesManager, ExperimentalAsh> dlp_rules_manager_ =
-      nullptr;
+  raw_ptr<policy::DlpRulesManager> dlp_rules_manager_ = nullptr;
 #endif
 
 #if BUILDFLAG(ENABLE_COMPOSE)

@@ -39,8 +39,7 @@ class ChromeFaceMLUserProviderTest : public BrowserWithTestWindowTest {
   }
 
  protected:
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

@@ -126,7 +126,7 @@ class StubRecommendAppsFetcher : public apps::RecommendAppsFetcher {
   void Retry() override { NOTREACHED(); }
 
  protected:
-  const raw_ptr<apps::RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;
   bool started_ = false;
 };
 

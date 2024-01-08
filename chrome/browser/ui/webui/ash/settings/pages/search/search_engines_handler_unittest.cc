@@ -69,13 +69,12 @@ class SearchEnginesHandlerAshTest : public testing::Test {
 
  protected:
   std::unique_ptr<content::TestWebUI> web_ui_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<::settings::SearchEnginesHandler, DanglingUntriaged | ExperimentalAsh>
-      handler_;
+  raw_ptr<::settings::SearchEnginesHandler, DanglingUntriaged> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };

@@ -79,10 +79,9 @@ class MockEnrollmentLauncher {
   // Unbinds the fake launcher from the mock.
   void unset_fake_launcher(FakeEnrollmentLauncher* fake_launcher);
 
-  raw_ptr<FakeEnrollmentLauncher, ExperimentalAsh> current_fake_launcher_{
+  raw_ptr<FakeEnrollmentLauncher> current_fake_launcher_{nullptr};
+  raw_ptr<EnrollmentLauncher::EnrollmentStatusConsumer> status_consumer_{
       nullptr};
-  raw_ptr<EnrollmentLauncher::EnrollmentStatusConsumer, ExperimentalAsh>
-      status_consumer_{nullptr};
 };
 
 // Connects `EnrollmentLauncher::EnrollmentStatusConsumer`,
@@ -122,7 +121,7 @@ class FakeEnrollmentLauncher : public EnrollmentLauncher {
   FakeEnrollmentLauncher(MockEnrollmentLauncher* mock,
                          EnrollmentStatusConsumer* status_consumer);
 
-  raw_ptr<MockEnrollmentLauncher, ExperimentalAsh> mock_{nullptr};
+  raw_ptr<MockEnrollmentLauncher> mock_{nullptr};
 };
 
 }  // namespace ash

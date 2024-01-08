@@ -72,7 +72,7 @@ class CrostiniSharedDevices : public KeyedService,
       std::optional<vm_tools::cicerone::UpdateContainerDevicesResponse>
           response);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<CrostiniSharedDevices> weak_ptr_factory_{this};
 };

@@ -37,7 +37,7 @@ class BorealisShutdownMonitorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
+  raw_ptr<BorealisServiceFake> service_fake_;
   BorealisFeatures features_;
   testing::StrictMock<BorealisContextManagerMock> context_manager_mock_;
 };

@@ -67,7 +67,7 @@ class ShelfContextMenu : public ui::SimpleMenuModel::Delegate {
   int64_t display_id() const { return display_id_; }
 
  private:
-  raw_ptr<ChromeShelfController, ExperimentalAsh> controller_;
+  raw_ptr<ChromeShelfController> controller_;
 
   const ash::ShelfItem item_;
 

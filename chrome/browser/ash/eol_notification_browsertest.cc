@@ -225,8 +225,8 @@ class EolStatusMixin : public InProcessBrowserTestMixin {
     return eol_notification;
   }
 
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      update_engine_client_ = nullptr;
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_ =
+      nullptr;
   base::SimpleTestClock clock_;
   base::Time profile_creation_time_;
 };

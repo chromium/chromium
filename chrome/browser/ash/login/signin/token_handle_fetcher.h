@@ -77,10 +77,10 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // This is called before profile is detroyed.
   void OnProfileDestroyed();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<TokenHandleUtil, ExperimentalAsh> token_handle_util_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<TokenHandleUtil> token_handle_util_;
   AccountId account_id_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::TimeTicks tokeninfo_response_start_time_ = base::TimeTicks();
   std::string refresh_token_hash_;

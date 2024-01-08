@@ -124,7 +124,7 @@ class UserSessionManagerTest : public testing::Test {
       fake_user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<user_manager::User, ExperimentalAsh> test_user_;
+  raw_ptr<user_manager::User> test_user_;
 };
 
 // Calling VoteForSavingLoginPassword() with `save_password` set to false for

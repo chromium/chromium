@@ -100,9 +100,9 @@ class AdbSideloadingAllowanceModePolicyHandler
   void MaybeShowPowerwashNotification(bool is_sideloading_enabled);
   void MaybeShowPowerwashUponRebootNotification();
 
-  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  const raw_ptr<ash::CrosSettings> cros_settings_;
 
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   std::unique_ptr<ash::AdbSideloadingPolicyChangeNotification>
       adb_sideloading_policy_change_notification_;

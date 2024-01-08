@@ -235,7 +235,7 @@ class BrowserDataMigratorImpl : public BrowserDataMigrator {
   // can check if migration is cancelled or not.
   scoped_refptr<browser_data_migrator_util::CancelFlag> cancel_flag_;
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
   std::unique_ptr<MigratorDelegate> migrator_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);

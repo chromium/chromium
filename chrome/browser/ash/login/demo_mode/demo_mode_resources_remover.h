@@ -178,7 +178,7 @@ class DemoModeResourcesRemover
   // Passes as the callback to directory removal file operations.
   void OnRemovalDone(RemovalReason reason, RemovalResult result);
 
-  const raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  const raw_ptr<PrefService> local_state_;
 
   // Whether a resources removal operation is currently in progress.
   bool removal_in_progress_ = false;
@@ -186,7 +186,7 @@ class DemoModeResourcesRemover
   // Callbacks for the resources removal operation, if one is in progress.
   std::vector<RemovalCallback> removal_callbacks_;
 
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Used to track the duration of last unrecorded interval of user activity.
   std::optional<base::TimeTicks> usage_start_;

@@ -67,8 +67,8 @@ class InSessionPasswordSyncManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_ = nullptr;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_ = nullptr;
+  raw_ptr<TestingProfile> primary_profile_ = nullptr;
+  raw_ptr<TestingProfile> secondary_profile_ = nullptr;
 
   std::unique_ptr<MockLockHandler> lock_handler_;
   std::unique_ptr<InSessionPasswordSyncManager> manager_;

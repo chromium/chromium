@@ -554,8 +554,7 @@ class UserSessionManager
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
   // Used to listen to network changes.
-  raw_ptr<network::NetworkConnectionTracker,
-          LeakedDanglingUntriaged | ExperimentalAsh>
+  raw_ptr<network::NetworkConnectionTracker, LeakedDanglingUntriaged>
       network_connection_tracker_;
 
   // Authentication/user context.

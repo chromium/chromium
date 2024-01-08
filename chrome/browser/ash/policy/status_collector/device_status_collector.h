@@ -349,7 +349,7 @@ class DeviceStatusCollector : public StatusCollector,
   bool IncludeEmailsInActivityReports() const;
 
   // Pref service that is mainly used to store activity periods for reporting.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   const raw_ptr<ReportingUserTracker> reporting_user_tracker_;
 
@@ -431,7 +431,7 @@ class DeviceStatusCollector : public StatusCollector,
   PowerStatusCallback power_status_callback_;
 
   // Power manager client. Used to listen to power changed events.
-  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_;
+  const raw_ptr<chromeos::PowerManagerClient> power_manager_;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

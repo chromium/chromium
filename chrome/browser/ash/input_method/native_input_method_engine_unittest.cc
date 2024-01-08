@@ -212,7 +212,7 @@ class FakeConnectionFactory : public ime::mojom::ConnectionFactory {
   }
 
  private:
-  raw_ptr<MockInputMethod, ExperimentalAsh> mock_input_method_;
+  raw_ptr<MockInputMethod> mock_input_method_;
   mojo::Receiver<ime::mojom::ConnectionFactory> connection_factory_{this};
 };
 

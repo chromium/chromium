@@ -68,7 +68,7 @@ class BrowserStatusMonitor::LocalWebContentsObserver
   }
 
  private:
-  raw_ptr<BrowserStatusMonitor, ExperimentalAsh> monitor_;
+  raw_ptr<BrowserStatusMonitor> monitor_;
 };
 
 BrowserStatusMonitor::BrowserStatusMonitor(

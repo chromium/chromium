@@ -55,11 +55,11 @@ class RemovedResultsRanker : public Ranker {
   // How long to wait until writing any |proto_| updates to disk.
   base::TimeDelta write_delay_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // TODO(https://crbug.com/1368833): after this issue gets fixed, the ranker
   // should own a proto that contains only non-file result ids.
-  const raw_ptr<PersistentProto<RemovedResultsProto>, ExperimentalAsh> proto_;
+  const raw_ptr<PersistentProto<RemovedResultsProto>> proto_;
 
   base::WeakPtrFactory<RemovedResultsRanker> weak_ptr_factory_{this};
 };

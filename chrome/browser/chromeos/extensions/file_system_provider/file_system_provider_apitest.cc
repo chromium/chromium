@@ -125,7 +125,7 @@ class AbortOnUnresponsivePerformer : public Observer {
       base::File::Error error) override {}
 
  private:
-  raw_ptr<Service, ExperimentalAsh> service_;  // Not owned.
+  raw_ptr<Service> service_;  // Not owned.
   std::vector<std::unique_ptr<NotificationButtonClicker>> clickers_;
 };
 

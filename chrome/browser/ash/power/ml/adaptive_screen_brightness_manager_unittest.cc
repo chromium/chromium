@@ -242,8 +242,7 @@ class AdaptiveScreenBrightnessManagerTest
 
   ui::UserActivityDetector user_activity_detector_;
   std::unique_ptr<AdaptiveScreenBrightnessManager> screen_brightness_manager_;
-  raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<TestingAdaptiveScreenBrightnessUkmLogger, DanglingUntriaged>
       ukm_logger_;
 };
 

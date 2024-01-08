@@ -149,7 +149,7 @@ class UpdateChromeFlags : public BorealisTask {
  private:
   void OnFlagsUpdated(BorealisContext* context, std::string error);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   base::WeakPtrFactory<UpdateChromeFlags> weak_factory_{this};
 };
 

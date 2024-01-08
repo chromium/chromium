@@ -104,10 +104,10 @@ class MachineCertificateUploaderImpl : public MachineCertificateUploader {
 
   void RunCallbacks(bool status);
 
-  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged | ExperimentalAsh>
-      policy_client_ = nullptr;
+  raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> policy_client_ =
+      nullptr;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_ = nullptr;
+  raw_ptr<AttestationFlow> attestation_flow_ = nullptr;
   bool refresh_certificate_ = false;
   std::vector<UploadCallback> callbacks_;
   int num_retries_ = 0;

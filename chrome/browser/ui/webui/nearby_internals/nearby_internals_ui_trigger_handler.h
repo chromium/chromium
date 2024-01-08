@@ -115,7 +115,7 @@ class NearbyInternalsUiTriggerHandler : public content::WebUIMessageHandler,
   // displayed.
   void GetState(const base::Value::List& args);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   base::flat_map<std::string, ShareTarget> id_to_share_target_map_;
   base::WeakPtrFactory<NearbyInternalsUiTriggerHandler> weak_ptr_factory_{this};
 };

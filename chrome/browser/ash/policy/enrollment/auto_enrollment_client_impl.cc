@@ -393,10 +393,10 @@ class AutoEnrollmentClientImpl::FREServerStateAvailabilityRequester
     }
   }
 
-  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<DeviceManagementService, DanglingUntriaged>
       device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 
@@ -554,7 +554,7 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
   // related to PSM protocol with DMServer.
   std::unique_ptr<psm::RlweDmserverClient> psm_rlwe_dmserver_client_;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   CompletionCallback completion_callback_;
 };
@@ -706,10 +706,10 @@ class AutoEnrollmentClientImpl::ServerStateRetriever {
     std::move(completion_callback_).Run(result);
   }
 
-  raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<DeviceManagementService, DanglingUntriaged>
       device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
   const std::string device_id_;
   const std::string uma_suffix_;
 

@@ -61,7 +61,7 @@ class ArcProvisionNotificationService
   void OnArcSessionStopped(ArcStopReason stop_reason) override;
   void OnArcErrorShowRequested(ArcSupportHost::ErrorInfo error_info) override;
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

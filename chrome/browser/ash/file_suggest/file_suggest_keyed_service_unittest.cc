@@ -43,7 +43,7 @@ class FileSuggestKeyedServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 };
 
 TEST_F(FileSuggestKeyedServiceTest, GetSuggestData) {
@@ -148,8 +148,7 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
 
   // This test verifies the suggestion removal only. Therefore, a mock file
   // suggest keyed service is sufficient.
-  raw_ptr<MockFileSuggestKeyedService, ExperimentalAsh> file_suggest_service_ =
-      nullptr;
+  raw_ptr<MockFileSuggestKeyedService> file_suggest_service_ = nullptr;
 
   // The mount point for local files.
   std::unique_ptr<ScopedTestMountPoint> local_fs_mount_point_;

@@ -44,7 +44,7 @@ class LoginProfilePolicyProvider : public ConfigurationPolicyProvider,
  private:
   void UpdateFromDevicePolicy();
 
-  raw_ptr<PolicyService, ExperimentalAsh> device_policy_service_;  // Not owned.
+  raw_ptr<PolicyService> device_policy_service_;  // Not owned.
 
   bool waiting_for_device_policy_refresh_;
 

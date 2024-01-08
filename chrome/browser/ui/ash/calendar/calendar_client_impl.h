@@ -28,7 +28,7 @@ class CalendarClientImpl : public CalendarClient {
       const base::Time& end_time) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

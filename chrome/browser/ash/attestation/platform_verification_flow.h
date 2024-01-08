@@ -233,11 +233,10 @@ class PlatformVerificationFlow
                                 AttestationStatus operation_status,
                                 const std::string& certificate_chain);
 
-  raw_ptr<AttestationFlow, ExperimentalAsh> attestation_flow_;
+  raw_ptr<AttestationFlow> attestation_flow_;
   std::unique_ptr<AttestationFlow> default_attestation_flow_;
-  const raw_ptr<AttestationClient, DanglingUntriaged | ExperimentalAsh>
-      attestation_client_;
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<AttestationClient, DanglingUntriaged> attestation_client_;
+  raw_ptr<Delegate> delegate_;
   std::unique_ptr<Delegate> default_delegate_;
   base::TimeDelta timeout_delay_;
   std::set<std::string> renewals_in_progress_;

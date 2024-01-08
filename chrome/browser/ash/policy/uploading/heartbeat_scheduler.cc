@@ -97,7 +97,7 @@ class HeartbeatRegistrationHelper {
                                  gcm::GCMClient::Result result);
 
   // GCMDriver to use to register.
-  const raw_ptr<gcm::GCMDriver, ExperimentalAsh> gcm_driver_;
+  const raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   // Callback to invoke when we have completed GCM registration.
   RegistrationHelperCallback callback_;

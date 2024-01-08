@@ -101,12 +101,12 @@ class ZeroStateFileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   base::FilePath downloads_folder_;
 
   TestSearchController search_controller_;
-  raw_ptr<ZeroStateFileProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<ZeroStateFileProvider> provider_ = nullptr;
 };
 
 TEST_F(ZeroStateFileProviderTest, NoResultsWithQuery) {

@@ -83,9 +83,9 @@ class StandaloneBrowserApps : public AppPublisher,
   // Called when the crosapi termination is terminated [e.g. Lacros is closed].
   void OnCrosapiDisconnected();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   bool is_browser_load_success_ = true;
-  const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<BrowserAppInstanceRegistry, DanglingUntriaged>
       browser_app_instance_registry_;
 
   // Receives Lacros app publisher events from Lacros.

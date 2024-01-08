@@ -149,8 +149,8 @@ class ScopedLogIn {
     return account_id_.GetAccountType() == AccountType::GOOGLE;
   }
 
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> fake_user_manager_;
-  raw_ptr<signin::IdentityTestEnvironment, ExperimentalAsh> identity_test_env_;
+  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_;
+  raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   const AccountId account_id_;
 };
 
@@ -234,8 +234,7 @@ class ChromeAssistantUtilTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Owned by |profile_manager_|
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
-      nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ = nullptr;
 };
 
 TEST_F(ChromeAssistantUtilTest, IsAssistantAllowedForProfile_PrimaryUser) {

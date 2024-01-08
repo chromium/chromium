@@ -134,12 +134,12 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
                                    AppType app_type);
 
   // Profile for which apps discovery metrics are being recorded for.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   const raw_ref<const AppRegistryCache> app_registry_cache_;
 
   // Instance of AppPlatformMetrics |this| is observing.
-  raw_ptr<AppPlatformMetrics, ExperimentalAsh> app_platform_metrics_ = nullptr;
+  raw_ptr<AppPlatformMetrics> app_platform_metrics_ = nullptr;
 
   // Map associating instance_ids to current state.
   std::map<base::UnguessableToken, InstanceState> instance_to_state_;

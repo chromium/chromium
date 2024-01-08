@@ -125,7 +125,7 @@ class ProxyAsyncDnsResolverFactory final
   }
 
  private:
-  raw_ptr<sharing::IpcPacketSocketFactory, ExperimentalAsh> socket_factory_;
+  raw_ptr<sharing::IpcPacketSocketFactory> socket_factory_;
 };
 
 // This object only exists to forward incoming mojo messages. It will be created

@@ -67,12 +67,11 @@ class DnsLatencyRoutine : public NetworkDiagnosticsRoutine {
   bool ProblemDetected();
 
   // Unowned
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   // Unowned
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
-      nullptr;
+  raw_ptr<network::mojom::NetworkContext> network_context_ = nullptr;
   // Unowned
-  raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
   bool successfully_resolved_all_addresses_ = false;
   base::TimeTicks start_resolution_time_;
   base::TimeTicks resolution_complete_time_;

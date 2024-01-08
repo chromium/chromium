@@ -273,7 +273,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const std::string& callback_id,
       const chromeos::CupsPrinterStatus& printer_status);
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Discovery support.  discovery_active_ tracks whether or not the UI
   // currently wants updates about printer availability.  The two vectors track
@@ -295,7 +295,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
   std::string webui_callback_id_;
-  raw_ptr<CupsPrintersManager, ExperimentalAsh> printers_manager_;
+  raw_ptr<CupsPrintersManager> printers_manager_;
   std::unique_ptr<local_discovery::EndpointResolver> endpoint_resolver_;
 
   std::unique_ptr<ServerPrintersFetcher> server_printers_fetcher_;

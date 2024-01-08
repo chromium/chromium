@@ -114,7 +114,7 @@ class OwnerKeyLoaderTestBase : public testing::Test {
       TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_ = nullptr;
+  raw_ptr<ash::FakeChromeUserManager> user_manager_ = nullptr;
 
   const user_manager::UserType user_type_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;

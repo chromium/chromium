@@ -711,9 +711,7 @@ class CopyOrMoveIOTaskWithScansTest
   storage::FileSystemURLSet directory_scanning_expectations_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile, DanglingUntriaged> profile_;
-  raw_ptr<policy::MockFilesPolicyNotificationManager,
-          DanglingUntriaged | ExperimentalAsh>
-      fpnm_;
+  raw_ptr<policy::MockFilesPolicyNotificationManager, DanglingUntriaged> fpnm_;
   policy::WarningWithJustificationCallback warning_callback_;
 };
 
@@ -1540,8 +1538,8 @@ class CopyOrMoveIOTaskWithDLPTest : public testing::Test {
       fake_user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   const std::unique_ptr<TestingProfile> profile_{
       std::make_unique<TestingProfile>()};
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ =
+      nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;

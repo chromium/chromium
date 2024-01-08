@@ -187,10 +187,10 @@ class PendingProfileCreation : public Profile::Delegate {
   }
 
   base::FilePath path_;
-  raw_ptr<Profile::Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Profile::Delegate> delegate_ = nullptr;
   base::OnceClosure wait_quit_closure_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   bool success_ = false;
   bool is_new_profile_ = false;
 };
@@ -389,11 +389,9 @@ class LockScreenProfileCreatorImplTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 
-  raw_ptr<UnittestProfileManager, DanglingUntriaged | ExperimentalAsh>
-      profile_manager_;
+  raw_ptr<UnittestProfileManager, DanglingUntriaged> profile_manager_;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      primary_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> primary_profile_ = nullptr;
 
   base::SimpleTestTickClock tick_clock_;
 

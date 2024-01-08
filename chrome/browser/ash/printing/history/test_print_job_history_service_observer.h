@@ -27,7 +27,7 @@ class TestPrintJobHistoryServiceObserver
   void OnPrintJobFinished(
       const printing::proto::PrintJobInfo& print_job_info) override;
 
-  raw_ptr<PrintJobHistoryService, ExperimentalAsh> print_job_history_service_;
+  raw_ptr<PrintJobHistoryService> print_job_history_service_;
   base::RepeatingClosure run_loop_closure_;
 
   // The number of times the observer is called.

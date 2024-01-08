@@ -53,7 +53,7 @@ class TimeLimitNotifier {
   TimeLimitNotifier(content::BrowserContext* context,
                     scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Called to show warning and exit notifications.
   base::OneShotTimer warning_notification_timer_;

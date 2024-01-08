@@ -82,7 +82,7 @@ class MockUptimeProvider {
   }
 
  private:
-  raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> mock_time_task_runner_;
+  raw_ptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
   base::FilePath uptime_file_path_;
   base::TimeDelta uptime_offset_;
@@ -134,7 +134,7 @@ class MockAutomaticRebootManagerObserver
  private:
   void StopObserving();
 
-  raw_ptr<AutomaticRebootManager, ExperimentalAsh> automatic_reboot_manger_;
+  raw_ptr<AutomaticRebootManager> automatic_reboot_manger_;
 };
 
 }  // namespace
@@ -231,8 +231,8 @@ class AutomaticRebootManagerBasicTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   session_manager::SessionManager session_manager_;
 
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
-      update_engine_client_ = nullptr;  // Not owned.
+  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_ =
+      nullptr;  // Not owned.
 };
 
 enum AutomaticRebootManagerTestScenario {

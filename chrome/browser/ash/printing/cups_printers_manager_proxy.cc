@@ -77,7 +77,7 @@ class ProxyImpl : public CupsPrintersManagerProxy,
 
  private:
   // The manager for which we are forwarding events.
-  raw_ptr<CupsPrintersManager, ExperimentalAsh> active_manager_ = nullptr;
+  raw_ptr<CupsPrintersManager> active_manager_ = nullptr;
   // TODO(skau): Change to CheckedObservers
   base::ObserverList<CupsPrintersManager::Observer>::Unchecked observers_;
 };

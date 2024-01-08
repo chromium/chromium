@@ -223,7 +223,7 @@ class TempFileSystem {
   }
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const url::Origin origin_;
   const std::string name_;
   base::ScopedTempDir temp_dir_;
@@ -256,8 +256,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 };
 

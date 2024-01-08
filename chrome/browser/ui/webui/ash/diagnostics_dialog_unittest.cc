@@ -26,7 +26,7 @@ class DiagnosticsDialogTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<DiagnosticsDialog, ExperimentalAsh> diagnostics_dialog;
+  raw_ptr<DiagnosticsDialog> diagnostics_dialog;
 
  private:
   session_manager::SessionManager session_manager_;

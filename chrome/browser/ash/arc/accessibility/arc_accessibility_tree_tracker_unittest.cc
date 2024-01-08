@@ -37,8 +37,7 @@ class ArcAccessibilityTreeTrackerTest : public ChromeViewsTestBase {
                                       accessibility_helper_instance,
                                       arc_bridge_service) {}
 
-    raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> focused_window_ =
-        nullptr;
+    raw_ptr<aura::Window, DanglingUntriaged> focused_window_ = nullptr;
     std::optional<bool> last_dispatched_talkback_state_;
 
     void TrackWindow(aura::Window* window) {

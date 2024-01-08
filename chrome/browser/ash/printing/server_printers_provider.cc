@@ -149,7 +149,7 @@ class ServerPrintersProviderImpl : public ServerPrintersProvider {
     return (servers_are_complete_ && fetchers_.empty());
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // A callback to propagate update of the resultant list of server printers.
   OnPrintersUpdateCallback callback_;

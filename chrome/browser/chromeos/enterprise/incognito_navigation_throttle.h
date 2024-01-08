@@ -57,7 +57,7 @@ class IncognitoNavigationThrottle : public content::NavigationThrottle {
   // in the browser.
   base::Value::List missing_extensions_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<IncognitoNavigationThrottle> weak_ptr_factory_{this};
 };

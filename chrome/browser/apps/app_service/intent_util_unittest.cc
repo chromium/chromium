@@ -948,7 +948,7 @@ class IntentUtilsFileTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
 class IntentUtilsFileSystemSchemeTest

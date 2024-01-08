@@ -383,7 +383,7 @@ class CrostiniCreditsHandler
   // Linux credits contents that was loaded from file.
   std::string contents_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 #endif
 

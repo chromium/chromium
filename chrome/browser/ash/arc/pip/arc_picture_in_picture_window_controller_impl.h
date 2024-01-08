@@ -46,7 +46,7 @@ class ArcPictureInPictureWindowControllerImpl
   std::optional<url::Origin> GetOrigin() override;
 
  private:
-  const raw_ptr<arc::ArcPipBridge, ExperimentalAsh> arc_pip_bridge_;
+  const raw_ptr<arc::ArcPipBridge> arc_pip_bridge_;
 };
 
 }  // namespace arc

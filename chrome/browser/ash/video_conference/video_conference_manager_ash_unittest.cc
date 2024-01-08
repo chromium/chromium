@@ -66,7 +66,7 @@ class FakeVcManagerCppClient
   // Public for testing.
   base::UnguessableToken id_;
   std::vector<crosapi::mojom::VideoConferenceMediaAppInfoPtr> apps_;
-  const raw_ref<FakeVideoConferenceManagerAsh, ExperimentalAsh> vc_manager_;
+  const raw_ref<FakeVideoConferenceManagerAsh> vc_manager_;
 };
 
 class VideoConferenceManagerAshTest : public testing::Test {

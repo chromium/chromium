@@ -80,7 +80,7 @@ class HelpAppZeroStateProviderTest : public AppListTestBase {
   ::test::TestAppListController app_list_controller_;
   std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
   TestSearchController search_controller_;
-  raw_ptr<HelpAppZeroStateProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<HelpAppZeroStateProvider> provider_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

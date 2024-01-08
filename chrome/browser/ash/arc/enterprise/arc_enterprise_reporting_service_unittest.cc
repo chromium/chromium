@@ -89,12 +89,11 @@ class ArcEnterpriseReportingServiceTest : public testing::Test {
   ArcEnterpriseReportingService* service() { return service_; }
 
  private:
-  raw_ptr<ArcEnterpriseReportingService, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  raw_ptr<ArcEnterpriseReportingService, DanglingUntriaged> service_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;

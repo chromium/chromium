@@ -170,8 +170,8 @@ class WilcoDtcSupportdWebRequestServiceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Owned by |web_request_service_|.
-  raw_ptr<TestingWilcoDtcSupportdNetworkContext, ExperimentalAsh>
-      testing_network_context_ = nullptr;
+  raw_ptr<TestingWilcoDtcSupportdNetworkContext> testing_network_context_ =
+      nullptr;
 };
 
 }  // namespace

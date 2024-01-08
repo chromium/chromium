@@ -163,7 +163,7 @@ class ArcInputMethodStateDelegateImpl : public ArcInputMethodState::Delegate {
   }
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 // The default implmentation of WindowDelegate.
@@ -209,7 +209,7 @@ class ArcInputMethodManagerService::ArcInputMethodBoundsObserver
   }
 
  private:
-  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
+  raw_ptr<ArcInputMethodManagerService> owner_;
 };
 
 class ArcInputMethodManagerService::InputMethodEngineObserver
@@ -281,7 +281,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
 
  private:
-  const raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
+  const raw_ptr<ArcInputMethodManagerService> owner_;
 };
 
 class ArcInputMethodManagerService::InputMethodObserver
@@ -311,7 +311,7 @@ class ArcInputMethodManagerService::InputMethodObserver
   }
 
  private:
-  const raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
+  const raw_ptr<ArcInputMethodManagerService> owner_;
 };
 
 class ArcInputMethodManagerService::TabletModeObserver
@@ -346,7 +346,7 @@ class ArcInputMethodManagerService::TabletModeObserver
     owner_->NotifyInputMethodManagerObservers(enabled);
   }
 
-  raw_ptr<ArcInputMethodManagerService, ExperimentalAsh> owner_;
+  raw_ptr<ArcInputMethodManagerService> owner_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };

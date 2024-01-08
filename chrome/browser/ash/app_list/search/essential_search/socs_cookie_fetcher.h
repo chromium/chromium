@@ -34,7 +34,7 @@ class SocsCookieFetcher final {
 
  private:
   // `consumer_` to call back when this request completes.
-  const raw_ptr<Consumer, ExperimentalAsh> consumer_;
+  const raw_ptr<Consumer> consumer_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

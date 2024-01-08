@@ -62,13 +62,11 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
       const std::string& callback_id,
       KioskChromeAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  raw_ptr<KioskChromeAppManager, ExperimentalAsh>
-      chrome_app_manager_;  // not owned.
+  raw_ptr<KioskChromeAppManager> chrome_app_manager_;  // not owned.
   bool initialized_;
   bool is_kiosk_enabled_;
   bool is_auto_launch_enabled_;
-  const raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh>
-      owner_settings_service_;  // not owned
+  const raw_ptr<OwnerSettingsServiceAsh> owner_settings_service_;  // not owned
   base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
 };
 

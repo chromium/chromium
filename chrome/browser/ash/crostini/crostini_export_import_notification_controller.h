@@ -88,7 +88,7 @@ class CrostiniExportImportNotificationController
 
   void on_notification_closed() { hidden_ = true; }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   guest_os::GuestId container_id_;
   // |delegate_| is responsible for handling click events. It is separate from
   // the controller because it needs to live as long as the notification is in

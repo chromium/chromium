@@ -56,7 +56,7 @@ class NetworkScreenUnitTest : public testing::Test {
   // A pointer to the NetworkScreen.
   std::unique_ptr<NetworkScreen> network_screen_;
 
-  raw_ptr<login::MockNetworkStateHelper, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<login::MockNetworkStateHelper, DanglingUntriaged>
       mock_network_state_helper_ = nullptr;
   std::optional<NetworkScreen::Result> last_screen_result_;
 

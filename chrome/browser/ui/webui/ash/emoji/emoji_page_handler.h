@@ -51,7 +51,7 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
 
   base::TimeTicks shown_time_;
-  const raw_ptr<EmojiUI, ExperimentalAsh> webui_controller_;
+  const raw_ptr<EmojiUI> webui_controller_;
   bool gif_support_enabled_;
   bool incognito_mode_;
   bool no_text_field_;

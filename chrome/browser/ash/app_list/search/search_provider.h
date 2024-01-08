@@ -84,7 +84,7 @@ class SearchProvider {
   }
 
  private:
-  raw_ptr<SearchController, ExperimentalAsh> search_controller_ = nullptr;
+  raw_ptr<SearchController> search_controller_ = nullptr;
   // The launcher search control category of the provider. Each provider is
   // enabled by default.
   ControlCategory control_category_ = ControlCategory::kCannotToggle;

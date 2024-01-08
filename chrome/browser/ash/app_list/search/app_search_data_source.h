@@ -86,9 +86,9 @@ class AppSearchDataSource : public apps::AppRegistryCache::Observer {
   // repeatedly calling `Refresh()` during batch updates in app service.
   void ScheduleRefresh();
 
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
-  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<AppListControllerDelegate> list_controller_;
+  const raw_ptr<base::Clock> clock_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 

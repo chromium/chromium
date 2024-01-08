@@ -174,7 +174,7 @@ class InformationTextArea : public views::View {
   }
 
  private:
-  raw_ptr<views::Label, ExperimentalAsh> label_;
+  raw_ptr<views::Label> label_;
   int min_width_;
   absl::optional<BorderPosition> position_;
 };

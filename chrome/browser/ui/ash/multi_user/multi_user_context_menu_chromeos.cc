@@ -46,7 +46,7 @@ class MultiUserContextMenuChromeos : public ui::SimpleMenuModel,
 
  private:
   // The window for which this menu is.
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
 };
 
 MultiUserContextMenuChromeos::MultiUserContextMenuChromeos(aura::Window* window)

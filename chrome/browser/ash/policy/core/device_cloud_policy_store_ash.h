@@ -93,8 +93,8 @@ class DeviceCloudPolicyStoreAsh : public CloudPolicyStore,
   // Whether DM token check has yet been done.
   bool dm_token_checked_ = false;
 
-  raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service_;
-  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
+  raw_ptr<ash::DeviceSettingsService> device_settings_service_;
+  raw_ptr<ash::InstallAttributes> install_attributes_;
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 

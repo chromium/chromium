@@ -61,7 +61,7 @@ class LocalFileSuggestionProvider
   void OnValidationComplete(std::pair<std::vector<LocalFileData>,
                                       std::vector<base::FilePath>> results);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Any file not modified at least as recently as `max_last_modified_time_` ago
   // will be filtered out of results.

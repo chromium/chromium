@@ -84,7 +84,7 @@ class MarketingBackendConnector
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::string access_token_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   static base::RepeatingCallback<void(std::string)>*
       request_finished_for_tests_;

@@ -54,7 +54,7 @@ class BorealisInstallerPageHandler
   mojo::Remote<ash::borealis_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;
   gfx::NativeWindow native_window_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::Time install_start_time_;
   base::ScopedObservation<borealis::BorealisInstaller,
                           borealis::BorealisInstaller::Observer>

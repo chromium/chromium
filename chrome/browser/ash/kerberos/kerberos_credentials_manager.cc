@@ -280,7 +280,7 @@ class KerberosAddAccountRunner {
   }
 
   // Pointer to the owning manager, not owned.
-  const raw_ptr<KerberosCredentialsManager, ExperimentalAsh> manager_ = nullptr;
+  const raw_ptr<KerberosCredentialsManager> manager_ = nullptr;
   std::string normalized_principal_;
   bool is_managed_ = false;
   absl::optional<std::string> password_;

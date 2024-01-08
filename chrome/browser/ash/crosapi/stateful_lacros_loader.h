@@ -85,7 +85,7 @@ class StatefulLacrosLoader : public LacrosSelectionLoader {
   scoped_refptr<component_updater::CrOSComponentManager> component_manager_;
 
   // May be null in tests.
-  const raw_ptr<component_updater::ComponentUpdateService, ExperimentalAsh>
+  const raw_ptr<component_updater::ComponentUpdateService>
       component_update_service_;
 
   const std::string lacros_component_name_;

@@ -64,7 +64,7 @@ class FileSearchProvider : public SearchProvider {
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   ash::ThumbnailLoader thumbnail_loader_;
   base::FilePath root_path_;
 

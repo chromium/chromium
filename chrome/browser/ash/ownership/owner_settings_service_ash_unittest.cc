@@ -82,8 +82,8 @@ class PrefsChecker : public ownership::OwnerSettingsService::Observer {
   void Wait() { loop_.Run(); }
 
  private:
-  raw_ptr<OwnerSettingsServiceAsh, ExperimentalAsh> service_;
-  raw_ptr<DeviceSettingsProvider, ExperimentalAsh> provider_;
+  raw_ptr<OwnerSettingsServiceAsh> service_;
+  raw_ptr<DeviceSettingsProvider> provider_;
   base::RunLoop loop_;
 
   using SetRequest = std::pair<std::string, base::Value>;
@@ -165,8 +165,7 @@ class OwnerSettingsServiceAshTest : public DeviceSettingsTestBase {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  raw_ptr<OwnerSettingsServiceAsh, DanglingUntriaged> service_ = nullptr;
   ScopedTestingLocalState local_state_;
   std::unique_ptr<DeviceSettingsProvider> provider_;
   base::ScopedPathOverride user_data_dir_override_;

@@ -56,7 +56,7 @@ class CrostiniRecoveryView : public views::BubbleDialogDelegateView {
 
   void OnStopVm(crostini::CrostiniResult result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   std::string app_id_;
   int64_t display_id_;
   const std::vector<guest_os::LaunchArg> args_;

@@ -54,8 +54,7 @@ class CrostiniInstallerPageHandler
   void OnInstallFinished(crostini::mojom::InstallerError error);
   void OnCanceled();
 
-  raw_ptr<crostini::CrostiniInstallerUIDelegate, ExperimentalAsh>
-      installer_ui_delegate_;
+  raw_ptr<crostini::CrostiniInstallerUIDelegate> installer_ui_delegate_;
   mojo::Receiver<crostini_installer::mojom::PageHandler> receiver_;
   mojo::Remote<crostini_installer::mojom::Page> page_;
   base::OnceClosure on_page_closed_;

@@ -161,7 +161,7 @@ class FakeWilcoDtcSupportdBridgeDelegate final
   }
 
  private:
-  const raw_ptr<FakeMojoWilcoDtcSupportdServiceFactory, ExperimentalAsh>
+  const raw_ptr<FakeMojoWilcoDtcSupportdServiceFactory>
       mojo_wilco_dtc_supportd_service_factory_;
 };
 
@@ -264,7 +264,7 @@ class WilcoDtcSupportdBridgeTest : public testing::Test {
           &mojo_wilco_dtc_supportd_service_};
 
   raw_ptr<StrictMock<MockWilcoDtcSupportdNotificationController>,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       notification_controller_;
 
   std::unique_ptr<WilcoDtcSupportdBridge> wilco_dtc_supportd_bridge_;

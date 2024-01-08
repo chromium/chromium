@@ -50,7 +50,7 @@ class EssentialSearchManager : public ash::SessionObserver,
   base::ScopedObservation<ash::SessionController, ash::SessionObserver>
       scoped_observation_{this};
 
-  const raw_ptr<Profile, ExperimentalAsh> primary_profile_;
+  const raw_ptr<Profile> primary_profile_;
 
   std::unique_ptr<SocsCookieFetcher> socs_cookie_fetcher_;
 

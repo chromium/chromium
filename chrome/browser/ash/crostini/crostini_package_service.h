@@ -175,7 +175,7 @@ class CrostiniPackageService : public KeyedService,
 
   std::string GetUniqueNotificationId();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // The notifications in the RUNNING state for each container.
   std::map<guest_os::GuestId, std::unique_ptr<CrostiniPackageNotification>>

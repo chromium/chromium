@@ -585,9 +585,8 @@ class DriveIntegrationService::DriveFsHolder
     profile_->GetPrefs()->SetString(prefs::kDriveFsMirrorSyncMachineRootId, id);
   }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<drivefs::DriveFsHost::MountObserver, ExperimentalAsh>
-      mount_observer_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<drivefs::DriveFsHost::MountObserver> mount_observer_;
 
   const DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory_;
 

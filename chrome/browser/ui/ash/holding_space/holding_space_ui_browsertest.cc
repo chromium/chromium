@@ -630,8 +630,8 @@ class HoldingSpaceUiDragAndDropBrowserTest
     return GetStorageLocationFlags() & flag;
   }
 
-  raw_ptr<DropSenderView, ExperimentalAsh> drop_sender_view_ = nullptr;
-  raw_ptr<DropTargetView, ExperimentalAsh> drop_target_view_ = nullptr;
+  raw_ptr<DropSenderView> drop_sender_view_ = nullptr;
+  raw_ptr<DropTargetView> drop_target_view_ = nullptr;
 };
 
 // Flaky on ChromeOS bots: crbug.com/1338054
@@ -2004,11 +2004,10 @@ class HoldingSpaceUiInProgressDownloadsBrowserTestBase
 
   const DownloadTypeToUse download_type_to_use_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<testing::NiceMock<content::MockDownloadManager>,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<testing::NiceMock<content::MockDownloadManager>, DanglingUntriaged>
       download_manager_ = nullptr;
-  raw_ptr<content::DownloadManagerDelegate, ExperimentalAsh>
-      download_manager_delegate_ = nullptr;
+  raw_ptr<content::DownloadManagerDelegate> download_manager_delegate_ =
+      nullptr;
   base::ObserverList<content::DownloadManager::Observer>::Unchecked
       download_manager_observers_;
   testing::NiceMock<MockDownloadControllerClient> download_controller_client_;

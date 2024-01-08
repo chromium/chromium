@@ -68,12 +68,12 @@ class CrostiniAnsibleSoftwareConfigView
 
   State state_ = State::CONFIGURING;
 
-  raw_ptr<views::Label, ExperimentalAsh> subtext_label_ = nullptr;
-  raw_ptr<views::Label, ExperimentalAsh> progress_label_ = nullptr;
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label> subtext_label_ = nullptr;
+  raw_ptr<views::Label> progress_label_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
   base::FilePath default_container_ansible_filepath_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   guest_os::GuestId container_id_;
   std::u16string container_name_;

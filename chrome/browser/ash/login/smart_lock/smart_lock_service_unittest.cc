@@ -349,7 +349,7 @@ class SmartLockServiceTest : public testing::Test {
   scoped_refptr<testing::NiceMock<MockBluetoothAdapter>> mock_adapter_;
 
   raw_ptr<testing::StrictMock<MockSmartLockNotificationController>,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       mock_notification_controller_;
 
   views::TestViewsDelegate view_delegate_;

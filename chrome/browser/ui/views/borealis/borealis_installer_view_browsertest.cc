@@ -152,7 +152,7 @@ class BorealisInstallerViewBrowserTest : public DialogBrowserTest {
   std::unique_ptr<BorealisAppLauncher> app_launcher_;
   std::unique_ptr<BorealisFeatures> features_;
   std::unique_ptr<BorealisWindowManager> window_manager_;
-  raw_ptr<BorealisInstallerView, DanglingUntriaged | ExperimentalAsh> view_;
+  raw_ptr<BorealisInstallerView, DanglingUntriaged> view_;
 };
 
 // Test that the dialog can be launched.

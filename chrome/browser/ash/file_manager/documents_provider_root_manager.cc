@@ -82,7 +82,7 @@ class BitmapWrapper {
   }
 
  private:
-  const raw_ptr<const SkBitmap, ExperimentalAsh> bitmap_;
+  const raw_ptr<const SkBitmap> bitmap_;
 };
 
 }  // namespace

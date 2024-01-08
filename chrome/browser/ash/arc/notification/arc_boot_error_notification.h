@@ -40,7 +40,7 @@ class ArcBootErrorNotification : public KeyedService,
   static void EnsureFactoryBuilt();
 
  private:
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace arc

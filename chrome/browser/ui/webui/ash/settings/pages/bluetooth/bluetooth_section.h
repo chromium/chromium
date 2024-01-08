@@ -64,7 +64,7 @@ class BluetoothSection : public OsSettingsSection,
   void UpdateSearchTags();
 
   // Observes user profile prefs.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   base::WeakPtrFactory<BluetoothSection> weak_ptr_factory_{this};

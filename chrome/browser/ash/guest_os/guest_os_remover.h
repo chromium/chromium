@@ -45,7 +45,7 @@ class GuestOsRemover : public base::RefCountedThreadSafe<GuestOsRemover> {
   void DestroyDiskImageFinished(
       absl::optional<vm_tools::concierge::DestroyDiskImageResponse> response);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::VmType vm_type_;
   std::string vm_name_;
   base::OnceCallback<void(Result)> callback_;

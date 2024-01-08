@@ -134,8 +134,7 @@ class DemoSessionTest : public testing::Test {
     return profile;
   }
 
-  raw_ptr<FakeCrOSComponentManager, ExperimentalAsh> cros_component_manager_ =
-      nullptr;
+  raw_ptr<FakeCrOSComponentManager> cros_component_manager_ = nullptr;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;

@@ -53,8 +53,7 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   bool successfully_requested_targets_ = true;
   bool failed_to_get_arc_service_manager_ = false;
   bool failed_to_get_net_instance_service_for_http_test_ = false;
-  raw_ptr<arc::mojom::NetInstance, DanglingUntriaged | ExperimentalAsh>
-      net_instance_ = nullptr;
+  raw_ptr<arc::mojom::NetInstance, DanglingUntriaged> net_instance_ = nullptr;
   int64_t max_latency_ = 0;
   base::WeakPtrFactory<ArcHttpRoutine> weak_ptr_factory_{this};
 };

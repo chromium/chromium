@@ -179,7 +179,7 @@ class ClipboardImageModelRequest : public content::WebContentsDelegate,
   std::unique_ptr<views::Widget> const widget_;
 
   // Contents view of |widget_|. Owned by |widget_|.
-  const raw_ptr<views::WebView, ExperimentalAsh> web_view_;
+  const raw_ptr<views::WebView> web_view_;
 
   // Unique identifier for this request run. Empty when there are no running
   // requests.

@@ -82,7 +82,7 @@ class ImmersiveRevealEndedWaiter : public ImmersiveModeController::Observer {
     immersive_controller_ = nullptr;
   }
 
-  raw_ptr<ImmersiveModeController, ExperimentalAsh> immersive_controller_;
+  raw_ptr<ImmersiveModeController> immersive_controller_;
   base::OnceClosure quit_closure_;
 };
 
@@ -331,7 +331,7 @@ class TabScrubberChromeOSTest : public InProcessBrowserTest,
         TabScrubberChromeOS::GetInstance()->FinishScrub(true);
     }
 
-    raw_ptr<ui::test::EventGenerator, ExperimentalAsh> event_generator_;
+    raw_ptr<ui::test::EventGenerator> event_generator_;
     base::TimeTicks time_for_next_event_ = ui::EventTimeForNow();
     int last_x_offset_ = 0;
   };

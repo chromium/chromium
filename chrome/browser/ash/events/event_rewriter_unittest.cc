@@ -1089,11 +1089,10 @@ class EventRewriterTest : public ChromeAshTestBase {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeChromeUserManager, DanglingUntriaged>
       fake_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<input_method::MockInputMethodManagerImpl,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<input_method::MockInputMethodManagerImpl, DanglingUntriaged>
       input_method_manager_mock_;
   testing::FakeUdevLoader fake_udev_;
   ui::DeviceDataManagerTestApi device_data_manager_test_api_;
@@ -1113,9 +1112,9 @@ class EventRewriterTest : public ChromeAshTestBase {
   TestEventSink sink_;
   ui::test::TestEventSource source_{&sink_};
   message_center::FakeMessageCenter message_center_;
-  raw_ptr<DeprecationNotificationController, ExperimentalAsh>
+  raw_ptr<DeprecationNotificationController>
       deprecation_controller_;  // Not owned.
-  raw_ptr<InputDeviceSettingsNotificationController, ExperimentalAsh>
+  raw_ptr<InputDeviceSettingsNotificationController>
       input_device_settings_notification_controller_;  // Not owned.
 };
 
@@ -4030,7 +4029,7 @@ class StickyKeysOverlayTest : public EventRewriterTest {
     ASSERT_TRUE(overlay_);
   }
 
-  raw_ptr<StickyKeysOverlay, DanglingUntriaged | ExperimentalAsh> overlay_;
+  raw_ptr<StickyKeysOverlay, DanglingUntriaged> overlay_;
 };
 
 TEST_F(StickyKeysOverlayTest, OneModifierEnabled) {

@@ -43,7 +43,7 @@ class DeskUuidChecker : public StatusChangeChecker,
 
  private:
   const base::Uuid uuid_;
-  const raw_ptr<desks_storage::DeskSyncService, ExperimentalAsh> service_;
+  const raw_ptr<desks_storage::DeskSyncService> service_;
 };
 
 // Class that allows waiting until a particular desk |uuid| is deleted by the
@@ -71,7 +71,7 @@ class DeskUuidDeletedChecker : public StatusChangeChecker,
 
  private:
   const base::Uuid uuid_;
-  const raw_ptr<desks_storage::DeskSyncService, ExperimentalAsh> service_;
+  const raw_ptr<desks_storage::DeskSyncService> service_;
 };
 
 // Class that allows waiting until the bridge is ready.
@@ -96,7 +96,7 @@ class DeskModelReadyChecker : public StatusChangeChecker,
   void EntriesRemovedRemotely(const std::vector<base::Uuid>& uuids) override;
 
  private:
-  const raw_ptr<desks_storage::DeskSyncService, ExperimentalAsh> service_;
+  const raw_ptr<desks_storage::DeskSyncService> service_;
 };
 
 }  // namespace workspace_desk_helper

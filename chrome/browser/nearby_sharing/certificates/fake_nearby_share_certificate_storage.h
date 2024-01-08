@@ -54,9 +54,8 @@ class FakeNearbyShareCertificateStorage : public NearbyShareCertificateStorage {
 
     std::vector<raw_ptr<FakeNearbyShareCertificateStorage, VectorExperimental>>
         instances_;
-    raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh>
-        latest_pref_service_ = nullptr;
-    raw_ptr<leveldb_proto::ProtoDatabaseProvider, ExperimentalAsh>
+    raw_ptr<PrefService, DanglingUntriaged> latest_pref_service_ = nullptr;
+    raw_ptr<leveldb_proto::ProtoDatabaseProvider>
         latest_proto_database_provider_ = nullptr;
     base::FilePath latest_profile_path_;
   };

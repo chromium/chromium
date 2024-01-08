@@ -33,8 +33,7 @@ class UI_CHROMEOS_EXPORT AssistiveAccessibilityView
   AssistiveAccessibilityView();
 
  private:
-  raw_ptr<SuggestionAccessibilityLabel, ExperimentalAsh> accessibility_label_ =
-      nullptr;
+  raw_ptr<SuggestionAccessibilityLabel> accessibility_label_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

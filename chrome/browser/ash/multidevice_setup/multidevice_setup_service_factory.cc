@@ -70,7 +70,7 @@ class MultiDeviceSetupServiceHolder : public KeyedService {
   // KeyedService:
   void Shutdown() override { multidevice_setup_service_.reset(); }
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<MultiDeviceSetupService> multidevice_setup_service_;
 };
 

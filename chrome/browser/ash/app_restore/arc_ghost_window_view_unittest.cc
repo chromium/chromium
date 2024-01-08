@@ -112,7 +112,7 @@ class ArcGhostWindowViewTest : public testing::Test {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 

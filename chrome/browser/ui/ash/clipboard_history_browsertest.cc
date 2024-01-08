@@ -154,7 +154,7 @@ class ViewBoundsWaiter : public views::ViewObserver {
     run_loop_.Quit();
   }
 
-  const raw_ptr<views::View, ExperimentalAsh> observed_view_;
+  const raw_ptr<views::View> observed_view_;
   base::RunLoop run_loop_;
 };
 
@@ -819,8 +819,7 @@ class ClipboardHistoryPasteTypeBrowserTest
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<content::WebContents, DanglingUntriaged | ExperimentalAsh>
-      web_contents_ = nullptr;
+  raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
   int paste_num_ = 1;
 };
 
@@ -1197,7 +1196,7 @@ class ClipboardHistoryTextfieldBrowserTestBase
   }
 
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<views::Textfield, ExperimentalAsh> textfield_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
 };
 
 class ClipboardHistoryTextfieldBrowserTest

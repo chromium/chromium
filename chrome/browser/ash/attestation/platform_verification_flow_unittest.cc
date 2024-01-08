@@ -141,7 +141,7 @@ class PlatformVerificationFlowTest : public ::testing::Test {
 
   // Used to create a fake user.
   FakeChromeUserManager user_manager_;
-  raw_ptr<user_manager::User, ExperimentalAsh> user_;
+  raw_ptr<user_manager::User> user_;
 
   scoped_refptr<PlatformVerificationFlow> verifier_;
 

@@ -61,7 +61,7 @@ class BrowserShortcutShelfItemController : public ash::ShelfItemDelegate,
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserClosing(Browser* browser) override;
 
-  raw_ptr<ash::ShelfModel, ExperimentalAsh> shelf_model_;
+  raw_ptr<ash::ShelfModel> shelf_model_;
 
   // The cached browser windows and tab indices shown in an application menu.
   std::vector<std::pair<Browser*, size_t>> app_menu_items_;

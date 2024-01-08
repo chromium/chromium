@@ -57,7 +57,7 @@ class Hierarchy {
 
    private:
     chromeos::settings::mojom::Section section_;
-    raw_ptr<const Hierarchy, ExperimentalAsh> hierarchy_;
+    raw_ptr<const Hierarchy> hierarchy_;
   };
 
   class SubpageMetadata {
@@ -100,7 +100,7 @@ class Hierarchy {
     // |modify_url_callback_|.
     std::string unmodified_url_path_with_parameters_;
 
-    raw_ptr<const Hierarchy, ExperimentalAsh> hierarchy_;
+    raw_ptr<const Hierarchy> hierarchy_;
   };
 
   // The location of a setting, which includes its section and, if applicable,
@@ -174,8 +174,7 @@ class Hierarchy {
       OsSettingsIdentifier id,
       const std::string& url_to_modify) const;
 
-  raw_ptr<const OsSettingsSections, ExperimentalAsh>
-      sections_;  // Owned by |OsSettingsManager|
+  raw_ptr<const OsSettingsSections> sections_;  // Owned by |OsSettingsManager|
 };
 
 #ifdef DCHECK

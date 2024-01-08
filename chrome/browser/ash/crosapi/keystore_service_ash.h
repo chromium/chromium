@@ -197,12 +197,12 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // Can be nullptr, should not be used directly, use GetPlatformKeys() instead.
   // Stores a pointer to a specific PlatformKeysService if it was specified in
   // constructor.
-  const raw_ptr<ash::platform_keys::PlatformKeysService, ExperimentalAsh>
+  const raw_ptr<ash::platform_keys::PlatformKeysService>
       fixed_platform_keys_service_ = nullptr;
   // Can be nullptr, should not be used directly, use GetKeyPermissions()
   // instead. Stores a pointer to a specific KeyPermissionsService if it was
   // specified in constructor.
-  const raw_ptr<ash::platform_keys::KeyPermissionsService, ExperimentalAsh>
+  const raw_ptr<ash::platform_keys::KeyPermissionsService>
       fixed_key_permissions_service_ = nullptr;
 
   // Container to keep outstanding challenges alive. The challenges should be

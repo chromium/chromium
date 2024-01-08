@@ -553,7 +553,7 @@ class AppServiceProxyAsh : public AppServiceProxyBase,
 
   std::unique_ptr<apps::AppStorage> app_storage_;
 
-  raw_ptr<SubscriberCrosapi, ExperimentalAsh> crosapi_subscriber_ = nullptr;
+  raw_ptr<SubscriberCrosapi> crosapi_subscriber_ = nullptr;
 
   std::unique_ptr<PublisherHost> publisher_host_;
 

@@ -162,13 +162,12 @@ class NearbyConnectionsManagerImpl
   absl::optional<Medium> GetUpgradedMedium(
       const std::string& endpoint_id) const;
 
-  raw_ptr<ash::nearby::NearbyProcessManager, ExperimentalAsh> process_manager_;
+  raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   NearbyFileHandler file_handler_;
-  raw_ptr<IncomingConnectionListener, ExperimentalAsh>
-      incoming_connection_listener_ = nullptr;
-  raw_ptr<DiscoveryListener, ExperimentalAsh> discovery_listener_ = nullptr;
+  raw_ptr<IncomingConnectionListener> incoming_connection_listener_ = nullptr;
+  raw_ptr<DiscoveryListener> discovery_listener_ = nullptr;
   base::WeakPtr<BandwidthUpgradeListener> bandwidth_upgrade_listener_;
   base::flat_set<std::string> discovered_endpoints_;
   // A map of endpoint_id to NearbyConnectionCallback.

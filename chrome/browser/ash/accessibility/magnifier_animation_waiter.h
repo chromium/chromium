@@ -30,8 +30,7 @@ class MagnifierAnimationWaiter {
  private:
   void OnTimer();
 
-  raw_ptr<FullscreenMagnifierController, ExperimentalAsh>
-      controller_;  // not owned
+  raw_ptr<FullscreenMagnifierController> controller_;  // not owned
   scoped_refptr<content::MessageLoopRunner> runner_;
 };
 

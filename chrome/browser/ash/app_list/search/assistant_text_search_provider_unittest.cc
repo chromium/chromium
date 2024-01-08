@@ -70,8 +70,7 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
   ash::MockAssistantState assistant_state_;
   testing::NiceMock<ash::MockAssistantController> assistant_controller_;
   TestSearchController search_controller_;
-  raw_ptr<AssistantTextSearchProvider, ExperimentalAsh> search_provider_ =
-      nullptr;
+  raw_ptr<AssistantTextSearchProvider> search_provider_ = nullptr;
 };
 
 // Tests -----------------------------------------------------------------------

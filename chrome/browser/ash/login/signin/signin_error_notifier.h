@@ -88,17 +88,16 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
       std::optional<int> button_index);
 
   // The error controller to query for error details.
-  raw_ptr<SigninErrorController, ExperimentalAsh> error_controller_;
+  raw_ptr<SigninErrorController> error_controller_;
 
   // The Profile this service belongs to.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // A non-owning pointer to IdentityManager.
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // A non-owning pointer.
-  const raw_ptr<account_manager::AccountManager, ExperimentalAsh>
-      account_manager_;
+  const raw_ptr<account_manager::AccountManager> account_manager_;
 
   const std::unique_ptr<TokenHandleUtil> token_handle_util_;
   const std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;

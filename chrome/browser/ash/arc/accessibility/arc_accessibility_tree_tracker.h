@@ -166,10 +166,9 @@ class ArcAccessibilityTreeTracker : public aura::EnvObserver {
   virtual void DispatchCustomSpokenFeedbackToggled(bool enabled);
   virtual aura::Window* GetFocusedArcWindow() const;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<ax::android::AXTreeSourceAndroid::Delegate, ExperimentalAsh>
-      tree_source_delegate_;
-  const raw_ref<const AccessibilityHelperInstanceRemoteProxy, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;
+  raw_ptr<ax::android::AXTreeSourceAndroid::Delegate> tree_source_delegate_;
+  const raw_ref<const AccessibilityHelperInstanceRemoteProxy>
       accessibility_helper_instance_;
 
   TreeMap trees_;

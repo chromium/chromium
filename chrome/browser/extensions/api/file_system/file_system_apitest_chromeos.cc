@@ -114,7 +114,7 @@ class ScopedAddListenerObserver : public EventRouter::Observer {
  private:
   const ExtensionId extension_id_;
   base::OnceClosure callback_;
-  const raw_ptr<EventRouter, ExperimentalAsh> event_router_;
+  const raw_ptr<EventRouter> event_router_;
 };
 
 // This class contains chrome.filesystem API test specific to Chrome OS, namely,
@@ -197,7 +197,7 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   base::ScopedTempDir drivefs_root_;
   base::FilePath drivefs_mount_point_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged>
       integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

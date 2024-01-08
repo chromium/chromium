@@ -34,7 +34,7 @@ class EmbeddedTestServerSetupMixin : public InProcessBrowserTestMixin {
   base::FilePath test_data_dir_;
 
   // Embedded test server owned by test that uses this mixin.
-  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> embedded_test_server_;
+  raw_ptr<net::EmbeddedTestServer> embedded_test_server_;
 };
 
 }  // namespace ash

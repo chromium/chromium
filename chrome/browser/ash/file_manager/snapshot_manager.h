@@ -54,7 +54,7 @@ class SnapshotManager {
       LocalPathCallback callback,
       int64_t needed_space);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<FileRefsHolder> holder_;
 
   // Note: This should remain the last member so it'll be destroyed and

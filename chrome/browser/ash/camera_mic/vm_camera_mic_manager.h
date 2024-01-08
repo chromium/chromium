@@ -108,8 +108,7 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   void UpdateVmInfo(VmType vm, void (VmInfo::*updator)(bool), bool value);
   void NotifyActiveChanged();
 
-  raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> primary_profile_ =
-      nullptr;
+  raw_ptr<Profile, LeakedDanglingUntriaged> primary_profile_ = nullptr;
   std::map<VmType, VmInfo> vm_info_map_;
 
   base::ObserverList<Observer> observers_;

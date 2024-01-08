@@ -39,7 +39,7 @@ class BorealisServiceImpl : public BorealisService {
   BorealisWindowManager& WindowManager() override;
   BorealisSurveyHandler& SurveyHandler() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   BorealisAppLauncherImpl app_launcher_;
   BorealisAppUninstaller app_uninstaller_;

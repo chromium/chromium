@@ -81,7 +81,7 @@ class DeviceScheduledUpdateChecker
   void ResetState();
 
   // Used to retrieve Chrome OS settings. Not owned.
-  const raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
+  const raw_ptr<ash::CrosSettings> cros_settings_;
 
   // Subscription for callback when settings change.
   base::CallbackListSubscription cros_settings_subscription_;

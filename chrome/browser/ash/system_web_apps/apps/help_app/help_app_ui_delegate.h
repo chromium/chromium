@@ -48,7 +48,7 @@ class ChromeHelpAppUIDelegate : public HelpAppUIDelegate {
       const GURL& url) override;
 
  private:
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
   std::unique_ptr<apps::DeviceInfoManager> device_info_manager_;
 };
 

@@ -121,7 +121,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // Maybe updates installation info for app sync metrics.
   void MaybeUpdateInstallMetrics(const mojom::ArcPackageInfo& package_info);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   base::OnceClosure wait_until_ready_to_sync_cb_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
 
@@ -146,7 +146,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   syncer::SyncableService::StartSyncFlare flare_;
 
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> prefs_;
+  const raw_ptr<ArcAppListPrefs> prefs_;
 
   ArcAppSyncMetricsHelper metrics_helper_;
 

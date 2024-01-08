@@ -131,7 +131,7 @@ class AnsibleManagementService : public KeyedService,
   void OnConfigurationFinished(const guest_os::GuestId& container_id,
                                bool success);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::ObserverList<Observer> observers_;
   std::map<guest_os::GuestId, std::unique_ptr<AnsibleConfiguration>>
       configuration_tasks_;

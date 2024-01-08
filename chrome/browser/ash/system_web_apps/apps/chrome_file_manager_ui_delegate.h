@@ -57,7 +57,7 @@ class ChromeFileManagerUIDelegate : public ash::FileManagerUIDelegate {
   int32_t total_hosted_files_ = 0;
   int32_t total_available_offline_hosted_files_ = 0;
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   base::WeakPtrFactory<ChromeFileManagerUIDelegate> weak_ptr_factory_{this};
 };

@@ -442,10 +442,10 @@ class NearbySharingServiceImpl
   void OnVisibilityReminderTimerFired();
   base::TimeDelta GetTimeUntilNextVisibilityReminder();
 
-  raw_ptr<PrefService, ExperimentalAsh> prefs_ = nullptr;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  raw_ptr<ash::nearby::NearbyProcessManager, ExperimentalAsh> process_manager_;
+  raw_ptr<ash::nearby::NearbyProcessManager> process_manager_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<PowerClient> power_client_;

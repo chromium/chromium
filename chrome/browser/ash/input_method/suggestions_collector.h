@@ -43,7 +43,7 @@ class SuggestionsCollector {
       const std::vector<ime::AssistiveSuggestion>& system_suggestions);
 
   // Not owned by this class
-  raw_ptr<SuggestionsSource, ExperimentalAsh> assistive_suggester_;
+  raw_ptr<SuggestionsSource> assistive_suggester_;
 
   // Client used to request suggestions from the system
   std::unique_ptr<AsyncSuggestionsSource> suggestions_service_client_;

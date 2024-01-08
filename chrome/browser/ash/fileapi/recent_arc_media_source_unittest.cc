@@ -222,7 +222,7 @@ class RecentArcMediaSourceTest : public testing::Test {
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<TestingProfile> profile_;
 
-  raw_ptr<arc::ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  raw_ptr<arc::ArcFileSystemOperationRunner> runner_;
 
   std::unique_ptr<RecentArcMediaSource> source_;
 };

@@ -66,7 +66,7 @@ class SmbHandler : public content::WebUIMessageHandler {
 
   bool host_discovery_done_ = false;
   base::OnceClosure stored_mount_call_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   UpdateCredentialsCallback update_cred_callback_;
   raw_ptr<smb_client::SmbService> test_smb_service_ = nullptr;
   base::WeakPtrFactory<SmbHandler> weak_ptr_factory_{this};

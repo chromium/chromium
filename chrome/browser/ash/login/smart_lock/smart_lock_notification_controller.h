@@ -72,7 +72,7 @@ class SmartLockNotificationController {
   void ShowNotification(
       std::unique_ptr<message_center::Notification> notification);
 
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::WeakPtrFactory<SmartLockNotificationController> weak_ptr_factory_{this};
 };

@@ -32,7 +32,7 @@ class InstallEventLogCollectorBase
  protected:
   // Whether the device is currently online.
   bool online_ = false;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   bool GetOnlineState();
 

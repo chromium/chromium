@@ -866,8 +866,8 @@ class FileTasksPolicyBrowserTest : public FileTasksBrowserTest {
   }
 
  protected:
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> rules_manager_ =
+      nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
@@ -1697,7 +1697,7 @@ class OneDriveTest : public TestAccountBrowserTest,
   base::FilePath relative_test_path_;
   base::FilePath test_path_within_odfs_;
   raw_ptr<test::FakeProvidedFileSystemOneDrive,
-          DanglingUntriaged | ExperimentalAsh>
+          DanglingUntriaged>
       provided_file_system_;  // Owned by Service.
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");

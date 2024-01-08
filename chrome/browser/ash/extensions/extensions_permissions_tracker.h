@@ -54,10 +54,10 @@ class ExtensionsPermissionsTracker : public ExtensionRegistryObserver {
   void ParseExtensionPermissions(const Extension* extension);
 
   // Unowned, but guaranteed to outlive this object.
-  raw_ptr<ExtensionRegistry, ExperimentalAsh> registry_;
+  raw_ptr<ExtensionRegistry> registry_;
 
   // Unowned, but guaranteed to outlive this object.
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   PrefChangeRegistrar pref_change_registrar_;
 

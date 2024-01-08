@@ -47,7 +47,7 @@ class AttestationCertificateGeneratorImpl
   std::unique_ptr<attestation::SoftBindAttestationFlow>
       soft_bind_attestation_flow_;
   std::unique_ptr<device_sync::CryptAuthKeyRegistry> key_registry_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
   bool is_valid_ = false;
   std::vector<std::string> attestation_certs_;
   base::Time last_attestation_completed_time_;

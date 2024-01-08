@@ -65,7 +65,7 @@ class CustomTabSessionImplTest : public InProcessBrowserTest,
 
  private:
   std::unique_ptr<exo::WMHelper> wm_helper_;
-  raw_ptr<CustomTabSessionImpl, ExperimentalAsh> custom_tab_session_ = nullptr;
+  raw_ptr<CustomTabSessionImpl> custom_tab_session_ = nullptr;
 };
 
 // Calls |callback| when |browser| is removed from BrowserList.
@@ -85,7 +85,7 @@ class BrowserRemovalObserver final : public BrowserListObserver {
   }
 
  private:
-  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> browser_;
+  raw_ptr<Browser, DanglingUntriaged> browser_;
   base::OnceClosure callback_;
 };
 

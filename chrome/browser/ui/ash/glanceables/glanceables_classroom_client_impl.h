@@ -455,7 +455,7 @@ class GlanceablesClassroomClientImpl : public GlanceablesClassroomClient {
 
   // Clock to be used to retrieve current time - expected to be default clock in
   // production.
-  const raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<base::Clock> clock_;
 
   // Callback passed from `GlanceablesKeyedService` that creates
   // `request_sender_`.

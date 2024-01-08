@@ -154,7 +154,7 @@ class DataTransferDlpController : public ui::DataTransferPolicyController {
     base::TimeTicks time;
   } last_reported_;
 
-  const raw_ref<const DlpRulesManager, ExperimentalAsh> dlp_rules_manager_;
+  const raw_ref<const DlpRulesManager> dlp_rules_manager_;
   DlpClipboardNotifier clipboard_notifier_;
   DlpDragDropNotifier drag_drop_notifier_;
 

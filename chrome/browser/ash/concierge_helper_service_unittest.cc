@@ -108,7 +108,7 @@ class ConciergeHelperServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<ConciergeHelperService, ExperimentalAsh> service_;
+  raw_ptr<ConciergeHelperService> service_;
 };
 
 // Tests that ConciergeHelperService makes cpu restriction requests correctly.

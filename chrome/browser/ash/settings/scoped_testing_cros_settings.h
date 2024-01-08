@@ -49,8 +49,8 @@ class ScopedTestingCrosSettings {
   std::unique_ptr<CrosSettings> test_instance_;
 
   // These are raw pointers since these objects are owned by |test_instance_|.
-  raw_ptr<StubCrosSettingsProvider, ExperimentalAsh> device_settings_ptr_;
-  raw_ptr<SystemSettingsProvider, ExperimentalAsh> system_settings_ptr_;
+  raw_ptr<StubCrosSettingsProvider> device_settings_ptr_;
+  raw_ptr<SystemSettingsProvider> system_settings_ptr_;
 };
 
 }  // namespace ash

@@ -58,8 +58,8 @@ class AppWindowShelfController : public wm::ActivationChangeObserver,
 
  private:
   // Unowned pointers.
-  raw_ptr<ChromeShelfController, ExperimentalAsh> owner_;
-  raw_ptr<wm::ActivationClient, ExperimentalAsh> activation_client_ = nullptr;
+  raw_ptr<ChromeShelfController> owner_;
+  raw_ptr<wm::ActivationClient> activation_client_ = nullptr;
 
   // ash::ShelfModelObserver:
   void ShelfItemDelegateChanged(const ash::ShelfID& id,

@@ -239,7 +239,7 @@ class ModellerImpl : public Modeller,
   std::unique_ptr<Trainer, base::OnTaskRunnerDeleter> trainer_;
 
   // This will be replaced by a mock tick clock during tests.
-  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   base::OneShotTimer model_timer_;
 

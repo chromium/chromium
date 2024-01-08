@@ -330,7 +330,7 @@ class Server : public ash::FilesInternalsDebugJSONProvider {
   // Returns the fuse_handle that is the map key.
   uint64_t InsertFuseFileMapEntry(FuseFileMapEntry&& entry);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
   FuseFileMap fuse_file_map_;
   fusebox::MonikerMap moniker_map_;
   PrefixMap prefix_map_;

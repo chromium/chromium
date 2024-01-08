@@ -47,9 +47,9 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
   void OnThemeChanged() override;
 
  private:
-  raw_ptr<AssistiveDelegate, ExperimentalAsh> delegate_;
-  raw_ptr<CompletionSuggestionView, ExperimentalAsh> suggestion_button_;
-  raw_ptr<views::ImageButton, ExperimentalAsh> ignore_button_;
+  raw_ptr<AssistiveDelegate> delegate_;
+  raw_ptr<CompletionSuggestionView> suggestion_button_;
+  raw_ptr<views::ImageButton> ignore_button_;
 
   ButtonId current_highlighted_button_id_ = ButtonId::kNone;
 

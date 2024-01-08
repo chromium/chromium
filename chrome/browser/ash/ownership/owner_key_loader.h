@@ -70,9 +70,8 @@ class OwnerKeyLoader {
   void MaybeRegenerateLostKey(
       const enterprise_management::PolicyData* policy_data);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<DeviceSettingsService, ExperimentalAsh>
-      device_settings_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<DeviceSettingsService> device_settings_service_;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
   const bool is_enterprise_managed_;
   scoped_refptr<ownership::PublicKey> public_key_;

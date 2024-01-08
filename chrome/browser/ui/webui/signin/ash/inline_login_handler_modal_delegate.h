@@ -34,7 +34,7 @@ class InlineLoginHandlerModalDelegate
 
  private:
   // Non-owning pointer.
-  raw_ptr<web_modal::WebContentsModalDialogHost, ExperimentalAsh> host_;
+  raw_ptr<web_modal::WebContentsModalDialogHost> host_;
 };
 
 }  // namespace ash

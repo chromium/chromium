@@ -106,7 +106,7 @@ class ActivityStorage {
       const base::RepeatingCallback<
           void(const int64_t, const int64_t, const std::string&)>& f) const;
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  const raw_ptr<PrefService> pref_service_ = nullptr;
   const std::string pref_name_;
 
   // Distance from midnight. |GetBeginningOfDay| uses this, as some

@@ -48,7 +48,7 @@ class UserSessionManagerTestApi {
   OnboardingUserActivityCounter* get_onboarding_user_activity_counter();
 
  private:
-  raw_ptr<UserSessionManager, ExperimentalAsh> session_manager_;  // not owned
+  raw_ptr<UserSessionManager> session_manager_;  // not owned
 };
 
 }  // namespace test

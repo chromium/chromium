@@ -102,8 +102,8 @@ class AssistantBrowserDelegateImpl
   base::CallbackListSubscription subscription_;
 
   // Non-owning pointers.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 
   base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
       assistant_state_observation_{this};

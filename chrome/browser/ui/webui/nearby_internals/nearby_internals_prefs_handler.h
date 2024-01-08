@@ -33,7 +33,7 @@ class NearbyInternalsPrefsHandler : public content::WebUIMessageHandler {
   // back into a state of before they have touched the feature.
   void HandleClearNearbyPrefs(const base::Value::List& args);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   base::WeakPtrFactory<NearbyInternalsPrefsHandler> weak_ptr_factory_{this};
 };

@@ -44,7 +44,7 @@ class TabClusterUIClient : public TabStripModelObserver {
                     TabChangeType change_type) override;
 
  private:
-  raw_ptr<ash::TabClusterUIController, ExperimentalAsh> controller_;
+  raw_ptr<ash::TabClusterUIController> controller_;
   BrowserTabStripTracker browser_tab_strip_tracker_;
   // A map from web contents to tab items.
   std::map<content::WebContents*, ash::TabClusterUIItem*> contents_item_map_;

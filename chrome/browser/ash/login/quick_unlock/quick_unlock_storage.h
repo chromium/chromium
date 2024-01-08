@@ -92,11 +92,11 @@ class QuickUnlockStorage : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   base::Time last_strong_auth_;
   // TODO(b/271249180): cleanup remaining AuthToken refs:
   std::unique_ptr<AuthToken> auth_token_;
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
   std::unique_ptr<FingerprintStorage> fingerprint_storage_;
   std::unique_ptr<PinStoragePrefs> pin_storage_prefs_;
 };

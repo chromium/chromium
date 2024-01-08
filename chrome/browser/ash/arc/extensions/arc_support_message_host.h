@@ -59,8 +59,8 @@ class ArcSupportMessageHost : public extensions::NativeMessageHost {
   void OnMessage(const std::string& request_string) override;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner() const override;
 
-  raw_ptr<Observer, ExperimentalAsh> observer_ = nullptr;
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Observer> observer_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 };
 
 }  // namespace arc

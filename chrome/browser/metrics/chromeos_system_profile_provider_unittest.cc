@@ -139,14 +139,12 @@ class ChromeOSSystemProfileProviderTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::multidevice_setup::FakeMultiDeviceSetupClient, DanglingUntriaged>
       fake_multidevice_setup_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      testing_profile_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> testing_profile_ = nullptr;
   std::unique_ptr<FakeMultiDeviceSetupClientImplFactory>
       fake_multidevice_setup_client_impl_factory_;
 

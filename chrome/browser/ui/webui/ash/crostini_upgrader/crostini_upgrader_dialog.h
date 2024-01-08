@@ -54,7 +54,7 @@ class CrostiniUpgraderDialog : public SystemWebDialogDelegate {
   void OnWebContentsFinishedLoad() override;
 
   base::WeakPtr<CrostiniUpgraderUI> upgrader_ui_ = nullptr;  // Not owned.
-  raw_ptr<Profile, ExperimentalAsh> profile_;                // Not owned
+  raw_ptr<Profile> profile_;                                 // Not owned
   const bool only_run_launch_closure_on_restart_;
   base::OnceClosure launch_closure_;
   base::OnceClosure deletion_closure_for_testing_;

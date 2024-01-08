@@ -124,7 +124,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   void ClearState();
 
   base::WeakPtr<AutoEnrollmentCheckScreenView> view_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen> error_screen_;
   base::RepeatingCallback<void(Result result)> exit_callback_;
   raw_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_ =
       nullptr;

@@ -183,10 +183,9 @@ class SystemLiveCaptionServiceTest : public InProcessBrowserTest {
   }
 
   // Unowned.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> primary_profile_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> secondary_profile_;
-  raw_ptr<speech::FakeSpeechRecognitionService,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile, DanglingUntriaged> primary_profile_;
+  raw_ptr<Profile, DanglingUntriaged> secondary_profile_;
+  raw_ptr<speech::FakeSpeechRecognitionService, DanglingUntriaged>
       fake_speech_recognition_service_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

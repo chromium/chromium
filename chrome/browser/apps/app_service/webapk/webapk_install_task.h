@@ -78,8 +78,8 @@ class WebApkInstallTask {
   // further work should be done after calling this method.
   void DeliverResult(WebApkInstallStatus status);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<web_app::WebAppProvider, ExperimentalAsh> web_app_provider_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<web_app::WebAppProvider> web_app_provider_;
 
   arc::mojom::WebApkInfoPtr web_apk_info_;
   const std::string app_id_;

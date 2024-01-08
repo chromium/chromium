@@ -356,7 +356,7 @@ class AccessibilityPanelWidgetObserver : public views::WidgetObserver {
   }
 
  private:
-  raw_ptr<views::Widget, ExperimentalAsh> widget_;
+  raw_ptr<views::Widget> widget_;
 
   base::OnceCallback<void()> on_destroying_;
 };

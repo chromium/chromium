@@ -177,8 +177,7 @@ class SmbShareFinderTest : public testing::Test {
 
   int32_t discovery_callback_counter_ = 0;
 
-  raw_ptr<InMemoryHostLocator, DanglingUntriaged | ExperimentalAsh>
-      host_locator_;
+  raw_ptr<InMemoryHostLocator, DanglingUntriaged> host_locator_;
   std::unique_ptr<FakeSmbProviderClient> fake_client_;
   std::unique_ptr<SmbShareFinder> share_finder_;
 };

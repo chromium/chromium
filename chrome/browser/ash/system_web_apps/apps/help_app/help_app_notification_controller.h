@@ -44,7 +44,7 @@ class HelpAppNotificationController {
   void MaybeShowDiscoverNotification();
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<HelpAppDiscoverTabNotification> discover_tab_notification_;
   std::unique_ptr<ReleaseNotesNotification> release_notes_notification_;
 

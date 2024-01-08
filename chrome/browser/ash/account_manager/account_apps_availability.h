@@ -138,10 +138,9 @@ class AccountAppsAvailability
   std::vector<base::OnceClosure> initialization_callbacks_;
 
   // Non-owning pointers:
-  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
-      account_manager_facade_;
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<PrefService> prefs_;
 
   // A list of observers registered via `AddObserver`.
   base::ObserverList<Observer> observer_list_;

@@ -256,8 +256,8 @@ class AutocorrectManager {
   int context_id_ = 0;
 
   // Not owned by this class.
-  raw_ptr<SuggestionHandlerInterface, ExperimentalAsh> suggestion_handler_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<SuggestionHandlerInterface> suggestion_handler_;
+  raw_ptr<Profile> profile_;
 
   DiacriticsInsensitiveStringComparator
       diacritics_insensitive_string_comparator_;

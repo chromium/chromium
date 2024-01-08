@@ -60,7 +60,7 @@ class PinStoragePrefs {
   std::string PinSecret() const;
 
  private:
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   int unlock_attempt_count_ = 0;
 };
 

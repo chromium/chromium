@@ -62,8 +62,8 @@ class ArcAndroidManagementChecker : public signin::IdentityManager::Observer {
   void OnRefreshTokensLoaded() override;
 
   // Unowned pointers.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
 
   const CoreAccountId device_account_id_;
 

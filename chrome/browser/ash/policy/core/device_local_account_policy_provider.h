@@ -74,7 +74,7 @@ class DeviceLocalAccountPolicyProvider
   const std::string user_id_;
   scoped_refptr<DeviceLocalAccountExternalDataManager> external_data_manager_;
 
-  raw_ptr<DeviceLocalAccountPolicyService, ExperimentalAsh> service_;
+  raw_ptr<DeviceLocalAccountPolicyService> service_;
   DeviceLocalAccount::Type type_;
 
   bool store_initialized_;

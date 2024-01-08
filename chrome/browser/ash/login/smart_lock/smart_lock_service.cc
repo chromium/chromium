@@ -138,7 +138,7 @@ class SmartLockService::PowerMonitor
 
   void ResetWakingUp() { service_->UpdateAppState(); }
 
-  raw_ptr<SmartLockService, ExperimentalAsh> service_;
+  raw_ptr<SmartLockService> service_;
   base::WeakPtrFactory<PowerMonitor> weak_ptr_factory_{this};
 };
 

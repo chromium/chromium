@@ -137,8 +137,8 @@ class FakeDlpController : public DataTransferDlpController,
     return false;
   }
 
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
-  raw_ptr<FakeClipboardNotifier, ExperimentalAsh> helper_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
   std::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();
   bool force_paste_on_warn_ = false;
@@ -227,8 +227,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
                                 "PLACEHOLDER_IP"));
   }
 
-  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      rules_manager_;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_;
   std::unique_ptr<data_controls::DlpReportingManager> reporting_manager_;
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;

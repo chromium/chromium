@@ -158,7 +158,7 @@ class IntervalMapConstIterator {
   }
 
  private:
-  raw_ptr<const MapType, ExperimentalAsh> map_;
+  raw_ptr<const MapType> map_;
 
   // Pointer to the entry in the IntervalMap that specifies the
   // beginning of the current interval.

@@ -85,7 +85,7 @@ class SettingsWindowManagerTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<chrome::SettingsWindowManager, ExperimentalAsh> settings_manager_;
+  raw_ptr<chrome::SettingsWindowManager> settings_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(SettingsWindowManagerTest, OpenSettingsWindow) {

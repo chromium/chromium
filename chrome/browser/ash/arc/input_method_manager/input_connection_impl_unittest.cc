@@ -122,7 +122,7 @@ class TestIMEInputContextHandler : public ash::MockIMEInputContextHandler {
   }
 
  private:
-  const raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+  const raw_ptr<ui::InputMethod> input_method_;
 
   int send_key_event_call_count_ = 0;
   std::vector<std::tuple<int, int>> composition_range_history_;

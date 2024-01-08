@@ -323,8 +323,8 @@ class GuestOsRegistryService : public KeyedService {
                            std::string png_icon_content);
 
   // Owned by the Profile.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
-  const raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
   // Keeps root folder where Crostini app icons for different scale factors are
   // stored.
@@ -332,7 +332,7 @@ class GuestOsRegistryService : public KeyedService {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<const base::Clock> clock_;
 
   std::vector<std::pair<GuestOsUrlHandler, CanHandleUrlCallback>> url_handlers_;
 

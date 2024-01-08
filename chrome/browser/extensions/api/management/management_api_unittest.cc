@@ -1076,9 +1076,9 @@ class ManagementApiSupervisedUserTest : public ManagementApiUnitTest {
   }
 
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<ManagementAPI, ExperimentalAsh> management_api_ = nullptr;
-  raw_ptr<TestSupervisedUserExtensionsDelegate, ExperimentalAsh>
-      supervised_user_delegate_ = nullptr;
+  raw_ptr<ManagementAPI> management_api_ = nullptr;
+  raw_ptr<TestSupervisedUserExtensionsDelegate> supervised_user_delegate_ =
+      nullptr;
 };
 
 TEST_F(ManagementApiSupervisedUserTest, SetEnabled_BlockedByParent) {
@@ -1516,7 +1516,7 @@ class ManagementApiSupervisedUserTestWithSetup
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_->id()));
   }
 
-  raw_ptr<TestManagementAPIDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<TestManagementAPIDelegate> delegate_ = nullptr;
   scoped_refptr<const Extension> extension_;
 };
 

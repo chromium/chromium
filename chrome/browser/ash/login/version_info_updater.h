@@ -97,9 +97,9 @@ class VersionInfoUpdater : public policy::CloudPolicyStore::Observer {
 
   std::vector<base::CallbackListSubscription> subscriptions_;
 
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings> cros_settings_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Weak pointer factory so we can give our callbacks for invocation
   // at a later time without worrying that they will actually try to

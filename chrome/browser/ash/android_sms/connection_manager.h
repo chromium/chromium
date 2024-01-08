@@ -106,10 +106,9 @@ class ConnectionManager
       std::unique_ptr<ServiceWorkerProvider> service_worker_provider);
 
   std::unique_ptr<ConnectionEstablisher> connection_establisher_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AndroidSmsAppManager, ExperimentalAsh> android_sms_app_manager_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AndroidSmsAppManager> android_sms_app_manager_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 
   std::unique_ptr<ServiceWorkerProvider> service_worker_provider_;
 

@@ -117,8 +117,7 @@ struct TentativeTeacherAssignment {
   std::string course_id;
   std::string course_work_id;
   std::string course_name;
-  raw_ptr<const GlanceablesClassroomCourseWorkItem, ExperimentalAsh>
-      course_work_item;
+  raw_ptr<const GlanceablesClassroomCourseWorkItem> course_work_item;
 };
 
 }  // namespace

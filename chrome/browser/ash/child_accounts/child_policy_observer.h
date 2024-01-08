@@ -90,7 +90,7 @@ class ChildPolicyObserver : public policy::CloudPolicyService::Observer {
   PolicyReadyCallback on_policy_ready_;
 
   // Profile of the child user, not owned.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

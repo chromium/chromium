@@ -178,7 +178,7 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
                           apps::AppRegistryCache::Observer>
       app_registry_cache_observer_{this};
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace app_time

@@ -165,7 +165,7 @@ class CrostiniPortForwarder : public KeyedService {
 
   base::ObserverList<Observer> observers_;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::WeakPtrFactory<CrostiniPortForwarder> weak_ptr_factory_{this};
 

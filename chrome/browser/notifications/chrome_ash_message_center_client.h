@@ -59,7 +59,7 @@ class ChromeAshMessageCenterClient : public NotificationPlatformBridge,
                                 bool enabled) override;
 
  private:
-  raw_ptr<NotificationPlatformBridgeDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<NotificationPlatformBridgeDelegate> delegate_;
 
   // Notifier source for each notifier type.
   std::map<message_center::NotifierType, std::unique_ptr<NotifierController>>

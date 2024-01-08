@@ -340,7 +340,7 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   // Used to set up drive fs for for drive tests.
   base::ScopedTempDir test_cache_root_;
   std::unique_ptr<drive::FakeDriveFsHelper> fake_drivefs_helper_;
-  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<drive::DriveIntegrationService, DanglingUntriaged>
       drive_integration_service_ = nullptr;
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

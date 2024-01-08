@@ -87,7 +87,7 @@ class UserCloudPolicyStoreAsh : public UserCloudPolicyStoreBase {
   std::unique_ptr<UserCloudPolicyValidator> CreateValidatorForLoad(
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy);
 
-  raw_ptr<ash::SessionManagerClient, ExperimentalAsh> session_manager_client_;
+  raw_ptr<ash::SessionManagerClient> session_manager_client_;
   const AccountId account_id_;
 
   // Used to load the policy key provided by session manager as a file.

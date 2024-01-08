@@ -84,8 +84,7 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
 
   ash::ScreencastManager screencast_manager_;
 
-  raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl, ExperimentalAsh>
-      annotator_handler_ = nullptr;
+  raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

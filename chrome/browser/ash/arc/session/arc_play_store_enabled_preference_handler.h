@@ -42,10 +42,10 @@ class ArcPlayStoreEnabledPreferenceHandler {
   // ArcSupportHost's managed state.
   void UpdateArcSessionManager();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Owned by ArcServiceLauncher.
-  const raw_ptr<ArcSessionManager, ExperimentalAsh> arc_session_manager_;
+  const raw_ptr<ArcSessionManager> arc_session_manager_;
 
   // Registrar used to monitor ARC enabled state.
   PrefChangeRegistrar pref_change_registrar_;

@@ -93,11 +93,11 @@ class ArcAppInstallEventLogManager
     void RequestUploadForUploader() override;
 
    private:
-    raw_ptr<ArcAppInstallEventLogManager, ExperimentalAsh> owner_;
+    raw_ptr<ArcAppInstallEventLogManager> owner_;
   };
 
   // Uploads logs to the server.
-  const raw_ptr<ArcAppInstallEventLogUploader, ExperimentalAsh> uploader_;
+  const raw_ptr<ArcAppInstallEventLogUploader> uploader_;
 
   // Helper that owns the log store. Once created, must only be accessed via
   // |log_task_runner_|. Outlives |this| and ensures the extension log is stored

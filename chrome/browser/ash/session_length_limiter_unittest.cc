@@ -47,7 +47,7 @@ class WallClockForwarder {
 
  private:
   // Unowned, must outlive this.
-  const raw_ptr<base::TestMockTimeTaskRunner, ExperimentalAsh> runner_;
+  const raw_ptr<base::TestMockTimeTaskRunner> runner_;
 
   // Used to simulate a power suspend and resume.
   base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
@@ -114,7 +114,7 @@ class SessionLengthLimiterTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   bool user_activity_seen_;
 
-  raw_ptr<MockSessionLengthLimiterDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<MockSessionLengthLimiterDelegate, DanglingUntriaged>
       delegate_;  // Owned by
                   // session_length_limiter_.
   std::unique_ptr<SessionLengthLimiter> session_length_limiter_;

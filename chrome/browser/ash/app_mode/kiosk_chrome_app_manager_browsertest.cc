@@ -148,7 +148,7 @@ class AppDataLoadWaiter : public KioskAppManagerObserver {
   }
 
   RepeatingTestFuture<bool> app_data_load_waiter_;
-  raw_ptr<KioskChromeAppManager, ExperimentalAsh> manager_;
+  raw_ptr<KioskChromeAppManager> manager_;
   int data_change_count_ = 0;
   int data_load_failure_count_ = 0;
 };

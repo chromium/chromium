@@ -53,7 +53,7 @@ class ChildUserService : public KeyedService,
     app_time::AppTimeController* app_time_controller();
 
    private:
-    const raw_ptr<ChildUserService, ExperimentalAsh> service_;
+    const raw_ptr<ChildUserService> service_;
   };
 
   // These enum values represent the current Family Link user's time limit
@@ -112,7 +112,7 @@ class ChildUserService : public KeyedService,
   // KeyedService:
   void Shutdown() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<app_time::AppTimeController> app_time_controller_;
 

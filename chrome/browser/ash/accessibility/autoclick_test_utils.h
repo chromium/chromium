@@ -61,7 +61,7 @@ class AutoclickTestUtils {
   void OnFocusRingChanged();
   base::WeakPtr<AutoclickTestUtils> GetWeakPtr();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<AutomationTestUtils> automation_utils_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

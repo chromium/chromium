@@ -69,12 +69,12 @@ class PairedKeyVerificationRunner {
   ShareTarget share_target_;
   std::string endpoint_id_;
   std::vector<uint8_t> raw_token_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> connection_;
+  raw_ptr<NearbyConnection> connection_;
   absl::optional<NearbyShareDecryptedPublicCertificate> certificate_;
-  raw_ptr<NearbyShareCertificateManager, ExperimentalAsh> certificate_manager_;
+  raw_ptr<NearbyShareCertificateManager> certificate_manager_;
   nearby_share::mojom::Visibility visibility_;
   bool restrict_to_contacts_;
-  raw_ptr<IncomingFramesReader, ExperimentalAsh> frames_reader_;
+  raw_ptr<IncomingFramesReader> frames_reader_;
   const base::TimeDelta read_frame_timeout_;
   base::OnceCallback<void(PairedKeyVerificationResult)> callback_;
 

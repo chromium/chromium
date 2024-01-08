@@ -103,7 +103,7 @@ class NetBiosHostLocator final : public HostLocator {
   int32_t outstanding_parse_requests_ = 0;
   GetInterfacesFunction get_interfaces_;
   NetBiosClientFactory client_factory_;
-  raw_ptr<SmbProviderClient, ExperimentalAsh> smb_provider_client_;
+  raw_ptr<SmbProviderClient> smb_provider_client_;
   FindHostsCallback callback_;
   HostMap results_;
   // |netbios_clients_| is a container for storing NetBios clients that are

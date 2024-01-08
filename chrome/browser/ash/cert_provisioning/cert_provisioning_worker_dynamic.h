@@ -176,8 +176,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
   CertScope cert_scope_ = CertScope::kUser;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
   CertProfile cert_profile_;
   base::RepeatingClosure state_change_callback_;
   CertProvisioningWorkerCallback result_callback_;
@@ -257,12 +257,10 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // observe the PlatformKeysService for shutdown events. Instead, it relies on
   // the CertProvisioningScheduler to destroy all CertProvisioningWorker
   // instances when the corresponding PlatformKeysService is shutting down.
-  raw_ptr<platform_keys::PlatformKeysService, ExperimentalAsh>
-      platform_keys_service_ = nullptr;
+  raw_ptr<platform_keys::PlatformKeysService> platform_keys_service_ = nullptr;
   std::unique_ptr<attestation::TpmChallengeKeySubtle>
       tpm_challenge_key_subtle_impl_;
-  const raw_ptr<CertProvisioningClient, ExperimentalAsh>
-      cert_provisioning_client_;
+  const raw_ptr<CertProvisioningClient> cert_provisioning_client_;
 
   std::unique_ptr<CertProvisioningInvalidator> invalidator_;
 

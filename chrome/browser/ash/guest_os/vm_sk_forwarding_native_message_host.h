@@ -96,8 +96,7 @@ class VmSKForwardingNativeMessageHost : public extensions::NativeMessageHost {
   const std::string json_message_to_send_;
 
   // Unowned. |client_| must outlive this instance.
-  raw_ptr<extensions::NativeMessageHost::Client, ExperimentalAsh> client_ =
-      nullptr;
+  raw_ptr<extensions::NativeMessageHost::Client> client_ = nullptr;
 };
 
 }  // namespace guest_os

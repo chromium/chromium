@@ -292,7 +292,7 @@ class ArcVmDataMigrationScreenTest : public ChromeAshTestBase,
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> profile_ =
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_ =
       nullptr;  // Owned by |profile_manager_|.
 
   std::unique_ptr<TestArcVmDataMigrationScreen> screen_;

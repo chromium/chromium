@@ -112,7 +112,7 @@ class UpdateNotificationShowingControllerTest
   std::unique_ptr<UpdateNotificationShowingController>
       update_notification_controller_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
-  raw_ptr<StubNotificationDisplayService, ExperimentalAsh> display_service_;
+  raw_ptr<StubNotificationDisplayService> display_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<Profile> profile_;

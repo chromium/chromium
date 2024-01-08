@@ -84,7 +84,7 @@ class DelegateForUser : public PlatformKeysServiceImplDelegate {
   }
 
  private:
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 class DelegateForDevice : public PlatformKeysServiceImplDelegate,

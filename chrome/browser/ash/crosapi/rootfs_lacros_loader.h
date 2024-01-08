@@ -65,7 +65,7 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
 
   // Pointer held to `UpstartClient` for testing purposes.
   // Otherwise, the lifetime is the same as `ash::UpstartClient::Get()`.
-  const raw_ptr<ash::UpstartClient, ExperimentalAsh> upstart_client_;
+  const raw_ptr<ash::UpstartClient> upstart_client_;
 
   // The path which stores the metadata including the version.
   // This is always the same for production code, but may be overridden on

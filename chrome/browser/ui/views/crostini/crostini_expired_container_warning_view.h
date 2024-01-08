@@ -30,7 +30,7 @@ class CrostiniExpiredContainerWarningView
                                       base::OnceClosure callback);
   ~CrostiniExpiredContainerWarningView() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  const raw_ptr<Profile> profile_;  // Not owned.
   std::vector<base::OnceClosure> callbacks_;
 
   base::WeakPtrFactory<CrostiniExpiredContainerWarningView> weak_ptr_factory_;

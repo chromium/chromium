@@ -115,8 +115,8 @@ class NativeInputMethodEngine
 
   bool ShouldRouteToNativeMojoEngine(const std::string& engine_id) const;
 
-  raw_ptr<AssistiveSuggester, ExperimentalAsh> assistive_suggester_ = nullptr;
-  raw_ptr<AutocorrectManager, ExperimentalAsh> autocorrect_manager_ = nullptr;
+  raw_ptr<AssistiveSuggester> assistive_suggester_ = nullptr;
+  raw_ptr<AutocorrectManager> autocorrect_manager_ = nullptr;
   base::ScopedObservation<ChromeKeyboardControllerClient,
                           ChromeKeyboardControllerClient::Observer>
       chrome_keyboard_controller_client_observer_{this};

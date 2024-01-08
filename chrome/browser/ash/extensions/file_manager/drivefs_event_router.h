@@ -125,8 +125,7 @@ class DriveFsEventRouter : public drivefs::DriveFsHost::Observer,
 
   // This is owned by EventRouter and only shared with this class.
   const raw_ptr<Profile> profile_;
-  const raw_ptr<SystemNotificationManager, ExperimentalAsh>
-      notification_manager_;
+  const raw_ptr<SystemNotificationManager> notification_manager_;
 
   // Set of paths for which Drive transfer events are ignored.
   std::set<base::FilePath> ignored_file_paths_;

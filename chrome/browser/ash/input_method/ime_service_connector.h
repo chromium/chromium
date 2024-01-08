@@ -54,7 +54,7 @@ class ImeServiceConnector : public ime::mojom::PlatformAccessProvider {
   void HandleDownloadResponse(base::FilePath file_path);
   void NotifyAllDownloadListeners(base::FilePath file_path);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

@@ -50,7 +50,7 @@ class SmbPersistedShareRegistry {
   std::vector<SmbShareInfo> GetAll() const;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace smb_client

@@ -80,7 +80,7 @@ class FakeFileStreamReader : public storage::FileStreamReader {
   }
 
  private:
-  raw_ptr<std::vector<int>, ExperimentalAsh> log_;  // Not owned.
+  raw_ptr<std::vector<int>> log_;  // Not owned.
   net::Error return_error_;
 };
 

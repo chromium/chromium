@@ -93,9 +93,9 @@ class FakeFileStreamWriter : public storage::FileStreamWriter {
 
  private:
   int pending_bytes_;
-  raw_ptr<std::vector<std::string>, ExperimentalAsh> write_log_;  // Not owned.
-  raw_ptr<std::vector<int>, ExperimentalAsh> flush_log_;          // Not owned.
-  raw_ptr<int, ExperimentalAsh> cancel_counter_;                  // Not owned.
+  raw_ptr<std::vector<std::string>> write_log_;  // Not owned.
+  raw_ptr<std::vector<int>> flush_log_;          // Not owned.
+  raw_ptr<int> cancel_counter_;                  // Not owned.
   net::Error write_error_;
 };
 

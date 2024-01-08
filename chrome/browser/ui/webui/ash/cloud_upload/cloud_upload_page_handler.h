@@ -72,8 +72,8 @@ class CloudUploadPageHandler : public mojom::PageHandler {
   void RecordCancel(mojom::MetricsRecordedSetupPage page) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<content::WebUI> web_ui_;
   mojom::DialogArgsPtr dialog_args_;
   bool odfs_mount_called_ = false;
 

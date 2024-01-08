@@ -111,7 +111,7 @@ class GameProviderTest : public testing::Test,
   std::unique_ptr<TestSearchController> search_controller_;
   std::unique_ptr<Profile> profile_;
 
-  raw_ptr<GameProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<GameProvider> provider_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,

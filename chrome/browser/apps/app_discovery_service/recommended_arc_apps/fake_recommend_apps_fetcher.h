@@ -31,7 +31,7 @@ class FakeRecommendAppsFetcher : public RecommendAppsFetcher {
  private:
   void OnTimer();
 
-  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate> delegate_;
   int fake_apps_count_;
   base::OneShotTimer delay_timer_;
 

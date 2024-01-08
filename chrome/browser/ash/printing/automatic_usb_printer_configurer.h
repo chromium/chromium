@@ -102,10 +102,9 @@ class AutomaticUsbPrinterConfigurer {
 
   SEQUENCE_CHECKER(sequence_);
 
-  raw_ptr<PrinterInstallationManager, ExperimentalAsh>
-      installation_manager_;  // Not owned.
-  raw_ptr<UsbPrinterNotificationController, ExperimentalAsh>
-      notification_controller_;  // Not owned.
+  raw_ptr<PrinterInstallationManager> installation_manager_;  // Not owned.
+  raw_ptr<UsbPrinterNotificationController>
+      notification_controller_;                  // Not owned.
   raw_ptr<chromeos::PpdProvider> ppd_provider_;  // Not owned.
   base::RepeatingCallback<void(std::string)> refresh_callback_;
 

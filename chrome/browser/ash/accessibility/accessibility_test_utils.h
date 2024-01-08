@@ -47,7 +47,7 @@ class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
 
  private:
   std::vector<std::u16string> errors_;
-  raw_ptr<ErrorConsole, ExperimentalAsh> error_console_;
+  raw_ptr<ErrorConsole> error_console_;
 };
 
 }  // namespace ash

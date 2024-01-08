@@ -46,7 +46,7 @@ class AboutSection : public OsSettingsSection {
   // Returns if the auto update toggle should be shown for the active user.
   bool ShouldShowAUToggle(user_manager::User* active_user);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::optional<CrostiniSection> crostini_subsection_;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

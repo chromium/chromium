@@ -135,10 +135,9 @@ class InputMethodManagerImpl : public InputMethodManager,
     const InputMethodDescriptor* LookupInputMethod(
         const std::string& input_method_id);
 
-    const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+    const raw_ptr<Profile, DanglingUntriaged> profile_;
 
-    const raw_ptr<InputMethodManagerImpl, DanglingUntriaged | ExperimentalAsh>
-        manager_;
+    const raw_ptr<InputMethodManagerImpl, DanglingUntriaged> manager_;
 
     std::string last_used_input_method_id_;
 

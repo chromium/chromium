@@ -160,7 +160,7 @@ class CertStoreService : public KeyedService,
   void OnUpdatedKeys(std::vector<CertDescription> certificates, bool success);
   void OnArcCertsInstalled(bool need_policy_update, bool success);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   std::unique_ptr<ArcCertInstaller> installer_;
   CertificateCache certificate_cache_;

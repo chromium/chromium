@@ -174,7 +174,7 @@ class PrintersSyncBridge::StoreProxy {
     owner_->change_processor()->ModelReadyToSync(std::move(metadata_batch));
   }
 
-  raw_ptr<PrintersSyncBridge, ExperimentalAsh> owner_;
+  raw_ptr<PrintersSyncBridge> owner_;
 
   std::unique_ptr<ModelTypeStore> store_;
   base::WeakPtrFactory<StoreProxy> weak_ptr_factory_{this};

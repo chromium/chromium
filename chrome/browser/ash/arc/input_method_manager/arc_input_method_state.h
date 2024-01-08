@@ -55,7 +55,7 @@ class ArcInputMethodState {
 
   void SetInputMethodEnabled(const std::string& ime_id, bool enabled);
 
-  const raw_ptr<const Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<const Delegate> delegate_;
 
   std::vector<InputMethodEntry> installed_imes_;
 };

@@ -229,7 +229,7 @@ class OmniboxLacrosProviderTest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 
@@ -437,7 +437,7 @@ class OmniboxLacrosProviderNoCrosAPITest : public testing::Test {
   TestAppListControllerDelegate list_controller_;
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<OmniboxLacrosProvider> omnibox_provider_;
 };
 

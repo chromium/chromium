@@ -90,8 +90,7 @@ class ShelfSpinnerController::ShelfSpinnerData {
   base::Time removal_time() const { return removal_time_; }
 
  private:
-  raw_ptr<ShelfSpinnerItemController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<ShelfSpinnerItemController, DanglingUntriaged> controller_;
   base::Time creation_time_;
   base::Time removal_time_;
 };

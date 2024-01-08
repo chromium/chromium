@@ -54,7 +54,7 @@ class RecentArcMediaSource : public RecentSource {
 
   bool WillArcFileSystemOperationsRunImmediately();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::vector<std::unique_ptr<MediaRoot>> roots_;
 
   // Time when the build started.

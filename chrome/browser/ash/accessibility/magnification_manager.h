@@ -111,7 +111,7 @@ class MagnificationManager
   void UpdateMagnifierFromPrefs();
   void UpdateDockedMagnifierFromPrefs();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   // Last mouse event time - used for ignoring focus changes for a few

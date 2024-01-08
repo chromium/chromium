@@ -56,7 +56,7 @@ class BruschettaLauncher {
   void Finish(BruschettaResult result);
 
   std::string vm_name_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // Callbacks to run once an in-progress launch finishes.
   base::OnceCallbackList<void(BruschettaResult)> callbacks_;

@@ -267,19 +267,16 @@ class TetherService
   TetherFeatureState previous_feature_state_ =
       TetherFeatureState::TETHER_FEATURE_STATE_MAX;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh> power_manager_client_;
-  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged | ExperimentalAsh>
-      device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<Profile> profile_;
+  raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
+  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged> device_sync_client_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, DanglingUntriaged>
       multidevice_setup_client_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
-  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;
   std::unique_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;

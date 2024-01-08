@@ -41,7 +41,7 @@ class SearchResultsChangedWaiter {
   void OnResultsChanged(ash::AppListSearchResultType result_type);
 
   // Observed search controller.
-  const raw_ptr<SearchController, ExperimentalAsh> search_controller_;
+  const raw_ptr<SearchController> search_controller_;
 
   // Set of result types that the waiter is still waiting for.
   std::set<ash::AppListSearchResultType> types_;

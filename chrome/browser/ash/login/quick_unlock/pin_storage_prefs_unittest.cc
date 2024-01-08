@@ -71,7 +71,7 @@ class PinStoragePrefsTestApi {
   }
 
  private:
-  raw_ptr<PinStoragePrefs, ExperimentalAsh> pin_storage_;
+  raw_ptr<PinStoragePrefs> pin_storage_;
 };
 
 // Verifies that:

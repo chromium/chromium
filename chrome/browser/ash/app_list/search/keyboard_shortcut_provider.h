@@ -45,14 +45,14 @@ class KeyboardShortcutProvider : public SearchProvider {
   void OnShortcutsSearchComplete(
       std::vector<ash::shortcut_customization::mojom::SearchResultPtr>);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // A full collection of keyboard shortcuts, against which a query is compared
   // during a search.
   std::vector<KeyboardShortcutData> shortcut_data_;
   // The |search_handler_| is managed by ShortcutsAppManager which is
   // implemented as a KeyedService, active for the lifetime of a logged-in user.
-  raw_ptr<ash::shortcut_ui::SearchHandler, ExperimentalAsh> search_handler_;
+  raw_ptr<ash::shortcut_ui::SearchHandler> search_handler_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<KeyboardShortcutProvider> weak_factory_{this};

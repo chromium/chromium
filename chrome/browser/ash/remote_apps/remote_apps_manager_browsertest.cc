@@ -318,16 +318,13 @@ class RemoteAppsManagerBrowsertest
                              "screenplay-446812cc-07af-4094-bfb2-00150301ede3");
   }
 
-  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<app_list::AppListSyncableService, DanglingUntriaged>
       app_list_syncable_service_;
-  raw_ptr<AppListModelUpdater, DanglingUntriaged | ExperimentalAsh>
-      app_list_model_updater_;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> app_list_model_updater_;
   ash::AppListTestApi app_list_test_api_;
-  raw_ptr<RemoteAppsManager, DanglingUntriaged | ExperimentalAsh> manager_ =
-      nullptr;
-  raw_ptr<MockImageDownloader, DanglingUntriaged | ExperimentalAsh>
-      image_downloader_ = nullptr;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<RemoteAppsManager, DanglingUntriaged> manager_ = nullptr;
+  raw_ptr<MockImageDownloader, DanglingUntriaged> image_downloader_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_ = nullptr;
   EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 
  private:

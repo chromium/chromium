@@ -80,7 +80,7 @@ class ChromeVirtualKeyboardDelegate
                          bool has_audio_input_devices);
   void DispatchConfigChangeEvent(absl::optional<base::Value::Dict> settings);
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   std::unique_ptr<media::AudioSystem> audio_system_;
   base::WeakPtr<ChromeVirtualKeyboardDelegate> weak_this_;
   base::WeakPtrFactory<ChromeVirtualKeyboardDelegate> weak_factory_{this};

@@ -111,7 +111,7 @@ class RlweDmserverClientImpl : public RlweDmserverClient {
 
   // Unowned by RlweDmserverClientImpl. Its used to communicate with the
   // device management service.
-  const raw_ptr<DeviceManagementService, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<DeviceManagementService, DanglingUntriaged>
       device_management_service_;
 
   // Its being used for both PSM requests e.g. RLWE OPRF request and RLWE query

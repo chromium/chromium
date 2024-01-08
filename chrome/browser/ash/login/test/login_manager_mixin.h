@@ -202,8 +202,8 @@ class LoginManagerMixin : public InProcessBrowserTestMixin,
   bool skip_post_login_screens_ = false;
 
   LocalStateMixin local_state_mixin_;
-  raw_ptr<FakeGaiaMixin, ExperimentalAsh> fake_gaia_mixin_;
-  raw_ptr<CryptohomeMixin, ExperimentalAsh> cryptohome_mixin_;
+  raw_ptr<FakeGaiaMixin> fake_gaia_mixin_;
+  raw_ptr<CryptohomeMixin> cryptohome_mixin_;
 };
 
 }  // namespace ash

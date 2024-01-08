@@ -46,7 +46,7 @@ class WebApkInstallQueue
   void MaybeStartNext();
   void OnInstallCompleted(bool success);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::circular_deque<std::unique_ptr<WebApkInstallTask>> pending_installs_;
   std::unique_ptr<WebApkInstallTask> current_install_;
   bool connection_ready_ = false;

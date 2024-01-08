@@ -39,9 +39,9 @@ class ShutdownPolicyHandler {
   void NotifyDelegateWithShutdownPolicy();
 
  private:
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
+  raw_ptr<CrosSettings> cros_settings_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::CallbackListSubscription shutdown_policy_subscription_;
 

@@ -69,13 +69,13 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   //        portion of the dialog is rendered outside the app window bounds).
   void AdjustToastWidgetBounds();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // If set, the app window for which the manager is being run.
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> app_window_ = nullptr;
+  raw_ptr<extensions::AppWindow> app_window_ = nullptr;
 
   // The widget associated with the first run dialog, if the dialog is shown.
-  raw_ptr<views::Widget, ExperimentalAsh> toast_widget_ = nullptr;
+  raw_ptr<views::Widget> toast_widget_ = nullptr;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       toast_widget_observation_{this};

@@ -234,7 +234,7 @@ class OmniboxResultTest : public testing::Test {
 
   testing::NiceMock<favicon::MockFaviconService> favicon_service_;
 
-  raw_ptr<bookmarks::BookmarkModel, ExperimentalAsh> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 TEST_F(OmniboxResultTest, Basic) {

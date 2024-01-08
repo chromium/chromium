@@ -206,7 +206,7 @@ class CrostiniManager::CrostiniRestarter
     RestartId restart_id;
     RestartOptions options;
     CrostiniResultCallback callback;
-    raw_ptr<RestartObserver, ExperimentalAsh> observer;  // optional
+    raw_ptr<RestartObserver> observer;  // optional
   };
 
   CrostiniRestarter(Profile* profile,
@@ -330,10 +330,10 @@ class CrostiniManager::CrostiniRestarter
           {mojom::InstallerState::kConfigureContainer, base::Seconds(5)},
       };
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   // This isn't accessed after the CrostiniManager is destroyed and we need a
   // reference to it during the CrostiniRestarter destructor.
-  raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
+  raw_ptr<CrostiniManager> crostini_manager_;
 
   const guest_os::GuestId container_id_;
   bool is_initial_install_ = false;

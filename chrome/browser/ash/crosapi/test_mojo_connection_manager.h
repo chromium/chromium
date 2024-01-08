@@ -51,7 +51,7 @@ class TestMojoConnectionManager {
   void OnTestingSocketAvailable();
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
-  raw_ptr<EnvironmentProvider, ExperimentalAsh> environment_provider_;
+  raw_ptr<EnvironmentProvider> environment_provider_;
 
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;

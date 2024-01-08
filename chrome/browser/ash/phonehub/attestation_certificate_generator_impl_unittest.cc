@@ -138,13 +138,12 @@ class AttestationCertificateGeneratorImplTest
       attestation_certificate_generator_impl_;
   FakeCryptAuthKeyRegistryFactory mock_cryptauth_key_factory_;
   bool is_valid_ = false;
-  raw_ptr<const std::vector<std::string>, ExperimentalAsh> certs_;
+  raw_ptr<const std::vector<std::string>> certs_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  const raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  const raw_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-  raw_ptr<FakeChromeUserManager, ExperimentalAsh> user_manager_;
-  raw_ptr<attestation::FakeSoftBindAttestationFlow, ExperimentalAsh>
-      mock_attestation_flow_;
+  raw_ptr<FakeChromeUserManager> user_manager_;
+  raw_ptr<attestation::FakeSoftBindAttestationFlow> mock_attestation_flow_;
 
  private:
   std::unique_ptr<TestingProfileManager> CreateTestingProfileManager() {

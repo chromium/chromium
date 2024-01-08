@@ -395,7 +395,7 @@ class PersonalizationAppAmbientProviderImplTest : public ash::AshTestBase {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   mojo::Remote<ash::personalization_app::mojom::AmbientProvider>
       ambient_provider_remote_;
   std::unique_ptr<PersonalizationAppAmbientProviderImpl> ambient_provider_;

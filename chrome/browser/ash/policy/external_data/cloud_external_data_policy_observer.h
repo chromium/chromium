@@ -111,14 +111,13 @@ class CloudExternalDataPolicyObserver
       std::map<std::string, std::unique_ptr<PolicyServiceObserver>>;
   LoggedInUserObserverMap logged_in_user_observers_;
 
-  raw_ptr<ash::CrosSettings, ExperimentalAsh> cros_settings_;
-  raw_ptr<DeviceLocalAccountPolicyService, ExperimentalAsh>
-      device_local_account_policy_service_;
+  raw_ptr<ash::CrosSettings> cros_settings_;
+  raw_ptr<DeviceLocalAccountPolicyService> device_local_account_policy_service_;
 
   // The policy that |this| observes.
   std::string policy_;
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

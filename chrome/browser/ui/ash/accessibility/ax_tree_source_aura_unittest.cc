@@ -85,9 +85,9 @@ class AXTreeSourceAuraTest : public ChromeViewsTestBase {
   }
 
  protected:
-  raw_ptr<Widget, DanglingUntriaged | ExperimentalAsh> widget_;
-  raw_ptr<View, DanglingUntriaged | ExperimentalAsh> content_;
-  raw_ptr<Textfield, DanglingUntriaged | ExperimentalAsh> textfield_;
+  raw_ptr<Widget, DanglingUntriaged> widget_;
+  raw_ptr<View, DanglingUntriaged> content_;
+  raw_ptr<Textfield, DanglingUntriaged> textfield_;
   AXAuraObjCache cache_;
   // A simulated desktop root with no delegate.
   AXRootObjWrapper root_wrapper_{nullptr, &cache_};

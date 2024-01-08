@@ -77,7 +77,7 @@ class MetricsReporter::DailyEventObserver
   }
 
  private:
-  raw_ptr<MetricsReporter, ExperimentalAsh> reporter_;  // Not owned.
+  raw_ptr<MetricsReporter> reporter_;  // Not owned.
 };
 
 void MetricsReporter::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

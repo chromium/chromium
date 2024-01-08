@@ -99,10 +99,9 @@ class ClientAppMetadataProviderService
   int64_t SoftwareVersionCodeAsInt64();
   void InvokePendingCallbacks();
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
-  raw_ptr<NetworkStateHandler, ExperimentalAsh> network_state_handler_;
-  raw_ptr<instance_id::InstanceIDProfileService, ExperimentalAsh>
-      instance_id_profile_service_;
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<NetworkStateHandler> network_state_handler_;
+  raw_ptr<instance_id::InstanceIDProfileService> instance_id_profile_service_;
 
   bool instance_id_recreated_ = false;
   absl::optional<std::string> pending_gcm_registration_id_;

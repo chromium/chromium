@@ -127,7 +127,7 @@ class CopyOrMoveIOTaskImpl {
   // The current progress state.
   // The reference is allowed here, as the owning object (CopyOrMoveIOTask) is
   // guaranteed to outlive the CopyOrMoveIOTaskImpl.
-  const raw_ref<ProgressStatus, ExperimentalAsh> progress_;
+  const raw_ref<ProgressStatus> progress_;
 
   // ProgressCallback for this operation, used to notify the UI of the current
   // progress.
@@ -174,7 +174,7 @@ class CopyOrMoveIOTaskImpl {
 
   void OnEncryptedFileSkipped(size_t idx, storage::FileSystemURL url);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Specifies whether the operation is already completed.

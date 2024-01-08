@@ -40,7 +40,7 @@ class FakeArcTosMixin : public InProcessBrowserTestMixin {
   std::string TestServerBaseUrl();
   const std::string kArcTosContent = "ARC TOS for test.";
   const std::string kPrivacyPolicyContent = "ARC Privacy Policy for test.";
-  raw_ptr<net::EmbeddedTestServer, ExperimentalAsh> test_server_;
+  raw_ptr<net::EmbeddedTestServer> test_server_;
 };
 
 }  // namespace ash

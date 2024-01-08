@@ -264,7 +264,7 @@ class ThumbnailLoaderNativeMessageHost : public extensions::NativeMessageHost {
   const std::string message_;
   ThumbnailDataCallback callback_;
 
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 
   bool response_received_ = false;
 

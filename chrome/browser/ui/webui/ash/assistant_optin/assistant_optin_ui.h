@@ -48,8 +48,7 @@ class AssistantOptInUI : public ui::WebDialogUI {
   void OnDialogClosed();
 
  private:
-  raw_ptr<AssistantOptInFlowScreenHandler, ExperimentalAsh>
-      assistant_handler_ptr_;
+  raw_ptr<AssistantOptInFlowScreenHandler> assistant_handler_ptr_;
   base::WeakPtrFactory<AssistantOptInUI> weak_factory_{this};
 };
 
@@ -83,7 +82,7 @@ class AssistantOptInDialog : public SystemWebDialogDelegate {
   void OnDialogClosed(const std::string& json_retval) override;
 
  private:
-  raw_ptr<AssistantOptInUI, ExperimentalAsh> assistant_ui_ = nullptr;
+  raw_ptr<AssistantOptInUI> assistant_ui_ = nullptr;
 
   // Callback to run if the flow is completed.
   AssistantSetup::StartAssistantOptInFlowCallback callback_;

@@ -70,8 +70,7 @@ class DeprecationNotificationController {
   base::flat_set<ui::KeyboardCode> shown_key_notifications_;
 
   // MessageCenter for adding notifications.
-  const raw_ptr<message_center::MessageCenter,
-                DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<message_center::MessageCenter, DanglingUntriaged>
       message_center_;
 };
 

@@ -132,7 +132,7 @@ class MetricProvider {
 
   // The profile manager that manages user profiles with their sync settings, we
   // do not own this object and only hold a reference to it.
-  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
 
   // Called when |cached_profile_data_| is populated.
   base::RepeatingClosure cache_updated_callback_;

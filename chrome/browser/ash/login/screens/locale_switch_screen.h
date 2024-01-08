@@ -76,7 +76,7 @@ class LocaleSwitchScreen : public BaseScreen,
 
   std::string gaia_id_;
   ScreenExitCallback exit_callback_;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observer_{this};

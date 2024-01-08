@@ -71,7 +71,7 @@ class ArcKeyMintBridge : public KeyedService,
   void GetServerAfterBootstrap(GetServerCallback callback,
                                bool bootstrapResult);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
                             //
   // Points to a proxy bound to the implementation in arc-keymintd.

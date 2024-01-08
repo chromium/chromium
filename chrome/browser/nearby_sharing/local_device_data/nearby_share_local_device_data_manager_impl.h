@@ -103,9 +103,8 @@ class NearbyShareLocalDeviceDataManagerImpl
       const absl::optional<nearby::sharing::proto::UpdateDeviceResponse>&
           response);
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
-  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
-      profile_info_provider_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider> profile_info_provider_ = nullptr;
   std::unique_ptr<NearbyShareDeviceDataUpdater> device_data_updater_;
   std::unique_ptr<ash::nearby::NearbyScheduler> download_device_data_scheduler_;
   std::string default_device_name_;

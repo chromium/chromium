@@ -1123,7 +1123,7 @@ class GuestLanguageSetCallbackData {
       const std::unique_ptr<GuestLanguageSetCallbackData>& self,
       const locale_util::LanguageSwitchResult& result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile;
+  raw_ptr<Profile> profile;
 };
 
 // static

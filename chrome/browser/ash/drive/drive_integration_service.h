@@ -497,7 +497,7 @@ class DriveIntegrationService : public KeyedService,
 
   friend class DriveIntegrationServiceFactory;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   State state_ = State::kNone;
   bool enabled_ = false;

@@ -33,7 +33,7 @@ class DriveMountPointWaiter : public drive::DriveIntegrationService::Observer {
   void Wait() { run_loop_.Run(); }
 
  private:
-  const raw_ptr<drive::DriveIntegrationService, ExperimentalAsh> service_;
+  const raw_ptr<drive::DriveIntegrationService> service_;
   base::RunLoop run_loop_;
 };
 

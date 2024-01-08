@@ -108,7 +108,7 @@ class ExtractIOTask : public IOTask {
   const storage::FileSystemURL parent_folder_;
 
   // Raw pointer not owned by this.
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   const scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   // Speedometer used to calculate the remaining time to finish the operation.

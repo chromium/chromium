@@ -50,7 +50,7 @@ class ArcAppInfoLinksPanel : public AppInfoPanel,
 
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       app_list_observation_{this};
-  raw_ptr<views::Link, ExperimentalAsh> manage_link_ = nullptr;
+  raw_ptr<views::Link> manage_link_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, ArcAppInfoLinksPanel, AppInfoPanel)

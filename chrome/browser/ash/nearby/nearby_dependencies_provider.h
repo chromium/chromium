@@ -74,8 +74,8 @@ class NearbyDependenciesProvider : public KeyedService {
 
   bool shut_down_ = false;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
 };
 
 }  // namespace ash::nearby

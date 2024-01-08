@@ -51,7 +51,7 @@ class GuestOsHandler : public ::settings::SettingsPageUIHandler,
                                   bool success,
                                   const std::string& failure_reason);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<CrosUsbDetector, CrosUsbDeviceObserver>
       cros_usb_device_observation_{this};
   // weak_ptr_factory_ should always be last member.

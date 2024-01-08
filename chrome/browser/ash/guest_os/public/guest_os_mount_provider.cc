@@ -75,7 +75,7 @@ class ScopedVolume {
     }
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string mount_label_;
   const VmType vm_type_;
 };
@@ -153,7 +153,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
     std::move(callback).Run(RealResult(std::move(scoped_volume)));
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   const std::string display_name_;
   const guest_os::GuestId container_id_;
   std::string mount_label_;

@@ -171,7 +171,7 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handle a request to start uninstalling Bruschetta
   void HandleRequestBruschettaUninstallerView(const base::Value::List& args);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
   std::unique_ptr<crostini::CrostiniFileSelector> file_selector_;

@@ -146,7 +146,7 @@ class ArcKioskAppServiceWrapper : public KioskAppLauncher {
  private:
   // `service_` is externally owned and it's the caller's responsibility to
   // ensure that it outlives this wrapper.
-  const raw_ptr<ArcKioskAppService, ExperimentalAsh> service_;
+  const raw_ptr<ArcKioskAppService> service_;
 };
 
 std::unique_ptr<KioskAppLauncher> BuildKioskAppLauncher(

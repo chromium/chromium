@@ -91,8 +91,8 @@ class RemoteApps : public AppPublisher {
                     int64_t display_id,
                     base::OnceCallback<void(MenuItems)> callback) override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace apps

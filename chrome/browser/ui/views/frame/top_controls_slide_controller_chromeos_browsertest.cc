@@ -260,7 +260,7 @@ class TopControlsShownRatioWaiter : public TestControllerObserver {
     return false;
   }
 
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -306,7 +306,7 @@ class GestureScrollInProgressChangeWaiter : public TestControllerObserver {
   }
 
  private:
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 
@@ -566,8 +566,8 @@ class TopControlsSlideControllerTest : public InProcessBrowserTest {
     return std::move(controller);
   }
 
-  raw_ptr<TestController, DanglingUntriaged | ExperimentalAsh>
-      test_controller_ = nullptr;  // Not owned.
+  raw_ptr<TestController, DanglingUntriaged> test_controller_ =
+      nullptr;  // Not owned.
 };
 
 namespace {
@@ -914,7 +914,7 @@ class BrowserViewLayoutWaiter : public views::ViewObserver {
   }
 
  private:
-  raw_ptr<BrowserView, ExperimentalAsh> browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   bool view_bounds_changed_ = false;
 
@@ -1206,7 +1206,7 @@ class IntermediateShownRatioWaiter : public TestControllerObserver {
   }
 
  private:
-  raw_ptr<TestController, ExperimentalAsh> controller_;
+  raw_ptr<TestController> controller_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
 

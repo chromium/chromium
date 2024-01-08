@@ -51,7 +51,7 @@ class PrivacySection : public OsSettingsSection {
 
   std::optional<SyncSection> sync_subsection_;
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar fingerprint_pref_change_registrar_;
 
   AuthPerformer auth_performer_;

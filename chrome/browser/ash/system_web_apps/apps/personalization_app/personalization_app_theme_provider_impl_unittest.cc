@@ -216,7 +216,7 @@ class PersonalizationAppThemeProviderImplTest : public ChromeAshTestBase {
   TestingProfileManager profile_manager_;
   content::TestWebUI web_ui_;
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   mojo::Remote<ash::personalization_app::mojom::ThemeProvider>
       theme_provider_remote_;
   TestThemeObserver test_theme_observer_;

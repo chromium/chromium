@@ -219,7 +219,7 @@ class UserActivityManager : public ui::UserActivityObserver,
 
   BootClock boot_clock_;
 
-  const raw_ptr<UserActivityUkmLogger, ExperimentalAsh> ukm_logger_;
+  const raw_ptr<UserActivityUkmLogger> ukm_logger_;
 
   base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
       user_activity_observation_{this};
@@ -230,15 +230,13 @@ class UserActivityManager : public ui::UserActivityObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
-  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
-      session_manager_;
+  const raw_ptr<session_manager::SessionManager> session_manager_;
 
   mojo::Receiver<viz::mojom::VideoDetectorObserver> receiver_;
 
-  const raw_ptr<const ChromeUserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<const ChromeUserManager> user_manager_;
 
-  const raw_ptr<chromeos::PowerManagerClient, ExperimentalAsh>
-      power_manager_client_;
+  const raw_ptr<chromeos::PowerManagerClient> power_manager_client_;
 
   // Delays to dim and turn off the screen. Zero means disabled.
   base::TimeDelta screen_dim_delay_;

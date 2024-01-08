@@ -32,7 +32,7 @@ class InputMethodPrefs {
   std::set<std::string> GetEnabledImes() const;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace arc

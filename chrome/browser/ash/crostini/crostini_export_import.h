@@ -272,7 +272,7 @@ class CrostiniExportImport : public KeyedService,
   std::unique_ptr<CrostiniExportImportStatusTracker> RemoveTracker(
       TrackerMap::iterator it);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   scoped_refptr<ui::SelectFileDialog> select_folder_dialog_;
   TrackerMap status_trackers_;
   // |operation_data_storage_| persists the data required to complete an

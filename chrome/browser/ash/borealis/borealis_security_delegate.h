@@ -39,7 +39,7 @@ class BorealisSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
   // Private constructor, use Build().
   explicit BorealisSecurityDelegate(Profile* profile);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace borealis

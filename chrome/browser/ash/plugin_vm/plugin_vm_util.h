@@ -120,7 +120,7 @@ class PluginVmAvailabilitySubscription {
   void OnPolicyChanged();
   void OnImageExistsChanged();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether Plugin VM was previously allowed for the profile.
   bool is_allowed_;

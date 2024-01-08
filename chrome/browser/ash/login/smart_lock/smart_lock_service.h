@@ -243,9 +243,8 @@ class SmartLockService
   // unlocks from password-based unlocks for metrics.
   bool will_authenticate_using_smart_lock_ = false;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<secure_channel::SecureChannelClient, ExperimentalAsh>
-      secure_channel_client_;
+  const raw_ptr<Profile> profile_;
+  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
 
   ChromeProximityAuthClient proximity_auth_client_;
 
@@ -287,12 +286,10 @@ class SmartLockService
   std::unique_ptr<SmartLockNotificationController> notification_controller_;
 
   // Used to fetch local device and remote device data.
-  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged | ExperimentalAsh>
-      device_sync_client_;
+  raw_ptr<device_sync::DeviceSyncClient, DanglingUntriaged> device_sync_client_;
 
   // Used to determine the FeatureState of Smart Lock.
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient, DanglingUntriaged>
       multidevice_setup_client_;
 
   // Tracks Smart Lock feature usage for the Standard Feature Usage Logging

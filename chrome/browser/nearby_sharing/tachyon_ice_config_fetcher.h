@@ -55,7 +55,7 @@ class TachyonIceConfigFetcher : public sharing::mojom::IceConfigFetcher {
       const std::string& serialized_proto,
       const std::string& request_id);
 
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Cache the last retrieved ICE servers.

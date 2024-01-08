@@ -61,8 +61,7 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<ash::bluetooth::DebugLogsManager, ExperimentalAsh>
-      debug_logs_manager_ = nullptr;
+  raw_ptr<ash::bluetooth::DebugLogsManager> debug_logs_manager_ = nullptr;
 #endif
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};

@@ -115,7 +115,7 @@ class FakeSamlIdpMixin final : public InProcessBrowserTestMixin {
   void SaveChallengeResponse(const std::string& response);
   void ClearChallengeResponse();
 
-  const raw_ptr<FakeGaiaMixin, ExperimentalAsh> gaia_mixin_;
+  const raw_ptr<FakeGaiaMixin> gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer saml_http_server_{net::EmbeddedTestServer::TYPE_HTTP};
 

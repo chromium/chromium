@@ -85,7 +85,7 @@ class BorealisContextTest : public testing::Test,
   std::unique_ptr<borealis::BorealisContext> borealis_context_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<BorealisFeatures> features_;
-  raw_ptr<BorealisServiceFake, ExperimentalAsh> service_fake_;
+  raw_ptr<BorealisServiceFake> service_fake_;
   std::unique_ptr<BorealisShutdownMonitor> borealis_shutdown_monitor_;
   std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
   base::HistogramTester histogram_tester_;

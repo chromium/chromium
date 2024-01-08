@@ -188,10 +188,10 @@ class ScanService : public scanning::mojom::ScanService,
   mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
-  raw_ptr<LorgnetteScannerManager, ExperimentalAsh> lorgnette_scanner_manager_;
+  raw_ptr<LorgnetteScannerManager> lorgnette_scanner_manager_;
 
   // The browser context from which scans are initiated.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Indicates whether there was a failure to save scanned images.
   bool page_save_failed_;

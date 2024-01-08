@@ -102,7 +102,7 @@ class CrostiniSshfs : ContainerShutdownObserver {
     PendingRequest& operator=(PendingRequest&& other) noexcept;
     ~PendingRequest();
   };
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};

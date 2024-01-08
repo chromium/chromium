@@ -54,8 +54,8 @@ class OmniboxProvider : public SearchProvider,
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AppListControllerDelegate, ExperimentalAsh> list_controller_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AppListControllerDelegate> list_controller_;
 
   std::u16string last_query_;
   std::optional<ash::string_matching::TokenizedString> last_tokenized_query_;

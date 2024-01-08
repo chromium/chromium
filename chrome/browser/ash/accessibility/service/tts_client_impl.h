@@ -38,7 +38,7 @@ class TtsClientImpl : public ax::mojom::Tts {
 
  private:
   mojo::ReceiverSet<ax::mojom::Tts> tts_receivers_;
-  raw_ptr<content::BrowserContext, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<content::BrowserContext> profile_ = nullptr;
 };
 
 }  // namespace ash

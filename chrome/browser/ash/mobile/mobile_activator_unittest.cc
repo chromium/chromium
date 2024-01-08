@@ -92,7 +92,7 @@ class TestMobileActivator : public MobileActivator {
  private:
   void DCheckOnThread(const BrowserThread::ID id) const {}
 
-  raw_ptr<NetworkState, ExperimentalAsh> cellular_network_;
+  raw_ptr<NetworkState> cellular_network_;
 };
 
 class MobileActivatorTest : public testing::Test {

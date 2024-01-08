@@ -1003,7 +1003,7 @@ class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
   base::OnceClosure closure_;
 
   // The test controller owns this object so is never invalid.
-  raw_ptr<TestControllerAsh, ExperimentalAsh> test_controller_;
+  raw_ptr<TestControllerAsh> test_controller_;
 };
 
 TestShillControllerAsh::TestShillControllerAsh() {

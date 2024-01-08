@@ -47,7 +47,7 @@ class StoreFileTask : public blink::mojom::BlobReaderClient {
 
   base::FilePath filename_;
   blink::mojom::SharedFilePtr file_;
-  const raw_ref<uint64_t, ExperimentalAsh> available_space_;
+  const raw_ref<uint64_t> available_space_;
   blink::mojom::ShareService::ShareCallback callback_;
   base::File output_file_;
 

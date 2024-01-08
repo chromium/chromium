@@ -59,7 +59,7 @@ class FamilyUserSessionMetrics : public FamilyUserMetricsService::Observer,
   // duration data to prefs or report to UMA.
   void UpdateUserEngagement(bool is_user_active);
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // The time when the user becomes active. It will be reset to base::Time()
   // when the user becomes inactive.

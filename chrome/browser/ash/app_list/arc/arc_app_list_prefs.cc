@@ -166,7 +166,7 @@ class NotificationsEnabledDeferred {
   }
 
  private:
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService> prefs_;
 };
 
 bool WriteIconFile(const base::FilePath& icon_path,

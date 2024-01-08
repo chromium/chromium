@@ -136,12 +136,11 @@ class ManagedSessionService
 
   bool is_logged_in_observed_ = false;
 
-  raw_ptr<base::Clock, ExperimentalAsh> clock_;
+  raw_ptr<base::Clock> clock_;
 
   base::ObserverList<Observer> observers_;
 
-  const raw_ptr<session_manager::SessionManager, ExperimentalAsh>
-      session_manager_;
+  const raw_ptr<session_manager::SessionManager> session_manager_;
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observations_{this};

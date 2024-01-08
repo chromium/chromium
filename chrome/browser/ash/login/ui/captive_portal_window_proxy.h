@@ -106,10 +106,9 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   // notifications from `widget_` and resets it.
   void DetachFromWidget(views::Widget* widget);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ =
-      ProfileHelper::GetSigninProfile();
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
-  raw_ptr<views::Widget, ExperimentalAsh> widget_ = nullptr;
+  raw_ptr<Profile> profile_ = ProfileHelper::GetSigninProfile();
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   std::unique_ptr<CaptivePortalView> captive_portal_view_;
 

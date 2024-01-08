@@ -99,7 +99,7 @@ class AppPlatformMetricsService {
   // arrived to report noisy AppKMs events.
   void CheckForNoisyAppKMReportingInterval();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   int day_id_;
 

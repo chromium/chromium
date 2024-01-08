@@ -584,7 +584,7 @@ class AccessibilityManager
   void OnAppTerminating();
 
   // Profile which has the current a11y context.
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::ScopedObservation<session_manager::SessionManager,
@@ -620,7 +620,7 @@ class AccessibilityManager
 
   bool braille_ime_current_ = false;
 
-  raw_ptr<ChromeVoxPanel, ExperimentalAsh> chromevox_panel_ = nullptr;
+  raw_ptr<ChromeVoxPanel> chromevox_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       chromevox_panel_widget_observer_;
 

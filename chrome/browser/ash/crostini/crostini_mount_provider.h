@@ -51,7 +51,7 @@ class CrostiniMountProvider : public guest_os::GuestOsMountProvider,
  private:
   void OnRestarted(PrepareCallback callback, CrostiniResult result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   guest_os::GuestId container_id_;
   base::ScopedObservation<CrostiniManager, ContainerShutdownObserver>
       container_shutdown_observer_{this};

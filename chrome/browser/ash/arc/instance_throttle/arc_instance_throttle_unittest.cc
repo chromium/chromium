@@ -237,7 +237,7 @@ class ArcInstanceThrottleTest : public testing::Test {
     void RecordCpuRestrictionDisabledUMA(const std::string& observer_name,
                                          base::TimeDelta delta) override {}
 
-    raw_ptr<ArcInstanceThrottleTest, ExperimentalAsh> test_;
+    raw_ptr<ArcInstanceThrottleTest> test_;
   };
 
   content::BrowserTaskEnvironment task_environment_{
@@ -255,10 +255,8 @@ class ArcInstanceThrottleTest : public testing::Test {
   std::unique_ptr<FakeIntentHelperHost> intent_helper_host_;
   std::unique_ptr<FakeIntentHelperInstance> intent_helper_instance_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
-      arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
-      arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
   size_t disable_cpu_restriction_counter_ = 0;
   size_t enable_cpu_restriction_counter_ = 0;
   size_t use_quota_counter_ = 0;
@@ -517,10 +515,8 @@ class ArcInstanceThrottleVMTest : public testing::Test {
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<TestingProfile> testing_profile_;
 
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
-      arc_instance_throttle_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
-      arc_metrics_service_ = nullptr;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> arc_instance_throttle_;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
 };
 
 TEST_F(ArcInstanceThrottleVMTest, Histograms) {

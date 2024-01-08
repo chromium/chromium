@@ -41,7 +41,7 @@ class HelpAppDiscoverTabNotification {
  private:
   void OnClick(std::optional<int> button_index);
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::unique_ptr<message_center::Notification> notification_;
   base::RepeatingCallback<void()> onclick_callback_;
 

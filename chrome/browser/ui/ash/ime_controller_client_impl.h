@@ -85,11 +85,10 @@ class ImeControllerClientImpl
   // Sends information about current and available IMEs to ash.
   void RefreshIme();
 
-  const raw_ptr<ash::input_method::InputMethodManager, ExperimentalAsh>
-      input_method_manager_;
+  const raw_ptr<ash::input_method::InputMethodManager> input_method_manager_;
 
   // ImeController in ash.
-  raw_ptr<ash::ImeController, ExperimentalAsh> ime_controller_ = nullptr;
+  raw_ptr<ash::ImeController> ime_controller_ = nullptr;
 
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>

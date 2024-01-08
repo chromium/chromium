@@ -41,7 +41,7 @@ class SystemExtensionsDataSource : public content::URLDataSource {
   std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   const SystemExtensionId system_extension_id_;
   const GURL system_extension_base_url_;
 };

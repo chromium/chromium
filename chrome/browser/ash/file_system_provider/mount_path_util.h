@@ -49,7 +49,7 @@ class FileSystemURLParser {
 
  private:
   storage::FileSystemURL url_;
-  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
+  raw_ptr<ProvidedFileSystemInterface> file_system_;
   base::FilePath file_path_;
 };
 
@@ -73,9 +73,9 @@ class LocalPathParser {
   const base::FilePath& file_path() const { return file_path_; }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::FilePath local_path_;
-  raw_ptr<ProvidedFileSystemInterface, ExperimentalAsh> file_system_;
+  raw_ptr<ProvidedFileSystemInterface> file_system_;
   base::FilePath file_path_;
 };
 

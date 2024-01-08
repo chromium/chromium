@@ -209,7 +209,7 @@ class GuestOsSharePath : public KeyedService,
   // true if path is no longer shared with any VMs.
   bool RemoveSharedPathInfo(SharedPathInfo& info, const std::string& vm_name);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   // Task runner for FilePathWatchers to be created, run, and be destroyed on.
   scoped_refptr<base::SequencedTaskRunner> file_watcher_task_runner_;
 

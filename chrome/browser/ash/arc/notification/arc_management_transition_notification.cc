@@ -79,7 +79,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
   }
 
   // Not owned.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Registrar used to monitor ARC enabled state.
   PrefChangeRegistrar pref_change_registrar_;

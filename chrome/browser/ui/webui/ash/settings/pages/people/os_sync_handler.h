@@ -55,7 +55,7 @@ class OSSyncHandler : public content::WebUIMessageHandler,
   void AddSyncServiceObserver();
   void RemoveSyncServiceObserver();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash

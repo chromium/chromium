@@ -265,13 +265,13 @@ class KerberosCredentialsManager : public KeyedService,
   void OnTicketExpiryNotificationClick(const std::string& principal_name);
 
   // Local state prefs, not owned.
-  raw_ptr<PrefService, ExperimentalAsh> local_state_ = nullptr;
+  raw_ptr<PrefService> local_state_ = nullptr;
 
   // Primary profile, not owned.
-  raw_ptr<Profile, ExperimentalAsh> primary_profile_ = nullptr;
+  raw_ptr<Profile> primary_profile_ = nullptr;
 
   // Policy service of the primary profile, not owned.
-  raw_ptr<policy::PolicyService, ExperimentalAsh> policy_service_ = nullptr;
+  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
 
   // Called by OnSignalConnected(), puts Kerberos files where GSSAPI finds them.
   std::unique_ptr<KerberosFilesHandler> kerberos_files_handler_;

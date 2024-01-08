@@ -61,7 +61,7 @@ class UserCloudExternalDataManager : public CloudExternalDataManagerBase {
   // * Post a task to the |backend_task_runner_| that will destroy the
   //   |resource_cache_|.
   // Because of this destruction sequence, a scoped_ptr cannot be used.
-  raw_ptr<ResourceCache, DanglingUntriaged | ExperimentalAsh> resource_cache_;
+  raw_ptr<ResourceCache, DanglingUntriaged> resource_cache_;
 };
 
 }  // namespace policy

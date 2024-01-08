@@ -67,7 +67,7 @@ class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {
                                    pending_receiver) override;
 
  private:
-  const raw_ptr<FakeNetworkDiagnostics, ExperimentalAsh> fake_diagnostics_;
+  const raw_ptr<FakeNetworkDiagnostics> fake_diagnostics_;
 };
 
 }  // namespace reporting

@@ -149,7 +149,7 @@ class Hierarchy::PerSectionHierarchyGenerator
   }
 
   mojom::Section section_;
-  raw_ptr<Hierarchy, ExperimentalAsh> hierarchy_;
+  raw_ptr<Hierarchy> hierarchy_;
 };
 
 Hierarchy::SectionMetadata::SectionMetadata(mojom::Section section,

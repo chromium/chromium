@@ -57,7 +57,7 @@ class FakeIconLoader : public apps::IconLoader {
       bool allow_placeholder_icon,
       apps::LoadIconCallback callback) override;
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> proxy_ = nullptr;
+  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
 };
 
 class FakePublisherForIconTest : public apps::AppPublisher {

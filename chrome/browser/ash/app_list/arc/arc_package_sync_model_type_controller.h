@@ -61,9 +61,9 @@ class ArcPackageSyncModelTypeController
   void OnOsSyncFeaturePrefChanged();
 
   std::unique_ptr<syncer::ModelTypeSyncBridge> bridge_;
-  const raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcAppListPrefs, ExperimentalAsh> arc_prefs_;
+  const raw_ptr<syncer::SyncService> sync_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcAppListPrefs> arc_prefs_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_ARC_ARC_PACKAGE_SYNC_MODEL_TYPE_CONTROLLER_H_

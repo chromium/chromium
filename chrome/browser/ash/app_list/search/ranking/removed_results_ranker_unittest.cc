@@ -69,7 +69,7 @@ class RemovedResultsRankerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<RemovedResultsRanker> ranker_;
 };

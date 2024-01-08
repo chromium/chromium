@@ -59,7 +59,7 @@ class AppNotificationHandler
   mojo::RemoteSet<app_notification::mojom::AppNotificationsObserver>
       observer_list_;
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

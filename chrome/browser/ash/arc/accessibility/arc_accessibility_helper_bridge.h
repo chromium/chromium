@@ -150,8 +150,8 @@ class ArcAccessibilityHelperBridge
 
   bool is_focus_event_enabled_ = false;
   bool use_full_focus_mode_ = false;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh> arc_bridge_service_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcBridgeService> arc_bridge_service_;
 
   const AccessibilityHelperInstanceRemoteProxy accessibility_helper_instance_;
 

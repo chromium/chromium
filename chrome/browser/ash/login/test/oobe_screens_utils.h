@@ -62,7 +62,7 @@ class LanguageReloadObserver : public WelcomeScreen::Observer {
   // WelcomeScreen::Observer:
   void OnLanguageListReloaded() override;
 
-  const raw_ptr<WelcomeScreen, ExperimentalAsh> welcome_screen_;
+  const raw_ptr<WelcomeScreen> welcome_screen_;
   base::RunLoop run_loop_;
 };
 

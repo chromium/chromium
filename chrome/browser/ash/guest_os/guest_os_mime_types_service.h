@@ -66,7 +66,7 @@ class GuestOsMimeTypesService : public KeyedService {
                                base::Value::Dict overrides);
 
   // Owned by the Profile.
-  const raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  const raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<GuestOsMimeTypesService> weak_ptr_factory_{this};
 };

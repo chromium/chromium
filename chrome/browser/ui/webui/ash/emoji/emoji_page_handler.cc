@@ -182,7 +182,7 @@ class InsertObserver : public ui::InputMethodObserver {
   }
   int focus_change_count_ = 0;
   base::OneShotTimer delete_timer_;
-  raw_ptr<ui::InputMethod, LeakedDanglingUntriaged | ExperimentalAsh> ime_;
+  raw_ptr<ui::InputMethod, LeakedDanglingUntriaged> ime_;
   bool inserted_ = false;
   base::TimeTicks start_time_;
 };

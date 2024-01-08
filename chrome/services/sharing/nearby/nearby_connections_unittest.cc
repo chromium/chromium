@@ -699,7 +699,7 @@ class NearbyConnectionsTest : public testing::Test {
   mojo::SelfOwnedReceiverRef<sharing::mojom::TcpSocketFactory>
       tcp_socket_factory_self_owned_receiver_ref_;
   std::unique_ptr<NearbyConnections> nearby_connections_;
-  raw_ptr<testing::NiceMock<MockServiceControllerRouter>, ExperimentalAsh>
+  raw_ptr<testing::NiceMock<MockServiceControllerRouter>>
       service_controller_router_ptr_;
   base::RunLoop disconnect_run_loop_;
 };

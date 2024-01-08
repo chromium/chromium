@@ -105,7 +105,7 @@ class AppLauncher final : public ProfileObserver {
     profile_->GetPrefs()->SetBoolean(prefs::kFirstRunTutorialShown, true);
     delete this;
   }
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::WeakPtrFactory<AppLauncher> weak_factory_{this};
 };
 

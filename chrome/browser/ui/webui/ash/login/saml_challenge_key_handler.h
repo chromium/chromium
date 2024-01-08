@@ -51,7 +51,7 @@ class SamlChallengeKeyHandler final {
   // task.
   void ReturnResult(const attestation::TpmChallengeKeyResult& result);
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::string decoded_challenge_;
   // Callback to return a result of ChallengeKey.
   CallbackType callback_;

@@ -79,11 +79,10 @@ class GlanceablesKeyedService : public KeyedService {
   void UpdateRegistration();
 
   // The profile for which this keyed service was created.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Identity manager associated with `profile_`.
-  const raw_ptr<signin::IdentityManager, DanglingUntriaged | ExperimentalAsh>
-      identity_manager_;
+  const raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   // Account id associated with the primary profile.
   const AccountId account_id_;

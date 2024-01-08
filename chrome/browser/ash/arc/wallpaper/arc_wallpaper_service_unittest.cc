@@ -119,8 +119,7 @@ class ArcWallpaperServiceTest : public testing::Test {
   }
 
  protected:
-  raw_ptr<arc::ArcWallpaperService, DanglingUntriaged | ExperimentalAsh>
-      service_ = nullptr;
+  raw_ptr<arc::ArcWallpaperService, DanglingUntriaged> service_ = nullptr;
   std::unique_ptr<arc::FakeWallpaperInstance> wallpaper_instance_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;

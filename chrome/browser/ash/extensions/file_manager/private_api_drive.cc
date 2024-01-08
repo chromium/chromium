@@ -337,7 +337,7 @@ class SingleEntryPropertiesGetterForDocumentsProvider {
   // Given parameters.
   ResultCallback callback_;
   const storage::FileSystemURL file_system_url_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Values used in the process.
   std::unique_ptr<EntryProperties> properties_;

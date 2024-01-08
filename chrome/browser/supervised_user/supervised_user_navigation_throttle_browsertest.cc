@@ -487,8 +487,7 @@ class SupervisedUserIframeFilterTest
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
-  raw_ptr<supervised_user::PermissionRequestCreatorMock,
-          DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<supervised_user::PermissionRequestCreatorMock, DanglingUntriaged>
       permission_creator_;
 
   // Each feature is enabled within its own feature list.

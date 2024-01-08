@@ -202,7 +202,7 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   user_manager::ScopedUserManager user_manager_enabler_;
-  raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged>
       scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
@@ -715,7 +715,7 @@ class ScheduledRebootTimerFailureTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<ScheduledTaskExecutorImpl, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ScheduledTaskExecutorImpl, DanglingUntriaged>
       scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;
@@ -792,7 +792,7 @@ class ScheduledRebootDelayedServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeScheduledTaskExecutor, DanglingUntriaged>
       scheduled_task_executor_;
   std::unique_ptr<DeviceScheduledRebootHandlerForTest>
       device_scheduled_reboot_handler_;

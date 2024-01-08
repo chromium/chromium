@@ -107,7 +107,7 @@ class PersistentForcedExtensionKeepAliveTest : public testing::Test {
   std::unique_ptr<BrowserManager::ScopedUnsetAllKeepAliveForTesting>
       scoped_unset_all_keep_alive_;
 
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
 };
 
 // Test that KeepAlive is registered on session start if an extension that

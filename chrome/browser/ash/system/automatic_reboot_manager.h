@@ -145,8 +145,8 @@ class AutomaticRebootManager : public chromeos::PowerManagerClient::Observer,
       base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // Clocks that can be mocked in tests to fast-forward time.
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
-  const raw_ptr<const base::TickClock, ExperimentalAsh> tick_clock_;
+  const raw_ptr<const base::Clock> clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   PrefChangeRegistrar local_state_registrar_;
 

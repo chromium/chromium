@@ -33,7 +33,7 @@ class UserCommandArcJob : public RemoteCommandJob {
   void RunImpl(CallbackWithResult result_callback) override;
 
  private:
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   std::string command_payload_;
 };
 

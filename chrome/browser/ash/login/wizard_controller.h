@@ -569,13 +569,12 @@ class WizardController : public OobeUI::Observer {
   // So it should be safe to store the pointers.
   base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
 
-  raw_ptr<WizardContext, ExperimentalAsh> wizard_context_;
+  raw_ptr<WizardContext> wizard_context_;
 
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
-  raw_ptr<BaseScreen, DanglingUntriaged | ExperimentalAsh> current_screen_ =
-      nullptr;
+  raw_ptr<BaseScreen, DanglingUntriaged> current_screen_ = nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

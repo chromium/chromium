@@ -241,7 +241,7 @@ class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // PrefService instance to read the policy refresh rate from.
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   base::CallbackListSubscription state_keys_update_subscription_;
 

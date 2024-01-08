@@ -47,7 +47,7 @@ class TerminalSource : public content::URLDataSource {
   std::string GetCrossOriginOpenerPolicy() override;
   std::string GetCrossOriginEmbedderPolicy() override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::string source_;
   std::string default_file_;
   const bool ssh_allowed_;

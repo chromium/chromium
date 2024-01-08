@@ -132,7 +132,7 @@ class FileSuggestKeyedService : public KeyedService {
 
   base::ObserverList<Observer> observers_;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // Used to query/persis the removed result ids. NOTE: `proto_` contains
   // non-file ids.

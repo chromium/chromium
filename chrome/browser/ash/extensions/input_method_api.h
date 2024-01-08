@@ -433,7 +433,7 @@ class InputMethodAPI : public BrowserContextKeyedAPI,
   }
   static const bool kServiceIsNULLWhileTesting = true;
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<chromeos::ExtensionInputMethodEventRouter>

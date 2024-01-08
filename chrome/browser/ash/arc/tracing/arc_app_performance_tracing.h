@@ -155,9 +155,9 @@ class ArcAppPerformanceTracing : public KeyedService,
                     mojom::GfxMetricsPtr metrics_ptr);
 
   // Unowned pointers.
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  const raw_ptr<content::BrowserContext> context_;
   // Currently active window.
-  raw_ptr<aura::Window, ExperimentalAsh> active_window_ = nullptr;
+  raw_ptr<aura::Window> active_window_ = nullptr;
 
   // Maps active tasks to app id and package name.
   std::map<int, std::pair<std::string, std::string>> task_id_to_app_id_;

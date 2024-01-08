@@ -232,13 +232,13 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   bool IsInProgress() const;
 
   // Used for checking ownership.
-  raw_ptr<ash::DeviceSettingsService, ExperimentalAsh> device_settings_service_;
+  raw_ptr<ash::DeviceSettingsService> device_settings_service_;
 
   // Used for communication with management service.
-  raw_ptr<DeviceManagementService, ExperimentalAsh> device_management_service_;
+  raw_ptr<DeviceManagementService> device_management_service_;
 
   // Used for retrieving device state keys.
-  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
+  raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
 
   // Used for checking dev boot status.
   std::unique_ptr<EnrollmentFwmpHelper> enrollment_fwmp_helper_;
@@ -293,7 +293,7 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   std::unique_ptr<ash::SystemClockSyncObservation>
       system_clock_sync_observation_;
 
-  raw_ptr<ash::NetworkStateHandler, ExperimentalAsh> network_state_handler_;
+  raw_ptr<ash::NetworkStateHandler> network_state_handler_;
   // Observes network state and calls `PortalStateChanged` when it changes from
   // the start until the auto-enrollment state is resolved. Triggers a retry
   // when the device goes online.

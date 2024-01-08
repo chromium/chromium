@@ -225,7 +225,7 @@ class MockDownloadBubbleUpdateService : public DownloadBubbleUpdateService {
   const raw_ref<const std::vector<std::unique_ptr<StrictMockDownloadItem>>,
                 ExperimentalAsh>
       download_items_;
-  const raw_ref<const OfflineItemList, ExperimentalAsh> offline_items_;
+  const raw_ref<const OfflineItemList> offline_items_;
 };
 
 class MockDownloadCoreService : public DownloadCoreService {

@@ -115,7 +115,7 @@ class ProfileAuthDataTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<network::NetworkService, ExperimentalAsh> network_service_;
+  raw_ptr<network::NetworkService> network_service_;
   TestingProfile login_browser_context_;
   TestingProfile user_browser_context_;
   std::unique_ptr<network::NetworkContext> login_network_context_;

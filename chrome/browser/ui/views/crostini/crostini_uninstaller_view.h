@@ -69,11 +69,11 @@ class CrostiniUninstallerView : public views::BubbleDialogDelegateView {
   void RecordUninstallResultHistogram(UninstallResult result);
 
   State state_ = State::PROMPT;
-  raw_ptr<views::Label, ExperimentalAsh> message_label_ = nullptr;
-  raw_ptr<views::ProgressBar, ExperimentalAsh> progress_bar_ = nullptr;
+  raw_ptr<views::Label> message_label_ = nullptr;
+  raw_ptr<views::ProgressBar> progress_bar_ = nullptr;
 
   bool has_logged_result_ = false;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 
   base::ScopedClosureRunner destructor_callback_for_testing_;
 

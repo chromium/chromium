@@ -142,7 +142,7 @@ class ArcAppInstallEventLogger
       int64_t android_id);
 
   // The delegate that events are forwarded to for inclusion in the log.
-  const raw_ptr<Delegate, ExperimentalAsh> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Whether |this| has set itself up as observer of other classes and needs to
   // remove itself as observer in the destructor.

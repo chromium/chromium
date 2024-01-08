@@ -37,7 +37,7 @@ class BorealisSurveyHandler
                            GetSurveyDataReturnsCorrectData);
 
   scoped_refptr<ash::HatsNotificationController> hats_notification_controller_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::ScopedObservation<BorealisWindowManager,
                           BorealisWindowManager::AppWindowLifetimeObserver>
       lifetime_observation_{this};

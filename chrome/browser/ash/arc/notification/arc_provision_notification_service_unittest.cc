@@ -109,7 +109,7 @@ class ArcProvisionNotificationServiceTest : public BrowserWithTestWindowTest {
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
-  raw_ptr<session_manager::SessionManager, ExperimentalAsh> session_manager_;
+  raw_ptr<session_manager::SessionManager> session_manager_;
 
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

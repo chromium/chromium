@@ -96,12 +96,9 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
   // Run all callbacks with |status|.
   void RunCallbacks(bool status);
 
-  const raw_ptr<DeviceSettingsService, ExperimentalAsh>
-      device_settings_service_;
-  const raw_ptr<policy::CloudPolicyClient, DanglingUntriaged | ExperimentalAsh>
-      policy_client_;
-  const raw_ptr<EnrollmentCertificateUploader, ExperimentalAsh>
-      certificate_uploader_;
+  const raw_ptr<DeviceSettingsService> device_settings_service_;
+  const raw_ptr<policy::CloudPolicyClient, DanglingUntriaged> policy_client_;
+  const raw_ptr<EnrollmentCertificateUploader> certificate_uploader_;
   int num_retries_;
   int retry_limit_;
   int retry_delay_;

@@ -281,8 +281,7 @@ class DeviceSettingsService : public SessionManagerClient::Observer {
   // Processes pending callbacks from GetOwnershipStatusAsync().
   void RunPendingOwnershipStatusCallbacks();
 
-  raw_ptr<SessionManagerClient, ExperimentalAsh> session_manager_client_ =
-      nullptr;
+  raw_ptr<SessionManagerClient> session_manager_client_ = nullptr;
   scoped_refptr<ownership::OwnerKeyUtil> owner_key_util_;
 
   Status store_status_ = STORE_SUCCESS;

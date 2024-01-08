@@ -102,7 +102,7 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged>
       disk_mount_manager_mock_;
   scoped_refptr<StorageDeviceList> devices_;
 };

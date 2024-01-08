@@ -34,7 +34,7 @@ class RecordingOverlayViewImpl : public ash::RecordingOverlayView {
   // Initializes `web_view_` to load the annotator app.
   void InitializeAnnotator();
 
-  raw_ptr<views::WebView, ExperimentalAsh> web_view_;
+  raw_ptr<views::WebView> web_view_;
 
   base::WeakPtrFactory<RecordingOverlayViewImpl> weak_ptr_factory_{this};
 };

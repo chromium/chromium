@@ -121,8 +121,7 @@ class TimeZoneResolverManager
   raw_ptr<SimpleGeolocationProvider> geolocation_provider_ = nullptr;
 
   // This is non-null only after user logs in.
-  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh>
-      primary_user_prefs_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> primary_user_prefs_ = nullptr;
 
   // This is used to subscribe to policy preference.
   PrefChangeRegistrar local_state_pref_change_registrar_;

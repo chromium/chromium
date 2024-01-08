@@ -97,7 +97,7 @@ class SingleEntryPropertiesGetterForDriveFs {
   ResultCallback callback_;
   const storage::FileSystemURL file_system_url_;
   base::FilePath relative_path_;
-  const raw_ptr<Profile, ExperimentalAsh> running_profile_;
+  const raw_ptr<Profile> running_profile_;
 
   // Values used in the process.
   std::unique_ptr<extensions::api::file_manager_private::EntryProperties>

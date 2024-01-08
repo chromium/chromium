@@ -135,8 +135,7 @@ class InputMethodEngineBrowserTest
     return nullptr;
   }
 
-  raw_ptr<const extensions::Extension, DanglingUntriaged | ExperimentalAsh>
-      extension_;
+  raw_ptr<const extensions::Extension, DanglingUntriaged> extension_;
 };
 
 class KeyEventDoneCallback {

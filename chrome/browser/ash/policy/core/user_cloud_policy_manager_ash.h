@@ -255,7 +255,7 @@ class UserCloudPolicyManagerAsh
   void ShutdownRemoteCommands();
 
   // Profile associated with the current user.
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   // Owns the store, note that CloudPolicyManager just keeps a plain pointer.
   std::unique_ptr<CloudPolicyStore> store_;

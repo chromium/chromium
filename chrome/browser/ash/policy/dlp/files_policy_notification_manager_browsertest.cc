@@ -229,15 +229,11 @@ class FilesPolicyNotificationManagerBrowserTest : public InProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
-  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged | ExperimentalAsh>
-      display_service_;
-  raw_ptr<TestNotificationPlatformBridgeDelegator,
-          DanglingUntriaged | ExperimentalAsh>
-      bridge_;
+  raw_ptr<NotificationDisplayServiceImpl, DanglingUntriaged> display_service_;
+  raw_ptr<TestNotificationPlatformBridgeDelegator, DanglingUntriaged> bridge_;
   std::unique_ptr<MockFilesPolicyDialogFactory> factory_;
-  raw_ptr<policy::FilesPolicyNotificationManager,
-          DanglingUntriaged | ExperimentalAsh>
-      fpnm_ = nullptr;
+  raw_ptr<policy::FilesPolicyNotificationManager, DanglingUntriaged> fpnm_ =
+      nullptr;
 };
 
 class NonIOWarningBrowserTest
@@ -1016,8 +1012,8 @@ class IOTaskBrowserTest
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("chrome://abc");
 
-  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_ = nullptr;
+  raw_ptr<policy::MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ =
+      nullptr;
   std::unique_ptr<policy::MockDlpFilesControllerAsh> files_controller_;
 };
 

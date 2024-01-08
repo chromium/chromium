@@ -5959,9 +5959,9 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
   }
 
   // The first profile.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_1_;
+  raw_ptr<Profile, DanglingUntriaged> profile_1_;
   // The second profile.
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_2_;
+  raw_ptr<Profile, DanglingUntriaged> profile_2_;
 
   // The NSSCertDatabase for |profile_1_|.
   // This field is not a raw_ptr<> because it was filtered by the rewriter

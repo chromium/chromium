@@ -220,8 +220,7 @@ class DlpContentManagerAshTest : public testing::Test {
   DlpContentManagerTestHelper helper_;
   base::HistogramTester histogram_tester_;
   std::vector<DlpPolicyEvent> events_;
-  raw_ptr<MockDlpRulesManager, DanglingUntriaged | ExperimentalAsh>
-      mock_rules_manager_ = nullptr;
+  raw_ptr<MockDlpRulesManager, DanglingUntriaged> mock_rules_manager_ = nullptr;
   MockPrivacyScreenHelper mock_privacy_screen_helper_;
 
  private:
@@ -241,9 +240,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      user_manager_;
+  raw_ptr<TestingProfile> profile_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
   user_manager::ScopedUserManager scoped_user_manager_;
 };
 

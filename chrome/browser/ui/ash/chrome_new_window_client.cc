@@ -220,9 +220,9 @@ class ChromeNewWindowClient::TabRestoreHelper
   }
 
  private:
-  raw_ptr<ChromeNewWindowClient, ExperimentalAsh> delegate_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<sessions::TabRestoreService, ExperimentalAsh> tab_restore_service_;
+  raw_ptr<ChromeNewWindowClient> delegate_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<sessions::TabRestoreService> tab_restore_service_;
 };
 
 void ChromeNewWindowClient::NewTab() {

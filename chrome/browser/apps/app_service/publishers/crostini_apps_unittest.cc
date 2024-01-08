@@ -68,8 +68,7 @@ class CrostiniAppsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<crostini::CrostiniTestHelper> test_helper_;
-  raw_ptr<AppServiceProxy, DanglingUntriaged | ExperimentalAsh>
-      app_service_proxy_ = nullptr;
+  raw_ptr<AppServiceProxy, DanglingUntriaged> app_service_proxy_ = nullptr;
 };
 
 TEST_F(CrostiniAppsTest, AppReadinessUpdatesWhenCrostiniDisabled) {

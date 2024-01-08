@@ -42,7 +42,7 @@ class FakeScheduledTaskExecutor : public ScheduledTaskExecutor {
 
  private:
   // Clock to use to get current time.
-  const raw_ptr<const base::Clock, ExperimentalAsh> clock_;
+  const raw_ptr<const base::Clock> clock_;
 
   // The current time zone.
   std::unique_ptr<icu::TimeZone> time_zone_;

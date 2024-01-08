@@ -86,7 +86,7 @@ class ArcDocumentsProviderRootMap : public KeyedService {
   // |runner_| outlives |this| and ArcDocumentsProviderRoot instances in |map_|
   // as this service has explicit dependency on ArcFileSystemOperationRunner in
   // the BrowserContextKeyedServiceFactory dependency graph.
-  const raw_ptr<ArcFileSystemOperationRunner, ExperimentalAsh> runner_;
+  const raw_ptr<ArcFileSystemOperationRunner> runner_;
 
   // Key is (authority, root_document_id).
   using Key = std::pair<std::string, std::string>;

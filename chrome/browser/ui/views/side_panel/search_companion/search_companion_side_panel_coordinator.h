@@ -98,8 +98,8 @@ class SearchCompanionSidePanelCoordinator
   raw_ptr<Browser> browser_;
   std::u16string accessible_name_;
   std::u16string name_;
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
-  const raw_ref<const gfx::VectorIcon, ExperimentalAsh> disabled_icon_;
+  const raw_ref<const gfx::VectorIcon> icon_;
+  const raw_ref<const gfx::VectorIcon> disabled_icon_;
   raw_ptr<PrefService> pref_service_;
   bool is_currently_observing_tab_changes_ = false;
 

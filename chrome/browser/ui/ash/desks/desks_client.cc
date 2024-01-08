@@ -240,7 +240,7 @@ class DesksClient::LaunchPerformanceTracker
   // Pointer back to the owning templates client. This is done to facilitate
   // this object's removal from the mapping of template id's to trackers after
   // this object has recorded its metric.
-  raw_ptr<DesksClient, ExperimentalAsh> templates_client_;
+  raw_ptr<DesksClient> templates_client_;
 
   base::ScopedObservation<app_restore::AppRestoreInfo,
                           app_restore::AppRestoreInfo::Observer>

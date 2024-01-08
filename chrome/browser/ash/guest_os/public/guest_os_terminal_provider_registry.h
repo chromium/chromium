@@ -64,7 +64,7 @@ class GuestOsTerminalProviderRegistry {
   std::unique_ptr<GuestOsTerminalProvider> Unregister(Id provider);
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   Id next_id_ = 0;
   base::flat_map<Id, std::unique_ptr<GuestOsTerminalProvider>> providers_;
 };

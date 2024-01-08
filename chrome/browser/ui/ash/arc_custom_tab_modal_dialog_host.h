@@ -63,7 +63,7 @@ class ArcCustomTabModalDialogHost
 
  protected:
   std::unique_ptr<arc::CustomTab> custom_tab_;
-  raw_ptr<content::WebContents, ExperimentalAsh> web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
  private:
   base::ObserverList<web_modal::ModalDialogHostObserver>::Unchecked

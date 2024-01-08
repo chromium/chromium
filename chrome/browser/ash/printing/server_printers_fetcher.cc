@@ -258,8 +258,7 @@ class ServerPrintersFetcher::PrivateImplementation
     printer->set_id(ServerPrinterId(url.GetNormalized()));
   }
 
-  raw_ptr<const ServerPrintersFetcher, DanglingUntriaged | ExperimentalAsh>
-      owner_;
+  raw_ptr<const ServerPrintersFetcher, DanglingUntriaged> owner_;
   const GURL server_url_;
   const std::string server_name_;
 

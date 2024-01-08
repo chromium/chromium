@@ -231,10 +231,10 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
 
  private:
   // Unowned pointer to pref service.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Unowned pointer to the WebUI through which the account was added.
-  const raw_ptr<const content::WebUI, ExperimentalAsh> web_ui_;
+  const raw_ptr<const content::WebUI> web_ui_;
 
   // Added account email.
   const std::string account_email_;

@@ -61,7 +61,7 @@ class ZeroStateFileProvider : public SearchProvider,
   void OnFileSuggestionUpdated(ash::FileSuggestionType type) override;
 
   // The reference to profile to get ZeroStateFileProvider service.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   ash::ThumbnailLoader thumbnail_loader_;
 

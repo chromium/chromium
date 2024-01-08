@@ -110,10 +110,10 @@ class InfolistEntryView : public views::View {
   ui::InfolistEntry entry_;
 
   // The title label. Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> title_label_;
+  raw_ptr<views::Label> title_label_;
 
   // The description label. Owned by views hierarchy.
-  raw_ptr<views::Label, ExperimentalAsh> description_label_;
+  raw_ptr<views::Label> description_label_;
 };
 
 BEGIN_METADATA(InfolistEntryView, views::View)

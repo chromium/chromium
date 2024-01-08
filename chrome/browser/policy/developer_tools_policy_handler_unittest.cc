@@ -250,8 +250,8 @@ class DeveloperToolsPolicyHandlerWithProfileTest
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> primary_profile_;
-  raw_ptr<TestingProfile, ExperimentalAsh> secondary_profile_;
+  raw_ptr<TestingProfile> primary_profile_;
+  raw_ptr<TestingProfile> secondary_profile_;
 };
 
 TEST_F(DeveloperToolsPolicyHandlerWithProfileTest,

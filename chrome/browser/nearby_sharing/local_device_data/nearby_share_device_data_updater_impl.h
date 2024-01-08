@@ -56,7 +56,7 @@ class NearbyShareDeviceDataUpdaterImpl : public NearbyShareDeviceDataUpdater {
   void OnRpcFailure(ash::nearby::NearbyHttpError error);
 
   base::TimeDelta timeout_;
-  raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
+  raw_ptr<NearbyShareClientFactory> client_factory_ = nullptr;
   std::unique_ptr<NearbyShareClient> client_;
   base::OneShotTimer timer_;
 };

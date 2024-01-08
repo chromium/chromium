@@ -114,7 +114,7 @@ class ScopedLogIn {
     fake_user_manager_->LoginUser(account_id_);
   }
 
-  raw_ptr<FakeUserManagerWithLocalState, ExperimentalAsh> fake_user_manager_;
+  raw_ptr<FakeUserManagerWithLocalState> fake_user_manager_;
   const AccountId account_id_;
 };
 

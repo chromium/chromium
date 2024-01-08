@@ -105,7 +105,7 @@ class ArcBootPhaseMonitorBridge : public KeyedService,
 
   THREAD_CHECKER(thread_checker_);
 
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
   const AccountId account_id_;
   const std::unique_ptr<Delegate> delegate_;

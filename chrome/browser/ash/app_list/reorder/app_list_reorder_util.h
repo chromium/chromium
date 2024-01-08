@@ -70,7 +70,7 @@ class StringWrapperComparator {
 
  private:
   const bool increasing_;
-  const raw_ptr<icu::Collator, ExperimentalAsh> collator_;
+  const raw_ptr<icu::Collator> collator_;
 };
 
 struct EphemeralAwareName {
@@ -92,7 +92,7 @@ class EphemeralStateAndNameComparator {
       const reorder::SyncItemWrapper<EphemeralAwareName>& rhs) const;
 
  private:
-  const raw_ptr<icu::Collator, ExperimentalAsh> collator_;
+  const raw_ptr<icu::Collator> collator_;
 };
 
 // Gets a list of wrappers based on the mappings from ids to sync items.

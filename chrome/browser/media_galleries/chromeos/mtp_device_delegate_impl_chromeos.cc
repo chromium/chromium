@@ -448,8 +448,8 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   const std::string file_name_;
 
   ChildNodes children_;
-  const raw_ptr<MTPFileNode, ExperimentalAsh> parent_;
-  raw_ptr<FileIdToMTPFileNodeMap, ExperimentalAsh> file_id_to_node_map_;
+  const raw_ptr<MTPFileNode> parent_;
+  raw_ptr<FileIdToMTPFileNodeMap> file_id_to_node_map_;
 };
 
 MTPDeviceDelegateImplLinux::MTPFileNode::MTPFileNode(

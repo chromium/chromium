@@ -202,10 +202,10 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Set |enrollment_step_| to |step|.
   void SetStep(EnrollmentStep step);
 
-  raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> store_;
-  raw_ptr<ash::InstallAttributes, ExperimentalAsh> install_attributes_;
-  raw_ptr<ServerBackedStateKeysBroker, ExperimentalAsh> state_keys_broker_;
-  raw_ptr<ash::attestation::AttestationFlow, ExperimentalAsh> attestation_flow_;
+  raw_ptr<DeviceCloudPolicyStoreAsh> store_;
+  raw_ptr<ash::InstallAttributes> install_attributes_;
+  raw_ptr<ServerBackedStateKeysBroker> state_keys_broker_;
+  raw_ptr<ash::attestation::AttestationFlow> attestation_flow_;
   // Factory for SigningService to be used by |client_| to register with.
   std::unique_ptr<SigningServiceProvider> signing_service_provider_;
   std::unique_ptr<CloudPolicyClient> client_;

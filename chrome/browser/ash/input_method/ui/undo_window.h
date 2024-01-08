@@ -47,9 +47,9 @@ class UI_CHROMEOS_EXPORT UndoWindow : public views::BubbleDialogDelegateView {
 
   void UndoButtonPressed();
 
-  raw_ptr<AssistiveDelegate, DanglingUntriaged | ExperimentalAsh> delegate_;
-  raw_ptr<views::LabelButton, ExperimentalAsh> undo_button_;
-  raw_ptr<views::ImageButton, ExperimentalAsh> learn_more_button_;
+  raw_ptr<AssistiveDelegate, DanglingUntriaged> delegate_;
+  raw_ptr<views::LabelButton> undo_button_;
+  raw_ptr<views::ImageButton> learn_more_button_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

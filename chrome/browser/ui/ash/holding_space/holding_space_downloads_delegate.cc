@@ -462,16 +462,14 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload {
 
  private:
   const Type type_;
-  const raw_ptr<HoldingSpaceDownloadsDelegate, ExperimentalAsh>
-      delegate_;  // NOTE: Owns `this`.
+  const raw_ptr<HoldingSpaceDownloadsDelegate> delegate_;  // NOTE: Owns `this`.
   crosapi::mojom::DownloadItemPtr mojo_download_item_;
 
   // The in-progress holding space item associated with this in-progress
   // download. NOTE: This may be `nullptr` until the target file path for the
   // in-progress download has been set and a holding space item has been created
   // and associated.
-  raw_ptr<const HoldingSpaceItem, ExperimentalAsh> holding_space_item_ =
-      nullptr;
+  raw_ptr<const HoldingSpaceItem> holding_space_item_ = nullptr;
 
   base::WeakPtrFactory<InProgressDownload> weak_factory_{this};
 };
@@ -531,8 +529,8 @@ class HoldingSpaceDownloadsDelegate::InProgressAshDownload
     UpdateMojoDownloadItem(nullptr);  // NOTE: Destroys `this`.
   }
 
-  const raw_ptr<content::DownloadManager, ExperimentalAsh> manager_;
-  const raw_ptr<download::DownloadItem, ExperimentalAsh> download_item_;
+  const raw_ptr<content::DownloadManager> manager_;
+  const raw_ptr<download::DownloadItem> download_item_;
 
   base::ScopedObservation<download::DownloadItem,
                           download::DownloadItem::Observer>

@@ -199,10 +199,10 @@ class UpdateRequiredScreenTest : public OobeBaseTest {
   }
 
  protected:
-  raw_ptr<UpdateRequiredScreen, ExperimentalAsh> update_required_screen_;
+  raw_ptr<UpdateRequiredScreen> update_required_screen_;
   // Error screen - owned by OobeUI.
   // Version updater - owned by `update_required_screen_`.
-  raw_ptr<VersionUpdater, ExperimentalAsh> version_updater_ = nullptr;
+  raw_ptr<VersionUpdater> version_updater_ = nullptr;
 
   // Handles network connections
   std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;

@@ -94,7 +94,7 @@ class WindowPropertyWaiter : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       make_transparent_observation_{this};
   base::OnceClosure quit_closure_;
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
+  raw_ptr<aura::Window> window_;
   const raw_ptr<const ui::ClassProperty<T>> key_;
 };
 

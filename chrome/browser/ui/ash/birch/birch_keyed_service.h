@@ -39,7 +39,7 @@ class BirchKeyedService : public KeyedService,
  private:
   void OnFileInfoRetrieved(std::vector<BirchFileItem> file_items);
 
-  const raw_ptr<FileSuggestKeyedService, ExperimentalAsh> file_suggest_service_;
+  const raw_ptr<FileSuggestKeyedService> file_suggest_service_;
 
   base::ScopedObservation<FileSuggestKeyedService,
                           FileSuggestKeyedService::Observer>

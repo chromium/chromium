@@ -59,20 +59,14 @@ class ProfileTestingHelper {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh> signin_profile_ =
-      nullptr;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> signin_profile_otr_ =
-      nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> signin_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> signin_profile_otr_ = nullptr;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      lockscreen_profile_ = nullptr;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh>
-      lockscreen_profile_otr_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> lockscreen_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> lockscreen_profile_otr_ = nullptr;
 
-  raw_ptr<TestingProfile, DanglingUntriaged | ExperimentalAsh>
-      lockscreenapp_profile_ = nullptr;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh>
-      lockscreenapp_profile_otr_ = nullptr;
+  raw_ptr<TestingProfile, DanglingUntriaged> lockscreenapp_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> lockscreenapp_profile_otr_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 

@@ -232,8 +232,7 @@ class FakeFastPairAdvertiserFactory : public FastPairAdvertiser::Factory {
   bool StopAdvertisingCalled() { return stop_advertising_called_; }
 
  private:
-  raw_ptr<FakeFastPairAdvertiser, ExperimentalAsh>
-      last_fake_fast_pair_advertiser_ = nullptr;
+  raw_ptr<FakeFastPairAdvertiser> last_fake_fast_pair_advertiser_ = nullptr;
   bool should_succeed_on_start_ = false;
   bool stop_advertising_called_ = false;
   bool fast_pair_advertiser_destroyed_ = false;
@@ -381,8 +380,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
-  raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
-      nullptr;
+  raw_ptr<FakeConnection::Factory> connection_factory_ = nullptr;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =

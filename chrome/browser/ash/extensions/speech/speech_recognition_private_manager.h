@@ -88,7 +88,7 @@ class SpeechRecognitionPrivateManager
       recognition_data_;
 
   // The browser context associated with the keyed service.
-  raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
+  raw_ptr<content::BrowserContext> context_;
 };
 
 }  // namespace extensions

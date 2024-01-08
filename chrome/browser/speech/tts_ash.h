@@ -93,7 +93,7 @@ class TtsAsh : public mojom::Tts,
   void TtsClientDisconnected(const base::UnguessableToken& browser_context_id);
 
   // Owned by g_browser_process.
-  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
+  raw_ptr<ProfileManager> profile_manager_;
 
   // Support any number of connections.
   mojo::ReceiverSet<mojom::Tts> receivers_;

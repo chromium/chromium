@@ -123,7 +123,7 @@ class RecentArcMediaSource::MediaRoot {
 
   // Set in the constructor.
   const std::string root_id_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
   const base::FilePath relative_mount_path_;
 
   // Number of in-flight ReadDirectory() calls by ScanDirectory().

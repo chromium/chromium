@@ -82,8 +82,8 @@ class ArcFileSystemWatcherService
       base::OnceClosure callback);
   void OnFileSystemChanged(const std::vector<std::string>& paths);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   bool watching_file_system_changes_ = false;

@@ -52,7 +52,7 @@ class AppPermissionHandler
 
   mojo::RemoteSet<app_permission::mojom::AppPermissionsObserver> observer_list_;
 
-  raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_proxy_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 
   base::ScopedObservation<apps::AppRegistryCache,
                           apps::AppRegistryCache::Observer>

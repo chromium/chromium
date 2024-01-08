@@ -114,8 +114,8 @@ class ExtensionsPermissionsTrackerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, ExperimentalAsh> prefs_;
-  raw_ptr<ExtensionRegistry, ExperimentalAsh> registry_;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  raw_ptr<ExtensionRegistry> registry_;
   ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<MockExtensionsPermissionsTracker> permissions_tracker_;
 };

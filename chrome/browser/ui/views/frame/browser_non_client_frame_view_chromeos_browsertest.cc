@@ -177,7 +177,7 @@ class BrowserNonClientFrameViewChromeOSTestApi {
   }
 
  private:
-  const raw_ptr<BrowserNonClientFrameViewChromeOS, ExperimentalAsh> frame_view_;
+  const raw_ptr<BrowserNonClientFrameViewChromeOS> frame_view_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -764,19 +764,17 @@ class WebAppNonClientFrameViewAshTest
 
   static SkColor GetThemeColor() { return SK_ColorBLUE; }
 
-  raw_ptr<Browser, DanglingUntriaged | ExperimentalAsh> app_browser_ = nullptr;
-  raw_ptr<BrowserView, DanglingUntriaged | ExperimentalAsh> browser_view_ =
+  raw_ptr<Browser, DanglingUntriaged> app_browser_ = nullptr;
+  raw_ptr<BrowserView, DanglingUntriaged> browser_view_ = nullptr;
+  raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged> frame_header_ =
       nullptr;
-  raw_ptr<chromeos::DefaultFrameHeader, DanglingUntriaged | ExperimentalAsh>
-      frame_header_ = nullptr;
-  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged | ExperimentalAsh>
-      web_app_frame_toolbar_ = nullptr;
+  raw_ptr<WebAppFrameToolbarView, DanglingUntriaged> web_app_frame_toolbar_ =
+      nullptr;
   raw_ptr<
       const std::vector<raw_ptr<ContentSettingImageView, VectorExperimental>>,
-      DanglingUntriaged | ExperimentalAsh>
+      DanglingUntriaged>
       content_setting_views_ = nullptr;
-  raw_ptr<AppMenuButton, DanglingUntriaged | ExperimentalAsh>
-      web_app_menu_button_ = nullptr;
+  raw_ptr<AppMenuButton, DanglingUntriaged> web_app_menu_button_ = nullptr;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     TopChromeMdParamTest<InProcessBrowserTest>::SetUpCommandLine(command_line);

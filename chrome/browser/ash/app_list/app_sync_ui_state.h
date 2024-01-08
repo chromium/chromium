@@ -81,8 +81,8 @@ class AppSyncUIState : public KeyedService,
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<syncer::SyncService, ExperimentalAsh> sync_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Timer to limit how much time STATUS_SYNCING is allowed.
   base::OneShotTimer max_syncing_status_timer_;
@@ -90,7 +90,7 @@ class AppSyncUIState : public KeyedService,
   Status status_;
   base::ObserverList<AppSyncUIStateObserver> observers_;
 
-  raw_ptr<extensions::ExtensionRegistry, ExperimentalAsh> extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_APP_SYNC_UI_STATE_H_

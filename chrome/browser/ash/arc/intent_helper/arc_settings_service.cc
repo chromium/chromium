@@ -335,8 +335,8 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // ConnectionObserver<mojom::AppInstance>:
   void OnConnectionReady() override;
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
   // Manages pref observation registration.

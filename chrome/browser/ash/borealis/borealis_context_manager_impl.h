@@ -68,7 +68,7 @@ class BorealisContextManagerImpl : public BorealisContextManager,
     // Transition overrides.
     void Start(std::unique_ptr<NotRunning> current_state) override;
 
-    const raw_ptr<Profile, ExperimentalAsh> profile_;
+    const raw_ptr<Profile> profile_;
     base::TimeTicks start_tick_;
     std::unique_ptr<BorealisContext> context_;
     base::queue<std::unique_ptr<BorealisTask>> task_queue_;
@@ -97,7 +97,7 @@ class BorealisContextManagerImpl : public BorealisContextManager,
 
   void ShutDownBorealisIfRunning();
 
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   std::unique_ptr<Startup> in_progress_startup_;
   std::unique_ptr<BorealisContext> context_;

@@ -194,7 +194,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
 
   void Finish() { std::move(done_closure_).Run(); }
 
-  raw_ptr<Profile, LeakedDanglingUntriaged | ExperimentalAsh> profile_;
+  raw_ptr<Profile, LeakedDanglingUntriaged> profile_;
 
   base::OnceClosure done_closure_;
 

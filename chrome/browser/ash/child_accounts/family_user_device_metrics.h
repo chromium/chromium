@@ -64,7 +64,7 @@ class FamilyUserDeviceMetrics : public session_manager::SessionManagerObserver,
  private:
   void ReportDeviceOwnership();
 
-  const raw_ptr<const user_manager::UserManager, ExperimentalAsh> user_manager_;
+  const raw_ptr<const user_manager::UserManager> user_manager_;
 
   base::WeakPtrFactory<FamilyUserDeviceMetrics> weak_factory_{this};
 };

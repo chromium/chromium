@@ -184,17 +184,15 @@ class OsSyncHandlerTest : public ChromeRenderViewHostTestHarness {
                                              enabled);
   }
 
-  raw_ptr<syncer::TestSyncService, DanglingUntriaged | ExperimentalAsh>
-      sync_service_ = nullptr;
-  raw_ptr<syncer::SyncUserSettings, DanglingUntriaged | ExperimentalAsh>
-      user_settings_ = nullptr;
+  raw_ptr<syncer::TestSyncService, DanglingUntriaged> sync_service_ = nullptr;
+  raw_ptr<syncer::SyncUserSettings, DanglingUntriaged> user_settings_ = nullptr;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<TestWebUI> web_ui_;
   TestWebUIProvider test_web_ui_provider_;
   std::unique_ptr<TestChromeWebUIControllerFactory> test_web_ui_factory_;
-  raw_ptr<OSSyncHandler, DanglingUntriaged | ExperimentalAsh> handler_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<OSSyncHandler, DanglingUntriaged> handler_;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
       new_window_delegate_primary_;
   std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
 };

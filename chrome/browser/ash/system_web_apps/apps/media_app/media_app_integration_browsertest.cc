@@ -316,7 +316,7 @@ class NotificationWatcher : public NotificationDisplayService::Observer {
   }
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop run_loop_;
   std::string seen_notification_id_;
 

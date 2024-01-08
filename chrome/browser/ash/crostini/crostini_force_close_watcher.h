@@ -128,14 +128,14 @@ class ShellSurfaceForceCloseDelegate : public ForceCloseWatcher::Delegate,
 
  private:
   // Handle to the shell surface we are trying to close.
-  raw_ptr<exo::ShellSurfaceBase, ExperimentalAsh> shell_surface_;
+  raw_ptr<exo::ShellSurfaceBase> shell_surface_;
 
   // Name of the app we are trying to close (or "" if unknown).
   std::string app_name_;
 
   // Handle to the widget representing the currently visible force-close dialog
   // (if there is one), or null.
-  raw_ptr<views::Widget, ExperimentalAsh> current_dialog_ = nullptr;
+  raw_ptr<views::Widget> current_dialog_ = nullptr;
 
   base::WeakPtrFactory<ShellSurfaceForceCloseDelegate> weak_ptr_factory_;
 };

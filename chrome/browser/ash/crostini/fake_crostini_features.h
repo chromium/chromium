@@ -65,7 +65,7 @@ class FakeCrostiniFeatures : public CrostiniFeatures {
  private:
   // Original global static when this instance is created. It is captured when
   // FakeCrostiniFeatures is created and replaced at destruction.
-  raw_ptr<CrostiniFeatures, ExperimentalAsh> original_features_;
+  raw_ptr<CrostiniFeatures> original_features_;
 
   std::optional<bool> could_be_allowed_;
   std::optional<bool> allowed_now_;

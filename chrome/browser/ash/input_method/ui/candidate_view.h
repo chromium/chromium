@@ -61,13 +61,13 @@ class UI_CHROMEOS_EXPORT CandidateView : public views::Button {
   // child views will be deleted when |this| is deleted.
 
   // The shortcut label renders shortcut numbers like 1, 2, and 3.
-  raw_ptr<views::Label, ExperimentalAsh> shortcut_label_ = nullptr;
+  raw_ptr<views::Label> shortcut_label_ = nullptr;
   // The candidate label renders candidates.
-  raw_ptr<views::Label, ExperimentalAsh> candidate_label_ = nullptr;
+  raw_ptr<views::Label> candidate_label_ = nullptr;
   // The annotation label renders annotations.
-  raw_ptr<views::Label, ExperimentalAsh> annotation_label_ = nullptr;
+  raw_ptr<views::Label> annotation_label_ = nullptr;
   // The infolist icon.
-  raw_ptr<views::View, ExperimentalAsh> infolist_icon_ = nullptr;
+  raw_ptr<views::View> infolist_icon_ = nullptr;
 
   int shortcut_width_ = 0;
   int candidate_width_ = 0;

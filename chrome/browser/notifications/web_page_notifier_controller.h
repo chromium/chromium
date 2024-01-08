@@ -43,7 +43,7 @@ class WebPageNotifierController : public NotifierController {
   std::unique_ptr<base::CancelableTaskTracker> favicon_tracker_;
 
   // Lifetime of parent must be longer than the source.
-  raw_ptr<Observer, ExperimentalAsh> observer_;
+  raw_ptr<Observer> observer_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_WEB_PAGE_NOTIFIER_CONTROLLER_H_

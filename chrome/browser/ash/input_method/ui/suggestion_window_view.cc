@@ -250,8 +250,7 @@ void SuggestionWindowView::LearnMoreClicked() {
       .id = ui::ime::ButtonId::kLearnMore, .window_type = type_});
 }
 
-raw_ptr<views::ImageButton, ExperimentalAsh>
-SuggestionWindowView::getLearnMoreButton() {
+raw_ptr<views::ImageButton> SuggestionWindowView::getLearnMoreButton() {
   return learn_more_button_;
 }
 

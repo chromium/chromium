@@ -122,7 +122,7 @@ class FakeUdpSocket : public network::mojom::UDPSocket {
   bool mojo_disconnect_on_connect_ = false;
   bool mojo_disconnect_on_send_ = false;
   bool mojo_disconnect_on_receive_ = false;
-  raw_ptr<content::BrowserTaskEnvironment, ExperimentalAsh> task_environment_;
+  raw_ptr<content::BrowserTaskEnvironment> task_environment_;
   base::TimeDelta connection_delay_;
   base::TimeDelta send_delay_;
   base::TimeDelta receive_delay_;

@@ -64,7 +64,7 @@ class TestTreeSource : public ax::android::AXTreeSourceAndroid {
   ax::android::AccessibilityInfoDataWrapper* GetRoot() const override {
     return root_;
   }
-  raw_ptr<ax::android::AccessibilityInfoDataWrapper, ExperimentalAsh> root_;
+  raw_ptr<ax::android::AccessibilityInfoDataWrapper> root_;
 };
 
 class ArcSerializationDelegateTest : public ash::AshTestBase {

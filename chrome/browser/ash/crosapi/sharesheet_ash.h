@@ -48,7 +48,7 @@ class SharesheetAsh : public mojom::Sharesheet, public ProfileObserver {
   void OnProfileWillBeDestroyed(Profile* profile) override;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   mojo::ReceiverSet<mojom::Sharesheet> receivers_;
   base::WeakPtrFactory<SharesheetAsh> weak_factory_{this};

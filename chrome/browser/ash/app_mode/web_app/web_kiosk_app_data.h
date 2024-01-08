@@ -83,7 +83,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // session.
   GURL GetLastIconUrl(const base::Value::Dict& dict) const;
 
-  raw_ptr<KioskAppDataDelegate, ExperimentalAsh> delegate_;  // not owned.
+  raw_ptr<KioskAppDataDelegate> delegate_;  // not owned.
   Status status_;
   const GURL install_url_;  // installation url.
   GURL launch_url_;         // app launch url.

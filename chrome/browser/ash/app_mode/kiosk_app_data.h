@@ -141,7 +141,7 @@ class KioskAppData : public KioskAppDataBase,
 
   void OnIconLoadDone(std::optional<gfx::ImageSkia> icon);
 
-  raw_ptr<KioskAppDataDelegate, ExperimentalAsh> delegate_;  // not owned.
+  raw_ptr<KioskAppDataDelegate> delegate_;  // not owned.
   Status status_;
 
   GURL update_url_;

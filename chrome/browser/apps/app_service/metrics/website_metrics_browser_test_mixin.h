@@ -74,7 +74,7 @@ class WebsiteMetricsBrowserTestMixin : public InProcessBrowserTestMixin {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  raw_ptr<AppPlatformMetricsService, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<AppPlatformMetricsService, DanglingUntriaged>
       app_platform_metrics_service_ = nullptr;
 #else
   raw_ptr<WebsiteMetricsServiceLacros> website_metrics_service_ = nullptr;

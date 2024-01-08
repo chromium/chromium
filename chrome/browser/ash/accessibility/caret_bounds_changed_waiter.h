@@ -31,7 +31,7 @@ class CaretBoundsChangedWaiter : public ui::InputMethodObserver {
   void OnInputMethodDestroyed(const ui::InputMethod* input_method) override {}
   void OnCaretBoundsChanged(const ui::TextInputClient* client) override;
 
-  raw_ptr<ui::InputMethod, ExperimentalAsh> input_method_;
+  raw_ptr<ui::InputMethod> input_method_;
   base::RunLoop run_loop_;
 };
 

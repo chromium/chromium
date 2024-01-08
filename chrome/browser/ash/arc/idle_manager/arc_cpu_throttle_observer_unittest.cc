@@ -77,14 +77,12 @@ class ArcCpuThrottleObserverTest : public testing::Test {
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   TestingPrefServiceSimple local_state_;
-  raw_ptr<ArcMetricsService, DanglingUntriaged | ExperimentalAsh>
-      arc_metrics_service_ = nullptr;
+  raw_ptr<ArcMetricsService, DanglingUntriaged> arc_metrics_service_ = nullptr;
   ArcCpuThrottleObserver cpu_throttle_observer_;
   std::unique_ptr<ArcServiceManager> service_manager_;
   std::unique_ptr<ArcSessionManager> session_manager_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  raw_ptr<ArcInstanceThrottle, DanglingUntriaged | ExperimentalAsh>
-      test_instance_throttle_;
+  raw_ptr<ArcInstanceThrottle, DanglingUntriaged> test_instance_throttle_;
 };
 
 TEST_F(ArcCpuThrottleObserverTest, TestConstructDestruct) {}

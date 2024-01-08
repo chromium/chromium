@@ -33,7 +33,7 @@ class KeyboardHandler : public ::settings::SettingsPageUIHandler,
     void Initialize();
 
    private:
-    raw_ptr<KeyboardHandler, ExperimentalAsh> handler_;  // Not owned.
+    raw_ptr<KeyboardHandler> handler_;  // Not owned.
   };
 
   KeyboardHandler();

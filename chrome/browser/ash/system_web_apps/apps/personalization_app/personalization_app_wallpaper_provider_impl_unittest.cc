@@ -258,7 +258,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
       RegisterPrefs(&pref_service_)};
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_;
+  raw_ptr<TestingProfile> profile_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
   // |test_wallpaper_controller_|.

@@ -441,8 +441,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   // NetworkConfigurationUpdater. When that happens, |certificate_importer_|
   // continues to point to that instance but
   // |client_certificate_importer_owned_| is released.
-  raw_ptr<FakeCertificateImporter, DanglingUntriaged | ExperimentalAsh>
-      certificate_importer_;
+  raw_ptr<FakeCertificateImporter, DanglingUntriaged> certificate_importer_;
   std::unique_ptr<ash::onc::CertificateImporter>
       client_certificate_importer_owned_;
 

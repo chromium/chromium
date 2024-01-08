@@ -152,7 +152,7 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
   void IntializeStorageMonitor();
   void OnStorageMonitorInitialized(std::unique_ptr<StorageMonitor> monitor);
 
-  raw_ptr<content::WebUI, ExperimentalAsh> web_ui_;  // Owns |this|.
+  raw_ptr<content::WebUI> web_ui_;  // Owns |this|.
 
   base::Time session_start_time_;
 

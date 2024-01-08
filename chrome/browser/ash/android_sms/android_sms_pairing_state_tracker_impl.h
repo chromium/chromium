@@ -54,8 +54,8 @@ class AndroidSmsPairingStateTrackerImpl
 
   void AddCookieChangeListener();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<AndroidSmsAppManager, ExperimentalAsh> android_sms_app_manager_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<AndroidSmsAppManager> android_sms_app_manager_;
 
   mojo::Receiver<network::mojom::CookieChangeListener>
       cookie_listener_receiver_{this};

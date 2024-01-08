@@ -192,10 +192,9 @@ class LayoutWidgetDelegateView : public views::WidgetDelegateView {
   View* GetInitiallyFocusedView() override { return oobe_view_; }
 
  private:
-  raw_ptr<OobeUIDialogDelegate, DanglingUntriaged | ExperimentalAsh>
-      dialog_delegate_ = nullptr;  // Owned by us.
-  raw_ptr<OobeWebDialogView, ExperimentalAsh> oobe_view_ =
-      nullptr;  // Owned by views hierarchy.
+  raw_ptr<OobeUIDialogDelegate, DanglingUntriaged> dialog_delegate_ =
+      nullptr;                                      // Owned by us.
+  raw_ptr<OobeWebDialogView> oobe_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<ViewShadow> view_shadow_;
 
   // Indicates whether Oobe web view should fully occupy the hosting widget.

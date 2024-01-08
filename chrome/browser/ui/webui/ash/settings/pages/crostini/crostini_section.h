@@ -51,9 +51,9 @@ class CrostiniSection : public OsSettingsSection {
 
   void UpdateSearchTags();
 
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace ash::settings

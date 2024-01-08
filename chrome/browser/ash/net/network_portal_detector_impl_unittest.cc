@@ -244,7 +244,7 @@ class NetworkPortalDetectorImplTest
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<NetworkPortalDetectorImpl> network_portal_detector_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   TestingProfileManager test_profile_manager_;

@@ -162,7 +162,7 @@ class NearbyShareActionTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<NearbyShareAction> nearby_share_action_;
 };
 

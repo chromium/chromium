@@ -64,7 +64,7 @@ class ExternalLogoutDoneEventHandlerUnittest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestingProfile, ExperimentalAsh> testing_profile_;
+  raw_ptr<TestingProfile> testing_profile_;
   std::unique_ptr<ExternalLogoutDoneEventHandler>
       external_logout_done_event_handler_;
   std::unique_ptr<EventRouter> event_router_;

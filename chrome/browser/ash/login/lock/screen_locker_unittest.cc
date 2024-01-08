@@ -191,7 +191,7 @@ class ScreenLockerUnitTest : public testing::Test {
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> user_profile_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> user_profile_ = nullptr;
 
   ScopedDeviceSettingsTestHelper device_settings_test_helper_;
   TestSessionController test_session_controller_;

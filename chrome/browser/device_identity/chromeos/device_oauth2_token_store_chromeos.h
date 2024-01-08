@@ -69,7 +69,7 @@ class DeviceOAuth2TokenStoreChromeOS : public DeviceOAuth2TokenStore {
 
   State state_ = State::STOPPED;
 
-  raw_ptr<PrefService, ExperimentalAsh> local_state_;
+  raw_ptr<PrefService> local_state_;
 
   base::CallbackListSubscription service_account_identity_subscription_;
 

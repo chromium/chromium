@@ -55,7 +55,7 @@ class UsbPrinterNotification : public message_center::NotificationObserver {
   const chromeos::Printer printer_;
   std::string notification_id_;
   Type type_;
-  raw_ptr<Profile, ExperimentalAsh> profile_;  // Not owned.
+  raw_ptr<Profile> profile_;  // Not owned.
   std::unique_ptr<message_center::Notification> notification_;
   bool visible_;
 

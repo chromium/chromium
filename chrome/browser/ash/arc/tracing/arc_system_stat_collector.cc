@@ -219,7 +219,7 @@ struct ArcSystemStatCollector::Sample {
 
 struct OneValueReaderInfo {
   SystemReader reader = SystemReader::kTotal;
-  raw_ptr<int64_t, ExperimentalAsh> value = nullptr;
+  raw_ptr<int64_t> value = nullptr;
   int64_t default_value = 0;
 };
 

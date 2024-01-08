@@ -285,7 +285,7 @@ class WilcoDtcSupportdDaemonOwnedMessageHost final
   const std::string json_message_to_send_;
   base::OnceCallback<void(const std::string& response)> send_response_callback_;
   // Unowned.
-  raw_ptr<Client, ExperimentalAsh> client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
 };
 
 // Helper that wraps the specified OnceCallback and encapsulates logic that

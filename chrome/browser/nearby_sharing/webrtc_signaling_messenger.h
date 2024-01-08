@@ -41,7 +41,7 @@ class WebRtcSignalingMessenger
       StartReceivingMessagesCallback callback) override;
 
  private:
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 

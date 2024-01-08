@@ -48,7 +48,7 @@ class SharesheetTargetButton : public views::Button {
   void SetLabelProperties(views::Label* label);
 
   raw_ptr<views::ImageView> image_;
-  raw_ptr<const gfx::VectorIcon, ExperimentalAsh> vector_icon_;
+  raw_ptr<const gfx::VectorIcon> vector_icon_;
 };
 
 }  // namespace sharesheet

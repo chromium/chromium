@@ -137,7 +137,7 @@ class FullRestoreService : public KeyedService,
 
   void OnAppTerminating();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
 
   // If the user of `profile_` is not the primary user, and hasn't been the

@@ -130,11 +130,11 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
   void HandleConfigureNetwork();
   void DoToggleNetworkConfig(bool visible);
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
   bool is_shown_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
-  raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen, DanglingUntriaged> error_screen_;
 
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;

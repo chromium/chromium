@@ -74,9 +74,8 @@ class AndroidSmsService : public KeyedService,
   // session_manager::SessionManagerObserver
   void OnSessionStateChanged() override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<multidevice_setup::MultiDeviceSetupClient, ExperimentalAsh>
-      multidevice_setup_client_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<multidevice_setup::MultiDeviceSetupClient> multidevice_setup_client_;
 
   std::unique_ptr<AndroidSmsAppSetupController>
       andoid_sms_app_setup_controller_;

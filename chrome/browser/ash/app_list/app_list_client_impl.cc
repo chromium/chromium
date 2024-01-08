@@ -131,7 +131,7 @@ class ScopedIphSessionImpl : public ash::ScopedIphSession {
 
  private:
   raw_ptr<feature_engagement::Tracker> tracker_;
-  const raw_ref<const base::Feature, ExperimentalAsh> iph_feature_;
+  const raw_ref<const base::Feature> iph_feature_;
 };
 
 }  // namespace

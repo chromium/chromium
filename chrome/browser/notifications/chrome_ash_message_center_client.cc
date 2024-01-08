@@ -55,7 +55,7 @@ class NotifierComparator {
   }
 
  private:
-  raw_ptr<icu::Collator, ExperimentalAsh> collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 // This delegate forwards NotificationDelegate methods to their equivalent in
@@ -100,7 +100,7 @@ class ForwardingNotificationDelegate
   // The ID of the notification.
   const std::string notification_id_;
 
-  raw_ptr<NotificationPlatformBridgeDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<NotificationPlatformBridgeDelegate> delegate_;
 };
 
 }  // namespace

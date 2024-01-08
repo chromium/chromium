@@ -114,9 +114,9 @@ class PolicyDialogBase : public views::DialogDelegateView {
                                   const std::u16string& title) = 0;
 
   // The upper section of the dialog.
-  raw_ptr<views::View, ExperimentalAsh> upper_panel_;
+  raw_ptr<views::View> upper_panel_;
   // The scrollable container used for listing contents or files.
-  raw_ptr<views::View, ExperimentalAsh> scroll_view_container_;
+  raw_ptr<views::View> scroll_view_container_;
 };
 
 }  // namespace policy

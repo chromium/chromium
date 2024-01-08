@@ -99,7 +99,7 @@ class UserSelectionScreen
   void SetUsersLoaded(bool loaded);
 
  protected:
-  raw_ptr<UserBoardView, ExperimentalAsh> view_ = nullptr;
+  raw_ptr<UserBoardView> view_ = nullptr;
 
   // Map from public session account IDs to recommended locales set by policy.
   std::map<AccountId, std::vector<std::string>>

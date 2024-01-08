@@ -83,7 +83,7 @@ class MockUploadJob : public UploadJob {
       {SystemLogUploader::kCommandIdHeaderName,
        base::NumberToString(kCommandId)}};
 
-  raw_ptr<UploadJob::Delegate, ExperimentalAsh> delegate_;
+  raw_ptr<UploadJob::Delegate> delegate_;
   bool is_upload_error_;
   bool is_immediate_upload_;
 };

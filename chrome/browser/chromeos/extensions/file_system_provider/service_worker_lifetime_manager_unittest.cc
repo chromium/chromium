@@ -46,7 +46,7 @@ class TestServiceWorkerLifetimeManager : public ServiceWorkerLifetimeManager {
 
   // Effectively emulates ProcessManager.
   int next_keepalive_id_ = 1;
-  const raw_ref<KeepaliveMap, ExperimentalAsh> keepalive_map_;
+  const raw_ref<KeepaliveMap> keepalive_map_;
 };
 
 }  // namespace

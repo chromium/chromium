@@ -35,8 +35,8 @@ class QuickUnlockHandler : public ::settings::SettingsPageUIHandler {
   void HandleQuickUnlockDisabledByPolicy(const base::Value::List& args);
   void UpdateQuickUnlockDisabledByPolicy();
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
-  raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<QuickUnlockHandler> weak_ptr_factory_{this};

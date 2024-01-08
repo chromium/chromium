@@ -189,7 +189,7 @@ class Connection
                                std::optional<std::vector<uint8_t>> data);
 
   base::OneShotTimer response_timeout_timer_;
-  raw_ptr<NearbyConnection, ExperimentalAsh> nearby_connection_;
+  raw_ptr<NearbyConnection> nearby_connection_;
   SessionContext session_context_;
   State connection_state_ = State::kOpen;
   ConnectionClosedCallback on_connection_closed_;

@@ -125,11 +125,10 @@ class DeviceDisablingManager {
 
   void UpdateFromCrosSettings();
 
-  raw_ptr<Delegate, ExperimentalAsh> delegate_;
-  raw_ptr<policy::BrowserPolicyConnectorAsh, ExperimentalAsh>
-      browser_policy_connector_;
-  raw_ptr<CrosSettings, ExperimentalAsh> cros_settings_;
-  raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<policy::BrowserPolicyConnectorAsh> browser_policy_connector_;
+  raw_ptr<CrosSettings> cros_settings_;
+  raw_ptr<user_manager::UserManager> user_manager_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 

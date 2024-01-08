@@ -49,7 +49,7 @@ class MockObserver : public FileSuggestKeyedService::Observer {
                              base::Unretained(this)));
   }
 
-  const raw_ptr<FileSuggestKeyedService, ExperimentalAsh> file_suggest_service_;
+  const raw_ptr<FileSuggestKeyedService> file_suggest_service_;
   base::RunLoop run_loop_;
   std::optional<std::vector<FileSuggestData>> last_fetched_data_;
   base::ScopedObservation<FileSuggestKeyedService,

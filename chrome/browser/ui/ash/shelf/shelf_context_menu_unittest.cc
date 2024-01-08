@@ -249,8 +249,8 @@ class ShelfContextMenuTest : public ChromeAshTestBase {
   apps::AppServiceTest app_service_test_;
   std::unique_ptr<ash::ShelfModel> model_;
   std::unique_ptr<ChromeShelfController> shelf_controller_;
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged | ExperimentalAsh>
-      extension_service_ = nullptr;
+  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
+      nullptr;
 };
 
 // Verifies that "New Incognito window" menu item in the launcher context

@@ -41,8 +41,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FuseBoxDaemon
 
   // Cros-disks mount manager.
   using CrosDisksMountManager = ::ash::disks::DiskMountManager;
-  raw_ptr<CrosDisksMountManager, ExperimentalAsh> cros_disks_mount_manager_ =
-      nullptr;
+  raw_ptr<CrosDisksMountManager> cros_disks_mount_manager_ = nullptr;
 
   // FuseBox daemon URI: cros-disks URI protocol is fusebox://<mount-point>.
   static char* CrosDisksFuseBoxHelperURI() {

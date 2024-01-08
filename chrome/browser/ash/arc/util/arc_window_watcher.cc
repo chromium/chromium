@@ -96,8 +96,8 @@ class Tracker : public aura::WindowObserver {
   }
 
  private:
-  raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<aura::Window, ExperimentalAsh> arc_window_ =
+  raw_ptr<aura::Window> window_;
+  raw_ptr<aura::Window> arc_window_ =
       nullptr;  // set to window_ when we know it is ARC.
   bool display_reported_ = false;
 };

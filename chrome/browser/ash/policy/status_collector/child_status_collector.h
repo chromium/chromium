@@ -119,10 +119,10 @@ class ChildStatusCollector : public StatusCollector,
   void OnAppActivityReportSubmitted();
 
   // Mainly used to store activity periods for reporting. Not owned.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Profile of the user that the status is collected for.
-  const raw_ptr<Profile, ExperimentalAsh> profile_;
+  const raw_ptr<Profile> profile_;
 
   // The last time an active state check was performed.
   base::Time last_active_check_;

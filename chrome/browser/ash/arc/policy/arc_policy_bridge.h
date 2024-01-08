@@ -170,11 +170,11 @@ class ArcPolicyBridge : public KeyedService,
   static void ActivateArcIfRequiredByPolicy(
       const policy::PolicyMap& policy_map);
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  const raw_ptr<ArcBridgeService, ExperimentalAsh>
+  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<ArcBridgeService>
       arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  raw_ptr<policy::PolicyService, ExperimentalAsh> policy_service_ = nullptr;
+  raw_ptr<policy::PolicyService> policy_service_ = nullptr;
 
   bool is_managed_ = false;
   bool is_policy_service_observed = false;

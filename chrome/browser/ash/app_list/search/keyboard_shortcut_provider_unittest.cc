@@ -118,7 +118,7 @@ class KeyboardShortcutProviderTest : public ChromeAshTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(FuzzyMatchForProviders,
@@ -308,7 +308,7 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
   std::unique_ptr<FakeSearchHandler> search_handler_;
   std::unique_ptr<Profile> profile_;
   std::unique_ptr<TestSearchController> search_controller_;
-  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
+  raw_ptr<KeyboardShortcutProvider> provider_ = nullptr;
 };
 
 // Test that when there are more than 3 results whose relevant score exceeds the

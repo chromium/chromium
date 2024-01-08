@@ -82,7 +82,7 @@ class NearbyPerSessionDiscoveryManager
   void UpdateFurthestDiscoveryProgressIfNecessary(DiscoveryProgress progress);
 
   bool registered_as_send_surface_ = false;
-  raw_ptr<NearbySharingService, ExperimentalAsh> nearby_sharing_service_;
+  raw_ptr<NearbySharingService> nearby_sharing_service_;
   std::vector<std::unique_ptr<Attachment>> attachments_;
   mojo::Remote<nearby_share::mojom::ShareTargetListener> share_target_listener_;
   mojo::Remote<nearby_share::mojom::TransferUpdateListener>

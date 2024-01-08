@@ -33,7 +33,7 @@ class DebugdNotificationHandler : public DebugDaemonClient::Observer {
   void CloseNotification();
   void OnButtonClick(absl::optional<int> /* button_idx */);
 
-  const raw_ptr<DebugDaemonClient, ExperimentalAsh> debug_daemon_client_;
+  const raw_ptr<DebugDaemonClient> debug_daemon_client_;
   base::WeakPtrFactory<DebugdNotificationHandler> weak_ptr_factory_{this};
 };
 

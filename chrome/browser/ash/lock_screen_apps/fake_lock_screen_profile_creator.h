@@ -38,7 +38,7 @@ class FakeLockScreenProfileCreator : public LockScreenProfileCreator {
   void InitializeImpl() override;
 
  private:
-  const raw_ptr<TestingProfileManager, ExperimentalAsh> profile_manager_;
+  const raw_ptr<TestingProfileManager> profile_manager_;
 };
 
 }  // namespace lock_screen_apps

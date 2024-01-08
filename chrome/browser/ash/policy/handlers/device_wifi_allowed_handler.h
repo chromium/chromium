@@ -26,8 +26,7 @@ class DeviceWiFiAllowedHandler {
  private:
   void OnWiFiPolicyChanged();
 
-  raw_ptr<ash::CrosSettings, DanglingUntriaged | ExperimentalAsh>
-      cros_settings_;
+  raw_ptr<ash::CrosSettings, DanglingUntriaged> cros_settings_;
   base::CallbackListSubscription wifi_policy_subscription_;
   base::WeakPtrFactory<DeviceWiFiAllowedHandler> weak_factory_{this};
 };

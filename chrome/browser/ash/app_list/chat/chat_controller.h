@@ -24,7 +24,7 @@ class ChatController {
   ChatController& operator=(const ChatController&) = delete;
 
  private:
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace app_list

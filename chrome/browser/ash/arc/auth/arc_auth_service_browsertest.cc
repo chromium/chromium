@@ -260,10 +260,8 @@ class AccountAppsAvailabilitySetter {
     return false;
   }
 
-  const raw_ptr<ash::AccountAppsAvailability, ExperimentalAsh>
-      account_apps_availability_;
-  const raw_ptr<account_manager::AccountManagerFacade, ExperimentalAsh>
-      account_manager_facade_;
+  const raw_ptr<ash::AccountAppsAvailability> account_apps_availability_;
+  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 };
 
 class ArcAuthServiceTest : public InProcessBrowserTest,
@@ -572,10 +570,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 
   // Not owned.
-  raw_ptr<ArcAuthService, DanglingUntriaged | ExperimentalAsh> auth_service_ =
-      nullptr;
-  raw_ptr<ArcBridgeService, DanglingUntriaged | ExperimentalAsh>
-      arc_bridge_service_ = nullptr;
+  raw_ptr<ArcAuthService, DanglingUntriaged> auth_service_ = nullptr;
+  raw_ptr<ArcBridgeService, DanglingUntriaged> arc_bridge_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, GetPrimaryAccountForGaiaAccounts) {

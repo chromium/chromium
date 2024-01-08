@@ -338,7 +338,7 @@ class FileManagerBrowserTestBase
   std::unique_ptr<CrostiniTestVolume> crostini_volume_;
   std::unique_ptr<AndroidFilesTestVolume> android_files_volume_;
   std::map<Profile*, std::unique_ptr<DriveFsTestVolume>> drive_volumes_;
-  raw_ptr<DriveFsTestVolume, ExperimentalAsh> drive_volume_ = nullptr;
+  raw_ptr<DriveFsTestVolume> drive_volume_ = nullptr;
   std::unique_ptr<FakeTestVolume> usb_volume_;
   std::unique_ptr<FakeTestVolume> mtp_volume_;
   std::unique_ptr<RemovableTestVolume> partition_1_;
@@ -370,8 +370,7 @@ class FileManagerBrowserTestBase
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
   std::unique_ptr<MockFileTasksObserver> file_tasks_observer_;
-  raw_ptr<SelectFileDialogExtensionTestFactory, ExperimentalAsh>
-      select_factory_;  // Not owned.
+  raw_ptr<SelectFileDialogExtensionTestFactory> select_factory_;  // Not owned.
 
   base::HistogramTester histograms_;
   base::UserActionTester user_actions_;

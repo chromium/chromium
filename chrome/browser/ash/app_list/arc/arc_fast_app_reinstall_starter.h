@@ -48,8 +48,8 @@ class ArcFastAppReinstallStarter : public ArcAppListPrefs::Observer {
   void OnAppStatesChanged(const std::string& app_id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
 
-  const raw_ptr<content::BrowserContext, ExperimentalAsh> context_;
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<content::BrowserContext> context_;
+  const raw_ptr<PrefService> pref_service_;
   bool started_ = false;
 };
 

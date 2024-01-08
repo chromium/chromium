@@ -61,8 +61,7 @@ class KioskProfileLoader {
 
   const AccountId account_id_;
   const KioskAppType app_type_;
-  raw_ptr<Delegate, ExperimentalAsh> delegate_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<CancellableJob> current_step_
       GUARDED_BY_CONTEXT(sequence_checker_);
 

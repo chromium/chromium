@@ -34,8 +34,8 @@ class AppListTestBase : public extensions::ExtensionServiceTestBase {
  private:
   void ConfigureWebAppProvider();
 
-  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged | ExperimentalAsh>
-      url_loader_ = nullptr;
+  raw_ptr<web_app::TestWebAppUrlLoader, DanglingUntriaged> url_loader_ =
+      nullptr;
 };
 
 // Test util constants --------------------------------------------------------

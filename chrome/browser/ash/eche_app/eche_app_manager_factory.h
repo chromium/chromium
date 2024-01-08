@@ -72,7 +72,7 @@ class LaunchedAppInfo {
     absl::optional<int64_t> user_id_;
     gfx::Image icon_;
     std::u16string phone_name_;
-    raw_ptr<AppsLaunchInfoProvider, ExperimentalAsh> apps_launch_info_provider_;
+    raw_ptr<AppsLaunchInfoProvider> apps_launch_info_provider_;
   };
 
   LaunchedAppInfo() = delete;
@@ -103,8 +103,7 @@ class LaunchedAppInfo {
   absl::optional<int64_t> user_id_;
   gfx::Image icon_;
   std::u16string phone_name_;
-  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged | ExperimentalAsh>
-      apps_launch_info_provider_;
+  raw_ptr<AppsLaunchInfoProvider, DanglingUntriaged> apps_launch_info_provider_;
 };
 
 // Factory to create a single EcheAppManager.

@@ -40,7 +40,7 @@ class DriveFsAsyncFileUtil : public storage::AsyncFileUtilAdapter {
       StatusCallback callback) override;
 
  private:
-  const raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
   base::WeakPtrFactory<DriveFsAsyncFileUtil> weak_factory_{this};
 };

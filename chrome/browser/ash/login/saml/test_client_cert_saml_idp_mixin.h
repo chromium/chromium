@@ -55,7 +55,7 @@ class TestClientCertSamlIdpMixin final : public InProcessBrowserTestMixin {
   HandleSamlWithClientCertsServerRequest(
       const net::test_server::HttpRequest& request);
 
-  const raw_ptr<FakeGaiaMixin, ExperimentalAsh> gaia_mixin_;
+  const raw_ptr<FakeGaiaMixin> gaia_mixin_;
   net::EmbeddedTestServer saml_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   net::EmbeddedTestServer saml_with_client_certs_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};

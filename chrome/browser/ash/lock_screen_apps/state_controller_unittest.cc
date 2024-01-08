@@ -230,8 +230,8 @@ class TestAppManager : public lock_screen_apps::AppManager {
   void ResetLaunchCount() { launch_count_ = 0; }
 
  private:
-  const raw_ptr<const Profile, ExperimentalAsh> expected_primary_profile_;
-  raw_ptr<lock_screen_apps::LockScreenProfileCreator, ExperimentalAsh>
+  const raw_ptr<const Profile> expected_primary_profile_;
+  raw_ptr<lock_screen_apps::LockScreenProfileCreator>
       lock_screen_profile_creator_;
 
   base::RepeatingClosure change_callback_;
@@ -375,7 +375,7 @@ class TestAppWindow : public content::WebContentsObserver {
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
-  raw_ptr<extensions::AppWindow, ExperimentalAsh> window_;
+  raw_ptr<extensions::AppWindow> window_;
   bool closed_ = false;
   bool initialized_ = false;
 };
@@ -673,8 +673,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged | ExperimentalAsh>
-      fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   user_manager::ScopedUserManager user_manager_enabler_;
 
   // Run loop used to throttle test until async state controller initialization
@@ -697,10 +696,9 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
 
   TestStateObserver observer_;
   TestTrayAction tray_action_;
-  raw_ptr<FakeLockScreenProfileCreator, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<FakeLockScreenProfileCreator, DanglingUntriaged>
       lock_screen_profile_creator_ = nullptr;
-  raw_ptr<TestAppManager, DanglingUntriaged | ExperimentalAsh> app_manager_ =
-      nullptr;
+  raw_ptr<TestAppManager, DanglingUntriaged> app_manager_ = nullptr;
 
   std::unique_ptr<TestAppWindow> app_window_;
   scoped_refptr<const extensions::Extension> app_;

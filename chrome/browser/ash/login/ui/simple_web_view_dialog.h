@@ -101,17 +101,16 @@ class SimpleWebViewDialog : public views::View,
   void AddObserver(web_modal::ModalDialogHostObserver* observer) override;
   void RemoveObserver(web_modal::ModalDialogHostObserver* observer) override;
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<LocationBarModel> location_bar_model_;
   std::unique_ptr<CommandUpdaterImpl> command_updater_;
 
   // Controls
-  raw_ptr<views::ImageButton, ExperimentalAsh> back_ = nullptr;
-  raw_ptr<views::ImageButton, ExperimentalAsh> forward_ = nullptr;
-  raw_ptr<ReloadButton, ExperimentalAsh> reload_ = nullptr;
-  raw_ptr<LocationBarView, ExperimentalAsh> location_bar_ = nullptr;
-  raw_ptr<views::WebView, DanglingUntriaged | ExperimentalAsh> web_view_ =
-      nullptr;
+  raw_ptr<views::ImageButton> back_ = nullptr;
+  raw_ptr<views::ImageButton> forward_ = nullptr;
+  raw_ptr<ReloadButton> reload_ = nullptr;
+  raw_ptr<LocationBarView> location_bar_ = nullptr;
+  raw_ptr<views::WebView, DanglingUntriaged> web_view_ = nullptr;
 
   // Will own the `web_view_` until it is added as a child to the to the simple
   // web view dialog.

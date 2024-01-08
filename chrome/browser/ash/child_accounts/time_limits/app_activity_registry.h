@@ -54,8 +54,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
     void SaveAppActivity();
 
    private:
-    const raw_ptr<AppActivityRegistry, DanglingUntriaged | ExperimentalAsh>
-        registry_;
+    const raw_ptr<AppActivityRegistry, DanglingUntriaged> registry_;
   };
 
   // Interface for the observers interested in the changes of apps state.
@@ -306,14 +305,13 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
   // has been updated.
   void AppLimitUpdated(const AppId& app_id);
 
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Owned by AppTimeController.
-  const raw_ptr<AppServiceWrapper, ExperimentalAsh> app_service_wrapper_;
+  const raw_ptr<AppServiceWrapper> app_service_wrapper_;
 
   // Notification delegate.
-  const raw_ptr<AppTimeNotificationDelegate, ExperimentalAsh>
-      notification_delegate_;
+  const raw_ptr<AppTimeNotificationDelegate> notification_delegate_;
 
   // Observers to be notified about app state changes.
   base::ObserverList<AppStateObserver> app_state_observers_;

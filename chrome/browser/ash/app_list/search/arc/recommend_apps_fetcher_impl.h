@@ -86,10 +86,9 @@ class RecommendAppsFetcherImpl : public RecommendAppsFetcher {
 
   std::optional<base::Value> ParseResponse(base::StringPiece response);
 
-  raw_ptr<RecommendAppsFetcherDelegate, ExperimentalAsh> delegate_;
+  raw_ptr<RecommendAppsFetcherDelegate> delegate_;
 
-  raw_ptr<network::mojom::URLLoaderFactory, ExperimentalAsh>
-      url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> app_list_loader_;
 
   int64_t android_id_ = 0;

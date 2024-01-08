@@ -89,7 +89,7 @@ class QuickUnlockStorageTestApi {
   }
 
  private:
-  raw_ptr<QuickUnlockStorage, ExperimentalAsh> quick_unlock_storage_;
+  raw_ptr<QuickUnlockStorage> quick_unlock_storage_;
 };
 
 // Verifies that marking the strong auth makes TimeSinceLastStrongAuth a > zero

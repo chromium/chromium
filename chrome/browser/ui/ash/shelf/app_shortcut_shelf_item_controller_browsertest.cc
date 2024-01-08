@@ -49,7 +49,7 @@ class Waiter : public BrowserListObserver {
   }
 
   base::OnceClosure callback_;
-  raw_ptr<Browser, ExperimentalAsh> browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
 };
 }  // namespace
 
@@ -91,8 +91,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
                                                    base::NullCallback());
   }
 
-  raw_ptr<ChromeShelfController, DanglingUntriaged | ExperimentalAsh>
-      controller_;
+  raw_ptr<ChromeShelfController, DanglingUntriaged> controller_;
 
   webapps::AppId app_id_;
   ash::ShelfID app_shelf_id_;

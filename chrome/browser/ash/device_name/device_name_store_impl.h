@@ -80,7 +80,7 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   void AttemptDeviceNameStateUpdate(bool is_user_owner);
 
   // Provides access and persistence for the device name value.
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Stores the device name state that was last set.
   DeviceNameStore::DeviceNameState device_name_state_;
@@ -89,7 +89,7 @@ class DeviceNameStoreImpl : public DeviceNameStore,
   // value of false and gets updated in AttemptDeviceNameStateUpdate().
   bool is_user_owner_ = false;
 
-  raw_ptr<policy::DeviceNamePolicyHandler, ExperimentalAsh> handler_;
+  raw_ptr<policy::DeviceNamePolicyHandler> handler_;
   std::unique_ptr<DeviceNameApplier> device_name_applier_;
 
   base::ScopedObservation<policy::DeviceNamePolicyHandler,

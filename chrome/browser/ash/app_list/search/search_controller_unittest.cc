@@ -157,8 +157,7 @@ class SearchControllerTest : public testing::Test {
   std::unique_ptr<SearchController> search_controller_;
   ::test::TestAppListControllerDelegate list_controller_{};
   // Owned by |search_controller_|.
-  raw_ptr<TestRankerManager, DanglingUntriaged | ExperimentalAsh>
-      ranker_manager_{nullptr};
+  raw_ptr<TestRankerManager, DanglingUntriaged> ranker_manager_{nullptr};
 };
 
 // Tests that long queries are truncated to the maximum allowed query length.

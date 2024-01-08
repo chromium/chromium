@@ -160,7 +160,7 @@ class SystemTrayTrayCastMediaRouterChromeOSTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<media_router::MockMediaRouter> media_router_;
-  raw_ptr<media_router::MediaSinksObserver, DanglingUntriaged | ExperimentalAsh>
+  raw_ptr<media_router::MediaSinksObserver, DanglingUntriaged>
       media_sinks_observer_ = nullptr;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;
 };
@@ -354,7 +354,7 @@ class SystemTrayTrayCastAccessCodeChromeOSTest
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-  raw_ptr<const user_manager::User, DanglingUntriaged | ExperimentalAsh> user_;
+  raw_ptr<const user_manager::User, DanglingUntriaged> user_;
 
  private:
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;

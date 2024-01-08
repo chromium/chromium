@@ -46,7 +46,7 @@ class FakeImpl : public HatsUnlockSurveyTrigger::Impl {
   bool should_show_survey_ = true;
   bool show_survey_called_ = false;
   base::flat_map<std::string, std::string> product_specific_data_;
-  raw_ptr<const HatsConfig, ExperimentalAsh> hats_config_;
+  raw_ptr<const HatsConfig> hats_config_;
 };
 
 }  // namespace
@@ -78,7 +78,7 @@ class HatsUnlockSurveyTriggerTest : public BrowserWithTestWindowTest {
   }
 
   AccountId account_id_;
-  raw_ptr<FakeImpl, DanglingUntriaged | ExperimentalAsh> fake_impl_;
+  raw_ptr<FakeImpl, DanglingUntriaged> fake_impl_;
   std::unique_ptr<HatsUnlockSurveyTrigger> unlock_survey_trigger_;
 };
 

@@ -205,9 +205,8 @@ class TaskGroup {
   scoped_refptr<SharedSampler> shared_sampler_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Shared sampler that retrieves memory footprint for all ARC processes.
-  raw_ptr<ArcSharedSampler, ExperimentalAsh> arc_shared_sampler_;  // Not owned
-  raw_ptr<CrosapiTaskProviderAsh, ExperimentalAsh>
-      crosapi_task_provider_;                      // Not owned
+  raw_ptr<ArcSharedSampler> arc_shared_sampler_;           // Not owned
+  raw_ptr<CrosapiTaskProviderAsh> crosapi_task_provider_;  // Not owned
 #endif                                             // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Lists the Tasks in this TaskGroup.

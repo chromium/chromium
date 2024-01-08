@@ -88,11 +88,11 @@ class ParentAccessUiHandlerImpl
       ParentAccessUiHandlerImpl::ParentAccessWidgetError error);
 
   // Used to fetch OAuth2 access tokens.
-  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   std::unique_ptr<signin::AccessTokenFetcher> oauth2_access_token_fetcher_;
   // Not owned by this class, and provided by the class's creator.  Can be null
   // if the handler is created without a dialog.
-  raw_ptr<ParentAccessUiHandlerDelegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<ParentAccessUiHandlerDelegate> delegate_ = nullptr;
   mojo::Receiver<parent_access_ui::mojom::ParentAccessUiHandler> receiver_;
 
   // The Parent Access Token.  Only set if the parent was verified.

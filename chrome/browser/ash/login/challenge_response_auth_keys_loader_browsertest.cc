@@ -376,10 +376,9 @@ class ChallengeResponseExtensionLoadObserverTest
   }
 
  private:
-  raw_ptr<base::RunLoop, ExperimentalAsh> extension_host_created_loop_ =
+  raw_ptr<base::RunLoop> extension_host_created_loop_ = nullptr;
+  raw_ptr<extensions::ExtensionHost, DanglingUntriaged> extension_host_ =
       nullptr;
-  raw_ptr<extensions::ExtensionHost, DanglingUntriaged | ExperimentalAsh>
-      extension_host_ = nullptr;
   base::ScopedObservation<extensions::ProcessManager,
                           extensions::ProcessManagerObserver>
       process_manager_observation_{this};

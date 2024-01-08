@@ -71,7 +71,7 @@ class UserCommandArcJobTest : public testing::Test {
   const std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   const std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<arc::ArcPolicyBridge, ExperimentalAsh> arc_policy_bridge_;
+  raw_ptr<arc::ArcPolicyBridge> arc_policy_bridge_;
   std::unique_ptr<arc::FakePolicyInstance> policy_instance_;
 };
 

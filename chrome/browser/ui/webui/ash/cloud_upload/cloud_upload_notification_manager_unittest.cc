@@ -132,7 +132,7 @@ class CloudUploadNotificationManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<StubNotificationDisplayService, ExperimentalAsh> display_service_;
+  raw_ptr<StubNotificationDisplayService> display_service_;
   std::string file_name_ = "foo.docx";
   base::FilePath file_path_ = base::FilePath("/some/path/foo.doc");
 };

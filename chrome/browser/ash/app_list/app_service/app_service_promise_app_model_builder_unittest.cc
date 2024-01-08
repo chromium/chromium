@@ -117,7 +117,7 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   display::test::TestScreen test_screen_;
   std::unique_ptr<Profile> profile_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<apps::PromiseAppRegistryCache, ExperimentalAsh> cache_;
+  raw_ptr<apps::PromiseAppRegistryCache> cache_;
   syncer::StringOrdinal last_position_;
   base::WeakPtrFactory<AppServicePromiseAppModelBuilderTest> weak_ptr_factory_{
       this};

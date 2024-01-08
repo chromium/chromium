@@ -81,8 +81,7 @@ class FakeAdapter : public mojom::Adapter {
   base::OnceClosure on_advertisement_destroyed_callback_;
 
   bool should_discovery_succeed_ = true;
-  raw_ptr<mojom::DiscoverySession, ExperimentalAsh> discovery_session_ =
-      nullptr;
+  raw_ptr<mojom::DiscoverySession> discovery_session_ = nullptr;
   base::OnceClosure on_discovery_session_destroyed_callback_;
 
   std::set<std::pair<std::string, device::BluetoothUUID>>
