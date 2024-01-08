@@ -67,8 +67,10 @@
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRecordHistogramHomeButtonClick_Ntp
 
 # crbug.com/1416433
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testExternalNavigationMessage
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithFileSchemeDoesNothing
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testIntentURIWithMixedCaseFileSchemeDoesNothing
+-org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallback
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationFromXHRCallbackAndLostActivationLongTimeout
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testNavigationWithFallbackURL
 -org.chromium.chrome.browser.externalnav.UrlOverridingTest.testOpenWindowFromUserGesture
@@ -78,7 +80,7 @@
 -org.chromium.chrome.browser.DragAndDropLauncherActivityTest.testDragAndDropLauncherActivity_openInExistingTabbedActivity
 
 # crbug.com/1432048
--org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryModernViewTest.testDismissesSwipingEducationBubbleOnTap
+-org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewTest.testDismissesSwipingEducationBubbleOnTap
 
 # crbug.com/1432049
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
@@ -110,8 +112,10 @@
 # crbug.com/1512250
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testEmptyStateView_ToggleIncognito
 -org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherOnCloseAllTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabSwitcherTabletTest.testGridTabSwitcherToggleIncognitoWithNoRegularTab
 
 # crbug.com/1512251
+-org.chromium.chrome.browser.incognito.IncognitoCookieLeakageTest.testCookiesDoNotLeakFromIncognitoToIncognito__INCOGNITO_TAB_INCOGNITO_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_CCT
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_INCOGNITO_TAB
 -org.chromium.chrome.browser.incognito.IncognitoStorageLeakageTest.testStorageDoesNotLeakFromActivityToActivity__INCOGNITO_CCT_REGULAR_CCT
@@ -161,14 +165,17 @@
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationWatchDialog
 -org.chromium.chrome.browser.permissions.GeolocationTest.testGeolocationPlumbingAllowedDialog
 -org.chromium.chrome.browser.permissions.MediaTest.testCombinedPermissionsPlumbingDialog
+-org.chromium.chrome.browser.permissions.MediaTest.testMicrophoneMediaPermissionsPlumbingDialog
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskCamera
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyAndNeverAskMicrophone
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeMicrophone
 
 # crbug.com/1513566
 -org.chromium.chrome.browser.privacy_sandbox.TrackingProtectionNoticeTest.testNoticeShownOnlyOnSecurePage
 
 # crbug.com/1513568
 -org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testExternalAppPrerenderingNavigation
+-org.chromium.chrome.browser.tab.InterceptNavigationDelegateTest.testNavigationFromImageOnLoad
 
 # crbug.com/1513570
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testSuspendNullCurrentTab
