@@ -535,6 +535,20 @@ class DownloadProtectionServiceTestBase
 
   void ClearClientDownloadRequest() { last_client_download_request_.reset(); }
 
+  void PrepareSuccessResponseForProfile(Profile* profile,
+                                        ClientDownloadResponse::Verdict verdict,
+                                        bool upload_requested,
+                                        bool request_deep_scan) {
+    ClientDownloadResponse response;
+    response.set_verdict(verdict);
+    response.set_upload(upload_requested);
+    response.set_request_deep_scan(request_deep_scan);
+    response.set_token("response_token");
+    sb_service_->GetTestURLLoaderFactory(profile)->AddResponse(
+        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        response.SerializeAsString());
+  }
+
   void PrepareResponse(ClientDownloadResponse::Verdict verdict,
                        net::HttpStatusCode response_code,
                        int net_error,
@@ -548,14 +562,8 @@ class DownloadProtectionServiceTestBase
           network::URLLoaderCompletionStatus(net_error));
       return;
     }
-    ClientDownloadResponse response;
-    response.set_verdict(verdict);
-    response.set_upload(upload_requested);
-    response.set_request_deep_scan(request_deep_scan);
-    response.set_token("response_token");
-    sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
-        response.SerializeAsString());
+    PrepareSuccessResponseForProfile(profile(), verdict, upload_requested,
+                                     request_deep_scan);
   }
 
   void PrepareBasicDownloadItem(
@@ -4820,6 +4828,49 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenTooLarge) {
       base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
+}
+
+TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenIncognito) {
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  sb_service_->CreateTestURLLoaderFactoryForProfile(incognito_profile);
+  PrepareSuccessResponseForProfile(
+      incognito_profile, ClientDownloadResponse::UNCOMMON,
+      /*upload_requested=*/true, /*request_deep_scan=*/true);
+
+  NiceMockDownloadItem item;
+  content::DownloadItemUtils::AttachInfoForTesting(&item, incognito_profile,
+                                                   nullptr);
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+      .Times(1);
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_, _))
+      .WillRepeatedly(
+          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(false);
+          });
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+
+  // Testing Scenario with request_deep_scan response is true and
+  // user is enrolled in the Enhanced Protection Program, but the download
+  // happens in the incognito profile.
+  safe_browsing::SetEnhancedProtectionPrefForTests(profile()->GetPrefs(),
+                                                   /*value*/ true);
+
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  // Not PROMPT_FOR_SCANNING because it is from incognito profile.
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
