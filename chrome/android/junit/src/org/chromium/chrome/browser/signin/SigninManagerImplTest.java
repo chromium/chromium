@@ -333,10 +333,7 @@ public class SigninManagerImplTest {
         assertTrue(mSigninManager.isSyncOptInAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
-        mSigninManager.signin(
-                AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
-                SigninAccessPoint.START_PAGE,
-                callback);
+        mSigninManager.signin(ACCOUNT_INFO, SigninAccessPoint.START_PAGE, callback);
 
         // Signin without turning on sync shouldn't apply policies.
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());

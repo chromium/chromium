@@ -81,12 +81,12 @@ public final class AccountRenameChecker {
     }
 
     /**
-     * Gets the new account name of the renamed account asynchronously.
+     * Gets the new account email of the renamed account asynchronously.
      *
-     * @return A {@link Promise} of the new account name if the old account is renamed to an account
-     * that exists in the given list of accounts; otherwise a {@link Promise} of null.
+     * @return A {@link Promise} of the new account email if the old account is renamed to an
+     *     account that exists in the given list of accounts; otherwise a {@link Promise} of null.
      */
-    public Promise<String> getNewNameOfRenamedAccountAsync(
+    public Promise<String> getNewEmailOfRenamedAccountAsync(
             String oldAccountEmail, List<CoreAccountInfo> coreAccountInfos) {
         final Promise<String> newNamePromise = new Promise<>();
         new AsyncTask<String>() {

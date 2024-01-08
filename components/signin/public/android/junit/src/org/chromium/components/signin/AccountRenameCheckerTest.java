@@ -146,7 +146,7 @@ public class AccountRenameCheckerTest {
             coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(email, "notUsedGaiaId"));
         }
         final AtomicReference<String> newAccountName = new AtomicReference<>();
-        mChecker.getNewNameOfRenamedAccountAsync(oldAccountEmail, coreAccountInfos)
+        mChecker.getNewEmailOfRenamedAccountAsync(oldAccountEmail, coreAccountInfos)
                 .then(newAccountName::set);
         return newAccountName.get();
     }

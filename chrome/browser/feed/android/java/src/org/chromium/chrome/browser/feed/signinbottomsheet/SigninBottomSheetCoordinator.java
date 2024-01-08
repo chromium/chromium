@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.feed.signinbottomsheet;
 
-import android.accounts.Account;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -22,9 +21,8 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
@@ -67,8 +65,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
     @Override
     public void signIn(
-            String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
-        Account account = AccountUtils.createAccountFromName(accountEmail);
+            CoreAccountInfo accountInfo, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
         SigninManager.SignInCallback callback =
                 new SigninManager.SignInCallback() {
                     @Override
@@ -97,17 +94,12 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
                     }
                 };
 
-        AccountInfoServiceProvider.get()
-                .getAccountInfoByEmail(accountEmail)
-                .then(
-                        accountInfo -> {
-                            if (mSigninManager.isSigninAllowed()) {
-                                mSigninManager.signin(account, mSigninAccessPoint, callback);
-                            } else {
-                                makeSigninNotAllowedToast();
-                                mController.hideContent(mController.getCurrentSheetContent(), true);
-                            }
-                        });
+        if (mSigninManager.isSigninAllowed()) {
+            mSigninManager.signin(accountInfo, mSigninAccessPoint, callback);
+        } else {
+            makeSigninNotAllowedToast();
+            mController.hideContent(mController.getCurrentSheetContent(), true);
+        }
     }
 
     @Override

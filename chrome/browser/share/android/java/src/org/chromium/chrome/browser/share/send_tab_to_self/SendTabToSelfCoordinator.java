@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.StringRes;
@@ -22,7 +21,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
-import org.chromium.components.signin.AccountUtils;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -115,11 +114,11 @@ public class SendTabToSelfCoordinator {
 
         @Override
         public void signIn(
-                String accountEmail, Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+                CoreAccountInfo accountInfo,
+                Callback<GoogleServiceAuthError> onSignInErrorCallback) {
             SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(mProfile);
-            Account account = AccountUtils.createAccountFromName(accountEmail);
             signinManager.signin(
-                    account,
+                    accountInfo,
                     SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
                     new SigninManager.SignInCallback() {
                         @Override

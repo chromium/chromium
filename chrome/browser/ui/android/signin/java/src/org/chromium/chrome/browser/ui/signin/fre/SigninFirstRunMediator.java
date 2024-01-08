@@ -346,9 +346,7 @@ public class SigninFirstRunMediator
                 IdentityServicesProvider.get()
                         .getSigninManager(
                                 mDelegate.getProfileSupplier().get().getOriginalProfile());
-        signinManager.signin(
-                getSelectedAccount(),
-                SigninAccessPoint.START_PAGE,
+        final SignInCallback signInCallback =
                 new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
@@ -369,7 +367,13 @@ public class SigninFirstRunMediator
                                 false);
                         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
                     }
-                });
+                };
+        CoreAccountInfo selectedAccount =
+                AccountUtils.findCoreAccountInfoByEmail(
+                        mAccountManagerFacade.getCoreAccountInfos().getResult(),
+                        mSelectedAccountEmail);
+        assert selectedAccount != null;
+        signinManager.signin(selectedAccount, SigninAccessPoint.START_PAGE, signInCallback);
     }
 
     /** Callback for the PropertyKey {@link SigninFirstRunProperties#ON_DISMISS_CLICKED}. */

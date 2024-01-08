@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.WebSigninBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
@@ -108,7 +107,7 @@ public class WebSigninAccountPickerDelegateTest {
 
     @Test
     public void testSignInSucceeded() {
-        mDelegate.signIn(TEST_EMAIL, error -> {});
+        mDelegate.signIn(mCoreAccountInfo, error -> {});
         InOrder calledInOrder = inOrder(mWebSigninBridgeFactoryMock, mSigninManagerMock);
         calledInOrder
                 .verify(mWebSigninBridgeFactoryMock)
@@ -118,10 +117,7 @@ public class WebSigninAccountPickerDelegateTest {
                         mWebSigninBridgeListenerCaptor.capture());
         calledInOrder
                 .verify(mSigninManagerMock)
-                .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.WEB_SIGNIN),
-                        any());
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
         mWebSigninBridgeListenerCaptor.getValue().onSigninSucceeded();
         verify(mTabMock).loadUrl(mLoadUrlParamsCaptor.capture());
         LoadUrlParams loadUrlParams = mLoadUrlParamsCaptor.getValue();
@@ -137,11 +133,8 @@ public class WebSigninAccountPickerDelegateTest {
                             return null;
                         })
                 .when(mSigninManagerMock)
-                .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.WEB_SIGNIN),
-                        any());
-        mDelegate.signIn(TEST_EMAIL, error -> {});
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
+        mDelegate.signIn(mCoreAccountInfo, error -> {});
         verify(mWebSigninBridgeMock).destroy();
     }
 
@@ -150,10 +143,10 @@ public class WebSigninAccountPickerDelegateTest {
         // In case an error is fired because cookies are taking longer to generate than usual,
         // if user retries the sign-in from the error screen, we need to sign out the user
         // first before signing in again.
-        mDelegate.signIn(TEST_EMAIL, error -> {});
+        mDelegate.signIn(mCoreAccountInfo, error -> {});
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(true);
 
-        mDelegate.signIn(TEST_EMAIL, error -> {});
+        mDelegate.signIn(mCoreAccountInfo, error -> {});
         InOrder calledInOrder =
                 inOrder(
                         mWebSigninBridgeMock,
@@ -167,17 +160,14 @@ public class WebSigninAccountPickerDelegateTest {
                 .create(eq(mProfileMock), eq(mCoreAccountInfo), any());
         calledInOrder
                 .verify(mSigninManagerMock)
-                .signin(
-                        eq(AccountUtils.createAccountFromName(TEST_EMAIL)),
-                        eq(SigninAccessPoint.WEB_SIGNIN),
-                        any());
+                .signin(eq(mCoreAccountInfo), eq(SigninAccessPoint.WEB_SIGNIN), any());
     }
 
     @Test
     public void testSignInFailedWithConnectionError() {
         Callback<GoogleServiceAuthError> mockCallback = mock(Callback.class);
         GoogleServiceAuthError error = new GoogleServiceAuthError(State.CONNECTION_FAILED);
-        mDelegate.signIn(TEST_EMAIL, mockCallback);
+        mDelegate.signIn(mCoreAccountInfo, mockCallback);
         verify(mWebSigninBridgeFactoryMock)
                 .create(
                         eq(mProfileMock),

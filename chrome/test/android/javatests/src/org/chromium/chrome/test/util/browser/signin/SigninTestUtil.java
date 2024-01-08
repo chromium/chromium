@@ -59,7 +59,7 @@ public final class SigninTestUtil {
                             IdentityServicesProvider.get()
                                     .getSigninManager(Profile.getLastUsedRegularProfile());
                     signinManager.signin(
-                            AccountUtils.createAccountFromName(coreAccountInfo.getEmail()),
+                            coreAccountInfo,
                             SigninAccessPoint.UNKNOWN,
                             new SigninManager.SignInCallback() {
                                 @Override
