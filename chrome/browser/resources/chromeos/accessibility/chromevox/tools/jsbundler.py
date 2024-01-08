@@ -260,6 +260,17 @@ def LinkOrCopyFiles(sources, dest_dir):
                       os.path.join(dest_dir, source.GetOutPath()))
 
 
+def ClearDirectories(clear_dest_dirs):
+  for dest_dir in clear_dest_dirs:
+    if os.path.exists(dest_dir):
+      shutil.rmtree(dest_dir, ignore_errors=True)
+
+    try:
+      os.makedirs(dest_dir)
+    except OSError:
+      pass
+
+
 def WriteOutput(bundle, format, out_file, dest_dir):
   '''Writes output in the specified format.
 
@@ -315,6 +326,13 @@ def WriteDepfile(depfile, outfile, infiles):
 def CreateOptionParser():
   parser = optparse.OptionParser(description=__doc__)
   parser.usage = '%prog [options] <top_level_file>...'
+  parser.add_option('--clear_dest_dir',
+      action='append',
+      dest='clear_dest_dirs',
+      default=[],
+      help='The destination directory will be cleared of files. '
+      'This is highly recommended to ensure that no stale files '
+      'are left in the directory.')
   parser.add_option(
       '-d',
       '--dest_dir',
@@ -404,6 +422,8 @@ def main():
   if len(options.roots) > 0 or len(options.modules) > 0:
     CalcDeps(bundle, sources, args)
   bundle.Add((sources[name] for name in args))
+  if len(options.clear_dest_dirs) > 0:
+    ClearDirectories(options.clear_dest_dirs)
   if options.mode == 'copy':
     if options.dest_dir is None:
       Die('Must specify --dest_dir when copying.')

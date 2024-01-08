@@ -6,7 +6,7 @@
  * @fileoverview Provides phonetic disambiguation functionality across multiple
  * languages for ChromeVox.
  */
-import {PhoneticDictionaries} from './phonetic_dictionaries.js';
+import {PhoneticDictionaries} from '../phonetic_dictionaries.js';
 
 export class PhoneticData {
   /**

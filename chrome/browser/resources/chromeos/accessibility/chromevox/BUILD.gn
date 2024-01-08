@@ -239,7 +239,7 @@ chromevox_panel_script_loader_file = "panel/panel_loader.js"
 
 generate_message_formatting_data("i18n_data") {
   inputs = [ "//third_party/cldr/src/common/supplemental/plurals.xml" ]
-  output_dir = "$chromevox_out_dir/common"
+  output_dir = "$chromevox_out_dir"
 }
 
 # Instead of setting up one copy target for each subdirectory, use a script
@@ -252,6 +252,19 @@ run_jsbundler("copied_files") {
     "../common:copied_files",
     "../common:ts_build",
   ]
+
+  clear_dest_dirs = [
+    "background",
+    "common",
+    "earcons",
+    "images",
+    "injected",
+    "learn_mode",
+    "log_page",
+    "panel",
+    "tutorial",
+  ]
+
   sources = [
     "background/background.html",
     "earcons/chromevox_loaded.ogg",
@@ -322,7 +335,7 @@ template("generate_deps_js") {
 action("chromevox_phonetic_dictionaries_js") {
   script = "tools/phonetic_dictionaries.py"
   src_dir = [ "$root_out_dir/resources/chromeos/accessibility/_locales" ]
-  output_file = "$chromevox_out_dir/background/phonetic_dictionaries.js"
+  output_file = "$chromevox_out_dir/phonetic_dictionaries.js"
   outputs = [ output_file ]
   deps = [
     "//chrome/browser/resources/chromeos/accessibility:accessibility_strings",
