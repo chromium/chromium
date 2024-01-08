@@ -60,7 +60,7 @@ class SchemaRegistry;
 class StatusUploader;
 class SystemLogUploader;
 
-enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED, HANDS_OFF };
+enum class ZeroTouchEnrollmentMode { DISABLED, ENABLED, FORCED };
 
 // CloudPolicyManager specialization for device policy in Ash.
 class DeviceCloudPolicyManagerAsh : public CloudPolicyManager,

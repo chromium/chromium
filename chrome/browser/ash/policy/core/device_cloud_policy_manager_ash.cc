@@ -66,7 +66,6 @@ namespace {
 // Zero-touch enrollment flag values.
 
 const char kZeroTouchEnrollmentForced[] = "forced";
-const char kZeroTouchEnrollmentHandsOff[] = "hands-off";
 
 // Default frequency for uploading enterprise status reports. Can be overriden
 // by Device Policy.
@@ -183,9 +182,6 @@ DeviceCloudPolicyManagerAsh::GetZeroTouchEnrollmentMode() {
       ash::switches::kEnterpriseEnableZeroTouchEnrollment);
   if (value == kZeroTouchEnrollmentForced) {
     return ZeroTouchEnrollmentMode::FORCED;
-  }
-  if (value == kZeroTouchEnrollmentHandsOff) {
-    return ZeroTouchEnrollmentMode::HANDS_OFF;
   }
   if (value.empty()) {
     return ZeroTouchEnrollmentMode::ENABLED;

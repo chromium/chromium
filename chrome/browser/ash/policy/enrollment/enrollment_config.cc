@@ -95,9 +95,6 @@ EnrollmentConfig EnrollmentConfig::GetPrescribedEnrollmentConfig(
       break;
 
     case ZeroTouchEnrollmentMode::FORCED:
-    case ZeroTouchEnrollmentMode::HANDS_OFF:
-      // Hands-off implies the same authentication method as Forced.
-
       // Only use attestation to authenticate since zero-touch is forced.
       config.auth_mechanism = EnrollmentConfig::AUTH_MECHANISM_ATTESTATION;
       break;
