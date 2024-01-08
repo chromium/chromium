@@ -1035,6 +1035,22 @@ base::TimeDelta GetOnDeviceModelRetentionTime() {
       base::Days(30));
 }
 
+bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+             kOptimizationGuideOnDeviceModel,
+             "on_device_model_free_space_mb_required_to_install",
+             20 * 1024) <= free_disk_space_bytes / (1024 * 1024);
+}
+
+bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes) {
+  return base::GetFieldTrialParamByFeatureAsInt(
+             kOptimizationGuideOnDeviceModel,
+             "on_device_model_free_space_mb_required_to_retain",
+             10 * 1024) >= free_disk_space_bytes / (1024 * 1024);
+}
+
 bool GetOnDeviceModelRetractUnsafeContent() {
   static const base::FeatureParam<bool>
       kOnDeviceModelShouldRetractUnsafeContent{

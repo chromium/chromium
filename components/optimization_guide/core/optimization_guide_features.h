@@ -558,6 +558,18 @@ bool IsOnDeviceExecutionEnabled();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta GetOnDeviceModelRetentionTime();
 
+// Whether there is enough free disk space to allow on-device model
+// installation.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsFreeDiskSpaceSufficientForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes);
+
+// Whether there is too little disk space to retain the on-device model
+// installation.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+bool IsFreeDiskSpaceTooLowForOnDeviceModelInstall(
+    int64_t free_disk_space_bytes);
+
 // Returns true if unsafe content should be removed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool GetOnDeviceModelRetractUnsafeContent();

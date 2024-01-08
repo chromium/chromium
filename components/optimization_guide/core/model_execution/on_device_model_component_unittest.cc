@@ -172,8 +172,9 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
+  // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
-      kMinDiskSpaceBeforeInstall - 1);
+      20ll * 1024 * 1024 * 1024 - 1);
 
   manager()->OnStartup();
   WaitForStartup();
@@ -266,8 +267,10 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
   local_state_.SetTime(
       prefs::localstate::kLastTimeEligibleForOnDeviceModelDownload,
       base::Time::Now());
+
+  // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   on_device_component_state_manager_.SetFreeDiskSpace(
-      kMinDiskSpaceBeforeUninstall - 1);
+      10ll * 1024 * 1024 * 1024 - 1);
 
   // Should uninstall right away. Unlike most install requirements, the disk
   // space requirement is not subject to `GetOnDeviceModelRetentionTime()`.

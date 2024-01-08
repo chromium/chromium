@@ -222,10 +222,10 @@ OnDeviceModelComponentStateManager::RegistrationCriteria
 OnDeviceModelComponentStateManager::GetRegistrationCriteria(
     int64_t disk_space_free_bytes) {
   RegistrationCriteria result;
-  result.running_out_of_disk_space =
-      (disk_space_free_bytes < kMinDiskSpaceBeforeUninstall);
-  result.disk_space_available =
-      (disk_space_free_bytes > kMinDiskSpaceBeforeInstall);
+  result.running_out_of_disk_space = optimization_guide::features::
+      IsFreeDiskSpaceTooLowForOnDeviceModelInstall(disk_space_free_bytes);
+  result.disk_space_available = optimization_guide::features::
+      IsFreeDiskSpaceSufficientForOnDeviceModelInstall(disk_space_free_bytes);
   result.device_capable = IsDeviceCapable(*local_state_);
   result.on_device_feature_recently_used =
       WasAnOnDeviceFeatureRecentlyUsed(*local_state_);
