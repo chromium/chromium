@@ -79,10 +79,6 @@ enum class PostCrashAction {
 // YES if the app is resuming from safe mode.
 @property(nonatomic) BOOL resumingFromSafeMode;
 
-// The SceneSession ID for the last session, where the Device doesn't support
-// multiple windows.
-@property(nonatomic, strong) NSString* previousSingleWindowSessionID;
-
 // Timestamp of when a scene was last becoming active. Can be null.
 @property(nonatomic, assign) base::TimeTicks lastTimeInForeground;
 
