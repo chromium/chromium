@@ -60,8 +60,11 @@ class FeedbackUploader : public KeyedService {
   // Queues a report for uploading.
   // |data|: The serialized userfeedback::ExtensionSubmit proto to send.
   // |has_email|: True iff the user included their email address in the report.
+  // |product_id|: The product ID for the report.
   // virtual for testing.
-  virtual void QueueReport(std::unique_ptr<std::string> data, bool has_email);
+  virtual void QueueReport(std::unique_ptr<std::string> data,
+                           bool has_email,
+                           int product_id);
 
   // Re-queues an existing report from disk for uploading.
   void RequeueReport(scoped_refptr<FeedbackReport> report);

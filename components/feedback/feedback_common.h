@@ -26,6 +26,8 @@ namespace userfeedback {
 class ExtensionSubmit;
 }
 
+inline constexpr int kOrcaFeedbackProductId = 5314436;
+
 // This is the base class for FeedbackData. It primarily knows about
 // data common to all feedback reports and how to zip things.
 class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {

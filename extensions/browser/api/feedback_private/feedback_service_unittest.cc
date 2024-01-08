@@ -49,7 +49,7 @@ class MockFeedbackUploader : public FeedbackUploader {
 
   MOCK_METHOD(void,
               QueueReport,
-              (std::unique_ptr<std::string>, bool),
+              (std::unique_ptr<std::string>, bool, int),
               (override));
 
   base::WeakPtr<FeedbackUploader> AsWeakPtr() override {
