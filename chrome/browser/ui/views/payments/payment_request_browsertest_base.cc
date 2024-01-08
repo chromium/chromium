@@ -804,20 +804,23 @@ void PaymentRequestBrowserTestBase::WaitForAnimation() {
 
 void PaymentRequestBrowserTestBase::WaitForAnimation(
     PaymentRequestDialogView* dialog_view) {
+  base::RunLoop loop;
   ViewStack* view_stack = dialog_view->view_stack_for_testing();
   if (view_stack->slide_in_animator_->IsAnimating()) {
     view_stack->slide_in_animator_->SetAnimationDuration(base::Milliseconds(1));
     view_stack->slide_in_animator_->SetAnimationDelegate(
-        view_stack->top(), std::unique_ptr<gfx::AnimationDelegate>(
-                               new gfx::TestAnimationDelegate()));
-    base::RunLoop().Run();
+        view_stack->top(),
+        std::unique_ptr<gfx::AnimationDelegate>(
+            new gfx::TestAnimationDelegate(loop.QuitWhenIdleClosure())));
+    loop.Run();
   } else if (view_stack->slide_out_animator_->IsAnimating()) {
     view_stack->slide_out_animator_->SetAnimationDuration(
         base::Milliseconds(1));
     view_stack->slide_out_animator_->SetAnimationDelegate(
-        view_stack->top(), std::unique_ptr<gfx::AnimationDelegate>(
-                               new gfx::TestAnimationDelegate()));
-    base::RunLoop().Run();
+        view_stack->top(),
+        std::unique_ptr<gfx::AnimationDelegate>(
+            new gfx::TestAnimationDelegate(loop.QuitWhenIdleClosure())));
+    loop.Run();
   }
 }
 

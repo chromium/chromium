@@ -15,15 +15,22 @@ namespace gfx {
 class TestAnimationDelegate : public AnimationDelegate {
  public:
   TestAnimationDelegate() = default;
+  TestAnimationDelegate(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
 
   TestAnimationDelegate(const TestAnimationDelegate&) = delete;
   TestAnimationDelegate& operator=(const TestAnimationDelegate&) = delete;
 
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
   virtual void AnimationEnded(const Animation* animation) {
     finished_ = true;
-    if (base::RunLoop::IsRunningOnCurrentThread())
-      base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    QuitRunLoop();
   }
+
+  void QuitRunLoop() { std::move(quit_closure_).Run(); }
 
   virtual void AnimationCanceled(const Animation* animation) {
     canceled_ = true;
@@ -36,6 +43,7 @@ class TestAnimationDelegate : public AnimationDelegate {
  private:
   bool canceled_ = false;
   bool finished_ = false;
+  base::OnceClosure quit_closure_ = base::DoNothing();
 };
 
 }  // namespace gfx
