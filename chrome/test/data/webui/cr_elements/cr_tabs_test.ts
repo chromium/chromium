@@ -120,4 +120,12 @@ suite('cr_tabs_test', function() {
     await checkClickTab(1, 2);
     await checkClickTab(2, 2);
   });
+
+  test('initial tab out of bound', async () => {
+    // When old selected tab is out of bound, onSelectedChanged_ should early
+    // return, rather than trigger out of bound error.
+    await checkUiChange(
+        () => getTabElement(1).click(), /*initialSelection=*/ 10,
+        /*expectedSelection=*/ 1);
+  });
 });
