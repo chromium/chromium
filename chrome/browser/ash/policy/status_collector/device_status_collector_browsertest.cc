@@ -42,6 +42,7 @@
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
@@ -3812,6 +3813,7 @@ TEST_F(DeviceStatusCollectorTest, GenerateAppInfo) {
   apps.push_back(std::move(app2));
   app_proxy->OnApps(std::move(apps), apps::AppType::kUnknown,
                     /*should_notify_initialized=*/false);
+  apps::WaitForAppServiceProxyReady(app_proxy);
 
   // Start app instance
   base::Time start_time;
