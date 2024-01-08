@@ -761,10 +761,12 @@ class ProxyResolverV8::Context {
     bool terminate = false;
 
     {
+      args.GetIsolate()->Exit();
       v8::Unlocker unlocker(args.GetIsolate());
       success =
           context->js_bindings()->ResolveDns(hostname, op, &result, &terminate);
     }
+    args.GetIsolate()->Enter();
 
     if (terminate)
       args.GetIsolate()->TerminateExecution();
