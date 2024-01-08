@@ -6,6 +6,8 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_DEFAULT_MODEL_DATABASE_API_CLIENTS_H_
 
 #include <memory>
+#include <set>
+#include <string>
 
 #include "base/strings/string_piece.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -34,6 +36,13 @@ class DatabaseApiClients : public DefaultModelProvider {
   static void AddSumQuery(MetadataWriter& writer,
                           base::StringPiece metric_name,
                           int days);
+
+  // Helper to write a query to get the sum of metric values for a given
+  // `event_name` and a collection of `metric_names` for the past `days`.
+  static void AddSumGroupQuery(MetadataWriter& writer,
+                               base::StringPiece event_name,
+                               const std::set<std::string>& metric_names,
+                               int days);
 
   // ModelProvider implementation.
   std::unique_ptr<ModelConfig> GetModelConfig() override;

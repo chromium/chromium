@@ -5,7 +5,10 @@
 #include "components/segmentation_platform/embedder/default_model/database_api_clients.h"
 
 #include <memory>
+#include <set>
+#include <string>
 
+#include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/stringprintf.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
@@ -39,11 +42,16 @@ struct CustomEvent {
 constexpr std::array<const char*, 3> kTestMetricNames{"test1", "test2",
                                                       "test3"};
 
-constexpr std::array<CustomEvent, 1> kRegisteredCustomEvents{
-    {CustomEvent{.event_name = "TestEvents",
-                 .metric_names = kTestMetricNames.data(),
-                 .metric_names_size = kTestMetricNames.size()}},
-};
+// TODO(ssid): Document the purpose and meaning of empty metric names.
+constexpr std::array<CustomEvent, 3> kRegisteredCustomEvents{{
+    CustomEvent{.event_name = "TestEvents",
+                .metric_names = kTestMetricNames.data(),
+                .metric_names_size = kTestMetricNames.size()},
+    {CustomEvent{.event_name =
+                     "NewTabPage.HistoryClusters.FrequentlySeenCategories"}},
+    {CustomEvent{.event_name =
+                     "NewTabPage.HistoryClusters.FrequentlyEngagedCategories"}},
+}};
 // End of metrics list.
 // ----------------------------------------------------------------------------
 
@@ -79,12 +87,52 @@ std::unique_ptr<Config> DatabaseApiClients::GetConfig() {
 }
 
 // static
+void DatabaseApiClients::AddSumGroupQuery(
+    MetadataWriter& writer,
+    std::string_view event_name,
+    const std::set<std::string>& metric_names,
+    int days) {
+  std::string event_names_sql_criteria;
+  for (const auto& metric_name : metric_names) {
+    event_names_sql_criteria.append(base::StringPrintf(
+        "('%" PRIX64 "'),", base::HashMetricName(metric_name)));
+  }
+  // Remove the last comma character.
+  event_names_sql_criteria.pop_back();
+
+  std::string query = base::StringPrintf(
+      "WITH hashed_metric_names(metric_hash) AS (VALUES%s) "
+      "SELECT CASE WHEN grouped_metrics.value is null then 0 "
+      "else grouped_metrics.value end as metric_value "
+      "FROM hashed_metric_names LEFT JOIN "
+      "(SELECT metric_hash, SUM(metric_value) as value FROM metrics "
+      "WHERE event_hash = '%" PRIX64
+      "' "
+      "AND event_timestamp BETWEEN ? AND ? "
+      "GROUP BY metric_hash) as grouped_metrics "
+      "ON hashed_metric_names.metric_hash = grouped_metrics.metric_hash",
+      event_names_sql_criteria.c_str(), base::HashMetricName(event_name));
+
+  MetadataWriter::SqlFeature sql_feature{.sql = query.c_str()};
+  std::string days_str = base::StringPrintf("%d", days);
+  const std::array<MetadataWriter::CustomInput::Arg, 1> kBindValueArg{
+      std::make_pair("bucket_count", days_str.c_str())};
+  const MetadataWriter::BindValue kBindValue{
+      proto::SqlFeature::BindValue::TIME,
+      {.tensor_length = 2,
+       .fill_policy = proto::CustomInput::TIME_RANGE_BEFORE_PREDICTION,
+       .arg = kBindValueArg.data(),
+       .arg_size = kBindValueArg.size()}};
+  writer.AddSqlFeature(sql_feature, {kBindValue});
+}
+
+// static
 void DatabaseApiClients::AddSumQuery(MetadataWriter& writer,
                                      base::StringPiece metric_name,
                                      int days) {
   std::string query = base::StringPrintf(
       "SELECT SUM(metric_value) FROM metrics WHERE metric_hash = '%" PRIX64
-      "' AND  event_timestamp BETWEEN ? AND ?",
+      "' AND event_timestamp BETWEEN ? AND ?",
       base::HashMetricName(metric_name));
   MetadataWriter::SqlFeature sql_feature{.sql = query.c_str()};
   std::string days_str = base::StringPrintf("%d", days);

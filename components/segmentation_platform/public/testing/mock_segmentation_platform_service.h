@@ -49,6 +49,7 @@ class MockSegmentationPlatformService : public SegmentationPlatformService {
   MOCK_METHOD(void, EnableMetrics, (bool));
   MOCK_METHOD(void, GetServiceStatus, ());
   MOCK_METHOD(bool, IsPlatformInitialized, ());
+  MOCK_METHOD(DatabaseClient*, GetDatabaseClient, ());
 };
 
 MATCHER_P(IsInputContextWithArgs,
