@@ -7,9 +7,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/strings/strcat.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
@@ -57,6 +59,23 @@ void AutofillRendererTest::TearDown() {
   GetMainFrame()->SetAutofillClient(nullptr);
   autofill_agent_.reset();
   RenderViewTest::TearDown();
+}
+
+bool AutofillRendererTest::SimulateElementClickAndWait(
+    const std::string& element_id) {
+  if (!SimulateElementClick(element_id)) {
+    return false;
+  }
+  task_environment_.RunUntilIdle();
+  return true;
+}
+
+void AutofillRendererTest::SimulateElementFocusAndWait(
+    std::string_view element_id) {
+  ExecuteJavaScriptForTests(
+      base::StrCat({"document.getElementById('", element_id, "').focus();"})
+          .c_str());
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace autofill::test

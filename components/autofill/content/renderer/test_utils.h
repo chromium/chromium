@@ -56,6 +56,10 @@ FrameToken GetFrameToken(const blink::WebDocument& doc,
                          std::string_view id,
                          AllowNull allow_null = AllowNull(false));
 
+// Returns how often AskForValuesToFill is expected to be called for a focus
+// change completion that is triggered by a click or tap.
+int AskForValuesToFillCallsOnFocusChangeByClickOrTap();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CONTENT_RENDERER_TEST_UTILS_H_

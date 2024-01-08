@@ -203,7 +203,6 @@ class AutofillAgent : public content::RenderFrameObserver,
 
  private:
   class DeferringAutofillDriver;
-  friend class AutofillAgentFormInteractionTest;
   friend class AutofillAgentTestApi;
 
   // This class ensures that the driver will only receive notifications only
@@ -440,7 +439,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool query_password_suggestion_ = false;
 
   bool last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
-  FieldRendererId last_clicked_form_control_element_for_testing_;
 
   // This is never null, it is created at construction time and is not changed
   // until destruction time.

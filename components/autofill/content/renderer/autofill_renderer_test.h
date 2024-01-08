@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -112,6 +113,16 @@ class AutofillRendererTest : public content::RenderViewTest {
   // content::RenderViewTest:
   void SetUp() override;
   void TearDown() override;
+
+  // Simulates a click on the element with id `element_id` and, if, successful,
+  // runs until the task environment is idle. Waits until the `TaskEnvironment`
+  // is idle to ensure that the `AutofillDriver` is notified via mojo.
+  bool SimulateElementClickAndWait(const std::string& element_id);
+
+  // Simulate focusing an element without clicking it. Waits until the
+  // `TaskEnvironment` is idle to ensure that the `AutofillDriver` is notified
+  // via mojo.
+  void SimulateElementFocusAndWait(std::string_view element_id);
 
   // AutofillDriver::FormsSeen() is throttled indirectly because some callsites
   // of AutofillAgent::ProcessForms() are throttled. This function blocks until

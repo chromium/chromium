@@ -1406,8 +1406,6 @@ bool AutofillAgent::IsPrerendering() const {
 
 void AutofillAgent::FormControlElementClicked(
     const WebFormControlElement& element) {
-  last_clicked_form_control_element_for_testing_ =
-      form_util::GetFieldRendererId(element);
   was_last_action_fill_ = false;
 
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
@@ -1755,7 +1753,6 @@ void AutofillAgent::SendPotentiallySubmittedFormToBrowser() {
 
 void AutofillAgent::ResetLastInteractedElements() {
   last_interacted_form_ = {};
-  last_clicked_form_control_element_for_testing_ = {};
   formless_elements_user_edited_.clear();
   formless_elements_were_autofilled_ = false;
   provisionally_saved_form_.reset();

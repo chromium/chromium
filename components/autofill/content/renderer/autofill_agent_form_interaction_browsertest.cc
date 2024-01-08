@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#include <string>
 
 #include "components/autofill/content/renderer/autofill_agent.h"
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
+#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
@@ -20,15 +23,54 @@ namespace autofill {
 
 namespace {
 
-FieldRendererId GetFieldRendererId(blink::WebElement element) {
-  blink::WebFormControlElement f = element.To<blink::WebFormControlElement>();
-  return f.IsNull() ? FieldRendererId() : form_util::GetFieldRendererId(f);
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::Field;
+using ::testing::InSequence;
+using ::testing::MockFunction;
+
+// Returns a matcher that matches a `FormFieldData::id_attribute`.
+auto HasFieldIdAttribute(std::u16string id_attribute) {
+  return Field("id_attribute", &FormFieldData::id_attribute, id_attribute);
+}
+
+// TODO(crbug.com/1496382): Clean up these functions once
+// `kAutofillAndroidDisableSuggestionsOnJSFocus` is launched and Android and
+// Desktop behave identically.
+
+// Returns the expected number of calls to AskForValuesToFill when left
+// clicking or tapping a previously unfocused field.
+int NumCallsToAskForValuesToFillOnInitialLeftClick() {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return base::FeatureList::IsEnabled(
+               features::kAutofillAndroidDisableSuggestionsOnJSFocus)
+               // Called solely by
+               // `AutofillAgent::DidReceiveLeftMouseDownOrGestureTapInNode`:
+               ? 1
+               // Called also by `AutofillAgent::FocusElementChanged`.
+               : 2;
+  }
+  // Called solely by `AutofillAgent::DidCompleteFocusChangeInFrame`.
+  return 1;
+}
+
+// Returns the expected number of calls to AskForValuesToFill when focusing a
+// text field without left clicking or tapping it.
+int NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick() {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return base::FeatureList::IsEnabled(
+               features::kAutofillAndroidDisableSuggestionsOnJSFocus)
+               ? 0
+               // Called by `AutofillAgent::FocusElementChanged`.
+               : 1;
+  }
+  return 0;
 }
 
 }  // namespace
 
 class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
- protected:
+ public:
   void SetUp() override {
     test::AutofillRendererTest::SetUp();
     web_view_->SetDefaultPageScaleLimits(1, 4);
@@ -36,210 +78,195 @@ class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
     LoadHTML(
         "<form>"
         "  <input type='text' id='text_1'></input><br>"
-        "  <input type='text' id='text_2'></input><br>"
+        "  <input type='text' id='text_2' disabled></input><br>"
         "  <textarea  id='textarea_1'></textarea><br>"
-        "  <textarea  id='textarea_2'></textarea><br>"
         "  <input type='button' id='button'></input><br>"
-        "  <input type='button' id='button_2' disabled></input><br>"
         "</form>");
     GetWebFrameWidget()->Resize(gfx::Size(500, 500));
     GetWebFrameWidget()->SetFocus(true);
-    blink::WebDocument document = GetMainFrame()->GetDocument();
-    text_ = document.GetElementById("text_1");
-    textarea_ = document.GetElementById("textarea_1");
-    ASSERT_FALSE(text_.IsNull());
-    ASSERT_FALSE(textarea_.IsNull());
 
     // Enable show-ime event when element is focused by indicating that a user
     // gesture has been processed since load.
     EXPECT_TRUE(SimulateElementClick("button"));
   }
-
-  void TearDown() override {
-    text_.Reset();
-    textarea_.Reset();
-    test::AutofillRendererTest::TearDown();
-  }
-
-  void ClearAutofillAgentTestState() {
-    autofill_agent().last_clicked_form_control_element_for_testing_ = {};
-  }
-
-  FieldRendererId last_clicked_form_control_element() {
-    return autofill_agent().last_clicked_form_control_element_for_testing_;
-  }
-
-  bool form_control_element_clicked_called() {
-    return !last_clicked_form_control_element().is_null();
-  }
-
-  blink::WebElement text_;
-  blink::WebElement textarea_;
 };
 
-// Tests that a clicked-input event is properly handled by AutofillAgent.
-TEST_F(AutofillAgentFormInteractionTest, InputClicked) {
-  ClearAutofillAgentTestState();
-  EXPECT_NE(text_, text_.GetDocument().FocusedElement());
-  // Click the text field once.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
+// Tests that (repeatedly) clicking a text input field calls AskForValuesToFill
+// each time, but clicking a button does not.
+TEST_F(AutofillAgentFormInteractionTest, TextInputLeftClick) {
+  MockFunction<void(int)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"text_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked))
+        .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+    EXPECT_CALL(check, Call(1));
+    // The second click only triggers a single call, regardless of OS.
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"text_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked));
+    EXPECT_CALL(check, Call(2));
+  }
 
-  // Click the text field again and verify that AutofillAgent knows about its
-  // focus.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
+  EXPECT_TRUE(SimulateElementClickAndWait("text_1"));
+  check.Call(1);
 
-  // Click the button, no notification should happen (this is not a text-input).
-  EXPECT_TRUE(SimulateElementClick("button"));
-  EXPECT_FALSE(form_control_element_clicked_called());
+  EXPECT_TRUE(SimulateElementClickAndWait("text_1"));
+  task_environment_.RunUntilIdle();
+  check.Call(2);
+
+  // No notification should be sent on clicking the button.
+  EXPECT_TRUE(SimulateElementClickAndWait("button"));
 }
 
-// Tests that AutofillAgent ignores a right click on Desktop, but not on
-// Android.
-TEST_F(AutofillAgentFormInteractionTest, InputRightClicked) {
-  ClearAutofillAgentTestState();
-  EXPECT_NE(text_, text_.GetDocument().FocusedElement());
-  // Right click the text field once.
+// Tests that a right click does not trigger AskForValuesToFill on Desktop, but
+// does on Android.
+TEST_F(AutofillAgentFormInteractionTest, TextInputRightClick) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, HasFieldIdAttribute(u"text_1"), _,
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      .Times(NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick());
   EXPECT_TRUE(SimulateElementRightClick("text_1"));
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_TRUE(form_control_element_clicked_called());
-    EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-  } else {
-    EXPECT_FALSE(form_control_element_clicked_called());
-    EXPECT_NE(GetFieldRendererId(text_), last_clicked_form_control_element());
+}
+
+// Tests that focusing the text field without a click does not call
+// AskForValuesToFill on Desktop, but does on Android. A later click interaction
+// triggers it on both.
+TEST_F(AutofillAgentFormInteractionTest, InputFocusAndLeftClick) {
+  MockFunction<void(int)> check;
+  {
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"text_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked))
+        .Times(NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick());
+    InSequence s;
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"text_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked));
+    EXPECT_CALL(check, Call(2));
   }
+
+  SimulateElementFocusAndWait("text_1");
+  check.Call(1);
+
+  EXPECT_TRUE(SimulateElementClickAndWait("text_1"));
+  check.Call(2);
 }
 
-TEST_F(AutofillAgentFormInteractionTest, InputFocusedAndClicked) {
-  ClearAutofillAgentTestState();
-  // Focus the text field without a click.
-  ExecuteJavaScriptForTests("document.getElementById('text_1').focus();");
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_TRUE(form_control_element_clicked_called());
-  } else {
-    EXPECT_FALSE(form_control_element_clicked_called());
+// Tests that (repeated) left clicks on a textarea trigger AskForValuesToFill.
+TEST_F(AutofillAgentFormInteractionTest, TextAreaLeftClick) {
+  MockFunction<void(int)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"textarea_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked))
+        .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"textarea_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked));
+    EXPECT_CALL(check, Call(2));
   }
-  ClearAutofillAgentTestState();
 
-  // Click the focused text field to test that was_focused_ is set correctly.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
+  EXPECT_TRUE(SimulateElementClickAndWait("textarea_1"));
+  check.Call(1);
+
+  EXPECT_TRUE(SimulateElementClickAndWait("textarea_1"));
+  check.Call(2);
+
+  EXPECT_TRUE(SimulateElementClickAndWait("button"));
 }
 
-// Tests that AutofillAgent accepts form clicks for a textarea element which is
-// clicked.
-TEST_F(AutofillAgentFormInteractionTest, TextAreaClicked) {
-  ClearAutofillAgentTestState();
-  // Click the textarea field once.
-  EXPECT_TRUE(SimulateElementClick("textarea_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
-
-  // Click the text field again and verify that AutofillAgent knows about its
-  // focus.
-  EXPECT_TRUE(SimulateElementClick("textarea_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
-
-  // Click the button, no notification should happen (this is not a text-input).
-  EXPECT_TRUE(SimulateElementClick("button"));
-  EXPECT_FALSE(form_control_element_clicked_called());
-}
-
-TEST_F(AutofillAgentFormInteractionTest, TextAreaFocusedAndClicked) {
-  ClearAutofillAgentTestState();
-  // Focus the textarea without a click.
-  ExecuteJavaScriptForTests("document.getElementById('textarea_1').focus();");
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    EXPECT_TRUE(form_control_element_clicked_called());
-  } else {
-    EXPECT_FALSE(form_control_element_clicked_called());
+// Tests that focusing the text field without a click does not call
+// AskForValuesToFill on Desktop, but does on Android. A later click interaction
+// triggers it on both.
+TEST_F(AutofillAgentFormInteractionTest, TextareaFocusAndLeftClick) {
+  MockFunction<void(int)> check;
+  {
+    InSequence s;
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"textarea_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked))
+        .Times(NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick());
+    EXPECT_CALL(check, Call(1));
+    EXPECT_CALL(
+        autofill_driver(),
+        AskForValuesToFill(
+            _, HasFieldIdAttribute(u"textarea_1"), _,
+            AutofillSuggestionTriggerSource::kFormControlElementClicked));
+    EXPECT_CALL(check, Call(2));
   }
-  ClearAutofillAgentTestState();
 
-  // Click the text field again and verify that AutofillAgent knows about its
-  // focus.
-  EXPECT_TRUE(SimulateElementClick("textarea_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
+  SimulateElementFocusAndWait("textarea_1");
+  check.Call(1);
+
+  EXPECT_TRUE(SimulateElementClickAndWait("textarea_1"));
+  check.Call(2);
 }
 
-TEST_F(AutofillAgentFormInteractionTest, ScaledTextareaClicked) {
-  ClearAutofillAgentTestState();
-  EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
+// Tests that left clicking a scaled text area triggers AskForValuesToFill.
+TEST_F(AutofillAgentFormInteractionTest, ScaledTextareaLeftClick) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, HasFieldIdAttribute(u"textarea_1"), _,
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+
   web_view_->SetPageScaleFactor(3);
   web_view_->SetVisualViewportOffset(gfx::PointF(50, 50));
-
-  // Click textarea_1.
   SimulatePointClick(gfx::Point(30, 30));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
 }
 
+// Tests that tapping a scaled text area triggers AskForValuesToFill.
 TEST_F(AutofillAgentFormInteractionTest, ScaledTextareaTapped) {
-  ClearAutofillAgentTestState();
-  EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, HasFieldIdAttribute(u"textarea_1"), _,
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
+
   web_view_->SetPageScaleFactor(3);
   web_view_->SetVisualViewportOffset(gfx::PointF(50, 50));
-
-  // Tap textarea_1.
   SimulateRectTap(gfx::Rect(30, 30, 30, 30));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
+  task_environment_.RunUntilIdle();
 }
 
-TEST_F(AutofillAgentFormInteractionTest, DisabledInputClickedNoEvent) {
-  ClearAutofillAgentTestState();
-  EXPECT_NE(text_, text_.GetDocument().FocusedElement());
-  // Click the text field once.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
-
-  // Click the disabled element.
-  EXPECT_TRUE(SimulateElementClick("button_2"));
-  EXPECT_FALSE(form_control_element_clicked_called());
+// Tests that left clicking a disabled input event does not trigger
+// AskForValuesToFill.
+TEST_F(AutofillAgentFormInteractionTest, DisabledInputLeftClick) {
+  EXPECT_CALL(autofill_driver(), AskForValuesToFill).Times(0);
+  EXPECT_TRUE(SimulateElementClickAndWait("text_2"));
 }
 
-TEST_F(AutofillAgentFormInteractionTest,
-       ClickDisabledInputDoesNotResetClickCounter) {
-  EXPECT_NE(text_, text_.GetDocument().FocusedElement());
-  // Click the text field once.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-  ClearAutofillAgentTestState();
+// Tests that a tap near the edge of an input field trigger AskForValuesToFill.
+TEST_F(AutofillAgentFormInteractionTest, TapNearEdge) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, HasFieldIdAttribute(u"text_1"), _,
+                  AutofillSuggestionTriggerSource::kFormControlElementClicked))
+      .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
 
-  // Click the disabled element and focus should change.
-  EXPECT_TRUE(SimulateElementClick("button_2"));
-  EXPECT_FALSE(form_control_element_clicked_called());
-  ClearAutofillAgentTestState();
-
-  // Click the text field second time and verify it has lost
-  // focus already.
-  EXPECT_TRUE(SimulateElementClick("text_1"));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
-}
-
-TEST_F(AutofillAgentFormInteractionTest, TapNearEdgeIsPageClick) {
-  EXPECT_NE(text_, text_.GetDocument().FocusedElement());
-  // Tap outside of element bounds, but tap width is overlapping the field.
   gfx::Rect element_bounds = GetElementBounds("text_1");
   SimulateRectTap(element_bounds -
                   gfx::Vector2d(element_bounds.width() / 2 + 1, 0));
-  EXPECT_TRUE(form_control_element_clicked_called());
-  EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
 }
 
 }  // namespace autofill
