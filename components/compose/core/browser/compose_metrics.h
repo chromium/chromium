@@ -86,7 +86,8 @@ enum class ComposeShowStatus {
   kPerUrlChecksFailed = 7,
   kUserNotAllowedByOptimizationGuide = 8,
   kNotComposeEligible = 9,
-  kMaxValue = kNotComposeEligible,
+  kIncorrectScheme = 10,
+  kMaxValue = kIncorrectScheme,
 };
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);

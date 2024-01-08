@@ -87,6 +87,7 @@ chromium-metrics-reviews@google.com.
   <int value="8"
       label="Blocked for user was not allowed by optimization guide"/>
   <int value="9" label="Feature not eligible, remotely disabled"/>
+  <int value="10" label="Incorrect scheme, should be HTTP/HTTPS"/>
 </enum>
 
 </enums>

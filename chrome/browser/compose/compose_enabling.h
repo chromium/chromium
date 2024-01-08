@@ -64,6 +64,7 @@ class ComposeEnabling : public optimization_guide::SettingsEnabledObserver {
  private:
   base::expected<void, compose::ComposeShowStatus> PageLevelChecks(
       translate::TranslateManager* translate_manager,
+      GURL url,
       const url::Origin& top_level_frame_origin,
       const url::Origin& element_frame_origin);
 
