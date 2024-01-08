@@ -755,11 +755,11 @@ class BASE_EXPORT FieldTrialList {
   // Deserialization instantiates the shared memory region for FieldTrials from
   // the serialized information contained in |switch_value|. Returns an invalid
   // ReadOnlySharedMemoryRegion on failure.
-  // |fd| is used on non-Mac POSIX platforms to instantiate the shared memory
-  // region via a file descriptor.
+  // |fd_key| is used on non-Mac POSIX platforms as the file descriptor passed
+  // down to the child process for the shared memory region.
   static ReadOnlySharedMemoryRegion DeserializeSharedMemoryRegionMetadata(
       const std::string& switch_value,
-      int fd);
+      uint32_t fd_key);
 
   // Takes in |handle_switch| from the command line which represents the shared
   // memory handle for field trials, parses it, and creates the field trials.

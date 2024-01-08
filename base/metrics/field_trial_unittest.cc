@@ -34,7 +34,7 @@
 #include "base/process/launch.h"
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX)
 #include "base/posix/global_descriptors.h"
 #endif
 
@@ -45,6 +45,11 @@
 namespace base {
 
 namespace {
+
+#if BUILDFLAG(USE_BLINK)
+// Pick an arbitrary FD number to use for the shmem FD in the child.
+const uint32_t kFDKey = 42;
+#endif
 
 // Default group name used by several tests.
 const char kDefaultGroupName[] = "DefaultGroup";
@@ -1148,14 +1153,16 @@ MULTIPROCESS_TEST_MAIN(SerializeSharedMemoryRegionMetadata) {
   std::string guid_string =
       CommandLine::ForCurrentProcess()->GetSwitchValueASCII("guid");
 
-  int fd = 42;
-#if BUILDFLAG(IS_ANDROID)
-  fd = base::GlobalDescriptors::GetInstance()->MaybeGet(42);
-  CHECK_NE(fd, -1);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
+  // Since the fd value will be mapped from the global descriptors singleton,
+  // set it there. We use the same value both for the key and the actual fd for
+  // simplicity.
+  // Note: On Android, the launch service already sets up the mapping.
+  base::GlobalDescriptors::GetInstance()->Set(kFDKey, kFDKey);
 #endif
 
   base::ReadOnlySharedMemoryRegion deserialized =
-      FieldTrialList::DeserializeSharedMemoryRegionMetadata(serialized, fd);
+      FieldTrialList::DeserializeSharedMemoryRegionMetadata(serialized, kFDKey);
   CHECK(deserialized.IsValid());
   CHECK_EQ(deserialized.GetGUID().ToString(), guid_string);
   CHECK(!deserialized.GetGUID().is_empty());
@@ -1197,8 +1204,7 @@ TEST_F(FieldTrialListTest, SerializeSharedMemoryRegionMetadata) {
 #else
   int shm_fd = shm.region.GetPlatformHandle().fd;
 #endif  // BUILDFLAG(IS_ANDROID)
-  // Pick an arbitrary FD number to use for the shmem FD in the child.
-  options.fds_to_remap.emplace_back(std::make_pair(shm_fd, 42));
+  options.fds_to_remap.emplace_back(std::make_pair(shm_fd, kFDKey));
 #endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
   CommandLine cmd_line = GetMultiProcessTestChildBaseCommandLine();

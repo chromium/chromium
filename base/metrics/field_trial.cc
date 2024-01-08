@@ -146,8 +146,9 @@ bool DeserializeGUIDFromStringPieces(StringPiece first,
                                      UnguessableToken* guid) {
   uint64_t high = 0;
   uint64_t low = 0;
-  if (!StringToUint64(first, &high) || !StringToUint64(second, &low))
+  if (!StringToUint64(first, &high) || !StringToUint64(second, &low)) {
     return false;
+  }
 
   absl::optional<UnguessableToken> token =
       UnguessableToken::Deserialize(high, low);
@@ -1114,21 +1115,23 @@ std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
 ReadOnlySharedMemoryRegion
 FieldTrialList::DeserializeSharedMemoryRegionMetadata(
     const std::string& switch_value,
-    int fd) {
+    uint32_t fd_key) {
   // Format: "handle,[irp],guid-high,guid-low,size".
   std::vector<StringPiece> tokens =
       SplitStringPiece(switch_value, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
 
-  if (tokens.size() != 5)
+  if (tokens.size() != 5) {
     return ReadOnlySharedMemoryRegion();
+  }
 
   int field_trial_handle = 0;
-  if (!StringToInt(tokens[0], &field_trial_handle))
+  if (!StringToInt(tokens[0], &field_trial_handle)) {
     return ReadOnlySharedMemoryRegion();
+  }
 
-    // token[1] has a fixed value but is ignored on all platforms except
-    // Windows, where it can be 'i' or 'p' to indicate that the handle is
-    // inherited or must be obtained from the parent.
+  // token[1] has a fixed value but is ignored on all platforms except
+  // Windows, where it can be 'i' or 'p' to indicate that the handle is
+  // inherited or must be obtained from the parent.
 #if BUILDFLAG(IS_WIN)
   HANDLE handle = reinterpret_cast<HANDLE>(field_trial_handle);
   if (tokens[1] == "p") {
@@ -1155,31 +1158,37 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
   }
   apple::ScopedMachSendRight scoped_handle = rendezvous->TakeSendRight(
       static_cast<MachPortsForRendezvous::key_type>(field_trial_handle));
-  if (!scoped_handle.is_valid())
+  if (!scoped_handle.is_valid()) {
     return ReadOnlySharedMemoryRegion();
+  }
 #elif BUILDFLAG(IS_FUCHSIA)
   static bool startup_handle_taken = false;
   DCHECK(!startup_handle_taken) << "Shared memory region initialized twice";
   zx::vmo scoped_handle(
       zx_take_startup_handle(checked_cast<uint32_t>(field_trial_handle)));
   startup_handle_taken = true;
-  if (!scoped_handle.is_valid())
+  if (!scoped_handle.is_valid()) {
     return ReadOnlySharedMemoryRegion();
+  }
 #elif BUILDFLAG(IS_POSIX)
-  if (fd == -1)
+  int fd = GlobalDescriptors::GetInstance()->MaybeGet(fd_key);
+  if (fd == -1) {
     return ReadOnlySharedMemoryRegion();
+  }
   ScopedFD scoped_handle(fd);
 #else
 #error Unsupported OS
 #endif
 
   UnguessableToken guid;
-  if (!DeserializeGUIDFromStringPieces(tokens[2], tokens[3], &guid))
+  if (!DeserializeGUIDFromStringPieces(tokens[2], tokens[3], &guid)) {
     return ReadOnlySharedMemoryRegion();
+  }
 
   int size;
-  if (!StringToInt(tokens[4], &size))
+  if (!StringToInt(tokens[4], &size)) {
     return ReadOnlySharedMemoryRegion();
+  }
 
   auto platform_handle = subtle::PlatformSharedMemoryRegion::Take(
       std::move(scoped_handle),
@@ -1192,14 +1201,8 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
 bool FieldTrialList::CreateTrialsFromSwitchValue(
     const std::string& switch_value,
     uint32_t fd_key) {
-  int fd = -1;
-#if BUILDFLAG(IS_POSIX)
-  fd = GlobalDescriptors::GetInstance()->MaybeGet(fd_key);
-  if (fd == -1)
-    return false;
-#endif  // BUILDFLAG(IS_POSIX)
   ReadOnlySharedMemoryRegion shm =
-      DeserializeSharedMemoryRegionMetadata(switch_value, fd);
+      DeserializeSharedMemoryRegionMetadata(switch_value, fd_key);
   if (!shm.IsValid()) {
     return false;
   }
