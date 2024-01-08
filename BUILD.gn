@@ -1106,6 +1106,7 @@ if (use_blink && !is_cronet_build) {
       ]
       data_deps = [
         ":blink_web_tests_expectations",
+        ":blink_web_tests_support_data",
         "//chrome:chrome",
         "//chrome/test/chromedriver:chromedriver_server",
         "//third_party/blink/tools:wpt_tests_isolate",
