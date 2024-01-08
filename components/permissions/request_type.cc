@@ -5,6 +5,8 @@
 #include "components/permissions/request_type.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
@@ -131,6 +133,10 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       // TODO(crbug.com/1503624): Use a proper smart card icon.
       return cr23 ? vector_icons::kDevicesChromeRefreshIcon
                   : vector_icons::kDevicesIcon;
+#endif
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case RequestType::kWebPrinting:
+      return vector_icons::kPrinterIcon;
 #endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
@@ -264,6 +270,10 @@ absl::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
     case ContentSettingsType::SMART_CARD_DATA:
       return RequestType::kSmartCard;
 #endif
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case ContentSettingsType::WEB_PRINTING:
+      return RequestType::kWebPrinting;
+#endif
     default:
       return absl::nullopt;
   }
@@ -332,6 +342,10 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
       return ContentSettingsType::STORAGE_ACCESS;
     case RequestType::kVrSession:
       return ContentSettingsType::VR;
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case RequestType::kWebPrinting:
+      return ContentSettingsType::WEB_PRINTING;
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowManagement:
       return ContentSettingsType::WINDOW_MANAGEMENT;
@@ -346,13 +360,16 @@ absl::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 
 // Returns whether confirmation chips can be displayed
 bool IsConfirmationChipSupported(RequestType for_request_type) {
-  return base::ranges::any_of(
-      std::vector<RequestType>{
-          RequestType::kNotifications, RequestType::kGeolocation,
-          RequestType::kCameraStream, RequestType::kMicStream},
-      [for_request_type](permissions::RequestType request_type) {
-        return request_type == for_request_type;
+  static constexpr auto kRequestsWithChip =
+      base::MakeFixedFlatSet<RequestType>({
+          // clang-format off
+          RequestType::kNotifications,
+          RequestType::kGeolocation,
+          RequestType::kCameraStream,
+          RequestType::kMicStream,
+          // clang-format on
       });
+  return base::Contains(kRequestsWithChip, for_request_type);
 }
 
 IconId GetIconId(RequestType type) {
@@ -442,6 +459,10 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
       return "top_level_storage_access";
     case permissions::RequestType::kVrSession:
       return "vr_session";
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
+    case RequestType::kWebPrinting:
+      return "web_printing";
+#endif
 #if !BUILDFLAG(IS_ANDROID)
     case permissions::RequestType::kWindowManagement:
       if (base::FeatureList::IsEnabled(

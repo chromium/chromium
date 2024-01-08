@@ -177,6 +177,7 @@ aggregate_vector_icons("components_vector_icons") {
     "picture_in_picture_alt.icon",
     "play_arrow.icon",
     "play_arrow_chrome_refresh.icon",
+    "printer.icon",
     "privacy_sandbox.icon",
     "protected_content.icon",
     "protocol_handler.icon",

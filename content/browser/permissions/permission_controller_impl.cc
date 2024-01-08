@@ -88,6 +88,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::NOTIFICATIONS:
     case PermissionType::CAPTURED_SURFACE_CONTROL:
     case PermissionType::SMART_CARD:
+    case PermissionType::WEB_PRINTING:
       return absl::nullopt;
   }
 }

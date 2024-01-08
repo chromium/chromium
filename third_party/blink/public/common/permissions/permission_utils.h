@@ -57,6 +57,7 @@ enum class PermissionType {
   TOP_LEVEL_STORAGE_ACCESS = 33,
   CAPTURED_SURFACE_CONTROL = 34,
   SMART_CARD = 35,
+  WEB_PRINTING = 36,
 
   // Always keep this at the end.
   NUM,

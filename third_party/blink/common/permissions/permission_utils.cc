@@ -88,6 +88,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "TopLevelStorageAccess";
     case PermissionType::CAPTURED_SURFACE_CONTROL:
       return "CapturedSurfaceControl";
+    case PermissionType::WEB_PRINTING:
+      return "WebPrinting";
     case PermissionType::NUM:
       NOTREACHED();
       return std::string();
@@ -125,6 +127,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kWebXr;
     case PermissionType::SMART_CARD:
       return mojom::PermissionsPolicyFeature::kSmartCard;
+    case PermissionType::WEB_PRINTING:
+      return mojom::PermissionsPolicyFeature::kWebPrinting;
     case PermissionType::STORAGE_ACCESS_GRANT:
       return mojom::PermissionsPolicyFeature::kStorageAccessAPI;
     case PermissionType::TOP_LEVEL_STORAGE_ACCESS:

@@ -4,9 +4,13 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/printing/printing_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chromeos/printing/printer_configuration.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -79,6 +83,10 @@ class WebPrintingBrowserTestBase
     web_app::IsolatedWebAppUrlInfo url_info =
         InstallDevModeProxyIsolatedWebApp(iwa_dev_server_->GetOrigin());
     app_frame_ = OpenApp(url_info.app_id());
+
+    HostContentSettingsMapFactory::GetForProfile(profile())
+        ->SetDefaultContentSetting(ContentSettingsType::WEB_PRINTING,
+                                   ContentSetting::CONTENT_SETTING_ALLOW);
   }
 
   void TearDownOnMainThread() override {

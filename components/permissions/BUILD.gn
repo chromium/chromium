@@ -17,6 +17,7 @@ component("permissions_common") {
     "//base",
     "//build:chromeos_buildflags",
   ]
+  public_deps = [ "//printing/buildflags" ]
 }
 
 source_set("permissions") {

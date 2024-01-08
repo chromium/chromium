@@ -209,6 +209,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/1464851): Update name once UI design is done.
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
+    // TODO(b/302505962): Add name once UI design is done.
+    {ContentSettingsType::WEB_PRINTING, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==

@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
 
 namespace content {
@@ -52,6 +53,10 @@ class WebPrintingServiceChromeOS
  private:
   using PrinterId = base::StrongAlias<class PrinterId, std::string>;
 
+  void OnPermissionDecidedForGetPrinters(
+      GetPrintersCallback,
+      blink::mojom::PermissionStatus permission_status);
+
   void OnPrintersRetrieved(
       GetPrintersCallback callback,
       std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
@@ -66,6 +71,7 @@ class WebPrintingServiceChromeOS
   void OnPdfReadAndFlattened(std::unique_ptr<PrintSettings> settings,
                              PrintCallback callback,
                              std::unique_ptr<MetafileSkia> flattened_pdf);
+
   void OnPrintJobCreated(
       mojo::PendingRemote<blink::mojom::WebPrintJobStateObserver> observer,
       std::optional<PrintJobCreatedInfo> creation_info);

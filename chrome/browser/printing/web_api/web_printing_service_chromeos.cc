@@ -13,11 +13,14 @@
 #include "chrome/browser/printing/print_job_controller.h"
 #include "chrome/browser/printing/web_api/web_printing_type_converters.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/permission_request_data.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "printing/backend/print_backend.h"
 #include "printing/metafile_skia.h"
 #include "printing/print_settings.h"
 #include "printing/printed_document.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 
 namespace printing {
 
@@ -89,6 +92,14 @@ void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
   }
 }
 
+bool HasPrintingPermission(content::RenderFrameHost& rfh) {
+  return rfh.GetBrowserContext()
+             ->GetPermissionController()
+             ->GetPermissionStatusForCurrentDocument(
+                 blink::PermissionType::WEB_PRINTING, &rfh) ==
+         blink::mojom::PermissionStatus::GRANTED;
+}
+
 }  // namespace
 
 WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
@@ -102,13 +113,24 @@ WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
 WebPrintingServiceChromeOS::~WebPrintingServiceChromeOS() = default;
 
 void WebPrintingServiceChromeOS::GetPrinters(GetPrintersCallback callback) {
-  GetLocalPrinterInterface()->GetPrinters(
-      base::BindOnce(&WebPrintingServiceChromeOS::OnPrintersRetrieved,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+  render_frame_host()
+      .GetBrowserContext()
+      ->GetPermissionController()
+      ->RequestPermissionFromCurrentDocument(
+          &render_frame_host(),
+          content::PermissionRequestDescription(
+              blink::PermissionType::WEB_PRINTING),
+          base::BindOnce(
+              &WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters,
+              weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebPrintingServiceChromeOS::FetchAttributes(
     FetchAttributesCallback callback) {
+  if (!HasPrintingPermission(render_frame_host())) {
+    return;
+  }
+
   GetLocalPrinterInterface()->GetCapability(
       *printers_.current_context(),
       base::BindOnce(&ConvertResponse).Then(std::move(callback)));
@@ -118,6 +140,10 @@ void WebPrintingServiceChromeOS::Print(
     mojo::PendingRemote<blink::mojom::Blob> document,
     std::unique_ptr<PrintSettings> attributes,
     PrintCallback callback) {
+  if (!HasPrintingPermission(render_frame_host())) {
+    return;
+  }
+
   auto printer_id = *printers_.current_context();
   attributes->set_device_name(base::UTF8ToUTF16(printer_id));
   GetLocalPrinterInterface()->GetCapability(
@@ -127,6 +153,18 @@ void WebPrintingServiceChromeOS::Print(
               &WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint,
               weak_factory_.GetWeakPtr(), std::move(document),
               std::move(attributes), std::move(callback), printer_id)));
+}
+
+void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
+    GetPrintersCallback callback,
+    blink::mojom::PermissionStatus permission_status) {
+  if (permission_status != blink::mojom::PermissionStatus::GRANTED) {
+    std::move(callback).Run(/*printers=*/{});
+    return;
+  }
+  GetLocalPrinterInterface()->GetPrinters(
+      base::BindOnce(&WebPrintingServiceChromeOS::OnPrintersRetrieved,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebPrintingServiceChromeOS::OnPrintersRetrieved(

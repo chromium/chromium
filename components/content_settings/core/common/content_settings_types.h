@@ -381,6 +381,9 @@ enum class ContentSettingsType : int32_t {
   SMART_CARD_GUARD,
   SMART_CARD_DATA,
 
+  // Content settings for access to printers for the Web Printing API.
+  WEB_PRINTING,
+
   NUM_TYPES,
 };
 

@@ -2742,6 +2742,7 @@ chromium-metrics-reviews@google.com.
       label="Top-level Storage Access API permission"/>
   <suffix name="VideoCapture" label="Camera permission"/>
   <suffix name="VR" label="VR permission"/>
+  <suffix name="WebPrinting" label="Web Printing permission"/>
   <suffix name="WindowPlacement" label="Window Management permission"/>
   <affected-histogram name="Permissions.Engagement.Accepted"/>
   <affected-histogram name="Permissions.Engagement.AcceptedOnce"/>

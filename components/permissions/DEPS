@@ -23,6 +23,7 @@ include_rules = [
   "+content/test",
   "+device/bluetooth",
   "+media/base/android/media_drm_bridge.h",
+  "+printing/buildflags/buildflags.h",
   "+services/metrics/public/cpp",
   "+sql",
   "+services/network/public/cpp/is_potentially_trustworthy.h",
