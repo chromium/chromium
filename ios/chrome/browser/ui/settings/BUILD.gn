@@ -182,6 +182,7 @@ source_set("settings") {
     "//ios/chrome/browser/ui/first_run:field_trial",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/ui/search_engine_choice:ui_util",
     "//ios/chrome/browser/ui/settings/address_bar_preference",
     "//ios/chrome/browser/ui/settings/address_bar_preference/cells",
     "//ios/chrome/browser/ui/settings/autofill",
@@ -297,6 +298,7 @@ source_set("unit_tests") {
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
     "import_data_table_view_controller_unittest.mm",
+    "search_engine_table_view_controller_choice_screen_unittest.mm",
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",
     "settings_root_table_view_controller_unittest.mm",

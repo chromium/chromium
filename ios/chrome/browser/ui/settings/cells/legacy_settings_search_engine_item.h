@@ -7,27 +7,21 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_search_engine_item.h"
 
 class GURL;
 
-// LegacySettingsSearchEngineItem contains the model data for a TableViewURLCell.
-// This class is deprecated for SettingsSearchEngineItem.
-@interface LegacySettingsSearchEngineItem : TableViewItem
+// LegacySettingsSearchEngineItem contains the model data for a
+// TableViewURLCell. This class is deprecated for SettingsSearchEngineItem.
+@interface LegacySettingsSearchEngineItem
+    : TableViewItem <SettingsSearchEngineItem>
 
-// The enabled/disabled state. If disabled, user interaction will be forbidden
-// and cell's alpha will be reduced.
-@property(nonatomic, assign) BOOL enabled;
-// The text for the title.
-@property(nonatomic, readwrite, copy) NSString* text;
-// The text for the subtitle.
-@property(nonatomic, readwrite, copy) NSString* detailText;
+// Identifier to match a URLItem with its URLCell.
+@property(nonatomic, readonly, copy) NSString* uniqueIdentifier;
 // The URL to fetch the favicon. This can be the favicon's URL, or a "fake" web
 // page URL created by filling empty query word into the search engine's
 // searchable URL template(e.g. "http://www.google.com/?q=").
 @property(nonatomic, assign) GURL URL;
-// Identifier to match a URLItem with its URLCell.
-@property(nonatomic, readonly, copy) NSString* uniqueIdentifier;
 
 @end
 
