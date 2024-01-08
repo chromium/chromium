@@ -651,8 +651,6 @@ void EnrollmentLauncherImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       UMA(policy::kMetricEnrollmentNoDeviceIdentification);
       break;
-    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
-      NOTREACHED_NORETURN();
     case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       UMA(policy::kMetricEnrollmentStoreDMTokenFailed);
       break;

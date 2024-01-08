@@ -228,9 +228,6 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
     case policy::EnrollmentStatus::Code::kNoMachineIdentification:
       return DemoSetupError(ErrorCode::kMachineIdentificationError,
                             RecoveryMethod::kUnknown, debug_message);
-    case policy::EnrollmentStatus::Code::kActiveDirectoryPolicyFetchFailed:
-      return DemoSetupError(ErrorCode::kUnexpectedError,
-                            RecoveryMethod::kReboot, debug_message);
     case policy::EnrollmentStatus::Code::kDmTokenStoreFailed:
       return DemoSetupError(ErrorCode::kDMTokenStoreError,
                             RecoveryMethod::kUnknown, debug_message);
