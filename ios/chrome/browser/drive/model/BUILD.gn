@@ -50,6 +50,8 @@ source_set("upload_task") {
   sources = [
     "upload_task.h",
     "upload_task.mm",
+    "upload_task_observer.h",
+    "upload_task_observer.mm",
   ]
   public_deps = [ "//base" ]
 }
@@ -95,6 +97,9 @@ source_set("unit_tests") {
     "drive_service_factory_unittest.mm",
     "drive_tab_helper_unittest.mm",
     "drive_upload_task_unittest.mm",
+    "test_upload_task_observer.h",
+    "test_upload_task_observer.mm",
+    "upload_task_unittest.mm",
   ]
   deps = [
     ":drive_service_factory",

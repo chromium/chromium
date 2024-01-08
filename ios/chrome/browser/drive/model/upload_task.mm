@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/drive/model/upload_task.h"
 
+#import "ios/chrome/browser/drive/model/upload_task_observer.h"
+
 UploadTask::UploadTask() = default;
 
 UploadTask::~UploadTask() {
-  // TODO(crbug.com/1495354): Notify all observers of destruction.
+  for (auto& observer : observers_) {
+    observer.OnUploadDestroyed(this);
+  }
 }
 
 #pragma mark - Public
@@ -25,13 +29,15 @@ bool UploadTask::IsDone() const {
 }
 
 void UploadTask::AddObserver(UploadTaskObserver* observer) {
-  // TODO(crbug.com/1495354): Add `observer` to list of observers.
+  observers_.AddObserver(observer);
 }
 
 void UploadTask::RemoveObserver(UploadTaskObserver* observer) {
-  // TODO(crbug.com/1495354): Remove `observer` from list of observers.
+  observers_.RemoveObserver(observer);
 }
 
 void UploadTask::OnUploadUpdated() {
-  // TODO(crbug.com/1495354): Notify all observers of update.
+  for (auto& observer : observers_) {
+    observer.OnUploadUpdated(this);
+  }
 }

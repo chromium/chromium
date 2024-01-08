@@ -60,8 +60,9 @@ class UploadTask {
   void OnUploadUpdated();
 
  private:
-  // A list of observers. Weak references.
-  // TODO(crbug.com/1495354): Store a list of all observers.
+  // A list of observers. At destruction, it *will* check that all observers
+  // have removed themselves from this list. Weak references.
+  base::ObserverList<UploadTaskObserver, true> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_UPLOAD_TASK_H_
