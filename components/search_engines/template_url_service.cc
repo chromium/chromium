@@ -39,6 +39,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
@@ -955,7 +956,8 @@ bool TemplateURLService::CanMakeDefault(const TemplateURL* url) const {
 }
 
 void TemplateURLService::SetUserSelectedDefaultSearchProvider(
-    TemplateURL* url) {
+    TemplateURL* url,
+    search_engines::ChoiceMadeLocation choice_made_location) {
   // Omnibox keywords cannot be made default. Extension-controlled search
   // engines can be made default only by the extension itself because they
   // aren't persisted.
@@ -963,6 +965,9 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
   if (url) {
     url->data_.is_active = TemplateURLData::ActiveStatus::kTrue;
   }
+
+  bool selection_added = false;
+
   if (load_failed_) {
     // Skip the DefaultSearchManager, which will persist to user preferences.
     if ((default_search_provider_source_ == DefaultSearchManager::FROM_USER) ||
@@ -970,16 +975,30 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
          DefaultSearchManager::FROM_FALLBACK)) {
       ApplyDefaultSearchChange(url ? &url->data() : nullptr,
                                DefaultSearchManager::FROM_USER);
+      selection_added = true;
     }
   } else {
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,
     // in fact, the effective DSE changes.
     if (url) {
       default_search_manager_.SetUserSelectedDefaultSearchEngine(url->data());
+      selection_added = true;
     } else {
       default_search_manager_.ClearUserSelectedDefaultSearchEngine();
     }
   }
+
+  if (selection_added) {
+    search_engines::RecordChoiceMade(prefs_, choice_made_location, this);
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (prefs_) {
+    // Commit the pref immediately so it isn't lost if the app is killed.
+    // TODO(b/316887441): Investigate removing this.
+    prefs_->CommitPendingWrite();
+  }
+#endif
 }
 
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {

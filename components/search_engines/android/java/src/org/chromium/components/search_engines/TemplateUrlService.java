@@ -143,11 +143,24 @@ public class TemplateUrlService {
                 .getDefaultSearchEngine(mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
     }
 
+    public void setSearchEngine(String selectedKeyword, @ChoiceMadeLocation int choiceLocation) {
+        ThreadUtils.assertOnUiThread();
+        TemplateUrlServiceJni.get()
+                .setUserSelectedDefaultSearchProvider(
+                        mNativeTemplateUrlServiceAndroid,
+                        TemplateUrlService.this,
+                        selectedKeyword,
+                        choiceLocation);
+    }
+
     public void setSearchEngine(String selectedKeyword) {
         ThreadUtils.assertOnUiThread();
         TemplateUrlServiceJni.get()
                 .setUserSelectedDefaultSearchProvider(
-                        mNativeTemplateUrlServiceAndroid, TemplateUrlService.this, selectedKeyword);
+                        mNativeTemplateUrlServiceAndroid,
+                        TemplateUrlService.this,
+                        selectedKeyword,
+                        ChoiceMadeLocation.OTHER);
     }
 
     /**
@@ -440,7 +453,8 @@ public class TemplateUrlService {
         void setUserSelectedDefaultSearchProvider(
                 long nativeTemplateUrlServiceAndroid,
                 TemplateUrlService caller,
-                String selectedKeyword);
+                String selectedKeyword,
+                int choiceLocation);
 
         boolean isDefaultSearchManaged(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);

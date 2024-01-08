@@ -297,22 +297,13 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     return;
   }
 
-  list_controller_.MakeDefaultTemplateURL(index);
-
-  Profile& profile = CHECK_DEREF(Profile::FromWebUI(web_ui()));
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(&profile);
   search_engines::ChoiceMadeLocation choice_made_location =
       static_cast<search_engines::ChoiceMadeLocation>(args[1].GetInt());
-
   CHECK(choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchSettings ||
         choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
-  // `RecordChoiceMade` should always be called after setting the default
-  // search engine.
-  search_engines::RecordChoiceMade(profile.GetPrefs(), choice_made_location,
-                                   template_url_service);
+  list_controller_.MakeDefaultTemplateURL(index, choice_made_location);
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
 }

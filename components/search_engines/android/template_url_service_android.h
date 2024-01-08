@@ -28,7 +28,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   void SetUserSelectedDefaultSearchProvider(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jstring>& jkeyword);
+      const base::android::JavaParamRef<jstring>& jkeyword,
+      jint choice_made_location);
   jboolean IsLoaded(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj) const;
   jboolean IsDefaultSearchManaged(

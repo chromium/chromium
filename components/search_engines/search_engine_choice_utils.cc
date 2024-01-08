@@ -316,6 +316,12 @@ void RecordChoiceScreenDefaultSearchProviderType(SearchEngineType engine_type) {
 void RecordChoiceMade(PrefService* profile_prefs,
                       ChoiceMadeLocation choice_location,
                       TemplateURLService* template_url_service) {
+  if (choice_location == ChoiceMadeLocation::kOther) {
+    // This is called from a path not resulting from a fully featured search
+    // engine choice screen, so skip recoding associated choice data.
+    return;
+  }
+
   if (!IsChoiceScreenFlagEnabled(ChoicePromo::kAny)) {
     return;
   }

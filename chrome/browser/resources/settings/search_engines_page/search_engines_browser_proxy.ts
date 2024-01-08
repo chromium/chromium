@@ -66,11 +66,8 @@ export enum SearchEnginesInteractions {
 /**
  * The location from which the search engine choice was made.
  *
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- *
  * Must be kept in sync with the ChoiceMadeLocation enum in
- * search_engine_choice_utils.h
+ * //components/search_engines/choice_made_location.h
  */
 export enum ChoiceMadeLocation {
   // `chrome://settings/search`
@@ -80,6 +77,11 @@ export enum ChoiceMadeLocation {
   // The search engine choice dialog for existing users or the profile picker
   // for new users. This value should not be used in settings.
   CHOICE_SCREEN = 2,
+  // Some other source, not matching some requirements that the full search
+  // engine choice surfaces are compatible with. Might be used for example when
+  // automatically changing default search engine via an extension, or some
+  // enterprise policy.
+  OTHER = 3,
 }
 
 export interface SearchEnginesBrowserProxy {

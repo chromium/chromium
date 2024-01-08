@@ -410,19 +410,15 @@ const char kUmaSelectDefaultSearchEngine[] =
   if (indexPath.section ==
       [model sectionForSectionIdentifier:SectionIdentifierFirstList]) {
     _templateURLService->SetUserSelectedDefaultSearchProvider(
-        _firstList[indexPath.row]);
+        _firstList[indexPath.row],
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   } else {
     _templateURLService->SetUserSelectedDefaultSearchProvider(
-        _secondList[indexPath.row]);
+        _secondList[indexPath.row],
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   }
   [self recordUmaOfDefaultSearchEngine];
   self.updatingBackend = NO;
-
-  // For choice screen eligible users, set the corresponding timestamp pref if
-  // it wasn't already set before.
-  search_engines::RecordChoiceMade(
-      _prefService, search_engines::ChoiceMadeLocation::kSearchEngineSettings,
-      _templateURLService);
 }
 
 - (void)tableView:(UITableView*)tableView

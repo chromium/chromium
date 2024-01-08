@@ -9,16 +9,36 @@
 #include <memory>
 
 #include "base/threading/platform_thread.h"
+#include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_service_client.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TemplateURLServiceUnitTest : public testing::Test {
  public:
-  TemplateURLServiceUnitTest()
-      : template_url_service_(/*initializers=*/nullptr, /*count=*/0) {}
-  TemplateURLService& template_url_service() { return template_url_service_; }
+  void SetUp() override {
+    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
+    TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_.registry());
+    DefaultSearchManager::RegisterProfilePrefs(pref_service_.registry());
+
+    template_url_service_ = std::make_unique<TemplateURLService>(
+        &pref_service_, std::make_unique<SearchTermsData>(),
+        nullptr /* KeywordWebDataService */,
+        nullptr /* TemplateURLServiceClient */, base::RepeatingClosure()
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+                                                    ,
+        false
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+    );
+  }
+
+  TemplateURLService& template_url_service() {
+    return *template_url_service_.get();
+  }
 
  private:
-  TemplateURLService template_url_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
+  std::unique_ptr<TemplateURLService> template_url_service_;
 };
 
 TEST_F(TemplateURLServiceUnitTest, SessionToken) {

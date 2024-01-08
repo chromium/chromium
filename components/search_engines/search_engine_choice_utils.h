@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/search_engine_type.h"
 
 namespace policy {
@@ -104,23 +105,6 @@ enum class ChoicePromo {
   kDialog = 1,
   // Showing to new users in the First Run Experience.
   kFre = 2,
-};
-
-//  The location from which the default search engine was set.
-//  These values are persisted to logs. Entries should not be renumbered and
-//  numeric values should never be reused.
-//  Must be kept in sync with the ChoiceMadeLocation enum in
-//  search_engines_browser_proxy.ts
-enum class ChoiceMadeLocation {
-  // `chrome://settings/search`
-  kSearchSettings = 0,
-  // `chrome://settings/searchEngines`
-  // This value is also used for the settings pages on mobile.
-  kSearchEngineSettings = 1,
-  // The search engine choice dialog for existing users or the profile picker
-  // for new users.
-  kChoiceScreen = 2,
-  kMaxValue = kChoiceScreen,
 };
 
 // The cause for wiping the search engine choice preferences. Only used for

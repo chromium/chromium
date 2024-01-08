@@ -49,7 +49,6 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
     DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
     template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
         browser_state_.get());
-    TemplateURLService::RegisterProfilePrefs(pref_service_.registry());
 
     // The search engine choice feature is only enabled for countries in the
     // EEA region. Override the country checks to simulate being in Belgium.
@@ -59,7 +58,7 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
         switches::kSearchEngineChoiceCountry, "BE");
     mediator_ = [[SearchEngineChoiceTableMediator alloc]
         initWithTemplateURLService:template_url_service_
-                       prefService:&pref_service_];
+                       prefService:browser_state_->GetPrefs()];
     // This is when the list of search engines is set
     mediator_.consumer = consumer_;
   }
@@ -74,7 +73,6 @@ class SearchEngineChoiceTableMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  sync_preferences::TestingPrefServiceSyncable pref_service_;
   TemplateURLService* template_url_service_;
   SearchEngineChoiceTableMediator* mediator_ = nil;
   SearchEngineChoiceTableTestConsumer* consumer_ =
@@ -97,12 +95,13 @@ TEST_F(SearchEngineChoiceTableMediatorTest, SavesDefaultSearchEngine) {
       isEqualToString:default_search_engine_name]);
   // We don't care about the value, we just need to check that something was
   // written.
-  EXPECT_GT(pref_service_.GetInt64(
+  EXPECT_GT(browser_state_->GetPrefs()->GetInt64(
                 prefs::kDefaultSearchProviderChoiceScreenCompletionTimestamp),
             0);
   EXPECT_FALSE(
-      pref_service_
-          .GetString(prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)
+      browser_state_->GetPrefs()
+          ->GetString(
+              prefs::kDefaultSearchProviderChoiceScreenCompletionVersion)
           .empty());
 }
 

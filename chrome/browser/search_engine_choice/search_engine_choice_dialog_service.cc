@@ -115,7 +115,8 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
     CHECK(search_engine);
     TemplateURL search_engine_template_url = TemplateURL(*search_engine);
     template_url_service_->SetUserSelectedDefaultSearchProvider(
-        &search_engine_template_url);
+        &search_engine_template_url,
+        search_engines::ChoiceMadeLocation::kChoiceScreen);
   } else {
     // Make sure that the default search engine is a custom search engine.
     const TemplateURL* default_search_provider =
@@ -151,12 +152,6 @@ void SearchEngineChoiceDialogService::NotifyChoiceMade(int prepopulate_id,
       break;
   }
   search_engines::RecordChoiceScreenEvent(event);
-
-  // `RecordChoiceMade` should always be called after setting the default
-  // search engine.
-  RecordChoiceMade(pref_service,
-                   search_engines::ChoiceMadeLocation::kChoiceScreen,
-                   &template_url_service_.get());
 }
 
 void SearchEngineChoiceDialogService::NotifyDialogOpened(

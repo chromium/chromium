@@ -5,6 +5,7 @@
 #include "components/search_engines/android/template_url_service_android.h"
 
 #include <stddef.h>
+
 #include <string>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/android/jni_headers/TemplateUrlService_jni.h"
 #include "components/search_engines/android/template_url_android.h"
+#include "components/search_engines/search_engine_choice_utils.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -70,12 +72,15 @@ void TemplateUrlServiceAndroid::Load(JNIEnv* env,
 void TemplateUrlServiceAndroid::SetUserSelectedDefaultSearchProvider(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jstring>& jkeyword) {
+    const JavaParamRef<jstring>& jkeyword,
+    jint choice_made_location) {
   std::u16string keyword(
       base::android::ConvertJavaStringToUTF16(env, jkeyword));
   TemplateURL* template_url =
       template_url_service_->GetTemplateURLForKeyword(keyword);
-  template_url_service_->SetUserSelectedDefaultSearchProvider(template_url);
+  template_url_service_->SetUserSelectedDefaultSearchProvider(
+      template_url,
+      static_cast<search_engines::ChoiceMadeLocation>(choice_made_location));
 }
 
 jboolean TemplateUrlServiceAndroid::IsLoaded(
@@ -393,7 +398,11 @@ jboolean TemplateUrlServiceAndroid::SetPlayAPISearchEngine(
   // CanMakeDefault() will prevent us from taking over a policy or extension
   // defined default search engine.
   if (set_as_default && template_url_service_->CanMakeDefault(t_url)) {
-    template_url_service_->SetUserSelectedDefaultSearchProvider(t_url);
+    template_url_service_->SetUserSelectedDefaultSearchProvider(
+        t_url,
+        // This method gets eventually called when the user interacts with the
+        // OS-level choice screen, so we use it as the location of the choice.
+        search_engines::ChoiceMadeLocation::kChoiceScreen);
   }
   return true;
 }

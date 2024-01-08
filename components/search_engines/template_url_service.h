@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
@@ -339,10 +340,16 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // controlled by an extension.
   bool CanMakeDefault(const TemplateURL* url) const;
 
-  // Set the default search provider.  |url| may be null.
+  // Set the default search provider. `url` may be null.
   // This will assert if the default search is managed; the UI should not be
   // invoking this method in that situation.
-  void SetUserSelectedDefaultSearchProvider(TemplateURL* url);
+  // `choice_made_location` indicates in which context the user made the
+  // selection, which will affect how some prefs are set and record additional
+  // metrics.
+  void SetUserSelectedDefaultSearchProvider(
+      TemplateURL* url,
+      search_engines::ChoiceMadeLocation choice_made_location =
+          search_engines::ChoiceMadeLocation::kOther);
 
   // Returns the default search provider. If the TemplateURLService hasn't been
   // loaded, the default search provider is pulled from preferences.

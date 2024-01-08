@@ -28,10 +28,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettings.java",
   ]
 
-  srcjar_deps = [
-    ":jni_headers",
-    "//components/search_engines:search_engine_type_java",
-  ]
+  srcjar_deps = [ ":jni_headers" ]
 
   deps = [
     ":java_resources",
