@@ -466,8 +466,8 @@
       </message>
       <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_ALERT_TITLE" desc="Alert title in the bookmarks page asking the user that all their local bookmarks will be saved to their account. [iOS Only]">
         {count, plural,
-          =1 {Save 1 Bookmark in your Google Account}
-          other {Save {count} Bookmarks in your Google Account}}
+          =1 {Save 1 Bookmark in Your Google Account}
+          other {Save {count} Bookmarks in Your Google Account}}
       </message>
       <message name="IDS_IOS_BOOKMARKS_HOME_BULK_UPLOAD_SECTION_DESCRIPTION" desc="This text is shown above the batch upload button section in the bookmarks page to explain to the user how many bookmarks exist only locally and can be uploaded to their Google Account. [iOS Only]">
         {count, plural,
