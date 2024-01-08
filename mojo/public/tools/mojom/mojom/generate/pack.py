@@ -255,7 +255,7 @@ class PackedStruct:
         raise Exception(
             "Non-nullable reference fields are only allowed in version 0 of a "
             "struct. %s.%s is defined with [MinVersion=%d]." %
-            (self.struct.name, packed_field.field.name,
+            (self.struct.mojom_name, packed_field.field.mojom_name,
              packed_field.min_version))
 
     src_field = src_fields[0]
