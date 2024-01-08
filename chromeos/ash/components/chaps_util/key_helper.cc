@@ -3,7 +3,14 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/chaps_util/key_helper.h"
+
+#include <pk11pub.h>
+#include <stdint.h>
+
+#include <vector>
+
 #include "base/hash/sha1.h"
+#include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"

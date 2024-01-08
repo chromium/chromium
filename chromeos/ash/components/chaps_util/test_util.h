@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_TEST_UTIL_H_
 
 #include <pk11pub.h>
+#include <stdint.h>
 
 #include <memory>
 #include <string>
@@ -14,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
+#include "crypto/scoped_nss_types.h"
 
 namespace chromeos {
 

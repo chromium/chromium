@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/chaps_util/chaps_util.h"
 
+#include <memory>
 #include <ostream>
 
 #include "base/functional/callback.h"

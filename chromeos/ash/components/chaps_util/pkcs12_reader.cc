@@ -1,15 +1,23 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+
+#include <stdint.h>
+
+#include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "chromeos/ash/components/chaps_util/key_helper.h"
-#include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_util.h"
 #include "net/cert/x509_util_nss.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 
 namespace chromeos {
 

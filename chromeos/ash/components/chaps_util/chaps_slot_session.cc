@@ -8,6 +8,9 @@
 #include <pkcs11.h>
 #include <pkcs11t.h>
 
+#include <memory>
+#include <optional>
+
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"

@@ -9,9 +9,11 @@
 #include <pk11pub.h>
 #include <pkcs11.h>
 #include <pkcs11t.h>
+#include <stdint.h>
 
 #include <optional>
 #include <ostream>
+#include <string>
 #include <vector>
 
 #include "base/check.h"
@@ -25,8 +27,10 @@
 #include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
 #include "crypto/chaps_support.h"
 #include "crypto/scoped_nss_types.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 
 namespace chromeos {
 

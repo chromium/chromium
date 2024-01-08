@@ -5,17 +5,20 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 #define CHROMEOS_ASH_COMPONENTS_CHAPS_UTIL_PKCS12_READER_H_
 
-#include <cstdint>
+#include <nss/certt.h>
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include <nss/certt.h>
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/pkcs7.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 
 namespace chromeos {
 

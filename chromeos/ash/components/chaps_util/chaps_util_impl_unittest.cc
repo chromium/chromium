@@ -6,6 +6,7 @@
 
 #include <pkcs11t.h>
 #include <secmodt.h>
+#include <stdint.h>
 
 #include <map>
 #include <optional>
@@ -13,7 +14,9 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/chaps_util/chaps_slot_session.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
 #include "crypto/nss_key_util.h"
@@ -24,7 +27,9 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 #include "third_party/boringssl/src/include/openssl/x509.h"
 
 namespace chromeos {

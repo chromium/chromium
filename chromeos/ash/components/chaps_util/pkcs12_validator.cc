@@ -4,11 +4,20 @@
 
 #include "chromeos/ash/components/chaps_util/pkcs12_validator.h"
 
+#include <stdint.h>
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/chaps_util/pkcs12_reader.h"
+#include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/pkcs8.h"
+#include "third_party/boringssl/src/include/openssl/stack.h"
 
 namespace chromeos {
 namespace {
