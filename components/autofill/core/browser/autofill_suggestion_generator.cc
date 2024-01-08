@@ -1495,9 +1495,7 @@ AutofillSuggestionGenerator::GetSuggestionsForCreditCards(
                                   field.is_autofilled)) {
       bool card_linked_offer_available =
           base::Contains(card_linked_offers_map, credit_card.guid());
-      // TODO(crbug.com/1493361): decide whether virtual credit card suggestions
-      // should be shown for the manual fallback.
-      if (!is_manual_fallback && ShouldShowVirtualCardOption(&credit_card)) {
+      if (ShouldShowVirtualCardOption(&credit_card)) {
         suggestions.push_back(CreateCreditCardSuggestion(
             credit_card, trigger_field_type,
             /*virtual_card_option=*/true, card_linked_offer_available));
@@ -1827,15 +1825,17 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     }
   }
 
-  if (is_manual_fallback) {
+  if (virtual_card_option) {
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY);
+  } else if (is_manual_fallback) {
     AddPaymentsGranularFillingChildSuggestions(credit_card, suggestion);
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
+  } else {
+    suggestion.acceptance_a11y_announcement =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
   }
-
-  suggestion.acceptance_a11y_announcement =
-      suggestion.is_acceptable
-          ? l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM)
-          : l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
 
   return suggestion;
 }
@@ -1978,6 +1978,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
   }
 
   suggestion.popup_item_id = PopupItemId::kVirtualCreditCardEntry;
+  suggestion.is_acceptable = true;
   suggestion.feature_for_iph =
       feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
 

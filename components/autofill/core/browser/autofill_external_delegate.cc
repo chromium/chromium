@@ -465,6 +465,10 @@ void AutofillExternalDelegate::DidSelectSuggestion(
       PreviewFieldByFieldFillingSuggestion(suggestion);
       break;
     case PopupItemId::kVirtualCreditCardEntry:
+      // If triggered on a non payments form, don't preview the value.
+      if (IsPaymentsManualFallbackOnNonPaymentsField()) {
+        break;
+      }
       FillAutofillFormData(
           suggestion.popup_item_id, backend_id, /*is_preview=*/true,
           {.trigger_source =
@@ -639,16 +643,31 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       manager_->OnUserAcceptedCardsFromAccountOption();
       break;
     case PopupItemId::kVirtualCreditCardEntry:
-      // There can be multiple virtual credit cards that all rely on
-      // PopupItemId::kVirtualCreditCardEntry as a `popup_item_id`. In this
-      // case, the payload contains the backend id, which is a GUID that
-      // identifies the actually chosen credit card.
-      FillAutofillFormData(
-          suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(),
-          /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+      if (IsPaymentsManualFallbackOnNonPaymentsField()) {
+        if (const CreditCard* credit_card =
+                manager_->client()
+                    .GetPersonalDataManager()
+                    ->GetCreditCardByGUID(
+                        suggestion.GetBackendId<Suggestion::Guid>().value())) {
+          CreditCard virtual_card = CreditCard::CreateVirtualCard(*credit_card);
+          manager_->GetCreditCardAccessManager().FetchCreditCard(
+              &virtual_card,
+              base::BindOnce(
+                  &AutofillExternalDelegate::OnVirtualCreditCardFetched,
+                  GetWeakPtr()));
+        }
+      } else {
+        // There can be multiple virtual credit cards that all rely on
+        // PopupItemId::kVirtualCreditCardEntry as a `popup_item_id`. In this
+        // case, the payload contains the backend id, which is a GUID that
+        // identifies the actually chosen credit card.
+        FillAutofillFormData(
+            suggestion.popup_item_id,
+            suggestion.GetPayload<Suggestion::BackendId>(),
+            /*is_preview=*/false,
+            {.trigger_source =
+                 TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
+      }
       break;
     case PopupItemId::kSeePromoCodeDetails:
       // Open a new tab and navigate to the offer details page.
@@ -1108,6 +1127,18 @@ void AutofillExternalDelegate::OnCreditCardFetched(
       PopupItemId::kCreditCardFieldByFieldFilling);
 }
 
+void AutofillExternalDelegate::OnVirtualCreditCardFetched(
+    CreditCardFetchResult result,
+    const CreditCard* credit_card) {
+  if (result != CreditCardFetchResult::kSuccess) {
+    return;
+  }
+  // In the failure case, `credit_card` can be `nullptr`, but in the success
+  // case it is non-null.
+  CHECK(credit_card);
+  manager_->OnCreditCardFetchedSuccessfully(*credit_card);
+}
+
 void AutofillExternalDelegate::FillAutofillFormData(
     PopupItemId popup_item_id,
     Suggestion::BackendId backend_id,
@@ -1254,6 +1285,16 @@ void AutofillExternalDelegate::InsertDataListValues(
     (*suggestions)[i].labels = {{Suggestion::Text(datalist_[i].content)}};
     (*suggestions)[i].popup_item_id = PopupItemId::kDatalistEntry;
   }
+}
+
+bool AutofillExternalDelegate::IsPaymentsManualFallbackOnNonPaymentsField()
+    const {
+  if (trigger_source_ ==
+      AutofillSuggestionTriggerSource::kManualFallbackPayments) {
+    const AutofillField* field = GetQueriedAutofillField();
+    return !field || field->Type().group() != FieldTypeGroup::kCreditCard;
+  }
+  return false;
 }
 
 std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {

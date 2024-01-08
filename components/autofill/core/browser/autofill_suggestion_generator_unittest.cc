@@ -2690,6 +2690,71 @@ TEST_F(AutofillCreditCardSuggestionContentTest,
                 IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY));
 }
 
+// Verify that the virtual credit card suggestion has the correct
+// `Suggestion::popup_item_id, AX label and is selectable.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  // Only the name is displayed on the first line.
+  EXPECT_EQ(enrolled_card_suggestion.popup_item_id,
+            PopupItemId::kVirtualCreditCardEntry);
+  EXPECT_TRUE(enrolled_card_suggestion.is_acceptable);
+  EXPECT_EQ(enrolled_card_suggestion.acceptance_a11y_announcement,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY));
+}
+
+// Verify that the virtual credit card suggestion has the correct labels.
+TEST_F(AutofillCreditCardSuggestionContentTest,
+       CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard_Labels) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  // For Desktop, split the first line and populate the card name and
+  // the last 4 digits separately.
+  EXPECT_EQ(enrolled_card_suggestion.main_text.value, u"Mastercard");
+  EXPECT_EQ(enrolled_card_suggestion.minor_text.value,
+            enrolled_card.ObfuscatedNumberWithVisibleLastFourDigits(4));
+
+  // The label is the expiration date formatted as mm/yy.
+  EXPECT_EQ(enrolled_card_suggestion.labels.size(), 2U);
+  EXPECT_EQ(enrolled_card_suggestion.labels[0].size(), 1U);
+  EXPECT_EQ(
+      enrolled_card_suggestion.labels[0][0].value,
+      enrolled_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale()));
+  EXPECT_EQ(enrolled_card_suggestion.labels[1].size(), 1U);
+  EXPECT_EQ(enrolled_card_suggestion.labels[1][0].value,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE));
+}
+
+// Verify that the virtual credit card suggestion has no nested suggestions.
+TEST_F(
+    AutofillCreditCardSuggestionContentTest,
+    CreateCreditCardSuggestion_ManualFallback_VirtualCreditCard_NestedSuggestions) {
+  CreditCard enrolled_card =
+      test::GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+
+  Suggestion enrolled_card_suggestion =
+      suggestion_generator()->CreateCreditCardSuggestion(
+          enrolled_card, UNKNOWN_TYPE, /*virtual_card_option=*/true,
+          /*card_linked_offer_available=*/false);
+
+  EXPECT_TRUE(enrolled_card_suggestion.children.empty());
+}
+
 // Verify that the nested suggestion's texts are populated correctly for a
 // masked server card suggestion when payments manual fallback is triggered.
 TEST_F(AutofillCreditCardSuggestionContentTest,

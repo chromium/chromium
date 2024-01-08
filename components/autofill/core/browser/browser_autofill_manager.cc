@@ -1872,16 +1872,17 @@ void BrowserAutofillManager::OnCreditCardFetched(
     driver().RendererShouldClearPreviewedForm();
     return;
   }
+  // In the failure case, `credit_card` can be `nullptr`, but in the success
+  // case it is non-null.
+  CHECK(credit_card);
+  OnCreditCardFetchedSuccessfully(*credit_card);
+
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   if (!GetCachedFormAndField(credit_card_form_, credit_card_field_,
                              &form_structure, &autofill_field)) {
     return;
   }
-  // In the failure case, `credit_card` can be `nullptr`, but in the success
-  // case it is non-null.
-  CHECK(credit_card);
-  OnCreditCardFetchedSuccessfully(*credit_card);
 
   FillCreditCardForm(
       credit_card_form_, credit_card_field_, *credit_card, credit_card->cvc(),
