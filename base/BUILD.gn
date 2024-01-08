@@ -4542,6 +4542,7 @@ if (is_android) {
       "android/javatests/src/org/chromium/base/PackageUtilsTest.java",
       "android/javatests/src/org/chromium/base/StrictModeContextTest.java",
       "android/javatests/src/org/chromium/base/UserDataHostTest.java",
+      "android/javatests/src/org/chromium/base/jank_tracker/JankTrackerTest.java",
       "android/javatests/src/org/chromium/base/library_loader/EarlyNativeTest.java",
       "android/javatests/src/org/chromium/base/metrics/RecordHistogramTest.java",
       "android/javatests/src/org/chromium/base/task/AsyncTaskTest.java",

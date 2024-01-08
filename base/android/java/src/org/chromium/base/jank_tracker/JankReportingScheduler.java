@@ -7,8 +7,6 @@ package org.chromium.base.jank_tracker;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import androidx.annotation.Nullable;
-
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -26,6 +24,13 @@ public class JankReportingScheduler {
     public JankReportingScheduler(FrameMetricsStore frameMetricsStore) {
         mFrameMetricsStore = frameMetricsStore;
         mRunnableStore = new HashMap<Integer, JankReportingRunnable>();
+        LazyHolder.HANDLER.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        mFrameMetricsStore.initialize();
+                    }
+                });
     }
 
     private final Runnable mPeriodicMetricReporter =
@@ -40,14 +45,23 @@ public class JankReportingScheduler {
                         // finished by taking the delay and +1 so that it will run in order (it
                         // was posted above).
                         startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-                        getOrCreateHandler()
-                                .postDelayed(mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
+                        LazyHolder.HANDLER.postDelayed(
+                                mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
                     }
                 }
             };
 
-    @Nullable protected HandlerThread mHandlerThread;
-    @Nullable private Handler mHandler;
+    private static class LazyHolder {
+        private static final HandlerThread HANDLER_THREAD;
+        private static final Handler HANDLER;
+
+        static {
+            HANDLER_THREAD = new HandlerThread("Jank-Tracker");
+            HANDLER_THREAD.start();
+            HANDLER = new Handler(HANDLER_THREAD.getLooper());
+        }
+    }
+
     private final AtomicBoolean mIsPeriodicReporterLooping = new AtomicBoolean(false);
 
     public void startTrackingScenario(@JankScenario int scenario) {
@@ -57,17 +71,16 @@ public class JankReportingScheduler {
         // scenario.
         JankReportingRunnable stopTask = mRunnableStore.get(scenario);
         if (stopTask != null) {
-            getOrCreateHandler().removeCallbacks(stopTask);
+            LazyHolder.HANDLER.removeCallbacks(stopTask);
             mRunnableStore.remove(scenario);
         }
-        getOrCreateHandler()
-                .post(
-                        new JankReportingRunnable(
-                                mFrameMetricsStore,
-                                scenario,
-                                /* isStartingTracking= */ true,
-                                mHandler,
-                                null));
+        LazyHolder.HANDLER.post(
+                new JankReportingRunnable(
+                        mFrameMetricsStore,
+                        scenario,
+                        /* isStartingTracking= */ true,
+                        LazyHolder.HANDLER,
+                        null));
     }
 
     public void finishTrackingScenario(@JankScenario int scenario) {
@@ -89,25 +102,13 @@ public class JankReportingScheduler {
                                 mFrameMetricsStore,
                                 scenario,
                                 /* isStartingTracking= */ false,
-                                mHandler,
+                                LazyHolder.HANDLER,
                                 endScenarioTime));
-        getOrCreateHandler().post(runnable);
+        LazyHolder.HANDLER.post(runnable);
     }
 
     public Handler getOrCreateHandler() {
-        if (mHandler == null) {
-            mHandlerThread = new HandlerThread("Jank-Tracker");
-            mHandlerThread.start();
-            mHandler = new Handler(mHandlerThread.getLooper());
-            mHandler.post(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mFrameMetricsStore.initialize();
-                        }
-                    });
-        }
-        return mHandler;
+        return LazyHolder.HANDLER;
     }
 
     public void startReportingPeriodicMetrics() {
@@ -116,7 +117,7 @@ public class JankReportingScheduler {
             return;
         }
         startTrackingScenario(JankScenario.PERIODIC_REPORTING);
-        getOrCreateHandler().postDelayed(mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
+        LazyHolder.HANDLER.postDelayed(mPeriodicMetricReporter, PERIODIC_METRIC_DELAY_MS);
     }
 
     public void stopReportingPeriodicMetrics() {
@@ -125,8 +126,8 @@ public class JankReportingScheduler {
             return;
         }
         // Remove any existing mPeriodicMetricReporter delayed tasks.
-        getOrCreateHandler().removeCallbacks(mPeriodicMetricReporter);
+        LazyHolder.HANDLER.removeCallbacks(mPeriodicMetricReporter);
         // Run mPeriodicMetricReporter one last time immediately.
-        getOrCreateHandler().post(mPeriodicMetricReporter);
+        LazyHolder.HANDLER.post(mPeriodicMetricReporter);
     }
 }

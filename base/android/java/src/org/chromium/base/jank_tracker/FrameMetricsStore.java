@@ -88,6 +88,7 @@ public class FrameMetricsStore {
      * checking.
      */
     void initialize() {
+        assert mThreadChecker == null;
         mThreadChecker = new ThreadChecker();
     }
 
