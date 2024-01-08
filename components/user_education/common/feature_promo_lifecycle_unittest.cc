@@ -126,6 +126,9 @@ class FeaturePromoLifecycleTest : public testing::Test {
       case PromoSubtype::kLegalNotice:
         name = "LegalNotice.";
         break;
+      case PromoSubtype::kActionableAlert:
+        name = "ActionableAlert.";
+        break;
       case PromoSubtype::kNormal:
         break;
     }
@@ -321,6 +324,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(PromoType::kTutorial),
                      testing::Values(PromoSubtype::kNormal,
                                      PromoSubtype::kPerApp,
+                                     PromoSubtype::kActionableAlert,
                                      PromoSubtype::kLegalNotice),
                      testing::Values(CloseReason::kDismiss,
                                      CloseReason::kSnooze,
@@ -403,6 +407,7 @@ INSTANTIATE_TEST_SUITE_P(
                                      PromoType::kCustomAction),
                      testing::Values(PromoSubtype::kNormal,
                                      PromoSubtype::kPerApp,
+                                     PromoSubtype::kActionableAlert,
                                      PromoSubtype::kLegalNotice)),
     (ParamToString<PromoType, PromoSubtype>));
 

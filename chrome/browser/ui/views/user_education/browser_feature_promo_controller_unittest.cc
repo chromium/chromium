@@ -1478,11 +1478,17 @@ TEST_F(BrowserFeaturePromoControllerViewsTest, TitleTextSubstitution_Plural) {
 }
 
 namespace {
-BASE_FEATURE(kHighPriorityIPHFeature,
-             "HighPriorityIPHFeature",
+BASE_FEATURE(kLegalNoticeFeature,
+             "LegalNoticeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kHighPriorityIPHFeature2,
-             "HighPriorityIPHFeature2",
+BASE_FEATURE(kLegalNoticeFeature2,
+             "LegalNoticeFeature2",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActionableAlertIPHFeature,
+             "kActionableAlertIPHFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kActionableAlertIPHFeature2,
+             "kActionableAlertIPHFeature2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 // Somewhere around 2020.
 const base::Time kSessionStartTime =
@@ -1506,19 +1512,32 @@ class BrowserFeaturePromoControllerPolicyTest
   void RegisterIPH() override {
     BrowserFeaturePromoControllerViewsTest::RegisterIPH();
 
-    auto high_priority_spec =
-        DefaultPromoSpecification(kHighPriorityIPHFeature);
-    high_priority_spec.set_promo_subtype_for_testing(
+    FeaturePromoSpecification spec =
+        DefaultPromoSpecification(kLegalNoticeFeature);
+    spec.set_promo_subtype_for_testing(
         FeaturePromoSpecification::PromoSubtype::kLegalNotice);
-    registry()->RegisterFeature(std::move(high_priority_spec));
+    registry()->RegisterFeature(std::move(spec));
 
-    auto high_priority_spec2 =
-        FeaturePromoSpecification::CreateForTutorialPromo(
-            kHighPriorityIPHFeature2, kToolbarAppMenuButtonElementId, IDS_OK,
-            kTestTutorialIdentifier);
-    high_priority_spec2.set_promo_subtype_for_testing(
+    spec = FeaturePromoSpecification::CreateForTutorialPromo(
+        kLegalNoticeFeature2, kToolbarAppMenuButtonElementId, IDS_OK,
+        kTestTutorialIdentifier);
+    spec.set_promo_subtype_for_testing(
         FeaturePromoSpecification::PromoSubtype::kLegalNotice);
-    registry()->RegisterFeature(std::move(high_priority_spec2));
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForCustomAction(
+        kActionableAlertIPHFeature, kToolbarAppMenuButtonElementId, IDS_CANCEL,
+        IDS_OK, base::DoNothing());
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kActionableAlert);
+    registry()->RegisterFeature(std::move(spec));
+
+    spec = FeaturePromoSpecification::CreateForCustomAction(
+        kActionableAlertIPHFeature2, kToolbarAppMenuButtonElementId, IDS_CANCEL,
+        IDS_OK, base::DoNothing());
+    spec.set_promo_subtype_for_testing(
+        FeaturePromoSpecification::PromoSubtype::kActionableAlert);
+    registry()->RegisterFeature(std::move(spec));
   }
 
   auto ResetSessionData(base::TimeDelta since_session_start,
@@ -1675,20 +1694,45 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest, TwoLowPriorityPromos) {
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       HighPriorityOverridesLowPriority) {
+       ActionableAlertOverridesLowPriority) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTestIPHFeature),
-                  MaybeShowPromo(kHighPriorityIPHFeature),
-                  ExpectShowingPromo(&kHighPriorityIPHFeature));
+                  MaybeShowPromo(kActionableAlertIPHFeature),
+                  ExpectShowingPromo(&kActionableAlertIPHFeature));
 }
 
-TEST_P(BrowserFeaturePromoControllerPolicyTest, TwoHighPriorityPromos) {
+TEST_P(BrowserFeaturePromoControllerPolicyTest, TwoActionableAlerts) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
-                  MaybeShowPromo(kHighPriorityIPHFeature),
-                  ExpectShowingPromo(&kHighPriorityIPHFeature),
-                  MaybeShowPromo(kHighPriorityIPHFeature2,
+                  MaybeShowPromo(kActionableAlertIPHFeature),
+                  ExpectShowingPromo(&kActionableAlertIPHFeature),
+                  MaybeShowPromo(kActionableAlertIPHFeature2,
                                  FeaturePromoResult::kBlockedByPromo),
-                  ExpectShowingPromo(&kHighPriorityIPHFeature));
+                  ExpectShowingPromo(&kActionableAlertIPHFeature));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       LegalNoticeOverridesLowPriority) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  MaybeShowPromo(kTestIPHFeature),
+                  MaybeShowPromo(kLegalNoticeFeature),
+                  ExpectShowingPromo(&kLegalNoticeFeature));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       LegalNoticeOverridesActionableAlert) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  MaybeShowPromo(kActionableAlertIPHFeature),
+                  MaybeShowPromo(kLegalNoticeFeature),
+                  ExpectShowingPromo(&kLegalNoticeFeature));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest, TwoLegalNotices) {
+  RunTestSequence(
+      ResetSessionData(kMoreThanGracePeriod),
+      MaybeShowPromo(kLegalNoticeFeature),
+      ExpectShowingPromo(&kLegalNoticeFeature),
+      MaybeShowPromo(kLegalNoticeFeature2, FeaturePromoResult::kBlockedByPromo),
+      ExpectShowingPromo(&kLegalNoticeFeature));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
@@ -1708,10 +1752,18 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       GracePeriodDoesNotBlockHeavyweightHighPriority) {
+       GracePeriodDoesNotBlockHeavyweightLegalNotice) {
   RunTestSequence(
       ResetSessionData(kLessThanGracePeriod), CheckSessionActive(true),
-      MaybeShowPromo(kHighPriorityIPHFeature2, FeaturePromoResult::Success()));
+      MaybeShowPromo(kLegalNoticeFeature2, FeaturePromoResult::Success()));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       GracePeriodDoesNotBlockActionableAlert) {
+  RunTestSequence(ResetSessionData(kLessThanGracePeriod),
+                  CheckSessionActive(true),
+                  MaybeShowPromo(kActionableAlertIPHFeature2,
+                                 FeaturePromoResult::Success()));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
@@ -1780,12 +1832,21 @@ TEST_P(BrowserFeaturePromoControllerPolicyTest,
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,
-       CooldownDoesNotPreventHighPriorityPromo) {
+       CooldownDoesNotPreventLegalNotice) {
   RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
                   MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
                   AdvanceTime(kLessThanCooldown),
                   AdvanceTime(kMoreThanGracePeriod),
-                  MaybeShowPromo(kHighPriorityIPHFeature2));
+                  MaybeShowPromo(kLegalNoticeFeature2));
+}
+
+TEST_P(BrowserFeaturePromoControllerPolicyTest,
+       CooldownDoesNotPreventActionableAlert) {
+  RunTestSequence(ResetSessionData(kMoreThanGracePeriod),
+                  MaybeShowPromo(kTutorialIPHFeature), ClosePromo(),
+                  AdvanceTime(kLessThanCooldown),
+                  AdvanceTime(kMoreThanGracePeriod),
+                  MaybeShowPromo(kActionableAlertIPHFeature2));
 }
 
 TEST_P(BrowserFeaturePromoControllerPolicyTest,

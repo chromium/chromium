@@ -86,6 +86,7 @@ FeaturePromoResult FeaturePromoLifecycle::CanShow() const {
                  ? FeaturePromoResult::kPermanentlyDismissed
                  : FeaturePromoResult::Success();
     case PromoSubtype::kLegalNotice:
+    case PromoSubtype::kActionableAlert:
       return data->is_dismissed ? FeaturePromoResult::kPermanentlyDismissed
                                 : FeaturePromoResult::Success();
   }
@@ -291,6 +292,10 @@ void FeaturePromoLifecycle::RecordShown() {
     case PromoSubtype::kLegalNotice:
       // Ends with a period.
       type_action_name.append("LegalNotice.");
+      break;
+    case PromoSubtype::kActionableAlert:
+      // Ends with a period.
+      type_action_name.append("ActionableAlert.");
       break;
   }
   switch (promo_type_) {

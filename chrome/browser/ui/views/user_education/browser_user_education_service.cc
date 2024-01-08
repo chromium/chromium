@@ -675,7 +675,9 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_NO_THANKS)
           .SetBubbleTitleText(IDS_MEMORY_SAVER_MODE_PROMO_TITLE)
-          .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)));
+          .SetHighlightedMenuItem(ToolsMenuModel::kPerformanceMenuItem)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
 
   // kIPHPriceTrackingInSidePanelFeature;
   if (!features::IsSidePanelPinningEnabled()) {
@@ -706,7 +708,9 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
           .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_ESB_PROMO_TITLE)
           .SetCustomActionDismissText(IDS_DOWNLOAD_BUBBLE_ESB_PROMO_DISMISS)
-          .SetBubbleIcon(&vector_icons::kGshieldIcon)));
+          .SetBubbleIcon(&vector_icons::kGshieldIcon)
+          .SetPromoSubtype(
+              FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
 #endif
 
   // kIPHDownloadToolbarButtonFeature:

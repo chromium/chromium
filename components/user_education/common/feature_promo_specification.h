@@ -165,7 +165,11 @@ class FeaturePromoSpecification {
     // A promo that must be able to be shown until explicitly acknowledged and
     // dismissed by the user. This type requires being on an allowlist.
     kLegalNotice = 2,
-    kMaxValue = kLegalNotice
+    // A promo that must be able to be shown at most times, alerting the user
+    // that something important has happened, and offering them an opportunity
+    // to address it. This type requires being on an allowlist.
+    kActionableAlert = 3,
+    kMaxValue = kActionableAlert
   };
 
   // Represents a command or command accelerator. Can be valueless (falsy) if

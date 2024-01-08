@@ -104,6 +104,7 @@ FeaturePromoSessionPolicy::SpecificationToPromoInfo(
     case FeaturePromoSpecification::PromoSubtype::kLegalNotice:
       promo_info.priority = PromoPriority::kHigh;
       break;
+    case FeaturePromoSpecification::PromoSubtype::kActionableAlert:
     case FeaturePromoSpecification::PromoSubtype::kPerApp:
       promo_info.priority = PromoPriority::kMedium;
       break;

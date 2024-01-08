@@ -260,7 +260,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
+    config->session_rate = Comparator(ANY, 0);
     // Show the promo max 3 times, once per week.
     config->trigger = EventConfig("high_efficiency_prompt_in_trigger",
                                   Comparator(LESS_THAN, 1), 7, 360);
@@ -505,10 +505,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(EQUAL, 0);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::ALL;
-    config->session_rate_impact = session_rate_impact;
+    config->session_rate = Comparator(ANY, 0);
     // Don't show if user has already seen an IPH this session.
     // Show the promo max once a year if the user hasn't interacted with
     // a dangerous download within the last 21 days.

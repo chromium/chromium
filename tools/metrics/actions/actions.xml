@@ -39537,6 +39537,12 @@ should be able to be added at any place in this file.
   <description>An IPH was shown to the user.</description>
 </action>
 
+<action name="UserEducation.MessageShown.ActionableAlert.CustomAction">
+  <owner>mickeyburks@chromium.org</owner>
+  <owner>frizzle-team@google.com</owner>
+  <description>An Actionable Alert IPH was shown to the user.</description>
+</action>
+
 <action name="UserEducation.MessageShown.CustomAction">
   <owner>mickeyburks@chromium.org</owner>
   <owner>frizzle-team@google.com</owner>

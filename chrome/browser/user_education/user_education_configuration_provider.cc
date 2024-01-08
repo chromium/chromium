@@ -64,8 +64,10 @@ bool UserEducationConfigurationProvider::MaybeProvideFeatureConfiguration(
   const bool is_unlimited =
       promo_spec->promo_subtype() ==
           user_education::FeaturePromoSpecification::PromoSubtype::kPerApp ||
-      promo_spec->promo_subtype() ==
-          user_education::FeaturePromoSpecification::PromoSubtype::kLegalNotice;
+      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
+                                         PromoSubtype::kLegalNotice ||
+      promo_spec->promo_subtype() == user_education::FeaturePromoSpecification::
+                                         PromoSubtype::kActionableAlert;
 
   switch (promo_spec->promo_type()) {
     case user_education::FeaturePromoSpecification::PromoType::kToast:
