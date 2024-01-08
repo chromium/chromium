@@ -22,7 +22,6 @@ static_library("unified_consent") {
   deps = [
     "//base",
     "//components/compose:buildflags",
-    "//components/compose/core/browser:features",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/identity_manager",

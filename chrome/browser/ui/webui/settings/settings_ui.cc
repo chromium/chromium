@@ -86,7 +86,6 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/compose/buildflags.h"
-#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -392,11 +391,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(features::kPageContentOptIn) ||
           base::FeatureList::IsEnabled(
               companion::features::kCompanionEnablePageContent));
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-  html_source->AddBoolean("enableComposeSetting",
-                          ComposeEnabling::IsEnabledForProfile(profile));
-#endif
 
   html_source->AddBoolean(
       "downloadBubblePartialViewControlledByPref",

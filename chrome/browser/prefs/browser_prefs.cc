@@ -945,6 +945,7 @@ const char kPrivacySandboxManuallyControlledV2[] =
 #if BUILDFLAG(ENABLE_COMPOSE)
 constexpr char kPrefHasAcceptedComposeConsent[] =
     "compose_has_accepted_consent";
+constexpr char kAutofillAssistanceEnabled[] = "autofill_assistance.enabled";
 #endif
 
 // Deprecated 01/2024.
@@ -1331,6 +1332,7 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 01/2024.
 #if BUILDFLAG(ENABLE_COMPOSE)
   registry->RegisterBooleanPref(kPrefHasAcceptedComposeConsent, false);
+  registry->RegisterBooleanPref(kAutofillAssistanceEnabled, false);
 #endif
 
   // Deprecated 01/2024.
@@ -2553,6 +2555,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 01/2024.
 #if BUILDFLAG(ENABLE_COMPOSE)
   profile_prefs->ClearPref(kPrefHasAcceptedComposeConsent);
+  profile_prefs->ClearPref(kAutofillAssistanceEnabled);
 #endif
 
   // Added 01/2024.
