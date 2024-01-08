@@ -1134,6 +1134,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
                           ash::features::IsSmdsSupportEnabled());
   html_source->AddBoolean("isHotspotEnabled",
                           ash::features::IsHotspotEnabled());
+  html_source->AddBoolean("isInstantHotspotRebrandEnabled",
+                          ash::features::IsInstantHotspotRebrandEnabled());
   html_source->AddBoolean("isPasspointEnabled",
                           ash::features::IsPasspointARCSupportEnabled());
   html_source->AddBoolean("isPasspointSettingsEnabled",

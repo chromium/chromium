@@ -235,6 +235,18 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
       },
 
       /**
+       * Return true if instant hotspot rebrand feature flag is enabled
+       */
+      isInstantHotspotRebrandEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isInstantHotspotRebrandEnabled') &&
+              loadTimeData.getBoolean('isInstantHotspotRebrandEnabled');
+        },
+      },
+
+
+      /**
        * Page name, if defined, indicating that the next deviceStates update
        * should call attemptShowCellularSetupDialog_().
        */
@@ -362,6 +374,7 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
   private isCellularCarrierLockEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isCreateCustomApnButtonDisabled_: boolean;
+  private isInstantHotspotRebrandEnabled_: boolean;
   private isHotspotFeatureEnabled_: boolean;
   private disableVpnUi_: boolean;
   private knownNetworksType_: NetworkType;
@@ -741,7 +754,8 @@ class SettingsInternetPageElement extends SettingsInternetPageElementBase {
     // TODO(khorimoto): Remove once Cellular/Tether are split into their own
     // sections.
     if (this.subpageType_ === NetworkType.kCellular ||
-        this.subpageType_ === NetworkType.kTether) {
+        (this.subpageType_ === NetworkType.kTether &&
+         !this.isInstantHotspotRebrandEnabled_)) {
       return this.i18n('OncTypeMobile');
     }
     return this.i18n(
