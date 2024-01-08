@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
@@ -15,6 +16,7 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "ui/views/widget/widget_observer.h"
 
 class PermissionPromptChipModel;
@@ -78,6 +80,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
+
+  void OnModalDialogActivated();
 
   // Initializes the permission prompt model as well as the permission request
   // manager and observes the prompt bubble.
@@ -236,6 +240,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
       observation_{this};
+
+  base::CallbackListSubscription modal_dialog_activated_subscription_;
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };

@@ -33,6 +33,9 @@ class SingleWebContentsDialogManagerDelegate {
   // Notify the delegate that the dialog is closing. The native
   // manager will be deleted before the end of this call.
   virtual void WillClose(gfx::NativeWindow dialog) = 0;
+
+  // Notify the delegate that a dialog is activated.
+  virtual void OnDialogActivated() = 0;
 };
 
 // Provides an interface for platform-specific UI implementation for the web
