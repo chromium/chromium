@@ -47,6 +47,10 @@ class PasswordCheckupLauncherHelper {
       JNIEnv* env,
       const base::android::JavaRef<jstring>& checkupUrl,
       const base::android::JavaRef<jobject>& activity) = 0;
+
+  // Opens the safety check menu in Chrome Settings.
+  virtual void LaunchSafetyCheck(JNIEnv* env,
+                                 ui::WindowAndroid* windowAndroid) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_CHECKUP_LAUNCHER_HELPER_H_
