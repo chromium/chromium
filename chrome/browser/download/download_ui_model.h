@@ -45,6 +45,20 @@ class FontList;
 // with a download.
 class DownloadUIModel {
  public:
+  // The type of tailored warning that is shown.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class TailoredWarningType {
+    kNoTailoredWarning = 0,
+    // Base cookie theft warning.
+    kCookieTheft = 1,
+    // Cookie theft warning with account info.
+    kCookieTheftWithAccountInfo = 2,
+    // Suspicious archive warning.
+    kSuspiciousArchive = 3,
+    kMaxValue = kSuspiciousArchive
+  };
+
   // Abstract base class for building StatusText
   class StatusTextBuilderBase {
    public:
@@ -576,7 +590,8 @@ class DownloadUIModel {
   BubbleUIInfo GetBubbleUIInfoForInterrupted(
       offline_items_collection::FailState fail_state) const;
   BubbleUIInfo GetBubbleUIInfoForInProgressOrComplete() const;
-  virtual BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const;
+  virtual BubbleUIInfo GetBubbleUIInfoForTailoredWarning(
+      TailoredWarningType tailored_warning_type) const;
   BubbleUIInfo GetBubbleUIInfoForFileTypeWarningNoSafeBrowsing() const;
 
   // Returns |true| if this download should be displayed in the download bubble.
@@ -584,8 +599,9 @@ class DownloadUIModel {
   // on the platform.
   virtual bool ShouldShowInBubble() const;
 
-  // Should this download trigger a tailored warning?
-  virtual bool ShouldShowTailoredWarning() const;
+  // Returns the type of tailored warning. Returns kNoTailoredWarning if this
+  // download shouldn't trigger a tailored warning.
+  virtual TailoredWarningType GetTailoredWarningType() const;
 
   // Ephemeral warnings are ones that are quickly removed from the bubble if the
   // user has not acted on them, and later deleted altogether. Is this that kind

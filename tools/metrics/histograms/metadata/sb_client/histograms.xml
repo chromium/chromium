@@ -312,6 +312,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.TailoredWarningType"
+    enum="TailoredWarningType" expires_after="2025-01-04">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the tailored warning type that is shown. Logged when a download
+    warning was shown in the shelf/bubble.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.UserGestureFileType.Attributes"
     enum="SBClientDownloadUserGestureFileTypeAttributes"
     expires_after="2024-02-25">

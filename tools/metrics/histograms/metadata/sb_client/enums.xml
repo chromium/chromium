@@ -267,6 +267,13 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Unsupported feature in LZMA SDK"/>
 </enum>
 
+<enum name="TailoredWarningType">
+  <int value="0" label="NoTailoredWarning"/>
+  <int value="1" label="CookieTheft"/>
+  <int value="2" label="CookieTheftWithAccountInfo"/>
+  <int value="3" label="SuspiciousArchive"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

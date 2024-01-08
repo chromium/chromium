@@ -24,6 +24,7 @@
 using download::DownloadItem;
 using offline_items_collection::FailState;
 using TailoredVerdict = safe_browsing::ClientDownloadResponse::TailoredVerdict;
+using TailoredWarningType = DownloadUIModel::TailoredWarningType;
 
 DownloadBubbleRowViewInfoObserver::DownloadBubbleRowViewInfoObserver() =
     default;
@@ -142,8 +143,9 @@ void DownloadBubbleRowViewInfo::PopulateForInProgressOrComplete() {
     }
   }
 
-  if (model_->ShouldShowTailoredWarning()) {
-    PopulateForTailoredWarning();
+  if (TailoredWarningType type = model_->GetTailoredWarningType();
+      type != TailoredWarningType::kNoTailoredWarning) {
+    PopulateForTailoredWarning(type);
     return;
   }
 
@@ -453,30 +455,20 @@ void DownloadBubbleRowViewInfo::PopulateForCancelled() {
                        : &vector_icons::kFileDownloadOffIcon;
 }
 
-void DownloadBubbleRowViewInfo::PopulateForTailoredWarning() {
+void DownloadBubbleRowViewInfo::PopulateForTailoredWarning(
+    TailoredWarningType tailored_warning_type) {
   CHECK(model_->GetDownloadItem());
-  download::DownloadDangerType danger_type = model_->GetDangerType();
-  TailoredVerdict tailored_verdict = safe_browsing::DownloadProtectionService::
-      GetDownloadProtectionTailoredVerdict(model_->GetDownloadItem());
-
-  // Suspicious archives
-  if (danger_type == download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT &&
-      tailored_verdict.tailored_verdict_type() ==
-          TailoredVerdict::SUSPICIOUS_ARCHIVE) {
-    PopulateSuspiciousUiPattern();
-    return;
+  switch (tailored_warning_type) {
+    case TailoredWarningType::kSuspiciousArchive:
+      return PopulateSuspiciousUiPattern();
+    case TailoredWarningType::kCookieTheft:
+    case TailoredWarningType::kCookieTheftWithAccountInfo:
+      return PopulateDangerousUiPattern();
+    case TailoredWarningType::kNoTailoredWarning: {
+      NOTREACHED();
+      return;
+    }
   }
-
-  // Cookie theft
-  if (danger_type ==
-          download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE &&
-      tailored_verdict.tailored_verdict_type() ==
-          TailoredVerdict::COOKIE_THEFT) {
-    PopulateDangerousUiPattern();
-    return;
-  }
-
-  NOTREACHED();
 }
 
 void DownloadBubbleRowViewInfo::PopulateForFileTypeWarningNoSafeBrowsing() {

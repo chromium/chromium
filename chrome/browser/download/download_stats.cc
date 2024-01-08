@@ -28,6 +28,10 @@ void MaybeRecordDangerousDownloadWarningShown(DownloadUIModel& model) {
   base::UmaHistogramEnumeration("Download.ShowedDownloadWarning",
                                 model.GetDangerType(),
                                 download::DOWNLOAD_DANGER_TYPE_MAX);
+#if !BUILDFLAG(IS_ANDROID)
+  base::UmaHistogramEnumeration("SBClientDownload.TailoredWarningType",
+                                model.GetTailoredWarningType());
+#endif  // BUILDFLAG(IS_ANDROID)
   safe_browsing::RecordDangerousDownloadWarningShown(
       model.GetDangerType(), model.GetTargetFilePath(),
       model.GetURL().SchemeIs(url::kHttpsScheme), model.HasUserGesture());

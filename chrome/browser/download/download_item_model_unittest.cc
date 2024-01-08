@@ -1271,30 +1271,41 @@ class DownloadItemModelTailoredWarningTest : public DownloadItemModelTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(DownloadItemModelTailoredWarningTest, ShouldShowTailoredWarning) {
+TEST_F(DownloadItemModelTailoredWarningTest, GetTailoredWarningType) {
   SetupDownloadItemDefaults();
 
-  const struct ShouldShowTailoredWarningTestCase {
+  const struct GetTailoredWarningTypeTestCase {
     download::DownloadDangerType danger_type;
     TailoredVerdict::TailoredVerdictType tailored_verdict_type;
-    bool expected_should_show;
+    DownloadUIModel::TailoredWarningType expected_warning_type;
   } kShouldShowTailoredWarningTestCases[] = {
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
-       TailoredVerdict::COOKIE_THEFT, true},
+       TailoredVerdict::COOKIE_THEFT,
+       DownloadUIModel::TailoredWarningType::kCookieTheft},
       {download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT,
-       TailoredVerdict::SUSPICIOUS_ARCHIVE, true},
+       TailoredVerdict::SUSPICIOUS_ARCHIVE,
+       DownloadUIModel::TailoredWarningType::kSuspiciousArchive},
       {download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL,
-       TailoredVerdict::COOKIE_THEFT, false},
+       TailoredVerdict::COOKIE_THEFT,
+       DownloadUIModel::TailoredWarningType::kNoTailoredWarning},
       {download::DOWNLOAD_DANGER_TYPE_POTENTIALLY_UNWANTED,
-       TailoredVerdict::SUSPICIOUS_ARCHIVE, false},
+       TailoredVerdict::SUSPICIOUS_ARCHIVE,
+       DownloadUIModel::TailoredWarningType::kNoTailoredWarning},
   };
   for (const auto& test_case : kShouldShowTailoredWarningTestCases) {
     SetupTailoredWarningForItem(test_case.danger_type,
                                 test_case.tailored_verdict_type,
                                 /*adjustments=*/{});
-    EXPECT_EQ(test_case.expected_should_show,
-              model().ShouldShowTailoredWarning());
+    EXPECT_EQ(model().GetTailoredWarningType(),
+              test_case.expected_warning_type);
   }
+
+  SetupTailoredWarningForItem(
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
+      TailoredVerdict::COOKIE_THEFT,
+      /*adjustments=*/{TailoredVerdict::ACCOUNT_INFO_STRING});
+  EXPECT_EQ(model().GetTailoredWarningType(),
+            DownloadUIModel::TailoredWarningType::kCookieTheftWithAccountInfo);
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1307,12 +1318,12 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
   // No primary button on download row view. Button only appears on subpage.
   EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons.size(), 1u);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::Command::DISCARD);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(u"This file can harm your personal and social network accounts",
-            bubble_ui_info.warning_summary);
+  EXPECT_EQ(bubble_ui_info.warning_summary,
+            u"This file can harm your personal and social network accounts");
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1325,15 +1336,15 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
   // No primary button on download row view. Button only appears on subpage.
   EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(2u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons.size(), 2u);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::Command::DISCARD);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(DownloadCommands::Command::KEEP,
-            bubble_ui_info.subpage_buttons[1].command);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[1].command,
+            DownloadCommands::Command::KEEP);
   EXPECT_FALSE(bubble_ui_info.subpage_buttons[1].is_prominent);
-  EXPECT_EQ(u"This archive file includes other files that may hide malware",
-            bubble_ui_info.warning_summary);
+  EXPECT_EQ(bubble_ui_info.warning_summary,
+            u"This archive file includes other files that may hide malware");
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1350,14 +1361,13 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
   // No primary button on download row view. Button only appears on subpage.
   EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons.size(), 1u);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::Command::DISCARD);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(
-      u"This file can harm your personal and social network accounts, "
-      u"including test@example.com",
-      bubble_ui_info.warning_summary);
+  EXPECT_EQ(bubble_ui_info.warning_summary,
+            u"This file can harm your personal and social network accounts, "
+            u"including test@example.com");
 }
 
 TEST_F(DownloadItemModelTailoredWarningTest,
@@ -1370,12 +1380,12 @@ TEST_F(DownloadItemModelTailoredWarningTest,
   DownloadUIModel::BubbleUIInfo bubble_ui_info = model().GetBubbleUIInfo();
   // No primary button on download row view. Button only appears on subpage.
   EXPECT_FALSE(bubble_ui_info.primary_button_command.has_value());
-  EXPECT_EQ(1u, bubble_ui_info.subpage_buttons.size());
-  EXPECT_EQ(DownloadCommands::Command::DISCARD,
-            bubble_ui_info.subpage_buttons[0].command);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons.size(), 1u);
+  EXPECT_EQ(bubble_ui_info.subpage_buttons[0].command,
+            DownloadCommands::Command::DISCARD);
   EXPECT_TRUE(bubble_ui_info.subpage_buttons[0].is_prominent);
-  EXPECT_EQ(u"This file can harm your personal and social network accounts",
-            bubble_ui_info.warning_summary);
+  EXPECT_EQ(bubble_ui_info.warning_summary,
+            u"This file can harm your personal and social network accounts");
 }
 
 class DownloadItemModelTailoredWarningDisabledTest
@@ -1399,7 +1409,8 @@ TEST_F(DownloadItemModelTailoredWarningDisabledTest,
   SetupTailoredWarningForItem(
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE,
       TailoredVerdict::COOKIE_THEFT, /*adjustments=*/{});
-  EXPECT_FALSE(model().ShouldShowTailoredWarning());
+  EXPECT_EQ(model().GetTailoredWarningType(),
+            DownloadUIModel::TailoredWarningType::kNoTailoredWarning);
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)

@@ -121,8 +121,9 @@ class DownloadItemModel : public DownloadUIModel,
                         DownloadCommands::Command command) const override;
   void ExecuteCommand(DownloadCommands* download_commands,
                       DownloadCommands::Command command) override;
-  BubbleUIInfo GetBubbleUIInfoForTailoredWarning() const override;
-  bool ShouldShowTailoredWarning() const override;
+  BubbleUIInfo GetBubbleUIInfoForTailoredWarning(
+      TailoredWarningType tailored_warning_type) const override;
+  TailoredWarningType GetTailoredWarningType() const override;
   bool ShouldShowInBubble() const override;
   bool IsEphemeralWarning() const override;
 #endif
