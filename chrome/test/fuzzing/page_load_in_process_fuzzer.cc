@@ -97,10 +97,10 @@ PageLoadInProcessFuzzer::PageLoadInProcessFuzzer()
 void PageLoadInProcessFuzzer::SetUpOnMainThread() {
   InProcessFuzzer::SetUpOnMainThread();
   host_resolver()->AddRule("*", "127.0.0.1");
-  ASSERT_TRUE(http_test_server1_.Start());
-  ASSERT_TRUE(http_test_server2_.Start());
-  ASSERT_TRUE(https_test_server1_.Start());
-  ASSERT_TRUE(https_test_server2_.Start());
+  CHECK(http_test_server1_.Start());
+  CHECK(http_test_server2_.Start());
+  CHECK(https_test_server1_.Start());
+  CHECK(https_test_server2_.Start());
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
