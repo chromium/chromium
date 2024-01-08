@@ -34,8 +34,6 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
     return false;
   }
 
-  // TODO(crbug.com/855312): Unify duplicated code between here and
-  // ServiceWorkerProviderHost::IsValidRegisterMessage.
   std::vector<GURL> urls = {manifest_url, sw_js_url, sw_scope};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
