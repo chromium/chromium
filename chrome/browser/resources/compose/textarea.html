@@ -185,7 +185,10 @@
 
 <div id="inputContainer" hidden$="[[readonly]]">
   <textarea id="input"
-      placeholder="$i18n{inputPlaceholder}"
+      placeholder="$i18n{inputPlaceholderTitle}
+ • $i18n{inputPlaceholderLine1}
+ • $i18n{inputPlaceholderLine2}
+ • $i18n{inputPlaceholderLine3}"
       value="{{value::input}}"
       required
       autofocus
