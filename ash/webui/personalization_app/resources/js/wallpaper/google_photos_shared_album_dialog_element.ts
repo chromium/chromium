@@ -7,7 +7,7 @@
  * selected for daily refresh is shared with other Google Photos accounts.
  */
 
-import '../../css/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';

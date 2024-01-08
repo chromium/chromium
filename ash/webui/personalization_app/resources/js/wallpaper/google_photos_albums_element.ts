@@ -6,10 +6,10 @@
  * @fileoverview Polymer element that displays Google Photos albums.
  */
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import '../../css/wallpaper.css.js';
-import '../../css/common.css.js';
 
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';

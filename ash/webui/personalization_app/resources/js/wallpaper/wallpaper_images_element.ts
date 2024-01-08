@@ -9,8 +9,8 @@
  * wallpaper collection id to avoid refetching data unnecessarily.
  */
 
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import '../../css/wallpaper.css.js';
 
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';

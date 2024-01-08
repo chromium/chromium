@@ -7,12 +7,12 @@
  * wallpaper.
  */
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '../../common/icons.html.js';
-import '../../css/common.css.js';
-import '../../css/wallpaper.css.js';
-import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 

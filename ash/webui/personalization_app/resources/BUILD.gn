@@ -164,13 +164,6 @@ build_webui("build") {
 
   icons_html_files = [ "common/icons.html" ]
 
-  css_files = [
-    "css/common.css",
-    "css/cros_button_style.css",
-    "css/sea_pen.css",
-    "css/wallpaper.css",
-  ]
-
   mojo_files_deps = [
     "../mojom:mojom_ts__generator",
     "//ash/style/mojom:color_scheme_ts__generator",

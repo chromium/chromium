@@ -6,8 +6,8 @@
  * @fileoverview A polymer component that displays the SeaPen templates.
  */
 
-import '../../../css/common.css.js';
-import '../../../css/wallpaper.css.js';
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 

@@ -7,12 +7,12 @@
  * wallpapers.
  */
 
+import 'chrome://resources/ash/common/personalization/common.css.js';
+import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
+import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import '../../../css/common.css.js';
-import '../../../css/sea_pen.css.js';
-import 'chrome://resources/ash/common/sea_pen/surface_effects/sparkle_placeholder.js';
 
 import {MantaStatusCode, SeaPenThumbnail} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {isNonEmptyArray} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
