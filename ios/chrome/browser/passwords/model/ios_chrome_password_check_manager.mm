@@ -185,9 +185,6 @@ void IOSChromePasswordCheckManager::OnStateChanged(State state) {
     user_prefs_->SetDouble(
         password_manager::prefs::kLastTimePasswordCheckCompleted,
         base::Time::Now().InSecondsFSinceUnixEpoch());
-    user_prefs_->SetTime(
-        password_manager::prefs::kSyncedLastTimePasswordCheckCompleted,
-        base::Time::Now());
 
     LogInsecureCredentialsCountMetrics();
   }

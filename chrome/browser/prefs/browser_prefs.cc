@@ -947,6 +947,10 @@ constexpr char kPrefHasAcceptedComposeConsent[] =
     "compose_has_accepted_consent";
 #endif
 
+// Deprecated 01/2024.
+const char kSyncedLastTimePasswordCheckCompleted[] =
+    "profile.credentials_last_password_checkup_time";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1328,6 +1332,10 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_COMPOSE)
   registry->RegisterBooleanPref(kPrefHasAcceptedComposeConsent, false);
 #endif
+
+  // Deprecated 01/2024.
+  registry->RegisterTimePref(kSyncedLastTimePasswordCheckCompleted,
+                             base::Time());
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2546,6 +2554,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if BUILDFLAG(ENABLE_COMPOSE)
   profile_prefs->ClearPref(kPrefHasAcceptedComposeConsent);
 #endif
+
+  // Added 01/2024.
+  profile_prefs->ClearPref(kSyncedLastTimePasswordCheckCompleted);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -103,9 +103,6 @@ const char kLastTimePasswordCheckCompleted[] =
 const char kLastTimePasswordStoreMetricsReported[] =
     "profile.last_time_password_store_metrics_reported";
 
-const char kSyncedLastTimePasswordCheckCompleted[] =
-    "profile.credentials_last_password_checkup_time";
-
 const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 
 const char kPasswordLeakDetectionEnabled[] =
