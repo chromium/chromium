@@ -11,15 +11,15 @@ This should be run whenever template_url_prepopulate_data.cc changes the list of
 search engines used per country, or whenever prepopulated_engines.json changes
 a favicon.
 
-To run, `apt-get install python3-commentjson`, then
+To run:
 `python3 tools/search_engine_choice/generate_search_engine_icons.py`.
 """
 
 import hashlib
+import json
 import os
 import re
 import sys
-import commentjson
 import requests
 
 
@@ -121,8 +121,8 @@ def download_icons_from_android_search():
 
   with open(config_file_path, 'r', encoding='utf-8') as config_json, open(
       prepopulated_engines_file_path, 'r', encoding='utf-8') as engines_json:
-    config_data = commentjson.loads(config_json.read())
-    engine_data = commentjson.loads(engines_json.read())
+    config_data = json.loads(json_comment_eater.Nom(config_json.read()))
+    engine_data = json.loads(json_comment_eater.Nom(engines_json.read()))
 
     icon_hash_to_name = {}
 
@@ -350,9 +350,17 @@ if sys.platform != 'linux':
   print(
       'Warning: This script has not been tested outside of the Linux platform')
 
-# Move to working directory to `src/components/resources/`.
 current_file_path = os.path.dirname(__file__)
 os.chdir(current_file_path)
+
+sys.path.insert(0,
+                os.path.normpath(current_file_path + "/../json_comment_eater"))
+try:
+  import json_comment_eater
+finally:
+  sys.path.pop(0)
+
+# Move to working directory to `src/components/resources/`.
 os.chdir('../../components/resources')
 
 # A set of search engines that are used in `template_url_prepopulate_data.cc`
