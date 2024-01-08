@@ -13,6 +13,17 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+namespace {
+
+// Matcher for the new tab button.
+id<GREYMatcher> NewTabButton() {
+  return grey_allOf(
+      grey_accessibilityID(@"TabStripNewTabButtonAccessibilityIdentifier"),
+      grey_kindOfClassName(@"UIButton"), grey_sufficientlyVisible(), nil);
+}
+
+}  // namespace
+
 // Tests for the tab strip shown on iPad.
 @interface TabStripTestCase : ChromeTestCase
 @end
@@ -23,6 +34,25 @@
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kModernTabStrip);
   return config;
+}
+
+// Tests opening new tabs using the new tab button.
+- (void)testTabStripNewTabButton {
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 1,
+                 @"Wrong number of opened tabs");
+
+  // Open a second tab.
+  [[EarlGrey selectElementWithMatcher:NewTabButton()] performAction:grey_tap()];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 2,
+                 @"Wrong number of opened tabs");
+
+  // Open a third tab.
+  [[EarlGrey selectElementWithMatcher:NewTabButton()] performAction:grey_tap()];
+  GREYAssertTrue([ChromeEarlGrey mainTabCount] == 3,
+                 @"Wrong number of opened tabs");
 }
 
 // Tests switching tabs using the tab strip.

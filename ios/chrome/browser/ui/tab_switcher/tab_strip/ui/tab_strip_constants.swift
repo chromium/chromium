@@ -22,6 +22,7 @@ struct TabStripConstants {
 
   /// New tab button constants.
   struct NewTabButton {
+    static let accessibilityIdentifier: String = "TabStripNewTabButtonAccessibilityIdentifier"
     static let width: CGFloat = 46
 
     static let topInset: CGFloat = 4
