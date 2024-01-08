@@ -27,6 +27,9 @@ export type ClickExitButtonEvent = CustomEvent;
 export const SET_NEXT_BUTTON_LABEL = 'set-next-button-label';
 export type SetNextButtonLabelEvent = CustomEvent<string>;
 
+export const CLICK_REPAIR_COMPONENT_BUTTON = 'click-repair-component-button';
+export type ClickRepairComponentButtonEvent = CustomEvent<number>;
+
 export type OnSelectedChangedEvent = CustomEvent<{value: string}>;
 
 type ExtractDetail<T> = T extends CustomEvent<infer U>? U : never;
