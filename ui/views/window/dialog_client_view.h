@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/input_event_activation_protector.h"
@@ -125,7 +124,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   // (which must be pointed to by `member`).  Which action is chosen is based on
   // whether DialogDelegate::GetDialogButtons() includes `type`, and whether
   // `member` points to a button that already exists.
-  void UpdateDialogButton(MdTextButton** member, ui::DialogButton type);
+  void UpdateDialogButton(raw_ptr<MdTextButton>* member, ui::DialogButton type);
 
   void ButtonPressed(ui::DialogButton type, const ui::Event& event);
 
@@ -161,12 +160,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView, public DialogObserver {
   gfx::Size minimum_size_;
 
   // The dialog buttons.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION MdTextButton* ok_button_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION MdTextButton* cancel_button_ = nullptr;
+  raw_ptr<MdTextButton> ok_button_ = nullptr;
+  raw_ptr<MdTextButton> cancel_button_ = nullptr;
 
   // The extra view shown in the row of buttons; may be nullptr.
   raw_ptr<View> extra_view_ = nullptr;
