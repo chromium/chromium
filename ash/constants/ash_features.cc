@@ -1982,6 +1982,11 @@ BASE_FEATURE(kSearchCustomizableShortcutsInLauncher,
              "SearchCustomizableShortcutsInLauncher",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables shortcut customization logging.
+BASE_FEATURE(kEnableShortcutCustomizationLogging,
+             "EnableShortcutCustomizationLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables or disables sending feedback for Orca.
 BASE_FEATURE(kOrcaFeedback, "OrcaFeedback", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4408,6 +4413,10 @@ bool ShouldArcFileTasksUseAppService() {
 
 bool isSearchCustomizableShortcutsInLauncherEnabled() {
   return base::FeatureList::IsEnabled(kSearchCustomizableShortcutsInLauncher);
+}
+
+bool IsShortcutCustomizationLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kEnableShortcutCustomizationLogging);
 }
 
 bool ShouldShowPlayStoreInDemoMode() {

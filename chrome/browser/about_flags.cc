@@ -7511,6 +7511,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kSearchCustomizableShortcutsInLauncher)},
 
+    {"enable-shortcut-customization-logging",
+     flag_descriptions::kEnableShortcutCustomizationLoggingName,
+     flag_descriptions::kEnableShortcutCustomizationLoggingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kEnableShortcutCustomizationLogging)},
+
     {"enable-input-device-settings-logging",
      flag_descriptions::kEnableInputDeviceSettingsLoggingName,
      flag_descriptions::kEnableInputDeviceSettingsLoggingDescription, kOsCrOS,
