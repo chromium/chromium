@@ -3209,6 +3209,19 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsArBlock", IDS_SETTINGS_SITE_SETTINGS_AR_BLOCK},
       {"siteSettingsVr", IDS_SITE_SETTINGS_TYPE_VR},
       {"siteSettingsVrMidSentence", IDS_SITE_SETTINGS_TYPE_VR_MID_SENTENCE},
+      {"siteSettingsWebPrinting", IDS_SITE_SETTINGS_TYPE_WEB_PRINTING},
+      {"siteSettingsWebPrintingMidSentence",
+       IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE},
+      {"siteSettingsWebPrintingDescription",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_DESCRIPTION},
+      {"siteSettingsWebPrintingAsk",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_ASK},
+      {"siteSettingsWebPrintingBlock",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_BLOCK},
+      {"siteSettingsWebPrintingAllowedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_ALLOWED_EXCEPTIONS},
+      {"siteSettingsWebPrintingBlockedExceptions",
+       IDS_SETTINGS_SITE_SETTINGS_WEB_PRINTING_BLOCKED_EXCEPTIONS},
       {"siteSettingsWindowManagement",
        IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT},
       {"siteSettingsWindowManagementMidSentence",
@@ -3303,6 +3316,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "enablePaymentHandlerContentSetting",
       base::FeatureList::IsEnabled(features::kServiceWorkerPaymentApps));
+
+  html_source->AddBoolean(
+      "enableWebPrintingContentSetting",
+      base::FeatureList::IsEnabled(blink::features::kWebPrinting));
 
   html_source->AddBoolean("enableFederatedIdentityApiContentSetting",
                           base::FeatureList::IsEnabled(features::kFedCm));

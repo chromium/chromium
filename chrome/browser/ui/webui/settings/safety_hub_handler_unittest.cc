@@ -703,7 +703,6 @@ TEST_F(SafetyHubHandlerTest, RevokeAllContentSettingTypes) {
           ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
           ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
           ContentSettingsType::FILE_SYSTEM_ACCESS_EXTENDED_PERMISSION,
-          ContentSettingsType::WEB_PRINTING,
           // clang-format on
       });
 

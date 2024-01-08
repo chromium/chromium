@@ -100,6 +100,7 @@ export interface SettingsRoutes {
   SITE_SETTINGS_VR: Route;
   SITE_SETTINGS_WINDOW_MANAGEMENT: Route;
   SITE_SETTINGS_ZOOM_LEVELS: Route;
+  SITE_SETTINGS_WEB_PRINTING: Route;
   SPELL_CHECK: Route;
   SYNC: Route;
   SYNC_ADVANCED: Route;

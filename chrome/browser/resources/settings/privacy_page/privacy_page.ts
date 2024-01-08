@@ -152,6 +152,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
+      enableWebPrintingContentSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableWebPrintingContentSetting'),
+      },
+
       showNotificationPermissionsReview_: {
         type: Boolean,
         value: false,
@@ -329,6 +334,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private enableExperimentalWebPlatformFeatures_: boolean;
   private enableSecurityKeysSubpage_: boolean;
   private enableWebBluetoothNewPermissionsBackend_: boolean;
+  private enableWebPrintingContentSetting_: boolean;
   private showNotificationPermissionsReview_: boolean;
   private isPrivacySandboxRestricted_: boolean;
   private isPrivacySandboxRestrictedNoticeEnabled_: boolean;

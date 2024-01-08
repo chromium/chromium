@@ -138,6 +138,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::STORAGE_ACCESS, "storage-access"},
     {ContentSettingsType::AUTO_PICTURE_IN_PICTURE, "auto-picture-in-picture"},
     {ContentSettingsType::CAPTURED_SURFACE_CONTROL, "captured-surface-control"},
+    {ContentSettingsType::WEB_PRINTING, "web-printing"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required, for example if the content setting
@@ -209,8 +210,6 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     // TODO(crbug.com/1464851): Update name once UI design is done.
     {ContentSettingsType::SMART_CARD_GUARD, nullptr},
     {ContentSettingsType::SMART_CARD_DATA, nullptr},
-    // TODO(b/302505962): Add name once UI design is done.
-    {ContentSettingsType::WEB_PRINTING, nullptr},
 };
 
 static_assert(std::size(kContentSettingsTypeGroupNames) ==
@@ -578,6 +577,10 @@ const std::vector<ContentSettingsType>& GetVisiblePermissionCategories() {
       base_types->push_back(ContentSettingsType::MIDI);
     } else {
       base_types->push_back(ContentSettingsType::MIDI_SYSEX);
+    }
+
+    if (base::FeatureList::IsEnabled(blink::features::kWebPrinting)) {
+      base_types->push_back(ContentSettingsType::WEB_PRINTING);
     }
 
     initialized = true;

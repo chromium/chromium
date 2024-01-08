@@ -144,6 +144,16 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsLocationBlocked',
     },
     {
+      route: routes.SITE_SETTINGS_WEB_PRINTING,
+      id: Id.WEB_PRINTING,
+      label: 'siteSettingsWebPrinting',
+      icon: 'settings:printer',
+      enabledLabel: 'siteSettingsWebPrintingAsk',
+      disabledLabel: 'siteSettingsWebPrintingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableWebPrintingContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_HID_DEVICES,
       id: Id.HID_DEVICES,
       label: 'siteSettingsHidDevices',
@@ -454,6 +464,7 @@ export class SettingsSiteSettingsPageElement extends
                   Id.AR,
                   Id.VR,
                   Id.IDLE_DETECTION,
+                  Id.WEB_PRINTING,
                   Id.WINDOW_MANAGEMENT,
                   Id.LOCAL_FONTS,
                   Id.AUTO_PICTURE_IN_PICTURE,

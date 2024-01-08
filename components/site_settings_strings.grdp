@@ -232,6 +232,12 @@
   <message name="IDS_SITE_SETTINGS_TYPE_ZOOM_LEVELS_MID_SENTENCE" desc="The label used for the zoom levels site settings controls when used mid-sentence.">
     zoom levels
   </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING" desc="The label used for the web printing site settings controls.">
+    Advanced printer features
+  </message>
+  <message name="IDS_SITE_SETTINGS_TYPE_WEB_PRINTING_MID_SENTENCE" desc="The label used for the web printing site settings controls when used mid-sentence.">
+    advanced printer features
+  </message>
   <message name="IDS_SITE_SETTINGS_TYPE_WINDOW_MANAGEMENT" desc="The label used for the window management site settings controls.">
     Window management
   </message>

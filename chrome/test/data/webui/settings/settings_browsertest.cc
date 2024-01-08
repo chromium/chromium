@@ -14,6 +14,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 class SettingsBrowserTest : public WebUIMochaBrowserTest {
  protected:
@@ -889,6 +890,9 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
   SettingsPrivacyPageTest() {
     scoped_feature_list1_.InitWithFeatures(
         {permissions::features::kPermissionStorageAccessAPI,
+#if BUILDFLAG(IS_CHROMEOS)
+         blink::features::kWebPrinting,
+#endif
          features::kSafetyCheckNotificationPermissions, features::kSafetyHub},
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -910,6 +914,16 @@ class SettingsPrivacyPageTestNoTestingConfig : public SettingsPrivacyPageTest {
     command_line->AppendSwitch("disable-field-trial-config");
   }
 };
+
+// Tests that the content settings page for Web Printing is not shown by
+// default.
+class SettingsPrivacyPageTestWithoutWebPrinting : public SettingsBrowserTest {};
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestWithoutWebPrinting,
+                       WebPrintingNotShown) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('WebPrintingNotShown')");
+}
 
 // TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
 #if BUILDFLAG(IS_LINUX)

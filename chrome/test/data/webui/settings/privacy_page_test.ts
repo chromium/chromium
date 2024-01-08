@@ -51,6 +51,11 @@ const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_USB_DEVICES,
   routes.SITE_SETTINGS_VR,
 
+  // WEB_PRINTING is currently only supported on ChromeOS.
+  // <if expr="is_chromeos">
+  routes.SITE_SETTINGS_WEB_PRINTING,
+  // </if>
+
   // TODO(crbug.com/1128902) After restructure add coverage for elements on
   // routes which depend on flags being enabled.
   // routes.SITE_SETTINGS_BLUETOOTH_SCANNING,
@@ -288,6 +293,12 @@ suite(`PrivacySandbox`, function() {
     await flushTasks();
     assertEquals(
         routes.PRIVACY_SANDBOX, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite('WebPrintingNotShown', function () {
+  test('navigateToWebPrinting', function () {
+    assertThrows(() => Router.getInstance().navigateTo(routes.SITE_SETTINGS_WEB_PRINTING));
   });
 });
 

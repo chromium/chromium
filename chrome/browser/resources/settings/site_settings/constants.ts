@@ -51,6 +51,7 @@ export enum ContentSettingsTypes {
   VR = 'vr',
   WINDOW_MANAGEMENT = 'window-placement',
   ZOOM_LEVELS = 'zoom-levels',
+  WEB_PRINTING = 'web-printing',
 
   // The following items are not in the C++ kContentSettingsTypeGroupNames, but
   // are used everywhere where ContentSettingsTypes is used in JS.
