@@ -238,10 +238,6 @@ class VotesUploader {
     is_manual_generation_ = is_manual_generation;
   }
 
-  autofill::FieldRendererId get_generation_element() const {
-    return generation_element_;
-  }
-
   void set_generation_element(autofill::FieldRendererId generation_element) {
     generation_element_ = generation_element;
   }
@@ -394,7 +390,7 @@ class VotesUploader {
   // Whether password generation was manually triggered.
   bool is_manual_generation_ = false;
 
-  // A password field name that is used for generation.
+  // A password field that is used for generation.
   autofill::FieldRendererId generation_element_;
 
   // Captures whether the user changed the username to a known value, an unknown

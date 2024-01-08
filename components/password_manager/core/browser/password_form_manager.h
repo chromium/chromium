@@ -458,6 +458,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // The decision is captured at the provisional save time while it can be
   // already different for the landing page.
   bool is_saving_allowed_ = true;
+
+  // A password field that is used for generation.
+  autofill::FieldRendererId generation_element_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

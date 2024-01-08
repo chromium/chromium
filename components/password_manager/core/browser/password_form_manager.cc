@@ -598,6 +598,7 @@ void PasswordFormManager::SetGenerationPopupWasShown(
 
 void PasswordFormManager::SetGenerationElement(
     FieldRendererId generation_element) {
+  generation_element_ = generation_element;
   votes_uploader_.set_generation_element(generation_element);
 }
 
@@ -641,7 +642,7 @@ void PasswordFormManager::UpdateStateOnUserInput(
   std::u16string generated_password =
       password_save_manager_->GetGeneratedPassword();
   CHECK(!generated_password.empty());
-  if (votes_uploader_.get_generation_element() == field_id) {
+  if (generation_element_ == field_id) {
     generated_password = field_value;
     CHECK(!generated_password.empty());
   }
