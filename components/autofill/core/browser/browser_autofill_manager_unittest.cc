@@ -5585,13 +5585,6 @@ class BrowserAutofillManagerWithLogEventsTest
         .is_active_pattern_source = true,
         .rank_in_field_signature_group = field_signature_rank,
     });
-    // Legacy pattern.
-    expected_events.push_back(HeuristicPredictionFieldLogEvent{
-        .field_type = heuristic_type,
-        .pattern_source = PatternSource::kLegacy,
-        .is_active_pattern_source = false,
-        .rank_in_field_signature_group = field_signature_rank,
-    });
     // Experimental pattern.
     expected_events.push_back(HeuristicPredictionFieldLogEvent{
         .field_type = heuristic_type,

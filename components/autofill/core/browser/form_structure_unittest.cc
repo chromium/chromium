@@ -71,8 +71,8 @@ constexpr DenseSet<PatternSource> kAllPatternSources {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
 #else
-  PatternSource::kLegacy, PatternSource::kDefault, PatternSource::kExperimental,
-      PatternSource::kNextGen
+    PatternSource::kDefault, PatternSource::kExperimental,
+    PatternSource::kNextGen
 #endif
 };
 
