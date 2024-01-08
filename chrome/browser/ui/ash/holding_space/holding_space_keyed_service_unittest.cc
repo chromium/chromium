@@ -3083,14 +3083,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Verifies that a Photoshop Web item will be added to the user's Holding Space
 // under expected circumstances.
-// TODO(crbug.com/1516029): Flaky test.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AddPhotoshopWebItem DISABLED_AddPhotoshopWebItem
-#else
-#define MAYBE_AddPhotoshopWebItem AddPhotoshopWebItem
-#endif
 TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
-       MAYBE_AddPhotoshopWebItem) {
+       AddPhotoshopWebItem) {
   // Cache `profile`.
   TestingProfile* const profile = GetProfile();
 
@@ -3115,7 +3109,9 @@ TEST_P(HoldingSpaceKeyedServicePhotoshopWebIntegrationTest,
 
   // Verify initial histogram state.
   base::HistogramTester histogram_tester;
-  EXPECT_TRUE(histogram_tester.GetAllHistogramsRecorded().empty());
+  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
+                  "HoldingSpace.FileCreatedFromShowSaveFilePicker."),
+              IsEmpty());
 
   // Propagate file creation event from a file picker with the binding context
   // specified by test parameterization.
