@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.DESTROY_COORDINATOR_DELAY_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.HARD_CLEANUP_DELAY_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
+
 import android.content.Context;
+import android.os.Handler;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -52,6 +57,10 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsAnimatingSupplier =
             new ObservableSupplierImpl<>();
+    private final Handler mHandler = new Handler();
+    private final Runnable mSoftCleanupRunnable = this::softCleanupInternal;
+    private final Runnable mHardCleanupRunnable = this::hardCleanupInternal;
+    private final Runnable mDestroyCoordinatorRunnable = this::destroyTabSwitcherPaneCoordinator;
 
     private final MenuOrKeyboardActionHandler mMenuOrKeyboardActionHandler =
             new MenuOrKeyboardActionHandler() {
@@ -139,12 +148,39 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         boolean isVisible = loadHint == LoadHint.HOT;
         mIsVisibleSupplier.set(isVisible);
 
+        removeDelayedCallbacks();
+
         if (isVisible) {
+            createTabSwitcherPaneCoordinator();
             mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
                     mMenuOrKeyboardActionHandler);
+            showAllTabs();
+            setInitialScrollIndexOffset();
+            // TODO(crbug/1502201): This should only happen when the Pane becomes user visible which
+            // might only happen after the Hub animation finishes. Figure out how to handle that
+            // since the load hint for hot will come before the animation is started. Panes likely
+            // need to know an animation is going to play and when it is finished (possibly using
+            // the isAnimatingSupplier?).
+            requestAccessibilityFocusOnCurrentTab();
         } else {
             mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
                     mMenuOrKeyboardActionHandler);
+        }
+
+        if (loadHint == LoadHint.WARM) {
+            if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) {
+                mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
+            } else {
+                createTabSwitcherPaneCoordinator();
+            }
+        }
+
+        if (loadHint == LoadHint.COLD) {
+            if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) {
+                mHandler.postDelayed(mSoftCleanupRunnable, SOFT_CLEANUP_DELAY_MS);
+                mHandler.postDelayed(mHardCleanupRunnable, HARD_CLEANUP_DELAY_MS);
+                mHandler.postDelayed(mDestroyCoordinatorRunnable, DESTROY_COORDINATOR_DELAY_MS);
+            }
         }
     }
 
@@ -248,19 +284,37 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         coordinator.setTabSwitcherRecyclerViewPosition(position);
     }
 
+    /**
+     * Request to show all the tabs in the pane. Subclasses should override this method to invoke
+     * {@link TabSwitcherResetHandler#resetWithTabList} with their available tabs.
+     */
+    protected abstract void showAllTabs();
+
+    /** Requests accessibility focus on the currently selected tab in the tab switcher. */
+    protected void requestAccessibilityFocusOnCurrentTab() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.requestAccessibilityFocusOnCurrentTab();
+    }
+
+    /** Returns the {@link TabListMode} of the {@link TabListCoordinator} that the pane hosts. */
     protected @TabListMode int getTabListMode() {
         return mFactory.getTabListMode();
     }
 
+    /** Returns whether the pane is visible onscreen. Note this is not the same as being focused. */
     protected boolean isVisible() {
         return mIsVisibleSupplier.get();
     }
 
+    /** Returns the current {@link TabSwitcherPaneCoordinator} or null if one doesn't exist. */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    protected @Nullable TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
+    @Nullable
+    TabSwitcherPaneCoordinator getTabSwitcherPaneCoordinator() {
         return mTabSwitcherPaneCoordinatorSupplier.get();
     }
 
+    /** Creates a {@link TabSwitcherCoordinator}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     void createTabSwitcherPaneCoordinator() {
         if (mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
@@ -279,12 +333,41 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         }
     }
 
-    protected void destroyTabSwitcherPaneCoordinator() {
+    /**
+     * Destroys the current {@link TabSwitcherCoordinator}. It is safe to call this even if a
+     * coordinator does not exist.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    void destroyTabSwitcherPaneCoordinator() {
         if (!mTabSwitcherPaneCoordinatorSupplier.hasValue()) return;
 
         @NonNull TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
         mTabSwitcherPaneCoordinatorSupplier.set(null);
         mRootView.removeAllViews();
         coordinator.destroy();
+    }
+
+    private void setInitialScrollIndexOffset() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.setInitialScrollIndexOffset();
+    }
+
+    private void softCleanupInternal() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.softCleanup();
+    }
+
+    private void hardCleanupInternal() {
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPaneCoordinatorSupplier.get();
+        if (coordinator == null) return;
+        coordinator.hardCleanup();
+    }
+
+    private void removeDelayedCallbacks() {
+        mHandler.removeCallbacks(mSoftCleanupRunnable);
+        mHandler.removeCallbacks(mHardCleanupRunnable);
+        mHandler.removeCallbacks(mDestroyCoordinatorRunnable);
     }
 }

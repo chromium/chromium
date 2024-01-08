@@ -71,10 +71,10 @@ public class PaneManagerImpl implements PaneManager {
         Pane previousPane = mCurrentPaneSupplierImpl.get();
         if (nextPane == previousPane) return true;
 
+        mCurrentPaneSupplierImpl.set(nextPane);
         if (isHubVisible()) {
             mPaneTransitionHelper.processTransition(nextPane.getPaneId(), LoadHint.HOT);
         }
-        mCurrentPaneSupplierImpl.set(nextPane);
 
         if (previousPane != null && isHubVisible()) {
             mPaneTransitionHelper.queueTransition(previousPane.getPaneId(), LoadHint.WARM);

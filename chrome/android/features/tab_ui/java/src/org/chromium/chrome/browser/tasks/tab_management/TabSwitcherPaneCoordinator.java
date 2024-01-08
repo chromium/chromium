@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab.TitleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -50,6 +52,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final SnackbarManager mSnackbarManager;
+    private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
+    private final ObservableSupplier<Boolean> mIsVisibleSupplier;
     private final TabSwitcherPaneMediator mMediator;
     private final Supplier<Boolean> mTabGridDialogVisibilitySupplier = this::isTabGridDialogVisible;
     private final TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
@@ -105,6 +109,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @TabListMode int mode) {
         mProfileProviderSupplier = profileProviderSupplier;
         mSnackbarManager = snackbarManager;
+        mIsVisibleSupplier = isVisibleSupplier;
+        isVisibleSupplier.addObserver(mOnVisibilityChanged);
         assert mode != TabListMode.STRIP : "TabListMode.STRIP not supported.";
 
         ViewGroup coordinatorView = activity.findViewById(R.id.coordinator);
@@ -240,6 +246,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGridDialogCoordinator != null) {
             mTabGridDialogCoordinator.destroy();
         }
+        mIsVisibleSupplier.removeObserver(mOnVisibilityChanged);
         mMultiThumbnailCardProvider.destroy();
         mTabListEditorManager.destroy();
         mMessageManager.destroy();
@@ -280,7 +287,23 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param tabList The {@link TabList} to show tabs for.
      */
     public void resetWithTabList(@Nullable TabList tabList) {
-        assert false : "Not implemented.";
+        var pseudoTabList = PseudoTab.getListOfPseudoTab(tabList);
+        mMessageManager.beforeReset();
+        mTabListCoordinator.resetWithListOfTabs(pseudoTabList, /* quickMode= */ true);
+        mMessageManager.afterReset(pseudoTabList == null ? 0 : pseudoTabList.size());
+    }
+
+    /** Performs soft cleanup which removes thumbnails to relieve memory usage. */
+    public void softCleanup() {
+        mTabListCoordinator.softCleanup();
+    }
+
+    /** Performs hard cleanup which saves price drop information. */
+    public void hardCleanup() {
+        mTabListCoordinator.hardCleanup();
+        // TODO(crbug/1505772): The pre-fork implementation resets the tab list, this seems
+        // suboptimal. Consider not doing this.
+        resetWithTabList(null);
     }
 
     /**
@@ -344,6 +367,17 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         // current group id in TabGridDialog can not be indexed in TabListModel, which should never
         // happen. Remove this when figure out the actual cause.
         return sourceViewHolder == null ? null : sourceViewHolder.itemView;
+    }
+
+    private void onVisibilityChanged(boolean visible) {
+        if (visible) {
+            // TODO(crbug/1505772): This has some possibly unwanted side effects in
+            // TabListRecyclerView where the item animator becomes permanently removed. Consider
+            // modifications downstream (or a parallel method) to ensure this doesn't happen.
+            mTabListCoordinator.prepareTabSwitcherView();
+        } else {
+            mTabListCoordinator.postHiding();
+        }
     }
 
     private GridCardOnClickListenerProvider getGridCardOnClickListenerProvider() {

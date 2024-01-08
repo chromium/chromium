@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -204,12 +205,17 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(mIncognitoTabModel).addIncognitoObserver(mIncognitoTabModelObserverCaptor.capture());
         verify(coordinator).initWithNative();
 
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(true);
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(true);
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(coordinator).resetWithTabList(null);
 
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
         callback.onIncognitoReauthSuccess();
         verify(coordinator).resetWithTabList(mTabModelFilter);
-        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator, times(2)).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
 
         // Check not called again
@@ -217,9 +223,73 @@ public class IncognitoTabSwitcherPaneUnitTest {
         callback.onIncognitoReauthSuccess();
         verifyNoMoreInteractions(coordinator);
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(coordinator, times(2)).resetWithTabList(mTabModelFilter);
+        verify(coordinator, times(3)).setInitialScrollIndexOffset();
+        verify(coordinator, times(2)).requestAccessibilityFocusOnCurrentTab();
 
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
         callback.onIncognitoReauthSuccess();
         verifyNoMoreInteractions(coordinator);
+    }
+
+    @Test
+    @SmallTest
+    public void testResetWithTabList() {
+        assertFalse(mIncognitoTabSwitcherPane.resetWithTabList(null, false));
+
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        assertTrue(mIncognitoTabSwitcherPane.resetWithTabList(null, false));
+        verify(coordinator).resetWithTabList(null);
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mIncognitoTabSwitcherPane.showAllTabs();
+        verify(coordinator, times(2)).resetWithTabList(null);
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(coordinator, times(3)).resetWithTabList(null);
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mIncognitoTabSwitcherPane.showAllTabs();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+    }
+
+    @Test
+    @SmallTest
+    public void testResetWithTabListReauthRequired() {
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
+        ShadowLooper.runUiThreadTasks();
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(true);
+        mIncognitoTabSwitcherPane.showAllTabs();
+        verify(coordinator).resetWithTabList(null);
+    }
+
+    @Test
+    @SmallTest
+    public void testRequestAccessibilityFocusOnCurrentTab() {
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
+        ShadowLooper.runUiThreadTasks();
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(true);
+        mIncognitoTabSwitcherPane.requestAccessibilityFocusOnCurrentTab();
+        verify(coordinator, never()).requestAccessibilityFocusOnCurrentTab();
+
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
+        mIncognitoTabSwitcherPane.requestAccessibilityFocusOnCurrentTab();
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
     }
 }

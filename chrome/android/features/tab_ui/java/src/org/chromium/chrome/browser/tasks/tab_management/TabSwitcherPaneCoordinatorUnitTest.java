@@ -9,13 +9,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyBoolean;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.FOCUS_TAB_INDEX_FOR_ACCESSIBILITY;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
+import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -30,6 +36,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -129,6 +136,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
         mTabModel = new MockTabModel(mProfile, null);
         when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
 
         mProfileProviderSupplier.set(mProfileProvider);
         mTabModelFilterSupplier.set(mTabModelFilter);
@@ -283,5 +291,54 @@ public class TabSwitcherPaneCoordinatorUnitTest {
             }
         }
         assertFalse("Did not remove custom view", found);
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTab() {
+        int tabId = 1;
+        MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
+        tab.setIsInitialized(true);
+        int index = 0;
+        mTabModel.addTab(
+                tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        when(mTabModelFilter.indexOf(tab)).thenReturn(index);
+        when(mTabModelFilter.getTabAt(index)).thenReturn(tab);
+        when(mTabModelFilter.getCount()).thenReturn(1);
+        when(mTabModelFilter.getRelatedTabList(tabId)).thenReturn(Collections.singletonList(tab));
+
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        doCallback(2, (Callback<Bitmap> callback) -> callback.onResult(bitmap))
+                .when(mTabContentManager)
+                .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
+        mCoordinator.resetWithTabList(mTabModelFilter);
+
+        TabListRecyclerView recyclerView =
+                (TabListRecyclerView) mActivity.findViewById(R.id.tab_list_recycler_view);
+        // Manually size the view so that the children get added.
+        recyclerView.measure(0, 0);
+        recyclerView.layout(0, 0, 100, 1000);
+
+        assertEquals(1, recyclerView.getAdapter().getItemCount());
+        assertEquals(1, recyclerView.getChildCount());
+        // This gets called twice initially due to thumbnail size and the fetcher independently
+        // making requests in the view binder.
+        verify(mTabContentManager, times(2))
+                .getTabThumbnailWithCallback(eq(tabId), any(), any(), anyBoolean(), anyBoolean());
+
+        TabThumbnailView thumbnailView =
+                (TabThumbnailView) mActivity.findViewById(R.id.tab_thumbnail);
+        assertNotNull(thumbnailView);
+        assertFalse(thumbnailView.isPlaceholder());
+
+        mIsVisibleSupplier.set(false);
+
+        mCoordinator.softCleanup();
+        assertTrue(thumbnailView.isPlaceholder());
+
+        mCoordinator.hardCleanup();
+        assertEquals(0, recyclerView.getAdapter().getItemCount());
+        // Don't assert on the actual child count, robolectric isn't removing the child view for
+        // some reason.
     }
 }

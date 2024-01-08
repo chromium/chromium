@@ -40,8 +40,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 }
             };
 
-    // TODO(crbug/1505772): Add and override TabSwitcherPaneBase#resetWithTabList to not load any
-    // tabs if mIncognitoReauthController is pending a reauth.
     private final IncognitoReauthCallback mIncognitoReauthCallback =
             new IncognitoReauthCallback() {
                 @Override
@@ -154,9 +152,37 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public void showAllTabs() {
+        resetWithTabList(mIncognitoTabModelFilterSupplier.get(), false);
+    }
+
+    @Override
     public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
-        // TODO(crbug/1505772): Implement.
+        @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+        if (coordinator == null) return false;
+
+        boolean isNotVisibleOrSelected =
+                !isVisible() || !mIncognitoTabModelFilterSupplier.get().isCurrentlySelectedFilter();
+        boolean incognitoReauthShowing =
+                mIncognitoReauthController != null
+                        && mIncognitoReauthController.isIncognitoReauthPending();
+
+        if (isNotVisibleOrSelected || incognitoReauthShowing) {
+            coordinator.resetWithTabList(null);
+        } else {
+            coordinator.resetWithTabList(tabList);
+        }
         return true;
+    }
+
+    @Override
+    protected void requestAccessibilityFocusOnCurrentTab() {
+        if (mIncognitoReauthController != null
+                && mIncognitoReauthController.isReauthPageShowing()) {
+            return;
+        }
+
+        super.requestAccessibilityFocusOnCurrentTab();
     }
 
     private IncognitoTabModel getIncognitoTabModel() {

@@ -175,11 +175,90 @@ public class TabSwitcherPaneUnitTest {
 
     @Test
     @SmallTest
-    public void testLoadHint() {
-        // TODO(crbug/1505772): this is a noop right now.
+    public void testLoadHintColdWarmCold() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
         mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        verify(coordinator, times(2)).softCleanup();
+        verify(coordinator).hardCleanup();
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadHintColdHotWarm() {
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+    }
+
+    @Test
+    @SmallTest
+    public void testLoadHintColdWarmHotCold() {
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        assertNotNull(coordinator);
+        verify(coordinator, never()).softCleanup();
+        verify(coordinator, never()).hardCleanup();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
+        verify(coordinator).setInitialScrollIndexOffset();
+        verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        verify(coordinator).softCleanup();
+        verify(coordinator).hardCleanup();
     }
 
     @Test
@@ -259,7 +338,8 @@ public class TabSwitcherPaneUnitTest {
     @SmallTest
     public void testPriceTracking() {
         mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
-        assertNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        assertNotNull(mTabSwitcherPane.getTabSwitcherPaneCoordinator());
+        mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
 
@@ -307,6 +387,7 @@ public class TabSwitcherPaneUnitTest {
 
         MenuOrKeyboardActionHandler handler = mMenuOrKeyboardActionHandlerCaptor.getValue();
         // Check this doesn't crash if there is no coordinator.
+        mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
         assertFalse(
                 handler.handleMenuOrKeyboardAction(
                         org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
@@ -382,5 +463,29 @@ public class TabSwitcherPaneUnitTest {
 
         mTabSwitcherPane.setTabSwitcherRecyclerViewPosition(position);
         verify(mTabSwitcherPaneCoordinator).setTabSwitcherRecyclerViewPosition(position);
+    }
+
+    @Test
+    @SmallTest
+    public void testResetWithTabList() {
+        assertFalse(mTabSwitcherPane.resetWithTabList(null, false));
+
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
+
+        assertTrue(mTabSwitcherPane.resetWithTabList(null, false));
+        verify(coordinator).resetWithTabList(null);
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabSwitcherPane.showAllTabs();
+        verify(coordinator, times(2)).resetWithTabList(null);
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
+
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        verify(coordinator, times(3)).resetWithTabList(null);
+
+        when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
+        mTabSwitcherPane.showAllTabs();
+        verify(coordinator).resetWithTabList(mTabModelFilter);
     }
 }

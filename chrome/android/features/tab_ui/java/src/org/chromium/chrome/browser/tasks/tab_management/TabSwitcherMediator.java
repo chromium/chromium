@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SHADOW_TOP_OFFSET;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.VISIBILITY_LISTENER;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.HARD_CLEANUP_DELAY_MS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConstants.SOFT_CLEANUP_DELAY_MS;
 
 import android.content.Context;
 import android.os.Handler;
@@ -87,9 +89,6 @@ class TabSwitcherMediator
                 TabSwitcherCustomViewManager.Delegate,
                 BackPressHandler {
     private static final String TAG = "TabSwitcherMediator";
-
-    private static final int DEFAULT_SOFT_CLEANUP_DELAY_MS = 3_000;
-    private static final int DEFAULT_CLEANUP_DELAY_MS = 30_000;
 
     private final Handler mHandler;
 
@@ -945,10 +944,10 @@ class TabSwitcherMediator
      * @see TabSwitcher.TabListDelegate#postHiding
      */
     void postHiding() {
-        Log.d(TAG, "SoftCleanupDelay = " + DEFAULT_SOFT_CLEANUP_DELAY_MS);
-        mHandler.postDelayed(mSoftClearTabListRunnable, DEFAULT_SOFT_CLEANUP_DELAY_MS);
-        Log.d(TAG, "CleanupDelay = " + DEFAULT_CLEANUP_DELAY_MS);
-        mHandler.postDelayed(mClearTabListRunnable, DEFAULT_CLEANUP_DELAY_MS);
+        Log.d(TAG, "SoftCleanupDelay = " + SOFT_CLEANUP_DELAY_MS);
+        mHandler.postDelayed(mSoftClearTabListRunnable, SOFT_CLEANUP_DELAY_MS);
+        Log.d(TAG, "HardCleanupDelay = " + HARD_CLEANUP_DELAY_MS);
+        mHandler.postDelayed(mClearTabListRunnable, HARD_CLEANUP_DELAY_MS);
         mIsTransitionInProgress = false;
         notifyBackPressStateChangedInternal();
         if (ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()

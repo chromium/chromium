@@ -91,8 +91,23 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public void showAllTabs() {
+        resetWithTabList(mTabModelFilterSupplier.get(), false);
+    }
+
+    @Override
     public boolean resetWithTabList(@Nullable TabList tabList, boolean quickMode) {
-        // TODO(crbug/1505772): Implement.
+        @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
+        if (coordinator == null) return false;
+
+        boolean isNotVisibleOrSelected =
+                !isVisible() || !mTabModelFilterSupplier.get().isCurrentlySelectedFilter();
+
+        if (isNotVisibleOrSelected) {
+            coordinator.resetWithTabList(null);
+        } else {
+            coordinator.resetWithTabList(tabList);
+        }
         return true;
     }
 
