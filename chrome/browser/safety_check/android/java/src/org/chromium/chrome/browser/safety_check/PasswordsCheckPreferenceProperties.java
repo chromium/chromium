@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
+import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckNativeException;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -85,7 +86,10 @@ class PasswordsCheckPreferenceProperties {
                             == CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED) {
                 return PasswordsState.BACKEND_VERSION_NOT_SUPPORTED;
             }
-            // TODO (b/312930046): Add logic to support the chrome native password check errors.
+            if (error instanceof PasswordCheckNativeException) {
+                return passwordsStatefromErrorState(
+                        ((PasswordCheckNativeException) error).errorCode);
+            }
             return PasswordsState.ERROR;
         }
 
