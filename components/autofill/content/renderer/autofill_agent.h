@@ -203,7 +203,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
  private:
   class DeferringAutofillDriver;
-  friend class FormControlClickDetectionTest;
+  friend class AutofillAgentFormInteractionTest;
   friend class AutofillAgentTestApi;
 
   // This class ensures that the driver will only receive notifications only

@@ -4,8 +4,8 @@
 
 #include <memory>
 
-#include "chrome/test/base/chrome_render_view_test.h"
 #include "components/autofill/content/renderer/autofill_agent.h"
+#include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -21,20 +21,16 @@ namespace autofill {
 namespace {
 
 FieldRendererId GetFieldRendererId(blink::WebElement element) {
-  blink::WebFormControlElement field =
-      element.To<blink::WebFormControlElement>();
-  if (field.IsNull())
-    return {};
-  return form_util::GetFieldRendererId(field);
+  blink::WebFormControlElement f = element.To<blink::WebFormControlElement>();
+  return f.IsNull() ? FieldRendererId() : form_util::GetFieldRendererId(f);
 }
 
 }  // namespace
 
-class FormControlClickDetectionTest : public ChromeRenderViewTest {
+class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
  protected:
   void SetUp() override {
-    ChromeRenderViewTest::SetUp();
-    // Must be set before loading HTML.
+    test::AutofillRendererTest::SetUp();
     web_view_->SetDefaultPageScaleLimits(1, 4);
 
     LoadHTML(
@@ -62,18 +58,18 @@ class FormControlClickDetectionTest : public ChromeRenderViewTest {
   void TearDown() override {
     text_.Reset();
     textarea_.Reset();
-    ChromeRenderViewTest::TearDown();
+    test::AutofillRendererTest::TearDown();
   }
 
   void ClearAutofillAgentTestState() {
-    autofill_agent_->last_clicked_form_control_element_for_testing_ = {};
+    autofill_agent().last_clicked_form_control_element_for_testing_ = {};
   }
 
-  FieldRendererId last_clicked_form_control_element() const {
-    return autofill_agent_->last_clicked_form_control_element_for_testing_;
+  FieldRendererId last_clicked_form_control_element() {
+    return autofill_agent().last_clicked_form_control_element_for_testing_;
   }
 
-  bool form_control_element_clicked_called() const {
+  bool form_control_element_clicked_called() {
     return !last_clicked_form_control_element().is_null();
   }
 
@@ -81,8 +77,8 @@ class FormControlClickDetectionTest : public ChromeRenderViewTest {
   blink::WebElement textarea_;
 };
 
-// Tests that a clicked input call is properly handled by AutofillAgent.
-TEST_F(FormControlClickDetectionTest, InputClicked) {
+// Tests that a clicked-input event is properly handled by AutofillAgent.
+TEST_F(AutofillAgentFormInteractionTest, InputClicked) {
   ClearAutofillAgentTestState();
   EXPECT_NE(text_, text_.GetDocument().FocusedElement());
   // Click the text field once.
@@ -103,21 +99,31 @@ TEST_F(FormControlClickDetectionTest, InputClicked) {
   EXPECT_FALSE(form_control_element_clicked_called());
 }
 
-// Tests that AutofillAgent ignores a right click.
-TEST_F(FormControlClickDetectionTest, InputRightClicked) {
+// Tests that AutofillAgent ignores a right click on Desktop, but not on
+// Android.
+TEST_F(AutofillAgentFormInteractionTest, InputRightClicked) {
   ClearAutofillAgentTestState();
   EXPECT_NE(text_, text_.GetDocument().FocusedElement());
   // Right click the text field once.
   EXPECT_TRUE(SimulateElementRightClick("text_1"));
-  EXPECT_FALSE(form_control_element_clicked_called());
-  EXPECT_NE(GetFieldRendererId(text_), last_clicked_form_control_element());
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_TRUE(form_control_element_clicked_called());
+    EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
+  } else {
+    EXPECT_FALSE(form_control_element_clicked_called());
+    EXPECT_NE(GetFieldRendererId(text_), last_clicked_form_control_element());
+  }
 }
 
-TEST_F(FormControlClickDetectionTest, InputFocusedAndClicked) {
+TEST_F(AutofillAgentFormInteractionTest, InputFocusedAndClicked) {
   ClearAutofillAgentTestState();
   // Focus the text field without a click.
   ExecuteJavaScriptForTests("document.getElementById('text_1').focus();");
-  EXPECT_FALSE(form_control_element_clicked_called());
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_TRUE(form_control_element_clicked_called());
+  } else {
+    EXPECT_FALSE(form_control_element_clicked_called());
+  }
   ClearAutofillAgentTestState();
 
   // Click the focused text field to test that was_focused_ is set correctly.
@@ -128,7 +134,7 @@ TEST_F(FormControlClickDetectionTest, InputFocusedAndClicked) {
 
 // Tests that AutofillAgent accepts form clicks for a textarea element which is
 // clicked.
-TEST_F(FormControlClickDetectionTest, TextAreaClicked) {
+TEST_F(AutofillAgentFormInteractionTest, TextAreaClicked) {
   ClearAutofillAgentTestState();
   // Click the textarea field once.
   EXPECT_TRUE(SimulateElementClick("textarea_1"));
@@ -148,11 +154,15 @@ TEST_F(FormControlClickDetectionTest, TextAreaClicked) {
   EXPECT_FALSE(form_control_element_clicked_called());
 }
 
-TEST_F(FormControlClickDetectionTest, TextAreaFocusedAndClicked) {
+TEST_F(AutofillAgentFormInteractionTest, TextAreaFocusedAndClicked) {
   ClearAutofillAgentTestState();
   // Focus the textarea without a click.
   ExecuteJavaScriptForTests("document.getElementById('textarea_1').focus();");
-  EXPECT_FALSE(form_control_element_clicked_called());
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    EXPECT_TRUE(form_control_element_clicked_called());
+  } else {
+    EXPECT_FALSE(form_control_element_clicked_called());
+  }
   ClearAutofillAgentTestState();
 
   // Click the text field again and verify that AutofillAgent knows about its
@@ -163,7 +173,7 @@ TEST_F(FormControlClickDetectionTest, TextAreaFocusedAndClicked) {
   ClearAutofillAgentTestState();
 }
 
-TEST_F(FormControlClickDetectionTest, ScaledTextareaClicked) {
+TEST_F(AutofillAgentFormInteractionTest, ScaledTextareaClicked) {
   ClearAutofillAgentTestState();
   EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
   web_view_->SetPageScaleFactor(3);
@@ -175,7 +185,7 @@ TEST_F(FormControlClickDetectionTest, ScaledTextareaClicked) {
   EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
 }
 
-TEST_F(FormControlClickDetectionTest, ScaledTextareaTapped) {
+TEST_F(AutofillAgentFormInteractionTest, ScaledTextareaTapped) {
   ClearAutofillAgentTestState();
   EXPECT_NE(textarea_, textarea_.GetDocument().FocusedElement());
   web_view_->SetPageScaleFactor(3);
@@ -187,7 +197,7 @@ TEST_F(FormControlClickDetectionTest, ScaledTextareaTapped) {
   EXPECT_EQ(GetFieldRendererId(textarea_), last_clicked_form_control_element());
 }
 
-TEST_F(FormControlClickDetectionTest, DisabledInputClickedNoEvent) {
+TEST_F(AutofillAgentFormInteractionTest, DisabledInputClickedNoEvent) {
   ClearAutofillAgentTestState();
   EXPECT_NE(text_, text_.GetDocument().FocusedElement());
   // Click the text field once.
@@ -201,7 +211,7 @@ TEST_F(FormControlClickDetectionTest, DisabledInputClickedNoEvent) {
   EXPECT_FALSE(form_control_element_clicked_called());
 }
 
-TEST_F(FormControlClickDetectionTest,
+TEST_F(AutofillAgentFormInteractionTest,
        ClickDisabledInputDoesNotResetClickCounter) {
   EXPECT_NE(text_, text_.GetDocument().FocusedElement());
   // Click the text field once.
@@ -222,7 +232,7 @@ TEST_F(FormControlClickDetectionTest,
   EXPECT_EQ(GetFieldRendererId(text_), last_clicked_form_control_element());
 }
 
-TEST_F(FormControlClickDetectionTest, TapNearEdgeIsPageClick) {
+TEST_F(AutofillAgentFormInteractionTest, TapNearEdgeIsPageClick) {
   EXPECT_NE(text_, text_.GetDocument().FocusedElement());
   // Tap outside of element bounds, but tap width is overlapping the field.
   gfx::Rect element_bounds = GetElementBounds("text_1");

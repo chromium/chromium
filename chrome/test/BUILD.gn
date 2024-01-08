@@ -2860,7 +2860,6 @@ if (!is_android && !is_fuchsia) {
       "../renderer/autofill/fake_password_generation_driver.h",
       "../renderer/autofill/form_autocomplete_browsertest.cc",
       "../renderer/autofill/form_autofill_browsertest.cc",
-      "../renderer/autofill/form_control_click_detection_browsertest.cc",
       "../renderer/autofill/page_passwords_analyser_browsertest.cc",
       "../renderer/autofill/password_autofill_agent_browsertest.cc",
       "../renderer/autofill/password_generation_agent_browsertest.cc",
