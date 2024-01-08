@@ -733,6 +733,24 @@ void FirmwareUpdateManager::OnPropertiesChangedResponse(
     return;
   }
   const auto status = FwupdStatus(properties->status.value());
+
+  // If the FwupdStatus just switched from WaitingForUser to anything else,
+  // consider the request successful and record a metric.
+  if (last_fwupd_status_ == FwupdStatus::kWaitingForUser &&
+      status != FwupdStatus::kWaitingForUser &&
+      last_request_started_timestamp_.has_value() &&
+      !last_request_started_timestamp_->is_null() &&
+      !last_device_request_.is_null()) {
+    const base::TimeDelta request_duration =
+        base::Time::Now() - last_request_started_timestamp_.value();
+    firmware_update::metrics::EmitDeviceRequestSuccessfulWithDuration(
+        request_duration, last_device_request_->id);
+
+    // Reset these tracking variables now that we've used them.
+    last_device_request_ = nullptr;
+    last_request_started_timestamp_ = std::nullopt;
+  }
+
   last_fwupd_status_ = status;
   const auto percentage = properties->percentage.value();
   VLOG(1) << "fwupd: OnPropertiesChangedResponse called with Status: "

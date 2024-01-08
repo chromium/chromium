@@ -64,6 +64,16 @@ void EmitFailedDeviceRequestDuration(const base::TimeDelta& request_duration,
       request_duration);
 }
 
+void EmitDeviceRequestSuccessfulWithDuration(
+    const base::TimeDelta& request_duration,
+    mojom::DeviceRequestId request_id) {
+  base::UmaHistogramLongTimes100(
+      base::StrCat(
+          {"ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration.RequestId",
+           GetRequestIdString(request_id)}),
+      request_duration);
+}
+
 std::string GetSourceStr(bool is_startup) {
   return std::string(kHistogramName) +
          std::string(is_startup ? "OnStartup" : "OnRefresh");

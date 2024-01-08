@@ -1308,11 +1308,64 @@ TEST_F(FirmwareUpdateManagerTest,
   // the user successfully fulfilled the request.
   SetStatus(FwupdStatus::kDeviceRestart);
 
+  // Since there was a successful request, this metric that tracks the duration
+  // of successful requests should have been recorded.
+  histogram_tester.ExpectTimeBucketCount(
+      "ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration."
+      "RequestIdInsertUSBCable",
+      base::Seconds(10), 1);
+
   TriggerInstallFailed();
 
   // Expect that the metric is not logged, because the request was successful,
   // even though the install failed.
   histogram_tester.ExpectTimeBucketCount(metric_name, base::Seconds(10), 0);
+}
+
+TEST_F(FirmwareUpdateManagerTest, RequestSucceededWithDurationMetric) {
+  base::HistogramTester histogram_tester;
+
+  // These steps are necessary for the rest of the test to work correctly.
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+  FakeDeviceRequestObserver device_request_observer;
+  SetupDeviceRequestObserver(&device_request_observer);
+
+  // Trigger a request.
+  TriggerOnDeviceRequestResponse(
+      firmware_update::mojom::DeviceRequestId::kPressUnlock,
+      firmware_update::mojom::DeviceRequestKind::kImmediate);
+  // Set status to kWaitingForUser, since that normally happens simultaneously
+  // with device requests.
+  SetStatus(FwupdStatus::kWaitingForUser);
+
+  const std::string request_success_metric_name =
+      "ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration."
+      "RequestIdPressUnlock";
+
+  // The metric should not be logged yet.
+  histogram_tester.ExpectTimeBucketCount(request_success_metric_name,
+                                         base::Minutes(5), 0);
+
+  // Wait 5 minutes.
+  AdvanceClock(base::Minutes(5));
+
+  // Set status to something other than kWaitingForUser, which indicates that
+  // the user successfully fulfilled the request.
+  SetStatus(FwupdStatus::kDeviceWrite);
+
+  // Now the metric should be logged, since there was a successful request.
+  histogram_tester.ExpectTimeBucketCount(request_success_metric_name,
+                                         base::Minutes(5), 1);
+
+  // Setting the status to something else now shouldn't trigger another metric
+  // recording.
+  SetStatus(FwupdStatus::kDownloading);
+  // The metric should have the same number of samples since it didn't get
+  // recorded again.
+  histogram_tester.ExpectTimeBucketCount(request_success_metric_name,
+                                         base::Minutes(5), 1);
 }
 
 }  // namespace ash

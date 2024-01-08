@@ -1265,6 +1265,22 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.FirmwareUpdateUi.RequestSucceededWithDuration.RequestId{DeviceRequestId}"
+    units="ms" expires_after="2024-06-28">
+  <owner>cambickel@google.com</owner>
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Records the duration of a successful device request. Requests are considered
+    successful when the installation continues after a request is received.
+    Specifically, when the FwupdStatus changes from WaitingForUser to anything
+    else, the request is considered successful.
+  </summary>
+  <token key="DeviceRequestId" variants="FirmwareUpdateUiDeviceRequestId"/>
+</histogram>
+
 <histogram name="ChromeOS.FirmwareUpdateUi.{Source}.DeviceCount"
     units="devices" expires_after="2023-01-01">
   <owner>jimmyxgong@chromium.org</owner>
