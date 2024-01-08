@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/base/android/media_drm_bridge.h"
+
 #include <memory>
 
 #include "base/android/build_info.h"
@@ -13,8 +15,8 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "media/base/android/media_drm_bridge.h"
 #include "media/base/media_switches.h"
+#include "media/base/mock_filters.h"
 #include "media/base/provision_fetcher.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -323,6 +325,67 @@ TEST_F(MediaDrmBridgeTest, ProvisionWithNullCallback_Widevine) {
 
   // Provisioning is executed asynchronously.
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
+  scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
+                                        {});
+
+  if (!MediaDrmBridge::IsKeySystemSupported(kExternalClearKeyKeySystem)) {
+    GTEST_SKIP() << "ClearKey not supported on device.";
+  }
+
+  // ExternalClearKey only initialized with 'kDefault' security level.
+  CreateWithoutSessionSupport(kExternalClearKeyKeySystem, kTestOrigin,
+                              kDefault);
+  EXPECT_TRUE_IF_KEY_SYSTEM_AVAILABLE(media_drm_bridge_,
+                                      kExternalClearKeyKeySystem);
+
+  CdmKeyInformation::KeyStatus key_status;
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersionNone, std::make_unique<MockCdmKeyStatusPromise>(
+                                         /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersion1_0, std::make_unique<MockCdmKeyStatusPromise>(
+                                        /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersion2_3, std::make_unique<MockCdmKeyStatusPromise>(
+                                        /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
+}
+
+TEST_F(MediaDrmBridgeTest, GetStatusForPolicyL3_Widevine) {
+  // Only test this if Widevine is supported. Otherwise
+  // CreateWithoutSessionSupport() will return null and it can't be
+  // tested.
+  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
+    GTEST_SKIP() << "Widevine not supported on device.";
+  }
+
+  CreateWithoutSessionSupport(kWidevineKeySystem, kTestOrigin, kL3);
+  EXPECT_TRUE(media_drm_bridge_);
+
+  CdmKeyInformation::KeyStatus key_status;
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersionNone, std::make_unique<MockCdmKeyStatusPromise>(
+                                         /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::USABLE, key_status);
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersion1_0, std::make_unique<MockCdmKeyStatusPromise>(
+                                        /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
+
+  media_drm_bridge_->GetStatusForPolicy(
+      HdcpVersion::kHdcpVersion2_3, std::make_unique<MockCdmKeyStatusPromise>(
+                                        /*expect_success=*/true, &key_status));
+  EXPECT_EQ(CdmKeyInformation::KeyStatus::OUTPUT_RESTRICTED, key_status);
 }
 
 }  // namespace media
