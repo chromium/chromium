@@ -323,7 +323,7 @@ INSTANTIATE_TEST_SUITE_P(
         // Large form: Expect that four observations are dropped, such that
         // the limit of eight observations are collected.
         DropObservationTest{
-            {NAME_FIRST, NAME_LAST_FIRST, NAME_LAST_SECOND, COMPANY_NAME,
+            {NAME_FIRST, NAME_MIDDLE, NAME_LAST, COMPANY_NAME,
              ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER,
              ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP, ADDRESS_HOME_STATE,
              ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER},

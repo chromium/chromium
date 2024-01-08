@@ -245,7 +245,7 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
   }
   const size_t observations_to_add =
       diable_randomization_for_testing_ ? observations.size()
-      : observations_.size() >= 11      ? 8
+      : observations.size() >= 11       ? 8
       : observations.size() > 3         ? observations.size() - 3
                                         : 1;
   // Shuffle the `observations` and add the first `observations_to_add` many.
