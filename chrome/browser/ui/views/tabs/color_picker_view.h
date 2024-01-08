@@ -20,7 +20,7 @@
 namespace views {
 class Button;
 class BubbleDialogDelegateView;
-}
+}  // namespace views
 
 class ColorPickerElementView;
 
@@ -28,9 +28,9 @@ class ColorPickerElementView;
 // clicked on. Similar to radio buttons, exactly one is selected after the first
 // selection is made.
 class ColorPickerView : public views::View {
- public:
-  METADATA_HEADER(ColorPickerView);
+  METADATA_HEADER(ColorPickerView, views::View)
 
+ public:
   using ColorSelectedCallback = base::RepeatingCallback<void()>;
 
   // |colors| should contain the color values and accessible names. There should

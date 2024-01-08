@@ -22,9 +22,9 @@ class TabDragContextBase;
 // specifically noted otherwise as being relative to a specific container.
 class CompoundTabContainer : public TabContainer,
                              public views::ViewTargeterDelegate {
- public:
-  METADATA_HEADER(CompoundTabContainer);
+  METADATA_HEADER(CompoundTabContainer, TabContainer)
 
+ public:
   CompoundTabContainer(TabContainerController& controller,
                        TabHoverCardController* hover_card_controller,
                        TabDragContextBase* drag_context,

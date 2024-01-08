@@ -25,7 +25,7 @@ constexpr int kTabOrganizeFlatCornerRadius = 4;
 constexpr int kTabOrganizeLabelMargin = 10;
 constexpr int kTabOrganizeCloseButtonMargin = 8;
 constexpr int kTabOrganizeCloseButtonSize = 16;
-}
+}  // namespace
 
 TabOrganizationButton::TabOrganizationButton(
     TabStripController* tab_strip_controller,
@@ -131,5 +131,5 @@ void TabOrganizationButton::SetCloseButton(
   close_button_ = AddChildView(std::move(close_button));
 }
 
-BEGIN_METADATA(TabOrganizationButton, TabStripControlButton)
+BEGIN_METADATA(TabOrganizationButton)
 END_METADATA

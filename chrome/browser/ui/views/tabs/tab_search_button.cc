@@ -23,7 +23,7 @@
 namespace {
 constexpr int kCRTabSearchCornerRadius = 10;
 constexpr int kCRTabSearchFlatCornerRadius = 4;
-}
+}  // namespace
 
 TabSearchButton::TabSearchButton(TabStripController* tab_strip_controller,
                                  Edge flat_edge)
@@ -73,5 +73,5 @@ int TabSearchButton::GetFlatCornerRadius() const {
   return kCRTabSearchFlatCornerRadius;
 }
 
-BEGIN_METADATA(TabSearchButton, TabStripControlButton)
+BEGIN_METADATA(TabSearchButton)
 END_METADATA

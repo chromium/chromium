@@ -73,8 +73,9 @@ class TabStrip : public views::View,
                  public TabContainerController,
                  public TabSlotController,
                  public BrowserRootView::DropTarget {
+  METADATA_HEADER(TabStrip, views::View)
+
  public:
-  METADATA_HEADER(TabStrip);
   explicit TabStrip(std::unique_ptr<TabStripController> controller);
   TabStrip(const TabStrip&) = delete;
   TabStrip& operator=(const TabStrip&) = delete;

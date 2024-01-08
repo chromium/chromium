@@ -214,5 +214,5 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
   }
 }
 
-BEGIN_METADATA(TabSearchContainer, views::View)
+BEGIN_METADATA(TabSearchContainer)
 END_METADATA

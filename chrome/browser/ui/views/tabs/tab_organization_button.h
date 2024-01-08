@@ -11,8 +11,9 @@
 class TabStripController;
 
 class TabOrganizationButton : public TabStripControlButton {
+  METADATA_HEADER(TabOrganizationButton, TabStripControlButton)
+
  public:
-  METADATA_HEADER(TabOrganizationButton);
   TabOrganizationButton(TabStripController* tab_strip_controller,
                         PressedCallback pressed_callback,
                         PressedCallback close_pressed_callback,

@@ -330,6 +330,6 @@ void TabStripScrollContainer::RemovedFromWidget() {
   paint_as_active_subscription_ = {};
 }
 
-BEGIN_METADATA(TabStripScrollContainer, views::View)
+BEGIN_METADATA(TabStripScrollContainer)
 ADD_READONLY_PROPERTY_METADATA(int, TabStripAvailableWidth)
 END_METADATA

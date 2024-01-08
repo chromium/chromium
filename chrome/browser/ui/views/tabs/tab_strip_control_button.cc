@@ -329,5 +329,5 @@ void TabStripControlButton::AnimateToStateForTesting(
   views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
 }
 
-BEGIN_METADATA(TabStripControlButton, views::LabelButton)
+BEGIN_METADATA(TabStripControlButton)
 END_METADATA

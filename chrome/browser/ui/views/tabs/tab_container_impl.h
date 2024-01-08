@@ -37,9 +37,9 @@ class TabContainerImpl : public TabContainer,
                          public views::ViewTargeterDelegate,
                          public views::MouseWatcherListener,
                          public views::BoundsAnimatorObserver {
- public:
-  METADATA_HEADER(TabContainerImpl);
+  METADATA_HEADER(TabContainerImpl, TabContainer)
 
+ public:
   TabContainerImpl(TabContainerController& controller,
                    TabHoverCardController* hover_card_controller,
                    TabDragContextBase* drag_context,

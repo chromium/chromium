@@ -31,8 +31,9 @@ class TabSearchContainer : public views::View,
                            public views::AnimationDelegateViews,
                            public TabOrganizationObserver,
                            public views::MouseWatcherListener {
+  METADATA_HEADER(TabSearchContainer, views::View)
+
  public:
-  METADATA_HEADER(TabSearchContainer);
   TabSearchContainer(TabStripController* tab_strip_controller,
                      bool before_tab_strip,
                      View* locked_expansion_view);

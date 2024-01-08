@@ -105,8 +105,9 @@ class FadePerformanceFooterRow : public FooterRow<PerformanceRowData> {
 };
 
 class FooterView : public views::View {
+  METADATA_HEADER(FooterView, views::View)
+
  public:
-  METADATA_HEADER(FooterView);
   using AlertFadeView =
       FadeView<FadeAlertFooterRow, FadeAlertFooterRow, AlertFooterRowData>;
   using PerformanceFadeView = FadeView<FadePerformanceFooterRow,

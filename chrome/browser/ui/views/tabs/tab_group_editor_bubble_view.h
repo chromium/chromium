@@ -35,9 +35,9 @@ class TabGroupHeader;
 
 // A dialog for changing a tab group's visual parameters.
 class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
- public:
-  METADATA_HEADER(TabGroupEditorBubbleView);
+  METADATA_HEADER(TabGroupEditorBubbleView, views::BubbleDialogDelegateView)
 
+ public:
   static constexpr int TAB_GROUP_HEADER_CXMENU_SAVE_GROUP = 13;
   static constexpr int TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP = 14;
   static constexpr int TAB_GROUP_HEADER_CXMENU_UNGROUP = 15;
@@ -108,8 +108,9 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView {
   TitleFieldController title_field_controller_;
 
   class TitleField : public views::Textfield {
+    METADATA_HEADER(TitleField, views::Textfield)
+
    public:
-    METADATA_HEADER(TitleField);
     explicit TitleField(bool stop_context_menu_propagation)
         : stop_context_menu_propagation_(stop_context_menu_propagation) {}
     ~TitleField() override = default;

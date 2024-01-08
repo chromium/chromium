@@ -33,8 +33,9 @@ class AnimationDelegate;
 // Tab (its parent View).
 class AlertIndicatorButton : public views::ImageButton,
                              public views::ViewTargeterDelegate {
+  METADATA_HEADER(AlertIndicatorButton, views::ImageButton)
+
  public:
-  METADATA_HEADER(AlertIndicatorButton);
   explicit AlertIndicatorButton(Tab* parent_tab);
   AlertIndicatorButton(const AlertIndicatorButton&) = delete;
   AlertIndicatorButton& operator=(const AlertIndicatorButton&) = delete;

@@ -45,8 +45,9 @@ class PinnedTabContainerController final : public TabContainerController {
 
   std::optional<int> GetActiveIndex() const override {
     const std::optional<int> active_index = base_controller_->GetActiveIndex();
-    if (active_index.has_value() && !IsValidModelIndex(active_index.value()))
+    if (active_index.has_value() && !IsValidModelIndex(active_index.value())) {
       return std::nullopt;
+    }
     return base_controller_->GetActiveIndex();
   }
 
@@ -113,8 +114,9 @@ class UnpinnedTabContainerController final : public TabContainerController {
   std::optional<int> GetActiveIndex() const override {
     const std::optional<int> base_model_active_index =
         base_controller_->GetActiveIndex();
-    if (base_model_active_index.has_value())
+    if (base_model_active_index.has_value()) {
       return ModelToContainerIndex(base_model_active_index.value());
+    }
     return std::nullopt;
   }
 
@@ -145,8 +147,9 @@ class UnpinnedTabContainerController final : public TabContainerController {
       const tab_groups::TabGroupId& group) const override {
     const std::optional<int> model_index =
         base_controller_->GetFirstTabInGroup(group);
-    if (!model_index)
+    if (!model_index) {
       return std::nullopt;
+    }
     return ModelToContainerIndex(model_index.value());
   }
 
@@ -178,18 +181,21 @@ class UnpinnedTabContainerController final : public TabContainerController {
  private:
   std::optional<int> ModelToContainerIndex(int model_index) const {
     if (model_index < base_controller_->NumPinnedTabsInModel() ||
-        !base_controller_->IsValidModelIndex(model_index))
+        !base_controller_->IsValidModelIndex(model_index)) {
       return std::nullopt;
+    }
     return model_index - base_controller_->NumPinnedTabsInModel();
   }
 
   std::optional<int> ContainerToModelIndex(int container_index) const {
-    if (container_index < 0)
+    if (container_index < 0) {
       return std::nullopt;
+    }
     const int model_index =
         container_index + base_controller_->NumPinnedTabsInModel();
-    if (!base_controller_->IsValidModelIndex(model_index))
+    if (!base_controller_->IsValidModelIndex(model_index)) {
       return std::nullopt;
+    }
     return model_index;
   }
 
@@ -243,8 +249,9 @@ CompoundTabContainer::CompoundTabContainer(
       bounds_animator_(this) {
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     bounds_animator_.SetAnimationDuration(base::TimeDelta());
+  }
 }
 
 CompoundTabContainer::~CompoundTabContainer() {
@@ -370,8 +377,9 @@ void CompoundTabContainer::ScrollTabToVisible(int model_index) {
 
 void CompoundTabContainer::ScrollTabContainerByOffset(int offset) {
   std::optional<gfx::Rect> visible_content_rect = GetVisibleContentRect();
-  if (!visible_content_rect.has_value() || offset == 0)
+  if (!visible_content_rect.has_value() || offset == 0) {
     return;
+  }
 
   // If tabcontainer is scrolled towards trailing tab, the start edge should
   // have the x coordinate of the right bound. If it is scrolled towards the
@@ -445,8 +453,9 @@ std::optional<int> CompoundTabContainer::GetModelIndexOf(
 Tab* CompoundTabContainer::GetTabAtModelIndex(int index) const {
   CHECK(index < GetTabCount());
   const int num_pinned_tabs = NumPinnedTabs();
-  if (index < num_pinned_tabs)
+  if (index < num_pinned_tabs) {
     return pinned_tab_container_->GetTabAtModelIndex(index);
+  }
   return unpinned_tab_container_->GetTabAtModelIndex(index - num_pinned_tabs);
 }
 
@@ -472,8 +481,9 @@ std::optional<int> CompoundTabContainer::GetModelIndexOfFirstNonClosingTab(
   } else {
     const std::optional<int> unpinned_index =
         unpinned_tab_container_->GetModelIndexOfFirstNonClosingTab(tab);
-    if (unpinned_index.has_value())
+    if (unpinned_index.has_value()) {
       return unpinned_index.value() + NumPinnedTabs();
+    }
     return std::nullopt;
   }
 }
@@ -490,16 +500,18 @@ void CompoundTabContainer::UpdateHoverCard(
     update_type = TabSlotController::HoverCardUpdateType::kAnimating;
   }
 
-  if (!hover_card_controller_)
+  if (!hover_card_controller_) {
     return;
+  }
 
   hover_card_controller_->UpdateHoverCard(tab, update_type);
 }
 
 void CompoundTabContainer::HandleLongTap(ui::GestureEvent* const event) {
   TabContainer* const tab_container = GetTabContainerAt(event->location());
-  if (!tab_container)
+  if (!tab_container) {
     return;
+  }
 
   ConvertEventToTarget(tab_container, event);
   tab_container->HandleLongTap(event);
@@ -551,8 +563,9 @@ void CompoundTabContainer::AnimateToIdealBounds() {
   // Animate the pinning or unpinning tabs too.
   for (views::View* child : children()) {
     Tab* tab = views::AsViewClass<Tab>(child);
-    if (!tab)
+    if (!tab) {
       continue;
+    }
 
     const std::optional<int> model_index = GetModelIndexOf(tab);
     // The tab may have been closed during a pin/unpin animation, in which case
@@ -642,8 +655,9 @@ int CompoundTabContainer::GetInactiveTabWidth() const {
 
 gfx::Rect CompoundTabContainer::GetIdealBounds(int model_index) const {
   // Ideal bounds for pinned tabs are fine as-is.
-  if (model_index < NumPinnedTabs())
+  if (model_index < NumPinnedTabs()) {
     return pinned_tab_container_->GetIdealBounds(model_index);
+  }
 
   return ConvertUnpinnedContainerIdealBoundsToLocal(
       unpinned_tab_container_->GetIdealBounds(model_index - NumPinnedTabs()));
@@ -734,16 +748,18 @@ void CompoundTabContainer::PaintChildren(const views::PaintInfo& paint_info) {
   // their individual z-values.
   std::vector<ZOrderableTabContainerElement> orderable_children;
   for (views::View* const child : children()) {
-    if (!ZOrderableTabContainerElement::CanOrderView(child))
+    if (!ZOrderableTabContainerElement::CanOrderView(child)) {
       continue;
+    }
     orderable_children.emplace_back(child);
   }
 
   // Sort in ascending order by z-value. Stable sort breaks ties by child index.
   std::stable_sort(orderable_children.begin(), orderable_children.end());
 
-  for (const ZOrderableTabContainerElement& child : orderable_children)
+  for (const ZOrderableTabContainerElement& child : orderable_children) {
     child.view()->Paint(paint_info);
+  }
 }
 
 void CompoundTabContainer::ChildPreferredSizeChanged(views::View* child) {
@@ -837,13 +853,15 @@ views::View* CompoundTabContainer::TargetForRect(views::View* root,
                                                  const gfx::Rect& rect) {
   CHECK_EQ(root, this);
 
-  if (!views::UsePointBasedTargeting(rect))
+  if (!views::UsePointBasedTargeting(rect)) {
     return views::ViewTargeterDelegate::TargetForRect(root, rect);
+  }
 
   const gfx::Point point(rect.CenterPoint());
   TabContainer* const sub_container = GetTabContainerAt(point);
-  if (sub_container == nullptr)
+  if (sub_container == nullptr) {
     return this;
+  }
 
   return sub_container->GetEventHandlerForRect(ToEnclosingRect(
       ConvertRectToTarget(this, sub_container, gfx::RectF(rect))));
@@ -852,8 +870,9 @@ views::View* CompoundTabContainer::TargetForRect(views::View* root,
 void CompoundTabContainer::UpdateAnimationTarget(TabSlotView* tab_slot_view,
                                                  gfx::Rect target_bounds,
                                                  TabPinned pinned) {
-  if (pinned == TabPinned::kUnpinned)
+  if (pinned == TabPinned::kUnpinned) {
     target_bounds = ConvertUnpinnedContainerIdealBoundsToLocal(target_bounds);
+  }
 
   if (tab_slot_view->parent() != this) {
     controller_->UpdateAnimationTarget(tab_slot_view, target_bounds);
@@ -862,8 +881,9 @@ void CompoundTabContainer::UpdateAnimationTarget(TabSlotView* tab_slot_view,
 
   // We should only have tabs to deal with here, as groups cannot be pinned.
   DCHECK(views::IsViewClass<Tab>(tab_slot_view));
-  if (bounds_animator_.IsAnimating(tab_slot_view))
+  if (bounds_animator_.IsAnimating(tab_slot_view)) {
     bounds_animator_.SetTargetBounds(tab_slot_view, target_bounds);
+  }
 }
 
 int CompoundTabContainer::NumPinnedTabs() const {
@@ -990,15 +1010,18 @@ TabContainer* CompoundTabContainer::GetTabContainerAt(
     const int cutoff_x = (pinned_tab_container_->bounds().right() +
                           unpinned_tab_container_->bounds().x()) /
                          2;
-    if (point_in_local_coords.x() < cutoff_x)
+    if (point_in_local_coords.x() < cutoff_x) {
       return std::to_address(pinned_tab_container_);
+    }
     return std::to_address(unpinned_tab_container_);
   }
 
-  if (in_pinned)
+  if (in_pinned) {
     return std::to_address(pinned_tab_container_);
-  if (in_unpinned)
+  }
+  if (in_unpinned) {
     return std::to_address(unpinned_tab_container_);
+  }
 
   // `point_in_local_coords` might be in neither sub container if our layout is
   // (transiently) stale, e.g. during window creation.
@@ -1034,8 +1057,9 @@ gfx::Size CompoundTabContainer::GetCombinedSizeForTabContainerSizes(
 std::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() const {
   const views::ScrollView* const scroll_container =
       views::ScrollView::GetScrollViewForContents(scroll_contents_view_);
-  if (!scroll_container)
+  if (!scroll_container) {
     return std::nullopt;
+  }
 
   return scroll_container->GetVisibleRect();
 }
@@ -1043,8 +1067,9 @@ std::optional<gfx::Rect> CompoundTabContainer::GetVisibleContentRect() const {
 void CompoundTabContainer::AnimateScrollToShowXCoordinate(
     const int start_edge,
     const int target_edge) {
-  if (tab_scrolling_animation_)
+  if (tab_scrolling_animation_) {
     tab_scrolling_animation_->Stop();
+  }
 
   gfx::Rect start_rect(start_edge, 0, 0, 0);
   gfx::Rect target_rect(target_edge, 0, 0, 0);
@@ -1055,5 +1080,5 @@ void CompoundTabContainer::AnimateScrollToShowXCoordinate(
   tab_scrolling_animation_->Start();
 }
 
-BEGIN_METADATA(CompoundTabContainer, views::View)
+BEGIN_METADATA(CompoundTabContainer)
 END_METADATA

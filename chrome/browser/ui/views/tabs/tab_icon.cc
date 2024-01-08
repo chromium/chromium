@@ -185,18 +185,21 @@ void TabIcon::SetActiveState(bool is_active) {
 
 void TabIcon::SetAttention(AttentionType type, bool enabled) {
   int previous_attention_type = attention_types_;
-  if (enabled)
+  if (enabled) {
     attention_types_ |= static_cast<int>(type);
-  else
+  } else {
     attention_types_ &= ~static_cast<int>(type);
+  }
 
-  if (attention_types_ != previous_attention_type)
+  if (attention_types_ != previous_attention_type) {
     SchedulePaint();
+  }
 }
 
 bool TabIcon::GetShowingLoadingAnimation() const {
-  if (inhibit_loading_animation_)
+  if (inhibit_loading_animation_) {
     return false;
+  }
 
   return NetworkStateIsAnimated(network_state_);
 }
@@ -206,8 +209,9 @@ bool TabIcon::GetShowingAttentionIndicator() const {
 }
 
 void TabIcon::SetCanPaintToLayer(bool can_paint_to_layer) {
-  if (can_paint_to_layer == can_paint_to_layer_)
+  if (can_paint_to_layer == can_paint_to_layer_) {
     return;
+  }
   can_paint_to_layer_ = can_paint_to_layer;
   RefreshLayer();
 }
@@ -215,18 +219,21 @@ void TabIcon::SetCanPaintToLayer(bool can_paint_to_layer) {
 void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
   // Only update elapsed time in the kWaiting state. This is later used as a
   // starting point for PaintThrobberSpinningAfterWaiting().
-  if (network_state_ == TabNetworkState::kWaiting)
+  if (network_state_ == TabNetworkState::kWaiting) {
     waiting_state_.elapsed_time = elapsed_time;
-  if (GetShowingLoadingAnimation())
+  }
+  if (GetShowingLoadingAnimation()) {
     SchedulePaint();
+  }
 }
 
 void TabIcon::OnPaint(gfx::Canvas* canvas) {
   // Compute the bounds adjusted for the hiding fraction.
   gfx::Rect contents_bounds = GetContentsBounds();
 
-  if (contents_bounds.IsEmpty())
+  if (contents_bounds.IsEmpty()) {
     return;
+  }
 
   gfx::Rect icon_bounds(
       GetMirroredXWithWidthInView(contents_bounds.x(), gfx::kFaviconSize),
@@ -248,8 +255,9 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
     MaybePaintFavicon(canvas, GetIconToPaint(), icon_bounds);
   }
 
-  if (GetShowingLoadingAnimation())
+  if (GetShowingLoadingAnimation()) {
     PaintLoadingAnimation(canvas, icon_bounds);
+  }
 }
 
 void TabIcon::OnThemeChanged() {
@@ -357,8 +365,9 @@ void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {
                               kLoadingAnimationStrokeWidthDp);
   } else {
     const base::TimeTicks current_time = clock_->NowTicks();
-    if (loading_animation_start_time_.is_null())
+    if (loading_animation_start_time_.is_null()) {
       loading_animation_start_time_ = current_time;
+    }
 
     waiting_state_.color = waiting_color;
     gfx::PaintThrobberSpinningAfterWaiting(
@@ -389,16 +398,19 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
                                 const gfx::Rect& bounds) {
   TRACE_EVENT0("views", "TabIcon::MaybePaintFavicon");
 
-  if (icon.isNull())
+  if (icon.isNull()) {
     return;
+  }
 
   if (GetShowingLoadingAnimation()) {
     // Never paint the favicon during the waiting animation.
-    if (network_state_ == TabNetworkState::kWaiting)
+    if (network_state_ == TabNetworkState::kWaiting) {
       return;
+    }
     // Don't paint the default favicon while we're still loading.
-    if (!GetNonDefaultFavicon())
+    if (!GetNonDefaultFavicon()) {
       return;
+    }
   }
 
   std::unique_ptr<gfx::ScopedCanvas> scoped_canvas;
@@ -526,14 +538,16 @@ void TabIcon::SetNetworkState(TabNetworkState network_state) {
 }
 
 void TabIcon::SetCrashed(bool crashed) {
-  if (crashed == crashed_)
+  if (crashed == crashed_) {
     return;
+  }
   crashed_ = crashed;
 
   if (!crashed_) {
     // Transitioned from crashed to non-crashed.
-    if (crash_animation_)
+    if (crash_animation_) {
       crash_animation_->Stop();
+    }
     should_display_crashed_favicon_ = false;
     hiding_fraction_ = 0.0;
   } else {
@@ -543,10 +557,12 @@ void TabIcon::SetCrashed(bool crashed) {
       // without animating.
       should_display_crashed_favicon_ = true;
     } else {
-      if (!crash_animation_)
+      if (!crash_animation_) {
         crash_animation_ = std::make_unique<CrashAnimation>(this);
-      if (!crash_animation_->is_animating())
+      }
+      if (!crash_animation_->is_animating()) {
         crash_animation_->Start();
+      }
     }
   }
   OnPropertyChanged(&crashed_, views::kPropertyEffectsPaint);
@@ -563,8 +579,9 @@ void TabIcon::RefreshLayer() {
       can_paint_to_layer_ &&
       (GetShowingLoadingAnimation() || favicon_size_animation_.is_animating() ||
        tab_discard_animation_.is_animating());
-  if (should_paint_to_layer == !!layer())
+  if (should_paint_to_layer == !!layer()) {
     return;
+  }
 
   // Change layer mode.
   if (should_paint_to_layer) {
@@ -608,7 +625,7 @@ void TabIcon::UpdateThemedFavicon() {
   SchedulePaint();
 }
 
-BEGIN_METADATA(TabIcon, views::View)
+BEGIN_METADATA(TabIcon)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowingLoadingAnimation)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowingAttentionIndicator)
 ADD_READONLY_PROPERTY_METADATA(bool, NonDefaultFavicon)
