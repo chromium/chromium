@@ -405,7 +405,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1736420071277903564">Ordinateur</translation>
 <translation id="1741613555002899862">Cette règle doit être spécifiée avec une chaîne valide lorsque la règle DnsOverHttpsMode est définie sur <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
 <translation id="1743393865165844832">Literie et linge de maison</translation>
-<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome se base sur votre navigation pour déterminer les thèmes qui vous intéressent. Les libellés des thèmes sont prédéfinis et incluent, par exemple, "Arts et divertissements", "Achats" et "Sports". Par la suite, un site que vous consultez pourra demander à Chrome quelques-uns de vos thèmes (mais pas votre historique de navigation) pour personnaliser les annonces qui vous seront présentées.</translation>
+<translation id="1745399796851657441"><ph name="BEGIN_BOLD" />Comment nous utilisons ces données<ph name="END_BOLD" /> : Chrome se base sur votre navigation pour déterminer les thèmes qui vous intéressent. Les libellés des thèmes sont prédéfinis et incluent, par exemple, "Arts et divertissements", "Achats" et "Sports". Par la suite, un site que vous visitez peut demander à Chrome quelques-uns de vos thèmes (mais pas votre historique de navigation) pour personnaliser les annonces que vous voyez.</translation>
 <translation id="1746113442205726301">Décalage Y de l'image</translation>
 <translation id="1746531169546376413">0 degré</translation>
 <translation id="1752021286346845558">Boîte aux lettres 8</translation>
@@ -3417,7 +3417,7 @@ Informations supplémentaires :
 <translation id="784137052867620416">Shopping Insights</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Aucune}=1{1 application (<ph name="EXAMPLE_APP_1" />)}=2{2 applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# application (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# applications (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> : <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
-<translation id="7857116075376571629">Par la suite, un site que vous consultez pourra demander vos thèmes à Chrome pour personnaliser les annonces qui vous seront présentées. Chrome partage jusqu'à trois thèmes tout en protégeant votre historique de navigation et votre identité.</translation>
+<translation id="7857116075376571629">Par la suite, un site que vous visitez peut demander vos thèmes à Chrome pour personnaliser les annonces que vous voyez. Chrome partage jusqu'à trois thèmes tout en protégeant votre historique de navigation et votre identité.</translation>
 <translation id="7860345425589240791">Saisissez la nouvelle date d'expiration et le nouveau code CVC au <ph name="SIDE_OF_CARD" /></translation>
 <translation id="7862185352068345852">Quitter le site Web ?</translation>
 <translation id="7865448901209910068">Vitesse optimale</translation>
