@@ -15,8 +15,8 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/thread_isolation/thread_isolation.h"
 
-#if !BUILDFLAG(IS_LINUX)
-#error "This pkey code is currently only supported on Linux"
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
+#error "This pkey code is currently only supported on Linux and ChromeOS"
 #endif
 
 namespace partition_alloc::internal {

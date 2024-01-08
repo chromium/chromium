@@ -336,10 +336,11 @@ declare_args() {
   # pkeys support is explicitly disabled in all Cronet builds, as some test
   # dependencies that use partition_allocator are compiled in AOSP against a
   # version of glibc that does not include pkeys syscall numbers.
-  enable_pkeys = is_linux && target_cpu == "x64" && !is_cronet_build
+  enable_pkeys =
+      (is_linux || is_chromeos) && target_cpu == "x64" && !is_cronet_build
 }
-assert(!enable_pkeys || (is_linux && target_cpu == "x64"),
-       "Pkeys are only supported on x64 linux")
+assert(!enable_pkeys || ((is_linux || is_chromeos) && target_cpu == "x64"),
+       "Pkeys are only supported on x64 linux and ChromeOS")
 
 # Some implementations of raw_ptr<>, like BackupRefPtr, require zeroing when
 # constructing, destructing or moving out of a pointer. When using these
