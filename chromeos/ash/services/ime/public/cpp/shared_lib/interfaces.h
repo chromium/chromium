@@ -166,9 +166,8 @@ class ImeClientDelegate {
   virtual ~ImeClientDelegate() = default;
 
  public:
-  // Returns the c_str() of the internal IME specification of ImeClientDelegate.
-  // The IME specification will be invalidated by its `Destroy` method.
-  virtual const char* ImeSpec() = 0;
+  // Obsolete, thus deprecated and must not be used. Kept for ABI vtable compat.
+  virtual void Unused1() = 0;
 
   // Process response data from the IME shared lib in the connected IME client.
   // The data will be invalidated by the engine soon after this call.
