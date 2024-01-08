@@ -113,7 +113,7 @@ const char* const kFilteredEventGroupNames[] = {
     "media",                                 // 0x20000
     "loading",                               // 0x40000
     "base",                                  // 0x80000
-    "unused_bit_20",                         // 0x100000
+    "devtools.timeline",                     // 0x100000
     "unused_bit_21",                         // 0x200000
     "unused_bit_22",                         // 0x400000
     "unused_bit_23",                         // 0x800000
