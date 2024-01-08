@@ -780,59 +780,6 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
 
-// Test that remember by choice checkbox works for open PWA option.
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       // TODO(crbug.com/1428813): Re-enable this test
-                       DISABLED_RememberOpenPWA) {
-  base::HistogramTester histogram_tester;
-
-  GURL test_url(InScopeAppUrl());
-  std::string app_name = "test_name";
-  auto app_id = InstallWebApp(app_name, test_url);
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  NavigateAndWaitForIconUpdate(test_url);
-  ClickIconToShowBubble();
-
-  // Check "Remember my choice" and choose "Open App".
-  ASSERT_TRUE(remember_selection_checkbox());
-  ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
-  remember_selection_checkbox()->SetChecked(true);
-  ASSERT_TRUE(intent_picker_bubble());
-  intent_picker_bubble()->AcceptDialog();
-  EXPECT_TRUE(VerifyPWALaunched(app_id));
-  Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  chrome::CloseWindow(app_browser);
-  ui_test_utils::WaitForBrowserToClose(app_browser);
-
-  // Navigate to the same site again, and verify the app is automatically
-  // launched.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-  Navigate(&params);
-  WaitForBrowserAdded();
-
-  EXPECT_TRUE(VerifyPWALaunched(app_id));
-
-  // Check that the correct histograms are incremented for recording that
-  // settings were changed.
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.WebApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2.ArcApp",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 0);
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Intents.LinkCapturingEvent2",
-      apps::IntentHandlingMetrics::LinkCapturingEvent::kSettingsChanged, 1);
-}
-
 class IntentPickerBubbleViewPrerenderingBrowserTestChromeOS
     : public IntentPickerBubbleViewBrowserTestChromeOS {
  public:
