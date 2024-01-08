@@ -26,7 +26,7 @@ src:*/ppapi/shared_impl/id_assignment.h
 fun:*hashEntry*
 fun:*LocaleCacheKey*hashCode*
 fun:*google*protobuf*hash*
-fun:*(hash|Hash)*
+fun:*{hash,Hash}*
 
 #############################################################################
 # Bounds ignorelist.
