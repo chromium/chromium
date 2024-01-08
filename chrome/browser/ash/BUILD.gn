@@ -29,6 +29,8 @@ source_set("ash") {
   public_configs = [ "//build/config/linux/nss" ]
 
   sources = [
+    "accessibility/accessibility_dlc_installer.cc",
+    "accessibility/accessibility_dlc_installer.h",
     "accessibility/accessibility_event_rewriter_delegate_impl.cc",
     "accessibility/accessibility_event_rewriter_delegate_impl.h",
     "accessibility/accessibility_extension_loader.cc",
@@ -50,8 +52,6 @@ source_set("ash") {
     "accessibility/magnification_manager.cc",
     "accessibility/magnification_manager.h",
     "accessibility/magnifier_type.h",
-    "accessibility/pumpkin_installer.cc",
-    "accessibility/pumpkin_installer.h",
     "accessibility/select_to_speak_event_handler_delegate_impl.cc",
     "accessibility/select_to_speak_event_handler_delegate_impl.h",
     "accessibility/service/accessibility_service_client.cc",
@@ -5061,7 +5061,7 @@ source_set("unit_tests") {
     "../ui/webui/ash/settings/services/metrics/settings_user_action_tracker_unittest.cc",
     "../ui/webui/ash/settings/services/settings_manager/os_settings_manager_unittest.cc",
     "../ui/webui/settings/about_handler_unittest.cc",
-    "accessibility/pumpkin_installer_unittest.cc",
+    "accessibility/accessibility_dlc_installer_unittest.cc",
     "account_manager/account_apps_availability_unittest.cc",
     "account_manager/account_manager_edu_coexistence_controller_unittest.cc",
     "android_sms/android_sms_app_manager_impl_unittest.cc",

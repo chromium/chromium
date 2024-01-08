@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/accessibility/pumpkin_installer.h"
+#include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,29 +19,39 @@ constexpr char kInstallationMetricName[] =
 
 namespace ash {
 
-class PumpkinInstallerTest : public testing::Test {
+class AccessibilityDlcInstallerTest : public testing::Test {
  protected:
-  void SetUp() override { installer_ = std::make_unique<PumpkinInstaller>(); }
+  void SetUp() override {
+    installer_ = std::make_unique<AccessibilityDlcInstaller>();
+  }
 
   void TearDown() override { installer_.reset(); }
 
-  void MaybeInstall() {
+  void MaybeInstallPumpkin() {
     installer_->MaybeInstall(
-        base::BindOnce(&PumpkinInstallerTest::OnInstalled,
+        AccessibilityDlcInstaller::DlcType::kPumpkin,
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
                        base::Unretained(this)),
-        base::BindRepeating(&PumpkinInstallerTest::OnProgress,
+        base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
                             base::Unretained(this)),
-        base::BindOnce(&PumpkinInstallerTest::OnError, base::Unretained(this)));
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
+        base::Unretained(this)));
   }
 
-  void MaybeInstallAndWait() {
+  void MaybeInstallPumpkinAndWait() {
     installer_->MaybeInstall(
-        base::BindOnce(&PumpkinInstallerTest::OnInstalled,
+        AccessibilityDlcInstaller::DlcType::kPumpkin,
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
                        base::Unretained(this)),
-        base::BindRepeating(&PumpkinInstallerTest::OnProgress,
+        base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
                             base::Unretained(this)),
-        base::BindOnce(&PumpkinInstallerTest::OnError, base::Unretained(this)));
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
+        base::Unretained(this)));
     task_environment_.RunUntilIdle();
+  }
+
+  bool IsPumpkinInstalled() {
+    return installer_->IsPumpkinInstalled();
   }
 
   void OnInstalled(bool success) { install_succeeded_ = success; }
@@ -55,13 +65,13 @@ class PumpkinInstallerTest : public testing::Test {
     fake_dlcservice_client_.set_install_error(dlcservice::kErrorNeedReboot);
   }
 
-  void SetPumpkinAlreadyInstalled() {
+  void SetDlcAlreadyInstalled() {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLED);
     fake_dlcservice_client_.set_dlc_state(dlc_state);
   }
 
-  void SetPumpkinCurrentlyInstalling() {
+  void SetDlcCurrentlyInstalling() {
     dlcservice::DlcState dlc_state;
     dlc_state.set_state(dlcservice::DlcState_State_INSTALLING);
     fake_dlcservice_client_.set_dlc_state(dlc_state);
@@ -90,7 +100,7 @@ class PumpkinInstallerTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<PumpkinInstaller> installer_;
+  std::unique_ptr<AccessibilityDlcInstaller> installer_;
   FakeDlcserviceClient fake_dlcservice_client_;
   base::HistogramTester histogram_tester_;
   bool install_succeeded_ = false;
@@ -98,24 +108,29 @@ class PumpkinInstallerTest : public testing::Test {
   std::string last_error_ = std::string();
 };
 
-// Verifies that PumpkinInstaller can successfully download the Pumpkin DLC.
-TEST_F(PumpkinInstallerTest, Install) {
+// Verifies that AccessibilityDlcInstaller can successfully download the Pumpkin
+// DLC.
+TEST_F(AccessibilityDlcInstallerTest, Install) {
   ASSERT_FALSE(install_succeeded());
-  MaybeInstallAndWait();
+  ASSERT_FALSE(IsPumpkinInstalled());
+  MaybeInstallPumpkinAndWait();
   ASSERT_TRUE(install_succeeded());
+  ASSERT_TRUE(IsPumpkinInstalled());
   ASSERT_FALSE(install_failed());
 
   ExpectSuccessHistogramCount(1);
   ExpectFailureHistogramCount(0);
 }
 
-// Verifies that PumpkinInstaller handles the case where the DLC fails to
-// download.
-TEST_F(PumpkinInstallerTest, InstallError) {
+// Verifies that AccessibilityDlcInstaller handles the case where the DLC fails
+// to download.
+TEST_F(AccessibilityDlcInstallerTest, InstallError) {
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   SetInstallError();
-  MaybeInstallAndWait();
+  MaybeInstallPumpkinAndWait();
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   ASSERT_TRUE(install_failed());
   EXPECT_EQ(dlcservice::kErrorNeedReboot, last_error());
 
@@ -123,13 +138,15 @@ TEST_F(PumpkinInstallerTest, InstallError) {
   ExpectFailureHistogramCount(1);
 }
 
-// Verifies that PumpkinInstaller handles the case where the DLC is already
-// installed.
-TEST_F(PumpkinInstallerTest, AlreadyInstalled) {
+// Verifies that AccessibilityDlcInstaller handles the case where the DLC is
+// already installed.
+TEST_F(AccessibilityDlcInstallerTest, AlreadyInstalled) {
   ASSERT_FALSE(install_succeeded());
-  SetPumpkinAlreadyInstalled();
-  MaybeInstallAndWait();
+  ASSERT_FALSE(IsPumpkinInstalled());
+  SetDlcAlreadyInstalled();
+  MaybeInstallPumpkinAndWait();
   ASSERT_TRUE(install_succeeded());
+  ASSERT_TRUE(IsPumpkinInstalled());
   ASSERT_FALSE(install_failed());
   EXPECT_EQ("", last_error());
 
@@ -139,13 +156,15 @@ TEST_F(PumpkinInstallerTest, AlreadyInstalled) {
   ExpectFailureHistogramCount(0);
 }
 
-// Verifies that PumpkinInstaller handles the case where the DLC is currently
-// installing.
-TEST_F(PumpkinInstallerTest, CurrentlyInstalling) {
+// Verifies that AccessibilityDlcInstaller handles the case where the DLC is
+// currently installing.
+TEST_F(AccessibilityDlcInstallerTest, CurrentlyInstalling) {
   ASSERT_FALSE(install_succeeded());
-  SetPumpkinCurrentlyInstalling();
-  MaybeInstallAndWait();
+  ASSERT_FALSE(IsPumpkinInstalled());
+  SetDlcCurrentlyInstalling();
+  MaybeInstallPumpkinAndWait();
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   ASSERT_TRUE(install_failed());
   EXPECT_EQ("Pumpkin already installing.", last_error());
 
@@ -153,13 +172,15 @@ TEST_F(PumpkinInstallerTest, CurrentlyInstalling) {
   ExpectFailureHistogramCount(0);
 }
 
-// Verifies that PumpkinInstaller handles the case where it can't retrieve the
-// DLC state from the DLC service.
-TEST_F(PumpkinInstallerTest, GetDlcError) {
+// Verifies that AccessibilityDlcInstaller handles the case where it can't
+// retrieve the DLC state from the DLC service.
+TEST_F(AccessibilityDlcInstallerTest, GetDlcError) {
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   SetGetDlcStateError();
-  MaybeInstallAndWait();
+  MaybeInstallPumpkinAndWait();
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   ASSERT_TRUE(install_failed());
   EXPECT_EQ("Test error", last_error());
 
@@ -167,17 +188,20 @@ TEST_F(PumpkinInstallerTest, GetDlcError) {
   ExpectFailureHistogramCount(0);
 }
 
-TEST_F(PumpkinInstallerTest, PendingDlcRequest) {
+TEST_F(AccessibilityDlcInstallerTest, PendingDlcRequest) {
   // Ensures that an error occurs if `MaybeInstall` is called in rapid
   // succession.
   ASSERT_FALSE(install_succeeded());
-  MaybeInstall();
+  ASSERT_FALSE(IsPumpkinInstalled());
+  MaybeInstallPumpkin();
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   EXPECT_EQ("", last_error());
   // Calling `MaybeInstall` again before the DlcserviceClient has responded
   // will cause an error.
-  MaybeInstall();
+  MaybeInstallPumpkin();
   ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(IsPumpkinInstalled());
   EXPECT_EQ("Cannot install Pumpkin, DLC request in progress.", last_error());
 }
 
