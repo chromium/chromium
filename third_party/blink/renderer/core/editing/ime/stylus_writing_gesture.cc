@@ -186,6 +186,9 @@ absl::optional<PlainTextRange> GestureRangeForPoints(
   DCHECK(frame_view);
   Element* const root_editable_element =
       local_frame->Selection().RootEditableElementOrDocumentElement();
+  if (!root_editable_element) {
+    return absl::nullopt;
+  }
   EphemeralRange ephemeral_range = local_frame->GetEditor().RangeBetweenPoints(
       frame_view->ViewportToFrame(start_point),
       frame_view->ViewportToFrame(end_point));
@@ -307,6 +310,9 @@ absl::optional<PlainTextRange> StylusWritingTwoRectGesture::GestureRange(
     const mojom::blink::StylusWritingGestureGranularity granularity) {
   Element* const root_editable_element =
       local_frame->Selection().RootEditableElementOrDocumentElement();
+  if (!root_editable_element) {
+    return absl::nullopt;
+  }
   if (start_rect_.IsEmpty() && end_rect_.IsEmpty()) {
     start_rect_.UnionEvenIfEmpty(end_rect_);
     start_rect_.InclusiveIntersect(root_editable_element->BoundsInWidget());
@@ -396,6 +402,9 @@ bool StylusWritingGestureRemoveSpaces::MaybeApplyGesture(LocalFrame* frame) {
 
   Element* const root_editable_element =
       frame->Selection().RootEditableElementOrDocumentElement();
+  if (!root_editable_element) {
+    return false;
+  }
   String gesture_text =
       PlainText(gesture_range->CreateRange(*root_editable_element));
   absl::optional<PlainTextRange> space_range =
