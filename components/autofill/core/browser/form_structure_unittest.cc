@@ -67,19 +67,6 @@ using ::testing::UnorderedElementsAre;
 
 constexpr uint64_t kFieldMaxLength = 10000;
 
-// Matches any protobuf `actual` whose serialization is equal to the
-// string-serialization of the protobuf `expected`.
-template <typename T>
-auto SerializesSameAs(const T& expected) {
-  std::string expected_string;
-  CHECK(expected.SerializeToString(&expected_string));
-  return Truly([expected_string](const auto& actual) {
-    std::string actual_string;
-    CHECK(actual.SerializeToString(&actual_string));
-    return actual_string == expected_string;
-  });
-}
-
 constexpr DenseSet<PatternSource> kAllPatternSources {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   PatternSource::kLegacy
