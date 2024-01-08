@@ -24,118 +24,11 @@
     justify-content: space-between;
   }
 
-  .illustration {
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 183px;
-  }
-
-  .illustration,
   .illustration-jelly {
     height: 173px;
     margin-top: 15px;
     padding: 16px;
     width: 183px;
-  }
-
-  #intro .illustration {
-     background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_start_pairing.svg);
-  }
-
-  #assignSwitch[data-switch='select'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_assign_select.svg);
-  }
-
-  #assignSwitch[data-switch='next'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_assign_next.svg);
-  }
-
-  #assignSwitch[data-switch='previous'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_assign_previous.svg);
-  }
-
-  #chooseSwitchCount[data-switch-count='1'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch.svg);
-  }
-
-  #chooseSwitchCount[data-switch-count='2'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
-  }
-
-  #chooseSwitchCount[data-switch-count='3'] .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches.svg);
-  }
-
-  #autoScanEnabled .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled.svg);
-  }
-
-  #closing .illustration {
-    background-image:
-      url(chrome://os-settings/images/switch_access_setup_guide_closing.svg);
-  }
-
-  @media(prefers-color-scheme: dark) {
-    #intro .illustration {
-       background-image:
-          url(chrome://os-settings/images/switch_access_setup_guide_start_pairing_dark.svg);
-    }
-
-    #assignSwitch[data-switch='select'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_assign_select_dark.svg);
-    }
-
-    #assignSwitch[data-switch='next'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_assign_next_dark.svg);
-    }
-
-    #assignSwitch[data-switch='previous'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_assign_previous_dark.svg);
-    }
-
-    #chooseSwitchCount[data-switch-count='1'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch_dark.svg);
-    }
-
-    #chooseSwitchCount[data-switch-count='2'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches_dark.svg);
-    }
-
-    #chooseSwitchCount[data-switch-count='3'] .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches_dark.svg);
-    }
-
-    #autoScanEnabled .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled_dark.svg);
-    }
-
-    #closing .illustration {
-      background-image:
-        url(chrome://os-settings/images/switch_access_setup_guide_closing_dark.svg);
-    }
-  }
-
-  :host-context(body:not(.jelly-enabled)) .illustration-jelly {
-    display: none;
-  }
-
-  :host-context(body.jelly-enabled) .illustration {
-    display: none;
   }
 
   #buttonContainer {
@@ -179,7 +72,6 @@
         $i18n{switchAccessSetupIntroBody}
       </div>
 
-      <div class="illustration"></div>
       <iron-icon icon="os-settings-illo:switch-access-setup-guide-start-pairing"
           class="illustration-jelly">
       </iron-icon>
@@ -188,7 +80,6 @@
         data-switch$="[[switchToAssign_]]">
       <div class="sa-setup-contents"></div>
 
-      <div class="illustration"></div>
       <iron-icon icon="[[getAssignSwitchIllo_(switchToAssign_)]]"
           class="illustration-jelly">
       </iron-icon>
@@ -199,7 +90,6 @@
         <p>$i18n{switchAccessSetupAutoScanEnabledDirections}</p>
       </div>
 
-      <div class="illustration"></div>
       <iron-icon icon="os-settings-illo:switch-access-setup-guide-auto-scan"
           class="illustration-jelly">
       </iron-icon>
@@ -236,7 +126,6 @@
         </cr-radio-button-group>
       </div>
 
-      <div class="illustration"></div>
       <iron-icon icon="[[getSwitchCountIllo_(switchCount_)]]"
           class="illustration-jelly">
       </iron-icon>
@@ -265,7 +154,6 @@
         <p>$i18n{switchAccessSetupClosingInfo}</p>
       </div>
 
-      <div class="illustration"></div>
       <iron-icon icon="os-settings-illo:switch-access-setup-guide-closing"
           class="illustration-jelly">
       </iron-icon>
