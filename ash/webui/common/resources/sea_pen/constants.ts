@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
@@ -43,7 +43,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A radiant <${SeaPenTemplateChip.kFlowerColor}> <${
           SeaPenTemplateChip.kFlowerType}> in bloom`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
       }],
       options: new Map([
         [
@@ -136,7 +136,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A close-up image of <${SeaPenTemplateChip.kMineralName}> with <${
           SeaPenTemplateChip.kMineralColor}> hues`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
       }],
       options: new Map([
         [
@@ -285,7 +285,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `A <${SeaPenTemplateChip.kLandscapeBiome}> landscape with <${
           SeaPenTemplateChip.kLandscapeLighting}> lighting`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
       }],
       options: new Map([
         [
@@ -370,7 +370,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
       text: `Otherworldly <${SeaPenTemplateChip.kScifiFeature}> in <${
           SeaPenTemplateChip.kScifiColor}> colors`,
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
       }],
       options: new Map([
         [
@@ -465,7 +465,7 @@ export function getSeaPenTemplates(): SeaPenTemplate[] {
   if (isSeaPenTextInputEnabled()) {
     templates.push({
       preview: [{
-        url: 'chrome://personalization/images/sea_pen_tile.svg',
+        url: 'chrome://resources/ash/common/sea_pen/sea_pen_tile.svg',
       }],
       title: 'Freeform',
       text: 'Freeform',

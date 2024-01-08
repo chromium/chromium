@@ -11,7 +11,7 @@
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';
 import 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {SeaPenProvider, SeaPenProviderInterface} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {SeaPenProvider, SeaPenProviderInterface} from './sea_pen.mojom-webui.js';
 
 let seaPenProvider: SeaPenProviderInterface|null = null;
 

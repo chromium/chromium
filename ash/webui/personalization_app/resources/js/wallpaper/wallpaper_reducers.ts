@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SeaPenActionName, SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
+import {seaPenReducer} from 'chrome://resources/ash/common/sea_pen/sea_pen_reducer.js';
+import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state';
 import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
@@ -12,9 +15,6 @@ import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
 
 import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
-import {SeaPenActionName, SeaPenActions} from './sea_pen/sea_pen_actions.js';
-import {seaPenReducer} from './sea_pen/sea_pen_reducer.js';
-import {SeaPenState} from './sea_pen/sea_pen_state';
 import {findAlbumById, isDefaultImage, isImageEqualToSelected} from './utils.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';

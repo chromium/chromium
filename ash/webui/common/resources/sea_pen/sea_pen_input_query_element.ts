@@ -16,7 +16,7 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 
-import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import {MAXIMUM_SEARCH_WALLPAPER_TEXT_BYTES, SeaPenQuery} from './sea_pen.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {QUERY} from './constants.js';
