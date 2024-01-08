@@ -2629,6 +2629,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
   std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
 
+  size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
     auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
     auto plane_size =
@@ -2651,10 +2652,10 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
       return error::kOutOfBounds;
     }
     if (plane > 0 &&
-        plane_offsets[plane] < plane_offsets[plane - 1] + byte_size) {
+        plane_offsets[plane] < plane_offsets[plane - 1] + prev_byte_size) {
       InsertError(GL_INVALID_VALUE,
                   "plane_offsets[plane] must be >= plane_offsets[plane "
-                  "- 1] + byte_size");
+                  "- 1] + prev_byte_size");
       return error::kOutOfBounds;
     }
 
@@ -2669,6 +2670,7 @@ error::Error GLES2DecoderPassthroughImpl::DoWritePixelsYUVINTERNAL(
 
     // Create an SkPixmap for the plane.
     pixmaps[plane] = SkPixmap(src_info, pixel_data, row_bytes[plane]);
+    prev_byte_size = byte_size;
   }
 
   // Try a direct texture upload without using SkSurface.
