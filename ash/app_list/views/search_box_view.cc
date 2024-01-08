@@ -1720,6 +1720,9 @@ void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {
 
     // Update the focus ring.
     views::FocusRing::Get(assistant_button())->SchedulePaint();
+
+    // Announce the IPH title.
+    GetViewAccessibility().AnnounceAlert(GetIphView()->GetTitleText());
   } else {
     DeleteIphView();
     assistant_button()->SetBackground(nullptr);

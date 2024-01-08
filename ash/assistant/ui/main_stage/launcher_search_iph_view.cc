@@ -168,12 +168,11 @@ LauncherSearchIphView::LauncherSearchIphView(
       views::BoxLayout::CrossAxisAlignment::kStart);
   text_container->SetBetweenChildSpacing(kMainLayoutBetweenChildSpacing);
 
-  views::Label* title_label = text_container->AddChildView(
-      std::make_unique<views::Label>(l10n_util::GetStringUTF16(
-          IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE)));
-  title_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  title_label->SetEnabledColorId(kColorAshTextColorPrimary);
-  title_label->GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
+  title_label_ = text_container->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_LAUNCHER_SEARCH_IPH_TITLE)));
+  title_label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
+  title_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+  title_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
 
   views::Label* description_label = text_container->AddChildView(
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(
@@ -183,7 +182,8 @@ LauncherSearchIphView::LauncherSearchIphView(
   const TypographyProvider* typography_provider = TypographyProvider::Get();
   DCHECK(typography_provider) << "TypographyProvider must not be null";
   if (typography_provider) {
-    typography_provider->StyleLabel(TypographyToken::kCrosTitle1, *title_label);
+    typography_provider->StyleLabel(TypographyToken::kCrosTitle1,
+                                    *title_label_);
     typography_provider->StyleLabel(TypographyToken::kCrosBody2,
                                     *description_label);
   }
@@ -238,6 +238,10 @@ void LauncherSearchIphView::NotifyAssistantButtonPressedEvent() {
   if (scoped_iph_session_) {
     scoped_iph_session_->NotifyEvent(kIphEventNameAssistantClick);
   }
+}
+
+std::u16string LauncherSearchIphView::GetTitleText() const {
+  return title_label_->GetText();
 }
 
 std::vector<raw_ptr<ChipView>> LauncherSearchIphView::GetChipsForTesting() {
