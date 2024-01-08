@@ -104,9 +104,8 @@ class FuzzDeviceLister : public local_discovery::ServiceDiscoveryDeviceLister {
                                   base::Unretained(this)));
   }
 
-  raw_ptr<local_discovery::ServiceDiscoveryDeviceLister::Delegate,
-          ExperimentalAsh>
-      delegate_ = nullptr;
+  raw_ptr<local_discovery::ServiceDiscoveryDeviceLister::Delegate> delegate_ =
+      nullptr;
   std::string service_type_;
   std::vector<CallToDelegate> calls_;
 };

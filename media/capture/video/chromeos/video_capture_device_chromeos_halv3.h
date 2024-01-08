@@ -43,7 +43,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSHalv3 final
                        SetPhotoOptionsCallback callback) final;
 
  private:
-  raw_ptr<VideoCaptureDeviceChromeOSDelegate, ExperimentalAsh> vcd_delegate_;
+  raw_ptr<VideoCaptureDeviceChromeOSDelegate> vcd_delegate_;
 
   ClientType client_type_;
 };

@@ -148,8 +148,7 @@ class SpeechRecognitionObserverWrapper
 
  private:
   // Owned by our parent, |AssistantManagerServiceImpl|.
-  const raw_ref<const base::ObserverList<AssistantInteractionSubscriber>,
-                ExperimentalAsh>
+  const raw_ref<const base::ObserverList<AssistantInteractionSubscriber>>
       interaction_subscribers_;
 
   mojo::Receiver<libassistant::mojom::SpeechRecognitionObserver> receiver_{

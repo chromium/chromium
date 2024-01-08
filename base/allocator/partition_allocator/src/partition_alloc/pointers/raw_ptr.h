@@ -1021,10 +1021,6 @@ constexpr auto AcrossTasksDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 // instead of the raw_ptr.
 constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 
-// Does nothing.
-// TODO(bartekn): Remove once no longer referenced.
-constexpr auto ExperimentalAsh = base::RawPtrTraits::kEmpty;
-
 // The use of uninitialized pointers is strongly discouraged. raw_ptrs will
 // be initialized to nullptr by default in all cases when building against
 // Chromium. However, third-party projects built in a standalone manner may

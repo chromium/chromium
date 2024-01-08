@@ -70,7 +70,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceChromeOSDelegate final
 
   // A reference to the CameraHalDelegate instance in the VCD factory.  This is
   // used by AllocateAndStart to query camera info and create the camera device.
-  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
 
   // A reference to the thread that all the VideoCaptureDevice interface methods
   // are expected to be called on.

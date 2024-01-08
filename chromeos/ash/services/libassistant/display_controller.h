@@ -80,8 +80,7 @@ class DisplayController
   std::unique_ptr<DisplayConnection> display_connection_;
 
   // Owned by |LibassistantService|.
-  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>,
-                ExperimentalAsh>
+  const raw_ref<mojo::RemoteSet<mojom::SpeechRecognitionObserver>>
       speech_recognition_observers_;
 
   raw_ptr<AssistantClient> assistant_client_ = nullptr;

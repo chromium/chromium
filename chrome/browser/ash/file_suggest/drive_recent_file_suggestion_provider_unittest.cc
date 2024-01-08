@@ -221,7 +221,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
       fake_user_manager_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile, ExperimentalAsh> profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   raw_ptr<disks::FakeDiskMountManager> disk_mount_manager_ = nullptr;
 

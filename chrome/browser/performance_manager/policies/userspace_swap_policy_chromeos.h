@@ -91,9 +91,7 @@ class UserspaceSwapPolicy : public GraphOwned,
 
   // We cache the config object since it cannot change, this makes the code
   // easier to read and testing also becomes easier.
-  const raw_ref<const ash::memory::userspace_swap::UserspaceSwapConfig,
-                ExperimentalAsh>
-      config_;
+  const raw_ref<const ash::memory::userspace_swap::UserspaceSwapConfig> config_;
 
   // Keeps track of the last time we walked the graph looking for processes to
   // swap, the frequency we walk the graph is configurable.

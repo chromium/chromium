@@ -277,12 +277,12 @@ class CAPTURE_EXPORT CameraDeviceDelegate final
   // Current configured resolution of BLOB stream.
   gfx::Size current_blob_resolution_;
 
-  raw_ptr<CameraHalDelegate, ExperimentalAsh> camera_hal_delegate_;
+  raw_ptr<CameraHalDelegate> camera_hal_delegate_;
 
   // Map client type to video capture parameter.
   base::flat_map<ClientType, VideoCaptureParams> chrome_capture_params_;
 
-  raw_ptr<CameraDeviceContext, ExperimentalAsh> device_context_;
+  raw_ptr<CameraDeviceContext> device_context_;
 
   std::queue<VideoCaptureDevice::TakePhotoCallback> take_photo_callbacks_;
 

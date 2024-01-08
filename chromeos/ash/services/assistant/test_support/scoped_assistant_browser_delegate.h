@@ -62,8 +62,7 @@ class ScopedAssistantBrowserDelegate : AssistantBrowserDelegate {
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
  private:
-  raw_ptr<mojo::Receiver<media_session::mojom::MediaControllerManager>,
-          ExperimentalAsh>
+  raw_ptr<mojo::Receiver<media_session::mojom::MediaControllerManager>>
       media_controller_manager_receiver_ = nullptr;
 };
 

@@ -97,8 +97,7 @@ class FakeAssistantClient : public AssistantClient {
  private:
   void GetAndNotifyTimerStatus();
 
-  raw_ptr<GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>,
-          ExperimentalAsh>
+  raw_ptr<GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>>
       timer_observer_;
 };
 

@@ -463,8 +463,7 @@ class DriveFsEventRouterImpl : public DriveFsEventRouter {
   }
 
   const raw_ptr<Profile> profile_;
-  const raw_ptr<const std::map<base::FilePath, std::unique_ptr<FileWatcher>>,
-                ExperimentalAsh>
+  const raw_ptr<const std::map<base::FilePath, std::unique_ptr<FileWatcher>>>
       file_watchers_;
 };
 

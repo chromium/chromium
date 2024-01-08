@@ -641,8 +641,7 @@ base::Value::List GetVideoAcceleratorsInfo() {
   base::Value::List info;
 
   struct {
-    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles,
-                  ExperimentalAsh>
+    const raw_ref<const gpu::VideoDecodeAcceleratorSupportedProfiles>
         capabilities;
     std::string name;
   } kVideoDecoderImplementations[] = {

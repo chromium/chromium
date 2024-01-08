@@ -705,8 +705,7 @@ class ArcAppListPrefs : public KeyedService,
   const raw_ptr<PrefService> prefs_;
 
   const raw_ptr<
-      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>,
-      ExperimentalAsh>
+      arc::ConnectionHolder<arc::mojom::AppInstance, arc::mojom::AppHost>>
       app_connection_holder_for_testing_;
 
   // List of observers.

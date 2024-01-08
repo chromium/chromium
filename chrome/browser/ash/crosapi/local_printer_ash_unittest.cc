@@ -1228,8 +1228,7 @@ class LocalPrinterAshWithOAuth2Test : public testing::Test {
   TestingProfile profile_;
   raw_ptr<ash::FakeCupsPrintersManager> printers_manager_ = nullptr;
   raw_ptr<
-      testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>,
-      ExperimentalAsh>
+      testing::StrictMock<ash::printing::oauth2::MockAuthorizationZoneManager>>
       auth_manager_ = nullptr;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;

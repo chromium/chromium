@@ -105,15 +105,13 @@ class CAPTURE_EXPORT Camera3AController final
 
   void ClearRepeatingCaptureMetadata();
 
-  const raw_ref<const cros::mojom::CameraMetadataPtr, ExperimentalAsh>
-      static_metadata_;
+  const raw_ref<const cros::mojom::CameraMetadataPtr> static_metadata_;
   bool ae_region_supported_;
   bool af_region_supported_;
   bool point_of_interest_supported_;
   bool zero_shutter_lag_supported_;
 
-  raw_ptr<CaptureMetadataDispatcher, ExperimentalAsh>
-      capture_metadata_dispatcher_;
+  raw_ptr<CaptureMetadataDispatcher> capture_metadata_dispatcher_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   std::unordered_set<cros::mojom::AndroidControlAfMode> available_af_modes_;
