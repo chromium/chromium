@@ -252,7 +252,7 @@ The baselines in this directory override the fallback baselines.
 *** note
 [BUILD.gn](../../BUILD.gn) assumes flag-specific builders always runs on linux bots, so
 flag-specific test expectations and baselines are only downloaded to linux bots.
-If you need run flag-specific builderst-n other platforms, please update
+If you need run flag-specific builders on other platforms, please update
 BUILD.gn to download flag-specific related data to that platform.
 ***
 
