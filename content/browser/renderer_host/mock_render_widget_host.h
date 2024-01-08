@@ -7,6 +7,7 @@
 
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
+#include "content/browser/renderer_host/input/fling_scheduler.h"
 #include "content/browser/renderer_host/input/mock_input_router.h"
 #include "content/common/input/event_with_latency_info.h"
 #include "content/test/mock_widget_input_handler.h"

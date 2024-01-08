@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_IMPL_H_
-#define CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_IMPL_H_
+#ifndef CONTENT_COMMON_INPUT_INPUT_ROUTER_IMPL_H_
+#define CONTENT_COMMON_INPUT_INPUT_ROUTER_IMPL_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "cc/input/touch_action.h"
-#include "content/browser/renderer_host/input/fling_scheduler.h"
 #include "content/common/content_export.h"
 #include "content/common/input/gesture_event_queue.h"
 #include "content/common/input/input_event_stream_validator.h"
@@ -25,7 +24,6 @@
 #include "content/common/input/passthrough_touch_event_queue.h"
 #include "content/common/input/touch_action_filter.h"
 #include "content/common/input/touchpad_pinch_event_queue.h"
-#include "content/public/common/input/native_web_keyboard_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -290,4 +288,4 @@ class CONTENT_EXPORT InputRouterImpl
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_INPUT_ROUTER_IMPL_H_
+#endif  // CONTENT_COMMON_INPUT_INPUT_ROUTER_IMPL_H_

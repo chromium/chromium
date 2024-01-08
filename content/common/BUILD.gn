@@ -129,6 +129,8 @@ source_set("common") {
     "input/input_router_client.h",
     "input/input_router_config_helper.cc",
     "input/input_router_config_helper.h",
+    "input/input_router_impl.cc",
+    "input/input_router_impl.h",
     "input/mouse_wheel_event_queue.cc",
     "input/mouse_wheel_event_queue.h",
     "input/passthrough_touch_event_queue.cc",

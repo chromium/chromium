@@ -1724,8 +1724,6 @@ source_set("browser") {
     "renderer_host/input/input_device_change_observer.h",
     "renderer_host/input/input_injector_impl.cc",
     "renderer_host/input/input_injector_impl.h",
-    "renderer_host/input/input_router_impl.cc",
-    "renderer_host/input/input_router_impl.h",
     "renderer_host/input/motion_event_web.cc",
     "renderer_host/input/motion_event_web.h",
     "renderer_host/input/mouse_wheel_phase_handler.cc",
