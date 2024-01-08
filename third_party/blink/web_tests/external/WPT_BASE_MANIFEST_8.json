@@ -238199,6 +238199,19 @@
        }
       ]
      ],
+     "modify-style-via-cssom.html": [
+      "6f026607bc5c24eb8f3cf41166025da3d212cf85",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/modify-style-via-cssom-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "multiline-span-with-overflowing-text-and-box-decorations.html": [
       "e166b3c9dfe66370a4800ff6cac37e236100d62d",
       [
@@ -286563,7 +286576,7 @@
       ]
      },
      "side-effects-of-animations-current.html": [
-      "b0de72bdbf9bcffef88ca5dc12bbe0f9ef239823",
+      "18b13be9fa689ea6b8fb7f5691bedb0e905fb9d0",
       [
        null,
        [
@@ -286576,7 +286589,7 @@
       ]
      ],
      "side-effects-of-animations-in-effect.html": [
-      "ff53c98d79373bd048f5ec96051cb129d7ed5795",
+      "90ee05508270e8d025c94bc68c4464a8ceb58304",
       [
        null,
        [
@@ -286589,7 +286602,7 @@
       ]
      ],
      "side-effects-of-animations-none.html": [
-      "b460ecc27fd1487075b9871e656e5a3bdbfb5399",
+      "d200409e647170105eb98d117dcaeaf78a6677ff",
       [
        null,
        [
@@ -340921,6 +340934,10 @@
       "1df26bb375248b014906c54efb426f2cf4bf9035",
       []
      ],
+     "modify-style-via-cssom-ref.html": [
+      "dd93e0b498c3650812eb126fb6d7422a715a474f",
+      []
+     ],
      "multiline-span-with-overflowing-text-and-box-decorations-ref.html": [
       "ca9efc52d6e412d2eb2ee3511b5f3845a36854b8",
       []
@@ -389521,7 +389538,7 @@
      []
     ],
     "helpers.js": [
-     "1ca0e121c6afffbd0babb27045f17d972abe1f98",
+     "0fd5d814dbb075ad39dd5eefeabc2bc1973fdba8",
      []
     ],
     "resources": {
@@ -389530,7 +389547,7 @@
       []
      ],
      "embedded_responder.js": [
-      "4a956c5f39459022f7c7c63c54ee98e7fdb8b8a0",
+      "bc13c7e7e8259aa67a99a38dd6fa3c31f3bb269d",
       []
      ],
      "embedded_worker.js": [
@@ -393537,6 +393554,12 @@
        []
       ]
      },
+     "resources": {
+      "side-effects-common.js": [
+       "2f6531d4fc4d518fd2c979939a5c20c4be65be2e",
+       []
+      ]
+     },
      "side-effects-of-animations-current-ref.html": [
       "acc0465b074c2dddfeb1ac427d49a55e5dcecd64",
       []
@@ -393657,7 +393680,7 @@
      ]
     },
     "testcommon.js": [
-     "a106cd9ac67464f16cb2a5c104e1dbf742bfc289",
+     "5b22c658d5cac8b513a4801074c8fa694bbe250d",
      []
     ],
     "timing-model": {
@@ -394801,7 +394824,7 @@
      []
     ],
     "video-encoder-utils.js": [
-     "855531a76a6e3bedb263b0931e0160ceedda6552",
+     "0838260d31bc8f90d2d294341f078bef544d29bd",
      []
     ],
     "videoFrame-construction.crossOriginIsolated.https.any.js.headers": [
@@ -395741,7 +395764,7 @@
        []
       ],
       "fixtures.py": [
-       "d7ca4d0fab7f593e773a5014dd00edf8eab85dc4",
+       "7468e8b251f8f6f6e203d2a314f9480e397940e2",
        []
       ],
       "fixtures_bidi.py": [
@@ -395753,7 +395776,7 @@
        []
       ],
       "helpers.py": [
-       "dbc5abc2475cf53c4d24add726a12a2ff47175c5",
+       "0a8e1dc1a4f1d15873db3bc6663bcd1a64ebef40",
        []
       ],
       "html": {
@@ -396952,7 +396975,7 @@
       []
      ],
      "simulcast.js": [
-      "1886531023d6a98c99c517a3ef0f4421714e92f1",
+      "e0b90d8ac37bff19aed1c208bc84e2b649861d38",
       []
      ]
     },
@@ -475262,6 +475285,13 @@
       ]
      ],
      "parsing": {
+      "invalid-pseudos.html": [
+       "a09572b6517a4e50b2babadcba90c15b49aa8191",
+       [
+        null,
+        {}
+       ]
+      ],
       "parse-anplusb.html": [
        "b7cfd293515b67d5aa66bfe7b62262e1b64c0942",
        [
@@ -630177,7 +630207,7 @@
      ]
     ],
     "requestStorageAccess-cross-site-sibling-iframes.sub.https.window.js": [
-     "06ee80e5a08951c7300dcb446d3e6bcf39a35583",
+     "528b1616368a16b9629f441ee7d9de7cfe54a392",
      [
       "storage-access-api/requestStorageAccess-cross-site-sibling-iframes.sub.https.window.html",
       {
@@ -652609,7 +652639,7 @@
        ]
       ],
       "sample-accurate-scheduling.html": [
-       "5fafd024eef9b476f4d97b2ebaa2190a4ca520d5",
+       "fd244e8a5f62c9910d17058c0edc8c1cb8cf8880",
        [
         null,
         {}
@@ -656479,7 +656509,7 @@
      ]
     ],
     "per-frame-qp-encoding.https.any.js": [
-     "81cc6c27d4ff4045fdae6399b549eac2f02f6436",
+     "8ec96c3f7035d4d02953dea5a2185fe63844df9a",
      [
       "webcodecs/per-frame-qp-encoding.https.any.html?av1",
       {
@@ -703055,12 +703085,10 @@
          ]
         ],
         "invalid.py": [
-         "2a90af4da0b1b6e63b5cb01d4e9f013e287a8fe1",
+         "744bc0f7f79f86722fbf2f05bb8475c6cdfc9e23",
          [
           null,
-          {
-           "timeout": "long"
-          }
+          {}
          ]
         ],
         "viewport.py": [
@@ -703125,12 +703153,10 @@
       "input": {
        "perform_actions": {
         "invalid.py": [
-         "f1e8c3c441a51a7bab58e0f9962f5548f11f6eb4",
+         "4ae3039f473e16ebe6350196822e8e5e7a4c00e3",
          [
           null,
-          {
-           "timeout": "long"
-          }
+          {}
          ]
         ],
         "key.py": [
@@ -703577,12 +703603,10 @@
          ]
         ],
         "invalid.py": [
-         "9de343955c8a260203f0a0beee962e0aa2ddaaf6",
+         "af94e86efe10c3e353f952111a3054d9d7525cff",
          [
           null,
-          {
-           "timeout": "long"
-          }
+          {}
          ]
         ],
         "invalid_tentative.py": [
@@ -704091,12 +704115,10 @@
       },
       "element_clear": {
        "clear.py": [
-        "22c07b6a8ce241a7166511c539765f1cd959edcb",
+        "9a0549ce4f25e17170b2a45ea1e89926c88dcb36",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "user_prompts.py": [
@@ -704533,7 +704555,7 @@
         ]
        ],
        "stress.py": [
-        "b907a31f17e0167ff27a4e8ceb2ad44cd372b537",
+        "cbc5e28c903ed140d8a99d703be2b355e03536ae",
         [
          null,
          {
@@ -704925,7 +704947,7 @@
       },
       "maximize_window": {
        "maximize.py": [
-        "3cbd47043f5db726f8df04cc41fc51dacbc6120c",
+        "3a20a0d5589bd222c17530ad650311555d71ded9",
         [
          null,
          {
@@ -704934,7 +704956,7 @@
         ]
        ],
        "stress.py": [
-        "986f6346e908d9cde7c66daa1069ab4920ac76b3",
+        "23f048e846b7b60f52d1f5424e4e7538c4538f4c",
         [
          null,
          {
@@ -704954,7 +704976,7 @@
       },
       "minimize_window": {
        "minimize.py": [
-        "ed02280a135f2b436bdef250d3511d5432efeea1",
+        "2ad5333ec54a79fd8306c17f093046a87b5aaf25",
         [
          null,
          {
@@ -704963,7 +704985,7 @@
         ]
        ],
        "stress.py": [
-        "8990f12669d70aa9693d798c6d75105c6075c3d6",
+        "f9c8304bdc00a01481877de0452bb2d7f72448ac",
         [
          null,
          {
@@ -705125,12 +705147,10 @@
       },
       "perform_actions": {
        "invalid.py": [
-        "b0302131a0ac28b9c704806deaf4585f39919126",
+        "f000477376e7ccded56168f2e9f3d373cbd675aa",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "key.py": [
@@ -705206,12 +705226,10 @@
         ]
        ],
        "pointer_mouse.py": [
-        "914e9f65608cd66ebbcd439a5b933ed3e03c5006",
+        "f8683ce45156c7d79c49753eca04c55ffc2b4f16",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "pointer_origin.py": [
@@ -705229,21 +705247,17 @@
         ]
        ],
        "pointer_pen.py": [
-        "b846f7e7ed59350cbb72f7faa3746cc7742d4664",
+        "bf71a20c4d2ce89ffc40c4338deaefb5a4f41ddd",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "pointer_touch.py": [
-        "ab49f1eed6d117a1b913e47763d6bf348429e6d8",
+        "b85b2e6ef38195d26e0e580edf34a141efc19eba",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "pointer_tripleclick.py": [
@@ -705254,12 +705268,10 @@
         ]
        ],
        "sequence.py": [
-        "f6c12220c450146a7a491b0fa9172264114debdc",
+        "7751762768c7aa4f6a9388318b881b5a302a165f",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ],
        "user_prompts.py": [
@@ -705349,12 +705361,10 @@
         ]
        ],
        "sequence.py": [
-        "65ad39fcbf788f4d1f0a9a032f161f8dc74875d8",
+        "348f81694605a38990f0309100ca610e9683e68b",
         [
          null,
-         {
-          "timeout": "long"
-         }
+         {}
         ]
        ]
       },
@@ -705387,7 +705397,7 @@
       },
       "set_window_rect": {
        "set.py": [
-        "af37c2f70d32c30f2aed2f88883c70249ba96865",
+        "5295c44fddb5d8503b2c6a743080f53c7724441b",
         [
          null,
          {
