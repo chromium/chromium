@@ -42,10 +42,12 @@ export const PASSWORD_SHARE_BUTTON_BUTTON_ELEMENT_ID =
 
 export type PasswordRemovedEvent =
     CustomEvent<{removedFromStores: chrome.passwordsPrivate.PasswordStoreSet}>;
+export type PasswordMovedEvent = CustomEvent<{accountEmail: string}>;
 
 declare global {
   interface HTMLElementEventMap {
     'password-removed': PasswordRemovedEvent;
+    'password-moved': PasswordMovedEvent;
   }
 }
 

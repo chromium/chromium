@@ -329,6 +329,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       // depending on the build.
       {"passwordManagerTitle",
        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE},
+      {"passwordMovedToastMessage",
+       IDS_PASSWORD_MANAGER_UI_PASSWORD_MOVED_TOAST_MESSAGE},
       {"passwordNoteCharacterCount",
        IDS_PASSWORD_MANAGER_UI_NOTE_CHARACTER_COUNT},
       {"passwordNoteCharacterCountWarning",
