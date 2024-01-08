@@ -296,8 +296,14 @@ void DragDropController::SetDragImage(const gfx::ImageSkia& image,
   drag_image_final_bounds_for_cancel_animation_ =
       gfx::Rect(start_location_ - image_offset, image.size());
 
-  drag_image_widget_ =
-      DragImageView::Create(source_window->GetRootWindow(), source);
+  // Only create `drag_image_widget_` if it doesn't exist. This prevents the
+  // case when dragging a webui tab in lacros keeps creating fresh
+  // `drag_image_widget_` with kTouch while it should have been set as kMouse to
+  // avoid drag hint. See crbug.com/1384469.
+  if (!drag_image_widget_) {
+    drag_image_widget_ =
+        DragImageView::Create(source_window->GetRootWindow(), source);
+  }
 
   DragImageView* drag_image =
       static_cast<DragImageView*>(drag_image_widget_->GetContentsView());
