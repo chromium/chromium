@@ -244,11 +244,6 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
-  SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
-  EXPECT_CALL(*mock_model_manager_, GetModelProvider(segment_id, _))
-      .WillOnce(testing::Return(nullptr))
-      .WillOnce(testing::Return(nullptr));
-
   service_proxy_impl_->SetExecutionService(&execution_);
   EXPECT_CALL(*mock_executor, ExecuteModel(_)).Times(1);
   service_proxy_impl_->ExecuteModel(
