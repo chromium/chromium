@@ -5,6 +5,7 @@
 #include "ash/picker/picker_controller.h"
 
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/picker/model/picker_search_results.h"
@@ -12,8 +13,10 @@
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
+#include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "base/hash/sha1.h"
 
 namespace ash {
@@ -95,6 +98,13 @@ void PickerController::ToggleWidget(
 std::unique_ptr<AshWebView> PickerController::CreateWebView(
     const AshWebView::InitParams& params) {
   return client_->CreateWebView(params);
+}
+
+void PickerController::LoadAndDecodeGif(const GURL& url,
+                                        DecodeGifCallback callback) {
+  client_->DownloadGifToString(
+      url,
+      base::BindOnce(&image_util::DecodeAnimationData, std::move(callback)));
 }
 
 void PickerController::StartSearch(const std::u16string& query,

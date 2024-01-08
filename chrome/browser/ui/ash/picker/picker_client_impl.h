@@ -24,6 +24,8 @@ class PickerClientImpl : public ash::PickerClient {
   // ash::PickerClient:
   std::unique_ptr<ash::AshWebView> CreateWebView(
       const ash::AshWebView::InitParams& params) override;
+  void DownloadGifToString(const GURL& url,
+                           DownloadGifToStringCallback callback) override;
 
  private:
   raw_ptr<ash::PickerController> controller_ = nullptr;

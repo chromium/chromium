@@ -36,6 +36,9 @@ class TestPickerClient : public PickerClient {
     return web_view_factory_.Create(params);
   }
 
+  void DownloadGifToString(const GURL& url,
+                           DownloadGifToStringCallback callback) override {}
+
  private:
   TestAshWebViewFactory web_view_factory_;
   raw_ptr<PickerController> controller_ = nullptr;

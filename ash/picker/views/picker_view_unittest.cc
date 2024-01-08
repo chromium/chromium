@@ -50,6 +50,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
     return ash_web_view_factory_.Create(params);
   }
 
+  void LoadAndDecodeGif(const GURL& url, DecodeGifCallback callback) override {}
+
   void StartSearch(const std::u16string& query,
                    SearchResultsCallback callback) override {
     callback.Run(search_function_.Run(query));

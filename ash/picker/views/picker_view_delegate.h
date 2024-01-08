@@ -9,6 +9,9 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ash_web_view.h"
+#include "ash/public/cpp/image_util.h"
+
+class GURL;
 
 namespace ash {
 
@@ -20,11 +23,20 @@ class ASH_EXPORT PickerViewDelegate {
  public:
   using SearchResultsCallback =
       base::RepeatingCallback<void(const PickerSearchResults& results)>;
+  // TODO: b/316936723 - Pass `frames` by reference to avoid a copy.
+  using DecodeGifCallback =
+      base::OnceCallback<void(std::vector<image_util::AnimationFrame> frames)>;
 
   virtual ~PickerViewDelegate() {}
 
   virtual std::unique_ptr<AshWebView> CreateWebView(
       const AshWebView::InitParams& params) = 0;
+
+  // Loads and decodes a gif from `url`. If successful, the decoded gif frames
+  // will be returned via `callback`. Otherwise, `callback` is run with an empty
+  // vector of frames.
+  virtual void LoadAndDecodeGif(const GURL& url,
+                                DecodeGifCallback callback) = 0;
 
   // Starts a search for `query`. Results will be returned via `callback`,
   // which may be called multiples times to update the results.
