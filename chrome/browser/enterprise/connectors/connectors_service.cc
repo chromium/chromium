@@ -173,10 +173,6 @@ BASE_FEATURE(kEnterpriseConnectorsEnabledOnMGS,
              "EnterpriseConnectorsEnabledOnMGS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableRelaxedAffiliationCheck,
-             "EnableRelaxedAffiliationCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // --------------------------------
 // ConnectorsService implementation
 // --------------------------------
@@ -511,10 +507,6 @@ ConnectorsService::GetBrowserDmToken() const {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
-  if (!base::FeatureList::IsEnabled(kEnableRelaxedAffiliationCheck) &&
-      !CanUseProfileDmToken()) {
-    return absl::nullopt;
-  }
   Profile* profile = Profile::FromBrowserContext(context_);
 
   policy::UserCloudPolicyManager* policy_manager =
@@ -527,16 +519,6 @@ ConnectorsService::GetProfileDmToken() const {
                  policy::POLICY_SCOPE_USER);
 }
 
-bool ConnectorsService::CanUseProfileDmToken() const {
-  Profile* profile = Profile::FromBrowserContext(context_);
-
-  // If the browser isn't managed by CBCM, then the profile DM token can be
-  // used.
-  if (!policy::BrowserDMTokenStorage::Get()->RetrieveDMToken().is_valid())
-    return true;
-
-  return chrome::enterprise_util::IsProfileAffiliated(profile);
-}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 policy::PolicyScope ConnectorsService::GetPolicyScope(

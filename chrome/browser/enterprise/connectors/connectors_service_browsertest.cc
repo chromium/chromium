@@ -297,19 +297,11 @@ class ConnectorsServiceProfileBrowserTest
 class ConnectorsServiceReportingProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<ReportingConnector, ManagementStatus, bool>> {
+          std::tuple<ReportingConnector, ManagementStatus>> {
  public:
   ConnectorsServiceReportingProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {
-    if (enable_relaxed_affiliation()) {
-      scoped_feature_list_.InitAndEnableFeature(kEnableRelaxedAffiliationCheck);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kEnableRelaxedAffiliationCheck);
-    }
-  }
+      : ConnectorsServiceProfileBrowserTest(std::get<1>(GetParam())) {}
   ReportingConnector connector() { return std::get<0>(GetParam()); }
-  bool enable_relaxed_affiliation() { return std::get<2>(GetParam()); }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -318,8 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
                      testing::Values(ManagementStatus::AFFILIATED,
                                      ManagementStatus::UNAFFILIATED,
-                                     ManagementStatus::UNMANAGED),
-                     testing::Bool()));
+                                     ManagementStatus::UNMANAGED)));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
@@ -340,38 +331,18 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
   std::string management_domain =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetManagementDomain();
-  switch (management_status()) {
-    case ManagementStatus::UNAFFILIATED:
-      if (enable_relaxed_affiliation()) {
-        EXPECT_TRUE(settings.has_value());
-        ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
-        ASSERT_TRUE(settings.value().per_profile);
-        ASSERT_EQ(kDomain1, management_domain);
-      } else {
-        EXPECT_FALSE(settings.has_value());
-        ASSERT_TRUE(management_domain.empty());
-      }
-      break;
-    case ManagementStatus::AFFILIATED:
-      EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
-      ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-    case ManagementStatus::UNMANAGED:
-      EXPECT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
-      ASSERT_TRUE(settings.value().per_profile);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-  }
+  // expected state is the same regardless of management_status() value.
+  EXPECT_TRUE(settings.has_value());
+  ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
+  ASSERT_TRUE(settings.value().per_profile);
+  ASSERT_EQ(kDomain1, management_domain);
 #endif
 }
 
 class ConnectorsServiceAnalysisProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<ManagementStatus, const char*, bool, bool>> {
+          std::tuple<ManagementStatus, const char*, bool>> {
  public:
   ConnectorsServiceAnalysisProfileBrowserTest()
       : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
@@ -382,11 +353,6 @@ class ConnectorsServiceAnalysisProfileBrowserTest
     } else {
       disabled_features.push_back(kEnterpriseConnectorsEnabledOnMGS);
     }
-    if (enable_relaxed_affiliation()) {
-      enabled_features.push_back(kEnableRelaxedAffiliationCheck);
-    } else {
-      disabled_features.push_back(kEnableRelaxedAffiliationCheck);
-    }
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
   const char* settings_value() { return std::get<1>(GetParam()); }
@@ -396,8 +362,6 @@ class ConnectorsServiceAnalysisProfileBrowserTest
   bool enterprise_connectors_enabled_on_mgs() {
     return std::get<2>(GetParam());
   }
-
-  bool enable_relaxed_affiliation() { return std::get<3>(GetParam()); }
 
   bool is_cloud() {
     return strcmp(settings_value(), kNormalCloudAnalysisSettingsPref) == 0;
@@ -544,7 +508,6 @@ INSTANTIATE_TEST_SUITE_P(
                         ManagementStatus::UNMANAGED),
         testing::Values(kNormalCloudAnalysisSettingsPref,
                         kNormalLocalAnalysisSettingsPref),
-        testing::Bool(),
         testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
@@ -645,22 +608,17 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
-        ASSERT_NE(management_domain.empty(), enable_relaxed_affiliation());
+        ASSERT_FALSE(management_domain.empty());
       } else {
-        if (enable_relaxed_affiliation()) {
-          EXPECT_TRUE(settings.has_value());
-          ASSERT_TRUE(
-              settings.value().cloud_or_local_settings.is_cloud_analysis());
-          ASSERT_EQ(kFakeProfileDMToken,
-                    settings.value().cloud_or_local_settings.dm_token());
-          ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
-                                 /*profile_reporting*/ true);
-          ASSERT_TRUE(settings.value().per_profile);
-          ASSERT_EQ(kDomain1, management_domain);
-        } else {
-          ASSERT_TRUE(management_domain.empty());
-          ASSERT_FALSE(settings.has_value());
-        }
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_TRUE(
+            settings.value().cloud_or_local_settings.is_cloud_analysis());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        ValidateClientMetadata(*settings.value().client_metadata, is_cloud(),
+                               /*profile_reporting*/ true);
+        ASSERT_TRUE(settings.value().per_profile);
+        ASSERT_EQ(kDomain1, management_domain);
       }
       break;
     case ManagementStatus::AFFILIATED:
@@ -739,22 +697,17 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
-        ASSERT_NE(management_domain.empty(), enable_relaxed_affiliation());
+        ASSERT_NE(management_domain.empty(), true);
       } else {
-        if (enable_relaxed_affiliation()) {
-          EXPECT_TRUE(settings.has_value());
-          ASSERT_EQ(kFakeProfileDMToken,
-                    settings.value().cloud_or_local_settings.dm_token());
-          if (enterprise_connectors_enabled_on_mgs()) {
-            ASSERT_FALSE(ContainsClientId(settings.value()));
-          } else {
-            ASSERT_FALSE(settings.value().client_metadata);
-          }
-          ASSERT_EQ(management_domain, kDomain1);
+        EXPECT_TRUE(settings.has_value());
+        ASSERT_EQ(kFakeProfileDMToken,
+                  settings.value().cloud_or_local_settings.dm_token());
+        if (enterprise_connectors_enabled_on_mgs()) {
+          ASSERT_FALSE(ContainsClientId(settings.value()));
         } else {
-          ASSERT_FALSE(settings.has_value());
-          ASSERT_TRUE(management_domain.empty());
+          ASSERT_FALSE(settings.value().client_metadata);
         }
+        ASSERT_EQ(management_domain, kDomain1);
       }
       break;
     case ManagementStatus::AFFILIATED:
@@ -838,23 +791,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 #else
     switch (management_status()) {
       case ManagementStatus::UNAFFILIATED:
-        if (enable_relaxed_affiliation()) {
-          // Same as ManagementStatus::AFFILIATED
-          EXPECT_TRUE(settings.has_value());
-          ASSERT_TRUE(
-              settings.value().cloud_or_local_settings.is_cloud_analysis());
-          ASSERT_EQ(kFakeProfileDMToken,
-                    settings.value().cloud_or_local_settings.dm_token());
-          if (enterprise_connectors_enabled_on_mgs()) {
-            ASSERT_FALSE(ContainsClientId(settings.value()));
-          } else {
-            ASSERT_FALSE(settings.value().client_metadata);
-          }
-          ASSERT_TRUE(settings.value().per_profile);
-        } else {
-          ASSERT_FALSE(settings.has_value());
-        }
-        break;
       case ManagementStatus::AFFILIATED:
         EXPECT_TRUE(settings.has_value());
         ASSERT_TRUE(
@@ -886,28 +822,17 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 class ConnectorsServiceRealtimeURLCheckProfileBrowserTest
     : public ConnectorsServiceProfileBrowserTest,
-      public testing::WithParamInterface<std::tuple<ManagementStatus, bool>> {
+      public testing::WithParamInterface<ManagementStatus> {
  public:
   ConnectorsServiceRealtimeURLCheckProfileBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(std::get<0>(GetParam())) {
-    if (enable_relaxed_affiliation()) {
-      scoped_feature_list_.InitAndEnableFeature(kEnableRelaxedAffiliationCheck);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kEnableRelaxedAffiliationCheck);
-    }
-  }
-
-  bool enable_relaxed_affiliation() const { return std::get<1>(GetParam()); }
+      : ConnectorsServiceProfileBrowserTest(GetParam()) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
-    testing::Combine(testing::Values(ManagementStatus::AFFILIATED,
-                                     ManagementStatus::UNAFFILIATED,
-                                     ManagementStatus::UNMANAGED),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
+                         testing::Values(ManagementStatus::AFFILIATED,
+                                         ManagementStatus::UNAFFILIATED,
+                                         ManagementStatus::UNMANAGED));
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
                        Test) {
@@ -934,34 +859,12 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
   std::string management_domain =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetManagementDomain();
-  switch (management_status()) {
-    case ManagementStatus::UNAFFILIATED: {
-      if (enable_relaxed_affiliation()) {
-        ASSERT_TRUE(maybe_dm_token.has_value());
-        ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-                  url_check_pref);
-        ASSERT_EQ(kDomain1, management_domain);
-      } else {
-        ASSERT_FALSE(maybe_dm_token.has_value());
-        ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
-        ASSERT_TRUE(management_domain.empty());
-      }
-    } break;
-    case ManagementStatus::AFFILIATED:
-      ASSERT_TRUE(maybe_dm_token.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-                url_check_pref);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-    case ManagementStatus::UNMANAGED:
-      ASSERT_TRUE(maybe_dm_token.has_value());
-      ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
-      ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-                url_check_pref);
-      ASSERT_EQ(kDomain1, management_domain);
-      break;
-  }
+  // expected state is the same regardless of management_status() value.
+  ASSERT_TRUE(maybe_dm_token.has_value());
+  ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
+  ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
+            url_check_pref);
+  ASSERT_EQ(kDomain1, management_domain);
 #endif
 }
 

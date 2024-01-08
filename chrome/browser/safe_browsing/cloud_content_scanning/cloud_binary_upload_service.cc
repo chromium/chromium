@@ -181,11 +181,8 @@ bool CanUseAccessToken(const BinaryUploadService::Request& request,
   }
 
   // This code being reached implies that the browser and profile are
-  // not affiliated. In that case, and only with the new relaxed affiliation
-  // logic, it's ok to attach the access token for profile requests.
-  return request.per_profile_request() &&
-         base::FeatureList::IsEnabled(
-             enterprise_connectors::kEnableRelaxedAffiliationCheck);
+  // not affiliated.
+  return request.per_profile_request();
 }
 
 }  // namespace
