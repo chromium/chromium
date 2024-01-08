@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -292,4 +293,43 @@ export function getFileErrorString(name: string|null|undefined) {
       FileErrorLocalizedName[name] :
       'FILE_ERROR_GENERIC';
   return loadTimeData.getString(error!);
+}
+
+/**
+ * Get the plural string with a specified count.
+ * Note: the string id to get must be handled by `PluralStringHandler` in C++
+ * side.
+ *
+ * @param id The translation string resource id.
+ * @param count The number count to get the plural.
+ */
+export async function getPluralString(
+    id: string, count: number): Promise<string> {
+  return PluralStringProxyImpl.getInstance().getPluralString(id, count);
+}
+
+/**
+ * Get the plural string with a specified count and placeholder values.
+ * Note: the string id to get must be handled by `PluralStringHandler` in C++
+ * side.
+ *
+ * ```
+ * {NUM_FILE, plural,
+ *    = 1 {1 file with <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> size.},
+ *    other {# files with <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> size.}}
+ *
+ * await getPluralStringWithPlaceHolders(id, 2, '44 MB')
+ * => "2 files with 44 MB size"
+ * ```
+ *
+ * @param id The translation string resource id.
+ * @param count The number count to get the plural.
+ * @param placeholders The placeholder value to replace.
+ */
+export async function getPluralStringWithPlaceHolders(
+    id: string, count: number,
+    ...placeholders: Array<string|number>): Promise<string> {
+  const strWithPlaceholders =
+      await PluralStringProxyImpl.getInstance().getPluralString(id, count);
+  return loadTimeData.substituteString(strWithPlaceholders, ...placeholders);
 }

@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-
-import {str, strf} from '../../common/js/translations.js';
+import {getPluralString, str, strf} from '../../common/js/translations.js';
 
 import {PanelButton} from './xf_button.js';
 import {getTemplate} from './xf_display_panel.html.js';
@@ -32,9 +30,6 @@ export class DisplayPanel extends HTMLElement {
   private panels_: HTMLDivElement;
 
   private toggleSummaryBound_ = this.toggleSummary_.bind(this);
-
-  /** Plural string proxy to call remote methods to get plural strings. */
-  private pluralStringProxy_ = PluralStringProxyImpl.getInstance();
 
   constructor() {
     super();
@@ -377,8 +372,7 @@ export class DisplayPanel extends HTMLElement {
           `generateWarningMessage_ expected errors > 0, but got ${errors}.`);
       return '';
     }
-    return this.pluralStringProxy_.getPluralString(
-        'ERROR_PROGRESS_SUMMARY', errors);
+    return getPluralString('ERROR_PROGRESS_SUMMARY', errors);
   }
 
   /**
@@ -392,8 +386,7 @@ export class DisplayPanel extends HTMLElement {
           warnings}.`);
       return '';
     }
-    return this.pluralStringProxy_.getPluralString(
-        'WARNING_PROGRESS_SUMMARY', warnings);
+    return getPluralString('WARNING_PROGRESS_SUMMARY', warnings);
   }
 }
 
