@@ -698,15 +698,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabManager.Discarding.DiscardedTabHasBeforeUnloadHandler"
-    enum="Boolean" expires_after="M77">
-  <owner>georgesak@chromium.org</owner>
-  <summary>
-    Recorded for each discarding, allowing us to know whether the discarded tab
-    had a before unload handler or not.
-  </summary>
-</histogram>
-
 <histogram name="TabManager.Discarding.DiscardToReloadTime" units="ms"
     expires_after="2024-06-30">
   <owner>chrisha@chromium.org</owner>
