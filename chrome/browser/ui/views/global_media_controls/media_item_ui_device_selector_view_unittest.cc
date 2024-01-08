@@ -233,7 +233,7 @@ class MediaItemUIDeviceSelectorViewTest : public ChromeViewsTestBase {
     auto device_selector_view = std::make_unique<MediaItemUIDeviceSelectorView>(
         kItemId, delegate, device_list_host_->PassRemote(),
         client_remote_.BindNewPipeAndPassReceiver(), has_audio_output,
-        entry_point, /*show_expand_button=*/false, show_devices);
+        entry_point, show_devices);
     device_selector_view->UpdateCurrentAudioDevice(current_device);
     return device_selector_view;
   }

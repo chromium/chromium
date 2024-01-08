@@ -163,8 +163,8 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
   }
   return std::make_unique<MediaItemUIDeviceSelectorView>(
       id, selector_delegate, std::move(host), std::move(client_receiver),
-      /*has_audio_output=*/is_local_media_session, entry_point,
-      /*show_expand_button=*/true, show_devices, media_color_theme);
+      /*has_audio_output=*/is_local_media_session, entry_point, show_devices,
+      media_color_theme);
 }
 
 std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
