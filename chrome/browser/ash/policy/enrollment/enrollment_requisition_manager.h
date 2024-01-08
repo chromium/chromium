@@ -25,7 +25,6 @@ class EnrollmentRequisitionManager {
   static const char kNoRequisition[];
   static const char kRemoraRequisition[];
   static const char kSharkRequisition[];
-  static const char kRialtoRequisition[];
   static const char kDemoRequisition[];
 
   // Initializes requisition settings at OOBE with values from VPD.

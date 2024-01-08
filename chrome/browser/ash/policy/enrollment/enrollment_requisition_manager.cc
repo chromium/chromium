@@ -23,7 +23,6 @@ using ::ash::system::StatisticsProvider;
 const char EnrollmentRequisitionManager::kNoRequisition[] = "none";
 const char EnrollmentRequisitionManager::kRemoraRequisition[] = "remora";
 const char EnrollmentRequisitionManager::kSharkRequisition[] = "shark";
-const char EnrollmentRequisitionManager::kRialtoRequisition[] = "rialto";
 const char EnrollmentRequisitionManager::kDemoRequisition[] = "cros-demo-mode";
 
 // static
@@ -47,8 +46,7 @@ void EnrollmentRequisitionManager::Initialize() {
       local_state->SetString(prefs::kDeviceEnrollmentRequisition,
                              requisition.value());
       if (requisition == kRemoraRequisition ||
-          requisition == kSharkRequisition ||
-          requisition == kRialtoRequisition) {
+          requisition == kSharkRequisition) {
         SetDeviceEnrollmentAutoStart();
       } else {
         const bool auto_start = StatisticsProvider::FlagValueToBool(
