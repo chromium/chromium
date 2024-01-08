@@ -430,11 +430,11 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
             raw_ptr_traits::ImplForTraits<raw_ptr<T, PassedTraits>::Traits>::
                 UnsafelyUnwrapPtrForDuplication(p.wrapped_ptr_))) {
-    // Limit cross-kind conversions only to cases where kMayDangle gets added,
-    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
-    // instead of disabling via SFINAE, so that the compiler catches other
-    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
-    // be taken.
+    // Limit cross-kind conversions only to cases where `kMayDangle` gets added,
+    // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
+    // Use a static_assert, instead of disabling via SFINAE, so that the
+    // compiler catches other conversions. Otherwise the implicit
+    // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
   }
@@ -447,10 +447,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
     // Limit cross-kind assignments only to cases where `kMayDangle` gets added,
-    // because that's needed for Unretained(Ref)Wrapper. Use a static_assert,
-    // instead of disabling via SFINAE, so that the compiler catches other
-    // conversions. Otherwise implicit raw_ptr<T> -> T* -> raw_ptr<> route will
-    // be taken.
+    // because that's needed for ExtractAsDangling() and Unretained(Ref)Wrapper.
+    // Use a static_assert, instead of disabling via SFINAE, so that the
+    // compiler catches other conversions. Otherwise the implicit
+    // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
 
