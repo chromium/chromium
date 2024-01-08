@@ -130,6 +130,9 @@ SurveyStringData ExtensionsHatsHandler::CreateSurveyStringsForNoInteraction() {
            base::NumberToString(number_installed_extensions_on_load_)},
           {"Time on extension page in minutes",
            base::NumberToString(time_spent_on_page.InMinutes())},
+          {"Number of extensions removed", ""},
+          {"Number of extensions kept", ""},
+          {"Number of non-trigger extensions removed", ""},
           {"Client Channel", client_channel_}};
 }
 
@@ -143,7 +146,7 @@ void ExtensionsHatsHandler::RequestHatsSurvey(bool require_same_origin,
     return;
   }
   hats_service->LaunchDelayedSurveyForWebContents(
-      "HappinessTrackingSurveysExtensionsSafetyHub", web_ui()->GetWebContents(),
+      kHatsSurveyTriggerExtensions, web_ui()->GetWebContents(),
       features::kHappinessTrackingSurveysExtensionsSafetyHubTime.Get()
           .InMilliseconds(),
       {}, string_data, require_same_origin);

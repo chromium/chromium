@@ -403,6 +403,9 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysExtensionsSafetyHub);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysExtensionsSafetyHubTime;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysExtensionsSafetyHubTriggerId;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 COMPONENT_EXPORT(CHROME_FEATURES)

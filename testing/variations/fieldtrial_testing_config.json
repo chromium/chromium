@@ -6800,6 +6800,30 @@
             ]
         }
     ],
+    "ExtensionPageHats": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "1",
+                        "security-page-time": "15s",
+                        "security-page-trigger-id": "42JiNWbpq0ugnJ3q1cK0Q7uYnB1P"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSurveysExtensionsSafetyHub"
+                    ]
+                }
+            ]
+        }
+    ],
     "ExtensionsServiceWorkerOptimizedEventDispatch": [
         {
             "platforms": [

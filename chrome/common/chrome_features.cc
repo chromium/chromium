@@ -568,6 +568,10 @@ const base::FeatureParam<base::TimeDelta>
     kHappinessTrackingSurveysExtensionsSafetyHubTime{
         &kHappinessTrackingSurveysExtensionsSafetyHub, "settings-time",
         base::Seconds(10)};
+extern const base::FeatureParam<std::string>
+    kHappinessTrackingSurveysExtensionsSafetyHubTriggerId{
+        &kHappinessTrackingSurveysExtensionsSafetyHub,
+        "extension-page-trigger-id", ""};
 
 // Enables or disables the Happiness Tracking System for Desktop Privacy Guide.
 BASE_FEATURE(kHappinessTrackingSurveysForDesktopPrivacyGuide,
