@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -104,6 +105,10 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
   if (show_confirmation_before_closing) {
     progress_throbber_->Stop();
     label_->SetText(controller_->GetConfirmationMessage());
+    // For accessibility consideration, announce the confirmation message when
+    // unmasking is finished.
+    label_->GetViewAccessibility().AnnouncePolitely(
+        controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
     GetBubbleFrameView()->SetTitleView(
         CreateTitleView(controller_->GetConfirmationTitle(),
