@@ -140,6 +140,14 @@ View* AddHorizontalUiElements(
   return labels_container;
 }
 
+std::unique_ptr<views::BoxLayoutView> CreateVerticalBoxLayoutView() {
+  return views::Builder<views::BoxLayoutView>()
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
+      .SetBetweenChildSpacing(kContentSingleSpacing)
+      .Build();
+}
+
 std::unique_ptr<views::BoxLayoutView> CreateHorizontalBoxLayoutView() {
   return views::Builder<views::BoxLayoutView>()
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)

@@ -77,6 +77,9 @@ views::View* AddHorizontalUiElements(
     views::View* container,
     const std::vector<std::unique_ptr<QuickAnswerUiElement>>& elements);
 
+// Creates a vertical FlexLayoutView with |kViewSpacingMargins| spacing.
+std::unique_ptr<views::BoxLayoutView> CreateVerticalBoxLayoutView();
+
 // Creates a horizontal BoxLayoutView with |kContentSingleSpacing| spacing.
 // These BoxLayoutViews are used as horizontal container views of the rich card
 // `content_view_`.

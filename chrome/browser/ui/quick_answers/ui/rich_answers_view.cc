@@ -235,13 +235,8 @@ void RichAnswersView::SetUpMainView() {
 }
 
 void RichAnswersView::SetUpContentView() {
-  content_view_ = main_view_->AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch)
-          .SetMinimumCrossAxisSize(kContentTextWidth)
-          .SetBetweenChildSpacing(kContentSingleSpacing)
-          .Build());
+  content_view_ = main_view_->AddChildView(CreateVerticalBoxLayoutView());
+  content_view_->SetMinimumCrossAxisSize(kContentTextWidth);
 
   main_view_->SetFlexForView(content_view_, /*flex=*/1);
 }
