@@ -1629,6 +1629,14 @@ Style notes:
         Scanning
       </message>
 
+      <!-- Holding Space Wallpaper Nudge -->
+      <message name="IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_DISABLED_TEXT" desc="Text shown on a nudge anchored to the holding space tray in the shelf to inform new users where files should be dropped for quick access in lieu of the desktop.">
+              Keep important files in <ph name="HOLDING_SPACE_TITLE">$1</ph> instead of on the desktop. Just drag files to <ph name="HOLDING_SPACE_TITLE">$1</ph>.
+      </message>
+      <message name="IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_ENABLED_TEXT" desc="Text shown on a nudge anchored to the holding space tray in the shelf to inform new users where to find files dropped on the desktop.">
+        Drop files on the desktop to add them to <ph name="HOLDING_SPACE_TITLE">$1</ph>. You can't add files to desktop.
+      </message>
+
       <!--  Video Conference Speaking On Mute Nudge  -->
       <message name="IDS_VIDEO_CONFERENCE_SPEAKING_ON_MUTE_OPT_IN_TITLE" desc="The title of the nudge shown to a user asking them to opt-in to the speaking on mute feature.">
         Turn on mute nudge?

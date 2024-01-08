@@ -23,6 +23,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/user_education/holding_space_wallpaper_nudge/holding_space_wallpaper_nudge_prefs.h"
@@ -42,6 +43,7 @@
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -86,13 +88,16 @@ const ui::ClipboardFormatType& FilesAppFormatType() {
   return ui::ClipboardFormatType::WebCustomDataType();
 }
 
-// TODO(http://b/283169365): Finalize strings.
 std::u16string GetBubbleBodyText() {
-  return features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()
-             ? u"[i18n] Drop files on the desktop to add them to Tote. You "
-               u"can't add files to desktop."
-             : u"[i18n] Keep important files in Tote instead of on the "
-               u"desktop. Just drag files to Tote.";
+  auto string_id =
+      features::IsHoldingSpaceWallpaperNudgeDropToPinEnabled()
+          ? IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_ENABLED_TEXT
+          : IDS_ASH_HOLDING_SPACE_WALLPAPER_NUDGE_DROP_DISABLED_TEXT;
+  return l10n_util::GetStringFUTF16(
+      string_id,
+      features::IsHoldingSpaceRefreshEnabled()
+          ? l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE_REFRESH)
+          : l10n_util::GetStringUTF16(IDS_ASH_HOLDING_SPACE_TITLE));
 }
 
 aura::Window* GetRootWindowForDisplayId(int64_t display_id) {
