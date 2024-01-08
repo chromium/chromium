@@ -108,7 +108,7 @@ bool PersonalizationSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool PersonalizationSystemAppDelegate::ShouldShowInSearch() const {
+bool PersonalizationSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   // Search is implemented by //ash/webui/personalization_app/search.
   return false;
 }

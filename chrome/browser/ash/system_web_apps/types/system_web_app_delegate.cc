@@ -58,7 +58,7 @@ bool SystemWebAppDelegate::ShouldShowInLauncher() const {
   return true;
 }
 
-bool SystemWebAppDelegate::ShouldShowInSearch() const {
+bool SystemWebAppDelegate::ShouldShowInSearchAndShelf() const {
   return true;
 }
 

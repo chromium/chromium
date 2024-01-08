@@ -823,7 +823,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     RandomHelper cros_random(params.seed, params.non_zero);
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = cros_random.next_bool();
-    chromeos_data->show_in_search = cros_random.next_bool();
+    chromeos_data->show_in_search_and_shelf = cros_random.next_bool();
     chromeos_data->show_in_management = cros_random.next_bool();
     chromeos_data->is_disabled = cros_random.next_bool();
     chromeos_data->oem_installed = cros_random.next_bool();

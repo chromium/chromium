@@ -186,7 +186,7 @@ web_app::ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.add_to_applications_menu = delegate.ShouldShowInLauncher();
   install_options.add_to_desktop = false;
   install_options.add_to_quick_launch_bar = false;
-  install_options.add_to_search = delegate.ShouldShowInSearch();
+  install_options.add_to_search = delegate.ShouldShowInSearchAndShelf();
   install_options.add_to_management = false;
   install_options.is_disabled = is_disabled;
   install_options.force_reinstall = force_update;

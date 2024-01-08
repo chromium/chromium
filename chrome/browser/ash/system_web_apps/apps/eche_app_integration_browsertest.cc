@@ -105,7 +105,7 @@ IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest, HiddenInLauncherAndSearch) {
   // Check system_web_app_manager has the correct attributes for Eche App.
   auto* system_app = GetManager().GetSystemApp(ash::SystemWebAppType::ECHE);
   EXPECT_FALSE(system_app->ShouldShowInLauncher());
-  EXPECT_FALSE(system_app->ShouldShowInSearch());
+  EXPECT_FALSE(system_app->ShouldShowInSearchAndShelf());
 }
 
 IN_PROC_BROWSER_TEST_P(EcheAppIntegrationTest,

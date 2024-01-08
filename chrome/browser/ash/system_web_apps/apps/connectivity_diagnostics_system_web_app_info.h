@@ -20,7 +20,7 @@ class ConnectivityDiagnosticsSystemAppDelegate
   // ash::SystemWebAppDelegate overrides:
   std::unique_ptr<web_app::WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
 };
 
 // Returns a WebAppInstallInfo used to install the app.

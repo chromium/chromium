@@ -345,7 +345,7 @@ bool MediaSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
 
-bool MediaSystemAppDelegate::ShouldShowInSearch() const {
+bool MediaSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return ShouldShowInLauncher();
 }
 

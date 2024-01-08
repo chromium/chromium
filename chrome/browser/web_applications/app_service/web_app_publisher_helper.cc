@@ -551,7 +551,7 @@ void WebAppPublisherHelper::SetWebAppShowInFields(const WebApp* web_app,
 #endif
     app.show_in_launcher = chromeos_data.show_in_launcher && should_show_app;
     app.show_in_shelf = app.show_in_search =
-        chromeos_data.show_in_search && should_show_app;
+        chromeos_data.show_in_search_and_shelf && should_show_app;
     app.show_in_management = chromeos_data.show_in_management;
     app.handles_intents =
         chromeos_data.handles_file_open_intents ? true : app.show_in_launcher;
@@ -1812,8 +1812,8 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
     auto* system_app = swa_manager->GetSystemApp(*system_app_type);
     DCHECK(system_app);
     app.show_in_launcher = system_app->ShouldShowInLauncher();
-    app.show_in_search = system_app->ShouldShowInSearch();
-    app.show_in_shelf = app.show_in_search;
+    app.show_in_shelf = system_app->ShouldShowInSearchAndShelf();
+    app.show_in_search = system_app->ShouldShowInSearchAndShelf();
   }
 #endif
 }

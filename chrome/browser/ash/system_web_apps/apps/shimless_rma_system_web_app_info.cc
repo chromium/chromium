@@ -53,7 +53,7 @@ bool ShimlessRMASystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-bool ShimlessRMASystemAppDelegate::ShouldShowInSearch() const {
+bool ShimlessRMASystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

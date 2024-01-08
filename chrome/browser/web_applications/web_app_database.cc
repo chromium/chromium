@@ -550,7 +550,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
     auto& chromeos_data = web_app.chromeos_data().value();
     auto* mutable_chromeos_data = local_data->mutable_chromeos_data();
     mutable_chromeos_data->set_show_in_launcher(chromeos_data.show_in_launcher);
-    mutable_chromeos_data->set_show_in_search(chromeos_data.show_in_search);
+    mutable_chromeos_data->set_show_in_search_and_shelf(
+        chromeos_data.show_in_search_and_shelf);
     mutable_chromeos_data->set_show_in_management(
         chromeos_data.show_in_management);
     mutable_chromeos_data->set_is_disabled(chromeos_data.is_disabled);
@@ -1027,7 +1028,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_chromeos_data()) {
     auto chromeos_data = absl::make_optional<WebAppChromeOsData>();
     chromeos_data->show_in_launcher = chromeos_data_proto.show_in_launcher();
-    chromeos_data->show_in_search = chromeos_data_proto.show_in_search();
+    chromeos_data->show_in_search_and_shelf =
+        chromeos_data_proto.show_in_search_and_shelf();
     chromeos_data->show_in_management =
         chromeos_data_proto.show_in_management();
     chromeos_data->is_disabled = chromeos_data_proto.is_disabled();

@@ -185,7 +185,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest, FeedbackAppAttributes) {
   auto* system_app =
       GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
   EXPECT_FALSE(system_app->ShouldShowInLauncher());
-  EXPECT_TRUE(system_app->ShouldShowInSearch());
+  EXPECT_TRUE(system_app->ShouldShowInSearchAndShelf());
   EXPECT_FALSE(system_app->ShouldShowNewWindowMenuOption());
   EXPECT_TRUE(system_app->ShouldAllowScriptsToCloseWindows());
   EXPECT_FALSE(system_app->ShouldAllowResize());
@@ -205,7 +205,7 @@ IN_PROC_BROWSER_TEST_P(OSFeedbackAppIntegrationTest,
   auto* system_app =
       GetManager().GetSystemApp(ash::SystemWebAppType::OS_FEEDBACK);
   EXPECT_FALSE(system_app->ShouldShowInLauncher());
-  EXPECT_FALSE(system_app->ShouldShowInSearch());
+  EXPECT_FALSE(system_app->ShouldShowInSearchAndShelf());
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

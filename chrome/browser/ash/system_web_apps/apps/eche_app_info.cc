@@ -59,7 +59,7 @@ bool EcheSystemAppDelegate::ShouldCaptureNavigations() const {
 bool EcheSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
-bool EcheSystemAppDelegate::ShouldShowInSearch() const {
+bool EcheSystemAppDelegate::ShouldShowInSearchAndShelf() const {
   return false;
 }
 

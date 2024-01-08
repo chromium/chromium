@@ -46,7 +46,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
       const apps::AppLaunchParams& params) const override;
   std::vector<int> GetAdditionalSearchTerms() const override;
   bool ShouldShowInLauncher() const override;
-  bool ShouldShowInSearch() const override;
+  bool ShouldShowInSearchAndShelf() const override;
   bool ShouldHandleFileOpenIntents() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldAllowResize() const override;
@@ -78,7 +78,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetEnabledOriginTrials(const OriginTrialsMap&);
   void SetAdditionalSearchTerms(const std::vector<int>&);
   void SetShouldShowInLauncher(bool);
-  void SetShouldShowInSearch(bool);
+  void SetShouldShowInSearchAndShelf(bool);
   void SetShouldHandleFileOpenIntents(bool);
   void SetShouldCaptureNavigations(bool);
   void SetShouldAllowResize(bool);
