@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -183,6 +184,10 @@ ComposeSession::~ComposeSession() {
     }
   }
 
+  if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
+  }
   LogComposeSessionCloseMetrics(close_reason_, compose_count_,
                                 dialog_shown_count_, undo_count_,
                                 update_input_count_);
@@ -240,6 +245,9 @@ void ComposeSession::Bind(
 void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   if (is_input_edited) {
     update_input_count_ += 1;
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("Compose.ComposeRequest.CreateClicked"));
   }
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
@@ -585,6 +593,8 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
     msbb_dialog_shown_count_ += 1;
     return;
   }
+
+  // Session is initialized at the main dialog UI state.
   dialog_shown_count_ += 1;
 
   text_selected_ = text_selected;
@@ -684,12 +694,17 @@ void ComposeSession::SetFirstRunCloseReason(
     compose::ComposeFirstRunSessionCloseReason close_reason) {
   fre_close_reason_ = close_reason;
 
-  // If the FRE dialog is progressing directly to the main dialog, then capture
-  // this dialog shown in the count.
   if (close_reason == compose::ComposeFirstRunSessionCloseReason::
-                          kFirstRunDisclaimerAcknowledgedWithoutInsert &&
-      current_msbb_state_) {
-    dialog_shown_count_ = 1;
+                          kFirstRunDisclaimerAcknowledgedWithoutInsert) {
+    if (current_msbb_state_) {
+      // The FRE dialog progresses directly to the main dialog.
+      dialog_shown_count_ = 1;
+      base::RecordAction(
+          base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.DialogSeen.FirstRunMSBB"));
+    }
   }
 }
 
@@ -753,5 +768,11 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
     msbb_enabled_during_session_ = true;
     SetMSBBCloseReason(
         compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
+    base::RecordAction(
+        base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
+
+    // Reset this initial state so that this block is not re-executed on every
+    // subsequent dialog open.
+    msbb_initially_off_ = false;
   }
 }

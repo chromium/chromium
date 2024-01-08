@@ -7083,6 +7083,106 @@ should be able to be added at any place in this file.
   <description>Triggered when ther user visits the checkout page.</description>
 </action>
 
+<action name="Compose.ComposeRequest.CreateClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when the user presses the &quot;Create&quot; button in the input
+    state of the Compose dialog. This is emitted when the button is pressed and
+    before the Compose request is made, at most once per Compose session.
+  </description>
+</action>
+
+<action name="Compose.ContextMenu.ItemSeen">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when the user opens the right-click context menu and the &quot;Help
+    me write&quot; menu item is available. This is emitted when the right-click
+    menu is opened.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.FirstRunDisclaimer">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. The first run
+    disclaimer is shown as the first state if the user has never progressed past
+    it. This is emitted when the dialog is shown for a newly created session and
+    is in this disclaimer state. This is emitted at most once per Compose
+    session.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.FirstRunMSBB">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. This dialog state
+    is shown if the user has not agreed to the MSBB setting, and is shown after
+    the FRE disclaimer (if relevant). This is emitted when the dialog is shown
+    for a newly created session and is in this MSBB state, or when the dialog
+    moves from the FRE disclaimer to the MSBB state by user action. This is
+    emitted at most once per Compose session.
+  </description>
+</action>
+
+<action name="Compose.DialogSeen.MainDialog">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    The Compose dialog can be shown in one of three UI states. The main dialog
+    encompasses the actual feature experience, and is shown after the first run
+    disclaimer and MSBB states (if they are relevant). This is emitted when the
+    dialog is shown for a newly created session and is in this main state, when
+    the dialog moves from the FRE disclaimer to this main state by user action,
+    or when the dialog is shown in this main state and the last state it was
+    open in was the MSBB state. This is emitted at most once per Compose
+    session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.CloseButtonClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because the close button of its
+    corresponding Compose dialog is pressed. This is emitted at most once per
+    session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.EndedImplicitly">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends implicitly. This is emitted when the
+    session is destroyed because the owning WebContents navigates or is
+    destroyed. This is emitted at most once per session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.InsertButtonClicked">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because the &quot;Insert&quot; button of
+    its corresponding Compose dialog is pressed. This is emitted at most once
+    per session.
+  </description>
+</action>
+
+<action name="Compose.EndedSession.NewSessionWithSelectedText">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>chrome-compose-frontend@google.com</owner>
+  <description>
+    Records when a Compose session ends because a dialog was opened with a text
+    selection from the same page field. This is emitted at most once per
+    session.
+  </description>
+</action>
+
 <action name="ConfirmNotToOrderSpringCharger">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

@@ -2385,6 +2385,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
         compose_client->ShouldTriggerContextMenu(render_frame_host, params_)) {
       compose::LogComposeContextMenuCtr(
           compose::ComposeContextMenuCtrEvent::kMenuItemDisplayed);
+      base::RecordAction(
+          base::UserMetricsAction("Compose.ContextMenu.ItemSeen"));
       menu_model_.AddItemWithStringId(IDC_CONTEXT_COMPOSE,
                                       IDS_COMPOSE_SUGGESTION_MAIN_TEXT);
       // TODO(b/303646344): Remove new feature tag when no longer new.

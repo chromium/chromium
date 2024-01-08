@@ -12,6 +12,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
@@ -312,6 +313,10 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
 
   const base::HistogramTester& histograms() const { return histogram_tester_; }
 
+  const base::UserActionTester& user_action_tester() const {
+    return user_action_tester_;
+  }
+
   // This helper function is a shortcut to adding a test future to listen for
   // compose responses.
   void BindComposeFutureToOnResponseReceived(
@@ -335,6 +340,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
   autofill::FormFieldData field_data_;
   raw_ptr<content::WebContents> contents_;
   base::HistogramTester histogram_tester_;
+  base::UserActionTester user_action_tester_;
 
   std::unique_ptr<mojo::Receiver<compose::mojom::ComposeDialog>>
       callback_router_;
@@ -369,6 +375,9 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
 
+  // Check that a user action for the Compose request was emitted.
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.ComposeRequest.CreateClicked"));
   // Check that a response result OK metric was emitted.
   histograms().ExpectUniqueSample(compose::kComposeResponseStatus,
                                   compose::mojom::ComposeStatus::kOk, 1);
@@ -853,6 +862,8 @@ TEST_F(ChromeComposeClientTest, TestClearStateWhenOpenWithSelectedText) {
 
   compose::mojom::OpenMetadataPtr result = open_test_future.Take();
   EXPECT_EQ("", result->compose_state->webui_state);
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.NewSessionWithSelectedText"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kNewSessionWithSelectedText, 1);
@@ -1169,6 +1180,8 @@ TEST_F(ChromeComposeClientTest, CloseButtonHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kCloseButton);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.CloseButtonClicked"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kCloseButtonPressed, 1);
@@ -1372,6 +1385,8 @@ TEST_F(ChromeComposeClientTest, AcceptSuggestionHistogramTest) {
 
   client().CloseUI(compose::mojom::CloseReason::kInsertButton);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.InsertButtonClicked"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kAcceptedSuggestion, 1);
@@ -1400,6 +1415,8 @@ TEST_F(ChromeComposeClientTest, LoseFocusHistogramTest) {
   GURL next_page("http://example.com/a.html");
   NavigateAndCommit(web_contents(), next_page);
 
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.EndedSession.EndedImplicitly"));
   histograms().ExpectBucketCount(
       compose::kComposeSessionCloseReason,
       compose::ComposeSessionCloseReason::kEndedImplicitly, 1);
@@ -1418,6 +1435,66 @@ TEST_F(ChromeComposeClientTest, LoseFocusFirstRunHistogramTest) {
   histograms().ExpectBucketCount(
       compose::kComposeFirstRunSessionCloseReason,
       compose::ComposeFirstRunSessionCloseReason::kEndedImplicitly, 1);
+}
+
+TEST_F(ChromeComposeClientTest, ComposeDialogStatesSeenUserActionsTest) {
+  // Set both FRE and MSBB dialog states to show and check that appropriate
+  // user actions are logged when moving through all states in a single session.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+  SetPrefsForComposeMSBBState(false);
+  EXPECT_EQ(0, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  EXPECT_EQ(0, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  EXPECT_EQ(
+      0, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+
+  // Dialog should show at FRE state.
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  // After acknowledging the disclaimer, dialog should show the MSBB state.
+  client().CompleteFirstRun();
+  EXPECT_EQ(1, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  // After updating the MSBB setting, only the next open of the dialog should
+  // record  a dialog seen action.
+  SetPrefsForComposeMSBBState(true);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      1, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  // Show dialog again.
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      1, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Check user actions for new session opened at MSBB state.
+  SetPrefsForComposeMSBBState(false);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(2, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunMSBB"));
+  client().CloseUI(compose::mojom::CloseReason::kMSBBCloseButton);
+
+  // Check user actions for new session opened at main dialog state.
+  SetPrefsForComposeMSBBState(true);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(
+      2, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
+  client().CloseUI(compose::mojom::CloseReason::kCloseButton);
+
+  // Check user actions for session opened at FRE state and progressing directly
+  // to main dialog state.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE,
+                                       false);
+  ShowDialogAndBindMojo();
+  EXPECT_EQ(2, user_action_tester().GetActionCount(
+                   "Compose.DialogSeen.FirstRunDisclaimer"));
+  // After acknowledging the disclaimer, dialog should show the main state.
+  client().CompleteFirstRun();
+  EXPECT_EQ(
+      3, user_action_tester().GetActionCount("Compose.DialogSeen.MainDialog"));
 }
 
 TEST_F(ChromeComposeClientTest, TestAutoCompose) {

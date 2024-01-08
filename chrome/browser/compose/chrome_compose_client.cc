@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -161,10 +162,14 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
           compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kCloseButton:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.EndedSession.CloseButtonClicked"));
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kInsertButton:
+      base::RecordAction(
+          base::UserMetricsAction("Compose.EndedSession.InsertButtonClicked"));
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kAcceptedSuggestion);
       SetMSBBSessionCloseReason(
@@ -231,6 +236,8 @@ void ChromeComposeClient::CreateOrUpdateSession(
     if (has_session) {
       // We have a session already, and we are going to close it and create a
       // new one, which will require a close reason.
+      base::RecordAction(base::UserMetricsAction(
+          "Compose.EndedSession.NewSessionWithSelectedText"));
       SetSessionCloseReason(
           compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
       // Set the equivalent close reason if the existing session was in a
@@ -243,11 +250,11 @@ void ChromeComposeClient::CreateOrUpdateSession(
                 kNewSessionWithSelectedText);
       }
     }
+    // Now create and set up a new session.
     auto new_session = std::make_unique<ComposeSession>(
         &GetWebContents(), GetModelExecutor(), GetModelQualityLogsUploader(),
         GetSessionId(), std::move(callback));
     current_session = new_session.get();
-    // Insert or replace with a new session.
     sessions_.insert_or_assign(active_compose_field_id_.value(),
                                std::move(new_session));
 
@@ -256,11 +263,23 @@ void ChromeComposeClient::CreateOrUpdateSession(
         pref_service_->GetBoolean(prefs::kPrefHasCompletedComposeFRE);
     current_session->set_fre_complete(fre_state);
 
+    // Record the UI state that new sessions are created in.
+    if (!fre_state) {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.DialogSeen.FirstRunDisclaimer"));
+    } else if (!GetMSBBStateFromPrefs()) {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.DialogSeen.FirstRunMSBB"));
+    } else {
+      base::RecordAction(
+          base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
+    }
+
     // Only record the selection length for new sessions.
     auto utf8_chars = base::CountUnicodeCharacters(selected_text);
     compose::LogComposeDialogSelectionLength(
         utf8_chars.has_value() ? utf8_chars.value() : 0);
-  }
+  }  // End of create new session.
   current_session->set_current_msbb_state(GetMSBBStateFromPrefs());
 
   // If we are resuming then don't send the selected text - we want to keep the
