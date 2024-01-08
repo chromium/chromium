@@ -374,15 +374,6 @@ constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #endif
 
-// This block duplicates the above entries to facilitate incremental conversion
-// from LOG_FOO to LOGGING_FOO.
-// TODO(thestig): Convert existing users to LOGGING_FOO and remove this block.
-constexpr LogSeverity LOG_VERBOSE = LOGGING_VERBOSE;
-constexpr LogSeverity LOG_INFO = LOGGING_INFO;
-constexpr LogSeverity LOG_WARNING = LOGGING_WARNING;
-constexpr LogSeverity LOG_ERROR = LOGGING_ERROR;
-constexpr LogSeverity LOG_FATAL = LOGGING_FATAL;
-
 // A few definitions of macros that don't generate much code. These are used
 // by LOG() and LOG_IF, etc. Since these are used all over our code, it's
 // better to have compact code for these operations.
