@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
+#include "content/browser/accessibility/scoped_mode_collection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "ui/accessibility/ax_mode.h"
@@ -68,6 +69,8 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void DisableAccessibility() override;
   bool IsRendererAccessibilityEnabled() override;
   ui::AXMode GetAccessibilityMode() override;
+  ui::AXMode GetAccessibilityModeForBrowserContext(
+      BrowserContext* browser_context) override;
   void AddAccessibilityModeFlags(ui::AXMode mode) override;
   void RemoveAccessibilityModeFlags(ui::AXMode mode) override;
   void ResetAccessibilityMode() override;
@@ -87,6 +90,14 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 #endif
   base::CallbackListSubscription RegisterFocusChangedCallback(
       FocusChangedCallback callback) override;
+  std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForProcess(
+      ui::AXMode mode) override;
+  std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForBrowserContext(
+      BrowserContext* browser_context,
+      ui::AXMode mode) override;
+  std::unique_ptr<ScopedAccessibilityMode> CreateScopedModeForWebContents(
+      WebContents* web_contents,
+      ui::AXMode mode) override;
 
   // Returns whether caret browsing is enabled for the most recently
   // used profile.
@@ -136,19 +147,27 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   virtual void UpdateHistogramsOnOtherThread();
 
  private:
-  // Resets accessibility_mode_ to the default value.
-  void ResetAccessibilityModeValue();
-
   // Called by `OnScreenReaderStopped` as a delayed task. If accessibility
-  // support has not been re-enabled by the time the delay has expired, we reset
-  // `accessibility_mode_` to the default value and notify all web contents.
+  // support has not been re-enabled by the time the delay has expired, we clear
+  // `process_accessibility_mode_` so that all WebContentses are updated.
   void MaybeResetAccessibilityMode();
 
   void OnOtherThreadDone();
 
   void UpdateAccessibilityActivityTask();
 
-  ui::AXMode accessibility_mode_;
+  // Handles a change to the effective accessibility mode for the process.
+  void OnModeChangedForProcess(ui::AXMode old_mode, ui::AXMode new_mode);
+
+  // Handles a change to the effective accessibility mode for `browser_context`.
+  void OnModeChangedForBrowserContext(BrowserContext* browser_context,
+                                      ui::AXMode old_mode,
+                                      ui::AXMode new_mode);
+
+  // Handles a change to the effective accessibility mode for `web_contents`.
+  void OnModeChangedForWebContents(WebContents* web_contents,
+                                   ui::AXMode old_mode,
+                                   ui::AXMode new_mode);
 
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
@@ -210,6 +229,17 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
 
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;
+
+  // The collection of active ScopedAccessibilityMode instances targeting all
+  // WebContentses in the process.
+  ScopedModeCollection scoped_modes_for_process_;
+
+  // A ScopedAccessibilityMode that holds the process-wide mode flags modified
+  // via ui::AXPlatformNode::NotifyAddAXModeFlags(),
+  // AddAccessibilityModeFlags(), RemoveAccessibilityModeFlags(), and
+  // ResetAccessibilityMode(); and applies them to all WebContentses in the
+  // process. Guaranteed to hold at least an instance with no mode flags set.
+  std::unique_ptr<ScopedAccessibilityMode> process_accessibility_mode_;
 
   base::WeakPtrFactory<BrowserAccessibilityStateImpl> weak_factory_{this};
 };

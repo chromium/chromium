@@ -8,6 +8,7 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
   ASSERT_TRUE(accessibility_mode.is_mode_off());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents());
-  content::BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
       ui::kAXModeComplete);
   ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(web_contents()->GetAccessibilityMode(), ui::kAXModeComplete);

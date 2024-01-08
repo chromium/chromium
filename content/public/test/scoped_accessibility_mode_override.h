@@ -5,25 +5,27 @@
 #ifndef CONTENT_PUBLIC_TEST_SCOPED_ACCESSIBILITY_MODE_OVERRIDE_H_
 #define CONTENT_PUBLIC_TEST_SCOPED_ACCESSIBILITY_MODE_OVERRIDE_H_
 
-#include "content/public/browser/browser_accessibility_state.h"
+#include <memory>
+
 #include "ui/accessibility/ax_mode.h"
 
 namespace content {
 
+class ScopedAccessibilityMode;
+
 class ScopedAccessibilityModeOverride {
  public:
-  explicit ScopedAccessibilityModeOverride(ui::AXMode mode) : mode_(mode) {
-    BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(mode);
-  }
-  ~ScopedAccessibilityModeOverride() { ResetMode(); }
+  explicit ScopedAccessibilityModeOverride(ui::AXMode mode);
+  ScopedAccessibilityModeOverride(const ScopedAccessibilityModeOverride&) =
+      delete;
+  ScopedAccessibilityModeOverride& operator=(
+      const ScopedAccessibilityModeOverride&) = delete;
+  ~ScopedAccessibilityModeOverride();
 
-  void ResetMode() {
-    BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
-        mode_);
-  }
+  void ResetMode();
 
  private:
-  const ui::AXMode mode_;
+  std::unique_ptr<ScopedAccessibilityMode> scoped_mode_;
 };
 
 }  // namespace content
