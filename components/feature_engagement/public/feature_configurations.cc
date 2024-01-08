@@ -217,6 +217,19 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHExperimentalAIPromoFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show the IPH once per year.
+    config->trigger = EventConfig("iph_experimental_ai_promo_trigger",
+                                  Comparator(EQUAL, 0), 360, 360);
+    config->used = EventConfig("iph_experimental_ai_promo_shown",
+                               Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHTrackingProtectionOffboardingFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

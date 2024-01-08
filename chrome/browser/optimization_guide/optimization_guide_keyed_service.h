@@ -179,6 +179,7 @@ class OptimizationGuideKeyedService
   void SimulateBrowserRestartForControllerTesting();
 
  private:
+  friend class BrowserView;
   friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class HintsFetcherBrowserTest;
@@ -245,6 +246,10 @@ class OptimizationGuideKeyedService
   // given `feature`. This should only be called by settings UX.
   bool IsSettingVisible(
       optimization_guide::proto::ModelExecutionFeature feature) const;
+
+  // Returns whether all conditions are met to show the IPH promo for
+  // experimental AI.
+  bool ShouldShowExperimentalAIPromo() const;
 
   download::BackgroundDownloadService* BackgroundDownloadServiceProvider();
 
