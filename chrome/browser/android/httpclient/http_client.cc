@@ -90,7 +90,7 @@ void HttpClient::Send(
   std::unique_ptr<network::SimpleURLLoader> simple_loader = MakeLoader(
       gurl, request_type, std::move(request_body), std::move(header_keys),
       std::move(header_values), network_traffic_annotation);
-
+  simple_loader->SetAllowHttpErrorResults(true);
   // TODO(https://crbug.com/1178921): Use flag to control the max size limit.
   simple_loader->DownloadToString(
       loader_factory_.get(),
