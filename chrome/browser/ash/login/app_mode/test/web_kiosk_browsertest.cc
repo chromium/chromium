@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -28,6 +27,7 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -323,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, CloseSettingWindowIfOnlyOpen) {
   initial_browser->window()->Close();
   // Ensure `settings_browser` is closed too.
   TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
-  settings_browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
 
   // No browsers are opened in the web kiosk session, so it should be
   // terminated.
@@ -349,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskTest, NotExitIfCloseSettingsWindow) {
   // Close `settings_browser` and ensure it is closed.
   settings_browser->window()->Close();
   TestBrowserClosedWaiter settings_browser_closed_waiter{settings_browser};
-  settings_browser_closed_waiter.WaitUntilClosed();
+  ASSERT_TRUE(settings_browser_closed_waiter.WaitUntilClosed());
 
   // The initial browsers should still be opened and so the kiosk session should
   // not be terminated.

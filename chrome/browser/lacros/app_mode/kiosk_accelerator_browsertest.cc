@@ -10,6 +10,7 @@
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -28,31 +29,9 @@ namespace {
 
 const char kNavigationUrl[] = "https://www.example.com/";
 
-// Observes BrowserList and blocks until a given browser is removed.
-class BrowserClosedWaiter : public BrowserListObserver {
- public:
-  explicit BrowserClosedWaiter(Browser* browser) : browser_{browser} {
-    BrowserList::AddObserver(this);
-  }
-
-  ~BrowserClosedWaiter() override { BrowserList::RemoveObserver(this); }
-
-  [[nodiscard]] bool Wait() { return future_.Wait(); }
-
- private:
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser_ == browser) {
-      future_.SetValue();
-    }
-  }
-
-  raw_ptr<Browser> browser_ = nullptr;
-  base::test::TestFuture<void> future_;
-};
-
 [[nodiscard]] bool WaitUntilBrowserClosed(Browser* browser) {
-  auto waiter = BrowserClosedWaiter(browser);
-  return waiter.Wait();
+  TestBrowserClosedWaiter waiter(browser);
+  return waiter.WaitUntilClosed();
 }
 
 }  // namespace

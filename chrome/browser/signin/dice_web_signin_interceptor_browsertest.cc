@@ -163,31 +163,6 @@ class FakeDiceWebSigninInterceptorDelegate
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
 
-class BrowserCloseObserver : public BrowserListObserver {
- public:
-  explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
-  }
-
-  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
-  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
-
-  ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver implementation.
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  raw_ptr<Browser> browser_;
-  base::RunLoop run_loop_;
-};
-
 // Runs the interception and returns the new profile that was created.
 Profile* InterceptAndWaitProfileCreation(content::WebContents* contents,
                                          const CoreAccountId& account_id) {

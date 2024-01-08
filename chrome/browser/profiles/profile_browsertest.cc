@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 
 #include <stddef.h>
@@ -20,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/scoped_multi_source_observation.h"
@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -211,30 +212,6 @@ void SpinThreads() {
   // directory that contains them has been deleted.
   base::ThreadPoolInstance::Get()->FlushForTesting();
 }
-
-class BrowserCloseObserver : public BrowserListObserver {
- public:
-  explicit BrowserCloseObserver(Browser* browser) : browser_(browser) {
-    BrowserList::AddObserver(this);
-  }
-
-  BrowserCloseObserver(const BrowserCloseObserver&) = delete;
-  BrowserCloseObserver& operator=(const BrowserCloseObserver&) = delete;
-
-  ~BrowserCloseObserver() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver implementation.
-  void OnBrowserRemoved(Browser* browser) override {
-    if (browser == browser_)
-      run_loop_.Quit();
-  }
-
- private:
-  raw_ptr<Browser, AcrossTasksDanglingUntriaged> browser_;
-  base::RunLoop run_loop_;
-};
 
 }  // namespace
 
@@ -1081,22 +1058,22 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, TestProfileTypes) {
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, UnderOneMinute) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
+  TestBrowserClosedWaiter close_waiter(browser);
 
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
+  ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 0, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, OneHour) {
   base::HistogramTester tester;
   Browser* browser = CreateGuestBrowser();
-  BrowserCloseObserver close_observer(browser);
+  TestBrowserClosedWaiter close_waiter(browser);
 
   browser->profile()->SetCreationTimeForTesting(base::Time::Now() -
                                                 base::Seconds(60) * 60);
   BrowserList::CloseAllBrowsersWithProfile(browser->profile());
-  close_observer.Wait();
+  ASSERT_TRUE(close_waiter.WaitUntilClosed());
   tester.ExpectUniqueSample("Profile.Guest.OTR.Lifetime", 60, 1);
 }
 
