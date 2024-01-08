@@ -35,7 +35,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.ClientDataJson;
@@ -462,8 +461,7 @@ public class Fido2CredentialRequest
         }
 
         byte[] clientDataHash = maybeClientDataHash;
-        if (payment != null
-                && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
+        if (payment != null) {
             assert options.challenge != null;
             assert clientDataHash == null;
             clientDataHash =

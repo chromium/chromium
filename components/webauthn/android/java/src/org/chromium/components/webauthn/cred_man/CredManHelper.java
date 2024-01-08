@@ -26,7 +26,6 @@ import org.chromium.base.Log;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
-import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.webauthn.Barrier;
@@ -107,7 +106,6 @@ public class CredManHelper {
                                 originString,
                                 options.challenge,
                                 /* isCrossOrigin= */ false,
-                                /* paymentOptions= */ null,
                                 options.relyingParty.id,
                                 /* topOrigin= */ null);
         if (clientDataHash == null) {
@@ -539,7 +537,6 @@ public class CredManHelper {
             String callerOrigin,
             byte[] challenge,
             boolean isCrossOrigin,
-            PaymentOptions paymentOptions,
             String relyingPartyId,
             Origin topOrigin) {
         String clientDataJson =
@@ -548,7 +545,7 @@ public class CredManHelper {
                         callerOrigin,
                         challenge,
                         isCrossOrigin,
-                        paymentOptions,
+                        /* paymentOptions= */ null,
                         relyingPartyId,
                         topOrigin);
         if (clientDataJson == null) {
@@ -600,7 +597,6 @@ public class CredManHelper {
                                 originString,
                                 options.challenge,
                                 mIsCrossOrigin,
-                                /* paymentOptions= */ null,
                                 options.relyingPartyId,
                                 /* topOrigin= */ null);
         if (clientDataHash == null) {
