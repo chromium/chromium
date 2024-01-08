@@ -383,8 +383,28 @@ public class Fido2CredentialRequest
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
                 return;
             }
-            // TODO(crbug.com/1511193): handle non-conditional requests through CredMan or Play
-            // Services.
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                if (!mPlayServicesAvailable) {
+                    Log.e(TAG, "Google Play Services' Fido2 Api is not available.");
+                    returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    return;
+                }
+                maybeDispatchGetAssertionRequest(
+                        options, callerOriginString, maybeClientDataHash, null);
+            } else {
+                int result =
+                        mCredManHelper.startGetRequest(
+                                mContext,
+                                mFrameHost,
+                                options,
+                                callerOriginString,
+                                mIsCrossOrigin,
+                                maybeClientDataHash,
+                                mGetAssertionCallback,
+                                this::returnErrorAndResetCallback,
+                                /* ignoreGpm= */ false);
+                if (result != AuthenticatorStatus.SUCCESS) returnErrorAndResetCallback(result);
+            }
             return;
         }
 

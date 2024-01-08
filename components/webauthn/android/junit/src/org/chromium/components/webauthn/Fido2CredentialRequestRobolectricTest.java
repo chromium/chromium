@@ -97,6 +97,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 .thenReturn("https://subdomain.example.test:443");
 
         mFido2ApiCallHelper = new FakeFido2ApiCallHelper();
+        mFido2ApiCallHelper.setArePlayServicesAvailable(true);
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
@@ -676,6 +677,62 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_WebAuthnModeApp_GoesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.APP);
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mRequest.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                /* frameHost= */ null,
+                clientDataHash,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verifyNoInteractions(mCredManHelperMock);
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
+        assertThat(mFido2ApiCallHelper.mClientDataHash).isEqualTo(clientDataHash);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_WebAuthnModeApp_failsIfGmscoreNotAvailable() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        Assume.assumeTrue(Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
+
+        Mockito.when(mModeProviderMock.getWebauthnMode())
+                .thenReturn(WebauthnModeProvider.WebauthnMode.APP);
+        final byte[] clientDataHash = new byte[] {1, 2, 3, 4};
+        mFido2ApiCallHelper.setArePlayServicesAvailable(false);
+        Fido2CredentialRequest request = new Fido2CredentialRequest(/* intentSender= */ null);
+
+        request.handleGetAssertionRequest(
+                mActivity,
+                mRequestOptions,
+                /* frameHost= */ null,
+                clientDataHash,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError);
+
+        verifyNoInteractions(mCredManHelperMock);
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+    }
+
+    @Test
+    @SmallTest
     public void testConditionalGetAssertion_credManEnabledSuccessWithGpmInCredManFlag_success() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
@@ -907,9 +964,15 @@ public class Fido2CredentialRequestRobolectricTest {
         public Exception mCredentialsError;
         public byte[] mClientDataHash;
 
+        private boolean mArePlayServicesAvailable = true;
+
         @Override
         public boolean arePlayServicesAvailable() {
-            return true;
+            return mArePlayServicesAvailable;
+        }
+
+        public void setArePlayServicesAvailable(boolean arePlayServicesAvailable) {
+            mArePlayServicesAvailable = arePlayServicesAvailable;
         }
 
         @Override
