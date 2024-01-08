@@ -23,6 +23,7 @@
 namespace media {
 
 class AUHALStream;
+class AUAudioInputStream;
 
 // iOS implementation of the AudioManager singleton. This class is internal
 // to the audio output and only internal users can call methods not exposed by
@@ -68,6 +69,10 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
 
   std::string GetDefaultInputDeviceID() override;
   std::string GetDefaultOutputDeviceID() override;
+
+  // Used to track destruction of input and output streams.
+  void ReleaseOutputStream(AudioOutputStream* stream) override;
+  void ReleaseInputStream(AudioInputStream* stream) override;
 
   // Implementation of AudioIOStreamClient.
   void ReleaseOutputStreamUsingRealDevice(AudioOutputStream* stream,
@@ -127,8 +132,9 @@ class MEDIA_EXPORT AudioManagerIOS : public AudioManagerApple {
 
  private:
   // Tracks all constructed input and output streams.
-  std::list<AUHALStream*> output_streams_;
   std::list<AudioInputStream*> basic_input_streams_;
+  std::list<AUAudioInputStream*> low_latency_input_streams_;
+  std::list<AUHALStream*> output_streams_;
 };
 
 }  // namespace media

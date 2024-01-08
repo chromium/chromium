@@ -129,7 +129,7 @@ class MacAudioInputTest : public testing::Test {
   ~MacAudioInputTest() override { audio_manager_->Shutdown(); }
 
   bool InputDevicesAvailable() {
-#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_APPLE) && defined(ARCH_CPU_ARM64)
     // TODO(crbug.com/1128458): macOS on ARM64 says it has devices, but won't
     // let any of them be opened or listed.
     return false;
@@ -142,7 +142,9 @@ class MacAudioInputTest : public testing::Test {
   int HardwareSampleRateForDefaultInputDevice() {
     // Determine the default input device's sample-rate.
     AudioDeviceID input_device_id = kAudioObjectUnknown;
+#if BUILDFLAG(IS_MAC)
     AudioManagerMac::GetDefaultInputDevice(&input_device_id);
+#endif
     auto* manager = static_cast<AudioManagerApple*>(audio_manager_.get());
     return manager->HardwareSampleRateForDevice(input_device_id);
   }
@@ -153,9 +155,14 @@ class MacAudioInputTest : public testing::Test {
   AudioInputStream* CreateDefaultAudioInputStream() {
     int fs = HardwareSampleRateForDefaultInputDevice();
     int samples_per_packet = fs / 100;
+#if BUILDFLAG(IS_MAC)
+    ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
+#else
+    ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Mono();
+#endif
     AudioInputStream* ais = audio_manager_->MakeAudioInputStream(
         AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                        ChannelLayoutConfig::Stereo(), fs, samples_per_packet),
+                        channel_layout_config, fs, samples_per_packet),
         AudioDeviceDescription::kDefaultDeviceId,
         base::BindRepeating(&MacAudioInputTest::OnLogMessage,
                             base::Unretained(this)));

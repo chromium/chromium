@@ -48,12 +48,17 @@
 #include "base/timer/timer.h"
 #include "media/audio/agc_audio_stream.h"
 #include "media/audio/audio_io.h"
-#include "media/audio/mac/audio_manager_mac.h"
 #include "media/audio/system_glitch_reporter.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_block_fifo.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "media/audio/mac/audio_manager_mac.h"
+#else
+#include "media/audio/ios/audio_manager_ios.h"
+#endif
 
 namespace media {
 class AudioManagerApple;

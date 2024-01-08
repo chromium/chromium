@@ -66,24 +66,15 @@ AudioSessionManagerIOS::AudioSessionManagerIOS() {
         audio_session.preferredInput.dataSources;
     AVAudioSessionDataSourceDescription* newDataSource = nil;
     for (AVAudioSessionDataSourceDescription* dataSource in dataSources) {
-      if ([dataSource.orientation isEqual:AVAudioSessionOrientationFront]) {
+      // Choosing AVAudioSessionOrientationBottom sets the mono channel for a
+      // audio session.
+      if ([dataSource.orientation isEqual:AVAudioSessionOrientationBottom]) {
         newDataSource = dataSource;
         break;
       }
     }
 
     if (newDataSource != nil) {
-      NSArray<NSString*>* supportedPolarPatterns =
-          newDataSource.supportedPolarPatterns;
-      if (supportedPolarPatterns != nil) {
-        BOOL hasStereo = [supportedPolarPatterns
-            containsObject:AVAudioSessionPolarPatternStereo];
-        if (hasStereo) {
-          [newDataSource
-              setPreferredPolarPattern:AVAudioSessionPolarPatternStereo
-                                 error:nil];
-        }
-      }
       [preferredInput setPreferredDataSource:newDataSource error:nil];
     }
   }
