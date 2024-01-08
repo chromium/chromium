@@ -462,9 +462,8 @@
 <div class="button-container">
   <cr-button class="action-button" id="actionButton"
       on-click="onActionButtonClicked_" disabled="[[isActionButtonDisabled_]]">
-      <div class="cr-icon" title=""
-          hidden="[[!needsScrollToTheBottom_(hasUserScrolledToTheBottom_)]]"
-          slot="prefix-icon">
+      <div class="cr-icon" slot="prefix-icon" title=""
+          hidden="[[hasUserScrolledToTheBottom_]]">
       </div>
       [[actionButtonText_]]
   </cr-button>

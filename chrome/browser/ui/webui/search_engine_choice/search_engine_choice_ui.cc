@@ -108,9 +108,6 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
 
   source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
 
-  source->AddBoolean("withForcedScroll",
-                     switches::kWithForcedScrollEnabled.Get());
-
   webui::SetupChromeRefresh2023(source);
 
   webui::SetupWebUIDataSource(

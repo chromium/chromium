@@ -270,10 +270,7 @@ class FirstRunParameterizedInteractiveUiTest
       enabled_features_and_params.push_back(
           {switches::kSearchEngineChoiceFre, {}});
       enabled_features_and_params.push_back(
-          {switches::kSearchEngineChoice, {
-             { switches::kWithForcedScrollEnabled.name,
-               "true" }
-           }});
+          {switches::kSearchEngineChoice, {}});
     } else {
       disabled_features.push_back(switches::kSearchEngineChoice);
       disabled_features.push_back(switches::kSearchEngineChoiceFre);
