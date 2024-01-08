@@ -127,13 +127,17 @@ LoadAttestationsInternal(base::FilePath installed_file_path) {
     return base::unexpected(ParsingStatus::kFileNotExist);
   }
 
-  SentinelFile sentinel_file(installed_file_path.DirName());
-  if (sentinel_file.IsPresent()) {
+  absl::optional<SentinelFile> sentinel_file =
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxAttestationSentinel)
+          ? absl::optional<SentinelFile>(installed_file_path.DirName())
+          : absl::nullopt;
+  if (sentinel_file.has_value() && sentinel_file->IsPresent()) {
     // An existing sentinel file implies previous parsing has crashed.
     return base::unexpected(ParsingStatus::kSentinelFilePresent);
   }
 
-  if (!sentinel_file.Create()) {
+  if (sentinel_file.has_value() && !sentinel_file->Create()) {
     // Failed to create the sentinel file.
     return base::unexpected(ParsingStatus::kCannotCreateSentinel);
   }
@@ -160,7 +164,7 @@ LoadAttestationsInternal(base::FilePath installed_file_path) {
       kAttestationsMapMemoryUsageUMA,
       base::trace_event::EstimateMemoryUsage(attestations_map.value()) / 1024);
 
-  if (!sentinel_file.Remove()) {
+  if (sentinel_file.has_value() && !sentinel_file->Remove()) {
     // Failed to remove the sentinel file.
     return base::unexpected(ParsingStatus::kCannotRemoveSentinel);
   }

@@ -132,6 +132,10 @@ BASE_DECLARE_FEATURE(kEnforcePrivacySandboxAttestations);
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
 BASE_DECLARE_FEATURE(kDefaultAllowPrivacySandboxAttestations);
 
+// Enables the sentinel file guard for Privacy Sandbox Attestations.
+COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
+BASE_DECLARE_FEATURE(kPrivacySandboxAttestationSentinel);
+
 // Gives a list of sites permission to use Privacy Sandbox features without
 // being officially enrolled.
 COMPONENT_EXPORT(PRIVACY_SANDBOX_FEATURES)
