@@ -174,7 +174,7 @@ foreach(f, common_screens_html_files) {
 }
 
 login_screens_js_files = [
-  "screens/login/arc_vm_data_migration.js",
+  "screens/login/arc_vm_data_migration.ts",
   "screens/login/checking_downloading_update.js",
   "screens/login/encryption_migration.ts",
   "screens/login/lacros_data_backward_migration.ts",

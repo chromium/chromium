@@ -10,7 +10,6 @@ js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args
   deps = [
-    ":arc_vm_data_migration",
     ":checking_downloading_update",
     ":update_required_card",
   ]
@@ -18,19 +17,6 @@ js_type_check("closure_compile") {
 
 ###############################
 # Closure compiler libraries below
-
-js_library("arc_vm_data_migration") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/arc_vm_data_migration.js" ]
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/dialogs:oobe_adaptive_dialog",
-    "../../components/dialogs:oobe_loading_dialog",
-  ]
-  extra_deps = [ ":web_components" ]
-}
 
 js_library("update_required_card") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/update_required_card.js" ]
