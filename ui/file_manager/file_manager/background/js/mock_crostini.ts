@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {Crostini} from './crostini.js';
+import type {VolumeManager} from './volume_manager.js';
 
 /**
  * Crostini shared path state handler.

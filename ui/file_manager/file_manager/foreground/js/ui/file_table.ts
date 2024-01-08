@@ -5,6 +5,7 @@
 import {dispatchSimpleEvent} from 'chrome://resources/ash/common/cr_deprecated.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {RateLimiter} from '../../../common/js/async_util.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {maybeShowTooltip} from '../../../common/js/dom_utils.js';
@@ -13,7 +14,6 @@ import {getType, isAudio, isEncrypted, isImage, isRaw, isVideo} from '../../../c
 import type {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled} from '../../../common/js/flags.js';
 import {getEntryLabel, str, strf} from '../../../common/js/translations.js';
-import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {FileListModel, GROUP_BY_FIELD_MODIFICATION_TIME} from '../file_list_model.js';
 import {ListThumbnailLoader, type ThumbnailLoadedEvent} from '../list_thumbnail_loader.js';
 import {MetadataModel} from '../metadata/metadata_model.js';

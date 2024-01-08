@@ -6,12 +6,12 @@ import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chromeos/chai_
 
 import type {Crostini} from '../../background/js/crostini.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {installMockChrome, MockChromeFileManagerPrivateDirectoryChanged} from '../../common/js/mock_chrome.js';
 import {storage} from '../../common/js/storage.js';
 import {waitUntil} from '../../common/js/test_error_reporting.js';
 import {getRootTypeFromVolumeType, RootType, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {DialogType} from '../../state/state.js';
 
 import {BannerController} from './banner_controller.js';

@@ -7,11 +7,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 import type {EntryLocation} from '../../background/js/entry_location_impl.js';
 import type {VolumeInfo} from '../../background/js/volume_info.js';
 import {VolumeInfoList} from '../../background/js/volume_info_list.js';
+import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent} from '../../background/js/volume_manager.js';
+import {VolumeManager} from '../../background/js/volume_manager.js';
 import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import type {ArchiveOpenEvent, DeviceConnectionChangedEvent, ExternallyUnmountedEvent, VolumeAlreadyMountedEvent, VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
 
 import {type SpliceEvent} from './array_data_model.js';
-import {FilesEventTarget} from './files_event_target.js';
 import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
 
@@ -51,10 +51,9 @@ const MEDIA_STORE_VOLUME_TYPES: VolumeType[] = [
  * for example, Drive volumes are dropped if Drive is disabled, and read-only
  * volumes are dropped in save-as dialogs.
  */
-export class FilteredVolumeManager extends
-    FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
+export class FilteredVolumeManager extends VolumeManager {
   // VolumeManager.volumeInfoList property accessed by callers.
-  volumeInfoList = new FilteredVolumeInfoList();
+  override volumeInfoList = new FilteredVolumeInfoList();
 
   private volumeManager_: VolumeManager|null = null;
 
@@ -109,11 +108,11 @@ export class FilteredVolumeManager extends
     this.isMediaStoreOnly_ = volumeFilter.includes('media-store-files-only');
   }
 
-  getFuseBoxOnlyFilterEnabled() {
+  override getFuseBoxOnlyFilterEnabled() {
     return this.isFuseBoxOnly_;
   }
 
-  getMediaStoreFilesOnlyFilterEnabled() {
+  override getMediaStoreFilesOnlyFilterEnabled() {
     return this.isMediaStoreOnly_;
   }
 
@@ -161,7 +160,7 @@ export class FilteredVolumeManager extends
   /**
    * Checks if a volume is allowed.
    */
-  isAllowedVolume(volumeInfo: VolumeInfo): boolean {
+  override isAllowedVolume(volumeInfo: VolumeInfo): boolean {
     if (!volumeInfo.volumeType) {
       return false;
     }
@@ -242,7 +241,7 @@ export class FilteredVolumeManager extends
    * Disposes the instance. After the invocation of this method, any other
    * method should not be called.
    */
-  dispose() {
+  override dispose() {
     this.disposed_ = true;
 
     if (!this.volumeManager_) {
@@ -336,7 +335,8 @@ export class FilteredVolumeManager extends
   /**
    * @return Current drive connection state.
    */
-  getDriveConnectionState(): chrome.fileManagerPrivate.DriveConnectionState {
+  override getDriveConnectionState():
+      chrome.fileManagerPrivate.DriveConnectionState {
     if (!this.isAllowedVolumeType_(VolumeType.DRIVE) || !this.volumeManager_) {
       return {
         type: chrome.fileManagerPrivate.DriveConnectionStateType.OFFLINE,
@@ -347,7 +347,7 @@ export class FilteredVolumeManager extends
     return this.volumeManager_.getDriveConnectionState();
   }
 
-  getVolumeInfo(entry: Entry|FilesAppEntry): VolumeInfo|null {
+  override getVolumeInfo(entry: Entry|FilesAppEntry): VolumeInfo|null {
     return this.filterDisallowedVolume_(
         this.volumeManager_ && this.volumeManager_.getVolumeInfo(entry));
   }
@@ -357,13 +357,15 @@ export class FilteredVolumeManager extends
    * @param volumeType Volume type.
    * @return Found volume info.
    */
-  getCurrentProfileVolumeInfo(volumeType: VolumeType): null|VolumeInfo {
+  override getCurrentProfileVolumeInfo(volumeType: VolumeType): null
+      |VolumeInfo {
     return this.filterDisallowedVolume_(
         this.volumeManager_ &&
         this.volumeManager_.getCurrentProfileVolumeInfo(volumeType));
   }
 
-  getDefaultDisplayRoot(callback: (entry: DirectoryEntry|null) => void) {
+  override getDefaultDisplayRoot(
+      callback: (entry: DirectoryEntry|null) => void) {
     this.ensureInitialized(() => {
       const defaultVolume =
           this.getCurrentProfileVolumeInfo(VolumeType.DOWNLOADS);
@@ -387,7 +389,7 @@ export class FilteredVolumeManager extends
    * @param entry File or directory entry.
    * @return Location information.
    */
-  getLocationInfo(entry: (Entry|FilesAppEntry)): null|EntryLocation {
+  override getLocationInfo(entry: (Entry|FilesAppEntry)): null|EntryLocation {
     const locationInfo =
         this.volumeManager_ && this.volumeManager_.getLocationInfo(entry);
     if (!locationInfo) {
@@ -400,7 +402,7 @@ export class FilteredVolumeManager extends
     return locationInfo;
   }
 
-  findByDevicePath(devicePath: any) {
+  override findByDevicePath(devicePath: any) {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
       if (volumeInfo.devicePath && volumeInfo.devicePath === devicePath) {
@@ -416,7 +418,7 @@ export class FilteredVolumeManager extends
    *
    * @return The VolumeInfo. Will not resolve if the volume is never mounted.
    */
-  async whenVolumeInfoReady(volumeId: string): Promise<VolumeInfo> {
+  override async whenVolumeInfoReady(volumeId: string): Promise<VolumeInfo> {
     await this.initialized_;
 
     const volumeInfo = this.filterDisallowedVolume_(
@@ -429,17 +431,17 @@ export class FilteredVolumeManager extends
     return volumeInfo;
   }
 
-  async mountArchive(fileUrl: string, password: string) {
+  override async mountArchive(fileUrl: string, password: string) {
     await this.initialized_;
     return this.volumeManager_!.mountArchive(fileUrl, password);
   }
 
-  async cancelMounting(fileUrl: string) {
+  override async cancelMounting(fileUrl: string) {
     await this.initialized_;
     return this.volumeManager_!.cancelMounting(fileUrl);
   }
 
-  async unmount(volumeInfo: VolumeInfo) {
+  override async unmount(volumeInfo: VolumeInfo) {
     await this.initialized_;
     return this.volumeManager_!.unmount(volumeInfo);
   }
@@ -449,7 +451,7 @@ export class FilteredVolumeManager extends
    * @param volumeInfo Volume to be configured.
    * @return Fulfilled on success, otherwise rejected with an error message.
    */
-  async configure(volumeInfo: VolumeInfo): Promise<void> {
+  override async configure(volumeInfo: VolumeInfo): Promise<void> {
     await this.initialized_;
     return this.volumeManager_!.configure(volumeInfo);
   }
@@ -469,11 +471,11 @@ export class FilteredVolumeManager extends
     }
   }
 
-  hasDisabledVolumes() {
+  override hasDisabledVolumes() {
     return this.disabledVolumes_.length > 0;
   }
 
-  isDisabled(volume: VolumeType) {
+  override isDisabled(volume: VolumeType) {
     return this.disabledVolumes_.includes(volume);
   }
 }

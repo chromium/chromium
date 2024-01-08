@@ -5,8 +5,8 @@
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
+import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {VolumeType} from '../../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../../externs/volume_manager.js';
 
 import {ContentMetadataProvider} from './content_metadata_provider.js';
 import {DlpMetadataProvider} from './dlp_metadata_provider.js';

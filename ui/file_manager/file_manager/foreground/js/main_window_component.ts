@@ -4,6 +4,7 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem, getKeyModifiers} from '../../common/js/dom_utils.js';
 import {isDirectoryEntry, isRecentRootType, isSameEntry, isTrashEntry} from '../../common/js/entry_utils.js';
@@ -12,7 +13,6 @@ import {recordEnum} from '../../common/js/metrics.js';
 import {getEntryLabel, str} from '../../common/js/translations.js';
 import type {TrashEntry} from '../../common/js/trash.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';

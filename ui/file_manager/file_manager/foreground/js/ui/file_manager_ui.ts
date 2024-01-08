@@ -6,6 +6,7 @@ import '../../elements/icons.html.js';
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 
+import type {VolumeManager} from '../../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
@@ -17,7 +18,6 @@ import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js'
 import {DirectoryTreeContainer} from '../../../containers/directory_tree_container.js';
 import {NudgeContainer} from '../../../containers/nudge_container.js';
 import {SearchContainer} from '../../../containers/search_container.js';
-import type {VolumeManager} from '../../../externs/volume_manager.js';
 import {DialogType} from '../../../state/state.js';
 import {XfCloudPanel} from '../../../widgets/xf_cloud_panel.js';
 import {XfConflictDialog} from '../../../widgets/xf_conflict_dialog.js';

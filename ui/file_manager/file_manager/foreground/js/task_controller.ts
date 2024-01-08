@@ -6,6 +6,7 @@ import {assertInstanceof, assertNotReached} from 'chrome://resources/ash/common/
 
 import type {Crostini} from '../../background/js/crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getMimeType, startIOTask} from '../../common/js/api.js';
 import {unwrapEntry} from '../../common/js/entry_utils.js';
 import {type AnnotatedTask, getDefaultTask} from '../../common/js/file_tasks.js';
@@ -13,7 +14,6 @@ import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_t
 import {recordDirectoryListLoadWithTolerance, startInterval} from '../../common/js/metrics.js';
 import {str, strf} from '../../common/js/translations.js';
 import {checkAPIError} from '../../common/js/util.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import {fetchFileTasks} from '../../state/ducks/current_directory.js';
 import {type FileData, type FileKey, type FileTasks as StoreFileTasks, PropStatus, type State} from '../../state/state.js';
 import {getFilesData, getStore, type Store, waitForState} from '../../state/store.js';

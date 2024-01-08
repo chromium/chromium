@@ -8,10 +8,10 @@ import {assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {Crostini} from './crostini.js';
 import type {EntryLocation} from './entry_location_impl.js';
+import type {VolumeManager} from './volume_manager.js';
 
 /**
  * Mock metrics.

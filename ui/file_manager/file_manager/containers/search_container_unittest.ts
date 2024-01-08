@@ -7,8 +7,8 @@ import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 import {EntryLocation} from '../background/js/entry_location_impl.js';
+import type {VolumeManager} from '../background/js/volume_manager.js';
 import {RootType} from '../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../externs/volume_manager.js';
 import type {A11yAnnounce} from '../foreground/js/ui/a11y_announce.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../state/ducks/search.js';
 import {waitDeepEquals} from '../state/for_tests.js';

@@ -9,11 +9,10 @@ import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {assertRejected, waitUntil} from '../../common/js/test_error_reporting.js';
 import {FileSystemType, RootType, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 
 import {VolumeInfo} from './volume_info.js';
+import {createVolumeInfo, VolumeManager} from './volume_manager.js';
 import {volumeManagerFactory} from './volume_manager_factory.js';
-import {createVolumeInfo, VolumeManagerImpl} from './volume_manager_impl.js';
 
 let mockChrome: {
   fileManagerPrivate: Partial<typeof chrome.fileManagerPrivate>,
@@ -625,7 +624,7 @@ export async function testErrorInitializingVolume(done: VoidCallback) {
   };
 
   // Wait for initialization to populate volumeInfoList.
-  const volumeManager = new VolumeManagerImpl(createVolumeInfoFake);
+  const volumeManager = new VolumeManager(createVolumeInfoFake);
   await volumeManager.initialize();
 
   // VolumeInfoList should contain only Android and MyFiles.

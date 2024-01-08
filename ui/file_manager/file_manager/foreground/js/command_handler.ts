@@ -6,11 +6,11 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import type {Crostini} from '../../background/js/crostini.js';
 import type {ProgressCenter} from '../../background/js/progress_center.js';
+import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
 import type {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import type {FilesAppState} from '../../common/js/files_app_state.js';
 import {recordEnum} from '../../common/js/metrics.js';
-import type {VolumeManager} from '../../externs/volume_manager.js';
 import type {DialogType} from '../../state/state.js';
 
 import type {ActionsController} from './actions_controller.js';

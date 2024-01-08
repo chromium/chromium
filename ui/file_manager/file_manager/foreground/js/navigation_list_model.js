@@ -205,7 +205,7 @@ export class NavigationModelFakeItem extends NavigationModelItem {
  */
 export class NavigationListModel extends EventTarget {
   /**
-   * @param {!import('../../externs/volume_manager.js').VolumeManager}
+   * @param {!import('../../background/js/volume_manager.js').VolumeManager}
    *     volumeManager VolumeManager instance.
    * @param {!FolderShortcutsDataModel} shortcutListModel The list of folder
    *     shortcut.
@@ -220,7 +220,7 @@ export class NavigationListModel extends EventTarget {
     super();
 
     /**
-     * @private @type {!import('../../externs/volume_manager.js').VolumeManager}
+     * @private @type {!import('../../background/js/volume_manager.js').VolumeManager}
      * @const
      */
     this.volumeManager_ = volumeManager;

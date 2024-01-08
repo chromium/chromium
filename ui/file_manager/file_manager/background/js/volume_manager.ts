@@ -6,18 +6,16 @@ import {assert} from 'chrome://resources/js/assert.js';
 
 import {getRootType, isComputersRoot, isFakeEntry, isSameEntry, isSameFileSystem, isTeamDriveRoot} from '../../common/js/entry_utils.js';
 import {FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
-import {FilesEventTarget} from '../../common/js/files_event_target.js';
+import {FilesEventTarget, type CustomEventMap} from '../../common/js/files_event_target.js';
 import {str} from '../../common/js/translations.js';
 import {promisify, timeoutPromise} from '../../common/js/util.js';
-import {COMPUTERS_DIRECTORY_PATH, FileSystemType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
-import type {VolumeManager, VolumeManagerEventMap} from '../../externs/volume_manager.js';
+import {COMPUTERS_DIRECTORY_PATH, FileSystemType, MediaViewRootType, RootType, SHARED_DRIVES_DIRECTORY_PATH, Source, VolumeError, VolumeType, getMediaViewRootTypeFromVolumeId, getRootTypeFromVolumeType} from '../../common/js/volume_manager_types.js';
 import {addVolume, removeVolume} from '../../state/ducks/volumes.js';
 import {getStore} from '../../state/store.js';
 
 import {EntryLocation} from './entry_location_impl.js';
 import {VolumeInfo} from './volume_info.js';
 import {VolumeInfoList} from './volume_info_list.js';
-
 
 /**
  * Time in milliseconds that we wait a response for general volume operations
@@ -157,11 +155,48 @@ interface Request {
   timeout: number;
 }
 
+export type DeviceConnectionChangedEvent = CustomEvent<undefined>&{
+  type: 'drive-connection-changed',
+};
+
+/**
+ * An event triggered when a user tries to mount the volume which is
+ * already mounted. The event object must have a volumeId property.
+ */
+export type VolumeAlreadyMountedEvent = CustomEvent<{
+  volumeId: string,
+}>&{
+  type: 'volume_already_mounted',
+};
+
+/**
+ * An event triggered when an archive file is newly mounted, or when opened a
+ * one already mounted.
+ */
+export type ArchiveOpenEvent = CustomEvent<{
+  mountPoint: DirectoryEntry,
+}>&{
+  type: 'archive_opened',
+};
+
+/**
+ * Event object which is dispatched with 'externally-unmounted' event.
+ */
+export type ExternallyUnmountedEvent = CustomEvent<VolumeInfo>&{
+  type: 'externally-unmounted',
+};
+
+export interface VolumeManagerEventMap extends CustomEventMap {
+  'drive-connection-changed': DeviceConnectionChangedEvent;
+  'volume_already_mounted': VolumeAlreadyMountedEvent;
+  'archive_opened': ArchiveOpenEvent;
+  'externally-unmounted': ExternallyUnmountedEvent;
+}
+
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  */
-export class VolumeManagerImpl extends
-    FilesEventTarget<VolumeManagerEventMap> implements VolumeManager {
+export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   volumeInfoList = new VolumeInfoList();
 
   /**
@@ -675,7 +710,7 @@ export class VolumeManagerImpl extends
 
   getDefaultDisplayRoot(
       callback: ((arg0: DirectoryEntry|FilesAppDirEntry|null) => void)) {
-    console.warn('Unexpected call to VolumeManagerImpl.getDefaultDisplayRoot');
+    console.warn('Unexpected call to VolumeManager.getDefaultDisplayRoot');
     callback(null);
   }
 

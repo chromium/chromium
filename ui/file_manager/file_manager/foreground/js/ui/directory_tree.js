@@ -2317,8 +2317,8 @@ export class DirectoryTree extends Tree {
     this.directoryModel_ = null;
 
     /**
-     * @type {import('../../../externs/volume_manager.js').VolumeManager} this
-     *     is set in decorate()
+     * @type {import('../../../background/js/volume_manager.js').VolumeManager}
+     *     this is set in decorate()
      */
     // @ts-ignore: error TS2322: Type 'null' is not assignable to type
     // 'VolumeManager'.
@@ -2352,7 +2352,7 @@ export class DirectoryTree extends Tree {
   /**
    * Decorates an element.
    * @param {!DirectoryModel} directoryModel Current DirectoryModel.
-   * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+   * @param {!import('../../../background/js/volume_manager.js').VolumeManager}
    *     volumeManager VolumeManager of the system.
    * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
    * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.
@@ -2994,7 +2994,7 @@ export class DirectoryTree extends Tree {
 
   /**
    * The VolumeManager instance of the system.
-   * @type {import('../../../externs/volume_manager.js').VolumeManager}
+   * @type {import('../../../background/js/volume_manager.js').VolumeManager}
    */
   get volumeManager() {
     return this.volumeManager_;
@@ -3033,7 +3033,7 @@ export class DirectoryTree extends Tree {
  * Decorates an element.
  * @param {HTMLElement} el Element to be DirectoryTree.
  * @param {!DirectoryModel} directoryModel Current DirectoryModel.
- * @param {!import('../../../externs/volume_manager.js').VolumeManager}
+ * @param {!import('../../../background/js/volume_manager.js').VolumeManager}
  *     volumeManager VolumeManager of the system.
  * @param {!MetadataModel} metadataModel Shared MetadataModel instance.
  * @param {boolean} fakeEntriesVisible True if it should show the fakeEntries.

@@ -33,7 +33,7 @@ class MockNavigationListItem {
  */
 export class MockNavigationListModel extends EventTarget {
   /**
-   * @param {import('../../externs/volume_manager.js').VolumeManager}
+   * @param {import('../../background/js/volume_manager.js').VolumeManager}
    *     volumeManager A volume manager.
    */
   constructor(volumeManager) {
