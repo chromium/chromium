@@ -15080,7 +15080,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithSidePanelPinning",
+                    "enable_features": [
+                        "ResponsiveToolbar",
+                        "SidePanelPinning"
+                    ]
+                },
+                {
+                    "name": "EnabledWithoutSidePanelPinning",
                     "enable_features": [
                         "ResponsiveToolbar"
                     ]
