@@ -43,4 +43,8 @@ const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1[] =
 const char kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2[] =
     "device_active.last_known_is_active_current_period_minus_2";
 
+// Dictionary storing 28 day rolling history of device active pings.
+const char kDeviceActive28DayActivePingCache[] =
+    "device_active.28day_active_ping_cache";
+
 }  // namespace ash::report::prefs

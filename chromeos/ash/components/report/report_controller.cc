@@ -132,6 +132,8 @@ void ReportController::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus1, false);
   registry->RegisterBooleanPref(
       prefs::kDeviceActiveLastKnownIsActiveCurrentPeriodMinus2, false);
+
+  registry->RegisterDictionaryPref(prefs::kDeviceActive28DayActivePingCache);
 }
 
 ReportController::ReportController(
