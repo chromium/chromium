@@ -16,9 +16,6 @@ namespace features {
 // chrome/browser/preloadingprefetch/prefetch_proxy/.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUseContentRefactor);
 
-// IF enabled, then redirects will be followed when prefetching.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchRedirects);
-
 // If enabled, PrefetchContainer can be used for more than one navigation.
 // https://crbug.com/1449360
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchReusable);

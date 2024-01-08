@@ -682,6 +682,11 @@ BASE_FEATURE(kPrefetchNewLimits,
              "PrefetchNewLimits",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, then redirects will be followed when prefetching.
+BASE_FEATURE(kPrefetchRedirects,
+             "PrefetchRedirects",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
 // within these APIs.

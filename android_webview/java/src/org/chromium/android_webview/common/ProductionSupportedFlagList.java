@@ -665,8 +665,9 @@ public final class ProductionSupportedFlagList {
                 "Enables showing the cancel dialog by calling preventDefault() "
                         + "on beforeunload event."),
         Flag.baseFeature(
-            BlinkFeatures.CLOSE_WATCHER,
-            "Enables the CloseWatcher JS API and integrates behavior with dialog and popover elements."),
+                BlinkFeatures.CLOSE_WATCHER,
+                "Enables the CloseWatcher JS API and integrates behavior with dialog and popover"
+                        + " elements."),
         Flag.baseFeature(
                 ContentFeatures.QUEUE_NAVIGATIONS_WHILE_WAITING_FOR_COMMIT,
                 "If enabled, allows navigations to be queued when there is "
@@ -697,6 +698,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 ContentFeatures.PREFETCH_NEW_LIMITS,
                 "Enables new limits policy for SpeculationRules Prefetch."),
+        Flag.baseFeature(
+                ContentFeatures.PREFETCH_REDIRECTS,
+                "Enables following redirects during speculation rules prefetch."),
         Flag.baseFeature(
                 BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_SUPPORT,
                 "Enables support for CSS vertical writing mode on non-text-based form"
