@@ -181,7 +181,7 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTOR_C},
       {"wallpaperSearchResultLabelBC",
        IDS_NTP_WALLPAPER_SEARCH_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C},
-      {"experimentalFeatureDisclaimer", IDS_EXPERIMENTAL_FEATURE_DISCLAIMER},
+      {"experimentalFeatureDisclaimer", IDS_NTP_WALLPAPER_SEARCH_DISCLAIMER},
       {"learnMore", IDS_LEARN_MORE},
       {"learnMoreAboutFeatureA11yLabel",
        IDS_LEARN_MORE_ABOUT_FEATURE_A11Y_LABEL},
