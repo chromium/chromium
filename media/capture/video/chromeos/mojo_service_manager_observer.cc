@@ -5,6 +5,7 @@
 #include <base/memory/ptr_util.h>
 
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 
 using chromeos::mojo_service_manager::mojom::ErrorOrServiceState;
@@ -50,13 +51,13 @@ void MojoServiceManagerObserver::OnServiceEvent(
 
   switch (event->type) {
     case chromeos::mojo_service_manager::mojom::ServiceEvent::Type::kRegistered:
-      LOG(WARNING) << service_name_ << " is registered.";
+      CAMERA_LOG(EVENT) << service_name_ << " is registered.";
       on_register_callback_.Run();
       return;
 
     case chromeos::mojo_service_manager::mojom::ServiceEvent::Type::
         kUnRegistered:
-      LOG(WARNING) << service_name_ << " is unregistered.";
+      CAMERA_LOG(EVENT) << service_name_ << " is unregistered.";
       on_unregister_callback_.Run();
       return;
 
@@ -72,13 +73,14 @@ void MojoServiceManagerObserver::QueryCallback(
     case ErrorOrServiceState::Tag::kState:
       switch (result->get_state()->which()) {
         case ServiceState::Tag::kRegisteredState:
-          LOG(WARNING) << service_name_ << " has been registered during query.";
+          CAMERA_LOG(EVENT)
+              << service_name_ << " has been registered during query.";
           on_register_callback_.Run();
           break;
 
         case ServiceState::Tag::kUnregisteredState:
-          LOG(WARNING) << service_name_
-                       << " has not been registered during query.";
+          CAMERA_LOG(EVENT)
+              << service_name_ << " has not been registered during query.";
           break;
 
         case ServiceState::Tag::kDefaultType:
