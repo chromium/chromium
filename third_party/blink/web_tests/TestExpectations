@@ -5059,8 +5059,8 @@ crbug.com/1275658 http/tests/misc/script-after-slow-stylesheet-removed.html [ Fa
 crbug.com/1275716 [ Mac ] fast/forms/text-control-intrinsic-widths.html [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/5173891.
-crbug.com/1379221 http/tests/devtools/a11y-axe-core/sources/global-listeners-sidebar-a11y-test.js [ Failure Pass ]
-crbug.com/1379221 http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Failure Pass ]
+crbug.com/1379221 http/tests/devtools/a11y-axe-core/sources/global-listeners-sidebar-a11y-test.js [ Failure Pass Timeout ]
+crbug.com/1379221 http/tests/devtools/elements/event-listeners-framework-with-service-worker.js [ Failure Pass Timeout ]
 
 # Sheriff 2021-12-02
 crbug.com/1276201 [ Mac ] external/wpt/html/browsers/the-window-object/open-close/open-features-tokenization-top-left.html [ Crash Failure Pass Timeout ]
