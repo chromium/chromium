@@ -18,7 +18,7 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace base {
 namespace android {
@@ -110,16 +110,15 @@ static ScopedJavaLocalRef<jobjectArray> JNI_SampleForTests_GetNonPODDatatype(
   return ScopedJavaLocalRef<jobjectArray>();
 }
 
-static base::android::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
+static jni_zero::ScopedJavaLocalRef<jclass> JNI_SampleForTests_GetClass(
     JNIEnv* env,
-    const base::android::JavaParamRef<jclass>& arg0) {
+    const jni_zero::JavaParamRef<jclass>& arg0) {
   return ScopedJavaLocalRef<jclass>();
 }
 
-static base::android::ScopedJavaLocalRef<jthrowable>
-JNI_SampleForTests_GetThrowable(
+static jni_zero::ScopedJavaLocalRef<jthrowable> JNI_SampleForTests_GetThrowable(
     JNIEnv* env,
-    const base::android::JavaParamRef<jthrowable>& arg0) {
+    const jni_zero::JavaParamRef<jthrowable>& arg0) {
   return ScopedJavaLocalRef<jthrowable>();
 }
 
@@ -129,32 +128,32 @@ JNI_SampleForTests_GetThrowable(
 // Proxy natives.
 static void JNI_SampleForAnnotationProcessor_Foo(JNIEnv* env) {}
 
-static base::android::ScopedJavaLocalRef<jobject>
+static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_Bar(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& sample) {
+    const jni_zero::JavaParamRef<jobject>& sample) {
   return base::android::JNI_SampleForTests_GetNonPODDatatype(env, sample);
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
+static jni_zero::ScopedJavaLocalRef<jstring>
 JNI_SampleForAnnotationProcessor_RevString(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& stringToReverse) {
+    const jni_zero::JavaParamRef<jstring>& stringToReverse) {
   return base::android::JNI_SampleForTests_GetNonPODDatatype(env,
                                                              stringToReverse);
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_SendToNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& strs) {
+    const jni_zero::JavaParamRef<jobjectArray>& strs) {
   return base::android::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_SendSamplesToNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobjectArray>& strs) {
+    const jni_zero::JavaParamRef<jobjectArray>& strs) {
   return base::android::JNI_SampleForTests_GetNonPODDatatype(env, strs);
 }
 
@@ -162,87 +161,87 @@ static jboolean JNI_SampleForAnnotationProcessor_HasPhalange(JNIEnv* env) {
   return jboolean(true);
 }
 
-static base::android::ScopedJavaLocalRef<jintArray>
+static jni_zero::ScopedJavaLocalRef<jintArray>
 JNI_SampleForAnnotationProcessor_TestAllPrimitives(
     JNIEnv* env,
     jint zint,
-    const base::android::JavaParamRef<jintArray>& ints,
+    const jni_zero::JavaParamRef<jintArray>& ints,
     jlong zlong,
-    const base::android::JavaParamRef<jlongArray>& longs,
+    const jni_zero::JavaParamRef<jlongArray>& longs,
     jshort zshort,
-    const base::android::JavaParamRef<jshortArray>& shorts,
+    const jni_zero::JavaParamRef<jshortArray>& shorts,
     jchar zchar,
-    const base::android::JavaParamRef<jcharArray>& chars,
+    const jni_zero::JavaParamRef<jcharArray>& chars,
     jbyte zbyte,
-    const base::android::JavaParamRef<jbyteArray>& bytes,
+    const jni_zero::JavaParamRef<jbyteArray>& bytes,
     jdouble zdouble,
-    const base::android::JavaParamRef<jdoubleArray>& doubles,
+    const jni_zero::JavaParamRef<jdoubleArray>& doubles,
     jfloat zfloat,
-    const base::android::JavaParamRef<jfloatArray>& floats,
+    const jni_zero::JavaParamRef<jfloatArray>& floats,
     jboolean zbool,
-    const base::android::JavaParamRef<jbooleanArray>& bools) {
+    const jni_zero::JavaParamRef<jbooleanArray>& bools) {
   return ScopedJavaLocalRef<jintArray>(ints);
 }
 
 static void JNI_SampleForAnnotationProcessor_TestSpecialTypes(
     JNIEnv* env,
-    const base::android::JavaParamRef<jclass>& clazz,
-    const base::android::JavaParamRef<jobjectArray>& classes,
-    const base::android::JavaParamRef<jthrowable>& throwable,
-    const base::android::JavaParamRef<jobjectArray>& throwables,
-    const base::android::JavaParamRef<jstring>& string,
-    const base::android::JavaParamRef<jobjectArray>& strings,
-    const base::android::JavaParamRef<jobject>& tStruct,
-    const base::android::JavaParamRef<jobjectArray>& structs,
-    const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobjectArray>& objects) {}
+    const jni_zero::JavaParamRef<jclass>& clazz,
+    const jni_zero::JavaParamRef<jobjectArray>& classes,
+    const jni_zero::JavaParamRef<jthrowable>& throwable,
+    const jni_zero::JavaParamRef<jobjectArray>& throwables,
+    const jni_zero::JavaParamRef<jstring>& string,
+    const jni_zero::JavaParamRef<jobjectArray>& strings,
+    const jni_zero::JavaParamRef<jobject>& tStruct,
+    const jni_zero::JavaParamRef<jobjectArray>& structs,
+    const jni_zero::JavaParamRef<jobject>& obj,
+    const jni_zero::JavaParamRef<jobjectArray>& objects) {}
 
-static base::android::ScopedJavaLocalRef<jthrowable>
+static jni_zero::ScopedJavaLocalRef<jthrowable>
 JNI_SampleForAnnotationProcessor_ReturnThrowable(JNIEnv* env) {
   return ScopedJavaLocalRef<jthrowable>();
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnThrowables(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>();
 }
 
-static base::android::ScopedJavaLocalRef<jclass>
+static jni_zero::ScopedJavaLocalRef<jclass>
 JNI_SampleForAnnotationProcessor_ReturnClass(JNIEnv* env) {
   return ScopedJavaLocalRef<jclass>();
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnClasses(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>();
 }
 
-static base::android::ScopedJavaLocalRef<jstring>
+static jni_zero::ScopedJavaLocalRef<jstring>
 JNI_SampleForAnnotationProcessor_ReturnString(JNIEnv* env) {
   return ScopedJavaLocalRef<jstring>();
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnStrings(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>();
 }
 
-static base::android::ScopedJavaLocalRef<jobject>
+static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_ReturnStruct(JNIEnv* env) {
   return ScopedJavaLocalRef<jobject>();
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnStructs(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>();
 }
 
-static base::android::ScopedJavaLocalRef<jobject>
+static jni_zero::ScopedJavaLocalRef<jobject>
 JNI_SampleForAnnotationProcessor_ReturnObject(JNIEnv* env) {
   return ScopedJavaLocalRef<jobject>();
 }
 
-static base::android::ScopedJavaLocalRef<jobjectArray>
+static jni_zero::ScopedJavaLocalRef<jobjectArray>
 JNI_SampleForAnnotationProcessor_ReturnObjects(JNIEnv* env) {
   return ScopedJavaLocalRef<jobjectArray>();
 }
@@ -290,11 +289,11 @@ int main() {
   base::android::Java_SampleForTests_getInnerEnum(env);
   base::android::Java_SampleForTests_getInnerEnum(env, 0);
 
-  base::android::ScopedJavaLocalRef<jthrowable> throwable;
+  jni_zero::ScopedJavaLocalRef<jthrowable> throwable;
   throwable = base::android::Java_SampleForTests_getThrowable(
       env, my_java_object, throwable);
 
-  base::android::ScopedJavaLocalRef<jclass> clazz;
+  jni_zero::ScopedJavaLocalRef<jclass> clazz;
   clazz =
       base::android::Java_SampleForTests_getClass(env, my_java_object, clazz);
 
