@@ -1363,15 +1363,19 @@ AXObject* AXObjectCacheImpl::GetOrCreate(Node* node,
     if (!obj->IsMissingParent()) {
       return obj;
     }
-    DUMP_WILL_BE_CHECK(parent_if_known)
-        << "Missing parent: " << obj->ToString(true, true);
 
-    // The parent is provided when the object is being added to the parent.
-    // This is expected when re-adding a child to a parent via
-    // AXNodeObject::AddChildren(), as the parent on previous children
-    // will have been cleared immediately before re-adding any of them.
-    obj->SetParent(parent_if_known);
-    return obj;
+    if (parent_if_known) {
+      // The parent is provided when the object is being added to the parent.
+      // This is expected when re-adding a child to a parent via
+      // AXNodeObject::AddChildren(), as the parent on previous children
+      // will have been cleared immediately before re-adding any of them.
+      obj->SetParent(parent_if_known);
+      return obj;
+    }
+
+    // TODO(accessibility) Try to get rid of repair situations by addressing
+    // partial subtrees and mid-tree object removal directly when they occur.
+    return RepairChildrenOfIncludedParent(node);
   }
 
   return CreateAndInit(node, node->GetLayoutObject(), parent_if_known);
@@ -4742,7 +4746,6 @@ AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
 // TODO(accessibility) Try to get rid of repair situations by addressing
 // partial subtrees and mid-tree object removal directly when they occur.
 AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
-  CHECK(child->GetNode()) << "Cannot restore parents of nodeless objects.";
   AXObject* parent = Get(LayoutTreeBuilderTraversal::Parent(*child->GetNode()));
   if (parent) {
     child->SetParent(parent);
