@@ -290,10 +290,11 @@ void TestPlugin::UpdateGeometry(const gfx::Rect& window_rect,
   } else if (gl_) {
     DCHECK(context_provider_);
     auto* sii = context_provider_->data->SharedImageInterface();
+    // We will draw to the SI via GL directly below and then send it off to the
+    // display compositor later.
     shared_image_ = sii->CreateSharedImage(
         viz::SinglePlaneFormat::kRGBA_8888, rect_.size(), gfx::ColorSpace(),
         kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ |
             gpu::SHARED_IMAGE_USAGE_GLES2_WRITE |
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ,
         "TestLabel", gpu::kNullSurfaceHandle);
