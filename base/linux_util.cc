@@ -181,8 +181,9 @@ pid_t FindThreadIDWithSyscall(pid_t pid, const std::string& expected_data,
       continue;
 
     *syscall_supported = true;
-    if (!ReadFromFD(fd.get(), syscall_data.data(), syscall_data.size()))
+    if (!ReadFromFD(fd.get(), syscall_data)) {
       continue;
+    }
 
     if (0 == strncmp(expected_data.c_str(), syscall_data.data(),
                      expected_data.size())) {

@@ -211,8 +211,8 @@ void RandBytes(void* output, size_t output_length, bool avoid_allocation) {
   // TODO(crbug.com/995996): When we no longer need to support old Linux
   // kernels, we can get rid of this /dev/urandom branch altogether.
   const int urandom_fd = GetUrandomFD();
-  const bool success =
-      ReadFromFD(urandom_fd, static_cast<char*>(output), output_length);
+  const bool success = ReadFromFD(
+      urandom_fd, make_span(static_cast<char*>(output), output_length));
   CHECK(success);
 }
 

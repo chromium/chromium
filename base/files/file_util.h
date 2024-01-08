@@ -265,9 +265,11 @@ BASE_EXPORT bool ReadStreamToStringWithMaxSize(FILE* stream,
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-// Read exactly |bytes| bytes from file descriptor |fd|, storing the result
-// in |buffer|. This function is protected against EINTR and partial reads.
-// Returns true iff |bytes| bytes have been successfully read from |fd|.
+// Reads exactly as many bytes as `buffer` can hold from file descriptor `fd`
+// into `buffer`. This function is protected against EINTR and partial reads.
+// Returns true iff `buffer` was successfully filled with bytes read from `fd`.
+BASE_EXPORT bool ReadFromFD(int fd, span<char> buffer);
+// TODO(https://crbug.com/1490484): Migrate callers to the span variant.
 BASE_EXPORT bool ReadFromFD(int fd, char* buffer, size_t bytes);
 
 // Performs the same function as CreateAndOpenTemporaryStreamInDir(), but
