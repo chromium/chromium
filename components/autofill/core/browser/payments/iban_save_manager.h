@@ -61,19 +61,22 @@ class IbanSaveManager {
   // While on desktop if this returns false, the show save prompt will not be
   // popped up but the omnibox icon still will be shown so the user can trigger
   // the save prompt manually.
-  [[nodiscard]] bool AttemptToOfferSave(const Iban& import_candidate);
+  [[nodiscard]] bool AttemptToOfferSave(Iban& import_candidate);
 
   void OnUserDidDecideOnLocalSaveForTesting(
+      const Iban& import_candidate,
       AutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"") {
-    OnUserDidDecideOnLocalSave(user_decision, nickname);
+    OnUserDidDecideOnLocalSave(import_candidate, user_decision, nickname);
   }
 
   void OnUserDidDecideOnUploadSaveForTesting(
+      const Iban& import_candidate,
       bool show_save_prompt,
       AutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"") {
-    OnUserDidDecideOnUploadSave(show_save_prompt, user_decision, nickname);
+    OnUserDidDecideOnUploadSave(import_candidate, show_save_prompt,
+                                user_decision, nickname);
   }
 
   // Returns the IbanSaveStrikeDatabase for `client_`.
@@ -85,16 +88,16 @@ class IbanSaveManager {
     observer_for_testing_ = observer;
   }
 
-  bool AttemptToOfferLocalSaveForTesting(const Iban& iban) {
+  bool AttemptToOfferLocalSaveForTesting(Iban& iban) {
     return AttemptToOfferLocalSave(iban);
   }
 
-  bool AttemptToOfferUploadSaveForTesting(const Iban& iban) {
+  bool AttemptToOfferUploadSaveForTesting(Iban& iban) {
     return AttemptToOfferUploadSave(iban);
   }
 
   TypeOfOfferToSave DetermineHowToSaveIbanForTesting(
-      const Iban& import_candidate) const {
+      Iban& import_candidate) const {
     return DetermineHowToSaveIban(import_candidate);
   }
 
@@ -109,13 +112,13 @@ class IbanSaveManager {
   bool MatchesExistingServerIban(const Iban& import_candidate) const;
 
   // Returns true if the local save prompt was shown, and false otherwise.
-  bool AttemptToOfferLocalSave(const Iban& import_candidate);
+  bool AttemptToOfferLocalSave(Iban& import_candidate);
 
   // Asynchronously attempts to offer an upload save prompt to the user. Will
   // fall back to a local save prompt if unable to offer server save.
   // Returns true if there will likely be a save prompt shown, and false if we
   // will definitely not be showing one.
-  bool AttemptToOfferUploadSave(const Iban& import_candidate);
+  bool AttemptToOfferUploadSave(Iban& import_candidate);
 
   // Returns the IbanSaveStrikeDatabase for `client_`;
   IbanSaveStrikeDatabase* GetIbanSaveStrikeDatabase();
@@ -124,9 +127,11 @@ class IbanSaveManager {
   // offer-to-save-prompt. `nickname` is the nickname for the IBAN, which should
   // only be provided in the kAccepted case if the user entered a nickname.
   void OnUserDidDecideOnLocalSave(
+      Iban import_candidate,
       AutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"");
   void OnUserDidDecideOnUploadSave(
+      Iban import_candidate,
       bool show_save_prompt,
       AutofillClient::SaveIbanOfferUserDecision user_decision,
       std::u16string_view nickname = u"");
@@ -141,22 +146,19 @@ class IbanSaveManager {
   // result and the `legal_message` is parsed successfully. In all other cases,
   // local save will be offered if applicable.
   void OnDidGetUploadDetails(bool show_save_prompt,
+                             Iban import_candidate,
                              AutofillClient::PaymentsRpcResult result,
                              const std::u16string& context_token,
                              std::unique_ptr<base::Value::Dict> legal_message);
 
   // Construct `UploadIbanRequestDetails` and send upload IBAN request via
   // PaymentsNetworkInterface.
-  void SendUploadRequest(bool show_save_prompt);
+  void SendUploadRequest(const Iban& import_candidate, bool show_save_prompt);
 
   // Called when an UploadIban call is completed.
-  void OnDidUploadIban(bool show_save_prompt,
+  void OnDidUploadIban(const Iban& import_candidate,
+                       bool show_save_prompt,
                        AutofillClient::PaymentsRpcResult result);
-
-  // The IBAN to be saved if local IBAN save is accepted. It will be set if
-  // imported IBAN is not empty. The record type of this IBAN candidate is
-  // initially set to `kUnknown`.
-  Iban iban_save_candidate_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database.

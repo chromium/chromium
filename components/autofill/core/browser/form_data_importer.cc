@@ -781,8 +781,7 @@ bool FormDataImporter::ProcessExtractedCreditCard(
              is_credit_card_upstream_enabled);
 }
 
-bool FormDataImporter::ProcessIbanImportCandidate(
-    const Iban& extracted_iban) {
+bool FormDataImporter::ProcessIbanImportCandidate(Iban& extracted_iban) {
   return iban_save_manager_->AttemptToOfferSave(extracted_iban);
 }
 

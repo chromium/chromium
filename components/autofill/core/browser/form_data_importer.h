@@ -97,7 +97,7 @@ class FormDataImporter : public PersonalDataManagerObserver {
       const FormStructure& form);
 
   // Tries to initiate the saving of `extracted_iban` if applicable.
-  bool ProcessIbanImportCandidate(const Iban& extracted_iban);
+  bool ProcessIbanImportCandidate(Iban& extracted_iban);
 
   // Cache the last four of the fetched virtual card so we don't offer saving
   // them.
