@@ -192,7 +192,6 @@ constexpr TabletModeController::TabletModeBehavior kDefault{};
 
 // Defines the behavior of the tablet mode when enabled by sensor.
 constexpr TabletModeController::TabletModeBehavior kOnBySensor{
-    .use_sensor = true,
     .block_internal_input_device = true,
 };
 
@@ -202,7 +201,6 @@ constexpr TabletModeController::TabletModeBehavior kLockInTabletMode{
     .use_sensor = false,
     .observe_display_events = false,
     .observe_pointer_device_events = false,
-    .block_internal_input_device = false,
     .always_show_overview_button = true,
 };
 
@@ -249,9 +247,6 @@ constexpr TabletModeController::TabletModeBehavior kOffForAutotest{
 // pointing device. It also forces to show the overview button.
 constexpr TabletModeController::TabletModeBehavior kOnForDev{
     .use_sensor = false,
-    .observe_display_events = true,
-    .observe_pointer_device_events = true,
-    .block_internal_input_device = false,
     .always_show_overview_button = true,
     .force_physical_tablet_state =
         TabletModeController::ForcePhysicalTabletState::kForceTabletMode,
@@ -269,9 +264,6 @@ const char* ToString(LidState lid_state) {
     case LidState::NOT_PRESENT:
       return "Not present";
   }
-
-  NOTREACHED();
-  return "";
 }
 
 const char* ToString(TabletMode tablet_mode) {
@@ -283,9 +275,6 @@ const char* ToString(TabletMode tablet_mode) {
     case TabletMode::UNSUPPORTED:
       return "Unsupported";
   }
-
-  NOTREACHED();
-  return "";
 }
 
 void ReportTrasitionSmoothness(bool enter_tablet_mode, int smoothness) {

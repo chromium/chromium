@@ -36,14 +36,6 @@
 
 namespace ash {
 
-namespace {
-
-struct OverviewFocusCyclerTestParams {
-  bool desk_templates_enabled = false;
-};
-
-}  // namespace
-
 class OverviewFocusCyclerTest : public OverviewTestBase,
                                 public testing::WithParamInterface<bool> {
  public:
