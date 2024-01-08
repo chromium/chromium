@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/ash/chrome_browser_main_extra_parts_ash.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_login_mixin.h"
+#include "chromeos/ash/components/standalone_browser/test_util.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -116,6 +117,5 @@ void AshIntegrationTest::OverrideGaiaUrlForLacros(
   // crbug.com/1371655.
   lacros_args.emplace_back(base::StringPrintf(
       "--%s=%s", switches::kGaiaUrl, https_server_->base_url().spec().c_str()));
-  command_line->AppendSwitchASCII(ash::switches::kLacrosChromeAdditionalArgs,
-                                  base::JoinString(lacros_args, "####"));
+  ash::standalone_browser::AddLacrosArguments(lacros_args, command_line);
 }

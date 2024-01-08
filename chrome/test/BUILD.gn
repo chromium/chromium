@@ -1166,6 +1166,7 @@ if (is_chromeos && is_chromeos_device) {
         "//chrome/test/base/chromeos/crosier:proto",
         "//chrome/test/base/chromeos/crosier/helper:common",
         "//chromeos/ash/components/standalone_browser",
+        "//chromeos/ash/components/standalone_browser:test_support",
         "//chromeos/services/machine_learning/public/cpp",
       ]
 
