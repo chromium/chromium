@@ -70,7 +70,7 @@ enum TestVariables {
   // Whether `net::features::kTpcdMetadataGrants` is enabled.
   kTpcdMetadataGrantsEligible,
   // Whether `content_settings_features::kHostIndexedMetadataGrants` is enabled
-  kHostIndexedMetadataGrantsEnabled,
+  kIndexedContentSettings,
 };
 }  // namespace
 
@@ -149,18 +149,20 @@ class CookieSettingsTest
       disabled_features.push_back(net::features::kTpcdSupportSettings);
     }
 
-    if (Is3pcdMetadataGrantEligible()) {
-      if (IsHostIndexedMetadataGrantsEnabled()) {
-        enabled_features.push_back({features::kHostIndexedMetadataGrants,
-                                    {{"MetadataGrantsThreshold", "1"}}});
-      } else {
-        disabled_features.push_back(features::kHostIndexedMetadataGrants);
-      }
-      enabled_features.push_back({net::features::kTpcdMetadataGrants,
+    if (IsIndexedContentSettingsEnabled()) {
+      enabled_features.push_back({features::kHostIndexedMetadataGrants,
                                   {{"MetadataGrantsThreshold", "1"}}});
+      enabled_features.push_back(
+          {features::kIndexedHostContentSettingsMap, {}});
+    } else {
+      disabled_features.push_back(features::kHostIndexedMetadataGrants);
+      disabled_features.push_back(features::kIndexedHostContentSettingsMap);
+    }
+
+    if (Is3pcdMetadataGrantEligible()) {
+      enabled_features.push_back({net::features::kTpcdMetadataGrants, {}});
     } else {
       disabled_features.push_back(net::features::kTpcdMetadataGrants);
-      disabled_features.push_back(features::kHostIndexedMetadataGrants);
     }
 
     enabled_features.push_back({features::kTpcdHeuristicsGrants,
@@ -218,9 +220,8 @@ class CookieSettingsTest
     return std::get<TestVariables::kTpcdMetadataGrantsEligible>(GetParam());
   }
 
-  bool IsHostIndexedMetadataGrantsEnabled() const {
-    return std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(
-        GetParam());
+  bool IsIndexedContentSettingsEnabled() const {
+    return std::get<TestVariables::kIndexedContentSettings>(GetParam());
   }
 
   net::CookieSettingOverrides GetCookieSettingOverrides() const {
@@ -1888,7 +1889,7 @@ std::string CustomTestName(
       << "_TpcdMetadataGrantsEligible_"
       << std::get<TestVariables::kTpcdMetadataGrantsEligible>(info.param)
       << "_HostIndexedMetadataGrantsEnabled_"
-      << std::get<TestVariables::kHostIndexedMetadataGrantsEnabled>(info.param);
+      << std::get<TestVariables::kIndexedContentSettings>(info.param);
   // clang-format on
   return custom_test_name.str();
 }
