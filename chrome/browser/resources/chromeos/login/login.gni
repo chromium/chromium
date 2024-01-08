@@ -87,7 +87,7 @@ oobe_screens_js_files = [
   "screens/oobe/hid_detection.js",
   "screens/oobe/oobe_network.js",
   "screens/oobe/packaged_license.ts",
-  "screens/oobe/update.js",
+  "screens/oobe/update.ts",
   "screens/oobe/welcome.js",
   "screens/oobe/welcome_dialog.js",
 ]
