@@ -410,7 +410,7 @@
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure",
              "--disable-threaded-compositing", "--disable-threaded-animation"],
-    "expires": "Feb 1, 2024"
+    "expires": "Jun 1, 2024"
   },
   {
     "prefix": "highdpi-threaded",
