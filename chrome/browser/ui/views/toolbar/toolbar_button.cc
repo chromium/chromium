@@ -71,6 +71,7 @@ class ToolbarButtonHighlightPathGenerator
   // HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
     gfx::Rect rect(view->size());
+    rect.Inset(GetToolbarInkDropInsets(view));
 
     SkPath path;
     const SkScalar left_radius =
