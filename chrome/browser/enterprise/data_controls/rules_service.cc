@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/data_controls/rules_service.h"
+
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
@@ -23,6 +24,32 @@ Verdict RulesService::GetPrintVerdict(const GURL& printed_page_url) const {
                                    {.source = {
                                         .url = printed_page_url,
                                     }});
+}
+
+Verdict RulesService::GetPasteVerdict(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const content::ClipboardMetadata& metadata) const {
+  ActionContext context;
+  if (source.data_transfer_endpoint() &&
+      source.data_transfer_endpoint()->IsUrlType()) {
+    context.source.url = *source.data_transfer_endpoint()->GetURL();
+  }
+  if (source.browser_context()) {
+    context.source.incognito =
+        Profile::FromBrowserContext(source.browser_context())
+            ->IsIncognitoProfile();
+  }
+  if (destination.data_transfer_endpoint() &&
+      destination.data_transfer_endpoint()->IsUrlType()) {
+    context.destination.url = *destination.data_transfer_endpoint()->GetURL();
+  }
+  if (destination.browser_context()) {
+    context.destination.incognito =
+        Profile::FromBrowserContext(destination.browser_context())
+            ->IsIncognitoProfile();
+  }
+  return rules_manager_.GetVerdict(Rule::Restriction::kClipboard, context);
 }
 
 // ----------------------------------
