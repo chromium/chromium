@@ -560,8 +560,8 @@ void ExtensionMessagePort::IncrementLazyKeepaliveCount(
 
   // Increment keepalive count for service workers of the extension managed by
   // this port.
-  // TODO(richardzh): Add a check to only increment count if the port is in lazy
-  // context.
+  // TODO(https://crbug.com/1514471): Add a check to only increment count if
+  // the port is in lazy context.
   for (const auto& worker_id :
        pm->GetServiceWorkersForExtension(extension_id_)) {
     base::Uuid request_uuid = pm->IncrementServiceWorkerKeepaliveCount(
@@ -590,8 +590,8 @@ void ExtensionMessagePort::DecrementLazyKeepaliveCount(
 
   // Decrement keepalive count for service workers of the extension managed by
   // this port.
-  // TODO(richardzh): Add a check to only decrement count if the port is in lazy
-  // context.
+  // TODO(https://crbug.com/1514471): Add a check to only decrement count if
+  // the port is in lazy context.
   for (const auto& worker_id :
        pm->GetServiceWorkersForExtension(extension_id_)) {
     auto iter = pending_keepalive_uuids_.find(worker_id);
