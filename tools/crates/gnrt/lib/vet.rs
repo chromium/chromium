@@ -6,7 +6,8 @@ use crate::config::BuildConfig;
 use crate::group::Group;
 use anyhow::Result;
 
-fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<String> {
+fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<AuditCriteria> {
+    use AuditCriteria::*;
     match (shipped, group) {
         // Safe crates can be used on adversarial inputs without a sandbox. They can not cause
         // security bugs in this case, and must satisfy the Rule of Two.
@@ -17,38 +18,51 @@ fn group_vet_criteria(group: Group, shipped: Option<bool>) -> Vec<String> {
         //
         // We currently consider ub-risk-2 as satisfying the Rule of Two, though there seems to be
         // some spot in between risk 1 and 2 that fits better and this could be improved.
-        (Some(true), Group::Safe) | (None, Group::Safe) => vec!["safe-to-deploy", "ub-risk-2"],
+        (Some(true), Group::Safe) | (None, Group::Safe) => vec![SafeToDeploy, UbRisk2],
         // Sandbox crates are used in a sandbox, so we have a weaker tolerance. There may be a bunch
         // of ASM code in there for example. Adversarial inputs may have a way to break things,
         // though we certainly try to avoid it.
         //
         // This type of crate is not well described in the UB risk guidelines for now, so we use
         // "ub-risk-3" for this category.
-        (Some(true), Group::Sandbox) | (None, Group::Sandbox) => {
-            vec!["safe-to-deploy", "ub-risk-3"]
-        }
+        (Some(true), Group::Sandbox) | (None, Group::Sandbox) => vec![SafeToDeploy, UbRisk3],
         // Code in tests is not run on user machines and does not interact with adversarial inputs.
         // Thus it does not need to be safe-to-deploy, but it needs to not be malicious against
         // developers and CI bots which is covered by "safe-to-run".
-        (_, Group::Test) => vec!["safe-to-run"],
+        (_, Group::Test) => vec![SafeToRun],
         // Crates that contribute to the shipped binary but are not themselves shipped (code
         // generators for example) do not get deployed themselves and do not interact with
         // adversarial inputs. Thus they need to be "safe-to-run" by developers and CI only.
-        (Some(false), _) => vec!["safe-to-run"],
+        (Some(false), _) => vec![SafeToRun],
     }
-    .into_iter()
-    .map(String::from)
-    .collect()
 }
 
 #[derive(serde::Serialize)]
 pub struct VetConfigToml {
     policies: Vec<Policy>,
 }
+
 #[derive(serde::Serialize)]
 pub struct Policy {
     crate_name: String,
-    criteria: Vec<String>,
+    criteria: Vec<AuditCriteria>,
+}
+
+/// Audit criteria used by Chromium for `cargo vet` audits.  This enum
+/// represents and replicates the criteria that can be found in
+/// https://github.com/google/rust-crate-audits/blob/main/audits.toml (e.g. `UbRisk2` corresponds
+/// to the `[criteria.ub-risk-2]` entry in that `audits.toml` file.
+/// Corresponding auditing standards are described in
+/// https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md
+#[derive(serde::Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum AuditCriteria {
+    SafeToDeploy,
+    SafeToRun,
+    #[serde(rename = "ub-risk-2")]
+    UbRisk2,
+    #[serde(rename = "ub-risk-3")]
+    UbRisk3,
 }
 
 /// Generate the config.toml for `cargo vet` with policies that match the groups
