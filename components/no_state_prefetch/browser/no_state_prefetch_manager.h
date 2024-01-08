@@ -276,8 +276,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       const absl::optional<url::Origin>& initiator_origin);
 
  protected:
-  class NoStatePrefetchData
-      : public base::SupportsWeakPtr<NoStatePrefetchData> {
+  class NoStatePrefetchData {
    public:
     struct OrderByExpiryTime;
 
@@ -318,6 +317,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
       expiry_time_ = expiry_time;
     }
 
+    base::WeakPtr<NoStatePrefetchData> AsWeakPtr() {
+      return weak_factory_.GetWeakPtr();
+    }
+
    private:
     const raw_ptr<NoStatePrefetchManager> manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
@@ -335,6 +338,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
     // After this time, this prefetch is no longer fresh, and should be removed.
     base::TimeTicks expiry_time_;
+
+    base::WeakPtrFactory<NoStatePrefetchData> weak_factory_{this};
   };
 
   // Called by a NoStatePrefetchData to signal that the launcher has navigated
