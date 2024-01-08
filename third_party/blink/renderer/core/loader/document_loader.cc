@@ -999,7 +999,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   std::unique_ptr<SoftNavigationEventScope> soft_navigation_event_scope;
   SoftNavigationHeuristics* heuristics = nullptr;
   ScriptState* script_state = nullptr;
-  if (frame_->IsMainFrame()) {
+  if (frame_->IsMainFrame() &&
+      base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     script_state = ToScriptStateForMainWorld(frame_);
     if (script_state) {
       CHECK(frame_->DomWindow());

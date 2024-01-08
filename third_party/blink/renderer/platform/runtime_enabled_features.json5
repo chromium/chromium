@@ -3556,9 +3556,18 @@
       status: "stable",
     },
     {
+      // Used to enable the code for detecting soft navigations through task
+      // attribution. Set to stable as this generates an enabled-by-default
+      // base::Feature for a field-trial remote shutoff. Needs to be a runtime
+      // feature so that the Soft Navigation Heuristics Origin Trial can depend
+      // on it.
+      name: "SoftNavigationDetection",
+      status: "stable",
+    },
+    {
       name: "SoftNavigationHeuristics",
       status: "experimental",
-      depends_on: ["NavigationId"],
+      depends_on: ["NavigationId","SoftNavigationDetection"],
       origin_trial_allows_third_party: true,
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },
