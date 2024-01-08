@@ -560,7 +560,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
   mojo::AssociatedReceiver<mojom::Renderer> renderer_receiver_{this};
 
-  mojo::AssociatedRemote<mojom::RenderMessageFilter> render_message_filter_;
+  mojo::Remote<mojom::RenderMessageFilter> render_message_filter_;
 
   std::set<std::unique_ptr<AgentSchedulingGroup>, base::UniquePtrComparator>
       agent_scheduling_groups_;

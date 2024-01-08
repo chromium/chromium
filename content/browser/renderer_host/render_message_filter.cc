@@ -5,21 +5,17 @@
 #include "content/browser/renderer_host/render_message_filter.h"
 
 #include <errno.h>
-#include <string.h>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace content {
 
 RenderMessageFilter::RenderMessageFilter(
     int render_process_id,
-    BrowserContext* browser_context,
     RenderWidgetHelper* render_widget_helper)
-    : BrowserAssociatedInterface<mojom::RenderMessageFilter>(this),
-      render_widget_helper_(render_widget_helper),
+    : render_widget_helper_(render_widget_helper),
       render_process_id_(render_process_id) {
   if (render_widget_helper)
     render_widget_helper_->Init(render_process_id_);
@@ -28,14 +24,6 @@ RenderMessageFilter::RenderMessageFilter(
 RenderMessageFilter::~RenderMessageFilter() {
   // This function should be called on the IO thread.
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-}
-
-bool RenderMessageFilter::OnMessageReceived(const IPC::Message& message) {
-  return false;
-}
-
-void RenderMessageFilter::OnDestruct() const {
-  BrowserThread::DeleteOnIOThread::Destruct(this);
 }
 
 void RenderMessageFilter::GenerateFrameRoutingID(

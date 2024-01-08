@@ -138,6 +138,7 @@
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -1829,11 +1830,6 @@ void RenderProcessHostImpl::ResetChannelProxy() {
 
 void RenderProcessHostImpl::CreateMessageFilters() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  scoped_refptr<RenderMessageFilter> render_message_filter =
-      base::MakeRefCounted<RenderMessageFilter>(GetID(), GetBrowserContext(),
-                                                widget_helper_.get());
-  AddFilter(render_message_filter.get());
-
 #if BUILDFLAG(ENABLE_PPAPI)
   pepper_renderer_connection_ = base::MakeRefCounted<PepperRendererConnection>(
       GetID(), PluginServiceImpl::GetInstance(), GetBrowserContext(),
@@ -2305,6 +2301,17 @@ void RenderProcessHostImpl::WriteIntoTrace(
 
 void RenderProcessHostImpl::RegisterMojoInterfaces() {
   auto registry = std::make_unique<service_manager::BinderRegistry>();
+
+  registry->AddInterface(base::BindRepeating(
+      [](int rph_id, scoped_refptr<RenderWidgetHelper> helper,
+         mojo::PendingReceiver<mojom::RenderMessageFilter> receiver) {
+        // We should only ever see one instance of this created per
+        // RenderProcessHost since it is maintained by the `RenderThreadImpl`.
+        mojo::MakeSelfOwnedReceiver(
+            std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
+            std::move(receiver));
+      },
+      GetID(), widget_helper_));
 
   AddUIThreadInterface(
       registry.get(),
