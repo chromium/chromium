@@ -131,7 +131,7 @@ using iterator_t = decltype(ranges::begin(std::declval<Range&>()));
 //
 // Reference: https://wg21.link/ranges.syn#:~:text=range_value_t
 template <typename Range>
-using range_value_t = iter_value_t<iterator_t<Range>>;
+using range_value_t = std::iter_value_t<iterator_t<Range>>;
 
 }  // namespace ranges
 

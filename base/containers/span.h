@@ -542,7 +542,7 @@ auto as_writable_chars(span<T, X> s) noexcept {
 // Type-deducing helpers for constructing a span.
 template <int&... ExplicitArgumentBarrier, typename It>
 constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T>(it, size);
 }
 
@@ -551,7 +551,7 @@ template <int&... ExplicitArgumentBarrier,
           typename End,
           typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
 constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T>(it, end);
 }
 
@@ -577,7 +577,7 @@ constexpr auto make_span(Container&& container) noexcept {
 // Usage: auto static_span = base::make_span<N>(...);
 template <size_t N, int&... ExplicitArgumentBarrier, typename It>
 constexpr auto make_span(It it, StrictNumeric<size_t> size) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T, N>(it, size);
 }
 
@@ -587,7 +587,7 @@ template <size_t N,
           typename End,
           typename = std::enable_if_t<!std::is_convertible_v<End, size_t>>>
 constexpr auto make_span(It it, End end) noexcept {
-  using T = std::remove_reference_t<iter_reference_t<It>>;
+  using T = std::remove_reference_t<std::iter_reference_t<It>>;
   return span<T, N>(it, end);
 }
 

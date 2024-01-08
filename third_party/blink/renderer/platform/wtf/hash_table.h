@@ -238,10 +238,9 @@ class HashTableConstIterator final {
                                  KeyTraits,
                                  Allocator>
       const_iterator;
-  typedef Value ValueType;
-  using value_type = ValueType;
+  using value_type = Value;
   typedef typename Traits::IteratorConstGetType GetType;
-  typedef const ValueType* PointerType;
+  typedef const value_type* PointerType;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
   friend class HashTableIterator<Key,
@@ -418,9 +417,9 @@ class HashTableIterator final {
                                  KeyTraits,
                                  Allocator>
       const_iterator;
-  typedef Value ValueType;
+  using value_type = Value;
   typedef typename Traits::IteratorGetType GetType;
-  typedef ValueType* PointerType;
+  typedef value_type* PointerType;
 
   friend class HashTable<Key, Value, Extractor, Traits, KeyTraits, Allocator>;
 
@@ -2006,7 +2005,7 @@ struct HashTableConstIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
 
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = HashTableType::ValueType;
   using difference_type = ptrdiff_t;
   using pointer = value_type*;
   using reference = value_type&;
@@ -2058,7 +2057,7 @@ struct HashTableConstIteratorAdapter<
 
  public:
   using iterator_category = std::bidirectional_iterator_tag;
-  using value_type = HashTableType;
+  using value_type = HashTableType::ValueType;
   using difference_type = ptrdiff_t;
   using pointer = value_type*;
   using reference = value_type&;
@@ -2110,6 +2109,13 @@ std::ostream& operator<<(
 template <typename HashTableType, typename Traits, typename Enable = void>
 struct HashTableIteratorAdapter {
   static_assert(!IsTraceable<typename Traits::TraitType>::value);
+
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = HashTableType::ValueType;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
@@ -2152,6 +2158,12 @@ struct HashTableIteratorAdapter<
   STACK_ALLOCATED();
 
  public:
+  using iterator_category = std::bidirectional_iterator_tag;
+  using value_type = HashTableType::ValueType;
+  using difference_type = ptrdiff_t;
+  using pointer = value_type*;
+  using reference = value_type&;
+
   typedef typename Traits::IteratorGetType GetType;
   typedef typename HashTableType::ValueTraits::IteratorGetType SourceGetType;
 
