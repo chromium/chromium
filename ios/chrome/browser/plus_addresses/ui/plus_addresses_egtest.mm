@@ -40,6 +40,25 @@ void ExpectModalHistogram(
                           forHistogram:@"Autofill.PlusAddresses.Modal.Events"];
   GREYAssertNil(error, @"Failed to record modal event histogram");
 }
+
+// Assert that the bottom sheet shown duration metrics is recorded.
+// Actual duration is not assessed to avoid unnecessary clock mocking.
+void ExpectModalTimeSample(
+    plus_addresses::PlusAddressMetrics::PlusAddressModalCompletionStatus status,
+    int count) {
+  NSString* modalStatus = [NSString
+      stringWithUTF8String:plus_addresses::PlusAddressMetrics::
+                               PlusAddressModalCompletionStatusToString(status)
+                                   .c_str()];
+  NSString* name = [NSString
+      stringWithFormat:@"Autofill.PlusAddresses.Modal.%@.ShownDuration",
+                       modalStatus];
+
+  NSError* error = [MetricsAppInterface expectTotalCount:count
+                                            forHistogram:name];
+  GREYAssertNil(error, @"Failed to record modal shown duration histogram");
+}
+
 }  // namespace
 
 // Test suite that tests plus addresses functionality.
@@ -150,6 +169,9 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
       1);
+  ExpectModalTimeSample(plus_addresses::PlusAddressMetrics::
+                            PlusAddressModalCompletionStatus::kModalCanceled,
+                        1);
 }
 
 - (void)testPlusAddressBottomSheetSettingsLink {
@@ -223,6 +245,9 @@ id<GREYMatcher> GetMatcherForSettingsLink() {
   ExpectModalHistogram(
       plus_addresses::PlusAddressMetrics::PlusAddressModalEvent::kModalCanceled,
       1);
+  ExpectModalTimeSample(plus_addresses::PlusAddressMetrics::
+                            PlusAddressModalCompletionStatus::kModalCanceled,
+                        1);
 }
 
 @end
