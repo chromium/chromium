@@ -132,7 +132,8 @@ bool SearchEngineChoiceDialogServiceFactory::
 std::unique_ptr<KeyedService>
 SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_FOR_TESTING)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(CHROME_FOR_TESTING)
   return nullptr;
 #else
   if (!g_is_chrome_build) {

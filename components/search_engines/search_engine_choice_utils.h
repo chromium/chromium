@@ -152,12 +152,13 @@ bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 // TODO(b/306367986): Restrict this function to iOS.
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
 
+#if BUILDFLAG(IS_IOS)
 // Returns whether the search engine choice screen can be displayed or not based
 // on device policies and profile properties.
-// TODO(b/306367986): Restrict this function to iOS.
 bool ShouldShowChoiceScreen(const policy::PolicyService& policy_service,
                             const ProfileProperties& profile_properties,
                             TemplateURLService* template_url_service);
+#endif
 
 // Returns the choice screen eligibility condition most relevant for the profile
 // associated with `profile_prefs` and `template_url_service`.
