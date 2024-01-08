@@ -21,10 +21,6 @@ class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}  // namespace user_prefs
-
 typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   // Section to invite the user to sign in and sync.
   BookmarksHomeSectionIdentifierPromo = kSectionIdentifierEnumZero,
@@ -94,9 +90,6 @@ class BookmarkModel;
 // the root level, `displayedBookmarkModel` returns the localOrSyncable storage.
 @property(nonatomic, assign, readonly)
     bookmarks::BookmarkModel* displayedBookmarkModel;
-
-// Registers the feature preferences.
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry;
 
 // Designated initializer.
 // `localOrSyncableBookmarkModel` must not be `nullptr`. It should also be

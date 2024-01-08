@@ -16,7 +16,6 @@
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/managed/managed_bookmark_service.h"
-#import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -32,7 +31,6 @@
 #import "ios/chrome/browser/bookmarks/model/managed_bookmark_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -124,11 +122,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   std::unique_ptr<BookmarkModelBridge> _accountBookmarkModelBridge;
   // List of nodes selected by the user when being in the edit mode.
   bookmark_utils_ios::NodeSet _selectedNodesForEditMode;
-}
-
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
-  registry->RegisterBooleanPref(
-      prefs::kIosBookmarkUploadSyncLeftBehindCompleted, false);
 }
 
 - (instancetype)initWithBrowser:(Browser*)browser
@@ -451,11 +444,6 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)triggerBatchUpload {
   self.syncService->TriggerLocalDataMigration(
       syncer::ModelTypeSet({syncer::BOOKMARKS}));
-
-  ChromeBrowserState* browserState = [self originalBrowserState];
-  PrefService* prefService = browserState->GetPrefs();
-  prefService->SetBoolean(prefs::kIosBookmarkUploadSyncLeftBehindCompleted,
-                          true);
 }
 
 - (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
@@ -787,11 +775,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   // impossible.
   if (self.syncService->GetUserActionableError() !=
       syncer::SyncService::UserActionableError::kNone) {
-    return NO;
-  }
-  // Do not show if the user has already uploaded the left-behind bookmarks.
-  if (browserState->GetPrefs()->GetBoolean(
-          prefs::kIosBookmarkUploadSyncLeftBehindCompleted)) {
     return NO;
   }
   return YES;
