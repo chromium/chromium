@@ -647,6 +647,12 @@
     'blink_xml': {
       'filepath': 'third_party/blink/renderer/core/xml/'
     },
+    'blundell_watch': {
+      'filepath': 'chrome/' \
+                  '|components/' \
+                  '|gpu/' \
+                  '|services/',
+    },
     'borealis': {
       'filepath': 'borealis/',
     },
@@ -1297,12 +1303,6 @@
                   'content/renderer/indexed_db|'\
                   'content/test/data/indexeddb|'\
                   'components/services/storage/indexed_db',
-    },
-    'infobars_for_weblayer': {
-      'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/banners/'\
-                  '|chrome/android/java/src/org/chromium/chrome/browser/infobar/'\
-                  '|chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/infobar/'\
-                  '|chrome/browser/ui/android/infobars/',
     },
     'input': {
       'filepath': 'content/browser/renderer_host/input|'\
@@ -2664,6 +2664,7 @@
                       'shimazu+worker@chromium.org'],
     'blink_wtf': ['blink-reviews-wtf@chromium.org'],
     'blink_xml': ['dominicc+watchlist@chromium.org'],
+    'blundell_watch': ['blundell+watchlist@chromium.org'],
     'borealis': ['borealis-reviews+watch@google.com'],
     'bottombar': ['donnd+watch@chromium.org',
                   'mdjones+watch@chromium.org'],
@@ -2924,7 +2925,6 @@
     'indexed_db': ['jsbell+idb@chromium.org',
                    'dmurph+watching-idb@chromium.org',
                    'enne+idb@chromium.org'],
-    'infobars_for_weblayer': ['blundell+infobars-watch@chromium.org'],
     'input': ['dtapuska+chromiumwatch@chromium.org'],
     'input_device_settings': ['dpad+watch-input-device-settings@google.com',
                               'michaelcheco+watch-input-device-settings@google.com',
