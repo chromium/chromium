@@ -1,3 +1,6 @@
+#!special-case-list-v1
+# TODO(https://crbug.com/1515966): update to glob patterns
+
 #############################################################################
 # UBSan ignorelist.
 
@@ -26,7 +29,7 @@ src:*/ppapi/shared_impl/id_assignment.h
 fun:*hashEntry*
 fun:*LocaleCacheKey*hashCode*
 fun:*google*protobuf*hash*
-fun:*{hash,Hash}*
+fun:*(hash|Hash)*
 
 #############################################################################
 # Bounds ignorelist.
