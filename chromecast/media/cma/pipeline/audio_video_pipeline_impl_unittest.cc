@@ -192,7 +192,11 @@ class PipelineHelper {
     EXPECT_CALL(*pipeline_backend_, GetCurrentPts());
     EXPECT_CALL(*pipeline_backend_, Pause());
   }
-
+  void Run() {
+    base::RunLoop loop;
+    quit_closure_ = loop.QuitWhenIdleClosure();
+    loop.Run();
+  }
   void Start(base::RepeatingClosure eos_cb) {
     eos_cb_ = std::move(eos_cb);
     eos_[STREAM_AUDIO] = !media_pipeline_->HasAudio();
@@ -218,7 +222,7 @@ class PipelineHelper {
   }
   void Stop() {
     media_pipeline_.reset();
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
   void FlushThenStop() {
     base::OnceClosure stop_task =
@@ -275,6 +279,7 @@ class PipelineHelper {
   CmaBackend::Decoder::Delegate* audio_decoder_delegate_;
   CmaBackend::Decoder::Delegate* video_decoder_delegate_;
   std::unique_ptr<MediaPipelineImpl> media_pipeline_;
+  base::OnceClosure quit_closure_;
 };
 
 using AudioVideoTuple = ::testing::tuple<bool, bool>;
@@ -319,7 +324,7 @@ TEST_P(AudioVideoPipelineImplTest, Play) {
       FROM_HERE, base::BindOnce(&PipelineHelper::Start,
                                 base::Unretained(pipeline_helper_.get()),
                                 std::move(verify_task)));
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 static void VerifyFlush(PipelineHelper* pipeline_helper) {
@@ -349,7 +354,7 @@ TEST_P(AudioVideoPipelineImplTest, Flush) {
                                 base::Unretained(pipeline_helper_.get()),
                                 std::move(verify_task)));
 
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 TEST_P(AudioVideoPipelineImplTest, FullCycle) {
@@ -361,7 +366,7 @@ TEST_P(AudioVideoPipelineImplTest, FullCycle) {
       FROM_HERE, base::BindOnce(&PipelineHelper::Start,
                                 base::Unretained(pipeline_helper_.get()),
                                 std::move(eos_cb)));
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 // Test all three types of pipeline: audio-only, video-only, audio-video.
@@ -407,7 +412,7 @@ TEST_F(EncryptedAVPipelineImplTest, SetCdmWithLicenseBeforeStart) {
       FROM_HERE, base::BindOnce(&PipelineHelper::Start,
                                 base::Unretained(pipeline_helper_.get()),
                                 std::move(verify_task)));
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 // Start the pipeline, then set a CDM with existing license.
@@ -427,7 +432,7 @@ TEST_F(EncryptedAVPipelineImplTest, SetCdmWithLicenseAfterStart) {
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdm,
                                 base::Unretained(pipeline_helper_.get())));
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 // Start the pipeline, set a CDM, and then install the license.
@@ -447,7 +452,7 @@ TEST_F(EncryptedAVPipelineImplTest, SetCdmAndInstallLicenseAfterStart) {
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdmLicenseInstalled,
                                 base::Unretained(pipeline_helper_.get())));
-  base::RunLoop().Run();
+  pipeline_helper_->Run();
 }
 
 }  // namespace media

@@ -40,6 +40,7 @@ class DemuxerStreamAdapterTest : public testing::Test {
 
   void Initialize(::media::DemuxerStream* demuxer_stream);
   void Start();
+  void Run();
 
  protected:
   void OnTestTimeout();
@@ -67,6 +68,8 @@ class DemuxerStreamAdapterTest : public testing::Test {
   std::unique_ptr<DemuxerStreamForTest> demuxer_stream_;
 
   std::unique_ptr<CodedFrameProvider> coded_frame_provider_;
+
+  base::OnceClosure quit_closure_;
 };
 
 DemuxerStreamAdapterTest::DemuxerStreamAdapterTest()
@@ -81,6 +84,12 @@ void DemuxerStreamAdapterTest::Initialize(
   coded_frame_provider_.reset(new DemuxerStreamAdapter(
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       scoped_refptr<BalancedMediaTaskRunnerFactory>(), demuxer_stream));
+}
+
+void DemuxerStreamAdapterTest::Run() {
+  base::RunLoop loop;
+  quit_closure_ = loop.QuitWhenIdleClosure();
+  loop.Run();
 }
 
 void DemuxerStreamAdapterTest::Start() {
@@ -101,8 +110,7 @@ void DemuxerStreamAdapterTest::Start() {
 
 void DemuxerStreamAdapterTest::OnTestTimeout() {
   ADD_FAILURE() << "Test timed out";
-  if (base::CurrentThread::Get())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  std::move(quit_closure_).Run();
 }
 
 void DemuxerStreamAdapterTest::OnNewFrame(
@@ -148,7 +156,7 @@ void DemuxerStreamAdapterTest::OnNewFrame(
 
 void DemuxerStreamAdapterTest::OnFlushCompleted() {
   ASSERT_EQ(frame_received_count_, total_expected_frames_);
-  base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  std::move(quit_closure_).Run();
 }
 
 TEST_F(DemuxerStreamAdapterTest, NoDelay) {
@@ -168,7 +176,7 @@ TEST_F(DemuxerStreamAdapterTest, NoDelay) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::Start, base::Unretained(this)));
-  base::RunLoop().Run();
+  Run();
 }
 
 TEST_F(DemuxerStreamAdapterTest, AllDelayed) {
@@ -188,7 +196,7 @@ TEST_F(DemuxerStreamAdapterTest, AllDelayed) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::Start, base::Unretained(this)));
-  base::RunLoop().Run();
+  Run();
 }
 
 TEST_F(DemuxerStreamAdapterTest, AllDelayedEarlyFlush) {
@@ -209,7 +217,7 @@ TEST_F(DemuxerStreamAdapterTest, AllDelayedEarlyFlush) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&DemuxerStreamAdapterTest::Start, base::Unretained(this)));
-  base::RunLoop().Run();
+  Run();
 }
 
 }  // namespace media
