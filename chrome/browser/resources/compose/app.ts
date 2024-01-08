@@ -126,6 +126,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
         value: false,
         reflectToAttribute: true,
       },
+      loadingIndicatorShown_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'isLoadingIndicatorShown_(loading_, partialResponse_)',
+      },
       response_: {
         type: Object,
         value: null,
@@ -500,10 +505,13 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private composeResponseReceived_(response: ComposeResponse) {
     this.response_ = response;
-    this.partialResponse_ = undefined;
     this.loading_ = false;
     this.undoEnabled_ = response.undoAvailable;
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
+    if (this.partialResponse_) {
+      this.animator_.transitionToFinalOutput();
+    }
+    this.partialResponse_ = undefined;
     this.requestUpdateScroll();
     switch (this.lastTriggerElement_) {
       case TriggerElement.SUBMIT_INPUT:
@@ -526,8 +534,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.partialResponse_ = partialResponse;
   }
 
-  private loadingIndictorShown_(): boolean {
-    return this.loading_ && !this.hasPartialResponse_();
+  private isLoadingIndicatorShown_(): boolean {
+    return this.loading_ && !this.partialResponse_;
   }
 
   private hasSuccessfulResponse_(): boolean {
@@ -536,6 +544,11 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private hasPartialResponse_(): boolean {
     return Boolean(this.partialResponse_);
+  }
+
+
+  private hasPartialOrCompleteResponse_(): boolean {
+    return Boolean(this.partialResponse_) || this.hasSuccessfulResponse_();
   }
 
   private hasFailedResponse_(): boolean {

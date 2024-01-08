@@ -65,4 +65,10 @@ export class ComposeAppAnimator extends Animator {
   transitionInLoading(): Animation[] {
     return this.fadeIn('#loading', {delay: 100, duration: 100});
   }
+
+  transitionToFinalOutput(): Animation[] {
+    return this.fadeIn(
+        '#resultOptions, #resultFooter',
+        {delay: 100, duration: 100, fill: 'backwards'});
+  }
 }

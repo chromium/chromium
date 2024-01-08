@@ -195,13 +195,13 @@
     background: var(--color-compose-dialog-scrollbar-thumb);
   }
 
-  :host([loading_]) #bodyAndFooter {
+  :host([loadingIndicatorShown_]) #bodyAndFooter {
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: 136px;
   }
 
-  :host([loading_]) #body {
+  :host([loadingIndicatorShown_]) #body {
     /* When loading, the heights of contents within #body are in flux due to
      * animations. Force the entire #body to be visible to prevent scrollbars
      * from flickering, and remove scrollbar width from padding. */
@@ -242,6 +242,10 @@
     align-items: flex-end;
     gap: 8px;
     margin-block-start: 16px;
+  }
+
+  #resultFooter[inert], #resultOptions[inert] {
+    opacity: 0;
   }
 
   #resultOptions .md-select {
@@ -431,7 +435,7 @@
       </compose-textarea>
 
       <div id="loading"
-          hidden="[[!loadingIndictorShown_(loading_, partialResponse_)]]">
+          hidden="[[!loadingIndicatorShown_]]">
         <cr-loading-gradient>
           <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="51">
             <clipPath>
@@ -442,19 +446,17 @@
           </svg>
         </cr-loading-gradient>
       </div>
-
-      <div id="partialResultContainer" class="result-container"
-          hidden="[[!hasPartialResponse_(partialResponse_)]]">
-        <div id="partialResultText" class="result-text">
-          [[getTrimmedPartialResult_(partialResponse_)]]
-        </div>
-      </div>
-
       <div id="resultContainer" class="result-container"
-          hidden="[[!hasSuccessfulResponse_(response_)]]">
-        <div class="result-text">[[getTrimmedResult_(response_.result)]]</div>
-
-        <div id="resultOptions">
+          hidden="[[!hasPartialOrCompleteResponse_(response_,
+              partialResponse_)]]">
+        <div class="result-text"
+            hidden="[[hasPartialResponse_(partialResponse_)]]"
+            >[[getTrimmedResult_(response_.result)]]</div>
+        <div id="partialResultText" class="result-text"
+            hidden="[[!hasPartialResponse_(partialResponse_)]]"
+            >[[getTrimmedPartialResult_(partialResponse_)]]</div>
+        <div id="resultOptions"
+            inert$="[[hasPartialResponse_(partialResponse_)]]">
           <select class="md-select" id="lengthMenu" value="[[selectedLength_]]"
               aria-label="$i18n{lengthMenuTitle}" on-change="onLengthChanged_">
             <template is="dom-repeat" items="[[lengthOptions_]]">
@@ -501,7 +503,8 @@
     </div>
 
     <div id="resultFooter" class="footer"
-      hidden="[[!hasSuccessfulResponse_(response_)]]">
+        hidden$="[[!hasSuccessfulResponse_(response_)]]"
+        inert$="[[hasPartialResponse_(partialResponse_)]]">
       <div class="footer-text">
         <div on-click="onFooterClick_">
           $i18nRaw{resultFooter}
@@ -517,7 +520,7 @@
     </div>
 
     <div id="errorFooter" class="footer"
-      hidden="[[!hasFailedResponse_(response_)]]">
+        hidden="[[!hasFailedResponse_(response_)]]">
       <div class="footer-text">[[failedResponseErrorText_(response_)]]</div>
     </div>
 
