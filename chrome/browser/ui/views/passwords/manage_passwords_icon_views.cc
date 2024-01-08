@@ -126,5 +126,5 @@ void ManagePasswordsIconViews::AboutToRequestFocusFromTabTraversal(
     PasswordBubbleViewBase::ActivateBubble();
 }
 
-BEGIN_METADATA(ManagePasswordsIconViews, PageActionIconView)
+BEGIN_METADATA(ManagePasswordsIconViews)
 END_METADATA

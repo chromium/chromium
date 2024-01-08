@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -217,3 +218,6 @@ void PageInfoPermissionContentView::MaybeAddMediaPreview() {
                                                     /*parent_view=*/this);
 #endif
 }
+
+BEGIN_METADATA(PageInfoPermissionContentView)
+END_METADATA

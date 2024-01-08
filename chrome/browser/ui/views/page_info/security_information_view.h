@@ -20,8 +20,9 @@ class NonAccessibleImageView;
 // View that represents the header of the page info bubble. The header shows the
 // status of the site's identity check and the name of the site's identity.
 class SecurityInformationView : public views::View {
+  METADATA_HEADER(SecurityInformationView, views::View)
+
  public:
-  METADATA_HEADER(SecurityInformationView);
   explicit SecurityInformationView(int side_margin);
   SecurityInformationView(const SecurityInformationView&) = delete;
   SecurityInformationView& operator=(const SecurityInformationView&) = delete;

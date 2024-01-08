@@ -22,8 +22,9 @@ class PageActionIconView;
 class PageActionIconLoadingIndicatorView : public views::View,
                                            public views::ViewObserver,
                                            public gfx::AnimationDelegate {
+  METADATA_HEADER(PageActionIconLoadingIndicatorView, views::View)
+
  public:
-  METADATA_HEADER(PageActionIconLoadingIndicatorView);
   explicit PageActionIconLoadingIndicatorView(PageActionIconView* parent);
   PageActionIconLoadingIndicatorView(
       const PageActionIconLoadingIndicatorView&) = delete;

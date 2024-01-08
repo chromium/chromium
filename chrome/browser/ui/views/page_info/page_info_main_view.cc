@@ -654,5 +654,5 @@ PageInfoMainView::CreateAdPersonalizationSection() {
   return ads_personalization_section;
 }
 
-BEGIN_METADATA(PageInfoMainView, views::View)
+BEGIN_METADATA(PageInfoMainView)
 END_METADATA

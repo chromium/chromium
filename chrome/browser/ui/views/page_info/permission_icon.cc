@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/permission_icon.h"
+
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 PermissionIcon::PermissionIcon(
     const PageInfo::PermissionInfo& permission_info) {
@@ -15,3 +17,6 @@ void PermissionIcon::OnPermissionChanged(
   permission_info_ = permission_info;
   SetImage(PageInfoViewFactory::GetPermissionIcon(permission_info_));
 }
+
+BEGIN_METADATA(PermissionIcon)
+END_METADATA

@@ -252,5 +252,5 @@ void SecurityInformationView::AddPasswordReuseButtons(
   InvalidateLayout();
 }
 
-BEGIN_METADATA(SecurityInformationView, views::View)
+BEGIN_METADATA(SecurityInformationView)
 END_METADATA

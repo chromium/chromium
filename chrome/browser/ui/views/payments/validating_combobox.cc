@@ -55,7 +55,7 @@ void ValidatingCombobox::Validate() {
   SetInvalid(!delegate_->ComboboxValueChanged(this));
 }
 
-BEGIN_METADATA(ValidatingCombobox, views::Combobox)
+BEGIN_METADATA(ValidatingCombobox)
 END_METADATA
 
 }  // namespace payments

@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -24,6 +25,8 @@ class PasswordBubbleControllerBase;
 // no longer relevant for checking dialog ownership. These two work items should
 // make this base class significantly smaller.
 class PasswordBubbleViewBase : public LocationBarBubbleDelegateView {
+  METADATA_HEADER(PasswordBubbleViewBase, LocationBarBubbleDelegateView)
+
  public:
   PasswordBubbleViewBase(const PasswordBubbleViewBase&) = delete;
   PasswordBubbleViewBase& operator=(const PasswordBubbleViewBase&) = delete;

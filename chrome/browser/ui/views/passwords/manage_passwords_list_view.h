@@ -14,6 +14,8 @@
 // A view that displays a list of credentials in a list view, together with an
 // entry to navigate to the password manager. Used in the ManagePasswordsView.
 class ManagePasswordsListView : public views::BoxLayoutView {
+  METADATA_HEADER(ManagePasswordsListView, views::BoxLayoutView)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTopView);
 

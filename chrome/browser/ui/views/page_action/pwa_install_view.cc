@@ -237,5 +237,5 @@ bool PwaInstallView::ShouldShowIph(content::WebContents* web_contents,
               .IsBlockedByGuardrails(app_id);
 }
 
-BEGIN_METADATA(PwaInstallView, PageActionIconView)
+BEGIN_METADATA(PwaInstallView)
 END_METADATA

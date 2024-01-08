@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
@@ -35,6 +36,8 @@ class ToggleButton;
 // | Manage button                                                 |
 // *---------------------------------------------------------------*
 class PageInfoPermissionContentView : public views::View, public PageInfoUI {
+  METADATA_HEADER(PageInfoPermissionContentView, views::View)
+
  public:
   PageInfoPermissionContentView(PageInfo* presenter,
                                 ChromePageInfoUiDelegate* ui_delegate,

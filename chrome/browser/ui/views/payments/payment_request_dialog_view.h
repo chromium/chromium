@@ -49,9 +49,9 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
                                  public PaymentRequestDialog,
                                  public PaymentRequestSpec::Observer,
                                  public InitializationTask::Observer {
- public:
-  METADATA_HEADER(PaymentRequestDialogView);
+  METADATA_HEADER(PaymentRequestDialogView, views::DialogDelegateView)
 
+ public:
   class ObserverForTest {
    public:
     virtual void OnDialogOpened() = 0;

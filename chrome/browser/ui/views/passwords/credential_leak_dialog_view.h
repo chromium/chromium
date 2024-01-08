@@ -19,8 +19,9 @@ class CredentialLeakDialogController;
 
 class CredentialLeakDialogView : public views::DialogDelegateView,
                                  public CredentialLeakPrompt {
+  METADATA_HEADER(CredentialLeakDialogView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(CredentialLeakDialogView);
   CredentialLeakDialogView(CredentialLeakDialogController* controller,
                            content::WebContents* web_contents);
   CredentialLeakDialogView(const CredentialLeakDialogView&) = delete;

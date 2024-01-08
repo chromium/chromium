@@ -30,8 +30,9 @@ class PageInfoBubbleViewTestApi;
 // allows the user to control via toggle whether that access is granted. Has a
 // button that opens a subpage with more controls.
 class PermissionToggleRowView : public views::View {
+  METADATA_HEADER(PermissionToggleRowView, views::View)
+
  public:
-  METADATA_HEADER(PermissionToggleRowView);
   PermissionToggleRowView(ChromePageInfoUiDelegate* delegate,
                           PageInfoNavigationHandler* navigation_handler,
                           const PageInfo::PermissionInfo& permission,

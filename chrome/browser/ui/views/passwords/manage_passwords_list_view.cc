@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/controls/separator.h"
@@ -106,3 +107,6 @@ ManagePasswordsListView::ManagePasswordsListView(
 ManagePasswordsListView::~ManagePasswordsListView() = default;
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ManagePasswordsListView, kTopView);
+
+BEGIN_METADATA(ManagePasswordsListView)
+END_METADATA

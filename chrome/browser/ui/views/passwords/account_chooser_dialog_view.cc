@@ -142,7 +142,7 @@ void AccountChooserDialogView::CredentialsItemPressed(
   }
 }
 
-BEGIN_METADATA(AccountChooserDialogView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(AccountChooserDialogView)
 END_METADATA
 
 AccountChooserPrompt* CreateAccountChooserPromptView(

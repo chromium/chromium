@@ -39,8 +39,9 @@ using bubble_anchor_util::GetPageInfoAnchorRect;
 // extension pages. Instead of the |PageInfoBubbleView|, the
 // |InternalPageInfoBubbleView| is displayed.
 class InternalPageInfoBubbleView : public PageInfoBubbleViewBase {
+  METADATA_HEADER(InternalPageInfoBubbleView, PageInfoBubbleViewBase)
+
  public:
-  METADATA_HEADER(InternalPageInfoBubbleView);
   // If |anchor_view| is nullptr, or has no Widget, |parent_window| may be
   // provided to ensure this bubble is closed when the parent closes.
   InternalPageInfoBubbleView(views::View* anchor_view,
@@ -119,7 +120,7 @@ InternalPageInfoBubbleView::InternalPageInfoBubbleView(
 
 InternalPageInfoBubbleView::~InternalPageInfoBubbleView() = default;
 
-BEGIN_METADATA(InternalPageInfoBubbleView, PageInfoBubbleViewBase)
+BEGIN_METADATA(InternalPageInfoBubbleView)
 END_METADATA
 
 PageInfoBubbleView::PageInfoBubbleView(
@@ -338,3 +339,6 @@ void ShowPageInfoDialogImpl(Browser* browser,
   bubble->SetArrow(configuration.bubble_arrow);
   bubble->GetWidget()->Show();
 }
+
+BEGIN_METADATA(PageInfoBubbleView)
+END_METADATA

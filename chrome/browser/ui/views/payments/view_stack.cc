@@ -153,6 +153,6 @@ void ViewStack::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   RequestFocus();
 }
 
-BEGIN_METADATA(ViewStack, views::View)
+BEGIN_METADATA(ViewStack)
 ADD_READONLY_PROPERTY_METADATA(size_t, Size)
 END_METADATA

@@ -84,7 +84,7 @@ void AutoSigninFirstRunDialogView::InitWindow() {
   AddChildView(label.release());
 }
 
-BEGIN_METADATA(AutoSigninFirstRunDialogView, views::DialogDelegateView)
+BEGIN_METADATA(AutoSigninFirstRunDialogView)
 END_METADATA
 
 AutoSigninFirstRunPrompt* CreateAutoSigninPromptView(
