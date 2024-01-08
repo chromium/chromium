@@ -81,6 +81,8 @@ const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
 
 // Disables hardware acceleration of video decode, where available.
+// Warning: do not remove or rename this flag, as it is used inside ChromeOS
+// code to implement the DeviceHardwareVideoDecodingEnabled policy.
 const char kDisableAcceleratedVideoDecode[] =
     "disable-accelerated-video-decode";
 
