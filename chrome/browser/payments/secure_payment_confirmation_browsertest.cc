@@ -303,6 +303,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                         "securePaymentConfirmationHasEnrolledInstrument()"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // Intentionally do not enable the "SecurePaymentConfirmation" Blink runtime
 // feature or the browser-side Finch flag.
 class SecurePaymentConfirmationDisabledTest
@@ -390,6 +391,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDisabledByFinchTest,
                          GetActiveWebContents(),
                          "securePaymentConfirmationHasEnrolledInstrument()"));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Test that the SecurePaymentConfirmationAllowOneActivationlessShow feature
 // allows one call to show() without a user activation.

@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.payments.test_support.DefaultPaymentFeatureConfig;
@@ -737,14 +736,12 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_success() {
         Assert.assertNotNull(defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build());
     }
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForHavingOptions() {
         PaymentOptions options = new PaymentOptions();
         options.requestShipping = true;
@@ -760,7 +757,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForNullPayeeNameAndOrigin() {
         Assert.assertNull(
                 defaultBuilder()
@@ -775,7 +771,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_allowsNullPayeeOrigin() {
         // If a valid payeeName is passed, then payeeOrigin is not needed.
         Assert.assertNotNull(
@@ -788,7 +783,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForEmptyPayeeName() {
         Assert.assertNull(
                 defaultBuilder().setPayeeName("").setOnlySpcMethodWithoutPaymentOptions().build());
@@ -799,7 +793,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    @EnableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
     public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeOrigin() {
         org.chromium.url.internal.mojom.Origin payeeOrigin =
                 new org.chromium.url.internal.mojom.Origin();
@@ -814,20 +807,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         assertErrorAndReason(
                 ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
                 PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
-    }
-
-    // The restriction is imposed only when the SPC flag is enabled.
-    @Test
-    @Feature({"Payments"})
-    @DisableFeatures(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)
-    public void testSpcCanOnlyBeRequestedAlone_notApplicableWhenSpcDisabled() {
-        PaymentOptions options = new PaymentOptions();
-        options.requestShipping = true;
-        Assert.assertNotNull(
-                defaultBuilder()
-                        .setOnlySpcMethodWithoutPaymentOptions()
-                        .setOptions(options)
-                        .build());
     }
 
     @Test
