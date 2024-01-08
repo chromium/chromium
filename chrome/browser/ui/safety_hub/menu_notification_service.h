@@ -23,6 +23,7 @@
 struct MenuNotificationEntry {
   int command = 0;
   std::u16string label;
+  safety_hub::SafetyHubModuleType module;
 };
 
 namespace {
@@ -89,10 +90,6 @@ class SafetyHubMenuNotificationService : public KeyedService {
   // Dismisses the active menu notification of the specified module.
   void DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType module);
-
-  // Returns the module of the notification that is currently active.
-  std::optional<safety_hub::SafetyHubModuleType> GetModuleOfActiveNotification()
-      const;
 
   // Returns the |service_info_map_|. For testing purposes only.
   SafetyHubMenuNotification* GetNotificationForTesting(

@@ -159,7 +159,8 @@ SafetyHubMenuNotificationService::GetNotificationToShow() {
   // as well.
   SaveNotificationsToPrefs();
   return MenuNotificationEntry(notification_to_show->GetNotificationCommandId(),
-                               notification_to_show->GetNotificationString());
+                               notification_to_show->GetNotificationString(),
+                               notification_to_show->GetModuleType());
 }
 
 std::optional<ResultMap>
@@ -249,14 +250,4 @@ void SafetyHubMenuNotificationService::DismissActiveNotificationOfModule(
   if (notification->IsCurrentlyActive()) {
     notification->Dismiss();
   }
-}
-
-std::optional<safety_hub::SafetyHubModuleType>
-SafetyHubMenuNotificationService::GetModuleOfActiveNotification() const {
-  for (auto const& item : module_info_map_) {
-    if (item.second->notification->IsCurrentlyActive()) {
-      return item.second->notification->GetModuleType();
-    }
-  }
-  return std::nullopt;
 }
