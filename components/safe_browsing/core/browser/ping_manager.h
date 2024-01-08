@@ -54,13 +54,25 @@ class PingManager : public KeyedService {
     virtual void AddToHitReportsSent(std::unique_ptr<HitReport> hit_report) = 0;
   };
 
+  explicit PingManager(
+      const V4ProtocolConfig& config,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      base::RepeatingCallback<bool()> get_should_fetch_access_token,
+      WebUIDelegate* webui_delegate,
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
+      base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
+          get_page_load_token_callback,
+      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
   PingManager(const PingManager&) = delete;
   PingManager& operator=(const PingManager&) = delete;
 
   ~PingManager() override;
 
   // Create an instance of the safe browsing ping manager.
-  static PingManager* Create(
+  static std::unique_ptr<PingManager> Create(
       const V4ProtocolConfig& config,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
@@ -107,18 +119,6 @@ class PingManager : public KeyedService {
 
  protected:
   friend class PingManagerTest;
-  explicit PingManager(
-      const V4ProtocolConfig& config,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
-      base::RepeatingCallback<bool()> get_should_fetch_access_token,
-      WebUIDelegate* webui_delegate,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      base::RepeatingCallback<ChromeUserPopulation()>
-          get_user_population_callback,
-      base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-          get_page_load_token_callback,
-      std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);

@@ -90,7 +90,7 @@ namespace safe_browsing {
 // SafeBrowsingPingManager implementation ----------------------------------
 
 // static
-PingManager* PingManager::Create(
+std::unique_ptr<PingManager> PingManager::Create(
     const V4ProtocolConfig& config,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
@@ -102,11 +102,11 @@ PingManager* PingManager::Create(
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
         get_page_load_token_callback,
     std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
-  return new PingManager(config, url_loader_factory, std::move(token_fetcher),
-                         get_should_fetch_access_token, webui_delegate,
-                         ui_task_runner, get_user_population_callback,
-                         get_page_load_token_callback,
-                         std::move(hats_delegate));
+  return std::make_unique<PingManager>(
+      config, url_loader_factory, std::move(token_fetcher),
+      get_should_fetch_access_token, webui_delegate, ui_task_runner,
+      get_user_population_callback, get_page_load_token_callback,
+      std::move(hats_delegate));
 }
 
 PingManager::PingManager(

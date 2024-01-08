@@ -27,7 +27,7 @@ class ChromePingManagerFactory : public ProfileKeyedServiceFactory {
   ~ChromePingManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory override:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 
   static bool ShouldFetchAccessTokenForReport(Profile* profile);
