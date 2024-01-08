@@ -80,6 +80,14 @@ int NumCallsToAskForValuesToFillOnTextfieldFocusWithoutLeftClick() {
   return 0;
 }
 
+// Returns the expected number of calls to HidePopup when unfocusing a field.
+int NumCallsToHidePopupOnFocusLoss() {
+  if constexpr (BUILDFLAG(IS_ANDROID)) {
+    return 0;  // The accessory allows to fill on focus loss.
+  }
+  return 1;  // Any dropdown should disappear on focus loss.
+}
+
 }  // namespace
 
 class AutofillAgentFormInteractionTest : public test::AutofillRendererTest {
@@ -311,7 +319,6 @@ TEST_F(AutofillAgentContentEditableInteractionTest, LeftClick) {
   SimulateElementClickAndWait("ce");
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Tests that unfocusing a contenteditable triggers a call to
 // `AutofillDriver::HidePopup()`.
 // The test is not enabled on Android because the keyboard accessory has
@@ -326,9 +333,11 @@ TEST_F(AutofillAgentContentEditableInteractionTest,
         AskForValuesToFill(
             Field(&FormData::fields, ElementsAre(IsContentEditable())),
             IsContentEditable(), _,
-            mojom::AutofillSuggestionTriggerSource::kContentEditableClicked));
+            mojom::AutofillSuggestionTriggerSource::kContentEditableClicked))
+        .Times(NumCallsToAskForValuesToFillOnInitialLeftClick());
     EXPECT_CALL(check, Call);
-    EXPECT_CALL(autofill_driver(), HidePopup);
+    EXPECT_CALL(autofill_driver(), HidePopup)
+        .Times(NumCallsToHidePopupOnFocusLoss());
   }
 
   LoadHTML("<body><div id=ce contenteditable></div>");
@@ -337,7 +346,6 @@ TEST_F(AutofillAgentContentEditableInteractionTest,
   check.Call();
   ChangeFocusToNull(GetMainFrame()->GetDocument());
 }
-#endif
 
 // Tests that clicking on a contenteditable form is ignored.
 TEST_F(AutofillAgentContentEditableInteractionTest,

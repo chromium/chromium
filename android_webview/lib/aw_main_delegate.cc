@@ -189,6 +189,8 @@ std::optional<int> AwMainDelegate::BasicStartupComplete() {
     base::ScopedAddFeatureFlags features(cl);
 
     features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
+    features.EnableIfNotSet(
+        autofill::features::kAutofillLegacyDatalistDropdown);
 
     if (cl->HasSwitch(switches::kWebViewLogJsConsoleMessages)) {
       features.EnableIfNotSet(::features::kLogJsConsoleMessages);

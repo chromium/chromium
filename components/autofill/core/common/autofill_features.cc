@@ -337,6 +337,13 @@ BASE_FEATURE(kAutofillDetectRemovedFormControls,
              "AutofillDetectRemovedFormControls",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Indicates whether the platform requires support for the legacy dropdown for
+// datalists. This is enabled on WebView because the keyboard accessory is not
+// available.
+BASE_FEATURE(kAutofillLegacyDatalistDropdown,
+             "AutofillLegacyDatalistDropdown",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces cached web elements in AutofillAgent and FormTracker by their
 // renderer ids.
 BASE_FEATURE(kAutofillReplaceCachedWebElementsByRendererIds,

@@ -123,6 +123,15 @@ DenseSet<ExtractOption> MaybeExtractDatalist(
   return extract_options;
 }
 
+bool UsesKeyboardAccessoryForSuggestions() {
+#if !BUILDFLAG(IS_ANDROID)
+  return false;  // The keyboard accessory is specific to Android.
+#else
+  return !base::FeatureList::IsEnabled(
+      features::kAutofillLegacyDatalistDropdown);
+#endif
+}
+
 }  // namespace
 
 // During prerendering, we do not want the renderer to send messages to the
@@ -436,7 +445,7 @@ void AutofillAgent::FocusedElementChanged(const WebElement& element) {
   // element because that will be done by HandleFocusChangeComplete() which
   // triggers FormControlElementClicked().
   // Refer to http://crbug.com/1105254
-  if ((IsKeyboardAccessoryEnabled() || !focus_requires_scroll_) &&
+  if ((UsesKeyboardAccessoryForSuggestions() || !focus_requires_scroll_) &&
       !element.IsNull() &&
       element.GetDocument().GetFrame()->HasTransientUserActivation()) {
     // If the focus change was caused by a user gesture,
@@ -1022,7 +1031,7 @@ void AutofillAgent::ShowSuggestions(
   WebString value = element.EditingValue();
   if (value.length() > kMaxStringLength ||
       (!ShouldAutofillOnEmptyValues(trigger_source) && value.IsEmpty() &&
-       !IsKeyboardAccessoryEnabled()) ||
+       !UsesKeyboardAccessoryForSuggestions()) ||
       (RequiresCaretAtEnd(trigger_source) &&
        (element.SelectionStart() != element.SelectionEnd() ||
         element.SelectionEnd() != value.length()))) {
@@ -1268,7 +1277,7 @@ void AutofillAgent::HidePopup() {
   is_popup_possibly_visible_ = false;
 
   // The keyboard accessory has a separate, more complex hiding logic.
-  if (IsKeyboardAccessoryEnabled()) {
+  if (UsesKeyboardAccessoryForSuggestions()) {
     return;
   }
 
@@ -1309,7 +1318,7 @@ void AutofillAgent::DidCompleteFocusChangeInFrame() {
     SendFocusedInputChangedNotificationToBrowser(focused_element);
   }
 
-  if (!IsKeyboardAccessoryEnabled() && focus_requires_scroll_) {
+  if (!UsesKeyboardAccessoryForSuggestions() && focus_requires_scroll_) {
     HandleFocusChangeComplete(
         /*focused_node_was_last_clicked=*/
         last_left_mouse_down_or_gesture_tap_in_node_caused_focus_);
