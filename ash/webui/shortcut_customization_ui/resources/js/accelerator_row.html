@@ -101,12 +101,14 @@
         <div id="noShortcutAssignedMessage">
           [[i18n('noShortcutAssigned')]]
         </div>
-        <div class="edit-icon-container" aria-label="[[i18n('edit')]]">
-          <cr-icon-button class="edit-button" class="clickable-button"
-            iron-icon="shortcut-customization:edit"
-            on-click="onEditIconClicked">
-          </cr-icon-button>
-        </div>
+        <template is="dom-if" if="[[!isLocked]]">
+          <div class="edit-icon-container" aria-label="[[i18n('edit')]]">
+            <cr-icon-button class="edit-button" class="clickable-button"
+                iron-icon="shortcut-customization:edit"
+                on-click="onEditIconClicked">
+            </cr-icon-button>
+          </div>
+        </template>
       </div>
     </template>
     <template is="dom-if" if="[[isTextLayout(layoutStyle)]]">

@@ -84,7 +84,7 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
   layoutStyle: LayoutStyle;
   action: number;
   source: AcceleratorSource;
-  private isLocked: boolean;
+  protected isLocked: boolean;
   private shortcutInterfaceProvider: ShortcutProviderInterface =
       getShortcutProvider();
 
