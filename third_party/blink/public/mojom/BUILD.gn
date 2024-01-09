@@ -1046,6 +1046,14 @@ mojom("mojom_platform") {
             mojom = "blink.mojom.WebPrintingSides"
             cpp = "::printing::mojom::DuplexMode"
           },
+          {
+            mojom = "blink.mojom.WebPrinterState"
+            cpp = "ipp_pstate_t"
+          },
+          {
+            mojom = "blink.mojom.WebPrinterStateReason"
+            cpp = "::printing::PrinterStatus::PrinterReason::Reason"
+          },
         ]
         traits_headers =
             [ "//chrome/browser/printing/web_api/web_printing_mojom_traits.h" ]

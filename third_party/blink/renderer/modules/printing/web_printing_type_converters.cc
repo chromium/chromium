@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_color_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_print_job_template_attributes.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_attributes.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_printer_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_mime_media_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_multiple_document_handling.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_printing_range.h"
@@ -34,6 +35,14 @@ using MojomJobState = blink::mojom::blink::WebPrintJobState;
 // print-color-mode:
 using V8ColorMode = blink::V8WebPrintColorMode;
 using MojomColorMode = blink::mojom::blink::WebPrintColorMode;
+
+// printer-state:
+using V8PrinterState = blink::V8WebPrinterState;
+using MojomPrinterState = blink::mojom::blink::WebPrinterState;
+
+// printer-state-reason:
+using V8PrinterStateReason = blink::V8WebPrinterStateReason;
+using MojomPrinterStateReason = blink::mojom::blink::WebPrinterStateReason;
 }  // namespace
 
 namespace mojo {
@@ -156,6 +165,113 @@ struct TypeConverter<MojomColorMode, V8ColorMode> {
   }
 };
 
+template <>
+struct TypeConverter<V8PrinterState::Enum, MojomPrinterState> {
+  static V8PrinterState::Enum Convert(const MojomPrinterState& printer_state) {
+    switch (printer_state) {
+      case MojomPrinterState::kIdle:
+        return V8PrinterState::Enum::kIdle;
+      case MojomPrinterState::kProcessing:
+        return V8PrinterState::Enum::kProcessing;
+      case MojomPrinterState::kStopped:
+        return V8PrinterState::Enum::kStopped;
+    }
+  }
+};
+
+template <>
+struct TypeConverter<V8PrinterStateReason, MojomPrinterStateReason> {
+  static V8PrinterStateReason Convert(
+      const MojomPrinterStateReason& printer_state_reason) {
+    switch (printer_state_reason) {
+      case MojomPrinterStateReason::kNone:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kNone);
+      case MojomPrinterStateReason::kOther:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kOther);
+      case MojomPrinterStateReason::kConnectingToDevice:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kConnectingToDevice);
+      case MojomPrinterStateReason::kCoverOpen:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kCoverOpen);
+      case MojomPrinterStateReason::kDeveloperEmpty:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kDeveloperEmpty);
+      case MojomPrinterStateReason::kDeveloperLow:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kDeveloperLow);
+      case MojomPrinterStateReason::kDoorOpen:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kDoorOpen);
+      case MojomPrinterStateReason::kFuserOverTemp:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kFuserOverTemp);
+      case MojomPrinterStateReason::kFuserUnderTemp:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kFuserUnderTemp);
+      case MojomPrinterStateReason::kInputTrayMissing:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kInputTrayMissing);
+      case MojomPrinterStateReason::kInterlockOpen:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kInterlockOpen);
+      case MojomPrinterStateReason::kInterpreterResourceUnavailable:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kInterpreterResourceUnavailable);
+      case MojomPrinterStateReason::kMarkerSupplyEmpty:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kMarkerSupplyEmpty);
+      case MojomPrinterStateReason::kMarkerSupplyLow:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kMarkerSupplyLow);
+      case MojomPrinterStateReason::kMarkerWasteAlmostFull:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kMarkerWasteAlmostFull);
+      case MojomPrinterStateReason::kMarkerWasteFull:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kMarkerWasteFull);
+      case MojomPrinterStateReason::kMediaEmpty:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kMediaEmpty);
+      case MojomPrinterStateReason::kMediaJam:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kMediaJam);
+      case MojomPrinterStateReason::kMediaLow:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kMediaLow);
+      case MojomPrinterStateReason::kMediaNeeded:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kMediaNeeded);
+      case MojomPrinterStateReason::kMovingToPaused:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kMovingToPaused);
+      case MojomPrinterStateReason::kOpcLifeOver:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kOpcLifeOver);
+      case MojomPrinterStateReason::kOpcNearEol:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kOpcNearEol);
+      case MojomPrinterStateReason::kOutputAreaAlmostFull:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kOutputAreaAlmostFull);
+      case MojomPrinterStateReason::kOutputAreaFull:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kOutputAreaFull);
+      case MojomPrinterStateReason::kOutputTrayMissing:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kOutputTrayMissing);
+      case MojomPrinterStateReason::kPaused:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kPaused);
+      case MojomPrinterStateReason::kShutdown:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kShutdown);
+      case MojomPrinterStateReason::kSpoolAreaFull:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kSpoolAreaFull);
+      case MojomPrinterStateReason::kStoppedPartly:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kStoppedPartly);
+      case MojomPrinterStateReason::kStopping:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kStopping);
+      case MojomPrinterStateReason::kTimedOut:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kTimedOut);
+      case MojomPrinterStateReason::kTonerEmpty:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kTonerEmpty);
+      case MojomPrinterStateReason::kTonerLow:
+        return V8PrinterStateReason(V8PrinterStateReason::Enum::kTonerLow);
+      case MojomPrinterStateReason::kCupsPkiExpired:
+        return V8PrinterStateReason(
+            V8PrinterStateReason::Enum::kCupsPkiExpired);
+    }
+  }
+};
+
 }  // namespace mojo
 
 namespace blink {
@@ -243,6 +359,13 @@ TypeConverter<blink::WebPrinterAttributes*,
   blink::ProcessPrinterResolution(*printer_attributes, attributes);
   blink::ProcessPrintColorMode(*printer_attributes, attributes);
   blink::ProcessSides(*printer_attributes, attributes);
+
+  attributes->setPrinterState(
+      mojo::ConvertTo<V8PrinterState::Enum>(printer_attributes->printer_state));
+  attributes->setPrinterStateReasons(
+      mojo::ConvertTo<Vector<V8PrinterStateReason>>(
+          printer_attributes->printer_state_reasons));
+  attributes->setPrinterStateMessage(printer_attributes->printer_state_message);
 
   return attributes;
 }

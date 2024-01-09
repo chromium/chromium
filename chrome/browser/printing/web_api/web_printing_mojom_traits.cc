@@ -4,6 +4,8 @@
 
 #include "chrome/browser/printing/web_api/web_printing_mojom_traits.h"
 
+#include <cups/ipp.h>
+
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "printing/mojom/print.mojom-shared.h"
@@ -23,6 +25,10 @@ using MultipleDocumentHandling =
 // print-color-mode:
 using PrintColorMode = blink::mojom::WebPrintColorMode;
 using printing::mojom::ColorModel;
+
+// printer-state-reason:
+using PrinterStatusReason = printing::PrinterStatus::PrinterReason::Reason;
+using blink::mojom::WebPrinterStateReason;
 
 // This is not typemapped via EnumTraits<> due to issues with handling `auto`
 // PrintColorMode (which doesn't represent a color model and hence has to be
@@ -70,6 +76,98 @@ bool EnumTraits<WebPrintingSides, DuplexMode>::FromMojom(WebPrintingSides input,
     case WebPrintingSides::kTwoSidedShortEdge:
       *output = DuplexMode::kShortEdge;
       return true;
+  }
+}
+
+// static
+blink::mojom::WebPrinterState
+EnumTraits<blink::mojom::WebPrinterState, ipp_pstate_t>::ToMojom(
+    ipp_pstate_t printer_state) {
+  switch (printer_state) {
+    case IPP_PSTATE_IDLE:
+      return blink::mojom::WebPrinterState::kIdle;
+    case IPP_PSTATE_PROCESSING:
+      return blink::mojom::WebPrinterState::kIdle;
+    case IPP_PSTATE_STOPPED:
+      return blink::mojom::WebPrinterState::kStopped;
+  }
+}
+
+// static
+WebPrinterStateReason
+EnumTraits<WebPrinterStateReason, PrinterStatusReason>::ToMojom(
+    PrinterStatusReason printer_status_reason) {
+  switch (printer_status_reason) {
+    case PrinterStatusReason::kNone:
+      return WebPrinterStateReason::kNone;
+    case PrinterStatusReason::kUnknownReason:
+      return WebPrinterStateReason::kOther;
+    case PrinterStatusReason::kConnectingToDevice:
+      return WebPrinterStateReason::kConnectingToDevice;
+    case PrinterStatusReason::kCoverOpen:
+      return WebPrinterStateReason::kCoverOpen;
+    case PrinterStatusReason::kDeveloperEmpty:
+      return WebPrinterStateReason::kDeveloperEmpty;
+    case PrinterStatusReason::kDeveloperLow:
+      return WebPrinterStateReason::kDeveloperLow;
+    case PrinterStatusReason::kDoorOpen:
+      return WebPrinterStateReason::kDoorOpen;
+    case PrinterStatusReason::kFuserOverTemp:
+      return WebPrinterStateReason::kFuserOverTemp;
+    case PrinterStatusReason::kFuserUnderTemp:
+      return WebPrinterStateReason::kFuserUnderTemp;
+    case PrinterStatusReason::kInputTrayMissing:
+      return WebPrinterStateReason::kInputTrayMissing;
+    case PrinterStatusReason::kInterlockOpen:
+      return WebPrinterStateReason::kInterlockOpen;
+    case PrinterStatusReason::kInterpreterResourceUnavailable:
+      return WebPrinterStateReason::kInterpreterResourceUnavailable;
+    case PrinterStatusReason::kMarkerSupplyEmpty:
+      return WebPrinterStateReason::kMarkerSupplyEmpty;
+    case PrinterStatusReason::kMarkerSupplyLow:
+      return WebPrinterStateReason::kMarkerSupplyLow;
+    case PrinterStatusReason::kMarkerWasteAlmostFull:
+      return WebPrinterStateReason::kMarkerWasteAlmostFull;
+    case PrinterStatusReason::kMarkerWasteFull:
+      return WebPrinterStateReason::kMarkerWasteFull;
+    case PrinterStatusReason::kMediaEmpty:
+      return WebPrinterStateReason::kMediaEmpty;
+    case PrinterStatusReason::kMediaJam:
+      return WebPrinterStateReason::kMediaJam;
+    case PrinterStatusReason::kMediaLow:
+      return WebPrinterStateReason::kMediaLow;
+    case PrinterStatusReason::kMediaNeeded:
+      return WebPrinterStateReason::kMediaNeeded;
+    case PrinterStatusReason::kMovingToPaused:
+      return WebPrinterStateReason::kMovingToPaused;
+    case PrinterStatusReason::kOpcLifeOver:
+      return WebPrinterStateReason::kOpcLifeOver;
+    case PrinterStatusReason::kOpcNearEol:
+      return WebPrinterStateReason::kOpcNearEol;
+    case PrinterStatusReason::kOutputAreaAlmostFull:
+      return WebPrinterStateReason::kOutputAreaAlmostFull;
+    case PrinterStatusReason::kOutputAreaFull:
+      return WebPrinterStateReason::kOutputAreaFull;
+    case PrinterStatusReason::kOutputTrayMissing:
+      return WebPrinterStateReason::kOutputTrayMissing;
+    case PrinterStatusReason::kPaused:
+      return WebPrinterStateReason::kPaused;
+    case PrinterStatusReason::kShutdown:
+      return WebPrinterStateReason::kShutdown;
+    case PrinterStatusReason::kSpoolAreaFull:
+      return WebPrinterStateReason::kSpoolAreaFull;
+    case PrinterStatusReason::kStoppedPartly:
+      return WebPrinterStateReason::kStoppedPartly;
+    case PrinterStatusReason::kStopping:
+      return WebPrinterStateReason::kStopping;
+    case PrinterStatusReason::kTimedOut:
+      return WebPrinterStateReason::kTimedOut;
+    case PrinterStatusReason::kTonerEmpty:
+      return WebPrinterStateReason::kTonerEmpty;
+    case PrinterStatusReason::kTonerLow:
+      return WebPrinterStateReason::kTonerLow;
+    case PrinterStatusReason::kCupsPkiExpired:
+      return WebPrinterStateReason::kCupsPkiExpired;
   }
 }
 

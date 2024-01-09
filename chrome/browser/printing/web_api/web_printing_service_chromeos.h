@@ -19,6 +19,10 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
 #include "third_party/blink/public/mojom/printing/web_printing.mojom.h"
 
+namespace chromeos {
+class CupsWrapper;
+}  // namespace chromeos
+
 namespace content {
 class RenderFrameHost;
 }  // namespace content
@@ -61,6 +65,11 @@ class WebPrintingServiceChromeOS
       GetPrintersCallback callback,
       std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
 
+  void OnPrinterAttributesRetrieved(
+      const std::string& printer_id,
+      FetchAttributesCallback callback,
+      blink::mojom::WebPrinterAttributesPtr printer_attributes);
+
   void OnPrinterAttributesRetrievedForPrint(
       mojo::PendingRemote<blink::mojom::Blob> document,
       std::unique_ptr<PrintSettings> pjt_attributes,
@@ -79,6 +88,7 @@ class WebPrintingServiceChromeOS
   // Stores browser-side endpoints for blink-side Printer objects.
   mojo::ReceiverSet<blink::mojom::WebPrinter, PrinterId> printers_;
 
+  std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
   std::unique_ptr<PdfBlobDataFlattener> pdf_flattener_;
   std::unique_ptr<PrintJobController> print_job_controller_;
   InProgressJobsStorageChromeOS in_progress_jobs_storage_;

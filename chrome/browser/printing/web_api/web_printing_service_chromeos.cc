@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/printing/print_job_controller.h"
@@ -92,6 +93,26 @@ void UpdatePrintJobTemplateAttributesWithPrinterDefaults(
   }
 }
 
+blink::mojom::WebPrinterAttributesPtr MergePrinterAttributesAndStatus(
+    blink::mojom::WebPrinterAttributesPtr printer_attributes,
+    std::unique_ptr<PrinterStatus> printer_status) {
+  if (!printer_status) {
+    // Even though `printer_attributes` were successfully fetched, it's better
+    // to play safe here and pretend that the entire request has failed.
+    return nullptr;
+  }
+  printer_attributes->printer_state = printer_status->state;
+  auto& printer_state_reasons = printer_attributes->printer_state_reasons;
+  for (const auto& reason : printer_status->reasons) {
+    printer_state_reasons.push_back(reason.reason);
+  }
+  base::ranges::sort(printer_state_reasons);
+  printer_state_reasons.erase(base::ranges::unique(printer_state_reasons),
+                              printer_state_reasons.end());
+  printer_attributes->printer_state_message = printer_status->message;
+  return printer_attributes;
+}
+
 bool HasPrintingPermission(content::RenderFrameHost& rfh) {
   return rfh.GetBrowserContext()
              ->GetPermissionController()
@@ -106,6 +127,7 @@ WebPrintingServiceChromeOS::WebPrintingServiceChromeOS(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebPrintingService> receiver)
     : DocumentService(*render_frame_host, std::move(receiver)),
+      cups_wrapper_(chromeos::CupsWrapper::Create()),
       pdf_flattener_(std::make_unique<PdfBlobDataFlattener>(
           Profile::FromBrowserContext(render_frame_host->GetBrowserContext()))),
       print_job_controller_(std::make_unique<PrintJobController>()) {}
@@ -131,9 +153,13 @@ void WebPrintingServiceChromeOS::FetchAttributes(
     return;
   }
 
+  const std::string& printer_id = *printers_.current_context();
   GetLocalPrinterInterface()->GetCapability(
-      *printers_.current_context(),
-      base::BindOnce(&ConvertResponse).Then(std::move(callback)));
+      printer_id,
+      base::BindOnce(&ConvertResponse)
+          .Then(base::BindOnce(
+              &WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved,
+              weak_factory_.GetWeakPtr(), printer_id, std::move(callback))));
 }
 
 void WebPrintingServiceChromeOS::Print(
@@ -144,7 +170,7 @@ void WebPrintingServiceChromeOS::Print(
     return;
   }
 
-  auto printer_id = *printers_.current_context();
+  const std::string& printer_id = *printers_.current_context();
   attributes->set_device_name(base::UTF8ToUTF16(printer_id));
   GetLocalPrinterInterface()->GetCapability(
       printer_id,
@@ -183,6 +209,20 @@ void WebPrintingServiceChromeOS::OnPrintersRetrieved(
     web_printers.push_back(std::move(printer_info));
   }
   std::move(callback).Run(std::move(web_printers));
+}
+
+void WebPrintingServiceChromeOS::OnPrinterAttributesRetrieved(
+    const std::string& printer_id,
+    FetchAttributesCallback callback,
+    blink::mojom::WebPrinterAttributesPtr printer_attributes) {
+  if (!printer_attributes) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  cups_wrapper_->QueryCupsPrinterStatus(
+      printer_id, base::BindOnce(&MergePrinterAttributesAndStatus,
+                                 std::move(printer_attributes))
+                      .Then(std::move(callback)));
 }
 
 void WebPrintingServiceChromeOS::OnPrinterAttributesRetrievedForPrint(
