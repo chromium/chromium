@@ -314,6 +314,23 @@ const base::FeatureParam<int> kBoostImagePriorityImageSize{&kBoostImagePriority,
 const base::FeatureParam<int> kBoostImagePriorityTightMediumLimit{
     &kBoostImagePriority, "tight_medium_limit", 2};
 
+// Boost the priority of certain loading tasks (https://crbug.com/1470003).
+BASE_FEATURE(kBoostImageSetLoadingTaskPriority,
+             "BoostImageSetLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostFontLoadingTaskPriority,
+             "BoostFontLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostVideoLoadingTaskPriority,
+             "BoostVideoLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostRenderBlockingStyleLoadingTaskPriority,
+             "BoostRenderBlockingStyleLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kBoostNonRenderBlockingStyleLoadingTaskPriority,
+             "BoostNonRenderBlockingStyleLoadingTaskPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // https://github.com/patcg-individual-drafts/topics
 // Kill switch for the Topics API.
 BASE_FEATURE(kBrowsingTopics,

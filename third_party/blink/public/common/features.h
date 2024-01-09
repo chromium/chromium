@@ -186,6 +186,15 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kBoostImagePriorityTightMediumLimit;
 
+// Boost the priority of certain loading tasks (https://crbug.com/1470003).
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostImageSetLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostFontLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBoostVideoLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBoostRenderBlockingStyleLoadingTaskPriority);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kBoostNonRenderBlockingStyleLoadingTaskPriority);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopics);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kBrowsingTopicsBypassIPIsPubliclyRoutableCheck);

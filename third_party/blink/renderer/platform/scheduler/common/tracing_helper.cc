@@ -196,9 +196,9 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
           TASK_TYPE_MAIN_THREAD_TASK_QUEUE_IPC_TRACKING;
     case TaskType::kNetworkingUnfreezable:
       return RendererMainThreadTaskExecution::TASK_TYPE_NETWORKING_UNFREEZABLE;
-    case TaskType::kNetworkingUnfreezableImageLoading:
+    case TaskType::kNetworkingUnfreezableRenderBlockingLoading:
       return RendererMainThreadTaskExecution::
-          TASK_TYPE_NETWORKING_UNFREEZABLE_IMAGE_LOADING;
+          TASK_TYPE_NETWORKING_UNFREEZABLE_RENDER_BLOCKING_LOADING;
     case TaskType::kWakeLock:
       return RendererMainThreadTaskExecution::TASK_TYPE_WAKE_LOCK;
     case TaskType::kInternalInputBlocking:

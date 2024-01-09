@@ -448,7 +448,7 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
       return IsInflightNetworkRequestBackForwardCacheSupportEnabled()
                  ? UnfreezableLoadingTaskQueueTraits()
                  : LoadingTaskQueueTraits();
-    case TaskType::kNetworkingUnfreezableImageLoading: {
+    case TaskType::kNetworkingUnfreezableRenderBlockingLoading: {
       QueueTraits queue_traits =
           IsInflightNetworkRequestBackForwardCacheSupportEnabled()
               ? UnfreezableLoadingTaskQueueTraits()

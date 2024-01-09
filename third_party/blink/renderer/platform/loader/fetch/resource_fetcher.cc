@@ -1347,6 +1347,37 @@ void ResourceFetcher::InitializeRevalidation(
   resource->SetRevalidatingRequest(revalidating_request);
 }
 
+namespace {
+
+bool UseRenderBlockingTaskPriority(const ResourceRequestHead& request) {
+  switch (request.GetRequestContext()) {
+    case mojom::blink::RequestContextType::IMAGE:
+      // Always boost the priority of images (see: https://crbug.com/1416030).
+      return true;
+    case mojom::blink::RequestContextType::IMAGE_SET:
+      return base::FeatureList::IsEnabled(
+          features::kBoostImageSetLoadingTaskPriority);
+    case mojom::blink::RequestContextType::FONT:
+      return base::FeatureList::IsEnabled(
+          features::kBoostFontLoadingTaskPriority);
+    case mojom::blink::RequestContextType::VIDEO:
+      return base::FeatureList::IsEnabled(
+          features::kBoostVideoLoadingTaskPriority);
+    case mojom::blink::RequestContextType::STYLE:
+      if (request.GetRenderBlockingBehavior() ==
+          RenderBlockingBehavior::kBlocking) {
+        return base::FeatureList::IsEnabled(
+            features::kBoostRenderBlockingStyleLoadingTaskPriority);
+      }
+      return base::FeatureList::IsEnabled(
+          features::kBoostNonRenderBlockingStyleLoadingTaskPriority);
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
 std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
     const ResourceRequestHead& request,
     const ResourceLoaderOptions& options) {
@@ -1376,13 +1407,12 @@ std::unique_ptr<URLLoader> ResourceFetcher::CreateURLLoader(
             frame_scheduler->GetAgentGroupScheduler()->DefaultTaskRunner();
       }
     }
-  } else if (request.GetRequestContext() ==
-             mojom::blink::RequestContextType::IMAGE) {
+  } else if (UseRenderBlockingTaskPriority(request)) {
     if (auto* frame_or_worker_scheduler = GetFrameOrWorkerScheduler()) {
       if (auto* frame_scheduler =
               frame_or_worker_scheduler->ToFrameScheduler()) {
         task_runner = frame_scheduler->GetTaskRunner(
-            TaskType::kNetworkingUnfreezableImageLoading);
+            TaskType::kNetworkingUnfreezableRenderBlockingLoading);
       }
     }
   }

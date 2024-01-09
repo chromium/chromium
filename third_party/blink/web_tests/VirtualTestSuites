@@ -1654,6 +1654,103 @@
     "expires": "Mar 1, 2024"
   },
   {
+    "prefix": "boost-image-set-loading-task-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "fast/dom/HTMLImageElement/image-sizes-js-change.html"
+    ],
+    "args": [
+      "--enable-features=BoostImageSetLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  {
+    "prefix": "boost-font-loading-task-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-fonts/font-display/font-display.html"
+    ],
+    "args": [
+      "--enable-features=BoostFontLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  {
+    "prefix": "boost-video-loading-task-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "media/video-src-change.html"
+    ],
+    "args": [
+      "--enable-features=BoostVideoLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  "Boost non render blocking style loading task priority.",
+  {
+    "prefix": "boost-non-render-blocking-style-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/cssom/HTMLLinkElement-load-event-002.html"
+    ],
+    "args": [
+      "--enable-features=BoostNonRenderBlockingStyleLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  "Boost render blocking style loading task priority.",
+  {
+    "prefix": "boost-render-blocking-style-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/cssom/cssimportrule.html"
+    ],
+    "args": [
+      "--enable-features=BoostRenderBlockingStyleLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  "Boosts all of the cases in go/boost-loading-task-priority",
+  {
+    "prefix": "boost-loading-task-priority",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/cssom/cssimportrule.html",
+      "external/wpt/css/cssom/HTMLLinkElement-load-event-002.html",
+      "media/video-src-change.html",
+      "external/wpt/css/css-fonts/font-display/font-display.html",
+      "fast/dom/HTMLImageElement/image-sizes-js-change.html"
+    ],
+    "args": [
+      "--enable-features=BoostImageSetLoadingTaskPriority,BoostFontLoadingTaskPriority,BoostVideoLoadingTaskPriority,BoostNonRenderBlockingStyleLoadingTaskPriority,BoostRenderBlockingStyleLoadingTaskPriority"
+    ],
+    "owners": [
+      "pdr@chromium.org",
+      "shaseley@chromium.org"
+    ],
+    "expires": "May 1, 2024"
+  },
+  {
     "prefix": "browsing-topics",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
