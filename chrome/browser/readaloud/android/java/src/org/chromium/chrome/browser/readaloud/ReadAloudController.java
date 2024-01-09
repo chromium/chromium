@@ -733,6 +733,7 @@ public class ReadAloudController
         promise.then(
                 playback -> {
                     Log.d(TAG, "Voice preview playback created.");
+                    ReadAloudMetrics.recordVoicePreviewed(voice.getVoiceId());
                     mVoicePreviewPlayback = playback;
                     playback.addListener(mVoicePreviewPlaybackListener);
                     mVoicePreviewPlayback.play();

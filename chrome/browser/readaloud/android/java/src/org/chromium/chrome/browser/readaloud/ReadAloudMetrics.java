@@ -29,6 +29,10 @@ public class ReadAloudMetrics {
     public static String IS_TAB_PLAYBACK_CREATION_SUCCESSFUL =
             "ReadAloud.IsTabPlaybackCreationSuccessful";
 
+    public static String VOICE_CHANGED = "ReadAloud.VoiceChanged.";
+
+    public static String VOICE_PREVIEWED = "ReadAloud.VoicePreviewed.";
+
     /**
      * The reason why we clear the prepared message.
      *
@@ -135,5 +139,13 @@ public class ReadAloudMetrics {
 
     public static void recordPlaybackStarted() {
         RecordUserAction.record("ReadAloud.PlaybackStarted");
+    }
+
+    public static void recordVoiceChanged(String voiceID) {
+        RecordHistogram.recordBooleanHistogram(VOICE_CHANGED + voiceID, true);
+    }
+
+    public static void recordVoicePreviewed(String voiceID) {
+        RecordHistogram.recordBooleanHistogram(VOICE_PREVIEWED + voiceID, true);
     }
 }

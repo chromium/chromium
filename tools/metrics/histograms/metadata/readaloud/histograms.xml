@@ -124,6 +124,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.VoiceChanged.{VoiceID}" enum="Boolean"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what voice a user changes to. Emitted when the
+    ReadAloud pref for voice is changed by the user. This only ever logs the
+    value &quot;true&quot; because we only care about the total count.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.VoicePreviewed.{VoiceID}" enum="Boolean"
+    expires_after="2024-06-02">
+  <owner>andreaxg@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <summary>
+    Histogram for recording what voice a user previews. Emitted when a voice
+    preview playback is created successfully in ReadAloudController. This only
+    ever logs the value &quot;true&quot; because we only care about the total
+    count.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

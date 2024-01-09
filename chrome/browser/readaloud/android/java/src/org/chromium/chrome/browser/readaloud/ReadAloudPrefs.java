@@ -51,6 +51,7 @@ public class ReadAloudPrefs {
         if (language == null || language.isEmpty() || voiceId == null || voiceId.isEmpty()) {
             return;
         }
+        ReadAloudMetrics.recordVoiceChanged(voiceId);
         ReadAloudPrefsJni.get().setVoice(prefs, language, voiceId);
     }
 

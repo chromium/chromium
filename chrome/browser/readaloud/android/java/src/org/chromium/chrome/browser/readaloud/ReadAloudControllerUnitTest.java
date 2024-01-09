@@ -921,6 +921,28 @@ public class ReadAloudControllerUnitTest {
     }
 
     @Test
+    public void testPreviewVoice_metric() {
+        final String histogramName = ReadAloudMetrics.VOICE_PREVIEWED;
+
+        var histogram = HistogramWatcher.newSingleRecordWatcher(histogramName + "abc", true);
+
+        // Play tab.
+        requestAndStartPlayback();
+
+        reset(mPlaybackHooks);
+        // Preview a voice.
+        var voice = new PlaybackVoice("en", "abc", "");
+        doReturn(List.of(voice)).when(mPlaybackHooks).getVoicesFor(anyString());
+        doReturn(List.of(voice)).when(mPlaybackHooks).getPlaybackVoiceList(any());
+        mController.previewVoice(voice);
+        verify(mPlaybackHooks).createPlayback(any(), mPlaybackCallbackCaptor.capture());
+        Playback previewPlayback = Mockito.mock(Playback.class);
+        onPlaybackSuccess(previewPlayback);
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRestorePlaybackState_whileLoading() {
         // Request playback but don't succeed yet.
         mController.playTab(mTab);
