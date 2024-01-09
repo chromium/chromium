@@ -153,11 +153,12 @@ $ gn gen out/Default
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Use reclient
+#### Use Reclient
 
 *** note
 **Warning:** If you are a Google employee, do not follow the instructions below.
-See [go/chrome-linux-build#setup-remote-execution](http://go/chrome-linux-build#setup-remote-execution)
+See
+[go/chrome-linux-build#setup-remote-execution](https://goto.google.com/chrome-linux-build#setup-remote-execution)
 instead.
 ***
 
@@ -172,7 +173,7 @@ For contributors who have
 RBE backend paid by Google. Note that reclient for external contributors is a
 best-effort process. We do not guarantee when you will be invited. Reach out to
 [reclient-users@chromium.org](https://groups.google.com/a/chromium.org/g/reclient-users)
-if you have some questions about reclient usages.
+if you have any questions about reclient usage.
 
 To get started, you need access to an REAPI-compatible backend. The following
 instructions assume that you received an invitation from Google to use

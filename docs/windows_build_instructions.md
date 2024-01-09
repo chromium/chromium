@@ -242,20 +242,19 @@ local variable or type information. With `symbol_level = 0` there is no
 source-level debugging but call stacks still have function names. Changing
 `symbol_level` requires recompiling everything.
 
+When invoking ninja, specify 'chrome' as the target to avoid building all test
+binaries as well.
+
 #### Use Reclient
 
-In addition, Google employees should use reclient, a distributed compilation system.
+In addition, Google employees should use Reclient, a distributed compilation system.
 Detailed information is available internally but the relevant gn arg is:
 * `use_remoteexec = true`
 
 Google employees can visit
-[go/building-chrome-win#setup-remote-execution](http://go/building-chrome-win#setup-remote-execution)
-for more information.
-
-When invoking ninja, specify 'chrome' as the target to avoid building all test
-binaries as well.
-
-Still, builds will take many hours on many machines.
+[go/building-chrome-win#setup-remote-execution](https://goto.google.com/building-chrome-win#setup-remote-execution)
+for more information. For external contributors, Reclient does not support
+Windows builds.
 
 #### Use Goma (deprecated)
 
