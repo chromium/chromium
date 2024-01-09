@@ -334,6 +334,10 @@ void ElementInternals::DidUpgrade() {
 
 void ElementInternals::SetElementAttribute(const QualifiedName& name,
                                            Element* element) {
+  if (!element) {
+    explicitly_set_attr_elements_map_.erase(name);
+    return;
+  }
   auto result = explicitly_set_attr_elements_map_.insert(name, nullptr);
   if (result.is_new_entry) {
     result.stored_value->value =

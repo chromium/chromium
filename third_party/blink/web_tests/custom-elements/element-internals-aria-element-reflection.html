@@ -7,13 +7,13 @@
     class CustomElement extends HTMLElement {
       constructor() {
         super();
-        this.i = this.attachInternals();
+        this.internals = this.attachInternals();
       }
     }
     customElements.define('custom-element', CustomElement);
   </script>
 
-  <custom-element></custom-element>
+  <custom-element id="custom1"></custom-element>
   <div id="activedescendant">Active descendant</div>
   <div id="controls">Controls</div>
   <div id="describedby">Described by</div>
@@ -36,27 +36,51 @@
       ['ariaOwnsElements', 'owns']];
 
     test(t => {
-      const custom = document.body.querySelector('custom-element');
+      const custom = document.getElementById('custom1');
       for (const [property, id] of element_properties) {
-        assert_equals(custom.i[property], null, `Could not retrieve ${property} from ElementInternals`);
+        assert_equals(custom.internals[property], null, `Could not retrieve ${property} from ElementInternals`);
       }
       for (const [property, id] of array_properties) {
-        assert_equals(custom.i[property], null, `Could not retrieve ${property} from ElementInternals`);
+        assert_equals(custom.internals[property], null, `Could not retrieve ${property} from ElementInternals`);
       }
     }, "Getting previously-unset ARIA element reflection properties on ElementInternals should return null, and not crash");
 
     test(t => {
-      const custom = document.body.querySelector('custom-element');
+      const custom = document.getElementById('custom1');
       for (const [property, id] of element_properties) {
         const related = document.getElementById(id);
-        custom.i[property] = related;
-        assert_equals(custom.i[property], related, `Could not retrieve ${property} from ElementInternals`);
+        custom.internals[property] = related;
+        assert_equals(custom.internals[property], related, `Could not retrieve ${property} from ElementInternals`);
       }
       for (const [property, id] of array_properties) {
         const related = document.getElementById(id);
-        custom.i[property] = [related];
-        assert_array_equals(custom.i[property], [related], `Could not retrieve ${property} from ElementInternals`);
+        custom.internals[property] = [related];
+        assert_array_equals(custom.internals[property], [related], `Could not retrieve ${property} from ElementInternals`);
       }
     }, "Getting ARIA element reflection properties on ElementInternals should return the value that was set, and not crash");
+
+    test(t => {
+      const custom = document.getElementById('custom1');
+      for (const [property, id] of element_properties) {
+        const related = document.getElementById(id);
+        custom.internals[property] = related;
+        assert_equals(custom.internals[property], related);
+
+        custom.internals[property] = null;
+        assert_equals(custom.internals[property], null, `Could not retrieve null ${property} from ElementInternals`);
+      }
+      for (const [property, id] of array_properties) {
+        const related = document.getElementById(id);
+        custom.internals[property] = [related];
+        assert_array_equals(custom.internals[property], [related]);
+
+        custom.internals[property] = [];
+        assert_array_equals(custom.internals[property], []);
+
+        custom.internals[property] = null;
+        assert_equals(custom.internals[property], null, `Could not retrieve ${property} from ElementInternals`);
+      }
+    }, "Setting ARIA element reflection properties on ElementInternals to null should delete any previous value, and not crash");
+
   </script>
 </body>
