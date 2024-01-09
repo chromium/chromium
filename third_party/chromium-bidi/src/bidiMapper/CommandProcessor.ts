@@ -15,8 +15,8 @@
  * limitations under the License.
  */
 
-import type {ICdpClient} from '../cdp/CdpClient';
-import type {ICdpConnection} from '../cdp/CdpConnection.js';
+import type {CdpClient} from '../cdp/CdpClient';
+import type {CdpConnection} from '../cdp/CdpConnection.js';
 import {
   Exception,
   UnknownCommandException,
@@ -29,7 +29,7 @@ import {LogType, type LoggerFn} from '../utils/log.js';
 import type {Result} from '../utils/result.js';
 
 import {BidiNoOpParser} from './BidiNoOpParser.js';
-import type {IBidiParser} from './BidiParser.js';
+import type {BidiCommandParameterParser} from './BidiParser.js';
 import {BrowserProcessor} from './domains/browser/BrowserProcessor.js';
 import {CdpProcessor} from './domains/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './domains/context/BrowsingContextProcessor.js';
@@ -66,19 +66,19 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #sessionProcessor: SessionProcessor;
   // keep-sorted end
 
-  #parser: IBidiParser;
+  #parser: BidiCommandParameterParser;
   #logger?: LoggerFn;
 
   constructor(
-    cdpConnection: ICdpConnection,
-    browserCdpClient: ICdpClient,
+    cdpConnection: CdpConnection,
+    browserCdpClient: CdpClient,
     eventManager: EventManager,
     selfTargetId: string,
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     acceptInsecureCerts: boolean,
     sharedIdWithFrame: boolean,
-    parser: IBidiParser = new BidiNoOpParser(),
+    parser: BidiCommandParameterParser = new BidiNoOpParser(),
     logger?: LoggerFn
   ) {
     super();

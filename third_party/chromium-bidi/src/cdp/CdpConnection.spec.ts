@@ -20,7 +20,7 @@ import sinon from 'sinon';
 
 import {StubTransport} from '../utils/transportStub.spec.js';
 
-import {CdpConnection} from './CdpConnection.js';
+import {MapperCdpConnection} from './CdpConnection.js';
 
 const SOME_SESSION_ID = 'ABCD';
 const ANOTHER_SESSION_ID = 'EFGH';
@@ -28,7 +28,7 @@ const ANOTHER_SESSION_ID = 'EFGH';
 describe('CdpConnection', () => {
   it('can send a command message for a CdpClient', async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
 
     const browserMessage = JSON.stringify({
       id: 0,
@@ -54,7 +54,7 @@ describe('CdpConnection', () => {
 
   it('creates a CdpClient for a session when the Target.attachedToTarget event is received', async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
 
     expect(() => cdpConnection.getCdpClient(SOME_SESSION_ID)).to.throw(
       'Unknown CDP session ID'
@@ -71,7 +71,7 @@ describe('CdpConnection', () => {
 
   it('removes the CdpClient for a session when the Target.detachedFromTarget event is received', async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
 
     await mockCdpServer.emulateIncomingMessage({
       method: 'Target.attachedToTarget',
@@ -93,7 +93,7 @@ describe('CdpConnection', () => {
 
   it('routes event messages to the correct handler based on sessionId', async () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
 
     const sessionMessage = {
       sessionId: SOME_SESSION_ID,
@@ -142,7 +142,7 @@ describe('CdpConnection', () => {
 
   it('closes the transport connection when closed', () => {
     const mockCdpServer = new StubTransport();
-    const cdpConnection = new CdpConnection(mockCdpServer);
+    const cdpConnection = new MapperCdpConnection(mockCdpServer);
     cdpConnection.close();
     sinon.assert.calledOnce(mockCdpServer.close);
   });

@@ -24,7 +24,7 @@ import type {
   Session,
 } from '../protocol/protocol.js';
 
-export interface IBidiParser {
+export interface BidiCommandParameterParser {
   // Browsing Context domain
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters;

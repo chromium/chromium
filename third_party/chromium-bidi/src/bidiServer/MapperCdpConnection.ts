@@ -19,8 +19,8 @@ import debug, {type Debugger} from 'debug';
 import type {Protocol} from 'devtools-protocol';
 
 import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import type {CdpClient} from '../cdp/CdpClient.js';
-import type {CdpConnection} from '../cdp/CdpConnection.js';
+import type {MapperCdpClient} from '../cdp/CdpClient.js';
+import type {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import type {LogPrefix, LogType} from '../utils/log.js';
 
 import {SimpleTransport} from './SimpleTransport.js';
@@ -40,17 +40,17 @@ const getLogger = (type: LogPrefix) => {
   return logger;
 };
 
-export class MapperCdpConnection {
-  #cdpConnection: CdpConnection;
-  #mapperCdpClient: CdpClient;
+export class MapperServerCdpConnection {
+  #cdpConnection: MapperCdpConnection;
+  #mapperCdpClient: MapperCdpClient;
   #bidiSession: SimpleTransport;
 
   static async create(
-    cdpConnection: CdpConnection,
+    cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
     verbose: boolean,
     mapperOptions: MapperOptions
-  ): Promise<MapperCdpConnection> {
+  ): Promise<MapperServerCdpConnection> {
     try {
       const mapperCdpClient = await this.#initMapper(
         cdpConnection,
@@ -58,7 +58,7 @@ export class MapperCdpConnection {
         verbose,
         mapperOptions
       );
-      return new MapperCdpConnection(cdpConnection, mapperCdpClient);
+      return new MapperServerCdpConnection(cdpConnection, mapperCdpClient);
     } catch (e) {
       cdpConnection.close();
       throw e;
@@ -66,8 +66,8 @@ export class MapperCdpConnection {
   }
 
   private constructor(
-    cdpConnection: CdpConnection,
-    mapperCdpClient: CdpClient
+    cdpConnection: MapperCdpConnection,
+    mapperCdpClient: MapperCdpClient
   ) {
     this.#cdpConnection = cdpConnection;
     this.#mapperCdpClient = mapperCdpClient;
@@ -145,11 +145,11 @@ export class MapperCdpConnection {
   };
 
   static async #initMapper(
-    cdpConnection: CdpConnection,
+    cdpConnection: MapperCdpConnection,
     mapperTabSource: string,
     verbose: boolean,
     mapperOptions: MapperOptions
-  ): Promise<CdpClient> {
+  ): Promise<MapperCdpClient> {
     debugInternal('Initializing Mapper.', mapperOptions);
 
     const browserClient = await cdpConnection.createBrowserSession();

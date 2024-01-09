@@ -17,7 +17,7 @@
 
 import type {ChromiumBidi} from '../protocol/protocol.js';
 
-export interface IBidiTransport {
+export interface BidiTransport {
   setOnMessage: (
     handler: (message: ChromiumBidi.Command) => Promise<void> | void
   ) => void;

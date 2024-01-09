@@ -17,7 +17,7 @@
 
 import sinon from 'sinon';
 
-import type {ITransport} from './transport.js';
+import type {Transport} from './transport.js';
 
 type TypedSpy<T extends (...args: any[]) => unknown> = sinon.SinonSpy<
   Parameters<T>,
@@ -28,10 +28,10 @@ function typedSpy<T extends sinon.SinonSpy>() {
   return sinon.spy() as T;
 }
 
-export class StubTransport implements ITransport {
-  setOnMessage: TypedSpy<ITransport['setOnMessage']>;
-  sendMessage: TypedSpy<ITransport['sendMessage']>;
-  close: TypedSpy<ITransport['close']>;
+export class StubTransport implements Transport {
+  setOnMessage: TypedSpy<Transport['setOnMessage']>;
+  sendMessage: TypedSpy<Transport['sendMessage']>;
+  close: TypedSpy<Transport['close']>;
 
   #getOnMessage(): (_: string) => unknown {
     sinon.assert.called(this.setOnMessage);

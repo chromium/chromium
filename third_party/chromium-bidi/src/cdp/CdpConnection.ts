@@ -19,9 +19,9 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {LogType} from '../utils/log.js';
 import type {LoggerFn} from '../utils/log.js';
-import type {ITransport} from '../utils/transport.js';
+import type {Transport} from '../utils/transport.js';
 
-import {CloseError, CdpClient, type ICdpClient} from './CdpClient.js';
+import {CloseError, MapperCdpClient, type CdpClient} from './CdpClient.js';
 import type {CdpMessage} from './cdpMessage.js';
 
 interface CdpCallbacks {
@@ -30,8 +30,8 @@ interface CdpCallbacks {
   error: Error;
 }
 
-export interface ICdpConnection {
-  getCdpClient(sessionId: Protocol.Target.SessionID): ICdpClient;
+export interface CdpConnection {
+  getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient;
 }
 
 /**
@@ -40,24 +40,24 @@ export interface ICdpConnection {
  * Manages all CdpClients (each backed by a Session ID) instance for each active
  * CDP session.
  */
-export class CdpConnection implements ICdpConnection {
+export class MapperCdpConnection implements CdpConnection {
   static readonly LOGGER_PREFIX_RECV = `${LogType.cdp}:RECV ◂` as const;
   static readonly LOGGER_PREFIX_SEND = `${LogType.cdp}:SEND ▸` as const;
 
-  readonly #mainBrowserCdpClient: ICdpClient;
-  readonly #transport: ITransport;
+  readonly #mainBrowserCdpClient: MapperCdpClient;
+  readonly #transport: Transport;
 
   /** Map from session ID to CdpClient.
    * `undefined` points to the main browser session. */
   readonly #sessionCdpClients = new Map<
     Protocol.Target.SessionID | undefined,
-    CdpClient
+    MapperCdpClient
   >();
   readonly #commandCallbacks = new Map<number, CdpCallbacks>();
   readonly #logger?: LoggerFn;
   #nextId = 0;
 
-  constructor(transport: ITransport, logger?: LoggerFn) {
+  constructor(transport: Transport, logger?: LoggerFn) {
     this.#transport = transport;
     this.#logger = logger;
     this.#transport.setOnMessage(this.#onMessage);
@@ -76,7 +76,7 @@ export class CdpConnection implements ICdpConnection {
     this.#sessionCdpClients.clear();
   }
 
-  async createBrowserSession(): Promise<ICdpClient> {
+  async createBrowserSession(): Promise<MapperCdpClient> {
     const {sessionId} = await this.#mainBrowserCdpClient.sendCommand(
       'Target.attachToBrowserTarget'
     );
@@ -87,7 +87,7 @@ export class CdpConnection implements ICdpConnection {
    * Gets a CdpClient instance attached to the given session ID,
    * or null if the session is not attached.
    */
-  getCdpClient(sessionId: Protocol.Target.SessionID): CdpClient {
+  getCdpClient(sessionId: Protocol.Target.SessionID): MapperCdpClient {
     const cdpClient = this.#sessionCdpClients.get(sessionId);
     if (!cdpClient) {
       throw new Error(`Unknown CDP session ID: ${sessionId}`);
@@ -122,13 +122,13 @@ export class CdpConnection implements ICdpConnection {
           this.#logger?.(LogType.debugError, error);
           this.#transport.close();
         });
-      this.#logger?.(CdpConnection.LOGGER_PREFIX_SEND, cdpMessage);
+      this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_SEND, cdpMessage);
     });
   }
 
   #onMessage = (json: string) => {
     const message: CdpMessage<any> = JSON.parse(json);
-    this.#logger?.(CdpConnection.LOGGER_PREFIX_RECV, message);
+    this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV, message);
 
     // Update client map if a session is attached
     // Listen for these events on every session.
@@ -175,8 +175,8 @@ export class CdpConnection implements ICdpConnection {
    */
   #createCdpClient(
     sessionId: Protocol.Target.SessionID | undefined
-  ): CdpClient {
-    const cdpClient = new CdpClient(this, sessionId);
+  ): MapperCdpClient {
+    const cdpClient = new MapperCdpClient(this, sessionId);
     this.#sessionCdpClients.set(sessionId, cdpClient);
     return cdpClient;
   }

@@ -16,8 +16,8 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/CdpClient.js';
-import type {ICdpConnection} from '../../../cdp/CdpConnection.js';
+import type {CdpClient} from '../../../cdp/CdpClient.js';
+import type {CdpConnection} from '../../../cdp/CdpConnection.js';
 import {
   BrowsingContext,
   InvalidArgumentException,
@@ -36,8 +36,8 @@ import type {BrowsingContextStorage} from './BrowsingContextStorage.js';
 import {CdpTarget} from './CdpTarget.js';
 
 export class BrowsingContextProcessor {
-  readonly #browserCdpClient: ICdpClient;
-  readonly #cdpConnection: ICdpConnection;
+  readonly #browserCdpClient: CdpClient;
+  readonly #cdpConnection: CdpConnection;
   readonly #selfTargetId: string;
   readonly #eventManager: EventManager;
 
@@ -51,8 +51,8 @@ export class BrowsingContextProcessor {
   readonly #logger?: LoggerFn;
 
   constructor(
-    cdpConnection: ICdpConnection,
-    browserCdpClient: ICdpClient,
+    cdpConnection: CdpConnection,
+    browserCdpClient: CdpClient,
     selfTargetId: string,
     eventManager: EventManager,
     browsingContextStorage: BrowsingContextStorage,
@@ -284,7 +284,7 @@ export class BrowsingContextProcessor {
    * This method is called for each CDP session, since this class is responsible
    * for creating and destroying all targets and browsing contexts.
    */
-  #setEventListeners(cdpClient: ICdpClient) {
+  #setEventListeners(cdpClient: CdpClient) {
     cdpClient.on('Target.attachedToTarget', (params) => {
       this.#handleAttachedToTargetEvent(params, cdpClient);
     });
@@ -337,7 +337,7 @@ export class BrowsingContextProcessor {
 
   #handleAttachedToTargetEvent(
     params: Protocol.Target.AttachedToTargetEvent,
-    parentSessionCdpClient: ICdpClient
+    parentSessionCdpClient: CdpClient
   ) {
     const {sessionId, targetInfo} = params;
     const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);

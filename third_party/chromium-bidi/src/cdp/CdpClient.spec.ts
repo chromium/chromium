@@ -23,7 +23,7 @@ import sinon from 'sinon';
 import {StubTransport} from '../utils/transportStub.spec.js';
 
 import type {CdpClient} from './CdpClient';
-import {CdpConnection} from './CdpConnection.js';
+import {MapperCdpConnection} from './CdpConnection.js';
 
 chai.use(chaiAsPromised);
 
@@ -35,7 +35,7 @@ async function createCdpClient(
   stubTransport: StubTransport,
   sessionId: string
 ): Promise<CdpClient> {
-  const cdpConnection = new CdpConnection(stubTransport);
+  const cdpConnection = new MapperCdpConnection(stubTransport);
 
   await stubTransport.emulateIncomingMessage({
     method: 'Target.attachedToTarget',

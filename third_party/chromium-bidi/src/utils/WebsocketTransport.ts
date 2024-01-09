@@ -17,9 +17,9 @@
 
 import type WebSocket from 'ws';
 
-import type {ITransport} from './transport.js';
+import type {Transport} from './transport.js';
 
-export class WebSocketTransport implements ITransport {
+export class WebSocketTransport implements Transport {
   #onMessage: ((message: string) => void) | null = null;
 
   #websocket: WebSocket;

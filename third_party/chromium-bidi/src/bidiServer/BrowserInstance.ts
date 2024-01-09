@@ -32,10 +32,10 @@ import debug from 'debug';
 import WebSocket from 'ws';
 
 import type {MapperOptions} from '../bidiMapper/BidiServer.js';
-import {CdpConnection} from '../cdp/CdpConnection.js';
+import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {WebSocketTransport} from '../utils/WebsocketTransport.js';
 
-import {MapperCdpConnection} from './MapperCdpConnection.js';
+import {MapperServerCdpConnection} from './MapperCdpConnection.js';
 import {getMapperTabSource} from './reader.js';
 import type {SimpleTransport} from './SimpleTransport.js';
 
@@ -58,7 +58,7 @@ type ChromeOptions = {
  * Mapper to the client.
  */
 export class BrowserInstance {
-  #mapperCdpConnection: MapperCdpConnection;
+  #mapperCdpConnection: MapperServerCdpConnection;
   #browserProcess: Process;
 
   static async run(
@@ -129,7 +129,7 @@ export class BrowserInstance {
     const mapperTabSource = await getMapperTabSource();
 
     // 3. Run `BiDi-CDP` mapper in launched browser using `MapperRunner`.
-    const mapperCdpConnection = await MapperCdpConnection.create(
+    const mapperCdpConnection = await MapperServerCdpConnection.create(
       cdpConnection,
       mapperTabSource,
       verbose,
@@ -140,7 +140,7 @@ export class BrowserInstance {
   }
 
   constructor(
-    mapperCdpConnection: MapperCdpConnection,
+    mapperCdpConnection: MapperServerCdpConnection,
     browserProcess: Process
   ) {
     this.#mapperCdpConnection = mapperCdpConnection;
@@ -159,7 +159,7 @@ export class BrowserInstance {
     return this.#mapperCdpConnection.bidiSession();
   }
 
-  static #establishCdpConnection(cdpUrl: string): Promise<CdpConnection> {
+  static #establishCdpConnection(cdpUrl: string): Promise<MapperCdpConnection> {
     return new Promise((resolve, reject) => {
       debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
@@ -171,7 +171,7 @@ export class BrowserInstance {
         debugInternal('Session established.');
 
         const transport = new WebSocketTransport(ws);
-        const connection = new CdpConnection(transport);
+        const connection = new MapperCdpConnection(transport);
         resolve(connection);
       });
     });

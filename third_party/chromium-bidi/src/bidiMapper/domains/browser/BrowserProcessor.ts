@@ -16,12 +16,12 @@
  */
 
 import type {EmptyResult} from '../../../protocol/protocol.js';
-import type {ICdpClient} from '../../BidiMapper.js';
+import type {CdpClient} from '../../BidiMapper.js';
 
 export class BrowserProcessor {
-  readonly #browserCdpClient: ICdpClient;
+  readonly #browserCdpClient: CdpClient;
 
-  constructor(browserCdpClient: ICdpClient) {
+  constructor(browserCdpClient: CdpClient) {
     this.#browserCdpClient = browserCdpClient;
   }
 

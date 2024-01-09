@@ -16,7 +16,7 @@
  */
 import {Protocol} from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/CdpClient.js';
+import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {
   ChromiumBidi,
   type BrowsingContext,
@@ -44,7 +44,7 @@ export class Realm {
   readonly #origin: string;
   readonly #sharedIdWithFrame: boolean;
   readonly #type: Script.RealmType;
-  readonly #cdpClient: ICdpClient;
+  readonly #cdpClient: CdpClient;
   readonly #eventManager: EventManager;
   readonly sandbox?: string;
   readonly #logger?: LoggerFn;
@@ -58,7 +58,7 @@ export class Realm {
     origin: string,
     type: Script.RealmType,
     sandbox: string | undefined,
-    cdpClient: ICdpClient,
+    cdpClient: CdpClient,
     eventManager: EventManager,
     sharedIdWithFrame: boolean,
     logger?: LoggerFn
@@ -269,7 +269,7 @@ export class Realm {
     return this.#type;
   }
 
-  get cdpClient(): ICdpClient {
+  get cdpClient(): CdpClient {
     return this.#cdpClient;
   }
 

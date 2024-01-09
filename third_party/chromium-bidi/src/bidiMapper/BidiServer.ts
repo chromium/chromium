@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-import type {ICdpClient} from '../cdp/CdpClient';
-import type {ICdpConnection} from '../cdp/CdpConnection.js';
+import type {CdpClient} from '../cdp/CdpClient';
+import type {CdpConnection} from '../cdp/CdpConnection.js';
 import type {ChromiumBidi} from '../protocol/protocol.js';
 import {EventEmitter} from '../utils/EventEmitter.js';
 import {type LoggerFn, LogType} from '../utils/log.js';
 import {ProcessingQueue} from '../utils/ProcessingQueue.js';
 import type {Result} from '../utils/result.js';
 
-import type {IBidiParser} from './BidiParser.js';
-import type {IBidiTransport} from './BidiTransport.js';
+import type {BidiCommandParameterParser} from './BidiParser.js';
+import type {BidiTransport} from './BidiTransport.js';
 import {CommandProcessor, CommandProcessorEvents} from './CommandProcessor.js';
 import {BrowsingContextStorage} from './domains/context/BrowsingContextStorage.js';
 import {RealmStorage} from './domains/script/RealmStorage.js';
@@ -47,7 +47,7 @@ export type MapperOptions = {
 
 export class BidiServer extends EventEmitter<BidiServerEvent> {
   #messageQueue: ProcessingQueue<OutgoingMessage>;
-  #transport: IBidiTransport;
+  #transport: BidiTransport;
   #commandProcessor: CommandProcessor;
   #eventManager: EventManager;
   #browsingContextStorage = new BrowsingContextStorage();
@@ -70,12 +70,12 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
   };
 
   private constructor(
-    bidiTransport: IBidiTransport,
-    cdpConnection: ICdpConnection,
-    browserCdpClient: ICdpClient,
+    bidiTransport: BidiTransport,
+    cdpConnection: CdpConnection,
+    browserCdpClient: CdpClient,
     selfTargetId: string,
     options?: MapperOptions,
-    parser?: IBidiParser,
+    parser?: BidiCommandParameterParser,
     logger?: LoggerFn
   ) {
     super();
@@ -114,12 +114,12 @@ export class BidiServer extends EventEmitter<BidiServerEvent> {
    * Creates and starts BiDi Mapper instance.
    */
   static async createAndStart(
-    bidiTransport: IBidiTransport,
-    cdpConnection: ICdpConnection,
-    browserCdpClient: ICdpClient,
+    bidiTransport: BidiTransport,
+    cdpConnection: CdpConnection,
+    browserCdpClient: CdpClient,
     selfTargetId: string,
     options?: MapperOptions,
-    parser?: IBidiParser,
+    parser?: BidiCommandParameterParser,
     logger?: LoggerFn
   ): Promise<BidiServer> {
     const server = new BidiServer(

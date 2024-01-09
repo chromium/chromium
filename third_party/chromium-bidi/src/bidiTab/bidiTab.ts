@@ -19,7 +19,7 @@
 
 import {BidiServer} from '../bidiMapper/BidiMapper.js';
 import type {MapperOptions} from '../bidiMapper/BidiServer';
-import {CdpConnection} from '../cdp/CdpConnection.js';
+import {MapperCdpConnection} from '../cdp/CdpConnection.js';
 import {LogType} from '../utils/log.js';
 
 import {BidiParser} from './BidiParser.js';
@@ -58,7 +58,7 @@ const cdpTransport = new WindowCdpTransport();
  * A CdpTransport implementation that uses the window.cdp bindings
  * injected by Target.exposeDevToolsProtocol.
  */
-const cdpConnection = new CdpConnection(cdpTransport, log);
+const cdpConnection = new MapperCdpConnection(cdpTransport, log);
 
 /**
  * Launches the BiDi mapper instance.

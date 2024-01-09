@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {IBidiParser} from '../bidiMapper/BidiMapper.js';
+import type {BidiCommandParameterParser} from '../bidiMapper/BidiMapper.js';
 import type {
   BrowsingContext,
   Cdp,
@@ -25,7 +25,7 @@ import type {
 } from '../protocol/protocol.js';
 import * as Parser from '../protocol-parser/protocol-parser.js';
 
-export class BidiParser implements IBidiParser {
+export class BidiParser implements BidiCommandParameterParser {
   // Browsing Context domain
   // keep-sorted start block=yes
   parseActivateParams(params: unknown): BrowsingContext.ActivateParameters {

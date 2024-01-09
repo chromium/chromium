@@ -21,12 +21,9 @@
  * XXX: Add ESlint rule for this (https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-restricted-paths.md)
  */
 export {BidiServer, MapperOptions} from './BidiServer.js';
-export type {
-  ICdpConnection,
-  ICdpConnection as CdpConnection,
-} from '../cdp/CdpConnection.js';
-export type {ICdpClient, ICdpClient as CdpClient} from '../cdp/CdpClient.js';
+export type {CdpConnection} from '../cdp/CdpConnection.js';
+export type {CdpClient} from '../cdp/CdpClient.js';
 export {EventEmitter} from '../utils/EventEmitter.js';
-export type {IBidiTransport as BidiTransport} from './BidiTransport.js';
+export type {BidiTransport} from './BidiTransport.js';
 export {OutgoingMessage} from './OutgoingMessage.js';
-export type {IBidiParser} from './BidiParser.js';
+export type {BidiCommandParameterParser} from './BidiParser.js';

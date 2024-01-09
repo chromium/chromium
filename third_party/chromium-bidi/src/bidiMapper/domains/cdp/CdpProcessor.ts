@@ -16,18 +16,18 @@
  */
 
 import type {Cdp} from '../../../protocol/protocol.js';
-import type {ICdpClient, ICdpConnection} from '../../BidiMapper.js';
+import type {CdpClient, CdpConnection} from '../../BidiMapper.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 
 export class CdpProcessor {
   readonly #browsingContextStorage: BrowsingContextStorage;
-  readonly #cdpConnection: ICdpConnection;
-  readonly #browserCdpClient: ICdpClient;
+  readonly #cdpConnection: CdpConnection;
+  readonly #browserCdpClient: CdpClient;
 
   constructor(
     browsingContextStorage: BrowsingContextStorage,
-    cdpConnection: ICdpConnection,
-    browserCdpClient: ICdpClient
+    cdpConnection: CdpConnection,
+    browserCdpClient: CdpClient
   ) {
     this.#browsingContextStorage = browsingContextStorage;
     this.#cdpConnection = cdpConnection;

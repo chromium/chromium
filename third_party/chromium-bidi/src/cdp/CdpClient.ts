@@ -20,7 +20,7 @@ import type {ProtocolMapping} from 'devtools-protocol/types/protocol-mapping.js'
 
 import {EventEmitter} from '../utils/EventEmitter.js';
 
-import type {CdpConnection} from './CdpConnection.js';
+import type {MapperCdpConnection} from './CdpConnection.js';
 
 export type CdpEvents = {
   [Property in keyof ProtocolMapping.Events]: ProtocolMapping.Events[Property][0];
@@ -29,7 +29,7 @@ export type CdpEvents = {
 /** A error that will be thrown if/when the connection is closed. */
 export class CloseError extends Error {}
 
-export interface ICdpClient extends EventEmitter<CdpEvents> {
+export interface CdpClient extends EventEmitter<CdpEvents> {
   /** Unique session identifier. */
   sessionId: Protocol.Target.SessionID | undefined;
 
@@ -56,12 +56,15 @@ export interface ICdpClient extends EventEmitter<CdpEvents> {
 }
 
 /** Represents a high-level CDP connection to the browser. */
-export class CdpClient extends EventEmitter<CdpEvents> implements ICdpClient {
-  #cdpConnection: CdpConnection;
+export class MapperCdpClient
+  extends EventEmitter<CdpEvents>
+  implements CdpClient
+{
+  #cdpConnection: MapperCdpConnection;
   #sessionId?: Protocol.Target.SessionID;
 
   constructor(
-    cdpConnection: CdpConnection,
+    cdpConnection: MapperCdpConnection,
     sessionId?: Protocol.Target.SessionID
   ) {
     super();

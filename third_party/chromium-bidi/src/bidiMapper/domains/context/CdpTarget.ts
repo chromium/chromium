@@ -17,7 +17,7 @@
  */
 import type {Protocol} from 'devtools-protocol';
 
-import type {ICdpClient} from '../../../cdp/CdpClient.js';
+import type {CdpClient} from '../../../cdp/CdpClient.js';
 import {Deferred} from '../../../utils/Deferred.js';
 import type {Result} from '../../../utils/result.js';
 import {LogManager} from '../log/LogManager.js';
@@ -30,8 +30,8 @@ import type {EventManager} from '../session/EventManager.js';
 
 export class CdpTarget {
   readonly #targetId: Protocol.Target.TargetID;
-  readonly #cdpClient: ICdpClient;
-  readonly #browserCdpClient: ICdpClient;
+  readonly #cdpClient: CdpClient;
+  readonly #browserCdpClient: CdpClient;
   readonly #cdpSessionId: Protocol.Target.SessionID;
   readonly #eventManager: EventManager;
 
@@ -43,8 +43,8 @@ export class CdpTarget {
 
   static create(
     targetId: Protocol.Target.TargetID,
-    cdpClient: ICdpClient,
-    browserCdpClient: ICdpClient,
+    cdpClient: CdpClient,
+    browserCdpClient: CdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     realmStorage: RealmStorage,
     eventManager: EventManager,
@@ -77,8 +77,8 @@ export class CdpTarget {
 
   constructor(
     targetId: Protocol.Target.TargetID,
-    cdpClient: ICdpClient,
-    browserCdpClient: ICdpClient,
+    cdpClient: CdpClient,
+    browserCdpClient: CdpClient,
     cdpSessionId: Protocol.Target.SessionID,
     eventManager: EventManager,
     preloadScriptStorage: PreloadScriptStorage,
@@ -104,11 +104,11 @@ export class CdpTarget {
     return this.#targetId;
   }
 
-  get cdpClient(): ICdpClient {
+  get cdpClient(): CdpClient {
     return this.#cdpClient;
   }
 
-  get browserCdpClient(): ICdpClient {
+  get browserCdpClient(): CdpClient {
     return this.#browserCdpClient;
   }
 

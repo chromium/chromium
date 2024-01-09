@@ -21,7 +21,7 @@ import {
   type ErrorResponse,
 } from '../protocol/protocol.js';
 import {LogType} from '../utils/log.js';
-import type {ITransport} from '../utils/transport.js';
+import type {Transport} from '../utils/transport.js';
 
 import {log} from './mapperTabPage.js';
 
@@ -167,7 +167,7 @@ export class WindowBidiTransport implements BidiTransport {
   }
 }
 
-export class WindowCdpTransport implements ITransport {
+export class WindowCdpTransport implements Transport {
   #onMessage: ((message: string) => void) | null = null;
 
   constructor() {
@@ -176,7 +176,7 @@ export class WindowCdpTransport implements ITransport {
     };
   }
 
-  setOnMessage(onMessage: Parameters<ITransport['setOnMessage']>[0]) {
+  setOnMessage(onMessage: Parameters<Transport['setOnMessage']>[0]) {
     this.#onMessage = onMessage;
   }
 
