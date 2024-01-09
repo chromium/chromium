@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_event_rewriter_delegate_impl.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
+#include "chrome/browser/ash/app_list/search/essential_search/essential_search_manager.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
@@ -1258,6 +1259,9 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     misconfigured_user_cleaner_->ScheduleCleanup();
 
+    essential_search_manager_ =
+        ::app_list::EssentialSearchManager::Create(profile);
+
     g_browser_process->platform_part()->session_manager()->Initialize(
         *base::CommandLine::ForCurrentProcess(), profile,
         is_integration_test());
@@ -1565,6 +1569,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   login_screen_extensions_storage_cleaner_.reset();
   debugd_notification_handler_.reset();
   shortcut_mapping_pref_service_.reset();
+  essential_search_manager_.reset();
   if (features::IsTrafficCountersEnabled()) {
     traffic_counters_handler_.reset();
   }

@@ -23,6 +23,10 @@ class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
 
+namespace app_list {
+class EssentialSearchManager;
+}
+
 namespace arc {
 class ArcServiceLauncher;
 class ContainerAppKiller;
@@ -308,6 +312,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
       video_conference_manager_client_;
 
   std::unique_ptr<MisconfiguredUserCleaner> misconfigured_user_cleaner_;
+
+  std::unique_ptr<::app_list::EssentialSearchManager> essential_search_manager_;
 
   base::WeakPtrFactory<ChromeBrowserMainPartsAsh> weak_ptr_factory_{this};
 };
