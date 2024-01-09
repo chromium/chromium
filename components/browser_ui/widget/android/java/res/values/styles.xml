@@ -46,7 +46,7 @@ found in the LICENSE file.
         <item name="android:minHeight">48dp</item>
     </style>
 
-    <style name="TextAppearance.ListMenuItem">
+    <style name="TextAppearance.BrowserUIListMenuItem">
         <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">16sp</item>
     </style>

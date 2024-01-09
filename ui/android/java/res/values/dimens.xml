@@ -100,8 +100,15 @@ found in the LICENSE file.
     <dimen name="default_list_row_padding">16dp</dimen>
 
     <!-- List menu & item dimensions -->
+    <dimen name="list_menu_bg_corner_radius">4dp</dimen>
+    <dimen name="list_menu_vertical_padding">8dp</dimen>
     <dimen name="list_menu_width">180dp</dimen>
+    <dimen name="list_menu_popup_min_width">112dp</dimen>
+    <dimen name="list_menu_popup_max_width">280dp</dimen>
     <dimen name="list_menu_item_icon_size">24dp</dimen>
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
-    <dimen name="list_menu_item_horizontal_padding">@dimen/default_list_row_padding</dimen>
+    <dimen name="list_menu_item_horizontal_padding">12dp</dimen>
+    <dimen name="list_menu_item_text_size">14sp</dimen>
+    <dimen name="list_menu_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="list_menu_item_min_height">48dp</dimen>
 </resources>

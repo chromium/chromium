@@ -403,6 +403,10 @@ found in the LICENSE file.
         <item name="android:layout_marginStart">0dp</item>
         <item name="android:layout_marginEnd">@dimen/list_menu_item_start_icon_end_margin</item>
     </style>
+    <style name="TextAppearance.ListMenuItem">
+        <item name="android:textColor">@color/list_menu_item_text_color_list</item>
+        <item name="android:textSize">@dimen/list_menu_item_text_size</item>
+    </style>
 
     <style name="EndIconMenuAnim" parent="AnchoredPopupAnimEndTop" />
     <style name="EndIconMenuAnimBottom" parent="AnchoredPopupAnimEndBottom" />
