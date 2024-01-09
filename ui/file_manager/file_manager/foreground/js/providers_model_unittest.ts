@@ -126,7 +126,6 @@ function addProvidedVolume(
       {isCurrentProfile: true, displayName: ''},  // profile
       '',                                         // label
       providerId,                                 // providerId
-      false,                                      // hasMedia
       false,                                      // configurable
       false,                                      // watchable
       Source.NETWORK,                             // source

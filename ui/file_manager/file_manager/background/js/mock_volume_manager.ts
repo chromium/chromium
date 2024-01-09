@@ -222,7 +222,6 @@ export class MockVolumeManager extends VolumeManager {
         {isCurrentProfile: true, displayName: ''},  // profile
         label || volumeId,                          // label
         providerId,                                 // providerId
-        false,                                      // hasMedia
         false,                                      // configurable
         false,                                      // watchable
         source,                                     // source

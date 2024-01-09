@@ -325,8 +325,7 @@ export interface NavigationTree {
  * fileManagerPrivate.VolumeMetadata.
  *
  * The property names are identical to VolumeInfo to simplify the migration.
- * Notable differences: missing the properties: profile, hasMedia,
- * remoteMountPath.
+ * Notable differences: missing the properties: profile, remoteMountPath.
  *
  * When the volume has an unrecognized file system, it's still mounted here,
  * but with `error`=="unknown".

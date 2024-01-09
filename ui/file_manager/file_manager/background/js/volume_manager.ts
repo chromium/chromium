@@ -110,8 +110,8 @@ export async function createVolumeInfo(
             volumeMetadata.deviceType, volumeMetadata.devicePath,
             volumeMetadata.isReadOnly, volumeMetadata.isReadOnlyRemovableDevice,
             volumeMetadata.profile, localizedLabel, volumeMetadata.providerId,
-            volumeMetadata.hasMedia, volumeMetadata.configurable,
-            volumeMetadata.watchable, volumeMetadata.source as Source,
+            volumeMetadata.configurable, volumeMetadata.watchable,
+            volumeMetadata.source as Source,
             volumeMetadata.diskFileSystemType as FileSystemType,
             volumeMetadata.iconSet, volumeMetadata.driveLabel,
             volumeMetadata.remoteMountPath, volumeMetadata.vmType);
@@ -137,7 +137,7 @@ export async function createVolumeInfo(
             volumeMetadata.mountCondition, volumeMetadata.deviceType,
             volumeMetadata.devicePath, volumeMetadata.isReadOnly,
             volumeMetadata.isReadOnlyRemovableDevice, volumeMetadata.profile,
-            localizedLabel, volumeMetadata.providerId, volumeMetadata.hasMedia,
+            localizedLabel, volumeMetadata.providerId,
             volumeMetadata.configurable, volumeMetadata.watchable,
             volumeMetadata.source as Source,
             volumeMetadata.diskFileSystemType as FileSystemType,
@@ -205,7 +205,6 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
   /**
    * The list of archives requested to mount. We will show contents once
    * archive is mounted, but only for mounts from within this filebrowser tab.
-   * TODO: Add interface to replace `any` below.
    */
   private requests_: Record<string, Request> = {};
 

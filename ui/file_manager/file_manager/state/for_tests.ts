@@ -188,7 +188,7 @@ export function createFakeVolumeMetadata(
     isParentDevice: undefined,
     isReadOnly: volumeInfo.isReadOnly,
     isReadOnlyRemovableDevice: volumeInfo.isReadOnlyRemovableDevice,
-    hasMedia: volumeInfo.hasMedia,
+    hasMedia: false,
     mountCondition: undefined,
     mountContext: undefined,
     diskFileSystemType: volumeInfo.diskFileSystemType,

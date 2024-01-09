@@ -34,7 +34,7 @@ export class VolumeInfo {
    * @param deviceType is the type of device
    *     ('usb'|'sd'|'optical'|'mobile'|'unknown') (as defined in
    *     chromeos/ash/components/disks/disk_mount_manager.cc). Can be undefined.
-   * @param devicePath is the dentifier of the device that the volume belongs
+   * @param devicePath is the identifier of the device that the volume belongs
    *     to. Can be undefined.
    * @param isReadOnly is true if the volume is read only.
    * @param isReadOnlyRemovableDevice is true if the volume is read only
@@ -43,8 +43,6 @@ export class VolumeInfo {
    * @param label is the abel of the volume.
    * @param providerId is the Id of the provider for this volume. Undefined for
    *     non-FSP volumes.
-   * @param hasMedia is true when the volume has been identified as containing
-   *     media such as photos or videos.
    * @param configurable is true when the volume can be configured.
    * @param watchable is true when the volume can be watched.
    * @param source is the source of the volume's data.
@@ -65,9 +63,8 @@ export class VolumeInfo {
       private isReadOnlyRemovableDevice_: boolean,
       private profile_: {displayName: string, isCurrentProfile: boolean},
       private label_: string, private providerId_: (string|undefined),
-      private hasMedia_: boolean, private configurable_: boolean,
-      private watchable_: boolean, private source_: Source,
-      private diskFileSystemType_: FileSystemType,
+      private configurable_: boolean, private watchable_: boolean,
+      private source_: Source, private diskFileSystemType_: FileSystemType,
       private iconSet_: chrome.fileManagerPrivate.IconSet,
       private driveLabel_: (string|undefined),
       private remoteMountPath_: (string|undefined),
@@ -189,13 +186,6 @@ export class VolumeInfo {
    */
   get providerId(): string|undefined {
     return this.providerId_;
-  }
-
-  /**
-   * True if the volume contains media.
-   */
-  get hasMedia(): boolean {
-    return this.hasMedia_;
   }
 
   /**
