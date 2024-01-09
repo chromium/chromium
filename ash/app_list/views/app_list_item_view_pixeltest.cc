@@ -25,7 +25,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -122,7 +122,7 @@ class AppListItemViewPixelTestBase : public AshTestBase {
 
   void ShowAppList() {
     if (use_tablet_mode()) {
-      Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+      ash::TabletModeControllerTestApi().EnterTabletMode();
     } else {
       GetAppListTestHelper()->ShowAppList();
     }

@@ -136,6 +136,9 @@ class ASH_EXPORT TabletModeController
   void RemoveObserver(TabletModeObserver* observer) override;
   bool AreInternalInputDeviceEventsBlocked() const override;
   bool ForceUiTabletModeState(std::optional<bool> enabled) override;
+  // Do NOT call this directly from unit tests. Instead, please use
+  // ash::TabletModeControllerTestApi().{Enter/Leave}TabletMode().
+  // TODO(crbug.com/1502114): Move this to private.
   void SetEnabledForTest(bool enabled) override;
 
   // ShellObserver:

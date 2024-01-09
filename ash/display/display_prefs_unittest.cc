@@ -23,6 +23,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
@@ -1637,7 +1638,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
   LoggedInAsUser();
 
   // Turn on tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
@@ -1659,7 +1660,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithSingleDisplay) {
               Optional(static_cast<int>(display::Display::ROTATE_90)));
 
   // Turn off tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   // Zoom should stay at the new value.
@@ -1730,7 +1731,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
   LoggedInAsUser();
 
   // Turn on tablet mode and make display changes.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
@@ -1804,7 +1805,7 @@ TEST_F(DisplayPrefsTest, SaveTabletModeWithMixedExternalDisplays) {
               Optional(static_cast<int>(display::Display::ROTATE_0)));
 
   // Turn off tablet mode.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display::Screen::GetScreen()->InTabletMode());
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());

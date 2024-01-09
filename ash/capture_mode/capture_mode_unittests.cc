@@ -62,6 +62,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
@@ -3393,8 +3394,7 @@ TEST_F(CaptureModeTest, CaptureModeBarButtonTypeHistograms) {
                                      CaptureModeBarButtonType::kWindow, 1);
 
   // Enter tablet mode and test the bar buttons.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
 
   ClickOnView(GetImageToggleButton(), event_generator);
@@ -3545,8 +3545,7 @@ TEST_F(CaptureModeTest, NumberOfCaptureRegionAdjustmentsHistogram) {
 
   // Enter tablet mode and restart the capture session. The capture region
   // should be remembered.
-  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_TRUE(display::Screen::GetScreen()->InTabletMode());
   StartImageRegionCapture();
   ASSERT_EQ(target_region, controller->user_capture_region());
