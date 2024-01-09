@@ -231,6 +231,33 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
   return std::make_unique<DefaultRuleIterator>(it->second.Clone());
 }
 
+std::unique_ptr<OwnedRule> DefaultProvider::GetRule(
+    const GURL& primary_url,
+    const GURL& secondary_url,
+    ContentSettingsType content_type,
+    bool off_the_record,
+    const PartitionKey& partition_key) const {
+  // The default provider never has off-the-record-specific settings.
+  if (off_the_record) {
+    return nullptr;
+  }
+
+  base::AutoLock lock(lock_);
+  const auto it = default_settings_.find(content_type);
+  if (it == default_settings_.end()) {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  if (it->second.is_none()) {
+    return nullptr;
+  }
+
+  return std::make_unique<OwnedRule>(ContentSettingsPattern::Wildcard(),
+                                     ContentSettingsPattern::Wildcard(),
+                                     it->second.Clone(), RuleMetaData{});
+}
+
 void DefaultProvider::ClearAllContentSettingsRules(
     ContentSettingsType content_type,
     const PartitionKey& partition_key) {

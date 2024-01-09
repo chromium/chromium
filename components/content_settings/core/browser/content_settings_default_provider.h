@@ -44,6 +44,13 @@ class DefaultProvider : public ObservableProvider {
       bool off_the_record,
       const PartitionKey& partition_key) const override;
 
+  std::unique_ptr<OwnedRule> GetRule(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      bool off_the_record,
+      const PartitionKey& partition_key) const override;
+
   bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          ContentSettingsType content_type,
