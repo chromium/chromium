@@ -187,7 +187,7 @@ bool MediaDeviceSaltDatabase::EnsureOpen(bool is_retry) {
     return false;
   }
 
-  db_.set_histogram_tag("Media Device Salts");
+  db_.set_histogram_tag("MediaDeviceSalts");
   // base::Unretained() is safe here because `this` owns `db`.
   db_.set_error_callback(base::BindRepeating(
       &MediaDeviceSaltDatabase::OnDatabaseError, base::Unretained(this)));

@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   <variant name="History" summary="History"/>
   <variant name="InterestGroups" summary="InterestGroups"/>
   <variant name="LocalTraces" summary="LocalTraces"/>
+  <variant name="MediaDeviceSalts" summary="MediaDeviceSalts"/>
   <variant name="OptOutBlacklist" summary="OptOutBlacklist"/>
   <variant name="Passwords" summary="Passwords"/>
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
