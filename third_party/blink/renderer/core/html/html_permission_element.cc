@@ -142,7 +142,9 @@ int GetMessageIDMultiplePermissions(
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
       permission_service_(document.GetExecutionContext()),
-      receivers_(this, document.GetExecutionContext()) {
+      permission_observer_receivers_(this, document.GetExecutionContext()),
+      embedded_permission_control_receiver_(this,
+                                            document.GetExecutionContext()) {
   DCHECK(RuntimeEnabledFeatures::PermissionElementEnabled());
   EnsureUserAgentShadowRoot();
 }
@@ -155,7 +157,8 @@ const AtomicString& HTMLPermissionElement::GetType() const {
 
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
-  visitor->Trace(receivers_);
+  visitor->Trace(permission_observer_receivers_);
+  visitor->Trace(embedded_permission_control_receiver_);
   visitor->Trace(shadow_element_);
   visitor->Trace(permission_text_span_);
   HTMLElement::Trace(visitor);
@@ -219,11 +222,11 @@ void HTMLPermissionElement::AttributeChanged(
 
     // TODO(crbug.com/1462930): We might consider not displaying the element
     // until the element is registered
+    mojo::PendingRemote<EmbeddedPermissionControlClient> client;
+    embedded_permission_control_receiver_.Bind(
+        client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
     GetPermissionService()->RegisterPageEmbeddedPermissionControl(
-        mojo::Clone(permission_descriptors_),
-        WTF::BindOnce(
-            &HTMLPermissionElement::OnPageEmbeddedPermissionControlRegistered,
-            WrapWeakPersistent(this)));
+        mojo::Clone(permission_descriptors_), std::move(client));
   }
 
   HTMLElement::AttributeChanged(params);
@@ -272,21 +275,21 @@ void HTMLPermissionElement::RegisterPermissionObserver(
     const PermissionDescriptorPtr& descriptor,
     PermissionStatus current_status) {
   mojo::PendingRemote<PermissionObserver> observer;
-  receivers_.Add(observer.InitWithNewPipeAndPassReceiver(), descriptor->name,
-                 GetTaskRunner());
+  permission_observer_receivers_.Add(observer.InitWithNewPipeAndPassReceiver(),
+                                     descriptor->name, GetTaskRunner());
   GetPermissionService()->AddPermissionObserver(
       descriptor.Clone(), current_status, std::move(observer));
 }
 
 void HTMLPermissionElement::OnPermissionStatusChange(PermissionStatus status) {
-  auto permission_name = receivers_.current_context();
+  auto permission_name = permission_observer_receivers_.current_context();
   auto it = permission_status_map_.find(permission_name);
   CHECK(it != permission_status_map_.end());
   it->value = status;
   UpdateAppearance();
 }
 
-void HTMLPermissionElement::OnPageEmbeddedPermissionControlRegistered(
+void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
     bool allowed,
     const absl::optional<Vector<PermissionStatus>>& statuses) {
   CHECK_EQ(permission_status_map_.size(), 0U);

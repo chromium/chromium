@@ -163,13 +163,17 @@ class TestPermissionService : public PermissionService {
                      HasPermissionCallback) override {}
   void RegisterPageEmbeddedPermissionControl(
       Vector<PermissionDescriptorPtr> permissions,
-      RegisterPageEmbeddedPermissionControlCallback callback) override {
+      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
+          pending_client) override {
     Vector<PermissionStatus> statuses =
         initial_statuses_.empty()
             ? Vector<PermissionStatus>(permissions.size(),
                                        PermissionStatus::ASK)
             : initial_statuses_;
-    std::move(callback).Run(/*allowed=*/true, std::move(statuses));
+    mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client(
+        std::move(pending_client));
+    client->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
+                                                  std::move(statuses));
   }
   void RequestPageEmbeddedPermission(
       EmbeddedPermissionRequestDescriptorPtr permissions,

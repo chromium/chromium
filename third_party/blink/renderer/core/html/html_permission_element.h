@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/shadow/permission_shadow_element.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -24,7 +25,8 @@ namespace blink {
 
 class CORE_EXPORT HTMLPermissionElement final
     : public HTMLElement,
-      public mojom::blink::PermissionObserver {
+      public mojom::blink::PermissionObserver,
+      public mojom::blink::EmbeddedPermissionControlClient {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -79,11 +81,11 @@ class CORE_EXPORT HTMLPermissionElement final
   // mojom::blink::PermissionObserver override.
   void OnPermissionStatusChange(mojom::blink::PermissionStatus status) override;
 
-  // Callback triggered when <permission>  element is registered from browser
-  // process.
-  void OnPageEmbeddedPermissionControlRegistered(
+  // mojom::blink::EmbeddedPermissionControlClient override.
+  void OnEmbeddedPermissionControlRegistered(
       bool allowed,
-      const absl::optional<Vector<mojom::blink::PermissionStatus>>& statuses);
+      const absl::optional<Vector<mojom::blink::PermissionStatus>>& statuses)
+      override;
 
   // Callback triggered when permission is decided from browser side.
   void OnEmbeddedPermissionsDecided(
@@ -130,7 +132,14 @@ class CORE_EXPORT HTMLPermissionElement final
                       HTMLPermissionElement,
                       HeapMojoWrapperMode::kWithContextObserver,
                       mojom::blink::PermissionName>
-      receivers_;
+      permission_observer_receivers_;
+
+  // Holds a receiver connected with a remote `EmbeddedPermissionControlClient`
+  // in browser process, allowing this element to receive PEPC events from
+  // browser process.
+  HeapMojoReceiver<mojom::blink::EmbeddedPermissionControlClient,
+                   HTMLPermissionElement>
+      embedded_permission_control_receiver_;
 
   //  Map holds all current permission statuses, keyed by permission name.
   using PermissionStatusMap =
