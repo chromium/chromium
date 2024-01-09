@@ -179,6 +179,7 @@ targets.legacy_compound_suite(
     name = "chromeos_vm_gtests",
     basic_suites = [
         "chromeos_system_friendly_gtests",
+        "chromeos_vaapi_fakelib_gtests",
         "chromeos_integration_tests",
     ],
 )
@@ -189,6 +190,7 @@ targets.legacy_compound_suite(
         "chromeos_browser_all_tast_tests",
         "chromeos_browser_integration_tests",
         "chromeos_system_friendly_gtests",
+        "chromeos_vaapi_fakelib_gtests",
         "chromeos_integration_tests",
     ],
 )

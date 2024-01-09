@@ -702,9 +702,21 @@
       'rust_gtest_interop_unittests': {},
       'sql_unittests': {},
       'url_unittests': {},
+    },
+
+    'chromeos_vaapi_fakelib_gtests': {
       'vaapi_unittest': {
         'mixins': [
+          'vaapi_unittest_args',
           'vaapi_unittest_libfake_args',
+        ],
+      },
+    },
+
+    'chromeos_vaapi_gtests': {
+      'vaapi_unittest': {
+        'mixins': [
+          'vaapi_unittest_args',
         ],
       },
     },
@@ -4233,6 +4245,7 @@
       'ozone_unittests': {},
       'vaapi_unittest': {
         'mixins': [
+          'vaapi_unittest_args',
           'vaapi_unittest_libfake_args',
         ],
       },
@@ -5872,6 +5885,7 @@
     'chromeos_vm_gtests': [
       'chromeos_integration_tests',
       'chromeos_system_friendly_gtests',
+      'chromeos_vaapi_fakelib_gtests',
     ],
 
     'chromeos_vm_gtests_and_tast': [
@@ -5879,6 +5893,7 @@
       'chromeos_browser_integration_tests',
       'chromeos_integration_tests',
       'chromeos_system_friendly_gtests',
+      'chromeos_vaapi_fakelib_gtests',
     ],
 
     'chromeos_vm_tast': [
@@ -6796,12 +6811,17 @@
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_device_only_gtests': {
+      'chromeos_integration_tests': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
       },
-      'chromeos_integration_tests': {
+      'chromeos_system_friendly_gtests': {
+        'variants': [
+          'CROS_BRYA_RELEASE_ASH_LKGM',
+        ],
+      },
+      'chromeos_vaapi_gtests': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],

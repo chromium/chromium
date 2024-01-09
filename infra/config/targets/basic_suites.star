@@ -725,8 +725,28 @@ targets.legacy_basic_suite(
         "rust_gtest_interop_unittests": targets.legacy_test_config(),
         "sql_unittests": targets.legacy_test_config(),
         "url_unittests": targets.legacy_test_config(),
+    },
+)
+
+# vaapi_unittest needs to run with fake driver in some builders but others with real driver.
+# Therefore these were isolated from chromeos_system_friendly_gtests.
+targets.legacy_basic_suite(
+    name = "chromeos_vaapi_gtests",
+    tests = {
         "vaapi_unittest": targets.legacy_test_config(
             mixins = [
+                "vaapi_unittest_args",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
+    name = "chromeos_vaapi_fakelib_gtests",
+    tests = {
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_args",
                 "vaapi_unittest_libfake_args",
             ],
         ),
@@ -3874,6 +3894,7 @@ targets.legacy_basic_suite(
         "ozone_unittests": targets.legacy_test_config(),
         "vaapi_unittest": targets.legacy_test_config(
             mixins = [
+                "vaapi_unittest_args",
                 "vaapi_unittest_libfake_args",
             ],
         ),

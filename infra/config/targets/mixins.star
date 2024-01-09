@@ -1440,10 +1440,16 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "vaapi_unittest_libfake_args",
+    name = "vaapi_unittest_args",
     args = [
         "--stop-ui",
         "--gtest_filter=\"VaapiTest.*\"",
+    ],
+)
+
+targets.mixin(
+    name = "vaapi_unittest_libfake_args",
+    args = [
         # Tell libva to do dummy encoding/decoding. For more info, see:
         # https://github.com/intel/libva/blob/v2.14-branch/va/va_fool.c#L52
         "--env-var",

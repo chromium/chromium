@@ -1132,10 +1132,14 @@
       },
     },
   },
-  'vaapi_unittest_libfake_args': {
+  'vaapi_unittest_args': {
     'args': [
       '--stop-ui',
       '--gtest_filter="VaapiTest.*"',
+    ],
+  },
+  'vaapi_unittest_libfake_args': {
+    'args': [
       '--env-var',
       'LIBVA_DRIVERS_PATH',
       './',
