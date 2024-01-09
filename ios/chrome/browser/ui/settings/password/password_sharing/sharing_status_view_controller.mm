@@ -56,9 +56,10 @@ const CGFloat kFaviconAppearingDelay = 0.1;
 const CGFloat kFaviconAppearingDuration = 0.15;
 const CGFloat kSharingCancelledDuration = 0.5;
 
-// Distance by which the profile images need to be moved when sliding.
-const CGFloat kImagesSlidingOutDistance = 78;
-const CGFloat kImagesSlidingInDistance = 51;
+// Distance by which the profile images x-center should be away from the middle
+// of the view in different parts of the animation.
+const CGFloat kImagesSlidedOutCenterXConstant = 78;
+const CGFloat kImagesSlidedInCenterXConstant = 27;
 
 // Tags marking parts of string that should have a bold font.
 NSString* const kBeginBoldTag = @"BEGIN_BOLD[ \t]*";
@@ -71,6 +72,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 }  // namespace
 
 @interface SharingStatusViewController () <UITextViewDelegate>
+
+// Container view for the animation.
+@property(nonatomic, strong) UIView* animationView;
 
 // Profile image of the sender.
 @property(nonatomic, strong) UIImageView* senderImageView;
@@ -133,7 +137,11 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
 @end
 
-@implementation SharingStatusViewController
+@implementation SharingStatusViewController {
+  // CenterX constraints for the images of sender and recipients.
+  NSLayoutConstraint* _senderImageCenterXConstraint;
+  NSLayoutConstraint* _recipientImageCenterXConstraint;
+}
 
 #pragma mark - UIViewController
 
@@ -266,7 +274,6 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   UIImageView* senderImageView =
       [[UIImageView alloc] initWithImage:self.senderImage];
   senderImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  senderImageView.hidden = YES;
   self.senderImageView = senderImageView;
   return senderImageView;
 }
@@ -360,17 +367,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   animationView = [[UIView alloc] init];
   animationView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  // Add sender profile image.
-  UIImageView* senderImageView = [self createSenderImageView];
-  [animationView addSubview:senderImageView];
-
-  // Add recipient profile image.
-  UIImageView* recipientImageView = [self createRecipientImageView];
-  [animationView insertSubview:recipientImageView belowSubview:senderImageView];
-
   // Add progress bar view.
   UIView* progressBarView = [self createProgressBarView];
-  [animationView insertSubview:progressBarView belowSubview:recipientImageView];
+  [animationView addSubview:progressBarView];
 
   // Add progress bar circles.
   [self createProgressBarSubviews];
@@ -379,11 +378,18 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   UIImageView* lockImage = [self createLockImage];
   [progressBarView addSubview:lockImage];
 
+  // Add sender profile image.
+  UIImageView* senderImageView = [self createSenderImageView];
+  [animationView addSubview:senderImageView];
+
+  // Add recipient profile image.
+  UIImageView* recipientImageView = [self createRecipientImageView];
+  [animationView addSubview:recipientImageView];
+
   // Add favicon and its container.
   FaviconContainerView* faviconContainerView =
       [self createFaviconContainerView];
-  [animationView insertSubview:faviconContainerView
-                  aboveSubview:senderImageView];
+  [animationView addSubview:faviconContainerView];
   FaviconView* faviconView = [self createFaviconView];
   [faviconContainerView addSubview:faviconView];
 
@@ -394,16 +400,12 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
     [senderImageView.bottomAnchor
         constraintEqualToAnchor:animationView.bottomAnchor
                        constant:-kVerticalSpacing],
-    [senderImageView.centerXAnchor
-        constraintEqualToAnchor:animationView.centerXAnchor],
     [senderImageView.widthAnchor constraintEqualToConstant:kProfileImageSize],
     [senderImageView.heightAnchor constraintEqualToConstant:kProfileImageSize],
 
     // Recipient image constraints.
     [recipientImageView.centerYAnchor
         constraintEqualToAnchor:senderImageView.centerYAnchor],
-    [recipientImageView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
     [recipientImageView.widthAnchor
         constraintEqualToConstant:kProfileImageSize],
     [recipientImageView.heightAnchor
@@ -411,7 +413,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
     // Progress bar constraints.
     [progressBarView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
+        constraintEqualToAnchor:animationView.centerXAnchor],
     [progressBarView.centerYAnchor
         constraintEqualToAnchor:senderImageView.centerYAnchor],
     [progressBarView.widthAnchor constraintEqualToConstant:kProgressBarWidth],
@@ -421,14 +423,14 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
     [lockImage.centerYAnchor
         constraintEqualToAnchor:senderImageView.centerYAnchor],
     [lockImage.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
+        constraintEqualToAnchor:animationView.centerXAnchor],
 
     // Favicon constraints.
     [faviconContainerView.topAnchor
         constraintEqualToAnchor:senderImageView.bottomAnchor
                        constant:-kFaviconProfileImageVerticalOverlap],
     [faviconContainerView.centerXAnchor
-        constraintEqualToAnchor:senderImageView.centerXAnchor],
+        constraintEqualToAnchor:animationView.centerXAnchor],
     [faviconContainerView.widthAnchor
         constraintEqualToConstant:kFaviconContainerSize],
     [faviconContainerView.heightAnchor
@@ -441,6 +443,14 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
     [faviconView.heightAnchor constraintEqualToConstant:kFaviconSize],
   ]];
 
+  _senderImageCenterXConstraint = [senderImageView.centerXAnchor
+      constraintEqualToAnchor:animationView.centerXAnchor];
+  _senderImageCenterXConstraint.active = YES;
+  _recipientImageCenterXConstraint = [recipientImageView.centerXAnchor
+      constraintEqualToAnchor:animationView.centerXAnchor];
+  _recipientImageCenterXConstraint.active = YES;
+
+  self.animationView = animationView;
   return animationView;
 }
 
@@ -474,10 +484,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
 // Creates sharing status animations that are started one by one.
 - (void)createAnimations {
-  UIImageView* senderImageView = self.senderImageView;
-  UIImageView* recipientImageView = self.recipientImageView;
   UIImageView* lockImage = self.lockImage;
   UIView* progressBarView = self.progressBarView;
+  UIView* view = self.view;
 
   UICubicTimingParameters* imagesSlidingTimingParams =
       [[UICubicTimingParameters alloc]
@@ -487,16 +496,11 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   self.imagesSlidingOutAnimation = [[UIViewPropertyAnimator alloc]
       initWithDuration:kImagesSlidingOutDuration
       timingParameters:imagesSlidingTimingParams];
-  [self.imagesSlidingOutAnimation addAnimations:^{
-    senderImageView.hidden = NO;
-    senderImageView.center =
-        CGPointMake(senderImageView.center.x - kImagesSlidingOutDistance,
-                    senderImageView.center.y);
-    recipientImageView.center =
-        CGPointMake(recipientImageView.center.x + kImagesSlidingOutDistance,
-                    recipientImageView.center.y);
-  }];
   __weak __typeof(self) weakSelf = self;
+  [self.imagesSlidingOutAnimation addAnimations:^{
+    [weakSelf setImagesCenterXConstraint:kImagesSlidedOutCenterXConstant];
+    [view layoutIfNeeded];
+  }];
   [self.imagesSlidingOutAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf.lockAppearingAnimation startAnimation];
@@ -539,12 +543,9 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
       timingParameters:imagesSlidingTimingParams];
   [self.imagesSlidingInAnimation addAnimations:^{
     progressBarView.hidden = YES;
-    senderImageView.center =
-        CGPointMake(senderImageView.center.x + kImagesSlidingInDistance,
-                    senderImageView.center.y);
-    recipientImageView.center =
-        CGPointMake(recipientImageView.center.x - kImagesSlidingInDistance,
-                    recipientImageView.center.y);
+    [weakSelf sendRecipientImageToBack];
+    [weakSelf setImagesCenterXConstraint:kImagesSlidedInCenterXConstant];
+    [view layoutIfNeeded];
   }];
   [self.imagesSlidingInAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
@@ -574,15 +575,27 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
       timingParameters:animationCancelledTimingParams];
   [self.sharingCancelledAnimation addAnimations:^{
     progressBarView.hidden = YES;
-    senderImageView.center =
-        CGPointMake(progressBarView.center.x, senderImageView.center.y);
-    recipientImageView.center =
-        CGPointMake(progressBarView.center.x, recipientImageView.center.y);
+    [weakSelf sendRecipientImageToBack];
+    [weakSelf setImagesCenterXConstraint:0];
+    [view layoutIfNeeded];
   }];
   [self.sharingCancelledAnimation
       addCompletion:^(UIViewAnimatingPosition finalPosition) {
         [weakSelf displayCancelledStatus];
       }];
+}
+
+// Moves the recipient image to the back so that it's below the sender image
+// when they overlap.
+- (void)sendRecipientImageToBack {
+  [self.animationView sendSubviewToBack:self.recipientImageView];
+}
+
+// Sets constant for sender and recipients centerX constraint so that the sender
+// is on the left from the middle of the view and the recipients on the right.
+- (void)setImagesCenterXConstraint:(CGFloat)constant {
+  _senderImageCenterXConstraint.constant = -constant;
+  _recipientImageCenterXConstraint.constant = constant;
 }
 
 // Calculates and sets detent based on the height of content.
