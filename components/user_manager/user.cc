@@ -58,69 +58,28 @@ bool User::TypeIsKiosk(UserType type) {
          type == USER_TYPE_WEB_KIOSK_APP;
 }
 
-class DeviceLocalAccountUserBase : public User {
- public:
-  DeviceLocalAccountUserBase(const DeviceLocalAccountUserBase&) = delete;
-  DeviceLocalAccountUserBase& operator=(const DeviceLocalAccountUserBase&) =
-      delete;
-
-  // User:
-  bool IsAffiliated() const override;
-
- protected:
-  explicit DeviceLocalAccountUserBase(const AccountId& account_id,
-                                      UserType type);
-  ~DeviceLocalAccountUserBase() override;
-  // User:
-  void SetAffiliation(bool) override;
-  bool IsDeviceLocalAccount() const override;
-};
-
-class KioskAppUser : public DeviceLocalAccountUserBase {
- public:
-  explicit KioskAppUser(const AccountId& kiosk_app_account_id);
-
-  KioskAppUser(const KioskAppUser&) = delete;
-  KioskAppUser& operator=(const KioskAppUser&) = delete;
-
-  ~KioskAppUser() override;
-};
-
-class ArcKioskAppUser : public DeviceLocalAccountUserBase {
- public:
-  explicit ArcKioskAppUser(const AccountId& arc_kiosk_account_id);
-
-  ArcKioskAppUser(const ArcKioskAppUser&) = delete;
-  ArcKioskAppUser& operator=(const ArcKioskAppUser&) = delete;
-
-  ~ArcKioskAppUser() override;
-};
-
-class WebKioskAppUser : public DeviceLocalAccountUserBase {
- public:
-  explicit WebKioskAppUser(const AccountId& web_kiosk_account_id);
-
-  WebKioskAppUser(const WebKioskAppUser&) = delete;
-  WebKioskAppUser& operator=(const WebKioskAppUser&) = delete;
-
-  ~WebKioskAppUser() override;
-};
-
-class PublicAccountUser : public DeviceLocalAccountUserBase {
- public:
-  explicit PublicAccountUser(const AccountId& account_id);
-
-  PublicAccountUser(const PublicAccountUser&) = delete;
-  PublicAccountUser& operator=(const PublicAccountUser&) = delete;
-
-  ~PublicAccountUser() override;
-};
-
 User::User(const AccountId& account_id, UserType type)
-    : account_id_(account_id), type_(type), user_image_(new UserImage) {
-  if (type_ == USER_TYPE_REGULAR || type_ == USER_TYPE_CHILD) {
+    : account_id_(account_id), type_(type), user_image_(new UserImage()) {
+  switch (type_) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      set_display_email(account_id.GetUserEmail());
+      break;
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+      // Public accounts nor guest account do not have a real email address,
+      // so they do not set |display_email_|.
+      break;
+    case user_manager::NUM_USER_TYPES:
+      NOTREACHED();
+  }
+
+  if (type_ == user_manager::USER_TYPE_REGULAR ||
+      type_ == user_manager::USER_TYPE_CHILD) {
     set_can_lock(true);
-    set_display_email(account_id.GetUserEmail());
   }
 }
 
@@ -247,33 +206,62 @@ void User::AddProfileCreatedObserver(base::OnceClosure on_profile_created) {
     on_profile_created_observers_.push_back(std::move(on_profile_created));
 }
 
+void User::SetProfileIsCreated() {
+  profile_is_created_ = true;
+  for (auto& callback : on_profile_created_observers_) {
+    std::move(callback).Run();
+  }
+  on_profile_created_observers_.clear();
+}
+
 bool User::IsAffiliated() const {
+  // Device local accounts are always affiliated.
+  if (IsDeviceLocalAccount()) {
+    return true;
+  }
+
   return is_affiliated_.value_or(false);
 }
 
 void User::IsAffiliatedAsync(
     base::OnceCallback<void(bool)> is_affiliated_callback) {
-  if (is_affiliated_.has_value())
-    std::move(is_affiliated_callback).Run(is_affiliated_.value());
-  else
-    on_affiliation_set_callbacks_.push_back(std::move(is_affiliated_callback));
-}
+  // TODO(b/278643115): Conceptually, we should call
+  //   std::move(is_affiliated_callback).Run(true)
+  // here immediately if this is for device local account.
 
-void User::SetProfileIsCreated() {
-  profile_is_created_ = true;
-  for (auto& callback : on_profile_created_observers_)
-    std::move(callback).Run();
-  on_profile_created_observers_.clear();
+  if (is_affiliated_.has_value()) {
+    std::move(is_affiliated_callback).Run(is_affiliated_.value());
+  } else {
+    on_affiliation_set_callbacks_.push_back(std::move(is_affiliated_callback));
+  }
 }
 
 void User::SetAffiliation(bool is_affiliated) {
+  // Device local accounts are always affiliated. No affiliation
+  // modification must happen.
+  CHECK(!IsDeviceLocalAccount());
+
   is_affiliated_ = is_affiliated;
-  for (auto& callback : on_affiliation_set_callbacks_)
+  for (auto& callback : on_affiliation_set_callbacks_) {
     std::move(callback).Run(is_affiliated_.value());
+  }
   on_affiliation_set_callbacks_.clear();
 }
 
 bool User::IsDeviceLocalAccount() const {
+  switch (type_) {
+    case user_manager::USER_TYPE_REGULAR:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_GUEST:
+      return false;
+    case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
+    case user_manager::USER_TYPE_KIOSK_APP:
+    case user_manager::USER_TYPE_ARC_KIOSK_APP:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
+      return true;
+    case user_manager::NUM_USER_TYPES:
+      NOTREACHED();
+  }
   return false;
 }
 
@@ -294,20 +282,20 @@ User* User::CreateGuestUser(const AccountId& guest_account_id) {
 }
 
 User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
-  return new KioskAppUser(kiosk_app_account_id);
+  return new User(kiosk_app_account_id, USER_TYPE_KIOSK_APP);
 }
 
 User* User::CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id) {
-  return new ArcKioskAppUser(arc_kiosk_account_id);
+  return new User(arc_kiosk_account_id, USER_TYPE_ARC_KIOSK_APP);
 }
 
 User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
-  return new WebKioskAppUser(web_kiosk_account_id);
+  return new User(web_kiosk_account_id, USER_TYPE_WEB_KIOSK_APP);
 }
 
 User* User::CreatePublicAccountUser(const AccountId& account_id,
                                     bool is_using_saml) {
-  User* user = new PublicAccountUser(account_id);
+  User* user = new User(account_id, USER_TYPE_PUBLIC_ACCOUNT);
   user->set_using_saml(is_using_saml);
   return user;
 }
@@ -335,64 +323,6 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_index_ = image_index;
   image_is_stub_ = true;
   image_is_loading_ = is_loading;
-}
-
-DeviceLocalAccountUserBase::DeviceLocalAccountUserBase(
-    const AccountId& account_id,
-    UserType type)
-    : User(account_id, type) {}
-
-DeviceLocalAccountUserBase::~DeviceLocalAccountUserBase() {
-}
-
-bool DeviceLocalAccountUserBase::IsAffiliated() const {
-  return true;
-}
-
-void DeviceLocalAccountUserBase::SetAffiliation(bool) {
-  // Device local accounts are always affiliated. No affiliation modification
-  // must happen.
-  NOTREACHED();
-}
-
-bool DeviceLocalAccountUserBase::IsDeviceLocalAccount() const {
-  return true;
-}
-
-KioskAppUser::KioskAppUser(const AccountId& kiosk_app_account_id)
-    : DeviceLocalAccountUserBase(kiosk_app_account_id,
-                                 user_manager::USER_TYPE_KIOSK_APP) {
-  set_display_email(kiosk_app_account_id.GetUserEmail());
-}
-
-KioskAppUser::~KioskAppUser() {
-}
-
-ArcKioskAppUser::ArcKioskAppUser(const AccountId& arc_kiosk_account_id)
-    : DeviceLocalAccountUserBase(arc_kiosk_account_id,
-                                 user_manager::USER_TYPE_ARC_KIOSK_APP) {
-  set_display_email(arc_kiosk_account_id.GetUserEmail());
-}
-
-ArcKioskAppUser::~ArcKioskAppUser() {
-}
-
-WebKioskAppUser::WebKioskAppUser(const AccountId& web_kiosk_account_id)
-    : DeviceLocalAccountUserBase(web_kiosk_account_id,
-                                 user_manager::USER_TYPE_WEB_KIOSK_APP) {
-  set_display_email(web_kiosk_account_id.GetUserEmail());
-}
-
-WebKioskAppUser::~WebKioskAppUser() {}
-
-PublicAccountUser::PublicAccountUser(const AccountId& account_id)
-    : DeviceLocalAccountUserBase(account_id,
-                                 user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
-  // Public accounts do not have a real email address, so they do not set
-  // |display_email_|.
-}
-
-PublicAccountUser::~PublicAccountUser() {
 }
 
 }  // namespace user_manager
