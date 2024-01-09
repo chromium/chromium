@@ -525,6 +525,10 @@ auto as_writable_bytes(span<T, X> s) noexcept {
   return span<uint8_t, N>(reinterpret_cast<uint8_t*>(s.data()), s.size_bytes());
 }
 
+// as_chars() is the equivalent of as_bytes(), except that it returns a
+// span of const char rather than const uint8_t. This non-std function is
+// added since chrome still represents many things as char arrays which
+// rightfully should be uint8_t.
 template <typename T, size_t X>
 auto as_chars(span<T, X> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
@@ -532,6 +536,10 @@ auto as_chars(span<T, X> s) noexcept {
                              s.size_bytes());
 }
 
+// as_writable_chars() is the equivalent of as_writable_bytes(), except that
+// it returns a span of char rather than uint8_t. This non-std function is
+// added since chrome still represents many things as char arrays which
+// rightfully should be uint8_t.
 template <typename T, size_t X>
   requires(!std::is_const_v<T>)
 auto as_writable_chars(span<T, X> s) noexcept {
