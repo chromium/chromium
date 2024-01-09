@@ -332,6 +332,10 @@
       status: "stable",
     },
     {
+      name: "AsyncClipboardImplicitPermission",
+      status: "experimental",
+    },
+    {
       name: "AttributionReporting",
       origin_trial_feature_name: "PrivacySandboxAdsAPIs",
       origin_trial_allows_third_party: true,

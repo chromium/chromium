@@ -59,6 +59,58 @@
 
 namespace blink {
 
+namespace {
+
+// This class holds some state relevant to current clipboard event dispatch. It
+// helps `ClipboardCommands` to know whether a given `ExecutionContext` is
+// currently handling a copy/paste command.
+class ExecutionContextClipboardEventState
+    : public GarbageCollected<ExecutionContextClipboardEventState>,
+      public Supplement<ExecutionContext> {
+ public:
+  static constexpr char kSupplementName[] =
+      "ExecutionContextClipboardEventState";
+
+  static ExecutionContextClipboardEventState& From(
+      ExecutionContext& execution_context) {
+    {
+      ExecutionContextClipboardEventState* supplement =
+          Supplement<ExecutionContext>::From<
+              ExecutionContextClipboardEventState>(execution_context);
+      if (!supplement) {
+        supplement = MakeGarbageCollected<ExecutionContextClipboardEventState>(
+            execution_context);
+        ProvideTo(execution_context, supplement);
+      }
+      return *supplement;
+    }
+  }
+
+  ExecutionContextClipboardEventState(ExecutionContext& execution_context)
+      : Supplement<ExecutionContext>(execution_context) {}
+  virtual ~ExecutionContextClipboardEventState() = default;
+
+  struct State {
+    const AtomicString* event_type = nullptr;
+    absl::optional<EditorCommandSource> source;
+  };
+
+  base::AutoReset<State> SetState(const AtomicString& event_type,
+                                  EditorCommandSource source) {
+    State new_state;
+    new_state.event_type = &event_type;
+    new_state.source = source;
+    return base::AutoReset<State>(&state_, new_state);
+  }
+
+  const State& GetState() const { return state_; }
+
+ private:
+  State state_;
+};
+
+}  // namespace
+
 bool ClipboardCommands::CanReadClipboard(LocalFrame& frame,
                                          EditorCommandSource source) {
   if (source == EditorCommandSource::kMenuOrKeyBinding)
@@ -84,6 +136,21 @@ bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
   if (!frame.GetContentSettingsClient())
     return default_value;
   return frame.GetContentSettingsClient()->AllowWriteToClipboard(default_value);
+}
+
+bool ClipboardCommands::IsExecutingCutOrCopy(ExecutionContext& context) {
+  const ExecutionContextClipboardEventState::State& event_state =
+      ExecutionContextClipboardEventState::From(context).GetState();
+  return (event_state.event_type == &event_type_names::kCopy ||
+          event_state.event_type == &event_type_names::kCut) &&
+         event_state.source == EditorCommandSource::kMenuOrKeyBinding;
+}
+
+bool ClipboardCommands::IsExecutingPaste(ExecutionContext& context) {
+  const ExecutionContextClipboardEventState::State& event_state =
+      ExecutionContextClipboardEventState::From(context).GetState();
+  return event_state.event_type == &event_type_names::kPaste &&
+         event_state.source == EditorCommandSource::kMenuOrKeyBinding;
 }
 
 bool ClipboardCommands::CanSmartReplaceInClipboard(LocalFrame& frame) {
@@ -125,9 +192,16 @@ bool ClipboardCommands::DispatchClipboardEvent(LocalFrame& frame,
           : DataObject::CreateFromClipboard(target->GetExecutionContext(),
                                             system_clipboard, paste_mode));
 
-  Event* const evt = ClipboardEvent::Create(event_type, data_transfer);
-  target->DispatchEvent(*evt);
-  const bool no_default_processing = evt->defaultPrevented();
+  bool no_default_processing = false;
+  {
+    base::AutoReset<ExecutionContextClipboardEventState::State> reset =
+        ExecutionContextClipboardEventState::From(
+            *target->GetExecutionContext())
+            .SetState(event_type, source);
+    Event* const evt = ClipboardEvent::Create(event_type, data_transfer);
+    target->DispatchEvent(*evt);
+    no_default_processing = evt->defaultPrevented();
+  }
   if (no_default_processing && policy == DataTransferAccessPolicy::kWritable) {
     frame.GetSystemClipboard()->WriteDataObject(data_transfer->GetDataObject());
     frame.GetSystemClipboard()->CommitWrite();

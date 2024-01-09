@@ -65,6 +65,8 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
                                           ScriptState* script_state,
                                           const String& text);
 
+  // Use one of the above factories to construct. This ctor is public for
+  // `MakeGarbageCollected<>`.
   ClipboardPromise(ExecutionContext* execution_context,
                    ScriptState* script_state);
   ClipboardPromise(const ClipboardPromise&) = delete;
@@ -91,6 +93,7 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
 
  private:
   class BlobPromiseResolverFunction;
+
   void HandlePromiseBlobsWrite(HeapVector<Member<Blob>>* blob_list);
   void WriteBlobs(HeapVector<Member<Blob>>* blob_list);
 
@@ -127,11 +130,14 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // the remote connection fails.
   mojom::blink::PermissionService* GetPermissionService();
 
-  // Requests the specified permission from the `PermissionService`.
+  // Validates that the action may proceed, including but not limited to
+  // requesting permissions from the `PermissionService` as necessary.
+  // On failure, will reject via `script_promise_resolver_`.
+  //
   // `permission`: The permission to request.
   // `will_be_sanitized`: Whether the data will be sanitized.
   // `callback`: The callback function to be called with the permission status.
-  void RequestPermission(
+  void ValidatePreconditions(
       mojom::blink::PermissionName permission,
       bool will_be_sanitized,
       base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback);

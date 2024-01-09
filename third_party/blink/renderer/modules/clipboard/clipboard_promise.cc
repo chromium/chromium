@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/clipboard/clipboard_mime_types.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_writer.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -108,8 +110,9 @@ ScriptPromise ClipboardPromise::CreateForRead(
     ExecutionContext* context,
     ScriptState* script_state,
     ClipboardUnsanitizedFormats* formats) {
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return ScriptPromise();
+  }
   ClipboardPromise* clipboard_promise =
       MakeGarbageCollected<ClipboardPromise>(context, script_state);
   ScriptPromise promise =
@@ -121,8 +124,9 @@ ScriptPromise ClipboardPromise::CreateForRead(
 // static
 ScriptPromise ClipboardPromise::CreateForReadText(ExecutionContext* context,
                                                   ScriptState* script_state) {
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return ScriptPromise();
+  }
   ClipboardPromise* clipboard_promise =
       MakeGarbageCollected<ClipboardPromise>(context, script_state);
   ScriptPromise promise =
@@ -136,8 +140,9 @@ ScriptPromise ClipboardPromise::CreateForWrite(
     ExecutionContext* context,
     ScriptState* script_state,
     const HeapVector<Member<ClipboardItem>>& items) {
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return ScriptPromise();
+  }
   ClipboardPromise* clipboard_promise =
       MakeGarbageCollected<ClipboardPromise>(context, script_state);
   ScriptPromise promise =
@@ -150,8 +155,9 @@ ScriptPromise ClipboardPromise::CreateForWrite(
 ScriptPromise ClipboardPromise::CreateForWriteText(ExecutionContext* context,
                                                    ScriptState* script_state,
                                                    const String& data) {
-  if (!script_state->ContextIsValid())
+  if (!script_state->ContextIsValid()) {
     return ScriptPromise();
+  }
   ClipboardPromise* clipboard_promise =
       MakeGarbageCollected<ClipboardPromise>(context, script_state);
   ScriptPromise promise =
@@ -166,8 +172,7 @@ ClipboardPromise::ClipboardPromise(ExecutionContext* context,
       script_state_(script_state),
       script_promise_resolver_(
           MakeGarbageCollected<ScriptPromiseResolver>(script_state)),
-      permission_service_(context),
-      clipboard_representation_index_(0) {}
+      permission_service_(context) {}
 
 ClipboardPromise::~ClipboardPromise() = default;
 
@@ -244,15 +249,16 @@ void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
     will_read_unprocessed_html_ = true;
   }
 
-  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_READ,
-                    /*will_be_sanitized=*/false,
-                    WTF::BindOnce(&ClipboardPromise::HandleReadWithPermission,
-                                  WrapPersistent(this)));
+  ValidatePreconditions(
+      mojom::blink::PermissionName::CLIPBOARD_READ,
+      /*will_be_sanitized=*/false,
+      WTF::BindOnce(&ClipboardPromise::HandleReadWithPermission,
+                    WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleReadText() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  RequestPermission(
+  ValidatePreconditions(
       mojom::blink::PermissionName::CLIPBOARD_READ,
       /*will_be_sanitized=*/true,
       WTF::BindOnce(&ClipboardPromise::HandleReadTextWithPermission,
@@ -262,8 +268,7 @@ void ClipboardPromise::HandleReadText() {
 void ClipboardPromise::HandleWrite(
     const HeapVector<Member<ClipboardItem>>& clipboard_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!GetExecutionContext())
-    return;
+  DCHECK(GetExecutionContext());
 
   if (clipboard_items.size() > 1) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
@@ -292,16 +297,17 @@ void ClipboardPromise::HandleWrite(
 
   // Input in standard formats is sanitized, so the write will be sanitized
   // unless there are custom formats.
-  RequestPermission(mojom::blink::PermissionName::CLIPBOARD_WRITE,
-                    /*will_be_sanitized=*/write_custom_format_types_.empty(),
-                    WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
-                                  WrapPersistent(this)));
+  ValidatePreconditions(
+      mojom::blink::PermissionName::CLIPBOARD_WRITE,
+      /*will_be_sanitized=*/write_custom_format_types_.empty(),
+      WTF::BindOnce(&ClipboardPromise::HandleWriteWithPermission,
+                    WrapPersistent(this)));
 }
 
 void ClipboardPromise::HandleWriteText(const String& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   plain_text_ = data;
-  RequestPermission(
+  ValidatePreconditions(
       mojom::blink::PermissionName::CLIPBOARD_WRITE,
       /*will_be_sanitized=*/true,
       WTF::BindOnce(&ClipboardPromise::HandleWriteTextWithPermission,
@@ -519,7 +525,7 @@ PermissionService* ClipboardPromise::GetPermissionService() {
   return permission_service_.get();
 }
 
-void ClipboardPromise::RequestPermission(
+void ClipboardPromise::ValidatePreconditions(
     mojom::blink::PermissionName permission,
     bool will_be_sanitized,
     base::OnceCallback<void(::blink::mojom::PermissionStatus)> callback) {
@@ -529,8 +535,7 @@ void ClipboardPromise::RequestPermission(
          permission == mojom::blink::PermissionName::CLIPBOARD_WRITE);
 
   ExecutionContext* context = GetExecutionContext();
-  if (!context)
-    return;
+  DCHECK(context);
   LocalDOMWindow& window = *To<LocalDOMWindow>(context);
   DCHECK(window.IsSecureContext());  // [SecureContext] in IDL
 
@@ -556,6 +561,17 @@ void ClipboardPromise::RequestPermission(
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         kFeaturePolicyMessage));
+    return;
+  }
+
+  if (RuntimeEnabledFeatures::AsyncClipboardImplicitPermissionEnabled() &&
+      ((permission == mojom::blink::PermissionName::CLIPBOARD_WRITE &&
+        ClipboardCommands::IsExecutingCutOrCopy(*context)) ||
+       (permission == mojom::blink::PermissionName::CLIPBOARD_READ &&
+        ClipboardCommands::IsExecutingPaste(*context)))) {
+    GetClipboardTaskRunner()->PostTask(
+        FROM_HERE, WTF::BindOnce(std::move(callback),
+                                 mojom::blink::PermissionStatus::GRANTED));
     return;
   }
 
