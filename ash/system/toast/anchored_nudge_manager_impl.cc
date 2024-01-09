@@ -25,6 +25,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/event_monitor.h"

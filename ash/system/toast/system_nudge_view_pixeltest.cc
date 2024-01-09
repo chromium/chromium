@@ -147,4 +147,20 @@ TEST_F(SystemNudgeViewPixelTest, TitleAndLeadingImageWithButtons) {
       "screenshot", /*revision_number=*/0, GetContentsView()));
 }
 
+TEST_F(SystemNudgeViewPixelTest, AnchoredNudgeWithPointyCorner) {
+  // Set up base nudge data and add an anchor view.
+  auto nudge_data = CreateBaseNudgeData();
+  auto* anchor_view =
+      GetContentsView()->AddChildView(std::make_unique<views::View>());
+  nudge_data.SetAnchorView(anchor_view);
+  // Set a corner-anchored arrow that will create a pointy corner.
+  nudge_data.arrow = views::BubbleBorder::Arrow::BOTTOM_RIGHT;
+
+  GetContentsView()->AddChildView(
+      std::make_unique<SystemNudgeView>(nudge_data));
+
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "screenshot", /*revision_number=*/0, GetContentsView()));
+}
+
 }  // namespace ash

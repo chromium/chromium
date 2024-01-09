@@ -93,6 +93,9 @@ class ASH_EXPORT AnchoredNudge : public display::DisplayObserver,
   // Whether the nudge should set its arrow based on shelf alignment.
   const bool anchored_to_shelf_;
 
+  // Whether the nudge should set its bounds anchored by its corners.
+  const bool is_corner_anchored_;
+
   // Owned by the views hierarchy. Contents view of the anchored nudge.
   raw_ptr<SystemNudgeView> system_nudge_view_ = nullptr;
 
