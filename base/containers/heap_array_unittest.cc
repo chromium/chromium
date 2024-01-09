@@ -110,6 +110,23 @@ TEST(HeapArrayDeathTest, BadIndex) {
   EXPECT_DEATH_IF_SUPPORTED(vec[2], "");
 }
 
+TEST(HeapArray, AsSpan) {
+  {
+    auto vec = HeapArray<uint32_t>::WithSize(2u);
+    auto s = vec.as_span();
+    static_assert(std::same_as<decltype(s), span<uint32_t>>);
+    EXPECT_EQ(s.size(), 2u);
+    EXPECT_EQ(s.data(), vec.data());
+  }
+  {
+    const auto vec = HeapArray<uint32_t>::WithSize(2u);
+    auto s = vec.as_span();
+    static_assert(std::same_as<decltype(s), span<const uint32_t>>);
+    EXPECT_EQ(s.size(), 2u);
+    EXPECT_EQ(s.data(), vec.data());
+  }
+}
+
 TEST(HeapArray, Subspan) {
   auto vec = HeapArray<uint32_t>::WithSize(4u);
   for (size_t i = 0; i < vec.size(); ++i) {

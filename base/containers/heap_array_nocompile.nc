@@ -58,7 +58,7 @@ int& WontCompileIndexLifetime() {
 }
 
 base::span<int> WontCompileSpanLifetime() {
-  return HeapArray<int>::WithSize(1u).span(); // expected-error {{returning address}}
+  return HeapArray<int>::WithSize(1u).as_span(); // expected-error {{returning address}}
 }
 
 }  // namespace

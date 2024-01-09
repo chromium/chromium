@@ -91,31 +91,31 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   T* data() ABSL_ATTRIBUTE_LIFETIME_BOUND { return data_.get(); }
   const T* data() const ABSL_ATTRIBUTE_LIFETIME_BOUND { return data_.get(); }
 
-  iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND { return span().begin(); }
+  iterator begin() ABSL_ATTRIBUTE_LIFETIME_BOUND { return as_span().begin(); }
   const_iterator begin() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().begin();
+    return as_span().begin();
   }
 
-  iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND { return span().end(); }
+  iterator end() ABSL_ATTRIBUTE_LIFETIME_BOUND { return as_span().end(); }
   const_iterator end() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().end();
+    return as_span().end();
   }
 
   T& operator[](size_t idx) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span()[idx];
+    return as_span()[idx];
   }
   const T& operator[](size_t idx) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span()[idx];
+    return as_span()[idx];
   }
 
   // Access the HeapArray via spans. Note that span<T> is implicilty
-  // constructible from HeapArray<T>, so an explicit call to .span() is
+  // constructible from HeapArray<T>, so an explicit call to .as_span() is
   // most useful, say, when the compiler can't deduce a template
   // argument type.
-  base::span<T> span() ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  base::span<T> as_span() ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::span<T>(data_.get(), size_);
   }
-  base::span<const T> span() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
+  base::span<const T> as_span() const ABSL_ATTRIBUTE_LIFETIME_BOUND {
     return base::span<const T>(data_.get(), size_);
   }
 
@@ -126,30 +126,30 @@ class TRIVIAL_ABI GSL_OWNER HeapArray {
   // the HeapArray.
   base::span<T> subspan(size_t offset, size_t count = base::dynamic_extent)
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().subspan(offset, count);
+    return as_span().subspan(offset, count);
   }
   base::span<const T> subspan(size_t offset,
                               size_t count = base::dynamic_extent) const
       ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().subspan(offset, count);
+    return as_span().subspan(offset, count);
   }
 
   // Returns a span over the first `count` elements of the HeapArray. A CHECK()
   // occurs if the `count` is larger than size of the HeapArray.
   base::span<T> first(size_t count) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().first(count);
+    return as_span().first(count);
   }
   base::span<const T> first(size_t count) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().first(count);
+    return as_span().first(count);
   }
 
   // Returns a span over the last `count` elements of the HeapArray. A CHECK()
   // occurs if the `count` is larger than size of the HeapArray.
   base::span<T> last(size_t count) ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().last(count);
+    return as_span().last(count);
   }
   base::span<const T> last(size_t count) const ABSL_ATTRIBUTE_LIFETIME_BOUND {
-    return span().last(count);
+    return as_span().last(count);
   }
 
  private:
