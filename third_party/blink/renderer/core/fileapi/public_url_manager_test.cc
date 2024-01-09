@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/blob/testing/fake_blob_url_store.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -125,6 +126,8 @@ class PublicURLManagerTestP
   }
 
  protected:
+  test::TaskEnvironment task_environment_;
+
   PublicURLManagerTestCase test_case_;
   base::test::ScopedFeatureList scoped_feature_list_;
 
