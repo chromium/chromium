@@ -552,6 +552,27 @@ void ShellSurface::SetUseImmersiveForFullscreen(bool value) {
     Configure();
 }
 
+void ShellSurface::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
+  ShellSurfaceBase::OnDidProcessDisplayChanges(configuration_change);
+
+  // Keep client surface coordinates in sync with the server when display
+  // layouts change.
+  const bool should_update_window_position = base::ranges::any_of(
+      configuration_change.display_metrics_changes,
+      [id = output_display_id()](
+          const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.display->id() == id &&
+               (change.changed_metrics &
+                    display::DisplayObserver::DISPLAY_METRIC_BOUNDS ||
+                change.changed_metrics &
+                    display::DisplayObserver::DISPLAY_METRIC_WORK_AREA);
+      });
+  if (should_update_window_position) {
+    OnWidgetScreenPositionChanged();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // aura::WindowObserver overrides:
 
@@ -572,9 +593,7 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     }
 
     if (new_bounds.size() == old_bounds.size()) {
-      if (!origin_change_callback_.is_null())
-        origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
-      UpdateHostWindowOrigin();
+      OnWidgetScreenPositionChanged();
       return;
     }
 
@@ -651,8 +670,7 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
       Configure();
 
   } else {
-    if (!origin_change_callback_.is_null())
-      origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+    OnWidgetScreenPositionChanged();
   }
 }
 
@@ -1115,6 +1133,14 @@ void ShellSurface::UpdateLayerSurfaceRange(
       layer->SetOldestAcceptableFallback(viz::SurfaceId{});
     }
   }
+}
+
+void ShellSurface::OnWidgetScreenPositionChanged() {
+  if (!origin_change_callback_.is_null()) {
+    origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+  }
+  // Ensure the host window's origin is kept in sync with the widget.
+  UpdateHostWindowOrigin();
 }
 
 }  // namespace exo

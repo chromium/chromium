@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/shell.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -122,6 +123,7 @@ SurfaceTreeHost::SurfaceTreeHost(const std::string& window_name,
                           ->SharedMainThreadRasterContextProvider();
   DCHECK(context_provider_);
   context_provider_->AddObserver(this);
+  display_manager_observation_.Observe(ash::Shell::Get()->display_manager());
 }
 
 SurfaceTreeHost::~SurfaceTreeHost() {
@@ -264,12 +266,20 @@ SecurityDelegate* SurfaceTreeHost::GetSecurityDelegate() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// display::DisplayObserver:
-void SurfaceTreeHost::OnDisplayMetricsChanged(const display::Display& display,
-                                              uint32_t changed_metrics) {
+// display::DisplayManagerObserver:
+
+void SurfaceTreeHost::OnDidProcessDisplayChanges(
+    const DisplayConfigurationChange& configuration_change) {
   // The output of the surface may change when the primary display changes.
-  if (changed_metrics & DisplayObserver::DISPLAY_METRIC_PRIMARY)
+  const bool primary_changed = base::ranges::any_of(
+      configuration_change.display_metrics_changes,
+      [](const DisplayManagerObserver::DisplayMetricsChange& change) {
+        return change.changed_metrics &
+               display::DisplayObserver::DISPLAY_METRIC_PRIMARY;
+      });
+  if (primary_changed) {
     UpdateDisplayOnTree();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

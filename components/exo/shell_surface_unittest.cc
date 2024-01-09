@@ -58,6 +58,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/display/display.h"
+#include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -4345,6 +4346,62 @@ TEST_F(ShellSurfaceTest,
 
   // Should not take compositor lock.
   EXPECT_FALSE(compositor->IsLocked());
+}
+
+// Tests that updates to the display layout configuration update the origin on
+// relevant hosted surfaces.
+TEST_F(ShellSurfaceTest, DisplayLayoutConfigurationUpdatesSurfaceOrigin) {
+  // Start with a single display configuration.
+  UpdateDisplay("800x600");
+
+  // Create the surface.
+  constexpr gfx::Size kBufferSize(256, 256);
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder(kBufferSize).SetNoCommit().BuildShellSurface();
+
+  // Set origin and leave/enter callbacks.
+  gfx::Point client_origin;
+  int64_t old_display_id = display::kInvalidDisplayId;
+  int64_t new_display_id = display::kInvalidDisplayId;
+  shell_surface->set_origin_change_callback(base::BindLambdaForTesting(
+      [&](const gfx::Point& origin) { client_origin = origin; }));
+  shell_surface->root_surface()->set_leave_enter_callback(
+      base::BindLambdaForTesting([&](int64_t old_id, int64_t new_id) {
+        old_display_id = old_id;
+        new_display_id = new_id;
+        return true;
+      }));
+
+  // Creating a new shell surface should notify on which display it is created.
+  constexpr gfx::Point kInitialOrigin = {200, 200};
+  shell_surface->root_surface()->Commit();
+  shell_surface->GetWidget()->SetBounds({kInitialOrigin, kBufferSize});
+  EXPECT_EQ(display::kInvalidDisplayId, old_display_id);
+  EXPECT_EQ(GetPrimaryDisplay().id(), new_display_id);
+  EXPECT_EQ(kInitialOrigin, client_origin);
+
+  // Attaching a second display should not change where the surface is located.
+  UpdateDisplay("800x600,800x600");
+  EXPECT_EQ(kInitialOrigin, client_origin);
+
+  // Move the window to second display.
+  constexpr gfx::Point kNewOrigin = {1000, 200};
+  shell_surface->GetWidget()->SetBounds({kNewOrigin, kBufferSize});
+  EXPECT_EQ(GetPrimaryDisplay().id(), old_display_id);
+  EXPECT_EQ(GetSecondaryDisplay().id(), new_display_id);
+  EXPECT_EQ(kNewOrigin, client_origin);
+
+  // Reposition the second display, the surface should receive an origin change
+  // event representing the updated bounds in screen coordinates.
+  constexpr int kVerticalOffset = 200;
+  display::DisplayLayoutBuilder builder(GetPrimaryDisplay().id());
+  builder.SetSecondaryPlacement(GetSecondaryDisplay().id(),
+                                display::DisplayPlacement::RIGHT,
+                                kVerticalOffset);
+  ash::Shell::Get()->display_manager()->SetLayoutForCurrentDisplays(
+      builder.Build());
+
+  EXPECT_EQ(kNewOrigin + gfx::Vector2d(0, kVerticalOffset), client_origin);
 }
 
 }  // namespace exo
