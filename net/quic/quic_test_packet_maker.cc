@@ -527,8 +527,8 @@ QuicTestPacketMaker::MakeAckRstAndDataPacket(
   InitializeHeader(num);
 
   AddQuicAckFrame(largest_received, smallest_received);
-  AddQuicStreamFrame(data_id, fin, data);
   AddQuicRstStreamFrame(stream_id, error_code);
+  AddQuicStreamFrame(data_id, fin, data);
   return BuildPacket();
 }
 

@@ -36,7 +36,6 @@ config("quiche_internal_config") {
   if (is_clang) {
     cflags += [
       "-Wno-unused-private-field",
-      "-Wno-shadow",
       "-Wno-sign-compare",
     ]
   }
