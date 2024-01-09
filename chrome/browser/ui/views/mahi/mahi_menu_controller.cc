@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 
+#include "chrome/browser/ui/views/mahi/mahi_menu_view.h"
+
 namespace chromeos::mahi {
 
 MahiMenuController::MahiMenuController() = default;
@@ -17,7 +19,8 @@ void MahiMenuController::OnContextMenuShown(Profile* profile) {
 void MahiMenuController::OnTextAvailable(const gfx::Rect& anchor_bounds,
                                          const std::string& selected_text,
                                          const std::string& surrounding_text) {
-  // TODO(b/315596183): Finish this function.
+  menu_widget_ = MahiMenuView::CreateWidget(anchor_bounds);
+  menu_widget_->ShowInactive();
 }
 
 void MahiMenuController::OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) {
@@ -25,7 +28,9 @@ void MahiMenuController::OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) {
 }
 
 void MahiMenuController::OnDismiss(bool is_other_command_executed) {
-  // TODO(b/315596183): Finish this function.
+  if (menu_widget_ && !menu_widget_->IsActive()) {
+    menu_widget_.reset();
+  }
 }
 
 }  // namespace chromeos::mahi

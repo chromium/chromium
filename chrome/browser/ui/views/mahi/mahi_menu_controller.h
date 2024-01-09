@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_MAHI_MAHI_MENU_CONTROLLER_H_
 
-#include "base/memory/weak_ptr.h"
+#include <string>
+
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "ui/views/widget/unique_widget_ptr.h"
+#include "ui/views/widget/widget.h"
 
 class Profile;
 
@@ -30,10 +32,10 @@ class MahiMenuController : public chromeos::ReadWriteCardController {
   void OnAnchorBoundsChanged(const gfx::Rect& anchor_bounds) override;
   void OnDismiss(bool is_other_command_executed) override;
 
+  views::Widget* menu_widget_for_test() { return menu_widget_.get(); }
+
  private:
   views::UniqueWidgetPtr menu_widget_;
-
-  base::WeakPtrFactory<MahiMenuController> weak_factory_{this};
 };
 
 }  // namespace chromeos::mahi

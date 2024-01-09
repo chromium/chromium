@@ -8,10 +8,13 @@ source_set("mahi") {
   sources = [
     "mahi_menu_controller.cc",
     "mahi_menu_controller.h",
+    "mahi_menu_view.cc",
+    "mahi_menu_view.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/editor_menu/public/cpp",
     "//ui/gfx",
     "//ui/views",
