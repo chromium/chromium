@@ -44993,6 +44993,9 @@ Called by update_net_error_codes.py.-->
   <int value="5" label="System update"/>
   <int value="6" label="Exiting from dark resume failed"/>
   <int value="7" label="Other request to powerd"/>
+  <int value="8" label="Hibernate failed"/>
+  <int value="9" label="Hibernate"/>
+  <int value="10" label="Hibernate (low battery)"/>
 </enum>
 
 <enum name="ShutdownType">
