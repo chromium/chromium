@@ -9,6 +9,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 
 namespace ash::settings {
 
@@ -216,9 +217,9 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
   RunSettingsTest("device_page/customize_button_dropdown_item_test.js");
 }
 
-class OSSettingsDevicePeripheralAndInputEnabled : public OSSettingsMochaTest {
+class OSSettingsDevicePeripheralAndSplitEnabled : public OSSettingsMochaTest {
  protected:
-  OSSettingsDevicePeripheralAndInputEnabled() {
+  OSSettingsDevicePeripheralAndSplitEnabled() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled=*/
         {
@@ -232,7 +233,7 @@ class OSSettingsDevicePeripheralAndInputEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageCustomizeButtonRow) {
   RunSettingsTest("device_page/customize_button_row_test.js");
 }
@@ -241,22 +242,22 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageCustomizeButtonSelect) {
   RunSettingsTest("device_page/customize_button_select_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageCustomizeButtonsSubsection) {
   RunSettingsTest("device_page/customize_buttons_subsection_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageCustomizeMouseButtonsSubpage) {
   RunSettingsTest("device_page/customize_mouse_buttons_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageCustomizePenButtonsSubpage) {
   RunSettingsTest("device_page/customize_pen_buttons_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageCustomizeTabletButtonsSubpage) {
   RunSettingsTest("device_page/customize_tablet_buttons_subpage_test.js");
 }
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
       "device_page/display_settings_mojo_interface_provider_test.js");
 }
 
-IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndInputEnabled,
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
                        DevicePageDragAndDropManager) {
   RunSettingsTest("device_page/drag_and_drop_manager_test.js");
 }
@@ -289,5 +290,252 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest, DevicePageFakeCrosAudioConfig) {
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        DevicePageFakeInputDeviceSettingsProvider) {
   RunSettingsTest("device_page/fake_input_device_settings_provider_test.js");
+}
+
+class OSSettingsDeviceFKeyRowTest : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceFKeyRowTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kInputDeviceSettingsSplit,
+            ash::features::kAltClickAndSixPackCustomization,
+            ::features::kSupportF11AndF12KeyShortcuts,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceFKeyRowTest, DevicePageFKeyRow) {
+  RunSettingsTest("device_page/fkey_row_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
+                       DevicePageGraphicsTabletSubpage) {
+  RunSettingsTest("device_page/graphics_tablet_subpage_test.js");
+}
+
+class OSSettingsDeviceSplitEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceSplitEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kInputDeviceSettingsSplit);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePageInputDeviceMojoInterfaceProvider) {
+  RunSettingsTest("device_page/input_device_mojo_interface_provider_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
+                       DevicePageKeyCombinationInputDialog) {
+  RunSettingsTest("device_page/key_combination_input_dialog_test.js");
+}
+
+class OSSettingsDevicePeripheralEnabledSplitDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDevicePeripheralEnabledSplitDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+        },
+        /*disabled=*/{
+            ash::features::kInputDeviceSettingsSplit,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralEnabledSplitDisabled,
+                       DevicePageKeyboard) {
+  RunSettingsTest("device_page/keyboard_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePageKeyboardSixPackKeyRow) {
+  RunSettingsTest("device_page/keyboard_six_pack_key_row_test.js");
+}
+
+class OSSettingsDeviceSplitEnabledRevampDisabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceSplitEnabledRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kInputDeviceSettingsSplit,
+        },
+        /*disabled=*/{
+            ash::features::kOsSettingsRevampWayfinding,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabledRevampDisabled,
+                       DevicePagePerDeviceKeyboard) {
+  RunSettingsTest("device_page/per_device_keyboard_test.js");
+}
+
+class OSSettingsDeviceRevampAndSplitEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceRevampAndSplitEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kInputDeviceSettingsSplit,
+            ash::features::kOsSettingsRevampWayfinding,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceRevampAndSplitEnabled,
+                       DevicePagePerDeviceKeyboardRevamp) {
+  RunSettingsTest("device_page/per_device_keyboard_test.js");
+}
+
+class OSSettingsDeviceAltClickAndSplitEnabled : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDeviceAltClickAndSplitEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kAltClickAndSixPackCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceAltClickAndSplitEnabled,
+                       DevicePagePerDeviceKeyboardRemapKeys) {
+  RunSettingsTest("device_page/per_device_keyboard_remap_keys_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceAltClickAndSplitEnabled,
+                       DevicePagePerDeviceKeyboardSubsection) {
+  RunSettingsTest("device_page/per_device_keyboard_subsection_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled, DevicePagePerDeviceMouse) {
+  RunSettingsTest("device_page/per_device_mouse_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
+                       DevicePagePerDeviceMouseSubsection) {
+  RunSettingsTest("device_page/per_device_mouse_subsection_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePagePerDevicePointingStick) {
+  RunSettingsTest("device_page/per_device_pointing_stick_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePagePerDevicePointingStickSubsection) {
+  RunSettingsTest("device_page/per_device_pointing_stick_subsection_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePagePerDeviceTouchpad) {
+  RunSettingsTest("device_page/per_device_touchpad_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDeviceSplitEnabled,
+                       DevicePagePerDeviceTouchpadSubsection) {
+  RunSettingsTest("device_page/per_device_touchpad_subsection_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralEnabledSplitDisabled,
+                       DevicePagePointers) {
+  RunSettingsTest("device_page/pointers_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampDisabled, DevicePagePower) {
+  RunSettingsTest("device_page/power_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       DevicePagePowerRevamp) {
+  RunSettingsTest("device_page/power_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       DevicePagePrintingSettingsCard) {
+  RunSettingsTest("os_printing_page/printing_settings_card_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampEnabled,
+                       DevicePageInputSettings) {
+  RunSettingsTest("device_page/device_page_input_settings_test.js");
+}
+
+class OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+        },
+        /*disabled=*/{ash::features::kOsSettingsRevampWayfinding});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabledRevampDisabled,
+                       DevicePageStorage) {
+  RunSettingsTest("device_page/storage_test.js");
+}
+
+class OSSettingsDevicePeripheralAndSplitAndRevampEnabled
+    : public OSSettingsMochaTest {
+ protected:
+  OSSettingsDevicePeripheralAndSplitAndRevampEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled=*/
+        {
+            ash::features::kPeripheralCustomization,
+            ash::features::kInputDeviceSettingsSplit,
+            ash::features::kOsSettingsRevampWayfinding,
+        },
+        /*disabled=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitAndRevampEnabled,
+                       DevicePageStorageRevamp) {
+  RunSettingsTest("device_page/storage_test.js");
+}
+
+IN_PROC_BROWSER_TEST_F(OSSettingsDevicePeripheralAndSplitEnabled,
+                       DevicePageStylus) {
+  RunSettingsTest("device_page/stylus_test.js");
 }
 }  // namespace ash::settings
