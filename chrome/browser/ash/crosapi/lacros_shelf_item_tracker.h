@@ -5,6 +5,7 @@
 #define CHROME_BROWSER_ASH_CROSAPI_LACROS_SHELF_ITEM_TRACKER_H_
 
 #include <map>
+#include <optional>
 #include <string>
 
 #include "base/scoped_multi_source_observation.h"
@@ -12,7 +13,6 @@
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -61,7 +61,7 @@ class LacrosShelfItemTracker : public mojom::LacrosShelfItemTracker,
     WindowInfo();
     ~WindowInfo();
     raw_ptr<aura::Window> window;
-    absl::optional<mojom::WindowDataPtr> window_data;
+    std::optional<mojom::WindowDataPtr> window_data;
   };
 
   // If |window_id| is present in both |all_lacros_windows_| and
