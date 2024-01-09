@@ -576,6 +576,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kSysUiDownloadsIntegrationV2);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kNightLight);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kNotificationCenterController);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationExpansionAnimation);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kNotificationImageDrag);
@@ -1110,6 +1112,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEducationEnrollmentOobeFlowEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEnrollmentNudgingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNewLockScreenReauthLayoutEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSysUiDownloadsIntegrationV2Enabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationCenterControllerEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsNotificationExpansionAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsNotificationExperimentalShortTimeoutsEnabled();

@@ -1863,6 +1863,12 @@ BASE_FEATURE(kSysUiDownloadsIntegrationV2,
 // Enables the Night Light feature.
 BASE_FEATURE(kNightLight, "NightLight", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Extracts controller logic from child views of `NotificationCenterView` to
+// place it in a new `NotificationCenterController` class.
+BASE_FEATURE(kNotificationCenterController,
+             "NotificationCenterController",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabled notification expansion animation.
 BASE_FEATURE(kNotificationExpansionAnimation,
              "NotificationExpansionAnimation",
@@ -3828,6 +3834,10 @@ bool IsSuppressTextMessagesEnabled() {
 
 bool IsSysUiDownloadsIntegrationV2Enabled() {
   return base::FeatureList::IsEnabled(kSysUiDownloadsIntegrationV2);
+}
+
+bool IsNotificationCenterControllerEnabled() {
+  return base::FeatureList::IsEnabled(kNotificationCenterController);
 }
 
 bool IsNotificationExpansionAnimationEnabled() {
