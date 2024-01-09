@@ -153,6 +153,7 @@ if (enable_vr) {
     if (enable_openxr) {
       sources += [
         "openxr/context_provider_callbacks.h",
+        "openxr/exit_xr_present_reason.h",
         "openxr/openxr_anchor_manager.cc",
         "openxr/openxr_anchor_manager.h",
         "openxr/openxr_api_wrapper.cc",
@@ -204,8 +205,6 @@ if (enable_vr) {
         "openxr/openxr_view_configuration.cc",
         "openxr/openxr_view_configuration.h",
         "test/test_hook.h",
-        "windows/compositor_base.cc",
-        "windows/compositor_base.h",
       ]
 
       if (is_win) {
