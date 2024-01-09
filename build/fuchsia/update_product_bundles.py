@@ -187,11 +187,12 @@ def main():
       else:
         bucket = 'fuchsia-sdk' if args.internal else 'fuchsia'
         base_url = f'gs://{bucket}/development/{new_hash}'
-      download_url = common.run_ffx_command(
-          cmd=['product', 'lookup', product, new_hash, '--base-url', base_url] +
+      lookup_output = common.run_ffx_command(
+          cmd=['--machine', 'json', 'product', 'lookup', product, new_hash, '--base-url', base_url] +
           auth_args,
           check=True,
           capture_output=True).stdout.strip()
+      download_url = json.loads(lookup_output)['transfer_manifest_url']
       logging.info(f'Downloading {product} from {base_url}.')
       common.run_ffx_command(
           cmd=['product', 'download', download_url, image_dir] + auth_args,

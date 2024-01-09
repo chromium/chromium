@@ -114,7 +114,12 @@ class TestUpdateProductBundles(unittest.TestCase):
       return
     auth_file = os.path.abspath(
         os.path.join(os.path.dirname(__file__), 'get_auth_token.py'))
-    self._ffx_mock.return_value.stdout = 'http://download-url'
+    self._ffx_mock.return_value.stdout = json.dumps({
+        "name": "core.x64",
+        "product_version": "17.20240106.2.1",
+        "transfer_manifest_url": "http://download-url"
+    })
+
     with mock.patch(
         'sys.argv',
         ['update_product_bundles.py', 'terminal.x64', '--internal']):
@@ -122,7 +127,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     new_hash = update_product_bundles.internal_hash()
     self._ffx_mock.assert_has_calls([
         mock.call(cmd=[
-            'product', 'lookup', 'terminal.x64', new_hash, '--base-url',
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', new_hash, '--base-url',
             f'gs://fuchsia-sdk/development/{new_hash}', '--auth', auth_file
         ],
                   check=True,
