@@ -17,6 +17,7 @@ class Widget;
 
 namespace ash {
 
+class NotificationCenterController;
 class NotificationCenterTray;
 class NotificationCenterView;
 class TrayBubbleView;
@@ -44,9 +45,10 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
   TrayBubbleView* GetBubbleView();
   views::Widget* GetBubbleWidget();
 
-  NotificationCenterView* notification_center_view() {
-    return notification_center_view_;
-  }
+  // Based on the `NotificationCenterController` feature:
+  // Returns `notification_center_view_` when the feature is disabled.
+  // Returns the view cached in `notification_center_controller_` when enabled.
+  NotificationCenterView* GetNotificationCenterView();
 
  private:
   friend class NotificationCenterTestApi;
@@ -62,7 +64,13 @@ class ASH_EXPORT NotificationCenterBubble : public ScreenLayoutObserver {
 
   // The main view responsible for showing all notification content in this
   // bubble. Owned by `TrayBubbleView`.
+  // Used when `NotificationCenterController` is disabled.
   raw_ptr<NotificationCenterView> notification_center_view_ = nullptr;
+
+  // The controller responsible for managing the NotificationCenterView and its
+  // children including the `StackedNotificationBar` and `NotificationListView`.
+  // Used when `NotificationCenterController` is enabled.
+  std::unique_ptr<NotificationCenterController> notification_center_controller_;
 
   std::unique_ptr<TrayBubbleView> bubble_view_;
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;

@@ -1832,6 +1832,8 @@ component("ash") {
     "system/notification_center/metrics_utils.h",
     "system/notification_center/notification_center_bubble.cc",
     "system/notification_center/notification_center_bubble.h",
+    "system/notification_center/notification_center_controller.cc",
+    "system/notification_center/notification_center_controller.h",
     "system/notification_center/notification_center_tray.cc",
     "system/notification_center/notification_center_tray.h",
     "system/notification_center/notification_grouping_controller.cc",

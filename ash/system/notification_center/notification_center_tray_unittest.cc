@@ -32,28 +32,50 @@ namespace ash {
 constexpr char kNotificationCenterTrayNoNotificationsToastId[] =
     "notification_center_tray_toast_ids.no_notifications";
 
-class NotificationCenterTrayTest : public AshTestBase {
+class NotificationCenterTrayTestBase : public AshTestBase {
  public:
-  NotificationCenterTrayTest() = default;
-  NotificationCenterTrayTest(const NotificationCenterTrayTest&) = delete;
-  NotificationCenterTrayTest& operator=(const NotificationCenterTrayTest&) =
-      delete;
-  ~NotificationCenterTrayTest() override = default;
+  NotificationCenterTrayTestBase(bool enable_notification_center_controller)
+      : enable_notification_center_controller_(
+            enable_notification_center_controller) {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kNotificationCenterController,
+        IsNotificationCenterControllerEnabled());
+  }
 
   void SetUp() override {
     AshTestBase::SetUp();
-
     test_api_ = std::make_unique<NotificationCenterTestApi>();
   }
 
   NotificationCenterTestApi* test_api() { return test_api_.get(); }
 
+  bool IsNotificationCenterControllerEnabled() const {
+    return enable_notification_center_controller_;
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<NotificationCenterTestApi> test_api_;
+  bool enable_notification_center_controller_ = false;
 };
 
+class NotificationCenterTrayTest
+    : public NotificationCenterTrayTestBase,
+      public testing::WithParamInterface<
+          /*enable_notification_center_controller=*/bool> {
+ public:
+  NotificationCenterTrayTest()
+      : NotificationCenterTrayTestBase(
+            /*enable_notification_center_controller=*/GetParam()) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NotificationCenterTrayTest,
+    /*enable_notification_center_controller=*/testing::Bool());
+
 // Test the initial state.
-TEST_F(NotificationCenterTrayTest, ShowTrayButtonOnNotificationAvailability) {
+TEST_P(NotificationCenterTrayTest, ShowTrayButtonOnNotificationAvailability) {
   EXPECT_FALSE(test_api()->GetTray()->GetVisible());
 
   std::string id = test_api()->AddNotification();
@@ -65,7 +87,7 @@ TEST_F(NotificationCenterTrayTest, ShowTrayButtonOnNotificationAvailability) {
 }
 
 // Bubble creation and destruction.
-TEST_F(NotificationCenterTrayTest, ShowAndHideBubbleOnUserInteraction) {
+TEST_P(NotificationCenterTrayTest, ShowAndHideBubbleOnUserInteraction) {
   test_api()->AddNotification();
 
   auto* tray = test_api()->GetTray();
@@ -81,7 +103,7 @@ TEST_F(NotificationCenterTrayTest, ShowAndHideBubbleOnUserInteraction) {
 
 // Hitting escape after opening the bubble should destroy the bubble
 // gracefully.
-TEST_F(NotificationCenterTrayTest, EscapeClosesBubble) {
+TEST_P(NotificationCenterTrayTest, EscapeClosesBubble) {
   auto* tray = test_api()->GetTray();
   LeftClickOn(tray);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
@@ -91,7 +113,7 @@ TEST_F(NotificationCenterTrayTest, EscapeClosesBubble) {
 
 // Removing all notifications by hitting the `clear_all_button_` should result
 // in the bubble being destroyed and the tray bubble going invisible.
-TEST_F(NotificationCenterTrayTest,
+TEST_P(NotificationCenterTrayTest,
        ClearAllNotificationsDestroysBubbleAndHidesTray) {
   test_api()->AddNotification();
   test_api()->AddNotification();
@@ -107,8 +129,8 @@ TEST_F(NotificationCenterTrayTest,
 
 // The last notification being removed directly by the
 // `message_center::MessageCenter` API should result in the bubble being
-// destroyed and tray visibilty being updated.
-TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
+// destroyed and tray visibility being updated.
+TEST_P(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
   std::string id = test_api()->AddNotification();
   test_api()->RemoveNotification(id);
 
@@ -119,7 +141,7 @@ TEST_F(NotificationCenterTrayTest, NotificationsRemovedByMessageCenterApi) {
 // When the only notifications present are all in the same group, removing the
 // parent notification of that group should result in the bubble being destroyed
 // and the tray being hidden.
-TEST_F(NotificationCenterTrayTest,
+TEST_P(NotificationCenterTrayTest,
        RemovingGroupParentDestroysBubbleAndHidesTray) {
   // Add two notifications that belong to the same group.
   const std::string url = "http://test-url.com";
@@ -145,7 +167,7 @@ TEST_F(NotificationCenterTrayTest,
 // Tests that clicking on the tray immediately after all notifications have been
 // removed does not result in an empty bubble being shown. This addresses
 // b/293174118.
-TEST_F(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
+TEST_P(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
   // Add a notification to make the tray visible. Note that animations complete
   // immediately in this part of the test.
   std::string id = test_api()->AddNotification();
@@ -173,7 +195,7 @@ TEST_F(NotificationCenterTrayTest, ClickOnTrayAfterRemovingNotifications) {
 
 // Tests that opening the bubble results in existing popups being dismissed
 // and no new ones being created.
-TEST_F(NotificationCenterTrayTest, NotificationPopupsHiddenWithBubble) {
+TEST_P(NotificationCenterTrayTest, NotificationPopupsHiddenWithBubble) {
   // Adding a notification should generate a popup.
   std::string id = test_api()->AddNotification();
   EXPECT_TRUE(test_api()->IsPopupShown(id));
@@ -189,7 +211,7 @@ TEST_F(NotificationCenterTrayTest, NotificationPopupsHiddenWithBubble) {
 }
 
 // Tests that popups are shown after the notification center is closed.
-TEST_F(NotificationCenterTrayTest, NotificationPopupsShownAfterBubbleClose) {
+TEST_P(NotificationCenterTrayTest, NotificationPopupsShownAfterBubbleClose) {
   test_api()->AddNotification();
 
   // Open and close bubble to dismiss existing popups.
@@ -202,7 +224,7 @@ TEST_F(NotificationCenterTrayTest, NotificationPopupsShownAfterBubbleClose) {
 }
 
 // Keyboard accelerator shows/hides the bubble.
-TEST_F(NotificationCenterTrayTest, AcceleratorTogglesBubble) {
+TEST_P(NotificationCenterTrayTest, AcceleratorTogglesBubble) {
   test_api()->AddNotification();
   EXPECT_FALSE(test_api()->IsBubbleShown());
   // Pressing the accelerator should show the bubble.
@@ -216,7 +238,7 @@ TEST_F(NotificationCenterTrayTest, AcceleratorTogglesBubble) {
 }
 
 // Keyboard accelerator shows a toast when there are no notifications.
-TEST_F(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
+TEST_P(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
   ASSERT_EQ(test_api()->GetNotificationCount(), 0u);
   EXPECT_FALSE(ToastManager::Get()->IsToastShown(
       kNotificationCenterTrayNoNotificationsToastId));
@@ -230,7 +252,7 @@ TEST_F(NotificationCenterTrayTest, AcceleratorShowsToastWhenNoNotifications) {
 
 // Tests that the bubble automatically hides if it is visible when another
 // bubble becomes visible, and otherwise does not automatically show or hide.
-TEST_F(NotificationCenterTrayTest, BubbleHideBehavior) {
+TEST_P(NotificationCenterTrayTest, BubbleHideBehavior) {
   // Basic verification test that the notification center tray bubble can
   // show/hide itself when no other bubbles are visible.
   EXPECT_FALSE(test_api()->IsBubbleShown());
@@ -259,7 +281,7 @@ TEST_F(NotificationCenterTrayTest, BubbleHideBehavior) {
 
 // Tests that visibility of the Do not disturb icon changes with Do not disturb
 // mode.
-TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
+TEST_P(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
   // Test the case where the tray is not initially visible.
   ASSERT_FALSE(test_api()->IsTrayShown());
   EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
@@ -282,7 +304,7 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbIconVisibility) {
   EXPECT_FALSE(test_api()->IsDoNotDisturbIconShown());
 }
 
-TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
+TEST_P(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   test_api()->AddPinnedNotification();
   EXPECT_TRUE(test_api()->IsNotificationIconShown());
 
@@ -293,7 +315,7 @@ TEST_F(NotificationCenterTrayTest, DoNotDisturbUpdatesPinnedIcons) {
   EXPECT_TRUE(test_api()->IsNotificationIconShown());
 }
 
-TEST_F(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
+TEST_P(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
   // No privacy indicators when `kVideoConference` is enabled.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -308,7 +330,7 @@ TEST_F(NotificationCenterTrayTest, NoPrivacyIndicatorsWhenVcEnabled) {
 
 // Tests that the focus ring is visible and has proper size when the
 // notification center tray is focused.
-TEST_F(NotificationCenterTrayTest, FocusRing) {
+TEST_P(NotificationCenterTrayTest, FocusRing) {
   // Add a notification to make the notification center tray visible.
   test_api()->AddNotification();
   ASSERT_TRUE(test_api()->IsTrayShown());
@@ -328,7 +350,7 @@ TEST_F(NotificationCenterTrayTest, FocusRing) {
 
 // Tests that removing all notifications while the lock screen is showing hides
 // the tray.
-TEST_F(NotificationCenterTrayTest,
+TEST_P(NotificationCenterTrayTest,
        RemovingAllNotificationsOnLockScreenHidesTray) {
   // Add a notification to make the notification center tray visible.
   const std::string id = test_api()->AddNotification();
@@ -346,7 +368,7 @@ TEST_F(NotificationCenterTrayTest,
 
 // Tests that adding an initial notification while the lock screen is showing
 // shows the tray.
-TEST_F(NotificationCenterTrayTest, AddingNotificationOnLockScreenShowsTray) {
+TEST_P(NotificationCenterTrayTest, AddingNotificationOnLockScreenShowsTray) {
   // Show the lock screen.
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   ASSERT_FALSE(test_api()->IsTrayShown());
@@ -361,7 +383,7 @@ TEST_F(NotificationCenterTrayTest, AddingNotificationOnLockScreenShowsTray) {
 // Tests that `NotificationCounterView` is not still visible on secondary
 // display after logging in with a pinned notification present. This covers
 // b/284139989.
-TEST_F(NotificationCenterTrayTest,
+TEST_P(NotificationCenterTrayTest,
        NotificationCounterVisibilityForMultiDisplay) {
   // The behavior under test relies on `TrayItemView` animations being
   // scheduled, but `TrayItemView` animations are bypassed when the animation
@@ -406,28 +428,33 @@ TEST_F(NotificationCenterTrayTest,
 }
 
 // Test fixture that disables notification popups.
-class NotificationCenterTrayNoPopupsTest : public NotificationCenterTrayTest {
+class NotificationCenterTrayNoPopupsTest
+    : public NotificationCenterTrayTestBase,
+      public testing::WithParamInterface<
+          /*enable_notification_center_controller=*/bool> {
  public:
-  NotificationCenterTrayNoPopupsTest() = default;
-  NotificationCenterTrayNoPopupsTest(
-      const NotificationCenterTrayNoPopupsTest&) = delete;
-  NotificationCenterTrayNoPopupsTest& operator=(
-      const NotificationCenterTrayNoPopupsTest&) = delete;
-  ~NotificationCenterTrayNoPopupsTest() override = default;
+  NotificationCenterTrayNoPopupsTest()
+      : NotificationCenterTrayTestBase(
+            /*enable_notification_center_controller=*/GetParam()) {}
 
   void SetUp() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSuppressMessageCenterPopups);
-    NotificationCenterTrayTest::SetUp();
+    NotificationCenterTrayTestBase::SetUp();
   }
 };
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NotificationCenterTrayNoPopupsTest,
+    /*enable_notification_center_controller=*/testing::Bool());
 
 // Tests that `NotificationCenterTray`'s `TrayItemView`s show up when adding a
 // secondary display. Notification popups are disabled for this test because the
 // presence of a popup actually hides the issue (i.e. the secondary display's
 // `NotificationCenterTray`'s `TrayItemView`s work as intended when a popup is
 // present). This covers b/281158734.
-TEST_F(NotificationCenterTrayNoPopupsTest,
+TEST_P(NotificationCenterTrayNoPopupsTest,
        TrayItemsVisibleWhenAddingSecondaryDisplay) {
   // Start with one display.
   UpdateDisplay("800x799");
