@@ -131,9 +131,15 @@ public class ChipsCoordinator {
             int position = parent.getChildAdapterPosition(view);
             boolean isFirst = position == 0;
             boolean isLast = position == parent.getAdapter().getItemCount() - 1;
+            // using 'parent' not 'view' since 'view' did not layout yet, so view's
+            // #getLayoutDirection() won't return correct value.
+            boolean isRtl = (parent.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL);
 
-            outRect.left = isFirst ? mSidePaddingPx : mChipSpacingPx;
-            outRect.right = isLast ? mSidePaddingPx : mChipSpacingPx;
+            @Px int startPadding = isFirst ? mSidePaddingPx : mChipSpacingPx;
+            @Px int endPadding = isLast ? mSidePaddingPx : mChipSpacingPx;
+
+            outRect.left = isRtl ? endPadding : startPadding;
+            outRect.right = isRtl ? startPadding : endPadding;
         }
     }
 }
