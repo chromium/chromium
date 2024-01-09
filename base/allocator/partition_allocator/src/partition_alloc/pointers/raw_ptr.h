@@ -424,7 +424,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Move is not supported as different traits may use different ref-counts, so
   // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
-            typename Unused = std::enable_if_t<Traits != PassedTraits>>
+            typename = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE constexpr explicit raw_ptr(
       const raw_ptr<T, PassedTraits>& p) noexcept
       : wrapped_ptr_(Impl::WrapRawPtrForDuplication(
@@ -443,7 +443,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   // Move is not supported as different traits may use different ref-counts, so
   // let move operations degrade to copy, which handles it well.
   template <RawPtrTraits PassedTraits,
-            typename Unused = std::enable_if_t<Traits != PassedTraits>>
+            typename = std::enable_if_t<Traits != PassedTraits>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<T, PassedTraits>& p) noexcept {
     // Limit cross-kind assignments only to cases where `kMayDangle` gets added,
@@ -475,7 +475,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -484,7 +484,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
             Impl::Duplicate(Impl::template Upcast<T, U>(ptr.wrapped_ptr_))) {}
   // Deliberately implicit in order to support implicit upcast.
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   // NOLINTNEXTLINE(google-explicit-constructor)
@@ -508,7 +508,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   // Upcast assignment
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
@@ -527,7 +527,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
   template <typename U,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 std::is_convertible_v<U*, T*> &&
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
@@ -591,7 +591,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   template <typename U = T,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type>>>
   PA_ALWAYS_INLINE constexpr U& operator*() const {
     return *GetForDereference();
@@ -663,7 +663,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
 
   template <typename Z,
             typename U = T,
-            typename Unused = std::enable_if_t<
+            typename = std::enable_if_t<
                 !std::is_void_v<typename std::remove_cv<U>::type> &&
                 partition_alloc::internal::is_offset_type<Z>>>
   PA_ALWAYS_INLINE constexpr U& operator[](Z delta_elems) const {
