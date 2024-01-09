@@ -200,6 +200,7 @@ test("gin_unittests") {
     "converter_unittest.cc",
     "data_object_builder_unittest.cc",
     "interceptor_unittest.cc",
+    "isolate_holder_unittest.cc",
     "per_context_data_unittest.cc",
     "shell_runner_unittest.cc",
     "test/run_all_unittests.cc",

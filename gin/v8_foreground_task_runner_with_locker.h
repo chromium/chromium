@@ -36,7 +36,15 @@ class V8ForegroundTaskRunnerWithLocker : public V8ForegroundTaskRunnerBase {
   bool NonNestableTasksEnabled() const override;
 
  private:
-  raw_ptr<v8::Isolate> isolate_;
+  // This dangles because the isolate must be disposed before the task runner
+  // can safely be destroyed. V8-managed tasks in other threads might try to
+  // post more tasks whilst the isolate is being disposed (before V8 cancels
+  // them as part of disposal).
+  //
+  // Once the isolate is disposed, V8 has made sure that no more tasks should be
+  // running or get posted, and this task runner will quickly get destroyed
+  // afterwards.
+  raw_ptr<v8::Isolate, DanglingUntriaged> isolate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

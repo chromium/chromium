@@ -73,7 +73,7 @@ class FakeAutomationV8Router : public AutomationV8Router {
   }
   FakeAutomationV8Router(const FakeAutomationV8Router&) = delete;
   FakeAutomationV8Router& operator=(const FakeAutomationV8Router&) = delete;
-  virtual ~FakeAutomationV8Router() = default;
+  ~FakeAutomationV8Router() override = default;
 
   // AutomationV8Router:
   void ThrowInvalidArgumentsException(bool is_fatal = true) const override {}

@@ -4,6 +4,7 @@
 
 #include "services/accessibility/features/automation_internal_bindings.h"
 
+#include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "gin/public/context_holder.h"
@@ -43,8 +44,18 @@ class TestIsolateHolder : public BindingsIsolateHolder {
     error_count_++;
   }
 
-  void StartTestV8AndBindAutomation(
-      AutomationInternalBindings* automation_bindings) {
+  void InstallAutomation(
+      mojo::PendingAssociatedReceiver<mojom::Automation> automation) {
+    automation_bindings_ = std::make_unique<AutomationInternalBindings>(
+        this, std::move(automation));
+  }
+
+  AutomationInternalBindings* GetAutomationBindings() {
+    return automation_bindings_.get();
+  }
+
+  void StartTestV8AndBindAutomation() {
+    CHECK(automation_bindings_);
     BindingsIsolateHolder::InitializeV8();
 
     // Test isolate uses the test main thread and will block.
@@ -60,7 +71,7 @@ class TestIsolateHolder : public BindingsIsolateHolder {
 
     v8::Local<v8::ObjectTemplate> automation_template =
         v8::ObjectTemplate::New(isolate_holder_->isolate());
-    automation_bindings->AddAutomationRoutesToTemplate(&automation_template);
+    automation_bindings_->AddAutomationRoutesToTemplate(&automation_template);
     global_template->Set(isolate_holder_->isolate(), "nativeAutomationInternal",
                          automation_template);
 
@@ -79,6 +90,10 @@ class TestIsolateHolder : public BindingsIsolateHolder {
   int ErrorCount() const { return error_count_; }
 
  private:
+  // automation_bindings_ must outlive the isolate, as the isolate's heap holds
+  // references to automation_bindings_. However, the BindingsIsolateHolder must
+  // outlive automation_bindings_, so the bindings are a field in this class.
+  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
   std::unique_ptr<gin::IsolateHolder> isolate_holder_;
   std::unique_ptr<gin::ContextHolder> context_holder_;
   int error_count_ = 0;
@@ -103,34 +118,29 @@ class AutomationInternalBindingsTest : public testing::Test {
     mojo::PendingAssociatedReceiver<mojom::Automation> automation;
     service_client_->BindAutomation(
         automation.InitWithNewEndpointAndPassRemote());
-    automation_bindings_ = std::make_unique<AutomationInternalBindings>(
-        test_isolate_holder_.get(), std::move(automation));
-    test_isolate_holder_->StartTestV8AndBindAutomation(
-        automation_bindings_.get());
+    test_isolate_holder_->InstallAutomation(std::move(automation));
+    test_isolate_holder_->StartTestV8AndBindAutomation();
   }
 
   void DispatchAccessibilityEvents(const ui::AXTreeID& tree_id,
                                    const std::vector<ui::AXTreeUpdate>& updates,
                                    const gfx::Point& mouse_location,
                                    const std::vector<ui::AXEvent>& events) {
-    automation_bindings_->DispatchAccessibilityEvents(tree_id, updates,
-                                                      mouse_location, events);
+    test_isolate_holder_->GetAutomationBindings()->DispatchAccessibilityEvents(
+        tree_id, updates, mouse_location, events);
   }
 
   void DispatchLocationChange(const ui::AXTreeID& tree_id,
                               int node_id,
                               const ui::AXRelativeBounds& bounds) {
-    automation_bindings_->DispatchAccessibilityLocationChange(tree_id, node_id,
-                                                              bounds);
+    test_isolate_holder_->GetAutomationBindings()
+        ->DispatchAccessibilityLocationChange(tree_id, node_id, bounds);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  // Must outlive `automation_bindings_` which has a raw_ptr to
-  // `test_isolate_holder_`.
-  std::unique_ptr<TestIsolateHolder> test_isolate_holder_;
   std::unique_ptr<FakeServiceClient> service_client_;
-  std::unique_ptr<AutomationInternalBindings> automation_bindings_;
+  std::unique_ptr<TestIsolateHolder> test_isolate_holder_;
 };
 
 // A test to ensure that the testing framework can catch exceptions.

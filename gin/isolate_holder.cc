@@ -9,6 +9,7 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -23,6 +24,7 @@
 #include "gin/v8_isolate_memory_dump_provider.h"
 #include "gin/v8_shared_memory_dump_provider.h"
 #include "v8/include/v8-isolate.h"
+#include "v8/include/v8-locker.h"
 #include "v8/include/v8-snapshot.h"
 
 namespace gin {
@@ -127,9 +129,18 @@ IsolateHolder::IsolateHolder(
 
 IsolateHolder::~IsolateHolder() {
   isolate_memory_dump_provider_.reset();
+  {
+    std::optional<v8::Locker> locker;
+    if (access_mode_ == AccessMode::kUseLocker) {
+      locker.emplace(isolate_);
+    }
+    v8::Isolate::Scope isolate_scope(isolate_);
+    isolate_data_->NotifyBeforeDispose();
+  }
   // Calling Isolate::Dispose makes sure all threads which might access
   // PerIsolateData are finished.
   isolate_->Dispose();
+  isolate_data_->NotifyDisposed();
   isolate_data_.reset();
   isolate_ = nullptr;
 }
