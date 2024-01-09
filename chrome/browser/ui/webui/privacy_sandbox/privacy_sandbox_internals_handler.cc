@@ -22,6 +22,19 @@ PrivacySandboxInternalsHandler::PrivacySandboxInternalsHandler(
 
 PrivacySandboxInternalsHandler::~PrivacySandboxInternalsHandler() = default;
 
+void PrivacySandboxInternalsHandler::ReadPref(const std::string& pref_name,
+                                              ReadPrefCallback callback) {
+  const PrefService::Preference* pref =
+      profile_->GetPrefs()->FindPreference(pref_name);
+  if (pref) {
+    std::move(callback).Run(pref->GetValue()->Clone());
+    return;
+  }
+
+  // If the pref isn't registered we return a null Value.
+  std::move(callback).Run(base::Value());
+}
+
 void PrivacySandboxInternalsHandler::GetCookieSettings(
     GetCookieSettingsCallback callback) {
   content_settings::CookieSettings* cookie_settings =
