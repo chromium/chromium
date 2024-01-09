@@ -265,6 +265,10 @@ bool PopupViewViews::HandleKeyPressEvent(
     }
   }
 
+  if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
+    return HandleKeyPressEventForCompose(event);
+  }
+
   const bool kHasShiftModifier =
       (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
   const bool kHasNonShiftModifier =
@@ -345,6 +349,42 @@ bool PopupViewViews::HandleKeyPressEvent(
         AcceptSelectedContentOrCreditCardCell(base::TimeTicks::Now());
       }
       return false;
+    default:
+      return false;
+  }
+}
+
+bool PopupViewViews::HandleKeyPressEventForCompose(
+    const content::NativeWebKeyboardEvent& event) {
+  CHECK_EQ(controller_->GetMainFillingProduct(), FillingProduct::kCompose);
+  const bool kHasShiftModifier =
+      (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
+  switch (event.windows_key_code) {
+    case ui::VKEY_ESCAPE:
+      controller_->Hide(PopupHidingReason::kUserAborted);
+      return true;
+    case ui::VKEY_TAB:
+      if (GetSelectedCell()) {
+        if (kHasShiftModifier) {
+          // Shift+TAB should remove the selection, but keep the popup open.
+          SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
+          return true;
+        }
+        // TAB should close the popup and focus the next HTML element if the
+        // Compose entry is selected.
+        controller_->Hide(PopupHidingReason::kUserAborted);
+        return false;
+      }
+
+      // If the Compose suggestion is not selected, Shift+TAB should not be
+      // handled, but TAB should select the suggestion.
+      if (kHasShiftModifier) {
+        return false;
+      }
+      // Compose nudges have a single entry - select it.
+      SetSelectedCell(CellIndex(0, PopupRowView::CellType::kContent),
+                      PopupCellSelectionSource::kKeyboard);
+      return true;
     default:
       return false;
   }
