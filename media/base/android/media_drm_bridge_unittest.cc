@@ -331,6 +331,8 @@ TEST_F(MediaDrmBridgeTest, GetStatusForPolicy_ExternalClearKey) {
   scoped_feature_list_.InitWithFeatures({media::kExternalClearKeyForTesting},
                                         {});
 
+  // TODO(b/263310318): Remove test skip when clear key is fixed and we call
+  // into MediaDrm for Android ClearKey instead of using AesDecryptor.
   if (!MediaDrmBridge::IsKeySystemSupported(kExternalClearKeyKeySystem)) {
     GTEST_SKIP() << "ClearKey not supported on device.";
   }
