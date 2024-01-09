@@ -37,6 +37,12 @@ class PlusAddressServiceFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   // The service is intentionally null when the base::Feature is disabled.
   bool ServiceIsNULLWhileTesting() const override;
+
+  // Ensure that the service is available in incognito mode. Existing
+  // plus_addresses are still offered in that mode, while creation of new ones
+  // is disabled in the PlusAddressService implementation.
+  web::BrowserState* GetBrowserStateToUse(
+      web::BrowserState* context) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_MODEL_PLUS_ADDRESS_SERVICE_FACTORY_H_
