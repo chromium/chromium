@@ -89,7 +89,7 @@ bool IsChoiceEnabledInNormalRun() {
   if (_searchEngineChoiceCoordinator) {
     return;
   }
-  if ([self shouldShowChoiceScreen]) {
+  if ([self shouldShowChoiceScreen:sceneState]) {
     DCHECK(!_searchEngineChoiceUIBlocker);
     _searchEngineChoiceUIBlocker =
         std::make_unique<ScopedUIBlocker>(sceneState);
@@ -103,14 +103,16 @@ bool IsChoiceEnabledInNormalRun() {
   }
 }
 
-- (BOOL)shouldShowChoiceScreen {
+- (BOOL)shouldShowChoiceScreen:(SceneState*)sceneState {
   if (!IsChoiceEnabledInNormalRun()) {
     return NO;
   }
   if (self.appState.initStage == InitStageFirstRun) {
     return NO;
   }
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
+  ChromeBrowserState* browserState =
+      sceneState.browserProviderInterface.mainBrowserProvider.browser
+          ->GetBrowserState();
   if (!browserState) {
     return NO;
   }
