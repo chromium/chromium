@@ -1806,7 +1806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PeripheralReadErrorLatencyMs" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2024-07-07">
   <owner>skyostil@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1816,7 +1816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PeripheralReadLatencyMs" units="ms"
-    expires_after="2024-05-05">
+    expires_after="2024-07-07">
   <owner>skyostil@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1930,7 +1930,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.SuspendDelay" units="seconds" expires_after="2024-05-05">
+<histogram name="Power.SuspendDelay" units="seconds" expires_after="2024-07-07">
   <owner>niwa@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
