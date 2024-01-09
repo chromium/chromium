@@ -335,6 +335,53 @@ TEST_P(CalendarViewEventListViewTest, ScrollToCurrentOrNextEvent) {
 }
 
 TEST_P(CalendarViewEventListViewTest,
+       DoNotScrollToCurrentOrNextEventWhenFocused) {
+  // Sets the timezone to GMT. Otherwise in other timezones events can become
+  // multi-day events that will be ignored when calculating index.
+  ash::system::ScopedTimezoneSettings timezone_settings(u"GMT");
+
+  // Sets today to be a day with many events, so `event_list_view()` is
+  // scrollable.
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("23 Nov 2021 08:00 GMT", &date));
+  CreateEventListView(date);
+
+  SetSelectedDate(date);
+
+  // Sets the current time to be a time that event id_9 has started.
+  base::Time current_time;
+  ASSERT_TRUE(base::Time::FromString("23 Nov 2021 02:40 GMT", &current_time));
+  SetFakeNow(current_time);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewEventListViewTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+  UpdateEventList();
+  views::test::RunScheduledLayout(event_list_view());
+
+  // The current or next event should be the second event(event id_9).
+  EXPECT_EQ(1, current_or_next_event_index());
+
+  // The top of `scroll_view()` visible rect should be the same with the top of
+  // the current or next event.
+  auto scroll_view_visible_bounds = scroll_view()->GetVisibleBounds();
+  views::View::ConvertRectToScreen(scroll_view(), &scroll_view_visible_bounds);
+  auto current_item_bounds =
+      GetHighlightView(current_or_next_event_index())->GetBoundsInScreen();
+  EXPECT_EQ(scroll_view_visible_bounds.y(), current_item_bounds.y());
+
+  // Focus on first item in `event_list_view()`, and `scroll_view()` should
+  // scroll up along with the focus change.
+  GetHighlightView(0)->RequestFocus();
+  views::test::RunScheduledLayout(event_list_view());
+
+  scroll_view_visible_bounds = scroll_view()->GetVisibleBounds();
+  views::View::ConvertRectToScreen(scroll_view(), &scroll_view_visible_bounds);
+  current_item_bounds =
+      GetHighlightView(current_or_next_event_index())->GetBoundsInScreen();
+  EXPECT_LT(scroll_view_visible_bounds.y(), current_item_bounds.y());
+}
+
+TEST_P(CalendarViewEventListViewTest,
        ScrollToCurrentOrNextEvent_WithMultiDayEvents) {
   // Sets the timezone to HST. The first two events become multi-day events, and
   // will be ignored when calculating index.
