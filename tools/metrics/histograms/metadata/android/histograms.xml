@@ -1756,16 +1756,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.Intent.IntentUriNavigationResult"
-    enum="IntentUriNavigationResult" expires_after="2023-12-17">
-  <owner>mthiesse@chromium.org</owner>
-  <owner>yfriedman@chromium.org</owner>
-  <summary>
-    Recorded when a navigation to an Intent URI occurs. Records the results of
-    the navigation.
-  </summary>
-</histogram>
-
 <histogram name="Android.Intent.MainFrameIntentLaunch"
     enum="MainFrameIntentLaunch" expires_after="2024-06-30">
   <owner>mthiesse@chromium.org</owner>
