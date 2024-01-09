@@ -57,6 +57,8 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
       return cros_healthd::mojom::ProbeCategoryEnum::kBus;
     case crosapi::mojom::ProbeCategoryEnum::kDisplay:
       return cros_healthd::mojom::ProbeCategoryEnum::kDisplay;
+    case crosapi::mojom::ProbeCategoryEnum::kThermal:
+      return cros_healthd::mojom::ProbeCategoryEnum::kThermal;
   }
   NOTREACHED_NORETURN();
 }
@@ -591,6 +593,31 @@ crosapi::mojom::ProbeTpmResultPtr UncheckedConvertPtr(
   }
 }
 
+crosapi::mojom::ProbeThermalSensorInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalSensorInfoPtr input) {
+  return crosapi::mojom::ProbeThermalSensorInfo::New(
+      input->name, input->temperature_celsius, Convert(input->source));
+}
+
+crosapi::mojom::ProbeThermalInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalInfoPtr input) {
+  return crosapi::mojom::ProbeThermalInfo::New(
+      ConvertPtrVector<crosapi::mojom::ProbeThermalSensorInfoPtr>(
+          std::move(input->thermal_sensors)));
+}
+
+crosapi::mojom::ProbeThermalResultPtr UncheckedConvertPtr(
+    cros_healthd::mojom::ThermalResultPtr input) {
+  switch (input->which()) {
+    case cros_healthd::mojom::ThermalResult::Tag::kThermalInfo:
+      return crosapi::mojom::ProbeThermalResult::NewThermalInfo(
+          ConvertProbePtr(std::move(input->get_thermal_info())));
+    case cros_healthd::mojom::ThermalResult::Tag::kError:
+      return crosapi::mojom::ProbeThermalResult::NewError(
+          ConvertProbePtr(std::move(input->get_error())));
+  }
+}
+
 crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   auto system_result_output =
@@ -745,6 +772,20 @@ crosapi::mojom::ProbeDisplayInputType Convert(
       return crosapi::mojom::ProbeDisplayInputType::kDigital;
     case cros_healthd::mojom::DisplayInputType::kAnalog:
       return crosapi::mojom::ProbeDisplayInputType::kAnalog;
+  }
+  NOTREACHED_NORETURN();
+}
+
+crosapi::mojom::ProbeThermalSensorSource Convert(
+    cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource input) {
+  switch (input) {
+    case cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::
+        kUnmappedEnumField:
+      return crosapi::mojom::ProbeThermalSensorSource::kUnmappedEnumField;
+    case cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kEc:
+      return crosapi::mojom::ProbeThermalSensorSource::kEc;
+    case cros_healthd::mojom::ThermalSensorInfo::ThermalSensorSource::kSysFs:
+      return crosapi::mojom::ProbeThermalSensorSource::kSysFs;
   }
   NOTREACHED_NORETURN();
 }
