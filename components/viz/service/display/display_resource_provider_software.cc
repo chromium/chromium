@@ -56,6 +56,10 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
       WaitSyncToken(resource->transferable.mailbox_holder.sync_token);
       access->representation =
           shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
+      if (!access->representation) {
+        return nullptr;
+      }
+
       access->read_access = access->representation->BeginScopedReadAccess();
       resource_shared_images_.emplace(id, std::move(access));
     }
@@ -80,13 +84,15 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
   return resource;
 }
 
-void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id) {
+void DisplayResourceProviderSoftware::UnlockForRead(ResourceId id,
+                                                    const SkImage* sk_image) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   ChildResource* resource = GetResource(id);
-
   DCHECK(!resource->is_gpu_resource_type());
-  DCHECK_GT(resource->lock_for_read_count, 0);
-  resource->lock_for_read_count--;
+  if (sk_image) {
+    DCHECK_GE(resource->lock_for_read_count, 0);
+    resource->lock_for_read_count--;
+  }
   TryReleaseResource(id, resource);
 }
 
@@ -159,7 +165,9 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
     SkAlphaType alpha_type)
     : resource_provider_(resource_provider), resource_id_(resource_id) {
   const ChildResource* resource = resource_provider->LockForRead(resource_id);
-  DCHECK(resource);
+  if (!resource) {
+    return;
+  }
   DCHECK(!resource->is_gpu_resource_type());
 
   // Use cached SkImage if possible.
@@ -209,7 +217,7 @@ void DisplayResourceProviderSoftware::WaitSyncToken(gpu::SyncToken sync_token) {
 
 DisplayResourceProviderSoftware::ScopedReadLockSkImage::
     ~ScopedReadLockSkImage() {
-  resource_provider_->UnlockForRead(resource_id_);
+  resource_provider_->UnlockForRead(resource_id_, sk_image_.get());
 }
 
 DisplayResourceProviderSoftware::SharedImageAccess::SharedImageAccess() =
