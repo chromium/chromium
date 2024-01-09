@@ -22,14 +22,17 @@ PrerenderHandleImpl::PrerenderHandleImpl(
   CHECK(!prerendering_url_.is_empty());
   // PrerenderHandleImpl is now designed only for embedder triggers. If you use
   // this handle for other triggers, please make sure to update the logging etc.
-  auto* prerender_host =
-      prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id);
-  CHECK(prerender_host);
-  CHECK_EQ(prerender_host->trigger_type(), PreloadingTriggerType::kEmbedder);
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    auto* prerender_host =
+        prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id);
+    CHECK(prerender_host);
+    CHECK_EQ(prerender_host->trigger_type(), PreloadingTriggerType::kEmbedder);
+  }
 }
 
 PrerenderHandleImpl::~PrerenderHandleImpl() {
-  if (prerender_host_registry_) {
+  if (prerender_host_registry_ &&
+      frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId) {
     prerender_host_registry_->CancelHost(
         frame_tree_node_id_, PrerenderFinalStatus::kTriggerDestroyed);
   }
@@ -39,14 +42,19 @@ const GURL& PrerenderHandleImpl::GetInitialPrerenderingUrl() const {
   return prerendering_url_;
 }
 
+bool PrerenderHandleImpl::WasSuccessfullyTriggeredForTesting() const {
+  return frame_tree_node_id_ != FrameTreeNode::kFrameTreeNodeInvalidId;
+}
+
 base::WeakPtr<PrerenderHandle> PrerenderHandleImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
 void PrerenderHandleImpl::SetPreloadingAttemptFailureReason(
     PreloadingFailureReason reason) {
-  if (!prerender_host_registry_)
+  if (!prerender_host_registry_) {
     return;
+  }
   auto* prerender_host =
       prerender_host_registry_->FindNonReservedHostById(frame_tree_node_id_);
   if (!prerender_host) {

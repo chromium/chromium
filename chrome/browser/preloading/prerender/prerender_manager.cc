@@ -306,9 +306,8 @@ PrerenderManager::StartPrerenderBookmark(
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/absl::nullopt,
       std::move(prerender_navigation_handle_callback));
-
-  return bookmark_prerender_handle_ ? bookmark_prerender_handle_->GetWeakPtr()
-                                    : nullptr;
+  CHECK(bookmark_prerender_handle_);
+  return bookmark_prerender_handle_->GetWeakPtr();
 }
 
 base::WeakPtr<content::PrerenderHandle>
@@ -354,9 +353,8 @@ PrerenderManager::StartPrerenderNewTabPage(
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
 
-  return new_tab_page_prerender_handle_
-             ? new_tab_page_prerender_handle_->GetWeakPtr()
-             : nullptr;
+  CHECK(new_tab_page_prerender_handle_);
+  return new_tab_page_prerender_handle_->GetWeakPtr();
 }
 
 void PrerenderManager::StopPrerenderNewTabPage(
@@ -412,10 +410,8 @@ PrerenderManager::StartPrerenderDirectUrlInput(
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
       content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt);
 
-  if (direct_url_input_prerender_handle_) {
-    return direct_url_input_prerender_handle_->GetWeakPtr();
-  }
-  return nullptr;
+  CHECK(direct_url_input_prerender_handle_);
+  return direct_url_input_prerender_handle_->GetWeakPtr();
 }
 
 void PrerenderManager::StartPrerenderSearchResult(
@@ -449,13 +445,11 @@ void PrerenderManager::StartPrerenderSearchResult(
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           holdback_status_override, preloading_attempt.get(),
           std::move(url_match_predicate));
-
-  if (prerender_handle) {
-    CHECK(!search_prerender_task_)
-        << "SearchPrerenderTask should be reset before setting a new one.";
-    search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
-        canonical_search_url, std::move(prerender_handle));
-  }
+  CHECK(prerender_handle);
+  CHECK(!search_prerender_task_)
+      << "SearchPrerenderTask should be reset before setting a new one.";
+  search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
+      canonical_search_url, std::move(prerender_handle));
 }
 
 void PrerenderManager::StopPrerenderSearchResult(
