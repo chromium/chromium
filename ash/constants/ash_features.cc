@@ -1277,9 +1277,15 @@ BASE_FEATURE(kGlanceablesV2ErrorMessage,
              "GlanceablesV2ErrorMessage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the updated version of time management glanceables.
-BASE_FEATURE(kGlanceablesTimeManagementStableLaunch,
-             "GlanceablesTimeManagementStableLaunch",
+// Enables Classroom Student Glanceable on time management surface for stable
+// launch.
+BASE_FEATURE(kGlanceablesTimeManagementClassroomStudentView,
+             "GlanceablesTimeManagementClassroomStudentView",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Tasks Glanceable on time management surface for stable launch.
+BASE_FEATURE(kGlanceablesTimeManagementTasksView,
+             "GlanceablesTimeManagementTasksView",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables logging new Gaia account creation event.
@@ -3528,8 +3534,18 @@ bool IsGlanceablesV2ErrorMessageEnabled() {
   return base::FeatureList::IsEnabled(kGlanceablesV2ErrorMessage);
 }
 
-bool IsGlanceablesTimeManagementStableLaunchEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementStableLaunch);
+bool IsGlanceablesTimeManagementClassroomStudentViewEnabled() {
+  return base::FeatureList::IsEnabled(
+      kGlanceablesTimeManagementClassroomStudentView);
+}
+
+bool IsGlanceablesTimeManagementTasksViewEnabled() {
+  return base::FeatureList::IsEnabled(kGlanceablesTimeManagementTasksView);
+}
+
+bool AreAnyGlanceablesTimeManagementViewsEnabled() {
+  return IsGlanceablesTimeManagementClassroomStudentViewEnabled() ||
+         IsGlanceablesTimeManagementTasksViewEnabled();
 }
 
 bool IsHibernateEnabled() {

@@ -417,7 +417,9 @@ BASE_DECLARE_FEATURE(kGlanceablesV2CalendarView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGlanceablesV2ErrorMessage);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kGlanceablesTimeManagementStableLaunch);
+BASE_DECLARE_FEATURE(kGlanceablesTimeManagementClassroomStudentView);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kGlanceablesTimeManagementTasksView);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kGaiaRecordAccountCreation);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kGaiaReauthEndpoint);
@@ -1043,7 +1045,11 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGlanceablesV2CalendarViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsGlanceablesV2ErrorMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsGlanceablesTimeManagementStableLaunchEnabled();
+bool IsGlanceablesTimeManagementClassroomStudentViewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsGlanceablesTimeManagementTasksViewEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool AreAnyGlanceablesTimeManagementViewsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHibernateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideArcMediaNotificationsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsHideShelfControlsInTabletModeEnabled();

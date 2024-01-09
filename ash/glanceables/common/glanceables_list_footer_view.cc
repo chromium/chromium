@@ -46,7 +46,7 @@ class SeeAllButton : public views::LabelButton {
   SeeAllButton(const std::u16string& see_all_accessible_name,
                base::RepeatingClosure on_see_all_pressed) {
     const bool stable_launch =
-        features::IsGlanceablesTimeManagementStableLaunchEnabled();
+        features::AreAnyGlanceablesTimeManagementViewsEnabled();
     SetText(stable_launch
                 ? u""
                 : l10n_util::GetStringUTF16(
@@ -104,7 +104,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
-  if (features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     items_count_label_->SetText(l10n_util::GetStringUTF16(
         IDS_GLANCEABLES_LIST_FOOTER_SEE_ALL_TASKS_LABEL));
   }
@@ -116,7 +116,7 @@ GlanceablesListFooterView::GlanceablesListFooterView(
 void GlanceablesListFooterView::UpdateItemsCount(size_t visible_items_count,
                                                  size_t total_items_count) {
   // Glanceable tasks in stable launch doesn't show the item count.
-  CHECK(!features::IsGlanceablesTimeManagementStableLaunchEnabled());
+  CHECK(!features::AreAnyGlanceablesTimeManagementViewsEnabled());
   CHECK_LE(visible_items_count, total_items_count);
   items_count_label_->SetText(
       l10n_util::GetStringFUTF16(IDS_GLANCEABLES_LIST_FOOTER_ITEMS_COUNT_LABEL,

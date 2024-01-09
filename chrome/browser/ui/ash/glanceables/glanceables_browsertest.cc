@@ -486,7 +486,7 @@ class GlanceablesWithAddEditBrowserTest : public GlanceablesBrowserTest {
 
  private:
   base::test::ScopedFeatureList features_{
-      features::kGlanceablesTimeManagementStableLaunch};
+      features::kGlanceablesTimeManagementTasksView};
 };
 
 IN_PROC_BROWSER_TEST_F(GlanceablesWithAddEditBrowserTest, AddTaskItem) {

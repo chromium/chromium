@@ -1725,7 +1725,8 @@ void Shell::Init(
   }
 
   if (features::AreGlanceablesV2Enabled() ||
-      features::AreGlanceablesV2EnabledForTrustedTesters()) {
+      features::AreGlanceablesV2EnabledForTrustedTesters() ||
+      features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     glanceables_controller_ = std::make_unique<GlanceablesController>();
   }
   post_login_glanceables_metrics_reporter_ =

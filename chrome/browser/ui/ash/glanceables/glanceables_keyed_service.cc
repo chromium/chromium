@@ -6,10 +6,10 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -104,6 +104,11 @@ void GlanceablesKeyedService::Shutdown() {
 }
 
 bool GlanceablesKeyedService::AreGlanceablesEnabled() const {
+  if (features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
+    // TODO(b/319251265): Finalize policies to control the feature.
+    return true;
+  }
+
   PrefService* const prefs = profile_->GetPrefs();
   if (features::AreGlanceablesV2Enabled()) {
     return prefs->GetBoolean(prefs::kGlanceablesEnabled) ||

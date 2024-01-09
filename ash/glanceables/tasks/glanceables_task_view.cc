@@ -9,17 +9,15 @@
 #include <utility>
 
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -225,22 +223,14 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
     label()->SetLineHeight(TypographyProvider::Get()->ResolveLineHeight(
         TypographyToken::kCrosButton2));
 
-    if (!base::FeatureList::IsEnabled(
-            features::kGlanceablesTimeManagementStableLaunch)) {
       SetFocusBehavior(FocusBehavior::NEVER);
       SetState(ButtonState::STATE_DISABLED);
-    }
   }
 
   void UpdateLabelForState(bool completed) {
-    const auto color_id = completed ? cros_tokens::kCrosSysSecondary
-                                    : cros_tokens::kCrosSysOnSurface;
-    if (base::FeatureList::IsEnabled(
-            features::kGlanceablesTimeManagementStableLaunch)) {
-      SetEnabledTextColorIds(color_id);
-    } else {
-      SetTextColorId(ButtonState::STATE_DISABLED, color_id);
-    }
+    SetTextColorId(ButtonState::STATE_DISABLED,
+                   completed ? cros_tokens::kCrosSysSecondary
+                             : cros_tokens::kCrosSysOnSurface);
 
     label()->SetFontList(
         TypographyProvider::Get()
@@ -376,20 +366,10 @@ void GlanceablesTaskView::UpdateTaskTitleViewForState(
       task_title_button_->UpdateLabelForState(/*completed=*/button_->checked());
       break;
     case TaskTitleViewState::kEdit:
-      // TODO(b/315188389): As there is a GlanceablesTaskViewV2 that replace
+      // TODO(b/315188389): As there is a `GlanceablesTaskViewV2` that replace
       // this class when the stable launch flag is enabled, remove the
       // adding/editing functions in this class to simplify the code.
-      if (!features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
-        break;
-      }
-      auto* const text_field =
-          tasks_title_view_->AddChildView(std::make_unique<TaskViewTextField>(
-              task_title_,
-              base::BindOnce(&GlanceablesTaskView::OnFinishedEditing,
-                             base::Unretained(this))));
-      GetWidget()->widget_delegate()->SetCanActivate(true);
-      text_field->RequestFocus();
-      break;
+      NOTREACHED();
   }
 }
 

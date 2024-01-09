@@ -37,8 +37,7 @@ class GlanceablesTaskViewStableLaunchTest : public AshTestBase {
  public:
   GlanceablesTaskViewStableLaunchTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlanceablesV2,
-                              features::kGlanceablesTimeManagementStableLaunch},
+        /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
   }
 
@@ -169,9 +168,6 @@ TEST_F(GlanceablesTaskViewStableLaunchTest, InvokesMarkAsCompletedCallback) {
 }
 
 TEST_F(GlanceablesTaskViewStableLaunchTest, EntersAndExitsEditState) {
-  base::test::ScopedFeatureList features{
-      features::kGlanceablesTimeManagementStableLaunch};
-
   const auto task = api::Task("task-id", "Task title", /*completed=*/false,
                               /*due=*/std::nullopt,
                               /*has_subtasks=*/false, /*has_email_link=*/false,

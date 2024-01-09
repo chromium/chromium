@@ -36,8 +36,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
  public:
   GlanceablesTasksViewTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlanceablesV2,
-                              features::kGlanceablesTimeManagementStableLaunch},
+        /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
         /*disabled_features=*/{});
   }
 

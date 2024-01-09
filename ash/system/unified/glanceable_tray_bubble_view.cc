@@ -303,7 +303,7 @@ void GlanceableTrayBubbleView::InitializeContents() {
   ChangeAnchorAlignment(shelf_->alignment());
   ChangeAnchorRect(shelf_->GetSystemTrayAnchorRect());
 
-  if (!features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
+  if (!features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     auto* const classroom_client =
         Shell::Get()->glanceables_controller()->GetClassroomClient();
     if (should_show_non_calendar_glanceables && classroom_client) {
@@ -375,7 +375,7 @@ void GlanceableTrayBubbleView::AddTaskBubbleViewIfNeeded(
     return;
   }
   // Add tasks bubble before everything.
-  if (features::IsGlanceablesTimeManagementStableLaunchEnabled()) {
+  if (features::IsGlanceablesTimeManagementTasksViewEnabled()) {
     time_management_container_view_ =
         AddChildViewAt(std::make_unique<TimeManagementContainer>(), 0);
     box_layout()->SetFlexForView(time_management_container_view_, 1);
@@ -402,8 +402,7 @@ void GlanceableTrayBubbleView::OnGlanceablesContainerPreferredSizeChanged() {
 void GlanceableTrayBubbleView::OnGlanceablesContainerHeightChanged(
     int height_delta) {
   if (!initialized_ || !IsDrawn() || !GetWidget() || GetWidget()->IsClosed() ||
-      base::FeatureList::IsEnabled(
-          features::kGlanceablesTimeManagementStableLaunch)) {
+      features::AreAnyGlanceablesTimeManagementViewsEnabled()) {
     return;
   }
 
@@ -436,7 +435,7 @@ void GlanceableTrayBubbleView::AdjustChildrenFocusOrder() {
   }
 
   const bool time_management_stable_launch =
-      features::IsGlanceablesTimeManagementStableLaunchEnabled();
+      features::AreAnyGlanceablesTimeManagementViewsEnabled();
 
   // Only adds the time management view/container after the calendar
   // view/container in the focus list if the calendar flag and the time

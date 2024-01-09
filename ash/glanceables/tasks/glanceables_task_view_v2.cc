@@ -267,7 +267,7 @@ GlanceablesTaskViewV2::GlanceablesTaskViewV2(
       task_title_(task ? base::UTF8ToUTF16(task->title) : u""),
       mark_as_completed_callback_(std::move(mark_as_completed_callback)),
       save_callback_(std::move(save_callback)) {
-  CHECK(features::IsGlanceablesTimeManagementStableLaunchEnabled());
+  CHECK(features::IsGlanceablesTimeManagementTasksViewEnabled());
   SetAccessibleRole(ax::mojom::Role::kListItem);
 
   SetCrossAxisAlignment(views::LayoutAlignment::kStart);
