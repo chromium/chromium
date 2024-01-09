@@ -57,10 +57,6 @@ ProposedLayout& ProposedLayout::operator=(const ProposedLayout& other) =
     default;
 ProposedLayout& ProposedLayout::operator=(ProposedLayout&& other) = default;
 
-bool ProposedLayout::operator==(const ProposedLayout& other) const {
-  return host_size == other.host_size && child_layouts == other.child_layouts;
-}
-
 std::string ProposedLayout::ToString() const {
   std::ostringstream oss;
   oss << "{" << host_size.ToString() << " {";
