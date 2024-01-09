@@ -6,6 +6,7 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -80,6 +81,9 @@ void CompanionSidePanelController::CreateAndRegisterEntry() {
   registry->Register(std::move(entry));
   AddObserver();
 
+// Only necessary on non-Ash builds. Granting 3P cookies on Ash causes
+// b/314326552.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Give Search Companion Server 3P Cookie Permissions
   auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser->profile());
   const url::Origin companion_origin = url::Origin::Create(
@@ -89,6 +93,7 @@ void CompanionSidePanelController::CreateAndRegisterEntry() {
       companion_origin,
       {ContentSettingsPattern::FromString("https://[*.]google.com"),
        ContentSettingsPattern::FromURL(GURL(GetHomepageURLForCompanion()))});
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void CompanionSidePanelController::DeregisterEntry() {
