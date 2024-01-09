@@ -383,7 +383,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
     [self.passwordSharingFirstRunCoordinator stop];
     self.passwordSharingFirstRunCoordinator =
         [[PasswordSharingFirstRunCoordinator alloc]
-            initWithBaseViewController:self.baseViewController
+            initWithBaseViewController:self.viewController
                                browser:self.browser];
     self.passwordSharingFirstRunCoordinator.delegate = self;
     [self.passwordSharingFirstRunCoordinator start];
@@ -459,7 +459,7 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
   // password details.
   [self dismissAlertCoordinator];
   [self dismissActionSheetCoordinator];
-  [self dismissPasswordSharingCoordinator];
+  [self stopPasswordSharingCoordinator];
   [self stopPasswordSharingFirstRunCoordinatorWithCompletion:nil];
 }
 
@@ -503,11 +503,6 @@ using password_manager::features::IsAuthOnEntryV2Enabled;
 - (void)dismissAlertCoordinator {
   [self.alertCoordinator stop];
   self.alertCoordinator = nil;
-}
-
-- (void)dismissPasswordSharingCoordinator {
-  [_passwordSharingCoordinator stop];
-  _passwordSharingCoordinator = nil;
 }
 
 // Starts reauthCoordinator. If Password Details was opened from outside the

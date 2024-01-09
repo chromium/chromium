@@ -47,6 +47,16 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SHARING_FIRST_RUN_TITLE));
 }
 
+// Matcher for the UITableView inside the Family Picker View.
+id<GREYMatcher> FamilyPickerTableViewMatcher() {
+  return grey_accessibilityID(kFamilyPickerTableViewID);
+}
+
+// Matcher for the Password Picker View.
+id<GREYMatcher> PasswordPickerViewMatcher() {
+  return grey_accessibilityID(kPasswordPickerViewID);
+}
+
 }  // namespace
 
 // Test case for the Password Sharing flow.
@@ -124,7 +134,11 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   }
 
   if ([self isRunningTest:@selector
-            (testFirstRunExperienceViewDismissedForAuthentication)]) {
+            (testFirstRunExperienceViewDismissedForAuthentication)] ||
+      [self isRunningTest:@selector
+            (testPasswordPickerViewDismissedForAuthentication)] ||
+      [self isRunningTest:@selector
+            (testFamilyPickerViewDismissedForAuthentication)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -287,8 +301,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kPasswordPickerViewID)]
+  [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
       performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
 
   // Check that the current view is the password details view.
@@ -528,8 +541,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       performAction:grey_tap()];
 
   // Scroll down to the last recipient (the ineligible ones are on the bottom).
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewID)]
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   // Tap on the info button next to the ineligible recipient row.
   [[EarlGrey
@@ -599,8 +611,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
       performAction:grey_tap()];
 
   // Check that the current view is the family picker view.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewID)]
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Tap the cancel button.
@@ -613,8 +624,7 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kFamilyPickerTableViewID)]
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -664,9 +674,59 @@ id<GREYMatcher> PasswordSharingFirstRunMatcher() {
   // Background then foreground app so reauthentication UI is displayed.
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
-  // Check that first run experience is gone.
+  // Check that first run experience is gone and password details is visible.
   [[EarlGrey selectElementWithMatcher:PasswordSharingFirstRunMatcher()]
       assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsViewControllerID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testFamilyPickerViewDismissedForAuthentication {
+  SignInAndEnableSync();
+  [self saveExamplePasswordToProfileStoreAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Background then foreground app so reauthentication UI is displayed.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the family picker is gone and password details is visible.
+  [[EarlGrey selectElementWithMatcher:FamilyPickerTableViewMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsViewControllerID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+- (void)testPasswordPickerViewDismissedForAuthentication {
+  SignInAndEnableSync();
+  [self saveExamplePasswordsToProfileStoreAndOpenDetails];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kPasswordShareButtonID)]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Background then foreground app so reauthentication UI is displayed.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Check that the password picker is gone and password details is visible.
+  [[EarlGrey selectElementWithMatcher:PasswordPickerViewMatcher()]
+      assertWithMatcher:grey_nil()];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordDetailsViewControllerID)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

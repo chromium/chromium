@@ -268,8 +268,9 @@ bool IsPasscodeSettingsAvailable() {
   UIViewController* presentedViewController =
       topViewController.presentedViewController;
   // Do not dismiss the Search Controller, otherwise pushViewController does not
-  // add a the new view controller to the top of the navigation stack.
-  if (![presentedViewController isKindOfClass:[UISearchController class]]) {
+  // add the new view controller to the top of the navigation stack.
+  if (![presentedViewController isKindOfClass:[UISearchController class]] &&
+      !presentedViewController.isBeingDismissed) {
     [presentedViewController.presentingViewController
         dismissViewControllerAnimated:NO
                            completion:nil];
