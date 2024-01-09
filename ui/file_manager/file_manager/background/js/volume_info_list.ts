@@ -10,11 +10,18 @@ import {ArrayDataModel} from '../../common/js/array_data_model.js';
 
 import type {VolumeInfo} from './volume_info.js';
 
+/**
+ * The container of the VolumeInfo for each mounted volume.
+ */
 export class VolumeInfoList extends ArrayDataModel<VolumeInfo> {
   constructor() {
     super([]);
   }
 
+  /**
+   * Adds the volumeInfo to the appropriate position. If there already exists,
+   * just replaces it.
+   */
   add(volumeInfo: VolumeInfo) {
     const index = this.findIndex(volumeInfo.volumeId);
     if (index !== -1) {
@@ -24,6 +31,9 @@ export class VolumeInfoList extends ArrayDataModel<VolumeInfo> {
     }
   }
 
+  /**
+   * Removes the VolumeInfo having the given ID.
+   */
   remove(volumeId: string) {
     const index = this.findIndex(volumeId);
     if (index !== -1) {

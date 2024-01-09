@@ -25,46 +25,41 @@ export class VolumeInfo {
   private fakeEntries_: Partial<Record<RootType, FakeEntry>> = {};
   private displayRootPromise_: Promise<DirectoryEntry>;
   /**
-   * `volumeType` is the type of the volume.
-   * `volumeId` is the ID of the volume.
-   * `fileSystem` is the file system object for this volume.
-   * `error` is the error if an error is found.
-   * `deviceType` is the type of device
+   * @param volumeType is the type of the volume.
+   * @param volumeId is the ID of the volume.
+   * @param fileSystem is the file system object for this volume.
+   * @param error is the error if an error is found. Note: This represents if
+   *     the mounting of the volume is successfully done or not. (If error is
+   *     empty string, the mount is successfully done).
+   * @param deviceType is the type of device
    *     ('usb'|'sd'|'optical'|'mobile'|'unknown') (as defined in
    *     chromeos/ash/components/disks/disk_mount_manager.cc). Can be undefined.
-   * `devicePath` is the dentifier of the device that the
-   *     volume belongs to. Can be undefined.
-   * `isReadOnly` is true if the volume is read only.
-   * `isReadOnlyRemovableDevice` is true if the volume is read only
+   * @param devicePath is the dentifier of the device that the volume belongs
+   *     to. Can be undefined.
+   * @param isReadOnly is true if the volume is read only.
+   * @param isReadOnlyRemovableDevice is true if the volume is read only
    *     removable device.
-   * `profile` is the profile information.
-   * `label` is the abel of the volume.
-   * `providerId` is the Id of the provider for this volume.
-   *     Undefined for non-FSP volumes.
-   * `hasMedia` is true when the volume has been identified
-   *     as containing media such as photos or videos.
-   * `configurable` is true when the volume can be configured.
-   * `watchable` is true when the volume can be watched.
-   * `source` is the source of the volume's data.
-   * `diskFileSystemType` is the file system type identifier.
-   * `iconSet` is the set of icons for this volume.
-   * `driveLabel` is the drive label of the volume. Removable
-   *     partitions belonging to the same device will share the same drive
-   *     label.
-   * `remoteMountPath` is the path on the remote host
-   *     where this volume is mounted, for crostini this is the user's homedir
-   *     (/home/<username>).
-   * `vmType` is the type of the VM which owns the volume if this is a
+   * @param profile is the profile information.
+   * @param label is the abel of the volume.
+   * @param providerId is the Id of the provider for this volume. Undefined for
+   *     non-FSP volumes.
+   * @param hasMedia is true when the volume has been identified as containing
+   *     media such as photos or videos.
+   * @param configurable is true when the volume can be configured.
+   * @param watchable is true when the volume can be watched.
+   * @param source is the source of the volume's data.
+   * @param diskFileSystemType is the file system type identifier.
+   * @param iconSet is the set of icons for this volume.
+   * @param driveLabel is the drive label of the volume. Removable partitions
+   *     belonging to the same device will share the same drive label.
+   * @param remoteMountPath is the path on the remote host where this volume is
+   *     mounted, for crostini this is the user's homedir (/home/<username>).
+   * @param vmType is the type of the VM which owns the volume if this is a
    *     GuestOS volume.
    */
   constructor(
       private volumeType_: VolumeType, private volumeId_: string,
-      private fileSystem_: FileSystem|null,
-      // Note: This represents if the mounting of the volume is successfully
-      // done or not. (If error is empty string, the mount is successfully
-      // done).
-      // TODO(hidehiko): Rename to make this more understandable.
-      private error_: (string|undefined),
+      private fileSystem_: FileSystem|null, private error_: (string|undefined),
       private deviceType_: (string|undefined),
       private devicePath_: (string|undefined), private isReadOnly_: boolean,
       private isReadOnlyRemovableDevice_: boolean,
@@ -133,18 +128,34 @@ export class VolumeInfo {
     return this.computersDisplayRoot_!;
   }
 
+  /**
+   * The volume's fake entries such as Recent, Offline, Shared with me, etc...
+   * in Google Drive.
+   */
   get fakeEntries(): Partial<Record<RootType, FakeEntry>> {
     return this.fakeEntries_;
   }
 
+  /**
+   * This represents if the mounting of the volume is successfully done or
+   * not. (If error is empty string, the mount is successfully done)
+   */
   get error(): string|undefined {
     return this.error_;
   }
 
+  /**
+   * The type of device. (e.g. USB, SD card, DVD etc.)
+   */
   get deviceType(): string|undefined {
     return this.deviceType_;
   }
 
+  /**
+   * If the volume is removable, devicePath is the path of the system device
+   * this device's block is a part of. (e.g.
+   * /sys/devices/pci0000:00/.../8:0:0:0/) Otherwise, this should be empty.
+   */
   get devicePath(): string|undefined {
     return this.devicePath_;
   }
@@ -165,29 +176,38 @@ export class VolumeInfo {
   }
 
   /**
-   * Label for the volume.
+   * Label for the volume if the volume is either removable or a provided file
+   * system. In case of removables, if disk is a parent, then its label, else
+   * parent's label (e.g. "TransMemory").
    */
   get label(): string {
     return this.label_;
   }
 
+  /**
+   * ID of a provider for this volume.
+   */
   get providerId(): string|undefined {
     return this.providerId_;
   }
 
+  /**
+   * True if the volume contains media.
+   */
   get hasMedia(): boolean {
     return this.hasMedia_;
   }
 
   /**
    * True if the volume is configurable.
+   * See https://developer.chrome.com/apps/fileSystemProvider.
    */
   get configurable(): boolean {
     return this.configurable_;
   }
 
   /**
-   * True if the volume is watchable.
+   * True if the volume notifies about changes via file/directory watchers.
    */
   get watchable(): boolean {
     return this.watchable_;
@@ -231,8 +251,9 @@ export class VolumeInfo {
   }
 
   /**
-   * An entry to be used as prefix of this volume on breadcrumbs, e.g. "My Files
-   * > Downloads", "My Files" is a prefixEntry on "Downloads" VolumeInfo.
+   * An entry to be used as prefix of this volume on breadcrumbs,
+   * e.g. "My Files > Downloads"
+   * "My Files" is a prefixEntry on "Downloads" VolumeInfo.
    */
   get prefixEntry(): FilesAppEntry|null {
     return this.prefixEntry_!;
@@ -333,6 +354,13 @@ export class VolumeInfo {
     return this.displayRoot_;
   }
 
+  /**
+   * Starts resolving the display root and obtains it.  It may take long time
+   * for Drive. Once resolved, it is cached.
+   *
+   * @param onSuccess Success callback with the display root directory as an
+   *     argument.
+   */
   resolveDisplayRoot(
       optOnSuccess?: (dirEntry: DirectoryEntry) => void,
       optOnFailure?: (a: any) => void): Promise<DirectoryEntry> {

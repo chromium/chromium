@@ -197,6 +197,9 @@ export interface VolumeManagerEventMap extends CustomEventMap {
  * VolumeManager is responsible for tracking list of mounted volumes.
  */
 export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
+  /**
+   * The list of VolumeInfo instances for each mounted volume.
+   */
   volumeInfoList = new VolumeInfoList();
 
   /**
@@ -242,14 +245,28 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
         this.onMountCompleted_.bind(this));
   }
 
+  /**
+   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
+   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   */
   getFuseBoxOnlyFilterEnabled(): boolean {
     return false;
   }
 
+  /**
+   * Gets the 'media-store-files-only' filter state: true if enabled, false if
+   * disabled. The filter is only enabled by the Android (ARC) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   */
   getMediaStoreFilesOnlyFilterEnabled(): boolean {
     return false;
   }
 
+  /**
+   * Disposes the instance. After the invocation of this method, any other
+   * method should not be called.
+   */
   dispose(): void {}
 
   /**
@@ -262,6 +279,9 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     });
   }
 
+  /**
+   * Returns the drive connection state.
+   */
   getDriveConnectionState(): chrome.fileManagerPrivate.DriveConnectionState {
     return this.driveConnectionState_;
   }
@@ -500,6 +520,11 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return requestType + ':' + argument;
   }
 
+  /**
+   * @param fileUrl File url to the archive file.
+   * @param password Password to decrypt archive file.
+   * @return Fulfilled on success, otherwise rejected with a VolumeError.
+   */
   async mountArchive(fileUrl: string, password?: string): Promise<VolumeInfo> {
     const path: string =
         await promisify(chrome.fileManagerPrivate.addMount, fileUrl, password);
@@ -508,11 +533,21 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return this.startRequest_(key);
   }
 
+  /**
+   * Cancels mounting an archive.
+   * @param fileUrl File url to the archive file.
+   * @return Fulfilled on success, otherwise rejected with a VolumeError.
+   */
   async cancelMounting(fileUrl: string): Promise<void> {
     console.debug(`Cancelling mounting archive at '${fileUrl}'`);
     return promisify(chrome.fileManagerPrivate.cancelMounting, fileUrl);
   }
 
+  /**
+   * Unmounts a volume.
+   * @param volumeInfo Volume to be unmounted.
+   * @return Fulfilled on success, otherwise rejected with a VolumeError.
+   */
   async unmount({volumeId}: VolumeInfo): Promise<void> {
     console.debug(`Unmounting '${volumeId}'`);
     const key = this.makeRequestKey_('unmount', volumeId);
@@ -521,11 +556,21 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     await request;
   }
 
+
+  /**
+   * Configures a volume.
+   * @param volumeInfo Volume to be configured.
+   * @return Fulfilled on success, otherwise rejected with an error message.
+   */
   configure(volumeInfo: VolumeInfo): Promise<void> {
     return promisify(
         chrome.fileManagerPrivate.configureVolume, volumeInfo.volumeId);
   }
 
+  /**
+   * Obtains a volume info containing the passed entry.
+   * @param entry Entry on the volume to be returned. Can be fake.
+   */
   getVolumeInfo(entry: Entry|FilesAppEntry): VolumeInfo|null {
     if (!entry) {
       console.warn(`Invalid entry passed to getVolumeInfo: ${entry}`);
@@ -549,6 +594,9 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return null;
   }
 
+  /**
+   * Obtains volume information of the current profile.
+   */
   getCurrentProfileVolumeInfo(volumeType: VolumeType): VolumeInfo|null {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
@@ -560,6 +608,10 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return null;
   }
 
+  /**
+   * Obtains location information from an entry.
+   * @param entry File or directory entry. It can be a fake entry.
+   */
   getLocationInfo(entry: Entry|FilesAppEntry): EntryLocation|null {
     if (!entry) {
       console.warn(`Invalid entry passed to getLocationInfo: ${entry}`);
@@ -684,6 +736,13 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return new EntryLocation(volumeInfo, rootType, isRootEntry, isReadOnly);
   }
 
+
+  /**
+   * Searches the information of the volume that exists on the given device
+   * path.
+   * @param devicePath Path of the device to search.
+   * @return The volume's information, or null if not found.
+   */
   findByDevicePath(devicePath: string): VolumeInfo|null {
     for (let i = 0; i < this.volumeInfoList.length; i++) {
       const volumeInfo = this.volumeInfoList.item(i);
@@ -694,6 +753,12 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     return null;
   }
 
+  /**
+   * Returns a promise that will be resolved when volume info, identified by
+   * `volumeId` is created.
+   * @return Resolved with the `VolumeInfo`. It won't resolve if the volume is
+   *     never mounted.
+   */
   whenVolumeInfoReady(volumeId: string): Promise<VolumeInfo> {
     return new Promise((fulfill) => {
       const handler = () => {
@@ -708,6 +773,10 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     });
   }
 
+  /**
+   * Obtains the default display root entry.
+   * @param callback Callback passed the default display root.
+   */
   getDefaultDisplayRoot(
       callback: ((arg0: DirectoryEntry|FilesAppDirEntry|null) => void)) {
     console.warn('Unexpected call to VolumeManager.getDefaultDisplayRoot');
@@ -779,14 +848,27 @@ export class VolumeManager extends FilesEventTarget<VolumeManagerEventMap> {
     }
   }
 
+  /**
+   * Checks if any volumes are disabled for selection.
+   * See overridden implementation in `FilteredVolumeManager`.
+   */
   hasDisabledVolumes(): boolean {
     return false;
   }
 
+  /**
+   * Checks whether the given volume is disabled for selection.
+   * See overridden implementation in `FilteredVolumeManager`.
+   * @param volume Volume to check.
+   */
   isDisabled(_volume: VolumeType): boolean {
     return false;
   }
 
+  /**
+   * Checks if a volume is allowed.
+   * See overridden implementation in `FilteredVolumeManager`.
+   */
   isAllowedVolume(_volumeInfo: VolumeInfo): boolean {
     return true;
   }
