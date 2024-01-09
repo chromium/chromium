@@ -5858,8 +5858,6 @@ static_library("browser") {
       "accessibility/caption_settings_dialog_win.cc",
       "badging/badge_manager_delegate_win.cc",
       "badging/badge_manager_delegate_win.h",
-      "browser_process_platform_part_win.cc",
-      "browser_process_platform_part_win.h",
       "browser_switcher/browser_switcher_policy_migrator.cc",
       "browser_switcher/browser_switcher_policy_migrator.h",
       "browser_switcher/browser_switcher_service_win.cc",
