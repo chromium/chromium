@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
-#include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_export.h"
@@ -97,7 +96,6 @@ GPU_EXPORT bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 
 // Collect Dawn Toggle name info for about:gpu
 GPU_EXPORT void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
-                                const gpu::GpuFeatureInfo& gpu_feature_info,
                                 bool collect_metrics,
                                 std::vector<std::string>* dawn_info_list);
 

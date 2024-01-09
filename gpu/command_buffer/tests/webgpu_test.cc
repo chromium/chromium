@@ -104,9 +104,7 @@ void WebGPUTest::Initialize(const Options& options) {
   if (options.use_skia_graphite) {
     gpu_preferences.gr_context_type = gpu::GrContextType::kGraphiteDawn;
   } else {
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-     BUILDFLAG(IS_ANDROID)) &&                        \
-    BUILDFLAG(USE_DAWN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && BUILDFLAG(USE_DAWN)
     gpu_preferences.use_vulkan = gpu::VulkanImplementationName::kNative;
     gpu_preferences.gr_context_type = gpu::GrContextType::kVulkan;
 #endif

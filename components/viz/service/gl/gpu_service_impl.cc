@@ -1752,14 +1752,12 @@ void GpuServiceImpl::GetDawnInfoOnMain(bool collect_metrics,
 
   if (report_only_mode) {
     SCOPED_UMA_HISTOGRAM_TIMER("GPU.Dawn.InfoCollectionTimeMS");
-    gpu::CollectDawnInfo(gpu_preferences_, gpu_feature_info_, collect_metrics,
-                         &dawn_info_list);
+    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
   } else {
     // Don't collect metrics if not in report only mode. Otherwise fast timings
     // will be recorded, and very-slow timings will crash and not record,
     // skewing the results.
-    gpu::CollectDawnInfo(gpu_preferences_, gpu_feature_info_, collect_metrics,
-                         &dawn_info_list);
+    gpu::CollectDawnInfo(gpu_preferences_, collect_metrics, &dawn_info_list);
   }
 
   if (watchdog_thread_ && pause_watchdog) {
