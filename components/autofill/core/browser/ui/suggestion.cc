@@ -154,6 +154,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kCardUnionPay";
     case Suggestion::Icon::kCardVisa:
       return "kCardVisa";
+    case Suggestion::Icon::kPlusAddress:
+      return "kPlusAddress";
     case Suggestion::Icon::kNoIcon:
       return "kNoIcon";
   }

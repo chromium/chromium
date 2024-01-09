@@ -313,6 +313,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
+    case Suggestion::Icon::kPlusAddress:
       NOTREACHED_NORETURN();
   }
   NOTREACHED_NORETURN();

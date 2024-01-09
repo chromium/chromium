@@ -10822,7 +10822,7 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, PlusAddressSuggestionShown) {
   GetAutofillSuggestions(form, form.fields[0]);
   external_delegate()->CheckSuggestions(
       form.fields[0].global_id(),
-      {Suggestion("plus+plus@plus.plus", "", Suggestion::Icon::kNoIcon,
+      {Suggestion("plus+plus@plus.plus", "", Suggestion::Icon::kPlusAddress,
                   PopupItemId::kFillExistingPlusAddress),
        Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
@@ -10858,7 +10858,8 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
       form.fields[0].global_id(),
       {Suggestion(
            base::UTF16ToUTF8(plus_address_service->GetCreateSuggestionLabel()),
-           "", Suggestion::Icon::kNoIcon, PopupItemId::kCreateNewPlusAddress),
+           "", Suggestion::Icon::kPlusAddress,
+           PopupItemId::kCreateNewPlusAddress),
        Suggestion("buddy@gmail.com", "", Suggestion::Icon::kNoIcon,
                   PopupItemId::kAddressEntry),
        Suggestion("theking@gmail.com", "", Suggestion::Icon::kNoIcon,

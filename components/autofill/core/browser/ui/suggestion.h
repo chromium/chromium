@@ -80,6 +80,7 @@ struct Suggestion {
     kMagic,
     kOfferTag,
     kPenSpark,
+    kPlusAddress,
     kScanCreditCard,
     kSettings,
     kSettingsAndroid,
