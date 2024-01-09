@@ -28,6 +28,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/LoadHint.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
+    "android/java/src/org/chromium/chrome/browser/hub/PaneHubController.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneId.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneListBuilder.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneLookup.java",

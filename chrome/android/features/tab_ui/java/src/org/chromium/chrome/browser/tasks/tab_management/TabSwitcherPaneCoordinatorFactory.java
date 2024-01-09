@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -104,6 +105,7 @@ public class TabSwitcherPaneCoordinatorFactory {
      * @param resetHandler The reset handler to drive updates.
      * @param isVisibleSupplier Supplies visibility information to the tab switcher.
      * @param isAnimatingSupplier Supplies animation information to the tab switcher.
+     * @param onTabClickCallback Callback to be invoked with the tab ID of the selected tab.
      * @param isIncognito Whether this is for the incognito tab switcher.
      * @return a {@link TabSwitcherPaneCoordinator} to use.
      */
@@ -112,6 +114,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             @NonNull TabSwitcherResetHandler resetHandler,
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
+            @NonNull Callback<Integer> onTabClickCallback,
             boolean isIncognito) {
         return new TabSwitcherPaneCoordinator(
                 mActivity,
@@ -131,6 +134,7 @@ public class TabSwitcherPaneCoordinatorFactory {
                 resetHandler,
                 isVisibleSupplier,
                 isAnimatingSupplier,
+                onTabClickCallback,
                 mMode);
     }
 

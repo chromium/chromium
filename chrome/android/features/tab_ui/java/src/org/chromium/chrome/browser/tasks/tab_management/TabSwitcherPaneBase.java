@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
@@ -88,6 +89,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private final boolean mIsIncognito;
 
     private boolean mNativeInitialized;
+    private @Nullable PaneHubController mPaneHubController;
 
     /**
      * @param context The activity context.
@@ -122,11 +124,19 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     }
 
     @Override
+    public void setPaneHubController(@Nullable PaneHubController paneHubController) {
+        mPaneHubController = paneHubController;
+        if (mPaneHubController != null) {
+            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        } else {
+            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
+                    mMenuOrKeyboardActionHandler);
+        }
+    }
+
+    @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
-        // TODO(crbug/1502201): Figure out a more immediate signal for pane visibility. Due to
-        // WARM/COLD signals being posted this can lead to multiple HOT panes for a brief period.
-        // In this case multiple HOT panes might listen for the same menu event leading to a
-        // collision.
         boolean isVisible = loadHint == LoadHint.HOT;
         mIsVisibleSupplier.set(isVisible);
 
@@ -134,8 +144,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
 
         if (isVisible) {
             createTabSwitcherPaneCoordinator();
-            mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
             showAllTabs();
             setInitialScrollIndexOffset();
             // TODO(crbug/1502201): This should only happen when the Pane becomes user visible which
@@ -144,9 +152,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
             // need to know an animation is going to play and when it is finished (possibly using
             // the isAnimatingSupplier?).
             requestAccessibilityFocusOnCurrentTab();
-        } else {
-            mMenuOrKeyboardActionController.unregisterMenuOrKeyboardActionHandler(
-                    mMenuOrKeyboardActionHandler);
         }
 
         if (loadHint == LoadHint.WARM) {
@@ -180,7 +185,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     public @NonNull HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with shrink animator and set animating supplier.
+        // TODO(crbug/1516949): Replace with shrink animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
@@ -189,7 +194,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     public @NonNull HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
             @NonNull HubContainerView hubContainerView) {
         assert !DeviceFormFactor.isNonMultiDisplayContextOnTablet(hubContainerView.getContext());
-        // TODO(crbug/1505772): Replace with expand animator and set animating supplier.
+        // TODO(crbug/1516949): Replace with expand animator and set animating supplier.
         return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
                 hubContainerView, HubLayoutConstants.FADE_DURATION_MS);
     }
@@ -289,6 +294,16 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         return mIsVisibleSupplier.get();
     }
 
+    /** Returns whether the pane is focused. */
+    protected boolean isFocused() {
+        return mPaneHubController != null;
+    }
+
+    /** Returns the PaneHubController if one exists or null otherwise. */
+    protected @Nullable PaneHubController getPaneHubController() {
+        return mPaneHubController;
+    }
+
     /** Returns the current {@link TabSwitcherPaneCoordinator} or null if one doesn't exist. */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     @Nullable
@@ -308,6 +323,7 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
                         /* resetHandler= */ this,
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
+                        this::onTabClick,
                         mIsIncognito);
         mTabSwitcherPaneCoordinatorSupplier.set(coordinator);
         if (mNativeInitialized) {
@@ -327,6 +343,15 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
         mTabSwitcherPaneCoordinatorSupplier.set(null);
         mRootView.removeAllViews();
         coordinator.destroy();
+    }
+
+    private void onTabClick(int tabId) {
+        if (mPaneHubController == null) return;
+
+        // TODO(crbug/1516949): Consider using INVALID_TAB_ID if already selected to prevent a
+        // repeat selection. For now this is required to ensure the tab gets marked as shown when
+        // exiting the Hub. See if this can be updated/changed.
+        mPaneHubController.selectTabAndHideHub(tabId);
     }
 
     private void setInitialScrollIndexOffset() {

@@ -87,6 +87,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
      * @param resetHandler The tab list reset handler for the pane.
      * @param isVisibleSupplier The supplier of the pane's visibility.
      * @param isAnimatingSupplier Whether the pane is animating into or out of view.
+     * @param onTabClickCallback Callback to invoke when a tab is clicked.
      * @param mode The {@link TabListMode} to use.
      */
     public TabSwitcherPaneCoordinator(
@@ -107,6 +108,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             @NonNull TabSwitcherResetHandler resetHandler,
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
+            @NonNull Callback<Integer> onTabClickCallback,
             @TabListMode int mode) {
         mProfileProviderSupplier = profileProviderSupplier;
         mSnackbarManager = snackbarManager;
@@ -155,7 +157,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                         parentView,
                         this::onTabSwitcherShown,
                         isVisibleSupplier,
-                        isAnimatingSupplier);
+                        isAnimatingSupplier,
+                        onTabClickCallback);
         mTabSwitcherCustomViewManager = new TabSwitcherCustomViewManager(mMediator);
 
         mMultiThumbnailCardProvider =

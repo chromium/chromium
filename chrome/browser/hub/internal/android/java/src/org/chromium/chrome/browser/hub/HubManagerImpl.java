@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
+import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -22,9 +24,11 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPr
  * created and torn down as needed when {@link HubLayout} visibility changes.
  */
 public class HubManagerImpl implements HubManager, HubController {
-    private final @NonNull Context mContext;
+    private final ValueChangedCallback<Pane> mOnFocusedPaneChanged =
+            new ValueChangedCallback<>(this::onFocusedPaneChanged);
     private final @NonNull ObservableSupplierImpl<Boolean> mHubVisibilitySupplier =
             new ObservableSupplierImpl<>();
+    private final @NonNull Context mContext;
     private final @NonNull PaneManagerImpl mPaneManager;
     private final @NonNull HubContainerView mHubContainerView;
     private final @NonNull BackPressManager mBackPressManager;
@@ -48,10 +52,13 @@ public class HubManagerImpl implements HubManager, HubController {
 
         // TODO(crbug/1487315): Consider making this a xml file so the entire core UI is inflated.
         mHubContainerView = new HubContainerView(mContext);
+
+        mPaneManager.getFocusedPaneSupplier().addObserver(mOnFocusedPaneChanged);
     }
 
     @Override
     public void destroy() {
+        mPaneManager.getFocusedPaneSupplier().removeObserver(mOnFocusedPaneChanged);
         mPaneManager.destroy();
         destroyHubCoordinator();
     }
@@ -117,10 +124,15 @@ public class HubManagerImpl implements HubManager, HubController {
                 new HubCoordinator(
                         mHubContainerView, mPaneManager, mHubLayoutController, mTabSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
+        Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+        if (pane != null) pane.setPaneHubController(mHubCoordinator);
     }
 
     private void destroyHubCoordinator() {
         if (mHubCoordinator != null) {
+            Pane pane = mPaneManager.getFocusedPaneSupplier().get();
+            if (pane != null) pane.setPaneHubController(null);
+
             mBackPressManager.removeHandler(mHubCoordinator);
             mHubCoordinator.destroy();
             mHubCoordinator = null;
@@ -129,5 +141,10 @@ public class HubManagerImpl implements HubManager, HubController {
 
     HubCoordinator getHubCoordinatorForTesting() {
         return mHubCoordinator;
+    }
+
+    private void onFocusedPaneChanged(@Nullable Pane newPane, @Nullable Pane oldPane) {
+        if (oldPane != null) oldPane.setPaneHubController(null);
+        if (newPane != null) newPane.setPaneHubController(mHubCoordinator);
     }
 }

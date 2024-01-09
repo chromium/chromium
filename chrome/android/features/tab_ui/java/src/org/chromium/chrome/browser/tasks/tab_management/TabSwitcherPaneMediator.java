@@ -100,6 +100,7 @@ public class TabSwitcherPaneMediator
     private final ObservableSupplier<Boolean> mIsVisibleSupplier;
     private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final Runnable mOnTabSwitcherShown;
+    private final Callback<Integer> mOnTabClickCallback;
 
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
@@ -117,6 +118,7 @@ public class TabSwitcherPaneMediator
      * @param onTabSwitcherShown Runnable executed once the view becomes visible.
      * @param isVisibleSupplier Supplier for visibility of the pane.
      * @param isAnimatingSupplier Supplier for when the pane is animating in or out of visibility.
+     * @param onTabClickCallback Callback to invoke when a tab is clicked.
      */
     public TabSwitcherPaneMediator(
             @NonNull TabSwitcherResetHandler resetHandler,
@@ -126,8 +128,10 @@ public class TabSwitcherPaneMediator
             @NonNull ViewGroup containerView,
             @NonNull Runnable onTabSwitcherShown,
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
-            @NonNull ObservableSupplier<Boolean> isAnimatingSupplier) {
+            @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
+            @NonNull Callback<Integer> onTabClickCallback) {
         mResetHandler = resetHandler;
+        mOnTabClickCallback = onTabClickCallback;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         mTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
 
@@ -241,7 +245,7 @@ public class TabSwitcherPaneMediator
             Tab newlySelectedTab = TabModelUtils.getTabById(model, tabId);
             StartSurfaceUserData.setKeepTab(newlySelectedTab, true);
         }
-        // TODO(crbug/1505772): Forward the selection event to the Hub.
+        mOnTabClickCallback.onResult(tabId);
     }
 
     @Override

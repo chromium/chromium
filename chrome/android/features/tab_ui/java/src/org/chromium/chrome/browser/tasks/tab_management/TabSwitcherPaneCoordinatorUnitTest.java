@@ -101,6 +101,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
+    @Mock private Callback<Integer> mOnTabClickedCallback;
     @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private Tracker mTracker;
 
@@ -175,6 +176,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         mResetHandler,
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
+                        mOnTabClickedCallback,
                         TabListMode.GRID);
 
         mCoordinator.initWithNative();

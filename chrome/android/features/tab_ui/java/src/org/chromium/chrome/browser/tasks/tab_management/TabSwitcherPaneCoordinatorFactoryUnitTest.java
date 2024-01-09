@@ -29,6 +29,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -87,6 +88,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabSwitcherResetHandler mResetHandler;
+    @Mock private Callback<Integer> mOnTabClickedCallback;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
 
@@ -135,6 +137,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mResetHandler,
                         mIsVisibleSupplier,
                         mIsAnimatingSupplier,
+                        mOnTabClickedCallback,
                         /* isIncognito= */ false));
     }
 

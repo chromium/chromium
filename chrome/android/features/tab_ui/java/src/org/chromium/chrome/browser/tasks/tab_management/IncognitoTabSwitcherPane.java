@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
+import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -40,6 +41,13 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 @Override
                 public void didBecomeEmpty() {
                     mReferenceButtonDataSupplier.set(null);
+                    if (isFocused()) {
+                        @Nullable PaneHubController controller = getPaneHubController();
+                        assert controller != null
+                                : "isFocused requires a non-null PaneHubController.";
+                        controller.focusPane(PaneId.TAB_SWITCHER);
+                    }
+                    resetWithTabList(null, false);
                 }
             };
 

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -27,6 +28,14 @@ public interface Pane extends BackPressHandler {
 
     /** Destroys the pane. Called when the Hub is destroyed. */
     void destroy();
+
+    /**
+     * Sets an interface for controlling certain aspects of the Hub while focused.
+     *
+     * @param paneHubController An interface that can be used to control the hub, may be null when
+     *     not focused. If null is set do not keep a reference to the old controller.
+     */
+    void setPaneHubController(@Nullable PaneHubController paneHubController);
 
     /**
      * Notifies of a change to the Hub's or the pane's lifecycle. See {@link LoadHint} for possible

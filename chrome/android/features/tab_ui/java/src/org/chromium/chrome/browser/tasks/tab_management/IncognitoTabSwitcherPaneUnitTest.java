@@ -40,11 +40,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
@@ -68,9 +70,11 @@ public class IncognitoTabSwitcherPaneUnitTest {
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private IncognitoTabModel mIncognitoTabModel;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock private PaneHubController mPaneHubController;
 
     @Captor private ArgumentCaptor<IncognitoTabModelObserver> mIncognitoTabModelObserverCaptor;
     @Captor private ArgumentCaptor<IncognitoReauthCallback> mIncognitoReauthCallbackCaptor;
+    @Captor private ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
 
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerSupplier = new OneshotSupplierImpl<>();
@@ -88,7 +92,13 @@ public class IncognitoTabSwitcherPaneUnitTest {
                             return mTabSwitcherPaneCoordinator;
                         })
                 .when(mTabSwitcherPaneCoordinatorFactory)
-                .create(any(), any(), any(), any(), anyBoolean());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        mOnTabClickedCallbackCaptor.capture(),
+                        anyBoolean());
 
         when(mTabModelFilter.getTabModel()).thenReturn(mIncognitoTabModel);
 
@@ -302,10 +312,17 @@ public class IncognitoTabSwitcherPaneUnitTest {
     }
 
     private void checkIncognitoTabModelObserverAndButtonData() {
+        mIncognitoTabSwitcherPane.createTabSwitcherPaneCoordinator();
+        TabSwitcherPaneCoordinator coordinator =
+                mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
+        mIncognitoTabSwitcherPane.setPaneHubController(mPaneHubController);
+
         IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
 
         observer.didBecomeEmpty();
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+        verify(coordinator).resetWithTabList(null);
+        verify(mPaneHubController).focusPane(PaneId.TAB_SWITCHER);
 
         // TODO(crbug/1505772): These resources need to be updated.
         observer.wasFirstTabCreated();
@@ -321,5 +338,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
         observer.didBecomeEmpty();
         assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+        verify(coordinator, times(2)).resetWithTabList(null);
+        verify(mPaneHubController, times(2)).focusPane(PaneId.TAB_SWITCHER);
     }
 }

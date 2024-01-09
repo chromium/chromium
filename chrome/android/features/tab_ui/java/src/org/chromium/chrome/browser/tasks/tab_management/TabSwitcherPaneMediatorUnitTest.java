@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -80,6 +81,7 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Mock private ViewGroup mContainerView;
     @Mock private View mCustomView;
     @Mock private Runnable mCustomViewBackPressRunnable;
+    @Mock private Callback<Integer> mOnTabClickedCallback;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -148,7 +150,8 @@ public class TabSwitcherPaneMediatorUnitTest {
                         mContainerView,
                         mOnTabSwitcherShownRunnable,
                         mIsVisibleSupplier,
-                        mIsAnimatingSupplier);
+                        mIsAnimatingSupplier,
+                        mOnTabClickedCallback);
 
         assertTrue(mTabModelFilterSupplier.hasObservers());
         assertTrue(mIsVisibleSupplier.hasObservers());
@@ -312,12 +315,11 @@ public class TabSwitcherPaneMediatorUnitTest {
     @Test
     @SmallTest
     public void testOnTabSelecting() {
-        // TODO(crbug/1505772): This test is incomplete since the event should be forwarded to the
-        // Hub.
         assertFalse(StartSurfaceUserData.getKeepTab(mUngroupedTab));
 
         mMediator.onTabSelecting(mUngroupedTab.getId(), /* fromActionButton= */ true);
         assertTrue(StartSurfaceUserData.getKeepTab(mUngroupedTab));
+        verify(mOnTabClickedCallback).onResult(UNGROUPED_TAB_ID);
     }
 
     @Test

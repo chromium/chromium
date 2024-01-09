@@ -40,6 +40,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -49,6 +50,7 @@ import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.HubContainerView;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationType;
 import org.chromium.chrome.browser.hub.LoadHint;
+import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
@@ -77,9 +79,11 @@ public class TabSwitcherPaneUnitTest {
     @Mock private View.OnClickListener mNewTabButtonClickListener;
     @Mock private TabModelFilter mTabModelFilter;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
+    @Mock private PaneHubController mPaneHubController;
 
     @Captor ArgumentCaptor<MenuOrKeyboardActionHandler> mMenuOrKeyboardActionHandlerCaptor;
     @Captor ArgumentCaptor<OnSharedPreferenceChangeListener> mPriceAnnotationsPrefListenerCaptor;
+    @Captor ArgumentCaptor<Callback<Integer>> mOnTabClickedCallbackCaptor;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -106,7 +110,13 @@ public class TabSwitcherPaneUnitTest {
                             return mTabSwitcherPaneCoordinator;
                         })
                 .when(mTabSwitcherPaneCoordinatorFactory)
-                .create(any(), any(), any(), any(), anyBoolean());
+                .create(
+                        any(),
+                        any(),
+                        any(),
+                        any(),
+                        mOnTabClickedCallbackCaptor.capture(),
+                        anyBoolean());
         when(mTabSwitcherPaneCoordinatorFactory.getTabListMode()).thenReturn(TabListMode.GRID);
         when(mTabSwitcherPaneCoordinator.getHandleBackPressChangedSupplier())
                 .thenReturn(mHandleBackPressChangeSupplier);
@@ -381,19 +391,18 @@ public class TabSwitcherPaneUnitTest {
     @SmallTest
     public void testShowTabListEditor() {
         verify(mMenuOrKeyboardActionController, never()).registerMenuOrKeyboardActionHandler(any());
-        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
         verify(mMenuOrKeyboardActionController)
                 .registerMenuOrKeyboardActionHandler(mMenuOrKeyboardActionHandlerCaptor.capture());
 
-        MenuOrKeyboardActionHandler handler = mMenuOrKeyboardActionHandlerCaptor.getValue();
         // Check this doesn't crash if there is no coordinator.
-        mTabSwitcherPane.destroyTabSwitcherPaneCoordinator();
+        MenuOrKeyboardActionHandler handler = mMenuOrKeyboardActionHandlerCaptor.getValue();
         assertFalse(
                 handler.handleMenuOrKeyboardAction(
                         org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
 
+        mTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         mTabSwitcherPane.initWithNative();
-        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
         TabSwitcherPaneCoordinator coordinator = mTabSwitcherPane.getTabSwitcherPaneCoordinator();
 
         assertFalse(
@@ -406,11 +415,8 @@ public class TabSwitcherPaneUnitTest {
                         org.chromium.chrome.tab_ui.R.id.menu_select_tabs, false));
         verify(coordinator).showTabListEditor();
 
-        mTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
+        mTabSwitcherPane.setPaneHubController(null);
         verify(mMenuOrKeyboardActionController).unregisterMenuOrKeyboardActionHandler(handler);
-        mTabSwitcherPane.notifyLoadHint(LoadHint.COLD);
-        verify(mMenuOrKeyboardActionController, times(2))
-                .unregisterMenuOrKeyboardActionHandler(handler);
     }
 
     @Test
@@ -487,5 +493,21 @@ public class TabSwitcherPaneUnitTest {
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         mTabSwitcherPane.showAllTabs();
         verify(coordinator).resetWithTabList(mTabModelFilter);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnTabClickedCallback() {
+        mTabSwitcherPane.initWithNative();
+        mTabSwitcherPane.createTabSwitcherPaneCoordinator();
+
+        int tabId = 6;
+        mOnTabClickedCallbackCaptor.getValue().onResult(tabId);
+        verify(mPaneHubController, never()).selectTabAndHideHub(tabId);
+
+        mTabSwitcherPane.setPaneHubController(mPaneHubController);
+
+        mOnTabClickedCallbackCaptor.getValue().onResult(tabId);
+        verify(mPaneHubController).selectTabAndHideHub(tabId);
     }
 }
