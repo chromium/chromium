@@ -87,7 +87,7 @@ class KeyProcessingWaiter {
   void Wait() { run_loop_.Run(); }
 
  private:
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 };
 
 // These use the browser test framework but tamper with the environment through
