@@ -5,10 +5,10 @@
 #ifndef COMPONENTS_INFOBARS_CORE_INFOBARS_SWITCHES_H_
 #define COMPONENTS_INFOBARS_CORE_INFOBARS_SWITCHES_H_
 
-namespace infobars::switches {
+namespace switches {
 
 inline constexpr char kDisableInfoBars[] = "disable-infobars";
 
-}  // namespace infobars::switches
+}  // namespace switches
 
 #endif  // COMPONENTS_INFOBARS_CORE_INFOBARS_SWITCHES_H_

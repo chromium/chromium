@@ -88,7 +88,7 @@ class ChromeForTestingInfoBarDisabledTest : public ChromeForTestingInfoBarTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(infobars::switches::kDisableInfoBars);
+    command_line->AppendSwitch(switches::kDisableInfoBars);
   }
 };
 
