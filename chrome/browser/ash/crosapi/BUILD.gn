@@ -480,6 +480,7 @@ source_set("test_support") {
   deps = [
     ":crosapi",
     "//ash",
+    "//ash:test_support",
     "//ash/app_list",
     "//ash/components/arc:arc_test_support",
     "//base",

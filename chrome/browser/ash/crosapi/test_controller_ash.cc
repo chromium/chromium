@@ -22,7 +22,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
@@ -114,10 +114,12 @@ bool DispatchMouseEvent(aura::Window* window,
 
 // Enables or disables tablet mode and waits for the transition to finish.
 void SetTabletModeEnabled(bool enabled) {
-  // This does not use ShellTestApi or TabletModeControllerTestApi because those
-  // are implemented in test-only files.
   ash::TabletMode::Waiter waiter(enabled);
-  ash::Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enabled);
+  if (enabled) {
+    ash::TabletModeControllerTestApi().EnterTabletMode();
+  } else {
+    ash::TabletModeControllerTestApi().LeaveTabletMode();
+  }
   waiter.Wait();
 }
 
