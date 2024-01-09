@@ -33,6 +33,17 @@ BASE_FEATURE(kAutofillAddressProfileSavePromptNicknameSupport,
              "AutofillAddressProfileSavePromptNicknameSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag to control the displaying of an ongoing hats survey that
+// measures users perception of Autofill. Differently from other surveys,
+// the Autofill user perception survey will not have a specific target
+// number of answers where it will be fully stop, instead, it will run
+// indefinitely. A target number of full answers exists, but per quarter. The
+// goal is to have a go to place to understand how users are perceiving autofill
+// across quarters.
+BASE_FEATURE(kAutofillAddressUserPerceptionSurvey,
+             "AutofillAddressUserPerceptionSurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // By default, AutofillAgent and, if |kAutofillProbableFormSubmissionInBrowser|
 // is enabled, also ContentAutofillDriver omit duplicate form submissions, even
 // though the form's data may have changed substantially. If enabled, the

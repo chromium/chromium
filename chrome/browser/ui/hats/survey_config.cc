@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_hats_trigger_helper.h"
 
@@ -22,6 +23,8 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+constexpr char kHatsSurveyTriggerAutofillAddressUserPerception[] =
+    "autofill-address-users-perception";
 constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
 constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -406,6 +409,19 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "Number of non-trigger extensions removed", "Client Channel"});
 
   // Autofill surveys.
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillAddressUserPerceptionSurvey,
+      kHatsSurveyTriggerAutofillAddressUserPerception, std::nullopt,
+      std::vector<std::string>{"granular filling available"},
+      std::vector<std::string>{
+          "Accepted fields", "Corrected to same type",
+          "Corrected to a different type", "Corrected to an unknown type",
+          "Corrected to empty", "Manually filled to same type",
+          "Manually filled to a different type",
+          "Manually filled to an unknown type", "Total corrected",
+          "Total filled", "Total unfilled", "Total manually filled",
+          "Total number of fields"});
+
   survey_configs.emplace_back(&features::kAutofillAddressSurvey,
                               kHatsSurveyTriggerAutofillAddress);
   survey_configs.emplace_back(&features::kAutofillCardSurvey,

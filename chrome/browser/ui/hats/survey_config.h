@@ -14,6 +14,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 // Trigger identifiers currently used; duplicates not allowed.
 extern const char kHatsSurveyTriggerAutofillAddress[];
+extern const char kHatsSurveyTriggerAutofillAddressUserPerception[];
 extern const char kHatsSurveyTriggerAutofillCard[];
 extern const char kHatsSurveyTriggerAutofillPassword[];
 extern const char kHatsSurveyTriggerDevToolsIssuesCOEP[];
