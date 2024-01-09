@@ -6,11 +6,12 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -152,16 +153,16 @@ OAuth2MintTokenFlow::Parameters::Parameters() : mode(MODE_ISSUE_ADVICE) {}
 // static
 OAuth2MintTokenFlow::Parameters
 OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
-    base::StringPiece extension_id,
-    base::StringPiece client_id,
-    base::span<const base::StringPiece> scopes,
+    std::string_view extension_id,
+    std::string_view client_id,
+    base::span<const std::string_view> scopes,
     Mode mode,
     bool enable_granular_permissions,
-    base::StringPiece version,
-    base::StringPiece channel,
-    base::StringPiece device_id,
-    base::StringPiece selected_user_id,
-    base::StringPiece consent_result) {
+    std::string_view version,
+    std::string_view channel,
+    std::string_view device_id,
+    std::string_view selected_user_id,
+    std::string_view consent_result) {
   Parameters parameters;
   parameters.extension_id = extension_id;
   parameters.client_id = client_id;
@@ -179,11 +180,11 @@ OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
 // static
 OAuth2MintTokenFlow::Parameters
 OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
-    base::StringPiece client_id,
-    base::span<const base::StringPiece> scopes,
-    base::StringPiece version,
-    base::StringPiece channel,
-    base::StringPiece device_id) {
+    std::string_view client_id,
+    base::span<const std::string_view> scopes,
+    std::string_view version,
+    std::string_view channel,
+    std::string_view device_id) {
   Parameters parameters;
   parameters.client_id = client_id;
   parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());

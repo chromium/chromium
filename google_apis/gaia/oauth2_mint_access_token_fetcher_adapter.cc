@@ -5,11 +5,11 @@
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string_piece.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -38,7 +38,7 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
   auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
-      client_id, std::vector<base::StringPiece>(scopes.begin(), scopes.end()),
+      client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_);
   if (mint_token_flow_factory_for_testing_) {
     mint_token_flow_ =

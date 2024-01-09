@@ -4,11 +4,12 @@
 
 #include "google_apis/gaia/gaia_urls.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros/concat.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -94,8 +95,8 @@ const char kRotateBoundCookiesUrlSuffix[] = "RotateBoundCookies";
 
 GaiaUrls* g_instance_for_testing = nullptr;
 
-void GetSwitchValueWithDefault(base::StringPiece switch_value,
-                               base::StringPiece default_value,
+void GetSwitchValueWithDefault(std::string_view switch_value,
+                               std::string_view default_value,
                                std::string* output_value) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switch_value)) {
@@ -105,8 +106,8 @@ void GetSwitchValueWithDefault(base::StringPiece switch_value,
   }
 }
 
-GURL GetURLSwitchValueWithDefault(base::StringPiece switch_value,
-                                  base::StringPiece default_value) {
+GURL GetURLSwitchValueWithDefault(std::string_view switch_value,
+                                  std::string_view default_value) {
   std::string string_value;
   GetSwitchValueWithDefault(switch_value, default_value, &string_value);
   const GURL result(string_value);
@@ -118,8 +119,8 @@ GURL GetURLSwitchValueWithDefault(base::StringPiece switch_value,
   return GURL(default_value);
 }
 
-url::Origin GetOriginSwitchValueWithDefault(base::StringPiece switch_value,
-                                            base::StringPiece default_value) {
+url::Origin GetOriginSwitchValueWithDefault(std::string_view switch_value,
+                                            std::string_view default_value) {
   std::string string_value;
   GetSwitchValueWithDefault(switch_value, default_value, &string_value);
   const url::Origin result = url::Origin::Create(GURL(string_value));
@@ -133,16 +134,16 @@ url::Origin GetOriginSwitchValueWithDefault(base::StringPiece switch_value,
 }
 
 void SetDefaultURLIfInvalid(GURL* url_to_set,
-                            base::StringPiece switch_value,
-                            base::StringPiece default_value) {
+                            std::string_view switch_value,
+                            std::string_view default_value) {
   if (!url_to_set->is_valid()) {
     *url_to_set = GetURLSwitchValueWithDefault(switch_value, default_value);
   }
 }
 
 void SetDefaultOriginIfOpaqueOrInvalidScheme(url::Origin* origin_to_set,
-                                             base::StringPiece switch_value,
-                                             base::StringPiece default_value) {
+                                             std::string_view switch_value,
+                                             std::string_view default_value) {
   if (origin_to_set->opaque() ||
       !origin_to_set->GetURL().SchemeIsHTTPOrHTTPS()) {
     *origin_to_set =
@@ -152,7 +153,7 @@ void SetDefaultOriginIfOpaqueOrInvalidScheme(url::Origin* origin_to_set,
 
 void ResolveURLIfInvalid(GURL* url_to_set,
                          const GURL& base_url,
-                         base::StringPiece suffix) {
+                         std::string_view suffix) {
   if (!url_to_set->is_valid()) {
     *url_to_set = base_url.Resolve(suffix);
   }

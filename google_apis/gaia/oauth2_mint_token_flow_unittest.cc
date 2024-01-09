@@ -7,13 +7,13 @@
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
-#include <optional>
 #include "base/json/json_reader.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -106,10 +106,10 @@ const char kTokenBindingChallengeResponse[] = R"(
     }
   )";
 
-constexpr base::StringPiece kVersion = "test_version";
-constexpr base::StringPiece kChannel = "test_channel";
-constexpr base::StringPiece kScopes[] = {"http://scope1", "http://scope2"};
-constexpr base::StringPiece kClientId = "client1";
+constexpr std::string_view kVersion = "test_version";
+constexpr std::string_view kChannel = "test_channel";
+constexpr std::string_view kScopes[] = {"http://scope1", "http://scope2"};
+constexpr std::string_view kClientId = "client1";
 
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
@@ -202,7 +202,7 @@ class OAuth2MintTokenFlowTest : public testing::Test {
                   const std::string& device_id,
                   const std::string& selected_user_id,
                   const std::string& consent_result) {
-    const base::StringPiece kExtensionId = "ext1";
+    const std::string_view kExtensionId = "ext1";
     flow_ = std::make_unique<MockMintTokenFlow>(
         delegate,
         OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
@@ -211,7 +211,7 @@ class OAuth2MintTokenFlowTest : public testing::Test {
   }
 
   void CreateClientFlow() {
-    const base::StringPiece kDeviceId = "test_device_id";
+    const std::string_view kDeviceId = "test_device_id";
     flow_ = std::make_unique<MockMintTokenFlow>(
         &delegate_, OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
                         kClientId, kScopes, kVersion, kChannel, kDeviceId));

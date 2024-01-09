@@ -4,6 +4,7 @@
 
 #include "google_apis/gaia/fake_gaia.h"
 
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -729,7 +729,7 @@ void FakeGaia::HandleTokenInfo(const HttpRequest& request,
             .Set("issued_to", token_info->issued_to)
             .Set("audience", token_info->audience)
             .Set("user_id", token_info->user_id)
-            .Set("scope", base::JoinString(std::vector<base::StringPiece>(
+            .Set("scope", base::JoinString(std::vector<std::string_view>(
                                                token_info->scopes.begin(),
                                                token_info->scopes.end()),
                                            " "))

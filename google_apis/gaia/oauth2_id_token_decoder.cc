@@ -5,8 +5,9 @@
 #include "google_apis/gaia/oauth2_id_token_decoder.h"
 
 #include <memory>
-
 #include <optional>
+#include <string_view>
+
 #include "base/base64url.h"
 #include "base/containers/contains.h"
 #include "base/json/json_reader.h"
@@ -29,8 +30,8 @@ const char kServicesKey[] = "services";
 // Decodes the JWT ID token to a dictionary. Returns whether the decoding was
 // successful.
 std::optional<base::Value::Dict> DecodeIdToken(const std::string id_token) {
-  const std::vector<base::StringPiece> token_pieces =
-      base::SplitStringPiece(base::StringPiece(id_token), ".",
+  const std::vector<std::string_view> token_pieces =
+      base::SplitStringPiece(std::string_view(id_token), ".",
                              base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (token_pieces.size() != 3) {
     VLOG(1) << "Invalid id_token: not in JWT format";
