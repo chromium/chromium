@@ -307,8 +307,7 @@ void SetUpLogging(bool launching_at_login_screen,
 
 // Sets up switches and arguments of command line for startup and post-login
 // data.
-void SetUpForStartupData(bool launching_at_login_screen,
-                         std::optional<int> startup_fd,
+void SetUpForStartupData(std::optional<int> startup_fd,
                          std::optional<int> read_pipe_fd,
                          LaunchParams& parameters) {
   if (startup_fd) {
@@ -556,8 +555,7 @@ LaunchParams BrowserLauncher::CreateLaunchParams(
                params.logfd.is_valid() ? std::optional(params.logfd.get())
                                        : std::nullopt,
                parameters);
-  SetUpForStartupData(launching_at_login_screen, startup_fd, read_pipe_fd,
-                      parameters);
+  SetUpForStartupData(startup_fd, read_pipe_fd, parameters);
   SetUpForMojo(channel, parameters);
   SetUpForCrashpad(parameters.command_line);
 
