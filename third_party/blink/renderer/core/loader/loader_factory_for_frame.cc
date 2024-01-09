@@ -179,9 +179,9 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
       // instead of cloning all `throttles`.
       return std::make_unique<BackgroundURLLoader>(
           std::move(web_background_resource_fetch_assets),
-          GetCorsExemptHeaderList(), freezable_task_runner,
-          unfreezable_task_runner, back_forward_cache_loader_helper,
-          std::move(throttles), GetBackgroundCodeCacheHost());
+          GetCorsExemptHeaderList(), unfreezable_task_runner,
+          back_forward_cache_loader_helper, std::move(throttles),
+          GetBackgroundCodeCacheHost());
     }
   }
 

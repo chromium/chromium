@@ -49,7 +49,6 @@ class BLINK_PLATFORM_EXPORT BackgroundURLLoader : public URLLoader {
       scoped_refptr<WebBackgroundResourceFetchAssets>
           background_resource_fetch_context,
       const Vector<String>& cors_exempt_header_list,
-      scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       BackForwardCacheLoaderHelper* back_forward_cache_loader_helper,
       Vector<std::unique_ptr<URLLoaderThrottle>> throttles,
