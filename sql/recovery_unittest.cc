@@ -93,6 +93,9 @@ class SqlRecoveryTestBase : public testing::Test {
   }
 
  protected:
+  explicit SqlRecoveryTestBase(DatabaseOptions options)
+      : db_(std::move(options)) {}
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath db_path_;
@@ -102,15 +105,29 @@ class SqlRecoveryTestBase : public testing::Test {
 
 // Tests both the legacy `sql::Recovery` interface and the newer
 // `sql::BuiltInRecovery` interface, if it's supported.
-class SqlRecoveryTest : public SqlRecoveryTestBase,
-                        public testing::WithParamInterface<bool> {
+//
+// Parameters are as follows:
+//   - Is BuiltInRecovery enabled?
+//   - Is WAL mode enabled?
+class SqlRecoveryTest
+    : public SqlRecoveryTestBase,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  SqlRecoveryTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kUseBuiltInRecoveryIfSupported, GetParam());
+  SqlRecoveryTest()
+      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = UseWalMode()}) {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kUseBuiltInRecoveryIfSupported, std::get<0>(GetParam())},
+         {features::kEnableWALModeByDefault, UseWalMode()}});
   }
 
-  bool UseBuiltIn() { return GetParam() && BuiltInRecovery::IsSupported(); }
+  bool UseBuiltIn() {
+    return std::get<0>(GetParam()) && BuiltInRecovery::IsSupported();
+  }
+
+  bool UseWalMode() {
+    // The legacy recovery module does not support recovering WAL databases.
+    return std::get<1>(GetParam()) && BuiltInRecovery::IsSupported();
+  }
 };
 
 // Tests specific to the newer `sql::BuiltInRecovery` interface.
@@ -120,7 +137,7 @@ class SqlRecoveryTest : public SqlRecoveryTestBase,
 // the legacy `sql::Recovery` module.
 class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
  public:
-  SqlBuiltInRecoveryTest() {
+  SqlBuiltInRecoveryTest() : SqlRecoveryTestBase(DatabaseOptions{}) {
     scoped_feature_list_.InitAndEnableFeature(
         features::kUseBuiltInRecoveryIfSupported);
   }
@@ -133,9 +150,17 @@ class SqlBuiltInRecoveryTest : public SqlRecoveryTestBase {
 // the new `sql::BuiltInRecovery` module.
 class SqlLegacyRecoveryTest : public SqlRecoveryTestBase {
  public:
-  SqlLegacyRecoveryTest() {
+  SqlLegacyRecoveryTest()
+      // The legacy recovery module does not support recovering WAL databases.
+      : SqlRecoveryTestBase(DatabaseOptions{.wal_mode = false}) {
     scoped_feature_list_.InitAndDisableFeature(
         features::kUseBuiltInRecoveryIfSupported);
+
+    // TODO(https://crbug.com/1385500): All databases which use legacy recovery
+    // must either disable WAL mode manually or be migrated to the new recovery
+    // module before WAL mode may be turned on globally. This assertion is added
+    // here as a guard against accidental regression.
+    assert(!base::FeatureList::IsEnabled(features::kEnableWALModeByDefault));
   }
 };
 
@@ -1328,15 +1353,15 @@ TEST_P(SqlRecoveryTest, BeginRecoverDatabase) {
   ASSERT_TRUE(sql::test::CorruptIndexRootPage(db_path_, "rows_index"));
   ASSERT_TRUE(Reopen());
 
-  // Run recovery code, then rollback.  Database remains the same.
-  {
+  if (!UseBuiltIn()) {
+    // Run recovery code, then rollback.  Database remains the same.
     std::unique_ptr<Recovery> recovery =
         Recovery::BeginRecoverDatabase(&db_, db_path_);
     ASSERT_TRUE(recovery);
     Recovery::Rollback(std::move(recovery));
+    db_.Close();
+    ASSERT_TRUE(Reopen());
   }
-  db_.Close();
-  ASSERT_TRUE(Reopen());
 
   static const char kIndexedCountSql[] =
       "SELECT SUM(indexed) FROM rows INDEXED BY rows_index";
@@ -1547,9 +1572,56 @@ TEST_P(SqlRecoveryTest, BuiltInRecoveryNotAttempedIfNotEnabled) {
       IsSqliteSuccessCode(BuiltInRecovery::RecoverDatabase(
           &db_, BuiltInRecovery::Strategy::kRecoverOrRaze)));
 }
+
+// This test mimics the case where a database that was using WAL mode crashed,
+// then next Chrome launch the database is not opened in WAL mode. This may
+// occur when e.g. WAL mode if configured via Finch and the user not in the
+// experiment group on the second launch of Chrome.
+TEST_F(SqlBuiltInRecoveryTest, PRE_RecoverFormerlyWalDbAfterCrash) {
+  base::FilePath wal_db_path =
+      temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
+
+  // Open the DB in WAL mode to set journal_mode="wal".
+  Database wal_db{{.wal_mode = true}};
+  ASSERT_TRUE(wal_db.Open(wal_db_path));
+
+  EXPECT_TRUE(wal_db.UseWALMode());
+  EXPECT_EQ(ExecuteWithResult(&wal_db, "PRAGMA journal_mode"), "wal");
+
+  // Crash the database somehow, foregoing the opportunity for any cleanup.
+  wal_db.set_error_callback(base::DoNothing());
+  EXPECT_DCHECK_DEATH(wal_db.set_error_callback(base::DoNothing()));
+}
+
+TEST_F(SqlBuiltInRecoveryTest, RecoverFormerlyWalDbAfterCrash) {
+  base::FilePath wal_db_path =
+      temp_dir_.GetPath().AppendASCII("recovery_wal_test.sqlite");
+
+  Database non_wal_db{{.wal_mode = false}};
+  ASSERT_TRUE(non_wal_db.Open(wal_db_path));
+
+  auto run_recovery = base::BindLambdaForTesting([&]() {
+    EXPECT_EQ(BuiltInRecovery::RecoverDatabase(
+                  &non_wal_db,
+                  BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze),
+              SqliteResultCode::kOk);
+  });
+
+  TestRecoverDatabase(non_wal_db, wal_db_path, /*with_meta=*/true,
+                      std::move(run_recovery));
+}
+
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
-INSTANTIATE_TEST_SUITE_P(All, SqlRecoveryTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SqlRecoveryTest,
+    testing::Values(
+        std::tuple(true, true),   // BuiltInRecovery with WAL databases.
+        std::tuple(true, false),  // BuiltInRecovery with non-WAL databases.
+        std::tuple(false, false)  // Legacy recovery with non-WAL databases.
+        // The legacy recovery module does not support recovering WAL databases.
+        ));
 
 }  // namespace
 

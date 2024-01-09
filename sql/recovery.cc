@@ -94,6 +94,7 @@ bool BuiltInRecovery::RecoverIfPossible(
           ? !BuiltInRecovery::ShouldAttemptRecovery(database, extended_error)
           : !database || !database->is_open() ||
                 database->DbPath(InternalApiToken()).empty() ||
+                database->UseWALMode() ||
                 !Recovery::ShouldRecover(extended_error)) {
     return false;
   }

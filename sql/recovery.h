@@ -22,8 +22,15 @@ class FilePath;
 
 namespace sql {
 
-// Recovery module for sql/. Please see the `RecoverIfPossible()` method for
-// how to use this class.
+// Recovery module for sql/. Please see the `RecoverIfPossible()` method for how
+// to use this class.
+//
+// This module is capable of recovering databases which the legacy recovery
+// module could not recover. These include:
+//   - tables with the WITHOUT ROWID optimization
+//   - databases which use Write-Ahead Log (i.e. WAL mode)
+//     - NOTE: as WAL mode is still experimental (see https://crbug.com/1416213)
+//       recovery should not be attempted on WAL databases for now.
 //
 // Uses SQLite's recovery extension: https://www.sqlite.org/recovery.html
 class COMPONENT_EXPORT(SQL) BuiltInRecovery {
