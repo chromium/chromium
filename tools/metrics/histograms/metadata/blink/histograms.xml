@@ -2310,6 +2310,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.HTMLParsing.PreloadRequestCount" units="count"
+    expires_after="2024-03-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The total number of queued preload requests created by the preload scanner
+    when HTMLDocumentParser performing parsing. This is only reported for
+    http/https urls. This is reported at the parse end.
+
+    This histogram does not record metrics on machines with low-resolution
+    clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.HTMLParsing.TimeToDeferredPumpTokenizer4"
     units="microseconds" expires_after="2024-03-10">
   <owner>sky@chromium.org</owner>

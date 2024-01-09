@@ -92,6 +92,8 @@ void HTMLParserMetrics::ReportUMAs() {
                           total_tokens_parsed_ / chunk_count_);
   UMA_HISTOGRAM_COUNTS_10M("Blink.HTMLParsing.TokensParsedTotal4",
                            total_tokens_parsed_);
+  UMA_HISTOGRAM_COUNTS_1000("Blink.HTMLParsing.PreloadRequestCount",
+                            total_preload_request_count_);
 
   // Only report yield data if we actually yielded.
   if (max_yield_interval_ != base::TimeDelta()) {

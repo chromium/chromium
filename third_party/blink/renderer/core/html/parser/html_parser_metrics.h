@@ -38,6 +38,8 @@ class CORE_EXPORT HTMLParserMetrics {
 
   void ReportMetricsAtParseEnd();
 
+  void IncrementPreloadRequestCount() { ++total_preload_request_count_; }
+
   unsigned chunk_count() const { return chunk_count_; }
 
  private:
@@ -55,6 +57,7 @@ class CORE_EXPORT HTMLParserMetrics {
   unsigned total_tokens_parsed_ = 0;
   unsigned min_tokens_parsed_ = UINT_MAX;
   unsigned max_tokens_parsed_ = 0;
+  unsigned total_preload_request_count_ = 0;
 
   // Yield count may not equal chunk count - 1. That is, there is not
   // always one yield between every pair of chunks.

@@ -1480,6 +1480,9 @@ void HTMLDocumentParser::ProcessPreloadData(
   task_runner_state_->SetSeenCSPMetaTag(preload_data->has_csp_meta_tag);
   for (auto& request : preload_data->requests) {
     queued_preloads_.push_back(std::move(request));
+    if (metrics_reporter_) {
+      metrics_reporter_->IncrementPreloadRequestCount();
+    }
   }
 
   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
