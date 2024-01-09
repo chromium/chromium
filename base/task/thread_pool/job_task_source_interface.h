@@ -43,9 +43,8 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
 
  protected:
   JobTaskSource(const TaskTraits& traits,
-                TaskRunner* task_runner,
                 TaskSourceExecutionMode execution_mode)
-      : TaskSource(traits, task_runner, execution_mode) {}
+      : TaskSource(traits, execution_mode) {}
   ~JobTaskSource() override = default;
 };
 

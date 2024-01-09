@@ -445,12 +445,12 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
         std::move(task),
         BindOnce(
             [](scoped_refptr<Sequence> sequence,
-               ThreadPoolImpl* thread_pool_impl, Task task) {
+               ThreadPoolImpl* thread_pool_impl, scoped_refptr<TaskRunner>,
+               Task task) {
               thread_pool_impl->PostTaskWithSequenceNow(std::move(task),
                                                         std::move(sequence));
             },
-            std::move(sequence), Unretained(this)),
-        std::move(task_runner));
+            std::move(sequence), Unretained(this), std::move(task_runner)));
   }
 
   return true;

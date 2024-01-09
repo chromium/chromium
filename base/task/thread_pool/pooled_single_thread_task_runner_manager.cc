@@ -177,7 +177,11 @@ class WorkerThreadDelegate : public WorkerThreadWaitableEvent::Delegate {
 
   TimeDelta GetSleepTimeout() override { return TimeDelta::Max(); }
 
-  bool PostTaskNow(scoped_refptr<Sequence> sequence, Task task) {
+  // `task_runner` isn't used but is forwarded to keep the task runner
+  // alive while the task is pending.
+  bool PostTaskNow(scoped_refptr<Sequence> sequence,
+                   scoped_refptr<SingleThreadTaskRunner> task_runner,
+                   Task task) {
     auto transaction = sequence->BeginTransaction();
 
     // |task| will be pushed to |sequence|, and |sequence| will be queued
@@ -538,15 +542,15 @@ class PooledSingleThreadTaskRunnerManager::PooledSingleThreadTaskRunner
     }
 
     if (task.delayed_run_time.is_null())
-      return GetDelegate()->PostTaskNow(sequence_, std::move(task));
+      return GetDelegate()->PostTaskNow(sequence_, nullptr, std::move(task));
 
     // Unretained(GetDelegate()) is safe because this TaskRunner and its
     // worker are kept alive as long as there are pending Tasks.
     outer_->delayed_task_manager_->AddDelayedTask(
         std::move(task),
         BindOnce(IgnoreResult(&WorkerThreadDelegate::PostTaskNow),
-                 Unretained(GetDelegate()), sequence_),
-        this);
+                 Unretained(GetDelegate()), sequence_,
+                 base::WrapRefCounted(this)));
     return true;
   }
 
