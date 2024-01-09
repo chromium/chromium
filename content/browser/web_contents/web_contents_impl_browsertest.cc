@@ -4518,10 +4518,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 // frame and mouse up is on OOF iframe, the mouse up event is delivered to the
 // main frame as well to clear cached mouse states including autoscroll
 // selection state.
-// TODO(crbug.com/1512574): This test was detected flaky.
 IN_PROC_BROWSER_TEST_F(
     WebContentsImplBrowserTest,
-    DISABLED_MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
+    MouseUpInOOPIframeShouldCancelMainFrameAutoscrollSelection) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -4575,11 +4574,23 @@ IN_PROC_BROWSER_TEST_F(
                    ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('B'),
                    ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
-  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "var inputElement = document.getElementById('input1');"
+                     "new Promise(function(resolve) {"
+                     "  if (inputElement.value == 'AB')"
+                     "    resolve(true);"
+                     "  inputElement.addEventListener('change', () => {"
+                     "    if (inputElement.value == 'AB')"
+                     "      resolve(true);"
+                     "  });"
+                     "});"));
   EXPECT_EQ("AB",
             EvalJs(web_contents, "document.getElementById('input1').value")
                 .ExtractString());
 
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "document.addEventListener('mousedown', () => { "
+                     "window.receivedMouseDown = true; });"));
   EXPECT_TRUE(ExecJs(web_contents,
                      "document.addEventListener('mouseup', () => { "
                      "window.receivedMouseUp = true; });"));
@@ -4605,7 +4616,10 @@ IN_PROC_BROWSER_TEST_F(
                      blink::WebMouseEvent::Button::kLeft,
                      gfx::Point(iframe_center_x, input_center_y));
   RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
-
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "new Promise(resolve => setTimeout(() => {"
+                     "  resolve(window.receivedMouseDown);"
+                     "}));"));
   EXPECT_TRUE(web_contents->GetInputEventRouter()
                   ->root_view_receive_additional_mouse_up_);
 
@@ -4613,20 +4627,29 @@ IN_PROC_BROWSER_TEST_F(
                      blink::WebMouseEvent::Button::kLeft,
                      gfx::Point(iframe_center_x, input_center_y));
   RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
-
+  // Main frame should receive mouse up event.
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "new Promise(resolve => setTimeout(() => {"
+                     "  resolve(window.receivedMouseUp);"
+                     "}));"));
   EXPECT_FALSE(web_contents->GetInputEventRouter()
                    ->root_view_receive_additional_mouse_up_);
-
-  // Main frame should receive mouse up event.
-  EXPECT_TRUE(EvalJs(web_contents, "window.receivedMouseUp").ExtractBool());
 
   // Type again in input element, insert text should be left to right.
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
                    ui::DomCode::US_E, ui::VKEY_E, false, false, false, false);
   SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
                    ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
-  RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
-
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "var inputElement = document.getElementById('input1');"
+                     "new Promise(function(resolve) {"
+                     "  if (inputElement.value == 'EF')"
+                     "    resolve(true);"
+                     "  inputElement.addEventListener('change', () => {"
+                     "    if (inputElement.value == 'EF')"
+                     "      resolve(true);"
+                     "  });"
+                     "});"));
   EXPECT_EQ("EF",
             EvalJs(web_contents, "document.getElementById('input1').value")
                 .ExtractString());
