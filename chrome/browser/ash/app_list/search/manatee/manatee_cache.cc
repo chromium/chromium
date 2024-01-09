@@ -15,7 +15,6 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace app_list {
 namespace {
@@ -58,7 +57,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         }
       })");
 
-std::optional<ManateeCache::EmbeddingsList> GetList(const base::Value* value) {
+std::optional<EmbeddingsList> GetList(const base::Value* value) {
   if (!value->is_dict()) {
     return std::nullopt;
   }
@@ -68,7 +67,7 @@ std::optional<ManateeCache::EmbeddingsList> GetList(const base::Value* value) {
     return std::nullopt;
   }
 
-  ManateeCache::EmbeddingsList embeddings;
+  EmbeddingsList embeddings;
   for (const auto& embedding_list : *field) {
     std::vector<double> embedding_vec;
     for (const auto& embedding_val : embedding_list.GetList()) {
@@ -155,8 +154,7 @@ void ManateeCache::OnJsonParsed(
     return;
   }
 
-  std::optional<ManateeCache::EmbeddingsList> embeddings =
-      GetList(&*result).value();
+  std::optional<EmbeddingsList> embeddings = GetList(&*result).value();
   if (embeddings.has_value()) {
     std::move(results_callback_).Run(embeddings.value());
     results_callback_.Reset();
@@ -164,7 +162,7 @@ void ManateeCache::OnJsonParsed(
   }
 }
 
-ManateeCache::EmbeddingsList ManateeCache::GetResponse() {
+EmbeddingsList ManateeCache::GetResponse() {
   return response_;
 }
 

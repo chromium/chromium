@@ -39,11 +39,9 @@ class ManateeCacheTest : public testing::Test {
   ManateeCacheTest() = default;
   ~ManateeCacheTest() override = default;
 
-  void OnResponseCallback(ManateeCache::EmbeddingsList& reply) {
-    reply_ = reply;
-  }
+  void OnResponseCallback(EmbeddingsList& reply) { reply_ = reply; }
 
-  ManateeCache::EmbeddingsList& GrabReply() { return reply_; }
+  EmbeddingsList& GrabReply() { return reply_; }
 
   void SetUp() override {
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -74,7 +72,7 @@ class ManateeCacheTest : public testing::Test {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   raw_ptr<signin::IdentityTestEnvironment> identity_test_env_;
-  ManateeCache::EmbeddingsList reply_;
+  EmbeddingsList reply_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> profile_;
@@ -88,7 +86,7 @@ class ManateeCacheTest : public testing::Test {
 TEST_F(ManateeCacheTest, URLLoaderSingleInputString) {
   std::unique_ptr<ManateeCache> manateeCache =
       std::make_unique<ManateeCache>(profile_, shared_url_loader_factory_);
-  ManateeCache::EmbeddingsList expected = {{0.1, 0.2, 0.3}};
+  EmbeddingsList expected = {{0.1, 0.2, 0.3}};
   identity_test_env_->MakePrimaryAccountAvailable(kEmail,
                                                   signin::ConsentLevel::kSync);
   constexpr char kValidJsonResponse[] = R"(
@@ -109,7 +107,7 @@ TEST_F(ManateeCacheTest, URLLoaderSingleInputString) {
 TEST_F(ManateeCacheTest, URLLoaderMultiInputString) {
   std::unique_ptr<ManateeCache> manateeCache =
       std::make_unique<ManateeCache>(profile_, shared_url_loader_factory_);
-  ManateeCache::EmbeddingsList expected = {{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}};
+  EmbeddingsList expected = {{0.1, 0.2, 0.3}, {0.4, 0.5, 0.6}};
   identity_test_env_->MakePrimaryAccountAvailable(kEmail,
                                                   signin::ConsentLevel::kSync);
   constexpr char kValidJsonResponse[] = R"(

@@ -5152,6 +5152,8 @@ source_set("unit_tests") {
     "app_list/search/test/search_controller_test_util.h",
     "app_list/search/test/search_metrics_test_util.cc",
     "app_list/search/test/search_metrics_test_util.h",
+    "app_list/search/test/test_manatee_cache.cc",
+    "app_list/search/test/test_manatee_cache.h",
     "app_list/search/test/test_ranker_manager.cc",
     "app_list/search/test/test_ranker_manager.h",
     "app_list/search/test/test_search_controller.cc",
