@@ -20,7 +20,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -327,14 +327,12 @@ TEST_P(ToastManagerImplTest, PositionWithVisibleBottomShelf) {
 
 TEST_P(ToastManagerImplTest, PositionWithHotseatShown) {
   Shelf* shelf = GetPrimaryShelf();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
 
   gfx::Rect toast_bounds = GetToastBounds();
@@ -350,14 +348,12 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatShown) {
 
 TEST_P(ToastManagerImplTest, PositionWithHotseatExtended) {
   Shelf* shelf = GetPrimaryShelf();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   hotseat->SetState(HotseatState::kExtended);
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
 
@@ -374,14 +370,12 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatExtended) {
 TEST_P(ToastManagerImplTest, PositionWithHotseatShownForMultipleMonitors) {
   UpdateDisplay("600x400,600x400");
   Shelf* shelf = GetPrimaryShelf();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   HotseatWidget* hotseat = GetPrimaryShelf()->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   ShowToast("DUMMY", ToastData::kInfiniteDuration);
@@ -407,7 +401,7 @@ TEST_P(ToastManagerImplTest, ShutdownWithExtendedHotseat) {
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   std::unique_ptr<aura::Window> window(
@@ -457,14 +451,12 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatExtendedOnSecondMonitor) {
   RootWindowController* const secondary_root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id());
   Shelf* const shelf = secondary_root_window_controller->shelf();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   HotseatWidget* hotseat = shelf->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   std::unique_ptr<aura::Window> window(
@@ -495,14 +487,12 @@ TEST_P(ToastManagerImplTest, PositionWithHotseatExtendedOnAnotherMonitor) {
   RootWindowController* const secondary_root_window_controller =
       Shell::GetRootWindowControllerWithDisplayId(GetSecondaryDisplay().id());
   Shelf* const shelf = secondary_root_window_controller->shelf();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   HotseatWidget* hotseat = shelf->hotseat_widget();
 
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
   EXPECT_EQ(SHELF_VISIBLE, shelf->GetVisibilityState());
 
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   display_manager()->SetMirrorMode(display::MirrorMode::kOff, std::nullopt);
 
   // Create two windows, one on each display. The window creation order should

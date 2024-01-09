@@ -53,7 +53,7 @@
 #include "ash/wallpaper/wallpaper_controller_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_test_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -1490,7 +1490,7 @@ TEST_P(LtrRtlShelfViewTest, HomeButtonMetricsInTablet) {
   Shell::Get()
       ->accessibility_controller()
       ->SetTabletModeShelfNavigationButtonsEnabled(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   const HomeButton* home_button =
       GetPrimaryShelf()->navigation_widget()->GetHomeButton();
@@ -1783,12 +1783,12 @@ TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   shelf_view_->shelf()->SetAlignment(ShelfAlignment::kBottom);
   SetShelfAlignmentPref(prefs, id, ShelfAlignment::kBottom);
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
@@ -1797,12 +1797,12 @@ TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   shelf_view_->shelf()->SetAlignment(ShelfAlignment::kLeft);
   SetShelfAlignmentPref(prefs, id, ShelfAlignment::kLeft);
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 
   observer.Reset();
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
   EXPECT_EQ(1, observer.icon_positions_animation_duration().InMilliseconds());
 }
@@ -2386,11 +2386,11 @@ TEST_P(LtrRtlShelfViewTest, FirstAndLastVisibleIndex) {
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // By enabling tablet mode, the back button (index 0) should become visible,
   // but that does not change the first and last visible indices.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
   // Turn tablet mode off again.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
   EXPECT_EQ(0u, shelf_view_->visible_views_indices()[0]);
 }
@@ -2555,7 +2555,7 @@ TEST_F(ShelfViewTest, ItemHasCorrectNotificationBadgeIndicator) {
 TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
   const ShelfID test_item_id = AddApp();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   views::View* const test_item_button = GetButtonByID(test_item_id);
   ASSERT_TRUE(test_item_button);
@@ -2581,7 +2581,7 @@ TEST_F(ShelfViewTest, TapOnItemDuringFadeOut) {
 TEST_F(ShelfViewTest, SwipeOnItemDuringFadeOut) {
   const ShelfID test_item_id = AddApp();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   views::View* const test_item_button = GetButtonByID(test_item_id);
   ASSERT_TRUE(test_item_button);
@@ -3620,7 +3620,7 @@ TEST_F(ShelfViewFocusWithNoShelfNavigationTest,
                   ->HasFocus());
 
   // Switch to tablet mode, which should hide navigation buttons.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   test_api_->RunMessageLoopUntilAnimationsDone();
 
   ASSERT_FALSE(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
@@ -3892,11 +3892,11 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
   // In tablet mode, the shelf should be visible but the desk button shouldn't.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 }
 
@@ -3929,8 +3929,8 @@ TEST_F(ShelfViewDeskButtonTest, NewDeskVisibility) {
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
   // Going into and out of tablet mode and overview shouldn't change this.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "");
   EXPECT_FALSE(prefs_->GetBoolean(prefs::kDeviceUsesDesks));
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
@@ -3986,8 +3986,8 @@ TEST_F(ShelfViewDeskButtonTest, PrefHidden) {
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_EQ(prefs_->GetString(prefs::kShowDeskButtonInShelf), "Hidden");
   EXPECT_FALSE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 

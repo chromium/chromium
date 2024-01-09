@@ -40,7 +40,7 @@
 #include "ash/system/virtual_keyboard/virtual_keyboard_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_ash_web_view_factory.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -719,7 +719,7 @@ TEST_F(StatusAreaWidgetCollapseStateTest,
        HideDragHandleOnOverlapInExpandedState) {
   std::unique_ptr<aura::Window> test_window =
       CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   status_area_->UpdateCollapseState();
 
   // By default, status area is collapsed.
@@ -743,7 +743,7 @@ TEST_F(StatusAreaWidgetCollapseStateTest,
        HideDragHandleWithNudgeOnOverlapInExpandedState) {
   std::unique_ptr<aura::Window> test_window =
       CreateTestWindow(gfx::Rect(0, 0, 400, 400));
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   status_area_->UpdateCollapseState();
 
   // By default, status area is collapsed.

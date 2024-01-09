@@ -16,7 +16,7 @@
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/i18n/rtl.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -324,8 +324,6 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithRTL) {
 TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
   Shelf* shelf = GetPrimaryShelf();
   HotseatWidget* hotseat = shelf->hotseat_widget();
-  TabletModeController* tablet_mode_controller =
-      Shell::Get()->tablet_mode_controller();
   display::Display primary_display = GetPrimaryDisplay();
   gfx::Rect display_bounds = primary_display.bounds();
   int shelf_size = ShelfConfig::Get()->shelf_size();
@@ -342,7 +340,7 @@ TEST_F(AnchoredNudgeManagerImplTest, DefaultLocation_WithHotseatShown) {
   EXPECT_EQ(nudge_bounds.bottom(), display_bounds.bottom() - shelf_size);
 
   // Test that the nudge updates its baseline when the hotseat is shown.
-  tablet_mode_controller->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   nudge_bounds = GetShownNudge(id)->GetWidget()->GetWindowBoundsInScreen();
   EXPECT_EQ(hotseat->state(), HotseatState::kShownHomeLauncher);
   EXPECT_EQ(nudge_bounds.bottom(),

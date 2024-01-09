@@ -30,7 +30,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -640,7 +640,7 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
     EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
 
     // Enter tablet mode - note that home button may be invisible in this case.
-    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+    ash::TabletModeControllerTestApi().EnterTabletMode();
     ShelfViewTestAPI shelf_test_api(
         GetPrimaryShelf()->GetShelfViewForTesting());
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
@@ -666,7 +666,7 @@ TEST_P(HomeButtonTest, ClipRectDoesNotClipHomeButtonBounds) {
       EXPECT_TRUE(clip_rect_bounds().Contains(home_button_bounds()));
 
     // Open another window and go back to clamshell.
-    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+    ash::TabletModeControllerTestApi().LeaveTabletMode();
     widget = CreateTestWidget();
     shelf_test_api.RunMessageLoopUntilAnimationsDone(
         test_api.GetBoundsAnimator());
@@ -704,7 +704,7 @@ TEST_P(HomeButtonTest, ClickToOpenAppList) {
 }
 
 TEST_P(HomeButtonTest, ClickToOpenAppListInTabletMode) {
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   Shelf* shelf = GetPrimaryShelf();
   EXPECT_EQ(ShelfAlignment::kBottom, shelf->alignment());
@@ -748,7 +748,7 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
   // while we wait for animations in the test.
   base::RunLoop().RunUntilIdle();
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   Shelf* const shelf = GetPrimaryShelf();
   ShelfViewTestAPI shelf_test_api(shelf->GetShelfViewForTesting());
@@ -787,7 +787,7 @@ TEST_P(HomeButtonTest, ButtonPositionInTabletMode) {
   if (should_show_home_button)
     EXPECT_GT(home_button()->bounds().x(), 0);
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   shelf_test_api.RunMessageLoopUntilAnimationsDone(
       test_api.GetBoundsAnimator());
 
@@ -809,7 +809,7 @@ TEST_F(HomeButtonAnimationTest, VisibilityAnimation) {
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Switch to tablet mode changes the button visibility.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   // Verify that the button view is still visible, and animating to 0 opacity.
   EXPECT_TRUE(home_button_view->GetVisible());
@@ -821,7 +821,7 @@ TEST_F(HomeButtonAnimationTest, VisibilityAnimation) {
   EXPECT_FALSE(home_button_view->GetVisible());
 
   // Tablet mode exit should schedule animation to the visible state.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(0.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
@@ -843,20 +843,20 @@ TEST_F(HomeButtonAnimationTest, HideWhileAnimatingToShow) {
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Switch to tablet mode to initiate home button hide animation.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(0.0f, home_button_view->layer()->GetTargetOpacity());
   home_button_view->layer()->GetAnimator()->StopAnimating();
 
   // Tablet mode exit should schedule an animation to the visible state.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(0.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Enter tablet mode immediately, to interrupt the show animation.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(0.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(0.0f, home_button_view->layer()->GetTargetOpacity());
@@ -876,14 +876,14 @@ TEST_F(HomeButtonAnimationTest, ShowWhileAnimatingToHide) {
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Switch to tablet mode to initiate the home button hide animation.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(0.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Tablet mode exit should schedule an animation to the visible state.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(home_button_view->GetVisible());
   EXPECT_EQ(1.0f, home_button_view->layer()->opacity());
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
@@ -905,7 +905,7 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   EXPECT_EQ(1.0f, home_button_view->layer()->GetTargetOpacity());
 
   // Switch to tablet mode changes the button visibility.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   Shelf* const shelf = GetPrimaryShelf();
   ShelfViewTestAPI shelf_test_api(shelf->GetShelfViewForTesting());
@@ -928,7 +928,7 @@ TEST_F(HomeButtonAnimationTest, NonAnimatedLayoutDuringAnimation) {
   EXPECT_FALSE(test_api.GetBoundsAnimator()->IsAnimating(home_button_view));
 
   // Tablet mode exit should schedule animation to the visible state.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
 
   EXPECT_TRUE(test_api.GetBoundsAnimator()->IsAnimating(home_button_view));
   EXPECT_TRUE(home_button_view->GetVisible());
@@ -986,7 +986,7 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
       assistant::AssistantAllowedState::ALLOWED);
   assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
 
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());
@@ -1255,14 +1255,14 @@ TEST_F(HomeButtonWithTextTest, Basic) {
 
   // Change to tablet mode, where the label and home button shouldn't be
   // visible.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());
   EXPECT_FALSE(test_api.IsHomeButtonVisible());
   EXPECT_FALSE(IsLabelVisible());
 
   // Change back to clamshell mode. The label should be visible again.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
+  ash::TabletModeControllerTestApi().LeaveTabletMode();
   EXPECT_TRUE(IsLabelVisible());
 }
 
@@ -1284,7 +1284,7 @@ TEST_P(HomeButtonVisibilityWithAccessibilityFeaturesTest,
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
 
   // Switch to tablet mode, and verify the home button is still visible.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
 
   // The button should be hidden if the feature gets disabled.
@@ -1299,7 +1299,7 @@ TEST_P(HomeButtonVisibilityWithAccessibilityFeaturesTest,
   EXPECT_TRUE(test_api.IsHomeButtonVisible());
 
   // Switch to tablet mode, and verify the home button is hidden.
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
   EXPECT_FALSE(test_api.IsHomeButtonVisible());
 
   // The button should be shown if the feature gets enabled.
