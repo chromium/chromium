@@ -228,6 +228,8 @@ if (is_win || is_mac || is_linux) {
     if (is_win) {
       sources += [
         "activity_impl_win.cc",
+        "app/app_install_util_win.cc",
+        "app/app_install_util_win.h",
         "app/app_install_win.cc",
         "app/app_install_win_internal.h",
         "app/app_server_win.cc",

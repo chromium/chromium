@@ -430,7 +430,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,
                           const bool is_silent_install,
                           const std::string& tag,
-                          const std::string& child_window_text_to_find) {
+                          const std::string& child_window_text_to_find,
+                          const bool always_launch_cmd) {
   const base::FilePath path = GetSetupExecutablePath();
   ASSERT_FALSE(path.empty());
   base::CommandLine command_line(path);
@@ -440,6 +441,9 @@ void InstallUpdaterAndApp(UpdaterScope scope,
   if (is_silent_install) {
     ASSERT_TRUE(child_window_text_to_find.empty());
     command_line.AppendSwitch(kSilentSwitch);
+  }
+  if (always_launch_cmd) {
+    command_line.AppendSwitch(kAlwaysLaunchCmdSwitch);
   }
 
   if (child_window_text_to_find.empty()) {

@@ -358,13 +358,15 @@ void AppTestHelper::FirstTaskRun() {
           {"install", WithSystemScope(Wrap(&Install))},
           {"install_updater_and_app",
            WithSwitch(
-               "child_window_text_to_find",
+               "always_launch_cmd",
                WithSwitch(
-                   "tag",
+                   "child_window_text_to_find",
                    WithSwitch(
-                       "is_silent_install",
-                       WithSwitch("app_id", WithSystemScope(Wrap(
-                                                &InstallUpdaterAndApp))))))},
+                       "tag",
+                       WithSwitch("is_silent_install",
+                                  WithSwitch("app_id",
+                                             WithSystemScope(Wrap(
+                                                 &InstallUpdaterAndApp)))))))},
           {"print_log", WithSystemScope(Wrap(&PrintLog))},
           {"run_wake",
            WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},

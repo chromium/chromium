@@ -239,9 +239,11 @@ class IntegrationTest : public ::testing::Test {
   void InstallUpdaterAndApp(const std::string& app_id,
                             const bool is_silent_install,
                             const std::string& tag,
-                            const std::string& child_window_text_to_find = {}) {
+                            const std::string& child_window_text_to_find = {},
+                            const bool always_launch_cmd = false) {
     test_commands_->InstallUpdaterAndApp(app_id, is_silent_install, tag,
-                                         child_window_text_to_find);
+                                         child_window_text_to_find,
+                                         always_launch_cmd);
   }
 
   void ExpectInstalled() { test_commands_->ExpectInstalled(); }
@@ -2407,6 +2409,7 @@ struct IntegrationInstallerResultsTestCase {
   const std::string installer_text;
   const std::string installer_cmd_line;
   const std::string custom_app_response;
+  const std::optional<bool> always_launch_cmd;
 };
 
 class IntegrationInstallerResultsTest
@@ -2507,6 +2510,20 @@ INSTANTIATE_TEST_SUITE_P(
             {},
         },
 
+        // Silent install with a launch command, with `always_launch_cmd` set to
+        // `true`, InstallerResult::kSuccess, will run `more.com` even for
+        // silent install.
+        {
+            false,
+            "INSTALLER_RESULT=0 "
+            "REGISTER_LAUNCH_COMMAND=more.com",
+            0,
+            {},
+            "more.com",
+            {},
+            true,
+        },
+
         // InstallerResult::kMsiError, `ERROR_SUCCESS_REBOOT_REQUIRED`.
         {
             true,
@@ -2598,8 +2615,9 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
   const bool should_install_successfully =
       !GetParam().error_code ||
       GetParam().error_code == ERROR_SUCCESS_REBOOT_REQUIRED;
+  const bool always_launch_cmd = GetParam().always_launch_cmd.value_or(false);
 
-  if (!GetParam().interactive_install) {
+  if (!GetParam().interactive_install && !always_launch_cmd) {
     ASSERT_NO_FATAL_FAILURE(Install());
     ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   }
@@ -2619,10 +2637,10 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
       });
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
 
-  if (GetParam().interactive_install) {
-    ASSERT_NO_FATAL_FAILURE(
-        InstallUpdaterAndApp(kMsiAppId, /*is_silent_install=*/false,
-                             "usagestats=1", GetParam().installer_text));
+  if (GetParam().interactive_install || always_launch_cmd) {
+    ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+        kMsiAppId, !GetParam().interactive_install, "usagestats=1",
+        GetParam().installer_text, always_launch_cmd));
     ASSERT_TRUE(WaitForUpdaterExit());
   } else {
     int64_t crx_file_size = 0;
@@ -2666,7 +2684,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
       const std::wstring post_install_launch_command_line =
           base::ASCIIToWide(GetParam().installer_cmd_line);
       EXPECT_EQ(test::IsProcessRunning(post_install_launch_command_line),
-                GetParam().interactive_install);
+                GetParam().interactive_install || always_launch_cmd);
       EXPECT_TRUE(test::KillProcesses(post_install_launch_command_line, 0));
     }
     ASSERT_NO_FATAL_FAILURE(Uninstall());
