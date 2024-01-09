@@ -123,14 +123,14 @@ void FileUploadJob::Manager::Register(
     Priority priority,
     Record record_copy,
     ::ash::reporting::LogUploadEvent log_upload_event,
-    base::WeakPtr<Delegate> delegate,
+    std::unique_ptr<Delegate> delegate,
     base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
   sequenced_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           [](Manager* self, Priority priority, Record record_copy,
              ::ash::reporting::LogUploadEvent log_upload_event,
-             base::WeakPtr<Delegate> delegate,
+             std::unique_ptr<Delegate> delegate,
              base::OnceCallback<void(StatusOr<FileUploadJob*>)> result_cb) {
             // Retry count must allow the job to run.
             if (log_upload_event.upload_settings().retry_count() < 1) {
@@ -157,7 +157,7 @@ void FileUploadJob::Manager::Register(
                   serialized_settings,
                   std::make_unique<FileUploadJob>(
                       log_upload_event.upload_settings(),
-                      log_upload_event.upload_tracker(), delegate));
+                      log_upload_event.upload_tracker(), std::move(delegate)));
               CHECK(res.second);
               it = res.first;
               DCHECK_CALLED_ON_VALID_SEQUENCE(
@@ -203,7 +203,8 @@ void FileUploadJob::Manager::Register(
             std::move(result_cb).Run(job);
           },
           base::Unretained(this), priority, std::move(record_copy),
-          std::move(log_upload_event), delegate, std::move(result_cb)));
+          std::move(log_upload_event), std::move(delegate),
+          std::move(result_cb)));
 }
 
 scoped_refptr<base::SequencedTaskRunner>
@@ -371,10 +372,13 @@ void FileUploadJob::EventHelper::PostRetry() const {
 
 FileUploadJob::FileUploadJob(const UploadSettings& settings,
                              const UploadTracker& tracker,
-                             base::WeakPtr<Delegate> delegate)
-    : delegate_(delegate), settings_(settings), tracker_(tracker) {}
+                             std::unique_ptr<Delegate> delegate)
+    : delegate_(std::move(delegate)), settings_(settings), tracker_(tracker) {}
 
-FileUploadJob::~FileUploadJob() = default;
+FileUploadJob::~FileUploadJob() {
+  FileUploadJob::Manager::GetInstance()->sequenced_task_runner()->DeleteSoon(
+      FROM_HERE, std::move(delegate_));
+}
 
 base::ScopedClosureRunner FileUploadJob::CompletionCb(
     base::OnceClosure done_cb) {
@@ -395,7 +399,8 @@ base::ScopedClosureRunner FileUploadJob::CompletionCb(
                 // and do not report the outcome.
                 Manager::GetInstance()->sequenced_task_runner()->PostTask(
                     FROM_HERE,
-                    base::BindOnce(&Delegate::DoDeleteFile, job->delegate_,
+                    base::BindOnce(&Delegate::DoDeleteFile,
+                                   job->delegate_->GetWeakPtr(),
                                    std::string(job->settings_.origin_path())));
               }
             }
@@ -430,7 +435,7 @@ void FileUploadJob::Initiate(base::OnceClosure done_cb) {
   }
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallInitiateOnSequence, delegate_,
+      base::BindOnce(&CallInitiateOnSequence, delegate_->GetWeakPtr(),
                      settings_.origin_path(), settings_.upload_parameters(),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneInitiate,
@@ -496,8 +501,9 @@ void FileUploadJob::NextStep(const ScopedReservation& scoped_reservation,
   }
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallNextStepOnSequence, delegate_, tracker_.total(),
-                     tracker_.uploaded(), tracker_.session_token(),
+      base::BindOnce(&CallNextStepOnSequence, delegate_->GetWeakPtr(),
+                     tracker_.total(), tracker_.uploaded(),
+                     tracker_.session_token(),
                      ScopedReservation(0uL, scoped_reservation),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneNextStep,
@@ -562,7 +568,7 @@ void FileUploadJob::Finalize(base::OnceClosure done_cb) {
 
   Manager::GetInstance()->sequenced_task_runner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&CallFinalizeOnSequence, delegate_,
+      base::BindOnce(&CallFinalizeOnSequence, delegate_->GetWeakPtr(),
                      tracker_.session_token(),
                      base::BindPostTaskToCurrentDefault(base::BindOnce(
                          &FileUploadJob::DoneFinalize,

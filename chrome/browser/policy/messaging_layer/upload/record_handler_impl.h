@@ -30,7 +30,8 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
  public:
   RecordHandlerImpl(
       scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner,
-      std::unique_ptr<FileUploadJob::Delegate> delegate);
+      base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+          delegate_factory);
   ~RecordHandlerImpl() override;
 
   // Base class ServerUploader::RecordHandler method implementation.
@@ -58,8 +59,9 @@ class RecordHandlerImpl : public ServerUploader::RecordHandler {
 
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
-  // The next field is only used for LOG_UPLOAD events.
-  std::unique_ptr<FileUploadJob::Delegate> delegate_;
+  // Factory is only used for LOG_UPLOAD events.
+  const base::RepeatingCallback<std::unique_ptr<FileUploadJob::Delegate>()>
+      delegate_factory_;
 };
 
 }  // namespace reporting

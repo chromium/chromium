@@ -121,7 +121,9 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<
   void SetUp() override {
     handler_ = std::make_unique<RecordHandlerImpl>(
         base::SequencedTaskRunner::GetCurrentDefault(),
-        std::make_unique<MockFileUploadDelegate>());
+        base::BindRepeating([]() -> std::unique_ptr<FileUploadJob::Delegate> {
+          return std::make_unique<MockFileUploadDelegate>();
+        }));
     test_storage_ = base::MakeRefCounted<test::TestStorageModule>();
     test_reporting_ = ReportingClient::TestEnvironment::CreateWithStorageModule(
         test_storage_);
