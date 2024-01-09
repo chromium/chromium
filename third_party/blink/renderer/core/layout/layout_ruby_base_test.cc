@@ -50,4 +50,19 @@ TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
   EXPECT_TRUE(caption_box->IsInline());
 }
 
+// crbug.com/1514152
+
+TEST_F(LayoutRubyBaseTest, ChangeToRubyNoBlockChildren) {
+  SetBodyInnerHTML(R"HTML(<div id="target"><p></div>)HTML");
+  GetElementById("target")->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                                   CSSValueID::kRuby);
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* base_box = To<LayoutRubyColumn>(
+                       GetLayoutObjectByElementId("target")->SlowFirstChild())
+                       ->RubyBase();
+  // <p> should be inlinified.
+  EXPECT_TRUE(base_box->FirstChild()->IsInline()) << base_box->FirstChild();
+}
+
 }  // namespace blink
