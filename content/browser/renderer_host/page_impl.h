@@ -16,6 +16,7 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
 #include "content/common/content_export.h"
+#include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/page.h"
 #include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -222,6 +223,12 @@ class CONTENT_EXPORT PageImpl : public Page {
     is_overriding_user_agent_ = is_overriding_user_agent;
   }
 
+  // Use to set and release |last_commit_params_|, see documentation of the
+  // member for more details. This is only called for outermost pages.
+  void SetLastCommitParams(
+      mojom::DidCommitProvisionalLoadParamsPtr commit_params);
+  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
+
  private:
   void DidActivateAllRenderViewsForPrerenderingOrPreview(
       base::OnceCallback<void(base::TimeTicks)> completion_callback);
@@ -358,6 +365,11 @@ class CONTENT_EXPORT PageImpl : public Page {
 
   // Whether the page is overriding the user agent or not.
   bool is_overriding_user_agent_ = false;
+
+  // This is used to re-commit when restoring a page from the BackForwardCache
+  // or when activating a prerendered page, with the same params as the original
+  // navigation.
+  mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
 
   base::WeakPtrFactory<PageImpl> weak_factory_{this};
 };

@@ -7926,7 +7926,7 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   // Use the DidCommitProvisionalLoadParams last used to commit the frame being
   // restored as a starting point.
   mojom::DidCommitProvisionalLoadParamsPtr params =
-      GetRenderFrameHost()->TakeLastCommitParams();
+      GetRenderFrameHost()->GetPage().TakeLastCommitParams();
 
   // Params must have been set when the RFH being restored from the cache last
   // navigated.

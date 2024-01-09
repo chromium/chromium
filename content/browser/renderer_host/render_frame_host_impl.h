@@ -1739,11 +1739,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // occurs immediately before a restored document is committed.
   void WillLeaveBackForwardCache();
 
-  // Take ownership over the DidCommitProvisionalLoadParams that were last used
-  // to commit this navigation. This is used by the BackForwardCache to
-  // re-commit when navigating to a restored page.
-  mojom::DidCommitProvisionalLoadParamsPtr TakeLastCommitParams();
-
   // Start a timer that will evict this RenderFrameHost from the
   // BackForwardCache after time to live.
   void StartBackForwardCacheEvictionTimer();
@@ -4729,11 +4724,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // might not happen on navigations on this frame due to other reasons.
   // Should only be used for testing purposes.
   bool has_test_disabled_proactive_browsing_instance_swap_ = false;
-
-  // This used to re-commit when restoring from the BackForwardCache, with the
-  // same params as the original navigation.
-  // Note: If BackForwardCache is not enabled, this field is not set.
-  mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
 
   blink::mojom::FrameVisibility visibility_ =
       blink::mojom::FrameVisibility::kRenderedInViewport;

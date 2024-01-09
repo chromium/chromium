@@ -427,4 +427,15 @@ void PageImpl::CancelLoadingMemoryTracker() {
   }
 }
 
+void PageImpl::SetLastCommitParams(
+    mojom::DidCommitProvisionalLoadParamsPtr commit_params) {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  last_commit_params_ = std::move(commit_params);
+}
+
+mojom::DidCommitProvisionalLoadParamsPtr PageImpl::TakeLastCommitParams() {
+  CHECK(GetMainDocument().IsOutermostMainFrame());
+  return std::move(last_commit_params_);
+}
+
 }  // namespace content

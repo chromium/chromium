@@ -2050,11 +2050,6 @@ void RenderFrameHostImpl::WillLeaveBackForwardCacheInternal() {
 #endif  // BUILDFLAG(IS_P2P_ENABLED)
 }
 
-mojom::DidCommitProvisionalLoadParamsPtr
-RenderFrameHostImpl::TakeLastCommitParams() {
-  return std::move(last_commit_params_);
-}
-
 void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
   DCHECK(IsInBackForwardCache());
   base::TimeDelta evict_after =
@@ -13260,7 +13255,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   // Store the Commit params so they can be reused if the page is ever
   // restored from the BackForwardCache or a Prerender2 page is activated.
-  last_commit_params_ = std::move(params);
+  if (IsOutermostMainFrame()) {
+    GetPage().SetLastCommitParams(std::move(params));
+  }
 
   return true;
 }
