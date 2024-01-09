@@ -26,6 +26,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -233,11 +234,20 @@ DeskProfilesButton::DeskProfilesButton(views::Button::PressedCallback callback,
     : desk_(desk) {
   desk_->AddObserver(this);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  SetPreferredSize(kIconButtonSize);
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   icon_ = AddChildView(std::make_unique<views::ImageView>());
   icon_->SetSize(kIconButtonSize);
   icon_->SetImageSize(kIconButtonSize);
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetOutsetFocusRingDisabled(true);
+  focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
+  views::InstallCircleHighlightPathGenerator(this);
+
   UpdateIcon();
   icon_->SetPaintToLayer();
   icon_->layer()->SetFillsBoundsOpaquely(false);

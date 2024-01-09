@@ -187,6 +187,19 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
       },
       base::Unretained(this)));
 
+  // Only show profile avatar button when there is more than one profile logged
+  // in.
+  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
+  if (chromeos::features::IsDeskProfilesEnabled() &&
+      (g_force_show_desk_profiles_button ||
+       (desk_profile_delegate &&
+        desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
+    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
+        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
+                            base::Unretained(this)),
+        desk));
+  }
+
   desk_action_view_ = AddChildView(std::make_unique<DeskActionView>(
       desks_controller->GetCombineDesksTargetName(desk_),
       /*combine_desks_callback=*/
@@ -241,18 +254,6 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
     desk_shortcut_view_->SetVisible(false);
     desk_shortcut_view_->SetCanProcessEventsWithinSubtree(false);
   }
-  // Only show profile avatar button when there is more than one profile logged
-  // in.
-  auto* desk_profile_delegate = Shell::Get()->GetDeskProfilesDelegate();
-  if (chromeos::features::IsDeskProfilesEnabled() &&
-      (g_force_show_desk_profiles_button ||
-       (desk_profile_delegate &&
-        desk_profile_delegate->GetProfilesSnapshot().size() > 1))) {
-    desk_profile_button_ = AddChildView(std::make_unique<DeskProfilesButton>(
-        base::BindRepeating(&DeskMiniView::OnDeskProfilesButtonPressed,
-                            base::Unretained(this)),
-        desk));
-  }
 
   UpdateDeskButtonVisibility();
 }
@@ -284,6 +285,8 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
 
   auto* controller = DesksController::Get();
 
+  bool desk_profile_button_is_focused =
+      desk_profile_button_ && desk_profile_button_->HasFocus();
   // Don't show desk buttons when hovered while the dragged window is on
   // the desk bar view.
   // For switch access, setting desk buttons to visible allows users to
@@ -294,7 +297,8 @@ void DeskMiniView::UpdateDeskButtonVisibility() {
       (IsMouseHovered() || force_show_desk_buttons_ ||
        Shell::Get()->accessibility_controller()->IsSwitchAccessRunning() ||
        (owner_bar_->type() == DeskBarViewBase::Type::kDeskButton &&
-        (desk_preview_->HasFocus() || desk_action_view_->ChildHasFocus())));
+        (desk_preview_->HasFocus() || desk_profile_button_is_focused ||
+         desk_action_view_->ChildHasFocus())));
 
   // Only show the combine desks button if there are app windows in the desk,
   // or if the desk is active and there are windows that should be visible on
