@@ -1934,7 +1934,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
-    enum="Boolean" expires_after="2024-02-12">
+    enum="Boolean" expires_after="2025-01-08">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
