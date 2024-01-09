@@ -51,6 +51,7 @@ class DownloadUpdatedObserver : public download::DownloadItem::Observer {
   EventFilter filter_;
   bool waiting_;
   bool event_seen_;
+  base::RunLoop loop_;
 };
 
 // Detects changes to the downloads after construction.
@@ -171,6 +172,8 @@ class DownloadTestObserver : public DownloadManager::Observer,
 
   // Holds the download ids which were dangerous.
   std::set<uint32_t> dangerous_downloads_seen_;
+
+  base::RunLoop loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   base::WeakPtrFactory<DownloadTestObserver> weak_factory_{this};
 };
@@ -325,6 +328,8 @@ class DownloadTestItemCreationObserver
 
   // We are in the message loop.
   bool waiting_;
+
+  base::RunLoop loop_;
 };
 
 // Class for mornitoring whether a save package download finishes.

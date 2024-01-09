@@ -892,7 +892,6 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
       base::RunLoop flush_startup_tasks;
       flush_startup_tasks.RunUntilIdle();
       // Make sure there isn't an odd caller which reached |flush_startup_tasks|
-      // statically via base::RunLoop::QuitCurrent*Deprecated().
       DCHECK(!flush_startup_tasks.AnyQuitCalled());
     }
 

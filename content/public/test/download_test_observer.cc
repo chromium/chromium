@@ -40,7 +40,7 @@ bool DownloadUpdatedObserver::WaitForEvent() {
     return true;
 
   waiting_ = true;
-  RunMessageLoop();
+  loop_.Run();
   waiting_ = false;
   return event_seen_;
 }
@@ -49,8 +49,9 @@ void DownloadUpdatedObserver::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_EQ(item_, item);
   if (filter_.Run(item_.get()))
     event_seen_ = true;
-  if (waiting_ && event_seen_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_ && event_seen_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 void DownloadUpdatedObserver::OnDownloadDestroyed(
@@ -58,8 +59,9 @@ void DownloadUpdatedObserver::OnDownloadDestroyed(
   DCHECK_EQ(item_, item);
   item_->RemoveObserver(this);
   item_ = nullptr;
-  if (waiting_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 DownloadTestObserver::DownloadTestObserver(
@@ -104,7 +106,7 @@ void DownloadTestObserver::ManagerGoingDown(DownloadManager* manager) {
 void DownloadTestObserver::WaitForFinished() {
   if (!IsFinished()) {
     waiting_ = true;
-    RunMessageLoop();
+    loop_.Run();
     waiting_ = false;
   }
 }
@@ -215,8 +217,9 @@ void DownloadTestObserver::DownloadInFinalState(
 }
 
 void DownloadTestObserver::SignalIfFinished() {
-  if (waiting_ && IsFinished())
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_ && IsFinished()) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 void DownloadTestObserver::AcceptDangerousDownload(uint32_t download_id) {
@@ -436,7 +439,7 @@ void DownloadTestItemCreationObserver::WaitForDownloadItemCreation() {
 
   if (called_back_count_ == 0) {
     waiting_ = true;
-    RunMessageLoop();
+    loop_.Run();
     waiting_ = false;
   }
 }
@@ -452,8 +455,9 @@ void DownloadTestItemCreationObserver::DownloadItemCreationCallback(
   ++called_back_count_;
   DCHECK_EQ(1u, called_back_count_);
 
-  if (waiting_)
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+  if (waiting_) {
+    loop_.QuitWhenIdle();
+  }
 }
 
 download::DownloadUrlParameters::OnStartedCallback
