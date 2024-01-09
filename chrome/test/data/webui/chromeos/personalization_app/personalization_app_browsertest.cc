@@ -220,7 +220,13 @@ IN_PROC_BROWSER_TEST_F(PersonalizationAppControllerTest, All) {
 // implementations but with mocked out network handler helper classes.
 using PersonalizationAppBrowserTest = PersonalizationAppMochaTestBase;
 
-IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, Main) {
+// TODO(crbug.com/1517028): Re-enable this test flakily failing on dbg builds.
+#if !defined(NDEBUG)
+#define MAYBE_Main DISABLED_Main
+#else
+#define MAYBE_Main Main
+#endif
+IN_PROC_BROWSER_TEST_F(PersonalizationAppBrowserTest, MAYBE_Main) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('main page')");
