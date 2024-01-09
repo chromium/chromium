@@ -58,20 +58,6 @@ bool User::TypeIsKiosk(UserType type) {
          type == USER_TYPE_WEB_KIOSK_APP;
 }
 
-// Also used for regular supervised users.
-class RegularUser : public User {
- public:
-  RegularUser(const AccountId& account_id, UserType type);
-
-  RegularUser(const RegularUser&) = delete;
-  RegularUser& operator=(const RegularUser&) = delete;
-
-  ~RegularUser() override;
-
-  // Overridden from User:
-  bool CanSyncImage() const override;
-};
-
 class GuestUser : public User {
  public:
   explicit GuestUser(const AccountId& guest_account_id);
@@ -141,7 +127,12 @@ class PublicAccountUser : public DeviceLocalAccountUserBase {
 };
 
 User::User(const AccountId& account_id, UserType type)
-    : account_id_(account_id), type_(type), user_image_(new UserImage) {}
+    : account_id_(account_id), type_(type), user_image_(new UserImage) {
+  if (type_ == USER_TYPE_REGULAR || type_ == USER_TYPE_CHILD) {
+    set_can_lock(true);
+    set_display_email(account_id.GetUserEmail());
+  }
+}
 
 User::~User() = default;
 
@@ -216,7 +207,8 @@ bool User::HasDefaultImage() const {
 }
 
 bool User::CanSyncImage() const {
-  return false;
+  return type_ == user_manager::USER_TYPE_REGULAR ||
+         type_ == user_manager::USER_TYPE_CHILD;
 }
 
 std::string User::display_email() const {
@@ -300,8 +292,11 @@ bool User::IsKioskType() const {
 }
 
 User* User::CreateRegularUser(const AccountId& account_id,
-                              const UserType user_type) {
-  return new RegularUser(account_id, user_type);
+                              const UserType type) {
+  CHECK(type == USER_TYPE_REGULAR || type == USER_TYPE_CHILD)
+      << "Invalid user type " << type;
+
+  return new User(account_id, type);
 }
 
 User* User::CreateGuestUser(const AccountId& guest_account_id) {
@@ -350,23 +345,6 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_index_ = image_index;
   image_is_stub_ = true;
   image_is_loading_ = is_loading;
-}
-
-RegularUser::RegularUser(const AccountId& account_id, UserType type)
-    : User(account_id, type) {
-  if (type != USER_TYPE_CHILD && type != USER_TYPE_REGULAR) {
-    LOG(FATAL) << "Invalid user type " << type;
-  }
-
-  set_can_lock(true);
-  set_display_email(account_id.GetUserEmail());
-}
-
-RegularUser::~RegularUser() {
-}
-
-bool RegularUser::CanSyncImage() const {
-  return true;
 }
 
 GuestUser::GuestUser(const AccountId& guest_account_id)
