@@ -462,10 +462,6 @@ const CGFloat kModuleMinMargin = 16;
     _feedContainer.translatesAutoresizingMaskIntoConstraints = NO;
     _feedContainer.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 
-    // Reduce the zPosition so that the container appears behind the feed
-    // content.
-    _feedContainer.layer.zPosition = -1;
-
     // Add corner radius to the top border.
     _feedContainer.clipsToBounds = YES;
     _feedContainer.layer.cornerRadius = kHomeModuleContainerCornerRadius;
