@@ -22,6 +22,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/ui/webui/password_manager/promo_cards/access_on_any_device_promo.h"
+#include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/password_checkup_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/password_manager_shortcut_promo.h"
 #include "chrome/browser/ui/webui/password_manager/promo_cards/web_password_manager_promo.h"
@@ -63,6 +64,11 @@ std::vector<std::unique_ptr<PasswordPromoCardBase>> GetAllPromoCardsForProfile(
       std::make_unique<PasswordManagerShortcutPromo>(profile));
   promo_cards.push_back(
       std::make_unique<AccessOnAnyDevicePromo>(profile->GetPrefs()));
+  promo_cards.push_back(std::make_unique<MovePasswordsPromo>(
+      profile,
+      extensions::PasswordsPrivateDelegateFactory::GetForBrowserContext(profile,
+                                                                        false)
+          .get()));
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

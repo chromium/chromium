@@ -155,7 +155,8 @@ TEST_F(PromoCardsHandlerTest, GetAllPromoCards) {
   std::vector<std::string> promo_cards = {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       "password_checkup_promo", "passwords_on_web_promo",
-      "password_shortcut_promo", "access_on_any_device_promo"
+      "password_shortcut_promo", "access_on_any_device_promo",
+      "move_passwords_promo"
 #endif
   };
 

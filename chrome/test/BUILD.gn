@@ -8083,8 +8083,10 @@ if (!is_fuchsia) {
       }
 
       if (is_chrome_branded) {
-        sources +=
-            [ "../browser/ui/webui/password_manager/promo_card_unittest.cc" ]
+        sources += [
+          "../browser/ui/webui/password_manager/promo_card_unittest.cc",
+          "../browser/ui/webui/password_manager/promo_cards/move_passwords_promo_unittest.cc",
+        ]
       }
 
       if (is_mac) {

@@ -35,6 +35,8 @@ build_webui("build") {
       "images/passwords_on_web_promo_dark.svg",
       "images/relaunch_chrome_promo.svg",
       "images/relaunch_chrome_promo_dark.svg",
+      "images/move_passwords_promo.svg",
+      "images/move_passwords_promo_dark.svg",
     ]
   } else {
     static_files += [
