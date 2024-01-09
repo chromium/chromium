@@ -41,7 +41,10 @@ bool ParseAudioCodec(const std::string& codec, AudioType* audio_type) {
   return audio_type->codec != AudioCodec::kUnknown;
 }
 
-bool AreAllAudioCodecsSupported(std::vector<AudioType> audio_types) {
+// These functions are intended to test that there are {audio/video} codecs
+// present in the types, and that each codec present is supported. An empty
+// list of audioo codecs should not be considered "supported audio" for example.
+bool AreAllAudioCodecsSupported(const std::vector<AudioType>& audio_types) {
   if (audio_types.empty()) {
     return false;
   }
@@ -53,7 +56,7 @@ bool AreAllAudioCodecsSupported(std::vector<AudioType> audio_types) {
   return true;
 }
 
-bool AreAllVideoCodecsSupported(std::vector<VideoType> video_types) {
+bool AreAllVideoCodecsSupported(const std::vector<VideoType>& video_types) {
   if (video_types.empty()) {
     return false;
   }
@@ -90,16 +93,16 @@ hls::RenditionManager::CodecSupportType GetSupportedTypes(
     }
   }
 
-  bool audio_support = AreAllAudioCodecsSupported(std::move(audio_formats));
-  bool video_support = AreAllVideoCodecsSupported(std::move(video_formats));
+  const bool audio_support = AreAllAudioCodecsSupported(audio_formats);
+  const bool video_support = AreAllVideoCodecsSupported(video_formats);
 
   if (audio_support && video_support) {
     return hls::RenditionManager::CodecSupportType::kSupportedAudioVideo;
   }
-  if (audio_support) {
+  if (audio_support && video_formats.empty()) {
     return hls::RenditionManager::CodecSupportType::kSupportedAudioOnly;
   }
-  if (video_support) {
+  if (video_support && audio_formats.empty()) {
     return hls::RenditionManager::CodecSupportType::kSupportedVideoOnly;
   }
   return hls::RenditionManager::CodecSupportType::kUnsupported;
