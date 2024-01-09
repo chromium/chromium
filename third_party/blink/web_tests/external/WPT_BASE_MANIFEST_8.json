@@ -63,6 +63,13 @@
        {}
       ]
      ],
+     "aria-owned-with-role-change.html": [
+      "c5b2130969c018dce682e2d1a404570f5c26f4e9",
+      [
+       null,
+       {}
+      ]
+     ],
      "aria-owns-destroyed-by-content-replacement.html": [
       "b64ebaa6024f50f68249204d21b60b1a2109179b",
       [
@@ -93,6 +100,13 @@
      ],
      "aria-owns-select.html": [
       "d6cd094041abe5d35d188d580a281324818101ce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "aria-owns-with-role-change.html": [
+      "13e1eaff6dd097c06d6275ebc9fe6646850454bf",
       [
        null,
        {}
@@ -290321,15 +290335,15 @@
     ],
     "derive_bits_keys": {
      "cfrg_curves_bits.https.any-expected.txt": [
-      "6c24f78fa10b6691207b0fdcce14569b7d0c774c",
+      "f0efe8e79931b6f6de9581b8ef578162c704196d",
       []
      ],
      "cfrg_curves_bits.https.any.worker-expected.txt": [
-      "6c24f78fa10b6691207b0fdcce14569b7d0c774c",
+      "f0efe8e79931b6f6de9581b8ef578162c704196d",
       []
      ],
      "cfrg_curves_bits.js": [
-      "4e12ca0eb711fae5168eb1a17db756588ef4eab6",
+      "ef6905e574c1581d0e5397ba9d5f955acec41b2c",
       []
      ],
      "cfrg_curves_bits_fixtures.js": [
@@ -290357,7 +290371,7 @@
       []
      ],
      "ecdh_bits.js": [
-      "e52ffc6bfdb6f6d4655cfa14b835adbebd088a2a",
+      "cb9747a529fd53530df926ddc99759e5a9126ee9",
       []
      ],
      "ecdh_keys.js": [
@@ -290397,7 +290411,7 @@
       []
      ],
      "hkdf.js": [
-      "2bb58533473eb9997151b43d342b7ef9ec06701d",
+      "3903da5cddff941c9ff82b19b0967ba41f0737f5",
       []
      ],
      "hkdf_vectors.js": [
@@ -290477,7 +290491,7 @@
       []
      ],
      "pbkdf2.js": [
-      "0403f382e1479c7c5018e91aba2ceb31b89998dc",
+      "4e4ae79d800a402b7a0933b752da9a5fb151bc2f",
       []
      ],
      "pbkdf2_vectors.js": [
@@ -343827,7 +343841,7 @@
       []
      ],
      "cssstyledeclaration-csstext-all-shorthand-expected.txt": [
-      "073ac7545b4d7c5e365b37a90089ffb917bca3f4",
+      "49cc4f9fc9a173d6057e3640301d0a683acd0635",
       []
      ],
      "cssstyledeclaration-csstext-expected.txt": [
@@ -362202,6 +362216,10 @@
        ],
        "custom-attrs-expected.txt": [
         "b450c530ad031e1e0dcefc456be0b1ed10e2cded",
+        []
+       ],
+       "dir-assorted.window-expected.txt": [
+        "3ca95eb87ec727376dcdce80a9e01209d19b1d6a",
         []
        ],
        "dir-shadow-01-ref.html": [
@@ -396268,11 +396286,11 @@
      []
     ],
     "elementwise_unary.https.any-expected.txt": [
-     "9fdb626319cca2f172ef8179356dab207e64da0f",
+     "a11e68d8b08a475139166b86754c7cadeb791cea",
      []
     ],
     "elementwise_unary.https.any.worker-expected.txt": [
-     "40d851efd058a1ed37ba820e91b638ca604c9eb6",
+     "ce037b1a3346ba752e8742e2e01a9a4ad740644f",
      []
     ],
     "elu.https.any-expected.txt": [
@@ -396300,11 +396318,11 @@
      []
     ],
     "hard_sigmoid.https.any-expected.txt": [
-     "a6dcfda56729e4c27d13cfacaaf6931d3144f5e5",
+     "17e72f17a0ccb9c6e2eb15a95c745ca94dd62d39",
      []
     ],
     "hard_sigmoid.https.any.worker-expected.txt": [
-     "3406fcea5517acf68af941a859d2dd7d72f51bf2",
+     "40e838b8951361508bf0ef73cbea05dd924119d3",
      []
     ],
     "hard_swish.https.any.worker-expected.txt": [
@@ -396312,11 +396330,11 @@
      []
     ],
     "idlharness.https.any-expected.txt": [
-     "f335321c701a7fdfe3c57de5a05025d51483b321",
+     "d1751d0346b82f35c9bbbbc572a55deb81bf17a8",
      []
     ],
     "idlharness.https.any.worker-expected.txt": [
-     "bfc4b9ac5a56439425525b43fd3c2c4c11c46e52",
+     "1ff95783a70afcc82c75f6eadbfdf5e8756af5c4",
      []
     ],
     "leaky_relu.https.any.worker-expected.txt": [
@@ -480471,6 +480489,13 @@
         "dom/observable/tentative/observable-event-target.any.worker.html",
         {}
        ]
+      ],
+      "observable-event-target.window.js": [
+       "77a137a3622e8dbbfb4c3f177f512c0cd509b509",
+       [
+        "dom/observable/tentative/observable-event-target.window.html",
+        {}
+       ]
       ]
      }
     },
@@ -500964,6 +500989,13 @@
       {}
      ]
     ],
+    "report-event-sandboxed-iframe.https.html": [
+     "7298f39e6945255de783362396fc89f9754b6ef0",
+     [
+      null,
+      {}
+     ]
+    ],
     "resize-lock-input.https.html": [
      "261c9a737eff4b85723214b7f4735b8fe9423a65",
      [
@@ -517200,9 +517232,9 @@
       ]
      ],
      "direct-from-seller-signals.https.window.js": [
-      "0ae1efd8d3780efe9ff1a0886e6f79d4c17c2558",
+      "339bc32ee564320d155f43e1a555847da7ec125b",
       [
-       "fledge/tentative/direct-from-seller-signals.https.window.html?1-5",
+       "fledge/tentative/direct-from-seller-signals.https.window.html?1-4",
        {
         "script_metadata": [
          [
@@ -517227,30 +517259,42 @@
          ],
          [
           "variant",
-          "?1-5"
+          "?1-4"
          ],
          [
           "variant",
-          "?6-10"
+          "?5-8"
          ],
          [
           "variant",
-          "?11-15"
+          "?9-12"
          ],
          [
           "variant",
-          "?16-20"
+          "?13-16"
          ],
          [
           "variant",
-          "?21-last"
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/direct-from-seller-signals.https.window.html?11-15",
+       "fledge/tentative/direct-from-seller-signals.https.window.html?13-16",
        {
         "script_metadata": [
          [
@@ -517275,30 +517319,42 @@
          ],
          [
           "variant",
-          "?1-5"
+          "?1-4"
          ],
          [
           "variant",
-          "?6-10"
+          "?5-8"
          ],
          [
           "variant",
-          "?11-15"
+          "?9-12"
          ],
          [
           "variant",
-          "?16-20"
+          "?13-16"
          ],
          [
           "variant",
-          "?21-last"
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/direct-from-seller-signals.https.window.html?16-20",
+       "fledge/tentative/direct-from-seller-signals.https.window.html?17-20",
        {
         "script_metadata": [
          [
@@ -517323,30 +517379,42 @@
          ],
          [
           "variant",
-          "?1-5"
+          "?1-4"
          ],
          [
           "variant",
-          "?6-10"
+          "?5-8"
          ],
          [
           "variant",
-          "?11-15"
+          "?9-12"
          ],
          [
           "variant",
-          "?16-20"
+          "?13-16"
          ],
          [
           "variant",
-          "?21-last"
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/direct-from-seller-signals.https.window.html?21-last",
+       "fledge/tentative/direct-from-seller-signals.https.window.html?21-24",
        {
         "script_metadata": [
          [
@@ -517371,30 +517439,42 @@
          ],
          [
           "variant",
-          "?1-5"
+          "?1-4"
          ],
          [
           "variant",
-          "?6-10"
+          "?5-8"
          ],
          [
           "variant",
-          "?11-15"
+          "?9-12"
          ],
          [
           "variant",
-          "?16-20"
+          "?13-16"
          ],
          [
           "variant",
-          "?21-last"
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/direct-from-seller-signals.https.window.html?6-10",
+       "fledge/tentative/direct-from-seller-signals.https.window.html?25-28",
        {
         "script_metadata": [
          [
@@ -517419,23 +517499,215 @@
          ],
          [
           "variant",
-          "?1-5"
+          "?1-4"
          ],
          [
           "variant",
-          "?6-10"
+          "?5-8"
          ],
          [
           "variant",
-          "?11-15"
+          "?9-12"
          ],
          [
           "variant",
-          "?16-20"
+          "?13-16"
          ],
          [
           "variant",
-          "?21-last"
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/direct-from-seller-signals.https.window.html?29-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/direct-from-seller-signals.https.window.html?5-8",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/direct-from-seller-signals.https.window.html?9-12",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-4"
+         ],
+         [
+          "variant",
+          "?5-8"
+         ],
+         [
+          "variant",
+          "?9-12"
+         ],
+         [
+          "variant",
+          "?13-16"
+         ],
+         [
+          "variant",
+          "?17-20"
+         ],
+         [
+          "variant",
+          "?21-24"
+         ],
+         [
+          "variant",
+          "?25-28"
+         ],
+         [
+          "variant",
+          "?29-last"
          ]
         ],
         "timeout": "long"
@@ -557869,7 +558141,7 @@
         ]
        ],
        "dir-assorted.window.js": [
-        "038b3f78d4d373286da051a6240493d0dce12112",
+        "0d4e4b82d9b9531087ed631fd38d9eb6ab6215e0",
         [
          "html/dom/elements/global-attributes/dir-assorted.window.html",
          {}
@@ -585241,6 +585513,13 @@
       {}
      ]
     ],
+    "resized-image-not-reconsidered.html": [
+     "6e195b89f9ef5dfbfc126e3fe7170d00dc93376f",
+     [
+      null,
+      {}
+     ]
+    ],
     "same-origin-redirects.html": [
      "b5cf9da2d120d4e03852954057fc7171fad9901f",
      [
@@ -590119,7 +590398,7 @@
      ]
     ],
     "GUM-non-applicable-constraint.https.html": [
-     "3e9481bfa445cfb77556bfe4b63c74faeb9298b8",
+     "e9fd6665dcface83218869a0a0fd1284c12f924f",
      [
       null,
       {
@@ -590230,7 +590509,7 @@
      ]
     ],
     "MediaDevices-getSupportedConstraints.https.html": [
-     "453184a16919a63ea72068538bca4f7c038957cf",
+     "7d374b5336ea5c12d1bf6c6d65c1766ebd2b9347",
      [
       null,
       {}
@@ -590397,7 +590676,7 @@
      ]
     ],
     "MediaStreamTrack-getCapabilities.https.html": [
-     "b67a8d51561a3d2c33047780014d890c1c2682a4",
+     "7d600c0e1b97c905cbeb172d0aae0a33ed961c9e",
      [
       null,
       {
@@ -590406,7 +590685,7 @@
      ]
     ],
     "MediaStreamTrack-getSettings.https.html": [
-     "1bda4c748ac5a0c0711cc231710c18ed5afa7c25",
+     "3bae50c346dd3c83d15f37eca598b58838250c46",
      [
       null,
       {
