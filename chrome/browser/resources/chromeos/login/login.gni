@@ -129,7 +129,7 @@ common_screens_js_files = [
   "screens/common/guest_tos.js",
   "screens/common/hw_data_collection.ts",
   "screens/common/local_state_error.ts",
-  "screens/common/managed_terms_of_service.js",
+  "screens/common/managed_terms_of_service.ts",
   "screens/common/marketing_opt_in.ts",
   "screens/common/multidevice_setup.js",
   "screens/common/offline_ad_login.js",

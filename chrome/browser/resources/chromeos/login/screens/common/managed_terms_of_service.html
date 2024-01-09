@@ -20,15 +20,15 @@ found in the LICENSE file.
   </p>
   <div slot="back-navigation">
     <oobe-back-button id="errorBackButton"
-        disabled="[[backButtonDisabled_]]"
-        on-click="onTosBackButtonPressed_"></oobe-back-button>
+        disabled="[[backButtonDisabled]]"
+        on-click="onTosBackButtonPressed"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="retryButton" inverse
         class="focus-on-show"
         text-key="termsOfServiceRetryButton"
-        disabled="[[retryButtonDisabled_]]"
-        on-click="onTosRetryButtonPressed_"></oobe-text-button>
+        disabled="[[retryButtonDisabled]]"
+        on-click="onTosRetryButtonPressed"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
 
@@ -45,9 +45,9 @@ found in the LICENSE file.
   <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
 
   <h1 id="tosHeading" slot="title">[[i18nDynamic(locale,
-    'termsOfServiceScreenHeading', tosManager_)]]</h1>
+    'termsOfServiceScreenHeading', tosManager)]]</h1>
   <p id="tosSubheading" slot="subtitle">[[i18nDynamic(locale,
-    'termsOfServiceScreenSubheading', tosManager_)]]</p>
+    'termsOfServiceScreenSubheading', tosManager)]]</p>
   <div slot="content" class="flex layout center-justified vertical">
     <webview id="termsOfServiceFrame"
         role="document" allowTransparency
@@ -55,14 +55,14 @@ found in the LICENSE file.
     </webview>
   </div>
   <div slot="back-navigation">
-    <oobe-back-button id="backButton" disabled="[[backButtonDisabled_]]"
-        on-click="onTosBackButtonPressed_"></oobe-back-button>
+    <oobe-back-button id="backButton" disabled="[[backButtonDisabled]]"
+        on-click="onTosBackButtonPressed"></oobe-back-button>
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="acceptButton" inverse
         text-key="termsOfServiceAcceptButton"
-        disabled="[[acceptButtonDisabled_]]"
-        on-click="onTermsOfServiceAccepted_"></oobe-text-button>
+        disabled="[[acceptButtonDisabled]]"
+        on-click="onTermsOfServiceAccepted"></oobe-text-button>
   </div>
 </oobe-adaptive-dialog>
 
