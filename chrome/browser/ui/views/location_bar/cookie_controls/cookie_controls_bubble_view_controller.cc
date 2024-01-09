@@ -19,6 +19,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/content_settings/core/common/cookie_controls_status.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/navigation_controller.h"
@@ -348,6 +349,7 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
     base::RecordAction(base::UserMetricsAction(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
+  controller_->SetUserChangedCookieBlockingForSite(true);
   controller_->OnCookieBlockingEnabledForSite(!allow_third_party_cookies);
   bubble_view_->GetContentView()->NotifyAccessibilityEvent(
       ax::mojom::Event::kAlert, true);
