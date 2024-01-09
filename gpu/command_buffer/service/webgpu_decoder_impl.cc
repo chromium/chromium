@@ -425,6 +425,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
       WebGPUPowerPreference::kNone;
+  bool vulkan_enabled_ = false;
   bool force_fallback_adapter_ = false;
   bool force_webgpu_compat_ = false;
   std::vector<std::string> require_enabled_toggles_;
@@ -1169,6 +1170,13 @@ ContextResult WebGPUDecoderImpl::Initialize(
     force_fallback_adapter_ = true;
   }
 
+  // Only allow Vulkan-backed WebGPU adapters if the device has Vulkan enabled
+  // for other parts of Chrome as well.
+  if (kGpuFeatureStatusEnabled ==
+      gpu_feature_info.status_values[GPU_FEATURE_TYPE_VULKAN]) {
+    vulkan_enabled_ = true;
+  }
+
   dawn_instance_->EnableAdapterBlocklist(use_blocklist());
   // Create a Chrome-side EGL context. This isn't actually used by Dawn,
   // but it prevents rendering artifacts in Chrome. This workaround should
@@ -1669,7 +1677,12 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 #elif BUILDFLAG(IS_MAC)
       backend_types = {wgpu::BackendType::Metal};
 #else
-      backend_types = {wgpu::BackendType::Vulkan, wgpu::BackendType::OpenGLES};
+      if (vulkan_enabled_) {
+        backend_types = {wgpu::BackendType::Vulkan,
+                         wgpu::BackendType::OpenGLES};
+      } else {
+        backend_types = {wgpu::BackendType::OpenGLES};
+      }
 #endif
       break;
     }

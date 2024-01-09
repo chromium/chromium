@@ -295,7 +295,8 @@ void GetDawnTogglesForSkiaGraphite(
 }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
-void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
+void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance,
+                                const gpu::GpuFeatureInfo& gpu_feature_info) {
   static BASE_FEATURE(kCollectDawnGpuMetrics, "CollectDawnGpuMetrics",
                       base::FEATURE_ENABLED_BY_DEFAULT);
   if (!base::FeatureList::IsEnabled(kCollectDawnGpuMetrics)) {
@@ -312,6 +313,11 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   adapter_options.backendType = WGPUBackendType_Metal;
 #else
   adapter_options.backendType = WGPUBackendType_Vulkan;
+  // Don't enumerate adapters if Vulkan is disabled
+  if (gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+      gpu::kGpuFeatureStatusEnabled) {
+    return;
+  }
 #endif
 
   bool supports_shader_f16 = false;
@@ -361,7 +367,8 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   }
 }
 
-void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
+void ReportWebGPUSupportMetrics(dawn::native::Instance* instance,
+                                const gpu::GpuFeatureInfo& gpu_feature_info) {
   static BASE_FEATURE(kCollectWebGPUSupportMetrics,
                       "CollectWebGPUSupportMetrics",
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
@@ -385,6 +392,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
     kMaxValue = kCoreSupported,
   };
 
+  bool core_is_disabled = false;
   bool has_core_blocklisted_adapter = false;
   bool has_core_adapter = false;
   bool has_compat_blocklisted_adapter = false;
@@ -398,23 +406,30 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   adapter_options.backendType = WGPUBackendType_Metal;
 #else
   adapter_options.backendType = WGPUBackendType_Vulkan;
+  if (gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+      gpu::kGpuFeatureStatusEnabled) {
+    core_is_disabled = true;
+  }
 #endif
-  // Check core adapters.
-  for (const dawn::native::Adapter& adapter :
-       instance->EnumerateAdapters(&adapter_options)) {
-    WGPUAdapterProperties properties = {};
-    adapter.GetProperties(&properties);
 
-    switch (properties.adapterType) {
-      case WGPUAdapterType_CPU:
-        // Skip CPU adapters.
-        break;
-      default:
-        if (gpu::IsWebGPUAdapterBlocklisted(properties)) {
-          has_core_blocklisted_adapter = true;
-        } else {
-          has_core_adapter = true;
-        }
+  // Check core adapters.
+  if (!core_is_disabled) {
+    for (const dawn::native::Adapter& adapter :
+         instance->EnumerateAdapters(&adapter_options)) {
+      WGPUAdapterProperties properties = {};
+      adapter.GetProperties(&properties);
+
+      switch (properties.adapterType) {
+        case WGPUAdapterType_CPU:
+          // Skip CPU adapters.
+          break;
+        default:
+          if (gpu::IsWebGPUAdapterBlocklisted(properties)) {
+            has_core_blocklisted_adapter = true;
+          } else {
+            has_core_adapter = true;
+          }
+      }
     }
   }
   // Check for compat adapters on GLES.
@@ -460,7 +475,7 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   }
 
   UMA_HISTOGRAM_ENUMERATION("GPU.WebGPU.Support", tier);
-  ReportWebGPUAdapterMetrics(instance);
+  ReportWebGPUAdapterMetrics(instance, gpu_feature_info);
 }
 #endif  // BUILDFLAG(USE_DAWN)
 
@@ -831,6 +846,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
 }
 
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
+                     const gpu::GpuFeatureInfo& gpu_feature_info,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
 #if BUILDFLAG(USE_DAWN)
@@ -891,13 +907,28 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
   auto instance = std::make_unique<dawn::native::Instance>(
       reinterpret_cast<const WGPUInstanceDescriptor*>(&instance_desc));
   if (collect_metrics) {
-    ReportWebGPUSupportMetrics(instance.get());
+    ReportWebGPUSupportMetrics(instance.get(), gpu_feature_info);
     return;
   }
 
   // Enumerate adapters with required toggles.
   wgpu::RequestAdapterOptions adapter_options = {};
   adapter_options.nextInChain = &dawn_toggles;
+
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  // If Vulkan is disabled on Android or Linux, do not enumerate hardware
+  // adapters. Software fallbacks are still allowed.
+  if (gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_VULKAN] !=
+      gpu::kGpuFeatureStatusEnabled) {
+    // Indicate that enumeration of hardware GPUs has been disabled
+    dawn_info_list->push_back("<Hardware GPUs>");
+    dawn_info_list->push_back("[WebGPU Status]");
+    dawn_info_list->push_back("Enumeration Disabled");
+
+    adapter_options.forceFallbackAdapter = true;
+  }
+#endif
+
   std::vector<dawn::native::Adapter> adapters = instance->EnumerateAdapters(
       reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
 
@@ -921,6 +952,11 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
       if (IsWebGPUAdapterBlocklisted(
               *reinterpret_cast<WGPUAdapterProperties*>(&properties))) {
         dawn_info_list->push_back("Blocklisted");
+      } else if (adapter_type != wgpu::AdapterType::CPU &&
+                 gpu_feature_info.status_values
+                         [gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU] ==
+                     kGpuFeatureStatusSoftware) {
+        dawn_info_list->push_back("Disabled");
       } else {
         dawn_info_list->push_back("Available");
       }
