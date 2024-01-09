@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <unistd.h>
+
 #include <algorithm>
 #include <cstddef>
 #include <memory>
@@ -20,6 +21,7 @@
 #include "base/android/jni_string.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/immediate_crash.h"
@@ -521,7 +523,9 @@ void JsSandboxIsolate::ConvertPromiseToArrayBufferInThreadPool(
     std::unique_ptr<v8::Global<v8::ArrayBuffer>> array_buffer,
     std::unique_ptr<v8::Global<v8::Promise::Resolver>> resolver,
     void* inner_buffer) {
-  if (base::ReadFromFD(fd.get(), static_cast<char*>(inner_buffer), length)) {
+  if (base::ReadFromFD(fd.get(),
+                       base::make_span(static_cast<char*>(inner_buffer),
+                                       base::checked_cast<size_t>(length)))) {
     control_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -591,7 +595,7 @@ void JsSandboxIsolate::ReadFileDescriptorOnThread(
 
   if (length >= 0) {
     code.resize(length);
-    if (!base::ReadFromFD(fd, &code[0], length)) {
+    if (!base::ReadFromFD(fd, code)) {
       ReportFileDescriptorIOError(std::move(pfd), std::move(callback),
                                   "Failed to read data from file descriptor");
       return;
