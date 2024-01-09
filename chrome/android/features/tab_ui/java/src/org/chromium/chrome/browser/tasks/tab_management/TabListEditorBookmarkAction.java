@@ -80,8 +80,10 @@ public class TabListEditorBookmarkAction extends TabListEditorAction {
         @Override
         public void bookmarkTabsAndShowSnackbar(
                 Activity activity, List<Tab> tabs, SnackbarManager snackbarManager) {
-            BookmarkModel bookmarkModel =
-                    BookmarkModel.getForProfile(Profile.getLastUsedRegularProfile());
+            if (tabs.isEmpty()) return;
+
+            Profile profile = tabs.get(0).getProfile();
+            BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
             bookmarkModel.finishLoadingBookmarkModel(
                     () -> {
                         BookmarkUtils.addBookmarksOnMultiSelect(
