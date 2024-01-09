@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Chromium 提示</translation>
 <translation id="2168108852149185974">部份外掛程式造成 Chromium 當機。請解除安裝以下程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用您的相機</translation>
-<translation id="219374086636266276">你可前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chromium 資料<ph name="END_LINK" />。
-如需其他會運用資料提升 Chromium 體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="2195025571279539885">您希望 Chromium 將來翻譯此網站的<ph name="LANGUAGE_NAME" />頁面嗎？</translation>
 <translation id="2218146227246548550">您的機構要求您登入才能使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">此地址目前儲存在 Chromium 中。如要在各項 Google 產品中使用此資料，請儲存至 Google 帳戶 (<ph name="USER_EMAIL" />)。</translation>
@@ -65,6 +63,9 @@
 <translation id="2730884209570016437">由於另一個應用程式正在使用相機，因此 Chromium 暫時無法使用</translation>
 <translation id="2784449251446768092">管理 Chromium 設定</translation>
 <translation id="2798503587425057129">開啟 Chromium 閱讀清單。</translation>
+<translation id="28276745681323897">你可以前往 Google 帳戶<ph name="BEGIN_LINK" />管理要儲存哪些 Chromium 資料<ph name="END_LINK" />。
+
+如需其他會運用資料提升 Chromium 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
 <translation id="2843571538056574338">使用 Chromium 的自動填入功能</translation>
 <translation id="2918709798697875261">您的機構要求您保持登出 Chromium。</translation>
 <translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及在其他應用程式中自動填入密碼</translation>

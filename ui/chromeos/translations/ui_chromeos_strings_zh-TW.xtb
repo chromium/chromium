@@ -76,7 +76,6 @@
 <translation id="162175252992296058">葡萄牙文搭配美式國際鍵盤</translation>
 <translation id="1629521517399325891">使用者憑證不適用於網路驗證。</translation>
 <translation id="1641780993263690097">中文 (拼音)</translation>
-<translation id="1646019627374511909">正在將 <ph name="NUMBER_OF_ITEMS" /> 個檔案設為可離線存取</translation>
 <translation id="164969095109328410">Chrome 裝置</translation>
 <translation id="1661207570040737402">Google Workspace 共用雲端硬碟儲存空間已用盡。</translation>
 <translation id="1661867754829461514">找不到 PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">根據系統管理員政策，你無法複製這 <ph name="COUNT" /> 個檔案</translation>
 <translation id="6509122719576673235">挪威文</translation>
 <translation id="6528513914570774834">允許這個裝置的其他使用者使用這個網路</translation>
-<translation id="653019979737152879">正在同步處理 <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">近期</translation>
 <translation id="6558280019477628686">發生錯誤，系統可能尚未刪除部分項目。</translation>
 <translation id="656398493051028875">正在刪除「<ph name="FILENAME" />」...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">授權 Linux 應用程式存取「<ph name="FOLDER_NAME" />」資料夾中的檔案</translation>
 <translation id="7555339735447658365">目前為離線狀態，系統會在連上網際網路後繼續同步檔案</translation>
 <translation id="7589661784326793847">請稍候片刻</translation>
-<translation id="7592775719802218421">正在將「<ph name="FILE_NAME" />」設定為可離線使用</translation>
 <translation id="7600126690270271294">塞爾維亞文</translation>
 <translation id="7603724359189955920">網格</translation>
 <translation id="7627790789328695202">糟糕！已存在名為 <ph name="FILE_NAME" /> 的檔案。請重新命名檔案並再試一次。</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">選取要開啟的檔案</translation>
 <translation id="8577897833047451336">克羅埃西亞文</translation>
 <translation id="8578308463707544055">印尼文</translation>
-<translation id="8579285237314169903">正在同步處理 <ph name="NUMBER_OF_FILES" /> 個項目...</translation>
 <translation id="8600173386174225982">檔案清單已變更為縮圖檢視模式。</translation>
 <translation id="8601932370724196034">Crostini 映像檔</translation>
 <translation id="8609695766746872526">冰島文</translation>

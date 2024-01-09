@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">రద్దయింది</translation>
 <translation id="1020274983236703756">ప్రత్యేకించి <ph name="PRODUCT_NAME" />‌లో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
-<translation id="103306827243002956">ఇటీవలి వాల్‌పేపర్‌లు</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">ప్రత్యేకంగా క్రియేటర్‌ల కోసం తయారుచేసిన Chromebook కొత్త డిజిటల్ మ్యాగజైన్‌ను చూడండి</translation>
 <translation id="1270369111467284986">క్యాప్టివ్ పోర్టల్ అనుమానించబడింది</translation>
 <translation id="1290331692326790741">సిగ్నల్ బలహీనంగా ఉంది</translation>
+<translation id="1300115153046603471">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం, <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">అప్‌డేట్ అవుతోంది (<ph name="PERCENTAGE_VALUE" />% పూర్తయింది)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> నిమిషాలు</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">కనీసం ఒక ఆర్ట్ గ్యాలరీ ఆల్బమ్‌ను ఎంచుకోవాలి</translation>
 <translation id="2230005943220647148">సెల్సియస్</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">మరిన్ని క్రియేట్ చేయండి</translation>
 <translation id="2236746079896696523">కీబోర్డ్ బ్యాక్‌లైట్‌ను టోగుల్ చేయండి</translation>
 <translation id="2240366984605217732">లేఅవుట్ స్విచ్</translation>
 <translation id="225692081236532131">క్రియాశీలత స్థితి</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">స్లయిడ్ షో</translation>
 <translation id="4297501883039923494">ఆగిపోయింది - తెలియని ఎర్రర్</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ఇమేజ్‌లు</translation>
-<translation id="4305367063258930534">Google అందించిన వాల్‌పేపర్</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> కీని నొక్కారు</translation>
 <translation id="4354430579665871434">కీ</translation>
 <translation id="4361257691546579041">APN అనేది ఆటోమేటిక్ సెట్టింగ్ రకం.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">ఫారెన్‌హీట్</translation>
 <translation id="584953448295717128">APN ఆటోమేటిక్‌గా గుర్తించబడింది.</translation>
 <translation id="5849570051105887917">స్వస్థల నెట్‌వర్క్ ప్రదాత కోడ్</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">చిత్రకళా గ్యాలరీ ఆల్బమ్</translation>
 <translation id="5859969039821714932">షార్ట్‌కట్ అందుబాటులో లేదు. <ph name="KEY" /> లేకుండా కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
 <translation id="5860033963881614850">ఆఫ్ అయ్యింది</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">స్కానింగ్ రద్దు చేయబడింది</translation>
 <translation id="6106186594183574873">దీనిని ముగించడానికి, మీ పాత పాస్‌వర్డ్‌ను నమోదు చేయండి</translation>
 <translation id="6108689792487843350">గేట్‌వే అందుబాటులో లేదు</translation>
+<translation id="6108952804512516814">AIతో క్రియేట్ చేయండి</translation>
 <translation id="6112878310391905610">ఈ సెట్టింగ్‌ను మీ అడ్మినిస్ట్రేటర్‌లు మేనేజ్ చేస్తారు</translation>
 <translation id="6113701710518389813">పై వైపు బాణం</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, మరో +<ph name="NUMBER" /> ఆల్బమ్‌లు</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">వాల్‌పేపర్‌ను మ్యాచ్ చేయండి</translation>
 <translation id="6527081081771465939">తెలియని WiFi భద్రతా ప్రోటోకాల్</translation>
 <translation id="6535178685492749208">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు. ఫీడ్‌బ్యాక్ తర్వాత పంపబడుతుంది.</translation>
+<translation id="6557784757915238407">APN అనేది <ph name="ATTACH" /> రకం.</translation>
 <translation id="65587193855025101">ఫ్లాట్‌బెడ్</translation>
 <translation id="6560196641871357166">శక్తివంతమైన రంగు</translation>
 <translation id="6564646048574748301">విఫలమైంది - ప్రింటర్‌ను చేరుకోవడం సాధ్యపడలేదు</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">మార్పిడి</translation>
 <translation id="7415801143053185905">అత్యధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">ఈ APNను డిజేబుల్ చేయడం లేదా తీసివేయడం సాధ్యపడదు. ఎనేబుల్ చేసి ఉన్న <ph name="ATTACH" /> APNలు డిసేబుల్ చేయబడ్డాయని లేదా తీసివేయబడ్డాయని నిర్ధారించుకోండి.</translation>
 <translation id="7458970041932198923">అవతార్‌లను చూసి, వాటిని సెట్ చేయడానికి దయచేసి నెట్‌వర్క్‌కు కనెక్ట్ చేసి, పేజీని రీలోడ్ చేయండి.</translation>
 <translation id="7469648432129124067">పోర్టల్ గుర్తించబడింది</translation>
 <translation id="7481312909269577407">ఫార్వర్డ్</translation>

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">โปรตุเกสด้วยแป้นพิมพ์สหรัฐฯ แบบสากล</translation>
 <translation id="1629521517399325891">ใช้ใบรับรองของผู้ใช้กับการตรวจสอบสิทธิ์เครือข่ายไม่ได้</translation>
 <translation id="1641780993263690097">พินอินภาษาจีน</translation>
-<translation id="1646019627374511909">กำลังทำให้ไฟล์ <ph name="NUMBER_OF_ITEMS" /> ไฟล์ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="164969095109328410">อุปกรณ์ Chrome</translation>
 <translation id="1661207570040737402">คุณใช้พื้นที่เก็บข้อมูลใน Google Workspace ของไดรฟ์ที่แชร์หมดแล้ว</translation>
 <translation id="1661867754829461514">ไม่พบ PIN</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">กำลังเขียนขอบคุณ</translation>
 <translation id="2088690981887365033">เครือข่าย VPN</translation>
 <translation id="209653272837065803">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ต่อ</translation>
+<translation id="2099143626019777139">ผู้ดูแลระบบจะเห็นเว็บไซต์ที่คุณเข้าชม คุณสามารถดูรายชื่อเว็บไซต์ที่แสดงได้</translation>
 <translation id="2111134541987263231">เปิด<ph name="BEGIN_BOLD" />อนุญาตในโหมดไม่ระบุตัวตน<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">ระบบจะลบ <ph name="NUMBER_OF_ITEMS" /> รายการและคุณจะกู้คืนไม่ได้</translation>
 <translation id="2122305276694332719">การเชื่อมต่อเครือข่ายที่ซ่อนอยู่โดยอัตโนมัติจะทำให้คนอื่นๆ เห็นอุปกรณ์ของคุณและการตั้งค่าเครือข่ายบางอย่าง เราไม่แนะนำให้เชื่อมต่อ</translation>
@@ -718,7 +718,6 @@
 <translation id="6503285896705205014">นโยบายของผู้ดูแลระบบบล็อกการคัดลอกไฟล์ <ph name="COUNT" /> ไฟล์</translation>
 <translation id="6509122719576673235">นอร์เวย์</translation>
 <translation id="6528513914570774834">อนุญาตให้ผู้ใช้อุปกรณ์นี้คนอื่นๆ ใช้เครือข่ายนี้ได้</translation>
-<translation id="653019979737152879">กำลังซิงค์ <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">ล่าสุด</translation>
 <translation id="6558280019477628686">เกิดข้อผิดพลาด อาจไม่ได้ลบบางรายการ</translation>
 <translation id="656398493051028875">กำลังลบ "<ph name="FILENAME" />"...</translation>
@@ -852,7 +851,6 @@
 <translation id="7553492409867692754">ให้สิทธิ์แอป Linux เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">คุณออฟไลน์อยู่ การซิงค์ไฟล์จะดำเนินต่อเมื่อคุณเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="7589661784326793847">รอสักครู่</translation>
-<translation id="7592775719802218421">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="7600126690270271294">เซอร์เบีย</translation>
 <translation id="7603724359189955920">ตารางกริด</translation>
 <translation id="7627790789328695202">อ๊ะ มี <ph name="FILE_NAME" /> อยู่แล้ว เปลี่ยนชื่อแล้วลองอีกครั้ง</translation>
@@ -969,6 +967,7 @@
 <translation id="83651606385705612">ให้สิทธิ์แก่ <ph name="VM_NAME" /> ในการเข้าถึงไฟล์ในโฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8372852072747894550">กรีก</translation>
+<translation id="8377269993083688872">เลย์เอาต์อีเมล</translation>
 <translation id="8386903983509584791">สแกนเสร็จแล้ว</translation>
 <translation id="8387733224523483503">แตกไฟล์ <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="8395901698320285466">มิติข้อมูล</translation>
@@ -1007,7 +1006,6 @@
 <translation id="8569764466147087991">เลือกไฟล์เพื่อเปิด</translation>
 <translation id="8577897833047451336">โครเอเชีย</translation>
 <translation id="8578308463707544055">อินโดนีเซีย</translation>
-<translation id="8579285237314169903">กำลังซิงค์ <ph name="NUMBER_OF_FILES" /> รายการ...</translation>
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>

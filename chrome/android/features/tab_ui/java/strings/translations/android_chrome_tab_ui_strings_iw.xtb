@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">רוצה לסגור כרטיסיות ישנות?</translation>
 <translation id="1215127405478249895">בדיקת הכרטיסיות</translation>
 <translation id="125153950246128346">יש להקיש כדי לראות כרטיסייה אחרת</translation>
+<translation id="1326271443836399892">בדיקת ההגדרות הקיימות של סידור הכרטיסיות.</translation>
 <translation id="1499635324672558517">לסגור את כל הכרטיסיות הפרטיות?</translation>
 <translation id="1657719826150349398">העברת הכרטיסייה למטה</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />)}one{<ph name="TABS_COUNT_MANY" /> כרטיסיות}two{<ph name="TABS_COUNT_MANY" /> כרטיסיות}other{<ph name="TABS_COUNT_MANY" /> כרטיסיות}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">הסרה מהקבוצה</translation>
 <translation id="3008554597174452548">הפסקת המעקב אחר המוצר הזה</translation>
 <translation id="3052964831964880138">הנחה בסך <ph name="PRICE_DROP" /> על <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{יש לך כרטיסייה אחת (<ph name="TABS_COUNT_ONE" />) שהועברה לארכיון}one{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}two{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}other{יש לך <ph name="TABS_COUNT_MANY" /> כרטיסיות שהועברו לארכיון}}</translation>
 <translation id="3194464645767632461">דירוג</translation>
 <translation id="3291470810748040983">תתקבל התראה כשתזוהה הנחה בכרטיסייה פתוחה</translation>
 <translation id="3328308545011660196">הצעה: יש <ph name="NUMBER_OF_TABS" /> כרטיסיות שנראות קשורות. לקבץ אותן?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">המידע על החנות הזו נסגר</translation>
 <translation id="9150694013019234766">מעבר בין כרטיסיות בקבוצת הכרטיסיות שבחלק התחתון של המסך</translation>
 <translation id="9169594135889675189">הוספת כרטיסייה חדשה לקבוצה</translation>
+<translation id="955558140275419384">אפשר להיכנס לכלי העריכה הזה כדי לבדוק את כל הכרטיסיות שהועברו לארכיון ולעשות בהן סדר.</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>
 </translationbundle>

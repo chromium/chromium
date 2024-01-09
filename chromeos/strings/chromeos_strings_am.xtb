@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">ተሰርዟል</translation>
 <translation id="1020274983236703756">ለሚመለከተው የተወሰኑ የ<ph name="PRODUCT_NAME" /> ንብረቶች አሁን ይገኛሉ</translation>
 <translation id="1022628058306505708">የዓለም ፍሰት</translation>
-<translation id="103306827243002956">የቅርብ ጊዜ ልጣፎች</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ተከታታይ፣ <ph name="CPU_MAX_CLOCK_SPEED" />ጊኸ)</translation>
 <translation id="1047773237499189053">አዲስ ባህሪ ይገኛል፣ የበለጠ ለመረዳት የላይ ቀስት ቁልፍን ይጠቀሙ።</translation>
 <translation id="1059913517121127803">ቅኝትን መጀመር አልተቻለም</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">ቢያንስ አንድ የስነ-ጥበብ ማዕከለ ሥዕላት አልበም መመረጥ አለበት</translation>
 <translation id="2230005943220647148">ሴሊሺየስ</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">ተጨማሪ ይፍጠሩ</translation>
 <translation id="2236746079896696523">የቁልፍ ሰሌዳ የጀርባ ብርሃን ቀያሪ</translation>
 <translation id="2240366984605217732">የአቀማመጥ መቀየሪያ</translation>
 <translation id="225692081236532131">የገባሪነት ሁኔታ</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">የተንሸራታች ትዕይንት</translation>
 <translation id="4297501883039923494">ቆሟል - ያልታወቀ ስህተት</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ምስሎች</translation>
-<translation id="4305367063258930534">በGoogle የተጎለበተ ልጣፍ</translation>
 <translation id="4333390807948134856">የ<ph name="KEY_NAME" /> ቁልፍ ተጭኗል</translation>
 <translation id="4354430579665871434">ቁልፍ</translation>
 <translation id="4361257691546579041">ኤፒኤን ነባሪ ዓይነት ነው።</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
+<translation id="6108952804512516814">በAI ፍጠር</translation>
 <translation id="6112878310391905610">ይህ ቅንብር በአስተዳዳሪዎችዎ የሚቀናበር ነው</translation>
 <translation id="6113701710518389813">የላይ ቀስት</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />፣ +<ph name="NUMBER" /> ተጨማሪ አልበሞች</translation>

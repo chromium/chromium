@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Chromium 小窍门</translation>
 <translation id="2168108852149185974">部分插件会导致 Chromium 崩溃，请卸载这些插件：</translation>
 <translation id="2178608107313874732">Chromium 目前无法使用您的相机</translation>
-<translation id="219374086636266276">您可以<ph name="BEGIN_LINK" />管理要将哪些 Chromium 数据保存<ph name="END_LINK" />到您的 Google 账号中。
-如需更多使用数据来提升 Chromium 体验的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />。</translation>
 <translation id="2195025571279539885">下次访问这个网站时，您希望 Chromium 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2218146227246548550">根据贵单位的要求，您必须登录才能使用 Chromium。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">此地址目前已保存到 Chromium。如需在所有 Google 产品中使用此地址，请将它保存到您的 Google 账号 (<ph name="USER_EMAIL" />) 中。</translation>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">বাতিল হয়েছে</translation>
 <translation id="1020274983236703756">এক্সক্লুসিভ <ph name="PRODUCT_NAME" /> অ্যাসেট এখন উপলভ্য</translation>
 <translation id="1022628058306505708">আর্থ ফ্লো</translation>
-<translation id="103306827243002956">সম্প্রতি তৈরি করা ওয়ালপেপার</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />টি থ্রেড, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">নতুন ফিচার উপলভ্য আছে, আরও জানতে, 'উর্ধমুখী তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="1059913517121127803">স্ক্যান শুরু করা যায়নি</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">ক্রিয়েটরের জন্য Chromebook-এর নতুন ডিজিট্যাল ম্যাগাজিন দেখুন</translation>
 <translation id="1270369111467284986">এটি একটি অন্তরীণ পোর্টাল হতে পারে</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
+<translation id="1300115153046603471">APN-এর ধরন হল ডিফল্ট ও <ph name="ATTACH" />।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">আপডেট হচ্ছে (<ph name="PERCENTAGE_VALUE" />% সম্পূর্ণ হয়েছে)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> মিনিট</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">কমপক্ষে একটি আর্ট গ্যালারি অ্যালবাম বেছে নিতে হবে</translation>
 <translation id="2230005943220647148">সেলসিয়াস</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">আরও তৈরি করুন</translation>
 <translation id="2236746079896696523">'কীবোর্ড ব্যাকলাইট টগল কী'</translation>
 <translation id="2240366984605217732">লেআউট সুইচ করার বোতাম</translation>
 <translation id="225692081236532131">সক্রিয়করণ স্থিতি</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">স্লাইড শো</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
-<translation id="4305367063258930534">Google পরিচালিত ওয়ালপেপার</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কী প্রেস করা হয়েছে</translation>
 <translation id="4354430579665871434">কী</translation>
 <translation id="4361257691546579041">APN হল ডিফল্টের একটি ধরন।</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">ফারেনহাইট</translation>
 <translation id="584953448295717128">APN অটোমেটিক শনাক্ত করা হয়েছে।</translation>
 <translation id="5849570051105887917">হোম পরিষেবা প্রদানকারী কোড</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">আর্ট গ্যালারি অ্যালবাম</translation>
 <translation id="5859969039821714932">শর্টকাট উপলভ্য নেই। <ph name="KEY" /> কী ছাড়া নতুন শর্টকাট প্রেস করুন।</translation>
 <translation id="5860033963881614850">বন্ধ করুন</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
+<translation id="6108952804512516814">AI-এর মাধ্যমে তৈরি করুন</translation>
 <translation id="6112878310391905610">এই সেটিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে থাকে</translation>
 <translation id="6113701710518389813">উপরের তীরচিহ্ন</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + আরও <ph name="NUMBER" />টি অ্যালবাম</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">ওয়ালপেপারের সাথে মেলান</translation>
 <translation id="6527081081771465939">অজানা ওয়াই-ফাই সিকিউরিটি প্রোটোকল</translation>
 <translation id="6535178685492749208">আপনি অফলাইন আছেন। মতামত পরে পাঠানো হবে।</translation>
+<translation id="6557784757915238407">APN-এর ধরন হল <ph name="ATTACH" />।</translation>
 <translation id="65587193855025101">ফ্ল্যাটবেড</translation>
 <translation id="6560196641871357166">ভাইব্রেন্ট</translation>
 <translation id="6564646048574748301">প্রিন্ট করা যায়নি - প্রিন্টারের সাথে কানেক্ট করা যাচ্ছে না</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">রূপান্তর</translation>
 <translation id="7415801143053185905">HTTP লেটেন্সি অনেক বেশি</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">এই APN বন্ধ করা বা সরানো যাচ্ছে না। নিশ্চিত করুন যে চালু করা <ph name="ATTACH" /> APN বন্ধ করা আছে বা সরানো হয়েছে।</translation>
 <translation id="7458970041932198923">অবতার দেখার ও সেট করার জন্য ডিভাইসটি নেটওয়ার্কের সঙ্গে কানেক্ট করে পেজটি আবার লোড করুন।</translation>
 <translation id="7469648432129124067">পোর্টাল শনাক্ত করা হয়েছে</translation>
 <translation id="7481312909269577407">ফরওয়ার্ড</translation>

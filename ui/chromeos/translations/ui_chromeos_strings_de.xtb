@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugiesisch mit internationaler US-amerikanischer Tastatur</translation>
 <translation id="1629521517399325891">Das Nutzerzertifikat ist nicht für die Netzwerkauthentifizierung verfügbar.</translation>
 <translation id="1641780993263690097">Chinesisch (Pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> Dateien werden offline verfügbar gemacht</translation>
 <translation id="164969095109328410">Chrome-Gerät</translation>
 <translation id="1661207570040737402">Dein gesamter Google Workspace-Speicherplatz in der geteilten Ablage ist belegt.</translation>
 <translation id="1661867754829461514">PIN fehlt</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Die Administratorrichtlinie blockiert das Kopieren von <ph name="COUNT" /> Dateien</translation>
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6528513914570774834">Anderen Nutzern des Geräts erlauben, dieses Netzwerk zu verwenden</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> wird synchronisiert...</translation>
 <translation id="6549689063733911810">Zuletzt geöffnet</translation>
 <translation id="6558280019477628686">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht gelöscht.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" wird gelöscht...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Du gibst Linux-Apps die Berechtigung, auf Dateien im Ordner „<ph name="FOLDER_NAME" />“ zuzugreifen</translation>
 <translation id="7555339735447658365">Du bist momentan offline. Die Dateisynchronisierung wird fortgesetzt, wenn du mit dem Internet verbunden bist</translation>
 <translation id="7589661784326793847">Einen Moment bitte</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> wird offline bereitgestellt</translation>
 <translation id="7600126690270271294">Serbisch</translation>
 <translation id="7603724359189955920">Gitter</translation>
 <translation id="7627790789328695202">Hoppla, <ph name="FILE_NAME" /> existiert bereits. Gib einen anderen Namen ein und versuche es erneut.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Zu öffnende Datei auswählen</translation>
 <translation id="8577897833047451336">Kroatisch</translation>
 <translation id="8578308463707544055">Indonesisch</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> Elemente werden synchronisiert...</translation>
 <translation id="8600173386174225982">Die Dateiliste wird jetzt in der Miniaturansicht angezeigt.</translation>
 <translation id="8601932370724196034">Crostini-Bilddatei</translation>
 <translation id="8609695766746872526">Isländisch</translation>

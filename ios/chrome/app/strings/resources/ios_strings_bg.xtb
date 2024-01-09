@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3090455602619185166">Вход с управляван профил</translation>
 <translation id="309710370695886264">Имате 1 повторно използвана парола. Коригирайте я сега, за да сте в безопасност.</translation>
+<translation id="3109724472072898302">Свито</translation>
 <translation id="3112556859945124369">Означаване…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Вижте какво можете да синхронизирате<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">История и др.</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">Няма връзка с интернет.</translation>
 <translation id="3789294999358192700">Изпълнете следните стъпки:</translation>
 <translation id="3789841737615482174">Инсталиране</translation>
-<translation id="3792713031001122343">{count,plural, =1{Запазване на 1 отметка в профила ви в Google}other{Запазване на {count} отметки в профила ви в Google}}</translation>
 <translation id="380329542618494757">Име</translation>
 <translation id="3803696231112616155">Предлагане да се преведе този сайт</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -1566,7 +1566,6 @@
 <translation id="952704832371081537">Отказ</translation>
 <translation id="959066944189734975">Следвате <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Показване на предложения за раздели от други устройства</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Можете да запазите паролата си за {DOMAIN_ONE} в профила си в Google {EMAIL}}=2{Можете да запазите паролите си за {DOMAIN_ONE} и {DOMAIN_TWO} в профила си в Google {EMAIL}}=3{Можете да запазите паролите си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайта в профила си в Google {EMAIL}}other{Можете да запазите паролите си за {DOMAIN_ONE}, {DOMAIN_TWO} и още {OTHER_DOMAINS_COUNT} сайта в профила си в Google {EMAIL}}}</translation>
 <translation id="973493300226275298">Проследявайте цената на даден продукт в различни онлайн магазини. Ще получите сигнал, когато цената се понижи.</translation>
 <translation id="981498610235328462">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити.</translation>
 <translation id="984509647832111802">Синхронизирането не работи.</translation>

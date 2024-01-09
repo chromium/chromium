@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugalština s klávesnicí USA – mezinárodní</translation>
 <translation id="1629521517399325891">Certifikát uživatele pro síťové ověření není k dispozici.</translation>
 <translation id="1641780993263690097">čínština (pchin-jin)</translation>
-<translation id="1646019627374511909">Zpřístupňování <ph name="NUMBER_OF_ITEMS" /> souborů offline</translation>
 <translation id="164969095109328410">Zařízení Chrome</translation>
 <translation id="1661207570040737402">Zaplnili jste celé své úložiště Google Workspace na sdíleném disku.</translation>
 <translation id="1661867754829461514">Chybí kód PIN</translation>
@@ -717,7 +716,6 @@
 <translation id="6503285896705205014">Kopírování souborů (<ph name="COUNT" />) je blokováno zásadami administrátora</translation>
 <translation id="6509122719576673235">norština</translation>
 <translation id="6528513914570774834">Povolit ostatním uživatelům tohoto zařízení používat tuto síť</translation>
-<translation id="653019979737152879">Synchronizace souboru <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Poslední</translation>
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>
@@ -851,7 +849,6 @@
 <translation id="7553492409867692754">Udělujete linuxovým aplikacím oprávnění k přístupu k souborům ve složce <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Momentálně jste offline. Synchronizace souborů bude pokračovat, až budete připojeni k internetu.</translation>
 <translation id="7589661784326793847">Chvilku strpení</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> se zpřístupňuje pro použití offline</translation>
 <translation id="7600126690270271294">srbština</translation>
 <translation id="7603724359189955920">Mřížky</translation>
 <translation id="7627790789328695202">Jejda, soubor <ph name="FILE_NAME" /> již existuje. Přejmenujte jej a zkuste to znovu.</translation>
@@ -1006,7 +1003,6 @@
 <translation id="8569764466147087991">Vyberte soubor, který chcete otevřít</translation>
 <translation id="8577897833047451336">chorvatština</translation>
 <translation id="8578308463707544055">indonéština</translation>
-<translation id="8579285237314169903">Synchronizace <ph name="NUMBER_OF_FILES" /> položek...</translation>
 <translation id="8600173386174225982">Seznam souborů se změnil na zobrazení miniatur.</translation>
 <translation id="8601932370724196034">Soubor obrazu Crostini</translation>
 <translation id="8609695766746872526">islandština</translation>

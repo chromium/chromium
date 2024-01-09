@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portoghese con tastiera internazionale USA</translation>
 <translation id="1629521517399325891">Il certificato utente non è disponibile per l'autenticazione della rete.</translation>
 <translation id="1641780993263690097">Cinese pinyin</translation>
-<translation id="1646019627374511909">Preparazione per la visualizzazione offline di <ph name="NUMBER_OF_ITEMS" /> file…</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Hai esaurito il tuo spazio di archiviazione Google Workspace su Drive condiviso.</translation>
 <translation id="1661867754829461514">PIN mancante</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">Gesto di ringraziamento</translation>
 <translation id="2088690981887365033">Rete VPN</translation>
 <translation id="209653272837065803">Spazio di archiviazione non sufficiente per continuare a sincronizzare i file</translation>
+<translation id="2099143626019777139">I siti web che visiti sono visibili all'amministratore. Puoi visualizzare l'elenco dei siti web visibili.</translation>
 <translation id="2111134541987263231">Attiva l'opzione <ph name="BEGIN_BOLD" />Consenti modalità di navigazione in incognito<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementi verranno eliminati e non potrai ripristinarli.</translation>
 <translation id="2122305276694332719">La connessione automatica a una rete nascosta consente ad altre persone di rilevare il tuo dispositivo e alcune impostazioni di rete, pertanto è sconsigliata.</translation>
@@ -717,7 +717,6 @@
 <translation id="6503285896705205014">La copia di <ph name="COUNT" /> file è bloccata dal criterio dell'amministratore</translation>
 <translation id="6509122719576673235">Norvegese</translation>
 <translation id="6528513914570774834">Consenti ad altri utenti del dispositivo di usare questa rete</translation>
-<translation id="653019979737152879">Sincronizzazione del file <ph name="FILE_NAME" /> in corso...</translation>
 <translation id="6549689063733911810">Recenti</translation>
 <translation id="6558280019477628686">Si è verificato un errore. Alcuni elementi potrebbero non essere stati eliminati.</translation>
 <translation id="656398493051028875">Eliminazione di "<ph name="FILENAME" />"...</translation>
@@ -851,7 +850,6 @@
 <translation id="7553492409867692754">Concedi alle app Linux l'autorizzazione per accedere ai file nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Al momento sei offline. La sincronizzazione dei file riprenderà quando ti connetterai a internet</translation>
 <translation id="7589661784326793847">Aspetta solo un secondo</translation>
-<translation id="7592775719802218421">Preparazione per la visualizzazione offline del file <ph name="FILE_NAME" />…</translation>
 <translation id="7600126690270271294">Serbo</translation>
 <translation id="7603724359189955920">Griglie</translation>
 <translation id="7627790789328695202">Spiacenti. <ph name="FILE_NAME" /> esiste già. Rinominarlo e riprovare.</translation>
@@ -968,6 +966,7 @@
 <translation id="83651606385705612">Autorizza <ph name="VM_NAME" /> ad accedere ai file memorizzati nella cartella <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Chiave WEP non valida</translation>
 <translation id="8372852072747894550">Greco</translation>
+<translation id="8377269993083688872">Layout per email</translation>
 <translation id="8386903983509584791">Scansione completata</translation>
 <translation id="8387733224523483503">Elemento "<ph name="FILE_NAME" />" estratto.</translation>
 <translation id="8395901698320285466">Dimensioni</translation>
@@ -1006,7 +1005,6 @@
 <translation id="8569764466147087991">Seleziona un file da aprire</translation>
 <translation id="8577897833047451336">Croato</translation>
 <translation id="8578308463707544055">Indonesiano</translation>
-<translation id="8579285237314169903">Sincronizzazione di <ph name="NUMBER_OF_FILES" /> elementi...</translation>
 <translation id="8600173386174225982">L'elenco dei file è stato modificato in visualizzazione miniatura.</translation>
 <translation id="8601932370724196034">File immagine Crostini</translation>
 <translation id="8609695766746872526">Islandese</translation>

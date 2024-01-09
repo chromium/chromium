@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Português com teclado internacional dos EUA</translation>
 <translation id="1629521517399325891">O certificado do usuário não está disponível para a autenticação da rede.</translation>
 <translation id="1641780993263690097">Chinês (pinyin)</translation>
-<translation id="1646019627374511909">Disponibilizando <ph name="NUMBER_OF_ITEMS" /> arquivos off-line</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Você usou todo o armazenamento no drive compartilhado do Google Workspace.</translation>
 <translation id="1661867754829461514">PIN ausente</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">A cópia de <ph name="COUNT" /> arquivos está bloqueada pela política do administrador</translation>
 <translation id="6509122719576673235">Norueguês</translation>
 <translation id="6528513914570774834">Permitir que outros usuários deste dispositivo usem esta rede</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recentes</translation>
 <translation id="6558280019477628686">Ocorreu um erro. Alguns itens podem não ter sido excluídos.</translation>
 <translation id="656398493051028875">Excluindo "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Conceder aos apps do Linux permissão para acessar arquivos na pasta <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">No momento, você está off-line. A sincronização de arquivos será retomada quando houver uma conexão com a Internet.</translation>
 <translation id="7589661784326793847">Aguarde um segundo</translation>
-<translation id="7592775719802218421">Disponibilizando <ph name="FILE_NAME" /> off-line</translation>
 <translation id="7600126690270271294">Sérvio</translation>
 <translation id="7603724359189955920">Grades</translation>
 <translation id="7627790789328695202">O item <ph name="FILE_NAME" /> já existe. Renomeie-o e tente novamente.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Selecionar um arquivo para ser aberto</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonésio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> itens...</translation>
 <translation id="8600173386174225982">A lista de arquivos foi alterada para a visualização em miniatura.</translation>
 <translation id="8601932370724196034">Arquivo de imagem do Crostini</translation>
 <translation id="8609695766746872526">Islandês</translation>

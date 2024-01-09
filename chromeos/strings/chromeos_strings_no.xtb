@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Avbrutt</translation>
 <translation id="1020274983236703756">Eksklusivt <ph name="PRODUCT_NAME" />-innhold er tilgjengelig nå</translation>
 <translation id="1022628058306505708">Jordflyt</translation>
-<translation id="103306827243002956">Nylige bakgrunner</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> tråder, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">En ny funksjon er tilgjengelig. Bruk oppoverpilen for å finne ut mer.</translation>
 <translation id="1059913517121127803">Kunne ikke starte skanningen</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Minst ett Kunst-gallerialbum må velges</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Skap mer</translation>
 <translation id="2236746079896696523">Slå av/på bakgrunnsbelysning for tastaturet</translation>
 <translation id="2240366984605217732">Oppsettsbytte</translation>
 <translation id="225692081236532131">Aktiveringsstatus</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Lysbildefremvisning</translation>
 <translation id="4297501883039923494">Stoppet – ukjent feil</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> bilder</translation>
-<translation id="4305367063258930534">Bakgrunn fra Google</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" />-tasten trykkes på</translation>
 <translation id="4354430579665871434">tast</translation>
 <translation id="4361257691546579041">APN er type standard.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
+<translation id="6108952804512516814">Skap med AI</translation>
 <translation id="6112878310391905610">Denne innstillingen administreres av administratorene dine</translation>
 <translation id="6113701710518389813">Oppoverpil</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> og <ph name="NUMBER" /> album til</translation>

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugis dengan keyboard International AS</translation>
 <translation id="1629521517399325891">Sertifikat pengguna tidak tersedia untuk autentikasi jaringan.</translation>
 <translation id="1641780993263690097">Pinyin China</translation>
-<translation id="1646019627374511909">Membuat <ph name="NUMBER_OF_ITEMS" /> file tersedia secara offline</translation>
 <translation id="164969095109328410">Perangkat Chrome</translation>
 <translation id="1661207570040737402">Anda telah menggunakan seluruh penyimpanan Drive Bersama Google Workspace.</translation>
 <translation id="1661867754829461514">PIN hilang</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Penyalinan <ph name="COUNT" /> file diblokir oleh kebijakan administrator</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Izinkan pengguna lain di perangkat ini untuk menggunakan jaringan ini</translation>
-<translation id="653019979737152879">Menyinkronkan <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Terkini</translation>
 <translation id="6558280019477628686">Terjadi error. Beberapa item mungkin belum dihapus.</translation>
 <translation id="656398493051028875">Menghapus "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Beri aplikasi Linux izin untuk mengakses file di folder <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Anda sedang offline. Sinkronisasi file akan dilanjutkan saat Anda terhubung ke internet</translation>
 <translation id="7589661784326793847">Tunggu sebentar</translation>
-<translation id="7592775719802218421">Membuat <ph name="FILE_NAME" /> tersedia secara offline</translation>
 <translation id="7600126690270271294">Serbia</translation>
 <translation id="7603724359189955920">Petak</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> sudah ada. Ganti nama dan coba lagi.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Pilih file yang akan dibuka</translation>
 <translation id="8577897833047451336">Kroasia</translation>
 <translation id="8578308463707544055">Indonesia</translation>
-<translation id="8579285237314169903">Menyinkronkan <ph name="NUMBER_OF_FILES" /> item...</translation>
 <translation id="8600173386174225982">Daftar file telah diubah menjadi tampilan thumbnail.</translation>
 <translation id="8601932370724196034">File gambar Crostini</translation>
 <translation id="8609695766746872526">Islandia</translation>

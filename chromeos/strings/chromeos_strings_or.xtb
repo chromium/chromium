@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">ବାତିଲ୍‌ କରାଗଲା</translation>
 <translation id="1020274983236703756">ଏକ୍ସକ୍ଲୁସିଭ <ph name="PRODUCT_NAME" /> ଆସେଟଗୁଡ଼ିକ ବର୍ତ୍ତମାନ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="1022628058306505708">ଆର୍ଥ ଫ୍ଲୋ</translation>
-<translation id="103306827243002956">ବର୍ତ୍ତମାନର ୱାଲପେପରଗୁଡ଼ିକ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" />ଟି ଥ୍ରେଡ୍, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ନୂଆ ଫିଚର୍ ଉପଲବ୍ଧ ଅଛି, ଅଧିକ ଜାଣିବାକୁ ଅପ୍ ତୀର କୀ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="1059913517121127803">ସ୍କାନିଂ ଆରମ୍ଭ କରାଯାଇପାରିଲା ନାହିଁ</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">କ୍ରିଏଟରମାନଙ୍କ ପାଇଁ Chromebookର ନୂଆ ଡିଜିଟାଲ୍ ପତ୍ରିକାକୁ ଦେଖନ୍ତୁ</translation>
 <translation id="1270369111467284986">କ୍ୟାପ୍ଟିଭ୍ ପୋର୍ଟାଲକୁ ସନ୍ଦେହ କରାଯାଇଛି</translation>
 <translation id="1290331692326790741">ଦୁର୍ବଳ ସିଗ୍‌‌‌‌‌‌‌ନାଲ୍</translation>
+<translation id="1300115153046603471">APN ପ୍ରକାର ଡିଫଲ୍ଟ ଏବଂ <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">ଅପଡେଟ କରାଯାଉଛି (<ph name="PERCENTAGE_VALUE" />% ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> ମିନିଟ</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">ଅତି କମରେ ଏକ ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ୍ ଚୟନ କରାଯିବା ଆବଶ୍ୟକ</translation>
 <translation id="2230005943220647148">ସେଲସିୟସ୍</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">ଅଧିକ ୱାଲପେପର ତିଆରି କରନ୍ତୁ</translation>
 <translation id="2236746079896696523">କୀବୋର୍ଡ ବ୍ୟାକଲାଇଟ ଟୋଗଲ</translation>
 <translation id="2240366984605217732">ଲେଆଉଟ ସ୍ୱିଚ</translation>
 <translation id="225692081236532131">ସକ୍ରିୟକରଣ ସ୍ଥିତି</translation>
@@ -306,7 +305,7 @@
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3291996639387199448">ପ୍ରମାଣୀକରଣ କୀ'ର ଦିଗ</translation>
 <translation id="3294437725009624529">ଅତିଥି</translation>
-<translation id="3303855915957856445">କୌଣସି ସନ୍ଧାନ ଫଳାଫଳଗୁଡିକ ଖୋଜି ପାଇଲା ନାହିଁ</translation>
+<translation id="3303855915957856445">କୌଣସି ସର୍ଚ୍ଚ ଫଳାଫଳ ମିଳିଲା ନାହିଁ</translation>
 <translation id="3305294846493618482">ଅଧିକ</translation>
 <translation id="3310640316857623290">DNS ଲାଟେନ୍ସି ଅନୁମୋଦିତ ସୀମା ଠାରୁ ଉଲ୍ଲେଖଯୋଗ୍ୟ ଭାବରେ ଉପରେ ଅଛି</translation>
 <translation id="3328783797891415197">ଟେଷ୍ଟ ଚାଲୁଛି</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">ସ୍ଲାଇଡ ଶୋ</translation>
 <translation id="4297501883039923494">ବନ୍ଦ ହୋଇଯାଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />ଟି ଛବି</translation>
-<translation id="4305367063258930534">Google ଦ୍ୱାରା ପରିଚାଳିତ ୱାଲପେପର</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> କୀ'କୁ ଦବାଯାଇଛି</translation>
 <translation id="4354430579665871434">କୀ</translation>
 <translation id="4361257691546579041">APN ହେଉଛି ଡିଫଲ୍ଟ ପ୍ରକାର।</translation>
 <translation id="437294888293595148">ସମସ୍ତ ସର୍ଟକଟକୁ ରିସେଟ କରନ୍ତୁ</translation>
+<translation id="4376423484621194274">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର <ph name="APP_NAME" />କୁ ବନ୍ଦ କରିବା ପାଇଁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ</translation>
 <translation id="4378373042927530923">ଚାଲୁନାହିଁ</translation>
 <translation id="4378551569595875038">ସଂଯୋଗ କରୁଛି...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">ଫାରେନହାଇଟ୍</translation>
 <translation id="584953448295717128">APN ସ୍ୱତଃ ଚିହ୍ନଟ ହୋଇଛି।</translation>
 <translation id="5849570051105887917">ମୂଳ ପ୍ରଦାତା କୋଡ୍‍</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">ଆର୍ଟ ଗ୍ୟାଲେରୀ ଆଲବମ</translation>
 <translation id="5859969039821714932">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। <ph name="KEY" /> ବିନା ଏକ ନୂଆ ସର୍ଟକଟକୁ ଦବାନ୍ତୁ।</translation>
 <translation id="5860033963881614850">ବନ୍ଦ ଅଛି</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
+<translation id="6108952804512516814">AI ମାଧ୍ୟମରେ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="6112878310391905610">ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରମାନଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="6113701710518389813">ଉପର ତୀର</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" />ଟି ଅଧିକ ଆଲବମ</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">ୱାଲପେପର ମେଳ କରନ୍ତୁ</translation>
 <translation id="6527081081771465939">ଅଜଣା ୱାଇଫାଇ ସୁରକ୍ଷା ପ୍ରୋଟୋକଲ୍</translation>
 <translation id="6535178685492749208">ଆପଣ ଅଫଲାଇନ ଅଛନ୍ତି। ପରେ ମତାମତ ପଠାଯିବ।</translation>
+<translation id="6557784757915238407">APN ପ୍ରକାର <ph name="ATTACH" /> ଅଟେ।</translation>
 <translation id="65587193855025101">ଫ୍ଲାଟବେଡ୍</translation>
 <translation id="6560196641871357166">ଭାଇବ୍ରାଣ୍ଟ</translation>
 <translation id="6564646048574748301">ବିଫଳ ହୋଇଛି - ପ୍ରିଣ୍ଟର୍ ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">କନଭର୍ସନ୍</translation>
 <translation id="7415801143053185905">HTTPର ବହୁତ ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">ଏହି APNକୁ ଅକ୍ଷମ କରାଯାଇପାରିବ ନାହିଁ କିମ୍ବା କାଢ଼ି ଦିଆଯାଇପାରିବ ନାହିଁ। ସକ୍ଷମ କରାଯାଇଥିବା <ph name="ATTACH" /> APNଗୁଡ଼ିକୁ ଅକ୍ଷମ କରାଯାଇଛି କିମ୍ବା କାଢ଼ି ଦିଆଯାଇଛି ବୋଲି ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="7458970041932198923">ଅବତାରଗୁଡ଼ିକୁ ଦେଖି ସେଟ କରିବା ପାଇଁ ଦୟାକରି ଏକ ନେଟୱାର୍କ ସହ କନେକ୍ଟ କରି ପୃଷ୍ଠାଟିକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="7469648432129124067">ପୋର୍ଟାଲକୁ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7481312909269577407">ଅଗ୍ରଗତି</translation>

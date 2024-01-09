@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portiwgaleg gyda bysellfwrdd Rhyngwladol UDA</translation>
 <translation id="1629521517399325891">Nid yw'r dystysgrif defnyddiwr ar gael ar gyfer dilysu rhwydwaith.</translation>
 <translation id="1641780993263690097">Pinyin Tsieinëeg</translation>
-<translation id="1646019627374511909">Wrthi'n gwneud <ph name="NUMBER_OF_ITEMS" /> ffeil ar gael all-lein</translation>
 <translation id="164969095109328410">Dyfais Chrome</translation>
 <translation id="1661207570040737402">Rydych wedi defnyddio'ch holl storfa Gyriant Cyffredin Google Workspace.</translation>
 <translation id="1661867754829461514">PIN ar goll</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Mae copïo <ph name="COUNT" /> ffeil wedi'i rwystro gan bolisi gweinyddwr</translation>
 <translation id="6509122719576673235">Norwyeg</translation>
 <translation id="6528513914570774834">Caniatáu i ddefnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
-<translation id="653019979737152879">Wrthi'n cysoni <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Diweddar</translation>
 <translation id="6558280019477628686">Bu gwall. Mae'n bosib na fydd rhai eitemau wedi'u dileu.</translation>
 <translation id="656398493051028875">Wrthi'n dileu "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Rhoi caniatâd i apiau Linux gael mynediad at ffeiliau yn y ffolder <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Rydych chi all-lein ar hyn o bryd. Bydd cysoni ffeiliau yn ailddechrau pan fyddwch wedi'ch cysylltu â'r rhyngrwyd</translation>
 <translation id="7589661784326793847">Arhoswch eiliad</translation>
-<translation id="7592775719802218421">Yn gwneud <ph name="FILE_NAME" /> ar gael all-lein</translation>
 <translation id="7600126690270271294">Serbeg</translation>
 <translation id="7603724359189955920">Gridiau</translation>
 <translation id="7627790789328695202">O na, mae <ph name="FILE_NAME" /> eisoes yn bodoli. Rhowch enw arall ar yr eitem a rhowch gynnig arall arni.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Dewiswch ffeil i'w hagor</translation>
 <translation id="8577897833047451336">Croateg</translation>
 <translation id="8578308463707544055">Indonesieg</translation>
-<translation id="8579285237314169903">Wrthi'n cysoni <ph name="NUMBER_OF_FILES" /> o eitemau…</translation>
 <translation id="8600173386174225982">Mae'r rhestr ffeiliau wedi newid i olwg mân-luniau.</translation>
 <translation id="8601932370724196034">Ffeil llun Crostini</translation>
 <translation id="8609695766746872526">Islandeg</translation>

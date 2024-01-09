@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Atšaukta</translation>
 <translation id="1020274983236703756">Dabar pasiekiami išskirtiniai „<ph name="PRODUCT_NAME" />“ ištekliai</translation>
 <translation id="1022628058306505708">Žemės srautas</translation>
-<translation id="103306827243002956">Naujausi ekrano fonai</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (grupių: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pasiekiama nauja funkcija, spustelėkite rodyklės aukštyn klavišą, kad sužinotumėte daugiau.</translation>
 <translation id="1059913517121127803">Nepavyko pradėti nuskaitymo</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Reikia pasirinkti bent vieną meno galerijos albumą</translation>
 <translation id="2230005943220647148">Celsijaus laipsniai</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Kurti daugiau</translation>
 <translation id="2236746079896696523">Klaviatūros foninio apšvietimo perjungiklis</translation>
 <translation id="2240366984605217732">Išdėstymo jungiklis</translation>
 <translation id="225692081236532131">Aktyvinimo būsena</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Skaidrių demonstracija</translation>
 <translation id="4297501883039923494">Sustabdyta – nežinoma klaida</translation>
 <translation id="4300073214558989">Vaizdų: <ph name="IMAGE_COUNT" /></translation>
-<translation id="4305367063258930534">Ekrano fonai iš „Google“</translation>
 <translation id="4333390807948134856">Paspaustas klavišas <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">klavišas</translation>
 <translation id="4361257691546579041">APN yra numatytojo tipo.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Nuskaitymas atšauktas</translation>
 <translation id="6106186594183574873">Norėdami užbaigti įveskite seną slaptažodį</translation>
 <translation id="6108689792487843350">Tinklų sietuvas nepasiekiamas</translation>
+<translation id="6108952804512516814">Kurkite su DI</translation>
 <translation id="6112878310391905610">Šį nustatymą tvarko jūsų administratoriai</translation>
 <translation id="6113701710518389813">Rodyklė aukštyn</translation>
 <translation id="6117895505466548728">„<ph name="TITLE" />“ ir dar <ph name="NUMBER" /> albumai</translation>

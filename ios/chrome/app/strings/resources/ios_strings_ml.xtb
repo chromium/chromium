@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3090455602619185166">മാനേജ് ചെയ്യപ്പെടുന്ന അക്കൗണ്ട് ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="309710370695886264">നിങ്ങൾക്ക് ആവർത്തിച്ച് ഉപയോഗിക്കുന്ന ഒരു പാസ്‌വേഡുണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അത് പരിഹരിക്കുക.</translation>
+<translation id="3109724472072898302">ചുരുക്കിയത്</translation>
 <translation id="3112556859945124369">അടയാളപ്പെടുത്തുക…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />നിങ്ങൾക്ക് എന്തൊക്കെ സമന്വയിപ്പിക്കാമെന്ന് കാണുക<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ചരിത്രവും മറ്റും</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">ഇന്റർനെറ്റ് കണക്ഷനില്ല.</translation>
 <translation id="3789294999358192700">ചുവടെയുള്ള ഘട്ടങ്ങൾ ഫോളോ ചെയ്യുക:</translation>
 <translation id="3789841737615482174">ഇന്‍സ്റ്റാൾ ചെയ്യുക</translation>
-<translation id="3792713031001122343">{count,plural, =1{നിങ്ങളുടെ Google Account-ൽ 1 ബുക്ക്‌മാർക്ക് സംരക്ഷിക്കുക}other{നിങ്ങളുടെ Google Account-ൽ {count} ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിക്കുക}}</translation>
 <translation id="380329542618494757">പേര്</translation>
 <translation id="3803696231112616155">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
@@ -1566,7 +1566,6 @@
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" /> എന്നത് നിങ്ങൾ പിന്തുടരുന്നു</translation>
 <translation id="96615566463761848">മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബ് നിർദ്ദേശങ്ങൾ കാണിക്കുക</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE} എന്നതിനുള്ള പാസ്‌വേഡ് സംരക്ഷിക്കാം}=2{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം}=3{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കും മറ്റ് {OTHER_DOMAINS_COUNT} എണ്ണത്തിനുമുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം}other{നിങ്ങളുടെ {EMAIL} എന്ന Google Account-ൽ {DOMAIN_ONE}, {DOMAIN_TWO} എന്നിവയ്ക്കും മറ്റ് {OTHER_DOMAINS_COUNT} എണ്ണത്തിനുമുള്ള പാസ്‌വേഡുകൾ സംരക്ഷിക്കാം}}</translation>
 <translation id="973493300226275298">ഓൺലൈൻ സ്റ്റോറുകളിലുടനീളം ഒരു ഉൽപ്പന്നത്തിന്റെ നിരക്ക് ട്രാക്ക് ചെയ്യുക. നിരക്ക് കുറയുമ്പോൾ നിങ്ങൾക്ക് അലേർട്ടുകൾ ലഭിക്കും.</translation>
 <translation id="981498610235328462">ചില അക്കൗണ്ടുകൾ ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യാൻ മാത്രമേ നിങ്ങളുടെ സ്ഥാപനം അനുവദിക്കൂ. അനുവദനീയമല്ലാത്ത അക്കൗണ്ടുകൾ മറച്ചിരിക്കുന്നു.</translation>
 <translation id="984509647832111802">സമന്വയം പ്രവർത്തിക്കുന്നില്ല.</translation>

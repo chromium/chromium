@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3090455602619185166">Մուտք գործել կառավարվող հաշիվ</translation>
 <translation id="309710370695886264">Դուք ունեք 1 կրկնվող գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
+<translation id="3109724472072898302">Կոծկված</translation>
 <translation id="3112556859945124369">Նշել…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Ինչ տվյալներ կարող եք համաժամացնել<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Պատմություն և այլ տվյալներ</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">Կապ չկա</translation>
 <translation id="3789294999358192700">Կատարեք հետևյալ քայլերը․</translation>
 <translation id="3789841737615482174">Տեղադրել</translation>
-<translation id="3792713031001122343">{count,plural, =1{Պահեք 1 էջանիշ ձեր Google հաշվում}one{Պահեք {count} էջանիշ ձեր Google հաշվում}other{Պահեք {count} էջանիշ ձեր Google հաշվում}}</translation>
 <translation id="380329542618494757">Անուն</translation>
 <translation id="3803696231112616155">Առաջարկել այս կայքի թագմանությունը</translation>
 <translation id="3810973564298564668">Կառավարել</translation>
@@ -1566,7 +1566,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="952704832371081537">Չեղարկել</translation>
 <translation id="959066944189734975">Դուք հետևում եք <ph name="CHANNEL_NAME" /> կայքին</translation>
 <translation id="96615566463761848">Ցույց տալ ներդիրների համար հուշումներ այլ սարքերից</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Դուք կարող եք {DOMAIN_ONE} տիրույթի գաղտնաբառը պահել ձեր Google հաշվում ({EMAIL})}=2{Դուք կարող եք {DOMAIN_ONE} և {DOMAIN_TWO} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}=3{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}one{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}other{Դուք կարող եք {DOMAIN_ONE}, {DOMAIN_TWO} ու ևս {OTHER_DOMAINS_COUNT} տիրույթների գաղտնաբառերը պահել ձեր Google հաշվում ({EMAIL})}}</translation>
 <translation id="973493300226275298">Հետագծեք ապրանքի գները տարբեր առցանց խանութներում։ Երբ գնիջեցում լինի, դուք ծանուցում կստանաք այդ մասին։</translation>
 <translation id="981498610235328462">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։</translation>
 <translation id="984509647832111802">Համաժամացումը չի աշխատում։</translation>

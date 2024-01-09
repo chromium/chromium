@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">જૂનું ટૅબ બંધ કરવા માગો છો?</translation>
 <translation id="1215127405478249895">ટૅબ રિવ્યૂ કરો</translation>
 <translation id="125153950246128346">અન્ય ટૅબ જોવા માટે ટૅપ કરો</translation>
+<translation id="1326271443836399892">ગોઠવણીને વ્યવસ્થિત કરવા માટેના વર્તમાન સેટિંગનો રિવ્યૂ કરો.</translation>
 <translation id="1499635324672558517">બધી છૂપી ટૅબ બંધ કરીએ?</translation>
 <translation id="1657719826150349398">ટૅબને નીચે ખસેડો</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">ગ્રૂપમાંથી દૂર કરો</translation>
 <translation id="3008554597174452548">પ્રોડક્ટને ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{તમારી પાસે આર્કાઇવ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ છે}one{તમારી પાસે આર્કાઇવ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ છે}other{તમારી પાસે આર્કાઇવ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ છે}}</translation>
 <translation id="3194464645767632461">રેટિંગ</translation>
 <translation id="3291470810748040983">ખોલવામાં આવેલી ટૅબમાં જ્યારે કોઈ આઇટમની કિંમત ઓછી થશે, ત્યારે તમને અલર્ટ મળશે</translation>
 <translation id="3328308545011660196">સૂચન: <ph name="NUMBER_OF_TABS" /> ટૅબ સંબંધિત હોય તેમ જણાય છે. તેમનું ગ્રૂપ બનાવીએ?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">આ સ્ટોર વિશેની માહિતી બતાવવાની બંધ કરી છે</translation>
 <translation id="9150694013019234766">સ્ક્રીનના નીચેના ભાગમાં, તમારા ટૅબ ગ્રૂપમાં એકથી વધુ ટૅબની વચ્ચે સ્વિચ કરો</translation>
 <translation id="9169594135889675189">ગ્રૂપમાં નવું ટૅબ ઉમેરો</translation>
+<translation id="955558140275419384">ગોઠવણીને વ્યવસ્થિત કરવા માટે, આ એડિટરમાં દાખલ થઈને આર્કાઇવ કરેલા તમામ ટૅબનો રિવ્યૂ કરો.</translation>
 <translation id="959682366969460160">સંગઠિત રહો</translation>
 </translationbundle>

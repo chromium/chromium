@@ -406,6 +406,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3087734570205094154">Ngaphansi</translation>
 <translation id="3090455602619185166">Ngena Ngemvume Nge-akhawunti Ephethwe</translation>
 <translation id="309710370695886264">Unephasiwedi eyodwa esetshenziswe kabusha. Yilungise manje ukuze uhlale uphephile.</translation>
+<translation id="3109724472072898302">Igoqiwe</translation>
 <translation id="3112556859945124369">Maka...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Bona Lokho Ongakuvumelanisa<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Umlando nokuningi</translation>
@@ -527,7 +528,6 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3779810277399252432">Akukho ukuxhumana kwe-intanethi.</translation>
 <translation id="3789294999358192700">Landela izinyathelo ezingezansi:</translation>
 <translation id="3789841737615482174">Faka</translation>
-<translation id="3792713031001122343">{count,plural, =1{Londoloza Ibhukhimakhi engu-1 ku-Google Account yakho}one{Londoloza Amabhukhimakhi angu-{count} ku-Google Account yakho}other{Londoloza Amabhukhimakhi angu-{count} ku-Google Account yakho}}</translation>
 <translation id="380329542618494757">Igama</translation>
 <translation id="3803696231112616155">Nikeza ukuhumusha leli sayithi</translation>
 <translation id="3810973564298564668">Phatha</translation>
@@ -1566,7 +1566,6 @@ Amasayithi angasebenzisa amakhukhi ukubona umsebenzi wakho wokuphequlula kumasay
 <translation id="952704832371081537">Khansela</translation>
 <translation id="959066944189734975">Ulandela i-<ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Bonisa Iziphakamiso Zethebhu kusuka Kwamanye Amadivayisi</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Ungalondolozela iphasiwedi yakho ye-{DOMAIN_ONE} ku-Google Account yakho, {EMAIL}}=2{Ungalondolozela amaphasiwedi akho e-{DOMAIN_ONE} ne-{DOMAIN_TWO} ku-Google Account yakho, {EMAIL}}=3{Ungalondolozela amaphasiwedi akho e-{DOMAIN_ONE}, ne-{DOMAIN_TWO}, kanye namanye angu-{OTHER_DOMAINS_COUNT} ku-Google Account yakho, ku-{EMAIL}}one{Ungalondolozela amaphasiwedi akho e-{DOMAIN_ONE}, ne-{DOMAIN_TWO}, kanye namanye angu{OTHER_DOMAINS_COUNT} ku-Google Account yakho, ku-{EMAIL}}other{Ungalondolozela amaphasiwedi akho e-{DOMAIN_ONE}, ne-{DOMAIN_TWO}, kanye namanye angu{OTHER_DOMAINS_COUNT} ku-Google Account yakho, ku-{EMAIL}}}</translation>
 <translation id="973493300226275298">Landelela intengo yomkhiqizo kuzo zonke izitolo eziku-inthanethi. Uzothola izexwayiso uma intengo yehla.</translation>
 <translation id="981498610235328462">Inhlangano yakho ikuvumela ukube ungene ngemvume ngama-akhawunti athile kuphela. Ama-akhawunti angavunyelwe ayafihlwa.</translation>
 <translation id="984509647832111802">Ukuvumelanisa Akusebenzi.</translation>

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugalská klávesnica s americkou klávesnicou s medzinárodným rozložením klávesov</translation>
 <translation id="1629521517399325891">Certifikát používateľa nie je k dispozícii na overenie siete.</translation>
 <translation id="1641780993263690097">Čínska klávesnica Pchin-jin</translation>
-<translation id="1646019627374511909">Súbory (<ph name="NUMBER_OF_ITEMS" />) sa sprístupňujú offline</translation>
 <translation id="164969095109328410">Zariadenie Chrome</translation>
 <translation id="1661207570040737402">Vyčerpali ste celý svoj priestor na spoločnom disku v službe Google Workspace.</translation>
 <translation id="1661867754829461514">Chýba kód PIN</translation>
@@ -718,7 +717,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6503285896705205014">Kopírovanie <ph name="COUNT" /> súborov je blokované pravidlami správcu</translation>
 <translation id="6509122719576673235">Nórčina</translation>
 <translation id="6528513914570774834">Povoliť ostatným používateľom zariadenia pripojiť sa k tejto sieti</translation>
-<translation id="653019979737152879">Prebieha synchronizácia súboru <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Nedávne</translation>
 <translation id="6558280019477628686">Vyskytla sa chyba. Niektoré položky sa nemuseli odstrániť.</translation>
 <translation id="656398493051028875">Prebieha odstraňovanie súboru <ph name="FILENAME" />...</translation>
@@ -852,7 +850,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="7553492409867692754">Povoľte aplikáciám pre Linux prístup k súborom v priečinku <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Momentálne ste offline. Synchronizácia súborov bude pokračovať po pripojení k internetu.</translation>
 <translation id="7589661784326793847">Vydržte chvíľu</translation>
-<translation id="7592775719802218421">Súbor <ph name="FILE_NAME" /> sa sprístupňuje offline</translation>
 <translation id="7600126690270271294">Srbská klávesnica</translation>
 <translation id="7603724359189955920">Mriežky</translation>
 <translation id="7627790789328695202">Hops, súbor <ph name="FILE_NAME" /> už existuje. Premenujte ho a skúste to znova.</translation>
@@ -936,6 +933,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8147028810663464959">Šírka znaku je Plná</translation>
 <translation id="8151638057146502721">Konfigurovať</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 chyba.}few{# chyby.}many{# errors.}other{# chýb.}}</translation>
 <translation id="8154842056504218462">Boli vybrané všetky položky.</translation>
 <translation id="8157684860301034423">Nepodarilo sa načítať informácie o aplikácii.</translation>
 <translation id="8175731104491895765">Francúzska (Belgicko) klávesnica</translation>
@@ -1007,7 +1005,6 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8569764466147087991">Vyberte súbor, ktorý chcete otvoriť</translation>
 <translation id="8577897833047451336">Chorvátska klávesnica</translation>
 <translation id="8578308463707544055">Indonézska klávesnica</translation>
-<translation id="8579285237314169903">Synchronizujú sa položky (počet: <ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Zoznam súborov sa zmenil na zobrazenie miniatúr.</translation>
 <translation id="8601932370724196034">Súbor obrázka Crostini</translation>
 <translation id="8609695766746872526">Islandská klávesnica</translation>
@@ -1028,6 +1025,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="8787254343425541995">Povoliť servery proxy pre zdieľané siete</translation>
 <translation id="8790981080411996443">Osoba polievajúca kvety</translation>
 <translation id="8798099450830957504">Predvolené</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 upozornenie.}few{# upozornenia.}many{# warnings.}other{# upozornení.}}</translation>
 <translation id="8808686172382650546">Mačka</translation>
 <translation id="8810671769985673465">Komprimovanie zlyhalo, položka existuje: „<ph name="FILE_NAME" />“</translation>
 <translation id="8813284582615685103">Španielska (Španielsko) klávesnica</translation>

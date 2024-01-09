@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="3090455602619185166">Σύνδεση με διαχειριζόμενο λογαριασμό</translation>
 <translation id="309710370695886264">Έχετε 1 επαναχρησιμοποιημένο κωδικό πρόσβασης. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.</translation>
+<translation id="3109724472072898302">Συμπτυγμένο</translation>
 <translation id="3112556859945124369">Επισήμανση…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Δείτε τι μπορείτε να συγχρονίσετε<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Ιστορικό και άλλα</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">Δεν υπάρχει σύνδεση στο διαδίκτυο.</translation>
 <translation id="3789294999358192700">Ακολουθήστε τα εξής βήματα:</translation>
 <translation id="3789841737615482174">Εγκατάσταση</translation>
-<translation id="3792713031001122343">{count,plural, =1{Αποθήκευση 1 σελιδοδείκτη στον Λογαριασμό σας Google}other{Αποθήκευση {count} σελιδοδεικτών στον Λογαριασμό σας Google}}</translation>
 <translation id="380329542618494757">Όνομα</translation>
 <translation id="3803696231112616155">Πρόταση για μετάφραση αυτού του ιστοτόπου</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
@@ -1567,7 +1567,6 @@
 <translation id="952704832371081537">Ακύρωση</translation>
 <translation id="959066944189734975">Ακολουθείτε το κανάλι <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Εμφάνιση προτάσεων καρτελών από άλλες συσκευές</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Μπορείτε να αποθηκεύσετε τον κωδικό πρόσβασης για τον τομέα {DOMAIN_ONE} στον Λογαριασμό σας Google, {EMAIL}}=2{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE} και {DOMAIN_TWO} στον Λογαριασμό σας Google, {EMAIL}}=3{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομέα στον Λογαριασμό σας Google, {EMAIL}}other{Μπορείτε να αποθηκεύσετε τους κωδικούς πρόσβασης για τους τομείς {DOMAIN_ONE}, {DOMAIN_TWO} και {OTHER_DOMAINS_COUNT} ακόμη τομείς στον Λογαριασμό σας Google, {EMAIL}}}</translation>
 <translation id="973493300226275298">Παρακολουθήστε την τιμή ενός προϊόντος στα διαδικτυακά καταστήματα. Θα λαμβάνετε ειδοποιήσεις όταν υπάρχει πτώση τιμής.</translation>
 <translation id="981498610235328462">Ο οργανισμός σας επιτρέπει να συνδέεστε μόνο με ορισμένους λογαριασμούς. Οι λογαριασμοί που δεν επιτρέπονται δεν εμφανίζονται.</translation>
 <translation id="984509647832111802">Ο συγχρονισμός δεν λειτουργεί.</translation>

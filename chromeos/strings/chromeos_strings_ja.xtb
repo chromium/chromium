@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">キャンセルされました</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 限定アセットが利用可能</translation>
 <translation id="1022628058306505708">地球の動き</translation>
-<translation id="103306827243002956">最近作成された壁紙</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（スレッド数 <ph name="THREAD_COUNT" />、<ph name="CPU_MAX_CLOCK_SPEED" /> GHz）</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
 <translation id="1059913517121127803">スキャンを開始できませんでした</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">アート ギャラリーのアルバムを少なくとも 1 つ選択してください</translation>
 <translation id="2230005943220647148">摂氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">さらに作成</translation>
 <translation id="2236746079896696523">キーボード バックライトの切り替え</translation>
 <translation id="2240366984605217732">レイアウトの切り替え</translation>
 <translation id="225692081236532131">起動状態</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">スライドショー</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
-<translation id="4305367063258930534">Google 提供の壁紙</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> キーを押しました</translation>
 <translation id="4354430579665871434">キー</translation>
 <translation id="4361257691546579041">APN の種類はデフォルトです。</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
+<translation id="6108952804512516814">AI を使用して作成</translation>
 <translation id="6112878310391905610">この設定は管理者によって管理されています</translation>
 <translation id="6113701710518389813">上矢印</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />、他 <ph name="NUMBER" /> 個のアルバム</translation>

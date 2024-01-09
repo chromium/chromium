@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ယူအက်စ်နိုင်ငံတကာ ကီးဘုတ်ဖြင့် ပေါ်တူဂီ</translation>
 <translation id="1629521517399325891">ကွန်ရက်အထောက်အထားစိစစ်ခြင်း အတွက် အသုံးပြုသူအသိအမှတ်ပြုလက်မှတ် မရနိုင်ပါ။</translation>
 <translation id="1641780993263690097">တရုတ် ပင်ယင်</translation>
-<translation id="1646019627374511909">ဖိုင် <ph name="NUMBER_OF_ITEMS" /> ခုကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="164969095109328410">Chrome ကိရိယာ</translation>
 <translation id="1661207570040737402">‘မျှသုံးဒရိုက်ဗ်’ Google Workspace သိုလှောင်ခန်းအားလုံးကို သုံးထားသည်။</translation>
 <translation id="1661867754829461514">ပင်နံပါတ်ကုဒ် လိုသေးသည်</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">ဖိုင် <ph name="COUNT" /> ဖိုင် မိတ္တူကူးခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက ပိတ်ထားသည်</translation>
 <translation id="6509122719576673235">နော်ဝေး ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
-<translation id="653019979737152879">စင့်ခ် လုပ်နေ <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">မကြာခင်</translation>
 <translation id="6558280019477628686">အမှားအယွင်း ရှိနေပါသည်။ အချို့အရာများကို ဖျက်လိုက်ခြင်း မဖြစ်နိုင်ပါ။</translation>
 <translation id="656398493051028875">ဖျက်နေ "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ဖိုင်တွဲရှိ ဖိုင်များကို Linux အား အသုံးပြုခွင့်ပေးမည်</translation>
 <translation id="7555339735447658365">လောလောဆယ် အော့ဖ်လိုင်းဖြစ်နေသည်။ အင်တာနက် ပြန်ရပါက ဖိုင်စင့်ခ်လုပ်ခြင်းကို ဆက်လုပ်ပါမည်</translation>
 <translation id="7589661784326793847">ခဏလေး</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံး၍ရအောင် ပြုလုပ်နေသည်</translation>
 <translation id="7600126690270271294">ဆားဘီးယား</translation>
 <translation id="7603724359189955920">မျဉ်းများ</translation>
 <translation id="7627790789328695202">အိုး၊ <ph name="FILE_NAME" /> ရှိပြီးဖြစ်သည်။ အမည်ပြန်ပေး၍ ထပ်မံ ကြိုးစားကြည့်ပါ။</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">ဖွင့်ရန် ဖိုင်ရွေးပါ</translation>
 <translation id="8577897833047451336">ခရိုအေးရှား</translation>
 <translation id="8578308463707544055">အင်ဒိုနီးရှား</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ခုအား စင့်လုပ်နေခြင်း...</translation>
 <translation id="8600173386174225982">ဖိုင်စာရင်းကို ပုံသေးမြင်ကွင်းအဖြစ် ပြောင်းထားသည်။</translation>
 <translation id="8601932370724196034">Crostini ပုံပါဝင်သော ဖိုင်</translation>
 <translation id="8609695766746872526">အိုက်စ်လန်</translation>

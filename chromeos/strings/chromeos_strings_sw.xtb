@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Imeghairiwa</translation>
 <translation id="1020274983236703756">Vipengee vya kipekee vya <ph name="PRODUCT_NAME" /> sasa vinapatikana</translation>
 <translation id="1022628058306505708">Kulingana na Dunia</translation>
-<translation id="103306827243002956">Mandhari ya hivi majuzi</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (michakato <ph name="THREAD_COUNT" />, GHz <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">Kipengele kipya kinapatikana, tumia kishale cha Juu ili upate maelezo zaidi.</translation>
 <translation id="1059913517121127803">Imeshindwa kuanza kuchanganua</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Angalia gazeti jipya la dijitali la watayarishi kwenye Chromebook</translation>
 <translation id="1270369111467284986">Inashukiwa kwamba kuna ukurasa wa mwanzo</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
+<translation id="1300115153046603471">APN ni aina chaguomsingi na <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Inasasisha (imekamilika kwa asilimia <ph name="PERCENTAGE_VALUE" />)</translation>
 <translation id="1309341072016605398">Dakika <ph name="MINUTES" /></translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Unahitaji kuchagua angalau albamu moja ya matunzio ya Sanaa</translation>
 <translation id="2230005943220647148">Selisiasi</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Buni mandhari zaidi</translation>
 <translation id="2236746079896696523">Kipengele cha kuzima/kuwasha mwangaza wa kibodi</translation>
 <translation id="2240366984605217732">Swichi ya muundo</translation>
 <translation id="225692081236532131">Hali ya kuwasha</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Onyesho la slaidi</translation>
 <translation id="4297501883039923494">Imesimama - Hitilafu isiyojulikana</translation>
 <translation id="4300073214558989">Picha <ph name="IMAGE_COUNT" /></translation>
-<translation id="4305367063258930534">Mandhari haya yanaendeshwa na Google</translation>
 <translation id="4333390807948134856">Kitufe cha <ph name="KEY_NAME" /> kimebonyezwa</translation>
 <translation id="4354430579665871434">bonyeza vitufe</translation>
 <translation id="4361257691546579041">APN ni ya chaguomsingi.</translation>
 <translation id="437294888293595148">Weka upya njia za mkato</translation>
+<translation id="4376423484621194274">Msimamizi wako haruhusu kufunga programu ya <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Usitekeleze</translation>
 <translation id="4378551569595875038">Inaunganisha...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Farenhaiti</translation>
 <translation id="584953448295717128">APN hutambuliwa kiotomatiki.</translation>
 <translation id="5849570051105887917">Msimbo wa mtoa huduma za nyumbani</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Albamu ya matunzio ya sanaa</translation>
 <translation id="5859969039821714932">Njia ya mkato haipatikani. Bonyeza njia mpya ya mkato bila <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Kimezimwa</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Uchanganuzi umeghairiwa</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>
+<translation id="6108952804512516814">Kutayarisha kwa kutumia AI</translation>
 <translation id="6112878310391905610">Mpangilio huu unadhibitiwa na wasimamizi wako</translation>
 <translation id="6113701710518389813">Kishale cha juu</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, na albamu <ph name="NUMBER" /> zaidi</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Linganisha mandhari</translation>
 <translation id="6527081081771465939">Itifaki isiyojulikana ya ulinzi wa WiFi</translation>
 <translation id="6535178685492749208">Haupo mtandaoni. Maoni yatatumwa baadaye.</translation>
+<translation id="6557784757915238407">Aina ya APN ni <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Kichanganuzi bapa</translation>
 <translation id="6560196641871357166">Rangi inayong'aa</translation>
 <translation id="6564646048574748301">Haijakamilika - Printa haiwezi kufikiwa</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">ubadilishaji</translation>
 <translation id="7415801143053185905">Muda mwingi sana wa kusubiri maombi ya HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Imeshindwa kuzima au kuondoa APN hii. Hakikisha APN za <ph name="ATTACH" /> ulizowasha zimezimwa au kuondolewa.</translation>
 <translation id="7458970041932198923">Tafadhali unganisha kwenye mtandao kisha upakie upya ukurasa ili uangalie na uweke ishara.</translation>
 <translation id="7469648432129124067">Imetambua ukurasa wa mwanzo</translation>
 <translation id="7481312909269577407">Mbele</translation>

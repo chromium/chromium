@@ -1075,6 +1075,7 @@
 <translation id="671481426037969117">თქვენი <ph name="FQDN" />-ის ტაიმერი ამოიწურა. ხვალ ის ხელახლა დაიწყება.</translation>
 <translation id="6715020873764921614">მაინც გსურთ, ჩამოტვირთოთ <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="6719634564325948108">გსურთ QR კოდით დაკავშირება?</translation>
+<translation id="6723740634201835758">თქვენს Google ანგარიშში</translation>
 <translation id="6738516213925468394"><ph name="TIME" />-დან თქვენი მონაცემები დაშიფრულია <ph name="BEGIN_LINK" />სინქრონიზაციის საიდუმლო ფრაზით<ph name="END_LINK" />. შეიყვანეთ ის სინქრონიზაციის დასაწყებად.</translation>
 <translation id="6738867403308150051">ჩამოტვირთვა…</translation>
 <translation id="674388916582496364">თქვენ მიერ მონახულებული საიტები, როგორც წესი, ინახავს თქვენს ინტერესებს ფუნქციების თქვენზე მორგების მიზნით. საიტებს Chrome-ის მეშვეობითაც შეუძლია თქვენს ინტერესებთან დაკავშირებული ინფორმაციის შენახვა.</translation>
@@ -1396,6 +1397,7 @@
 <translation id="8260126382462817229">ცადეთ სისტემაში ხელახლა შესვლა</translation>
 <translation id="8261506727792406068">წაშლა</translation>
 <translation id="82619448491672958">სხვა ჩანართების ნახვა</translation>
+<translation id="8265018477030547118">მხოლოდ ამ მოწყობილობაზე</translation>
 <translation id="8266862848225348053">ჩამოტვირთვის მდებარეობა</translation>
 <translation id="8281886186245836920">გამოტოვება</translation>
 <translation id="8282297628636750033">საიტებზე მუქი თემის გამოყენება (შეძლებისდაგვარად)</translation>

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugheză cu tastatură S.U.A. internațională</translation>
 <translation id="1629521517399325891">Certificatul de utilizator nu este disponibil pentru autentificarea în rețea.</translation>
 <translation id="1641780993263690097">Chineză Pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fișiere devin disponibile offline</translation>
 <translation id="164969095109328410">Dispozitiv Chrome</translation>
 <translation id="1661207570040737402">Ai folosit tot spațiul de stocare Drive în comun din Google Workspace.</translation>
 <translation id="1661867754829461514">Codul PIN lipsește</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Copierea a <ph name="COUNT" /> fișiere este blocată de politica implementată de administrator</translation>
 <translation id="6509122719576673235">Norvegiană</translation>
 <translation id="6528513914570774834">Permite altor utilizatori ai dispozitivului să folosească această rețea</translation>
-<translation id="653019979737152879">Se sincronizează <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">A apărut o eroare. Este posibil ca unele elemente să nu fi fost șterse.</translation>
 <translation id="656398493051028875">Se șterge „<ph name="FILENAME" />”...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Acordă aplicațiilor Linux permisiunea să acceseze fișiere din dosarul <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Ești în modul offline. Sincronizarea fișierelor va fi reluată când te conectezi la internet.</translation>
 <translation id="7589661784326793847">Așteptați puțin</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> devine disponibil offline</translation>
 <translation id="7600126690270271294">Sârbă</translation>
 <translation id="7603724359189955920">Grile</translation>
 <translation id="7627790789328695202">Hopa, <ph name="FILE_NAME" /> există deja. Redenumiți și încercați din nou.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Selectează un fișier pentru a-l deschide</translation>
 <translation id="8577897833047451336">Croată</translation>
 <translation id="8578308463707544055">Indoneziană</translation>
-<translation id="8579285237314169903">Se sincronizează <ph name="NUMBER_OF_FILES" /> elemente...</translation>
 <translation id="8600173386174225982">Lista de fișiere s-a modificat la vizualizare cu miniaturi.</translation>
 <translation id="8601932370724196034">Fișier imagine Crostini</translation>
 <translation id="8609695766746872526">Islandeză</translation>

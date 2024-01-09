@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Ya están disponibles los recursos exclusivos de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Flujo de la Tierra</translation>
-<translation id="103306827243002956">Fondos de pantalla recientes</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> subprocesos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Para obtener más información, usa la flecha hacia arriba.</translation>
 <translation id="1059913517121127803">No se pudo comenzar el escaneo</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Conoce la nueva revista digital de Chromebook para creadores.</translation>
 <translation id="1270369111467284986">Posible portal cautivo</translation>
 <translation id="1290331692326790741">Señal débil</translation>
+<translation id="1300115153046603471">El APN es de tipo predeterminado y <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Actualizando (<ph name="PERCENTAGE_VALUE" />% completo)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de Galería de arte.</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Crear más</translation>
 <translation id="2236746079896696523">Tecla para activar la retroiluminación del teclado</translation>
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="225692081236532131">Estado de activación</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Presentación de diapositivas</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
-<translation id="4305367063258930534">Fondo de pantalla con la tecnología de Google</translation>
 <translation id="4333390807948134856">La tecla <ph name="KEY_NAME" /> está presionada</translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">El APN es el predeterminado.</translation>
 <translation id="437294888293595148">Restablecer todos los accesos directos</translation>
+<translation id="4376423484621194274">Tu administrador no permite cerrar <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">No se ejecutó la rutina</translation>
 <translation id="4378551569595875038">Conectando…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">El APN se detecta automáticamente.</translation>
 <translation id="5849570051105887917">Código del proveedor de origen</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum Galería de arte</translation>
 <translation id="5859969039821714932">La combinación de teclas no está disponible. Presiona una nueva combinación de teclas sin <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desactivado</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Se canceló el escaneo</translation>
 <translation id="6106186594183574873">Para finalizar, ingresa tu contraseña anterior</translation>
 <translation id="6108689792487843350">no se puede acceder a la puerta de enlace</translation>
+<translation id="6108952804512516814">Crea con IA</translation>
 <translation id="6112878310391905610">Los administradores controlan esta configuración</translation>
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + otros <ph name="NUMBER" /> álbumes</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Coincidir con el fondo de pantalla</translation>
 <translation id="6527081081771465939">el protocolo de seguridad Wi-Fi es desconocido</translation>
 <translation id="6535178685492749208">No tienes conexión. Los comentarios se enviarán más tarde.</translation>
+<translation id="6557784757915238407">El APN es de tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Cristal del escáner</translation>
 <translation id="6560196641871357166">Vibrante</translation>
 <translation id="6564646048574748301">Error: No se puede acceder a la impresora</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP muy alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">No se puede inhabilitar ni quitar este APN. Asegúrate de que se inhabiliten o se quiten los APN <ph name="ATTACH" /> que estén habilitados.</translation>
 <translation id="7458970041932198923">Conéctate a una red y vuelve a cargar la página para ver y configurar los avatares.</translation>
 <translation id="7469648432129124067">Se detectó un portal</translation>
 <translation id="7481312909269577407">Adelante</translation>

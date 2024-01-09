@@ -77,7 +77,6 @@
 <translation id="162175252992296058">Πορτογαλικά με πληκτρολόγιο Διεθνές ΗΠΑ</translation>
 <translation id="1629521517399325891">Το πιστοποιητικό χρήστη δεν είναι διαθέσιμο για έλεγχο ταυτότητας δικτύου.</translation>
 <translation id="1641780993263690097">Κινεζικά Pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> αρχεία γίνονται διαθέσιμα εκτός σύνδεσης.</translation>
 <translation id="164969095109328410">Συσκευή Chrome</translation>
 <translation id="1661207570040737402">Έχετε χρησιμοποιήσει όλο τον αποθηκευτικό χώρο του κοινού Drive στο Google Workspace.</translation>
 <translation id="1661867754829461514">Απουσιάζει το PIN </translation>
@@ -731,7 +730,6 @@
 <translation id="6503285896705205014">Η αντιγραφή <ph name="COUNT" /> αρχείων έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="6509122719576673235">Νορβηγικά</translation>
 <translation id="6528513914570774834">Επιτρέψτε σε άλλους χρήστες της συσκευής να χρησιμοποιούν αυτό το δίκτυο</translation>
-<translation id="653019979737152879">Συγχρονισμός <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Πρόσφατα</translation>
 <translation id="6558280019477628686">Παρουσιάστηκε σφάλμα. Ορισμένα στοιχεία ενδέχεται να μην έχουν διαγραφεί.</translation>
 <translation id="656398493051028875">Διαγραφή αρχείου "<ph name="FILENAME" />"…</translation>
@@ -869,7 +867,6 @@
 <translation id="7553492409867692754">Παραχωρήστε στις εφαρμογές Linux άδεια πρόσβασης σε αρχεία στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Είστε εκτός σύνδεσης. Ο συγχρονισμός αρχείων θα συνεχιστεί όταν συνδεθείτε στο διαδίκτυο</translation>
 <translation id="7589661784326793847">Περιμένετε λίγο</translation>
-<translation id="7592775719802218421">Το αρχείο <ph name="FILE_NAME" /> γίνεται διαθέσιμο εκτός σύνδεσης.</translation>
 <translation id="7600126690270271294">Σερβικά</translation>
 <translation id="7603724359189955920">Πλέγματα</translation>
 <translation id="7627790789328695202">Ωχ! Το αρχείο <ph name="FILE_NAME" /> υπάρχει ήδη. Μετονομάστε το και δοκιμάστε ξανά.</translation>
@@ -1027,7 +1024,6 @@
 <translation id="8569764466147087991">Επιλέξτε αρχείο για άνοιγμα</translation>
 <translation id="8577897833047451336">Κροατικά</translation>
 <translation id="8578308463707544055">Ινδονησιακά</translation>
-<translation id="8579285237314169903">Γίνεται συγχρονισμός <ph name="NUMBER_OF_FILES" /> στοιχείων…</translation>
 <translation id="8600173386174225982">Η λίστα αρχείων έχει αλλάξει σε προβολή μικρογραφίας.</translation>
 <translation id="8601932370724196034">Αρχείο εικόνας Crostini</translation>
 <translation id="8609695766746872526">Ισλανδικά</translation>

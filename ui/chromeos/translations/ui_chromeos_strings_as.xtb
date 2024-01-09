@@ -76,7 +76,6 @@
 <translation id="162175252992296058">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে পৰ্টুগীজ</translation>
 <translation id="1629521517399325891">নেটৱৰ্কৰ বিশ্বাসযোগ্যতা প্ৰমাণীকৰণৰ বাবে ব্যৱহাৰকাৰীৰ প্ৰমাণপত্ৰ উপলব্ধ নহয়।</translation>
 <translation id="1641780993263690097">চীনা পিনয়িন</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> টা ফাইল অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="164969095109328410">Chrome ডিভাইচ</translation>
 <translation id="1661207570040737402">আপুনি আপোনাৰ শ্বেয়াৰ কৰা ড্ৰাইভৰ Google Workspaceৰ সমগ্ৰ ষ্ট’ৰেজ ব্যৱহাৰ কৰিছে।</translation>
 <translation id="1661867754829461514">পিন নাই</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> টা ফাইল প্ৰতিলিপি কৰাটো প্ৰশাসকৰ নীতিয়ে অৱৰোধ কৰিছে</translation>
 <translation id="6509122719576673235">ন’ৰৱেজিয়ান</translation>
 <translation id="6528513914570774834">এই ডিভাইচটোৰ অন্য ব্যৱহাৰকাৰীসকলক এই নেটৱৰ্কটো ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> ছিংক কৰি থকা হৈছে…</translation>
 <translation id="6549689063733911810">শেহতীয়া</translation>
 <translation id="6558280019477628686">কোনো আসোঁৱাহ হৈছে। কিছুমান বস্তু মচা নহ’ব পাৰে।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মচি থকা হৈছে...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Linuxৰ এপ্‌সমূহক <ph name="FOLDER_NAME" /> ফ’ল্ডাৰটোত থকা ফাইল এক্সেছ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="7555339735447658365">আপুনি বৰ্তমান অফলাইন হৈ আছে। আপুনি ইণ্টাৰনেটৰ সৈতে সংযুক্ত হ’লে ফাইল ছিংক কৰা পুনৰ আৰম্ভ হ’ব</translation>
 <translation id="7589661784326793847">কেইছেকেণ্ডমান অপেক্ষা কৰক</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> অফলাইনত উপলব্ধ কৰি থকা হৈছে</translation>
 <translation id="7600126690270271294">ছার্বিয়ান</translation>
 <translation id="7603724359189955920">গ্ৰীড</translation>
 <translation id="7627790789328695202">আমি দুঃখিত, <ph name="FILE_NAME" /> ইতিমধ্যে আছেই। নতুন নাম দি পুনৰ চেষ্টা কৰক।</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">খুলিবলৈ এটা ফাইল বাছনি কৰক</translation>
 <translation id="8577897833047451336">ক্ৰ’ৱেশ্বিয়ান</translation>
 <translation id="8578308463707544055">ইণ্ডোনেছিয়ান</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টা বস্তু ছিংক কৰি থকা হৈছে...</translation>
 <translation id="8600173386174225982">ফাইলৰ সূচীখন থাম্বনেইল ভিউ ম'ডলৈ সলনি কৰা হৈছে।</translation>
 <translation id="8601932370724196034">Crostini প্ৰতিচ্ছবিৰ ফাইল</translation>
 <translation id="8609695766746872526">আইচলেণ্ডীয়</translation>

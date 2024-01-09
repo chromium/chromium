@@ -1500,6 +1500,7 @@
 <translation id="7025533177575372252">เชื่อมต่อ <ph name="DEVICE_NAME" /> กับโทรศัพท์</translation>
 <translation id="7026338066939101231">การลด</translation>
 <translation id="7029814467594812963">ออกจากเซสชัน</translation>
+<translation id="7031303610220416229">ดูงานทั้งหมดใน Google Tasks</translation>
 <translation id="7032161822340700104">อนุญาตเพียง 6 เทมเพลต นำเทมเพลตออกเพื่อบันทึกเทมเพลตใหม่</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ต้องการใช้ <ph name="DEVICE_NAME" /> เปิดสวิตช์ <ph name="DEVICE_NAME" /> ของอุปกรณ์</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
@@ -1812,6 +1813,7 @@
 <translation id="8351131234907093545">สร้างโน้ต</translation>
 <translation id="8367948981300340152">ใช้งาน<ph name="CAPTURE_MEDIUM" />อยู่</translation>
 <translation id="8369166482916924789">เดสก์ที่บันทึกไว้ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">ค้นหา <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">ไปข้างหน้าทีละตัวอักษร</translation>
 <translation id="8371991222807690464">อุปกรณ์ต่อพ่วงอาจมีประสิทธิภาพจำกัดเมื่อใช้โหมดผู้มาเยือน</translation>
 <translation id="8374601332003098278">กด Enter เพื่อบันทึกหน้าจอบางส่วน</translation>

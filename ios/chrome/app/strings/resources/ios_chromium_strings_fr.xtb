@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Astuce Chromium</translation>
 <translation id="2168108852149185974">Certains modules complémentaires entraînent le plantage de Chromium. Veuillez désinstaller les modules suivants :</translation>
 <translation id="2178608107313874732">Chromium ne peut pas utiliser votre appareil photo pour le moment</translation>
-<translation id="219374086636266276">Vous pouvez <ph name="BEGIN_LINK" />gérer les données Chromium à enregistrer<ph name="END_LINK" /> dans votre compte Google.
-Pour voir d'autres paramètres qui utilisent les données pour améliorer votre expérience Chromium, accédez aux <ph name="BEGIN_LINK" />services Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite ?</translation>
 <translation id="2218146227246548550">Votre organisation exige que vous vous connectiez pour utiliser Chromium. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Cette adresse est actuellement enregistrée dans Chromium. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>

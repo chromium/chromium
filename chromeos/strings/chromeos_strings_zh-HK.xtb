@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756">現已推出 <ph name="PRODUCT_NAME" /> 專屬廣告元素</translation>
 <translation id="1022628058306505708">地球動態</translation>
-<translation id="103306827243002956">最近建立的桌布</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> 個執行緒；<ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">推出咗新功能，請用向上箭咀掣了解詳情。</translation>
 <translation id="1059913517121127803">無法開始掃瞄</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">請選取至少一個畫廊相簿</translation>
 <translation id="2230005943220647148">攝氏</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">建立更多類似桌布</translation>
 <translation id="2236746079896696523">切換鍵盤背光</translation>
 <translation id="2240366984605217732">版面配置切換</translation>
 <translation id="225692081236532131">啟用狀態</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">投影片</translation>
 <translation id="4297501883039923494">已停止 - 不明錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
-<translation id="4305367063258930534">Google 製作的桌布</translation>
 <translation id="4333390807948134856">㩒咗 <ph name="KEY_NAME" /> 制</translation>
 <translation id="4354430579665871434">鍵</translation>
 <translation id="4361257691546579041">呢個 APN 係預設 APN。</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">掃瞄已取消</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入您的舊密碼</translation>
 <translation id="6108689792487843350">無法連接閘道</translation>
+<translation id="6108952804512516814">以 AI 製作</translation>
 <translation id="6112878310391905610">此設定由管理員管理</translation>
 <translation id="6113701710518389813">向上箭咀</translation>
 <translation id="6117895505466548728">「<ph name="TITLE" />」和另外 <ph name="NUMBER" /> 個相簿</translation>

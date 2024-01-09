@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portuguese with US International keyboard</translation>
 <translation id="1629521517399325891">User certificate is not available for network authentication.</translation>
 <translation id="1641780993263690097">Chinese Pinyin</translation>
-<translation id="1646019627374511909">Making <ph name="NUMBER_OF_ITEMS" /> files available offline</translation>
 <translation id="164969095109328410">Chrome device</translation>
 <translation id="1661207570040737402">You’ve used all of your shared drive Google Workspace storage.</translation>
 <translation id="1661867754829461514">PIN missing</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Copying <ph name="COUNT" /> files is blocked by administrator policy</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>
-<translation id="653019979737152879">Syncing <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">An error occurred. Some items may not have been deleted.</translation>
 <translation id="656398493051028875">Deleting "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Give Linux apps permission to access files in the <ph name="FOLDER_NAME" /> folder</translation>
 <translation id="7555339735447658365">You are currently offline. File sync will resume when you are connected to the Internet</translation>
 <translation id="7589661784326793847">Wait just a sec</translation>
-<translation id="7592775719802218421">Making <ph name="FILE_NAME" /> available offline</translation>
 <translation id="7600126690270271294">Serbian</translation>
 <translation id="7603724359189955920">Grids</translation>
 <translation id="7627790789328695202">Whoops, <ph name="FILE_NAME" /> already exists. Rename it and try again.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Select a file to open</translation>
 <translation id="8577897833047451336">Croatian</translation>
 <translation id="8578308463707544055">Indonesian</translation>
-<translation id="8579285237314169903">Syncing <ph name="NUMBER_OF_FILES" /> items...</translation>
 <translation id="8600173386174225982">File list has changed to thumbnail view.</translation>
 <translation id="8601932370724196034">Crostini image file</translation>
 <translation id="8609695766746872526">Icelandic</translation>

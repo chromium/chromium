@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portuguès amb teclat internacional dels EUA</translation>
 <translation id="1629521517399325891">El certificat de l'usuari no està disponible per a l'autenticació de xarxa.</translation>
 <translation id="1641780993263690097">Xinès (pinyin)</translation>
-<translation id="1646019627374511909">S'està fent que <ph name="NUMBER_OF_ITEMS" /> fitxers estiguin disponibles sense connexió</translation>
 <translation id="164969095109328410">Dispositiu Chrome</translation>
 <translation id="1661207570040737402">Has fet servir tot el teu espai d'emmagatzematge a la unitat compartida de Google Workspace.</translation>
 <translation id="1661867754829461514">Falta el PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">La política de l'administrador ha bloquejat l'opció de copiar <ph name="COUNT" /> fitxers</translation>
 <translation id="6509122719576673235">Noruec</translation>
 <translation id="6528513914570774834">Permet que els altres usuaris d'aquest dispositiu facin servir aquesta xarxa</translation>
-<translation id="653019979737152879">S'està sincronitzant <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">S'ha produït un error. És possible que alguns elements no s'hagin suprimit.</translation>
 <translation id="656398493051028875">S'està suprimint "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Dona permís a les aplicacions de Linux per accedir als fitxers de la carpeta <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">En aquests moments no tens connexió. La sincronització de fitxers es reprendrà quan tinguis connexió a Internet.</translation>
 <translation id="7589661784326793847">Espereu un moment.</translation>
-<translation id="7592775719802218421">S'està fent que <ph name="FILE_NAME" /> estigui disponible sense connexió</translation>
 <translation id="7600126690270271294">Serbi</translation>
 <translation id="7603724359189955920">Quadrícules</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> ja existeix. Canvieu-ne el nom i torneu-ho a provar.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Seleccioneu el fitxer que vulgueu obrir</translation>
 <translation id="8577897833047451336">Croat</translation>
 <translation id="8578308463707544055">Indonesi</translation>
-<translation id="8579285237314169903">S'estan sincronitzant <ph name="NUMBER_OF_FILES" /> elements...</translation>
 <translation id="8600173386174225982">La llista de fitxers ha canviat a la visualització de miniatures.</translation>
 <translation id="8601932370724196034">Fitxer d'imatge de Crostini</translation>
 <translation id="8609695766746872526">Islandès</translation>

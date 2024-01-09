@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugais avec clavier international américain</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas disponible pour l'authentification réseau.</translation>
 <translation id="1641780993263690097">Chinois (Pinyin)</translation>
-<translation id="1646019627374511909">Téléchargement de <ph name="NUMBER_OF_ITEMS" /> fichiers pour les utiliser hors connexion…</translation>
 <translation id="164969095109328410">Appareil Google Chrome</translation>
 <translation id="1661207570040737402">Vous avez utilisé tout votre espace de stockage Google Workspace Drive partagé.</translation>
 <translation id="1661867754829461514">Code secret manquant</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Une règle de l'administrateur a bloqué la copie de <ph name="COUNT" /> fichiers</translation>
 <translation id="6509122719576673235">Norvégien</translation>
 <translation id="6528513914570774834">Autoriser les autres utilisateurs de cet appareil à employer ce réseau</translation>
-<translation id="653019979737152879">Synchronisation de <ph name="FILE_NAME" /> en cours…</translation>
 <translation id="6549689063733911810">Récents</translation>
 <translation id="6558280019477628686">Une erreur s'est produite. Il se peut que certains éléments n'aient pas été supprimés.</translation>
 <translation id="656398493051028875">Suppression de "<ph name="FILENAME" />" en cours...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Autorisez les applications Linux à accéder aux fichiers du dossier "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Vous êtes actuellement hors connexion. La synchronisation des fichiers reprendra lorsque vous serez connecté à Internet.</translation>
 <translation id="7589661784326793847">Veuillez patienter un court instant.</translation>
-<translation id="7592775719802218421">Téléchargement du fichier "<ph name="FILE_NAME" />" pour l'utiliser hors connexion…</translation>
 <translation id="7600126690270271294">Serbe</translation>
 <translation id="7603724359189955920">Grilles</translation>
 <translation id="7627790789328695202">Le fichier <ph name="FILE_NAME" /> existe déjà. Veuillez le renommer, puis réessayer.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Sélectionnez le fichier à ouvrir</translation>
 <translation id="8577897833047451336">Croate</translation>
 <translation id="8578308463707544055">Indonésien</translation>
-<translation id="8579285237314169903">Synchronisation de <ph name="NUMBER_OF_FILES" /> éléments en cours…</translation>
 <translation id="8600173386174225982">Les fichiers s'affichent désormais sous forme de vignettes.</translation>
 <translation id="8601932370724196034">Fichier image Crostini</translation>
 <translation id="8609695766746872526">Islandais</translation>

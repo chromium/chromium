@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португалча жана эл аралык АКШ баскычтобу</translation>
 <translation id="1629521517399325891">Колдонуучунун тастыктамасын тармак аутентификациясы үчүн пайдаланууга болбойт.</translation>
 <translation id="1641780993263690097">Кытайча (пиньинь)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файл оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="164969095109328410">Chrome түзмөгү</translation>
 <translation id="1661207570040737402">Жалпы дисктеги Google Workspace сактагычынын баарын колдонуп койдуңуз.</translation>
 <translation id="1661867754829461514">ПИН жок</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> файлды көчүрүү аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="6509122719576673235">Норвежче</translation>
 <translation id="6528513914570774834">Бул түзмөктү колдонгон кишилерге ушул тармакты колдонууга уруксат берилсин</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" />… шайкештештирилүүдө</translation>
 <translation id="6549689063733911810">Акыркы</translation>
 <translation id="6558280019477628686">Ката кетти. Айрым элементтер өчкөн жок окшойт.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"… жок кылуу</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Linux колдонмолоруна <ph name="FOLDER_NAME" /> папкасындагы файлдарга кирүүгө уруксат бериңиз</translation>
 <translation id="7555339735447658365">Учурда офлайндасыз. Файлды шайкештирүү түзмөк Интернетке туташтырылганда улантылат</translation>
 <translation id="7589661784326793847">Бир секунд күтө туруңуз</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> файлы оффлайн режиминде колдонуу үчүн жүктөлүүдө</translation>
 <translation id="7600126690270271294">Сербче</translation>
 <translation id="7603724359189955920">Торчолор</translation>
 <translation id="7627790789328695202">Ой, <ph name="FILE_NAME" /> мурунтан эле бар экен. Аталышын өзгөртүп, дагы бир жолу аракет кылып көрүңүз.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Ачыла турган файлды тандаңыз</translation>
 <translation id="8577897833047451336">Хорватча</translation>
 <translation id="8578308463707544055">Индонезияча</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> нерсе шайкештирилүүдө…</translation>
 <translation id="8600173386174225982">Файлдардын тизмеси эскиз көрүнүшүнө которулду.</translation>
 <translation id="8601932370724196034">Crostini сүрөт файлы</translation>
 <translation id="8609695766746872526">Исландча</translation>

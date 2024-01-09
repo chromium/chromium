@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Impossible de trouver le chemin d'accès absolu du répertoire à empaqueter.</translation>
 <translation id="5160071981665899014">Échec de chargement du code JavaScript « <ph name="RELATIVE_PATH" /> » pour le script.</translation>
 <translation id="5356315618422219272">Appview : <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Les fenêtres mises en forme ne sont pas prises en charge.</translation>
 <translation id="5456409301717116725">Cette extension comprend le fichier de clé « <ph name="KEY_PATH" /> ». Vous ne voulez probablement pas continuer.</translation>
 <translation id="5486326529110362464">La clé privée est requise.</translation>
 <translation id="5972529113578162692">L'administrateur de cette machine requiert l'installation de <ph name="EXTENSION_NAME" />. Cette extension ne peut pas être désinstallée.</translation>

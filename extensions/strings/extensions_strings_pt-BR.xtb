@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Não é possível encontrar o caminho absoluto para o diretório do pacote.</translation>
 <translation id="5160071981665899014">Não foi possível carregar "<ph name="RELATIVE_PATH" />" em javascript para o script.</translation>
 <translation id="5356315618422219272">Visualização do app: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Janelas com formas não são suportadas.</translation>
 <translation id="5456409301717116725">Esta extensão inclui o arquivo de chave '<ph name="KEY_PATH" />'. Você provavelmente não quer fazer isso.</translation>
 <translation id="5486326529110362464">O valor inserido para a chave privada deve existir.</translation>
 <translation id="5972529113578162692">O administrador desta máquina requer a instalação da extensão <ph name="EXTENSION_NAME" />. Ela não pode ser desinstalada.</translation>

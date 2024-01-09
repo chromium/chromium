@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugalščina z mednarodno tipkovnico za angleščino (Združene države)</translation>
 <translation id="1629521517399325891">Uporabniško potrdilo ni na voljo za preverjanje pristnosti omrežja.</translation>
 <translation id="1641780993263690097">kitajščina (pinjin)</translation>
-<translation id="1646019627374511909">Omogočanje datotek (<ph name="NUMBER_OF_ITEMS" />) za dostop brez povezave</translation>
 <translation id="164969095109328410">Naprava Chrome</translation>
 <translation id="1661207570040737402">Porabili ste ves deljeni prostor za shranjevanje v Googlu Drive za Google Workspace.</translation>
 <translation id="1661867754829461514">Manjka PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Kopiranje <ph name="COUNT" /> datotek(-e) blokira skrbniški pravilnik.</translation>
 <translation id="6509122719576673235">norveščina</translation>
 <translation id="6528513914570774834">Omogoči drugim uporabnikom te naprave uporabo tega omrežja</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> – sinhroniziranje ...</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6558280019477628686">Prišlo je do napake. Nekateri elementi morda niso izbrisani.</translation>
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Aplikacijam za Linux dovolite dostop do datotek v mapi <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Trenutno ste brez povezave. Sinhronizacija datotek se bo nadaljevala, ko vzpostavite internetno povezavo</translation>
 <translation id="7589661784326793847">Počakajte trenutek</translation>
-<translation id="7592775719802218421">Omogočanje dostopa do datoteke <ph name="FILE_NAME" /> brez povezave</translation>
 <translation id="7600126690270271294">srbščina</translation>
 <translation id="7603724359189955920">Mreže</translation>
 <translation id="7627790789328695202">Ups, datoteka <ph name="FILE_NAME" /> že obstaja. Preimenujte jo in poskusite znova.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Izberite datoteko, ki jo želite odpreti</translation>
 <translation id="8577897833047451336">hrvaščina</translation>
 <translation id="8578308463707544055">indonezijščina</translation>
-<translation id="8579285237314169903">Sinhroniziranje datotek (<ph name="NUMBER_OF_FILES" />) ...</translation>
 <translation id="8600173386174225982">Seznam datotek je spremenjen na pogled sličic.</translation>
 <translation id="8601932370724196034">Slikovna datoteka za Crostini</translation>
 <translation id="8609695766746872526">islandščina</translation>

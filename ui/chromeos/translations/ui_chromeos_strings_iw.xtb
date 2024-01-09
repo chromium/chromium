@@ -76,7 +76,6 @@
 <translation id="162175252992296058">פורטוגזית עם מקלדת בינלאומית של ארה"ב</translation>
 <translation id="1629521517399325891">אישור המשתמש לא זמין לאימות הרשת.</translation>
 <translation id="1641780993263690097">‏סינית Pinyin</translation>
-<translation id="1646019627374511909">המערכת מגדירה <ph name="NUMBER_OF_ITEMS" /> קבצים כזמינים אופליין</translation>
 <translation id="164969095109328410">‏מכשיר Chrome</translation>
 <translation id="1661207570040737402">‏השתמשת בכל נפח האחסון השיתופי שמוקצה לך ב-Google Workspace.</translation>
 <translation id="1661867754829461514">‏חסר PIN</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">חתימת תודה רבה</translation>
 <translation id="2088690981887365033">‏רשת VPN</translation>
 <translation id="209653272837065803">אין מספיק נפח אחסון כדי להמשיך לסנכרן קבצים</translation>
+<translation id="2099143626019777139">אתרים שבהם ביקרת גלויים לאדמין שלך. ניתן לראות רשימה של האתרים הגלויים.</translation>
 <translation id="2111134541987263231">מפעילים את האפשרות <ph name="BEGIN_BOLD" />לאפשר במצב פרטי<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">יימחקו <ph name="NUMBER_OF_ITEMS" /> פריטים ולא תהיה אפשרות לשחזר אותם.</translation>
 <translation id="2122305276694332719">חיבור אוטומטי לרשת מוסתרת מאפשר לאחרים לראות את המכשיר שלך וחלק מהגדרות הרשת. האפשרות הזו לא מומלצת.</translation>
@@ -719,7 +719,6 @@
 <translation id="6503285896705205014">בהתאם למדיניות האדמין, העתקה של <ph name="COUNT" /> קבצים חסומה</translation>
 <translation id="6509122719576673235">נורווגית</translation>
 <translation id="6528513914570774834">אישור למשתמשים האחרים במכשיר הזה להשתמש ברשת הזו</translation>
-<translation id="653019979737152879">הסנכרון של <ph name="FILE_NAME" /> מתבצע...</translation>
 <translation id="6549689063733911810">מהזמן האחרון</translation>
 <translation id="6558280019477628686">אירעה שגיאה. ייתכן שפריטים מסוימים לא נמחקו.</translation>
 <translation id="656398493051028875">מחיקת "<ph name="FILENAME" />" מתבצעת...</translation>
@@ -853,7 +852,6 @@
 <translation id="7553492409867692754">‏הענקת הרשאת גישה לאפליקציות של Linux לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">אין חיבור לאינטרנט כרגע. סנכרון הקבצים ימשיך כשיהיה חיבור לאינטרנט.</translation>
 <translation id="7589661784326793847">יש להמתין מספר רגעים</translation>
-<translation id="7592775719802218421">בתהליך להפוך את <ph name="FILE_NAME" /> לזמין אופליין</translation>
 <translation id="7600126690270271294">סרבית</translation>
 <translation id="7603724359189955920">רשתות</translation>
 <translation id="7627790789328695202">אופס, <ph name="FILE_NAME" /> כבר קיים. יש לשנות את השם שלו ולנסות שוב.</translation>
@@ -970,6 +968,7 @@
 <translation id="83651606385705612">הענקת הרשאה ל-<ph name="VM_NAME" /> לגשת לקבצים בתיקייה <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">‏מקש WEP גרוע</translation>
 <translation id="8372852072747894550">יוונית</translation>
+<translation id="8377269993083688872">פריסות אימייל</translation>
 <translation id="8386903983509584791">הסריקה הושלמה</translation>
 <translation id="8387733224523483503">הקובץ <ph name="FILE_NAME" /> חולץ.</translation>
 <translation id="8395901698320285466">מידות</translation>
@@ -1008,7 +1007,6 @@
 <translation id="8569764466147087991">יש לבחור קובץ לפתיחה</translation>
 <translation id="8577897833047451336">קרואטית</translation>
 <translation id="8578308463707544055">אינדונזית</translation>
-<translation id="8579285237314169903">מתבצע סנכרון ל-<ph name="NUMBER_OF_FILES" /> פריטים...</translation>
 <translation id="8600173386174225982">רשימת הקבצים מוצגת עכשיו בתצוגת תמונות ממוזערות.</translation>
 <translation id="8601932370724196034">‏קובץ תמונה Crostini</translation>
 <translation id="8609695766746872526">איסלנדית</translation>

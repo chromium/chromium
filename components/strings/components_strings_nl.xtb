@@ -272,6 +272,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1476595624592550506">Je wachtwoord wijzigen</translation>
 <translation id="1482879811280872320">Fietsen</translation>
 <translation id="1483493594462132177">Verzenden</translation>
+<translation id="1484632730438126438">Dit is te kort. Schrijf minstens 3 woorden.</translation>
 <translation id="1492194039220927094">Pushen van beleid:</translation>
 <translation id="14938948731065592">Randapparatuur voor computers</translation>
 <translation id="1495677929897281669">Terug naar tabblad</translation>
@@ -1399,6 +1400,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3748009735914587286">Metaal (hoogglans)</translation>
 <translation id="3748148204939282805">Cybercriminelen op <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> kunnen proberen om je te misleiden zodat je iets gevaarlijks doet, bijvoorbeeld software installeren of je persoonlijke informatie bekendmaken (zoals wachtwoorden, telefoonnummers of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Luchtvaartindustrie</translation>
+<translation id="3751020515020988516">Je verzoek is niet begrepen. Probeer een ander verzoek.</translation>
 <translation id="3752543821772132562">Genegeerd omdat <ph name="POLICY_NAME" /> niet is ingesteld.</translation>
 <translation id="3754210790023674521">Scherm-in-scherm afsluiten</translation>
 <translation id="3759461132968374835">Je hebt geen onlangs gemelde crashes. Crashes die zich voordeden toen de crashrapportage was uitgezet, worden hier niet weergegeven.</translation>
@@ -1455,6 +1457,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
+<translation id="3877877650871124156">Dit is te lang. Kort het in en probeer het opnieuw.</translation>
 <translation id="3881478300875776315">Minder regels bekijken</translation>
 <translation id="3883500545751229739">opdringerige advertenties</translation>
 <translation id="3884278016824448484">Conflicterende apparaat-ID's</translation>
@@ -2563,6 +2566,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Meer informatie over incognito in Chrome<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Blijven toestaan</translation>
 <translation id="6133984428121856852">De bestandsextensie is leeg of heeft een onjuiste notatie.</translation>
+<translation id="6139769382153674477">Er is iets misgegaan. Ben je ingelogd?</translation>
 <translation id="6139975341602920272">17 x 22 inch</translation>
 <translation id="6146055958333702838">Controleer alle kabels en start alle routers, modems of andere netwerkapparaten die je gebruikt, opnieuw op.</translation>
 <translation id="614940544461990577">Probeer dit eens:</translation>

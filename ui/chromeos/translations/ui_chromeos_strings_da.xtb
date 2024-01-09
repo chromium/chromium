@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
 <translation id="1629521517399325891">Brugercertifikatet kan ikke anvendes til netværksgodkendelse.</translation>
 <translation id="1641780993263690097">Kinesisk pinyin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer gøres tilgængelige offline</translation>
 <translation id="164969095109328410">Chrome-enhed</translation>
 <translation id="1661207570040737402">Du har brugt al din Google Workspace-lagerplads for fællesdrevet.</translation>
 <translation id="1661867754829461514">Pinkode mangler</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Administratorpolitikken tillader ikke, at du kopierer <ph name="COUNT" /> filer</translation>
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
-<translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
 <translation id="656398493051028875">Slettter "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Giv Linux-apps adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du er i øjeblikket offline. Filsynkronisering genoptages, når du har forbindelse til internettet</translation>
 <translation id="7589661784326793847">Vent et øjeblik</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> gøres tilgængelig offline</translation>
 <translation id="7600126690270271294">Serbisk</translation>
 <translation id="7603724359189955920">Gitre</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> findes allerede. Giv filen et nyt navn, og prøv igen.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Vælg den fil, der skal åbnes</translation>
 <translation id="8577897833047451336">Kroatisk</translation>
 <translation id="8578308463707544055">Indonesisk</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elementer synkroniseres...</translation>
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>

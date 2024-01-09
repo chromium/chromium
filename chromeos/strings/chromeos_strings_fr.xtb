@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1020274983236703756">De nouveaux composants <ph name="PRODUCT_NAME" /> exclusifs sont disponibles</translation>
 <translation id="1022628058306505708">Flux terrestre</translation>
-<translation id="103306827243002956">Fonds d'écran récents</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1059913517121127803">Impossible de lancer la numérisation</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de la galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Créer</translation>
 <translation id="2236746079896696523">Activation/Désactivation du rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Changer de disposition</translation>
 <translation id="225692081236532131">État d'activation</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche suspendue - Erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
-<translation id="4305367063258930534">Fond d'écran fourni par Google</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> appuyée</translation>
 <translation id="4354430579665871434">touche</translation>
 <translation id="4361257691546579041">Le type d'APN est "par défaut".</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Numérisation annulée</translation>
 <translation id="6106186594183574873">Pour terminer, saisissez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Passerelle injoignable</translation>
+<translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6112878310391905610">Ce paramètre est géré par vos administrateurs</translation>
 <translation id="6113701710518389813">Flèche vers le haut</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + <ph name="NUMBER" /> autres albums</translation>

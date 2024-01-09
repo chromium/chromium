@@ -76,7 +76,6 @@
 <translation id="162175252992296058">португалски са америчком интернационалном тастатуром</translation>
 <translation id="1629521517399325891">Кориснички сертификат није доступан за потврду идентитета мреже.</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
-<translation id="1646019627374511909">Омогућава се коришћење фајлова офлајн (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome уређај</translation>
 <translation id="1661207570040737402">Искористили сте сав Google Workspace меморијски простор на дељеном диску.</translation>
 <translation id="1661867754829461514">Недостаје PIN</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">Особа пише „Хвала вам“</translation>
 <translation id="2088690981887365033">VPN мрежа</translation>
 <translation id="209653272837065803">Нема довољно меморијског простора да бисте и даље синхронизовали фајлове</translation>
+<translation id="2099143626019777139">Веб-сајтови које посећујете су видљиви администратору. Можете да прегледате листу видљивих веб-сајтова.</translation>
 <translation id="2111134541987263231">Укључите <ph name="BEGIN_BOLD" />Дозволи у режиму без архивирања<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Ставке (<ph name="NUMBER_OF_ITEMS" />) ће бити избрисане и нећете моћи да их вратите.</translation>
 <translation id="2122305276694332719">Ако се аутоматски повежете на скривену мрежу, други могу да виде ваш уређај и нека подешавања мреже, због чега вам то не препоручујемо.</translation>
@@ -718,7 +718,6 @@
 <translation id="6503285896705205014">Смернице администратора блокирају копирање фајлова (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволите другим корисницима овог уређаја да користе ову мрежу</translation>
-<translation id="653019979737152879">Синхронизује се <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Недавно</translation>
 <translation id="6558280019477628686">Дошло је до грешке. Неке ставке можда нису избрисане.</translation>
 <translation id="656398493051028875">Брисање „<ph name="FILENAME" />“...</translation>
@@ -852,7 +851,6 @@
 <translation id="7553492409867692754">Дозволите да Linux апликације приступају фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Тренутно сте офлајн. Синхронизација ће се наставити када се повежете на интернет</translation>
 <translation id="7589661784326793847">Сачекајте тренутак</translation>
-<translation id="7592775719802218421">Омогућава се да фајл <ph name="FILE_NAME" /> буде доступан фајл</translation>
 <translation id="7600126690270271294">српски</translation>
 <translation id="7603724359189955920">Мреже</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> већ постоји. Преименујте датотеку и покушајте поново.</translation>
@@ -969,6 +967,7 @@
 <translation id="83651606385705612">Дозволите да <ph name="VM_NAME" /> приступа фајловима у фолдеру <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Неисправна WEP шифра</translation>
 <translation id="8372852072747894550">грчки</translation>
+<translation id="8377269993083688872">Изгледи имејла</translation>
 <translation id="8386903983509584791">Скенирање је завршено</translation>
 <translation id="8387733224523483503">Фајл <ph name="FILE_NAME" /> је изведен.</translation>
 <translation id="8395901698320285466">Димензије</translation>
@@ -1007,7 +1006,6 @@
 <translation id="8569764466147087991">Избор датотеке за отварање</translation>
 <translation id="8577897833047451336">хрватски</translation>
 <translation id="8578308463707544055">индонежански</translation>
-<translation id="8579285237314169903">Синхронизују се ставке (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Листа датотека се променила у приказ сличица.</translation>
 <translation id="8601932370724196034">Crostini датотека слике</translation>
 <translation id="8609695766746872526">исландски</translation>

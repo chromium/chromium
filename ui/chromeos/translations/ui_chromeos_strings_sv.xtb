@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugisiska med internationellt tangentbord för USA</translation>
 <translation id="1629521517399325891">Användarcertifikatet är inte tillgängligt för nätverksautentisering.</translation>
 <translation id="1641780993263690097">kinesiska (pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> filer görs tillgängliga offline</translation>
 <translation id="164969095109328410">Chrome-enhet</translation>
 <translation id="1661207570040737402">Du har använt allt ditt lagringsutrymme på den delade Google Workspace-enheten.</translation>
 <translation id="1661867754829461514">Pinkod saknas</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Möjligheten att kopiera <ph name="COUNT" /> filer blockeras av administratörspolicyn</translation>
 <translation id="6509122719576673235">norska</translation>
 <translation id="6528513914570774834">Tillåt att andra användare på den här enheten kan använda det här nätverket</translation>
-<translation id="653019979737152879">Synkroniserar <ph name="FILE_NAME" /> ...</translation>
 <translation id="6549689063733911810">Senaste</translation>
 <translation id="6558280019477628686">Ett fel uppstod. Vissa objekt kanske inte har raderats.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> tas bort ...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Ge Linux-appar behörighet att öppna filer i mappen <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Du är offline för närvarande. Filsynkroniseringen återupptas när du ansluter till internet.</translation>
 <translation id="7589661784326793847">Ett ögonblick</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> görs tillgänglig offline</translation>
 <translation id="7600126690270271294">serbiska</translation>
 <translation id="7603724359189955920">Rutnät</translation>
 <translation id="7627790789328695202">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Byt namn på filen och försök igen.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Välj fil att öppna</translation>
 <translation id="8577897833047451336">kroatiska</translation>
 <translation id="8578308463707544055">indonesiska</translation>
-<translation id="8579285237314169903">Synkroniserar <ph name="NUMBER_OF_FILES" /> objekt ...</translation>
 <translation id="8600173386174225982">Fillistan har ändrats till miniatyrvy.</translation>
 <translation id="8601932370724196034">Bildfil för Crostini</translation>
 <translation id="8609695766746872526">isländska</translation>

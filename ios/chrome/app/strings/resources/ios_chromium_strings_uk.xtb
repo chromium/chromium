@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Порада щодо Chromium</translation>
 <translation id="2168108852149185974">Через деякі доповнення Chromium аварійно завершує роботу. Видаліть:</translation>
 <translation id="2178608107313874732">Зараз Chromium не може використовувати камеру</translation>
-<translation id="219374086636266276">Ви можете <ph name="BEGIN_LINK" />керувати тим, які дані Chromium зберігаються<ph name="END_LINK" /> у вашому обліковому записі Google.
-Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chromium, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Хочете, щоб Chromium наступного разу пропонував перекласти сторінки цього сайту, написані такою мовою: <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2218146227246548550">За вимогами вашої організації, ви повинні ввійти в обліковий запис, щоб використовувати Chromium. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Ця адреса зараз зберігається в Chromium. Збережіть її у своєму обліковому записі Google (<ph name="USER_EMAIL" />), щоб використовувати в усіх продуктах Google.</translation>

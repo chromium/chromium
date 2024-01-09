@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3090455602619185166">Увійти за допомогою керованого облікового запису</translation>
 <translation id="309710370695886264">У вас є 1 повторно використаний пароль. Змініть його, щоб захистити свої дані.</translation>
+<translation id="3109724472072898302">Згорнуто</translation>
 <translation id="3112556859945124369">Позначити…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Які дані можна синхронізувати<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Історія та інші переваги</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">Немає з’єднання з Інтернетом</translation>
 <translation id="3789294999358192700">Для цього виконайте наведені нижче дії.</translation>
 <translation id="3789841737615482174">Установити</translation>
-<translation id="3792713031001122343">{count,plural, =1{Збережіть 1 закладку у своєму обліковому записі Google}one{Збережіть {count} закладку у своєму обліковому записі Google}few{Збережіть {count} закладки у своєму обліковому записі Google}many{Збережіть {count} закладок у своєму обліковому записі Google}other{Збережіть {count} закладки у своєму обліковому записі Google}}</translation>
 <translation id="380329542618494757">Повне ім’я</translation>
 <translation id="3803696231112616155">Пропонувати переклад для цього сайту</translation>
 <translation id="3810973564298564668">Керувати</translation>
@@ -1566,7 +1566,6 @@
 <translation id="952704832371081537">Скасувати</translation>
 <translation id="959066944189734975">Ви підписалися на канал "<ph name="CHANNEL_NAME" />"</translation>
 <translation id="96615566463761848">Показувати пропозиції щодо вкладок з інших пристроїв</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Ви можете зберегти пароль для веб-сайту {DOMAIN_ONE} у своєму обліковому записі Google ({EMAIL})}=2{Ви можете зберегти паролі для веб-сайтів {DOMAIN_ONE} і {DOMAIN_TWO} у своєму обліковому записі Google ({EMAIL})}=3{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL})}one{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL})}few{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL})}many{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайтів в обліковому записі Google ({EMAIL})}other{Ви можете зберегти паролі для {DOMAIN_ONE}, {DOMAIN_TWO} і ще {OTHER_DOMAINS_COUNT} веб-сайту в обліковому записі Google ({EMAIL})}}</translation>
 <translation id="973493300226275298">Відстежуйте ціну на товар в онлайн-магазинах. Коли вона знизиться, ви отримаєте сповіщення.</translation>
 <translation id="981498610235328462">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано.</translation>
 <translation id="984509647832111802">Синхронізація не працює.</translation>

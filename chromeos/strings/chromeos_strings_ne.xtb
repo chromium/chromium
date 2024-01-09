@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">रद्द गरियो</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> का खास एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="1022628058306505708">अर्थ फ्लो</translation>
-<translation id="103306827243002956">हालसालैका वालपेपरहरू</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">निर्माताहरूका लागि बनाइएको Chromebook को नयाँ डिजिटल पत्रिका पढ्नुहोस्</translation>
 <translation id="1270369111467284986">संदिग्ध क्याप्टिभ पोर्टल</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
+<translation id="1300115153046603471">APN को प्रकार डिफल्ट र <ph name="ATTACH" /> सेट गरिएको छ।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट हुँदै छ (<ph name="PERCENTAGE_VALUE" />% पूरा भयो)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> मिनेट</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">आर्ट ग्यालेरीमा रहेको कम्तीमा एउटा एल्बम चयन गर्नु पर्ने हुन्छ</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">थप वालपेपर बनाउनुहोस्</translation>
 <translation id="2236746079896696523">किबोर्डको ब्याकलाइट अन/अफ गर्ने की</translation>
 <translation id="2240366984605217732">लेआउट बदल्ने की</translation>
 <translation id="225692081236532131">सक्रियताको वस्तुस्थिति</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> वटा फोटो</translation>
-<translation id="4305367063258930534">Google ले सञ्चालन गरेको वालपेपर</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की थिचियो</translation>
 <translation id="4354430579665871434">की</translation>
 <translation id="4361257691546579041">APN को प्रकार डिफल्ट सेट गरिएको छ।</translation>
 <translation id="437294888293595148">सबै सर्टकटहरू रिसेट गर्नुहोस्</translation>
+<translation id="4376423484621194274">तपाईंका एड्मिन <ph name="APP_NAME" /> बन्द गर्ने अनुमति दिनुहुन्न</translation>
 <translation id="4378373042927530923">चलेन</translation>
 <translation id="4378551569595875038">जडान गर्दै...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">फरेनहाइट</translation>
 <translation id="584953448295717128">APN स्वतः पत्ता लगाइन्छ।</translation>
 <translation id="5849570051105887917">गृहपृष्ठ प्रदायकको कोड</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">आर्ट ग्यालेरी एल्बम</translation>
 <translation id="5859969039821714932">यो सर्टकट उपलब्ध छैन। <ph name="KEY" /> नथिचिकन नयाँ सर्टकट थिच्नुहोस्।</translation>
 <translation id="5860033963881614850">बन्द</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
+<translation id="6108952804512516814">AI प्रयोग गरी सिर्जना गर्नुहोस्</translation>
 <translation id="6112878310391905610">तपाईंका एड्मिन यो सेटिङ मिलाउनुहुन्छ</translation>
 <translation id="6113701710518389813">अप एरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, थप <ph name="NUMBER" /> एल्बमहरू</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">वालपेपरको रङसँग मिल्दो बनाउनुहोस्</translation>
 <translation id="6527081081771465939">अज्ञात WiFi सेक्युरिटी प्रोटोकोल</translation>
 <translation id="6535178685492749208">तपाईं अफलाइन हुनुहुन्छ। प्रतिक्रिया पछि पठाइने छ।</translation>
+<translation id="6557784757915238407">APN को प्रकार <ph name="ATTACH" /> सेट गरिएको छ।</translation>
 <translation id="65587193855025101">फ्याल्टबेड</translation>
 <translation id="6560196641871357166">भाइब्रेन्ट</translation>
 <translation id="6564646048574748301">प्रिन्ट गर्न सकिएन - प्रिन्टरमा कनेक्ट भइरहेको छैन</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">रूपान्तरण</translation>
 <translation id="7415801143053185905">HTTP को विलम्बता अति धेरै छ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">यो APN अफ गर्न वा हटाउन मिल्दैन। अन गरिएका <ph name="ATTACH" /> APN हरू अफ गरिएका वा हटाइएका छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="7458970041932198923">अवतारहरू हेर्न र सेट गर्न इन्टरनेटमा कनेक्ट गर्नुहोस् र यो पेज रिलोड गर्नुहोस्।</translation>
 <translation id="7469648432129124067">पोर्टल पत्ता लागेको छ</translation>
 <translation id="7481312909269577407">अगाडि</translation>

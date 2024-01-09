@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">අවලංගු විය</translation>
 <translation id="1020274983236703756">සුවිශේෂී <ph name="PRODUCT_NAME" /> වත්කම් දැන් ලබා ගත හැක</translation>
 <translation id="1022628058306505708">පෘථිවි ප්‍රවාහය</translation>
-<translation id="103306827243002956">මෑත වෝල්පේපර</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (පොටවල් <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">නව විශේෂාංගයක් ලබා ගත හැකිය, තව දැන ගැනීමට ඉහළට ඊතල යතුර භාවිත කරන්න.</translation>
 <translation id="1059913517121127803">ස්කෑන් කිරීම ආරම්භ කිරීමට නොහැකි විය</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">නිර්මාපකයින් සඳහා Chromebook හි නව ඩිජිටල් සඟරාව බලන්න</translation>
 <translation id="1270369111467284986">පිවිසුම් දොරටුව සැක කරන ලදි</translation>
 <translation id="1290331692326790741">දුර්වල සංඥාව</translation>
+<translation id="1300115153046603471">APN වර්ගය පෙරනිමි සහ <ph name="ATTACH" /> වේ.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">යාවත්කාලීන කරමින් (<ph name="PERCENTAGE_VALUE" />% සම්පූර්ණයි)</translation>
 <translation id="1309341072016605398">විනාඩි <ph name="MINUTES" />ක්</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">අවම වශයෙන් එක් කලා ගැලරි ඇල්බමයක් තේරිය යුතුය</translation>
 <translation id="2230005943220647148">සෙල්සියස්</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">තව තනන්න</translation>
 <translation id="2236746079896696523">යතුරු පුවරු පසු ආලෝකය ටොගල කිරීම</translation>
 <translation id="2240366984605217732">පිරිසැලසුම් මාරුව</translation>
 <translation id="225692081236532131">සක්‍රිය කිරීමේ තත්ත්වය</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
-<translation id="4305367063258930534">Google විසින් බලගන්වන ලද වෝල්පේපරය</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> යතුර ඔබන ලදි</translation>
 <translation id="4354430579665871434">යතුර</translation>
 <translation id="4361257691546579041">APN වර්ගය පෙරනිමි වේ.</translation>
 <translation id="437294888293595148">සියලු කෙටිමං යළි සකසන්න</translation>
+<translation id="4376423484621194274">ඔබේ පරිපාලකයා <ph name="APP_NAME" /> වැසීමට ඉඩ නොදෙයි</translation>
 <translation id="4378373042927530923">ධාවනය නොවේ</translation>
 <translation id="4378551569595875038">සම්බන්ධ වෙමින්...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">ෆැරන්හයිට්</translation>
 <translation id="584953448295717128">APN ස්වයංක්‍රීයව අනාවරණය වේ.</translation>
 <translation id="5849570051105887917">නිවෙස් සපයන්නාගේ කේතය</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">කලා ගැලරි ඇල්බමය</translation>
 <translation id="5859969039821714932">කෙටිමඟ නොලැබේ. <ph name="KEY" /> නොමැතිව නව කෙටිමඟක් ඔබන්න.</translation>
 <translation id="5860033963881614850">අක්‍රීය</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">ස්කෑන් කිරීම අවලංගු කර ඇත</translation>
 <translation id="6106186594183574873">අවසන් කිරීමට, ඔබේ පැරණි මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="6108689792487843350">වාහල වෙත ළඟා විය නොහැකිය</translation>
+<translation id="6108952804512516814">AI සමග නිර්මාණය කරන්න</translation>
 <translation id="6112878310391905610">මෙම සැකසීම ඔබගේ පරිපාලකයන් විසින් කළමනාකරණය කෙරේ</translation>
 <translation id="6113701710518389813">ඉහළ ඊතලය</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, තව ඇල්බම +<ph name="NUMBER" /></translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">වෝල්පේපරය ගළපන්න</translation>
 <translation id="6527081081771465939">නොදන්නා Wi-Fi ආරක්ෂක ප්‍රොටොකෝලය</translation>
 <translation id="6535178685492749208">ඔබ නොබැඳි වේ. ප්‍රතිපෝෂණ පසුව යවනු ලැබේ.</translation>
+<translation id="6557784757915238407">APN වර්ගය <ph name="ATTACH" /> වේ.</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6560196641871357166">විචිත්‍රවත්</translation>
 <translation id="6564646048574748301">අසාර්ථක විය - මුද්‍රණ යන්ත්‍රය වෙත ළඟා විය නොහැකිය</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">පරිවර්තනය</translation>
 <translation id="7415801143053185905">ඉතා ඉහළ HTTP පමාව</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">මෙම APN අබල කිරීමට හෝ ඉවත් කිරීමට නොහැක. සබල කළ <ph name="ATTACH" /> APNs අබල කර හෝ ඉවත් කර ඇති බවට වග බලා ගන්න.</translation>
 <translation id="7458970041932198923">ජාලයකට සම්බන්ධ වී නියුරු බැලීමට සහ සැකසීමට පිටුව නැවත පූරණය කරන්න.</translation>
 <translation id="7469648432129124067">ද්වාරය අනාවරණය කර ගන්නා ලදි</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>

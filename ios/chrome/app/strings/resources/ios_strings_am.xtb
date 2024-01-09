@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">ግርጌ</translation>
 <translation id="3090455602619185166">በሚተዳደር መለያ ይግቡ</translation>
 <translation id="309710370695886264">1 ዳግም ጥቅም ላይ የዋለ የይለፍ ቃል አለዎት። ደህንነትዎን እንደተጠበቀ ለማቆየት አሁን ያስተካክሉት።</translation>
+<translation id="3109724472072898302">ተሰብስቧል</translation>
 <translation id="3112556859945124369">ምልክት አድርግበት…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />ምን ማስመር እንደሚችሉ ይመልከቱ<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ታሪክ እና ተጨማሪ</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">ምንም የበይነመረብ ግንኙነት የለም።</translation>
 <translation id="3789294999358192700">ከታች ያሉትን እርምጃዎች ይከተሉ፦</translation>
 <translation id="3789841737615482174">ጫን  </translation>
-<translation id="3792713031001122343">{count,plural, =1{በእርስዎ Google መለያ ውስጥ 1 ዕልባት ያስቀምጡ}one{በእርስዎ Google መለያ ውስጥ {count} ዕልባት ያስቀምጡ}other{በእርስዎ Google መለያ ውስጥ {count} ዕልባቶች ያስቀምጡ}}</translation>
 <translation id="380329542618494757">ስም</translation>
 <translation id="3803696231112616155">ወደዚህ ጣቢያ ለመተርጎም ሐሳብ ያቅርቡ</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
@@ -991,6 +991,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6255097610484507482">ክሬዲት ካርድን አርትዕ</translation>
 <translation id="6266039999629596120">ትኩረት ያስፈልገዋል</translation>
 <translation id="6277426346321820595">ጥበቃ የለም</translation>
+<translation id="628251768213143684">በGoogle መለያዎ ውስጥ የተቀመጠውን ማንኛውንም ነገር ማስተዳደር ይችላሉ</translation>
 <translation id="6284652193729350524">ወደ <ph name="LANGUAGE" /> ለመተርጎም ሐሳብ ያቅርቡ</translation>
 <translation id="6289501276895392862"><ph name="CHANNEL_NAME" /> መከተል ቆሟል</translation>
 <translation id="6293101329759844770">ደህንነቱ የተጠበቀ አሰሳን ለማብራት <ph name="BEGIN_LINK" />የGoogle አገልግሎቶች<ph name="END_LINK" />ን ይክፈቱ እና የጥንቃቄ አሰሳን መታ ያድርጉ።</translation>
@@ -1566,7 +1567,6 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="952704832371081537">ይቅር</translation>
 <translation id="959066944189734975"><ph name="CHANNEL_NAME" />ን እየተከተሉ ነው</translation>
 <translation id="96615566463761848">ከሌሎች መሣሪያዎች የትር ጥቆማዎችን አሳይ</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE} የይለፍ ቃልዎን ማስቀመጥ ይችላሉ}=2{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE} እና {DOMAIN_TWO} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}=3{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}one{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃልዎን ማስቀመጥ ይችላሉ}other{በእርስዎ Google መለያ {EMAIL} ውስጥ የ{DOMAIN_ONE}፣ {DOMAIN_TWO} እና {OTHER_DOMAINS_COUNT} የይለፍ ቃላትዎን ማስቀመጥ ይችላሉ}}</translation>
 <translation id="973493300226275298">በመላው የመስመር ላይ መደብሮች ላይ የአንድን ምርት ዋጋ ይከታተሉ። ዋጋው በሚቀንበት ጊዜ ማንቂያዎች ይደርሱዎታል።</translation>
 <translation id="981498610235328462">በተወሰኑ መለያዎች አማካኝነት ብቻ እንዲገቡ ድርጅትዎ ይፈቅድልዎታል። ያልተፈቀዱ መለያዎች ተደብቀዋል።</translation>
 <translation id="984509647832111802">ስምረት እየሠራ አይደለም።</translation>

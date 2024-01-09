@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Bertan behera utzi da</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> gailuaren baliabide esklusiboak eskuragai</translation>
 <translation id="1022628058306505708">Lurraren fluxua</translation>
-<translation id="103306827243002956">Azken horma-paperak</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hari, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Eginbide berri bat eskuragarri dago. Erabili gora egiteko gezi-tekla informazio gehiago lortzeko.</translation>
 <translation id="1059913517121127803">Ezin izan da hasi eskaneatzen</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Ikusi Chromebook-ei buruzko aldizkari digital berria sortzaileentzat</translation>
 <translation id="1270369111467284986">Sare-zerbitzuaren ataria dirudi</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
+<translation id="1300115153046603471">APNa <ph name="ATTACH" /> motakoa eta mota lehenetsikoa da.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Eguneratzen (% <ph name="PERCENTAGE_VALUE" /> osatu da)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutu</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Arte-galeria kategoriako album bat gutxienez hautatu behar da</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Sortu gehiago</translation>
 <translation id="2236746079896696523">Teklatuaren atzeko argiztapenaren etengailua</translation>
 <translation id="2240366984605217732">Diseinua aldatzeko etengailua</translation>
 <translation id="225692081236532131">Aktibazioaren egoera</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Diapositiba-aurkezpena</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
-<translation id="4305367063258930534">Google-k eskainitako horma-papera</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> sakatuta dago</translation>
 <translation id="4354430579665871434">tekla</translation>
 <translation id="4361257691546579041">APNa mota lehenetsikoa da.</translation>
 <translation id="437294888293595148">Berrezarri lasterbide guztiak</translation>
+<translation id="4376423484621194274">Administratzaileak ez du eman <ph name="APP_NAME" /> ixteko baimenik</translation>
 <translation id="4378373042927530923">Ez da exekutatu</translation>
 <translation id="4378551569595875038">Konektatzen…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">Automatikoki hautematen da APNa.</translation>
 <translation id="5849570051105887917">Hasierako hornitzailearen kodea</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Arte-galeria moduko albuma</translation>
 <translation id="5859969039821714932">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat <ph name="KEY" /> erabili gabe.</translation>
 <translation id="5860033963881614850">Desaktibatuta</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Bertan behera utzi da eskaneatzeko prozesua</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
+<translation id="6108952804512516814">Sortu AA bidez</translation>
 <translation id="6112878310391905610">Administratzaileek kudeatzen dute ezarpen hau</translation>
 <translation id="6113701710518389813">Gora gezi-tekla</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> eta beste <ph name="NUMBER" /> album</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Bat etorrarazi horma-paperarekin</translation>
 <translation id="6527081081771465939">Wifiaren segurtasun-protokoloa ezezaguna da</translation>
 <translation id="6535178685492749208">Ez dago Interneteko konexiorik. Geroago bidaliko dira oharrak.</translation>
+<translation id="6557784757915238407">APNa <ph name="ATTACH" /> motakoa da.</translation>
 <translation id="65587193855025101">Eskaner horizontala</translation>
 <translation id="6560196641871357166">Animatua</translation>
 <translation id="6564646048574748301">Hutsegitea - Inprimagailua ez da aurkitu</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">APN hau ezin da desgaitu edo kendu. Ziurtatu gaituta dauden <ph name="ATTACH" /> motako APNak desgaitu edo kendu direla.</translation>
 <translation id="7458970041932198923">Konektatu sare batera eta kargatu berriro orria abatarrak ikusi eta ezartzeko.</translation>
 <translation id="7469648432129124067">Ataria hauteman da</translation>
 <translation id="7481312909269577407">Aurrera</translation>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Recursos exclusivos de <ph name="PRODUCT_NAME" /> ya disponibles</translation>
 <translation id="1022628058306505708">Movimiento de la Tierra</translation>
-<translation id="103306827243002956">Fondos de pantalla recientes</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> hilos, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Hay una nueva función disponible. Utiliza la flecha hacia arriba para obtener más información.</translation>
 <translation id="1059913517121127803">No se ha podido empezar a escanear</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Debes seleccionar al menos un álbum de la galería de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Crear más</translation>
 <translation id="2236746079896696523">Interruptor de retroiluminación de teclado</translation>
 <translation id="2240366984605217732">Cambiar diseño</translation>
 <translation id="225692081236532131">Estado de la activación</translation>
@@ -445,11 +443,11 @@
 <translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detenido: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imágenes</translation>
-<translation id="4305367063258930534">Fondo de pantalla creado por Google</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pulsada</translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">El APN es de tipo predeterminado.</translation>
 <translation id="437294888293595148">Restablecer todas las combinaciones de teclas</translation>
+<translation id="4376423484621194274">Tu administrador no permite cerrar <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Sin ejecutar</translation>
 <translation id="4378551569595875038">Conectando...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -688,6 +686,7 @@
 <translation id="6104112872696127344">Se ha cancelado el análisis</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
 <translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
+<translation id="6108952804512516814">Crear con IA</translation>
 <translation id="6112878310391905610">Este ajuste lo gestionan tus administradores</translation>
 <translation id="6113701710518389813">Flecha hacia arriba</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> álbumes</translation>

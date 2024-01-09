@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> विशेष मालमत्ता आता उपलब्ध आहेत</translation>
 <translation id="1022628058306505708">मृदा वाह</translation>
-<translation id="103306827243002956">अलीकडील वॉलपेपर</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Chromebook चे निर्माणकर्त्यांसाठीचे नवीन डिजिटल मासिक पहा</translation>
 <translation id="1270369111467284986">संशयास्पद कॅप्टिव्ह पोर्टल</translation>
 <translation id="1290331692326790741">खराब सिग्नल</translation>
+<translation id="1300115153046603471">APN हे डीफॉल्ट आणि <ph name="ATTACH" /> या प्रकारचे आहे.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">अपडेट करत आहे (<ph name="PERCENTAGE_VALUE" />% पूर्ण झाले)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> मिनिटे</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">किमान एक आर्ट गॅलरी अल्बम निवडणे आवश्यक आहे</translation>
 <translation id="2230005943220647148">सेल्सियस</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">आणखी तयार करा</translation>
 <translation id="2236746079896696523">कीबोर्ड बॅकलाइट टॉगल</translation>
 <translation id="2240366984605217732">लेआउट स्विच</translation>
 <translation id="225692081236532131">सक्रियन स्थिती</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">स्लाइड शो</translation>
 <translation id="4297501883039923494">थांबले - अज्ञात एरर</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> इमेज</translation>
-<translation id="4305367063258930534">Google द्वारे सक्षम करण्यात आलेला वॉलपेपर</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> की दाबली</translation>
 <translation id="4354430579665871434">की</translation>
 <translation id="4361257691546579041">APN हे डीफॉल्ट या प्रकारचे आहे.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">फॅरेनहाइट</translation>
 <translation id="584953448295717128">APN आपोआप डिटेक्ट केले.</translation>
 <translation id="5849570051105887917">होम प्रोव्हाइडर कोड</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">आर्ट गॅलरी अल्बम</translation>
 <translation id="5859969039821714932">शॉर्टकट उपलब्ध नाही. <ph name="KEY" /> शिवाय नवीन शॉर्टकट प्रेस करा.</translation>
 <translation id="5860033963881614850">बंद</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
+<translation id="6108952804512516814">AI वापरून तयार करा</translation>
 <translation id="6112878310391905610">हे सेटिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="6113701710518389813">अप अ‍ॅरो</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + आणखी <ph name="NUMBER" /> अल्बम</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">वॉलपेपर जुळवा</translation>
 <translation id="6527081081771465939">अनोळखी वायफाय सुरक्षा प्रोटोकॉल</translation>
 <translation id="6535178685492749208">तुम्ही ऑफलाइन आहात. फीडबॅक हा नंतर पाठवला जाईल.</translation>
+<translation id="6557784757915238407">APN हे <ph name="ATTACH" /> या प्रकारचे आहे.</translation>
 <translation id="65587193855025101">फ्लॅटबेड</translation>
 <translation id="6560196641871357166">आकर्षक</translation>
 <translation id="6564646048574748301">अयशस्वी झाले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली <ph name="ATTACH" /> APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
 <translation id="7458970041932198923">कृपया नेटवर्कशी कनेक्ट करा आणि स्क्रीन सेव्हर पाहण्यासाठी व अवतार सेट करण्यासाठी पेज रीलोड करा.</translation>
 <translation id="7469648432129124067">पोर्टल डिटेक्ट केले</translation>
 <translation id="7481312909269577407">पुढील</translation>

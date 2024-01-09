@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Kan inte hitta den absoluta sökvägen till katalogen som ska packas.</translation>
 <translation id="5160071981665899014">Det gick inte att läsa in JavaScript-filen <ph name="RELATIVE_PATH" /> för skriptet.</translation>
 <translation id="5356315618422219272">Appvy: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Formade fönster stöds inte.</translation>
 <translation id="5456409301717116725">Detta tillägg omfattar nyckelfilen <ph name="KEY_PATH" />. Du vill antagligen inte göra detta.</translation>
 <translation id="5486326529110362464">Det angivna värdet för den privata nyckeln måste finnas.</translation>
 <translation id="5972529113578162692">Administratören för den här datorn kräver att <ph name="EXTENSION_NAME" /> installeras. Det kan inte avinstalleras.</translation>

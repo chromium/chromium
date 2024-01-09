@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">تم الإلغاء</translation>
 <translation id="1020274983236703756">مواد العرض الحصرية لأجهزة <ph name="PRODUCT_NAME" /> متاحة الآن</translation>
 <translation id="1022628058306505708">انسياب أرضي</translation>
-<translation id="103306827243002956">الخلفيات الأخيرة</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> عملية، <ph name="CPU_MAX_CLOCK_SPEED" /> غيغاهرتز)</translation>
 <translation id="1047773237499189053">تتوفر ميزات جديدة. يمكنك استخدام مفتاح السهم المتجه للأعلى للاطّلاع على مزيد من المعلومات.</translation>
 <translation id="1059913517121127803">تعذَّر إجراء عملية المسح الضوئي.</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">‏اطّلِع على المجلة الرقمية الجديدة المخصّصة لصنّاع المحتوى على أجهزة Chromebook.</translation>
 <translation id="1270369111467284986">اشتباه في مدخل مشروط الوصول إليه</translation>
 <translation id="1290331692326790741">إشارة ضعيفة</translation>
+<translation id="1300115153046603471">اسم نقطة الوصول من النوع التلقائي و<ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">‏بروتوكول GSM</translation>
 <translation id="1308754910631152188">جارٍ التحديث (اكتمل تثبيت %<ph name="PERCENTAGE_VALUE" /> من التحديثات)</translation>
 <translation id="1309341072016605398">‫<ph name="MINUTES" /> دقيقة</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">يجب اختيار ألبوم واحد على الأقل من "معرض الفنون".</translation>
 <translation id="2230005943220647148">درجة مئوية</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">إنشاء المزيد</translation>
 <translation id="2236746079896696523">إيقاف/تفعيل الإضاءة الخلفية للوحة المفاتيح</translation>
 <translation id="2240366984605217732">مفتاح التبديل بين تنسيقات لوحة المفاتيح</translation>
 <translation id="225692081236532131">حالة التفعيل</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">عرض الشرائح</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
-<translation id="4305367063258930534">‏الخلفية مقدَّمة من Google</translation>
 <translation id="4333390807948134856">تم الضغط على المفتاح <ph name="KEY_NAME" />.</translation>
 <translation id="4354430579665871434">مفتاح</translation>
 <translation id="4361257691546579041">إنّ اسم نقطة الوصول من النوع التلقائي.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">فهرنهايت</translation>
 <translation id="584953448295717128">‏تم رصد اسم نقطة الوصول (APN) تلقائيًا.</translation>
 <translation id="5849570051105887917">رمز مقدم الخدمة الرئيسي</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">ألبوم معرض الفنون</translation>
 <translation id="5859969039821714932">هذا الاختصار غير متاح. اضغط على اختصار جديد بدون "<ph name="KEY" />".</translation>
 <translation id="5860033963881614850">غير مفعّلة</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">تم إلغاء المسح الضوئي.</translation>
 <translation id="6106186594183574873">يُرجى إدخال كلمة المرور القديمة لإنهاء الإجراء.</translation>
 <translation id="6108689792487843350">يتعذّر الوصول إلى البوابة</translation>
+<translation id="6108952804512516814">إنشاء باستخدام الذكاء الاصطناعي</translation>
 <translation id="6112878310391905610">يتولّى المشرفون إدارة هذا الإعداد.</translation>
 <translation id="6113701710518389813">السهم المتّجه للأعلى</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، بالإضافة إلى <ph name="NUMBER" /> ألبوم آخر</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">مطابقة درجات لون الخلفية</translation>
 <translation id="6527081081771465939">‏بروتوكول حماية شبكة Wi-Fi غير معروف.</translation>
 <translation id="6535178685492749208">لا يتوفّر اتصال بالإنترنت. سيتم إرسال التعليقات لاحقًا.</translation>
+<translation id="6557784757915238407">اسم نقطة الوصول من النوع <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">المسطَّح</translation>
 <translation id="6560196641871357166">نابض بالحياة</translation>
 <translation id="6564646048574748301">تعذَّرت الطباعة - لا يمكن الوصول إلى الطابعة</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">التحويل</translation>
 <translation id="7415801143053185905">‏وقت استجابة بروتوكول HTTP طويل جدًا.</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">‏لا يمكن إيقاف اسم نقطة الوصول (APN) هذا أو إزالته. يُرجى إيقاف أو إزالة أسماء نقاط الوصول المفعَّلة من نوع <ph name="ATTACH" />.</translation>
 <translation id="7458970041932198923">يُرجى الاتصال بإحدى الشبكات وإعادة تحميل الصفحة لعرض الصور الرمزية وتحديدها.</translation>
 <translation id="7469648432129124067">تم رصد مدخل.</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>

@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Nie można określić ścieżki bezwzględnej pakowanego katalogu.</translation>
 <translation id="5160071981665899014">Nie udało się wczytać pliku JavaScript „<ph name="RELATIVE_PATH" />” dla skryptu.</translation>
 <translation id="5356315618422219272">Tag appview: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Niestandardowe kształty okien nie są obsługiwane.</translation>
 <translation id="5456409301717116725">To rozszerzenie zawiera plik klucza „<ph name="KEY_PATH" />”. Prawdopodobnie nie powinno tak być.</translation>
 <translation id="5486326529110362464">Wartość wejściowa klucza prywatnego musi istnieć.</translation>
 <translation id="5972529113578162692">Administrator tego urządzenia wymaga, by było na nim zainstalowane rozszerzenie <ph name="EXTENSION_NAME" />. Nie można go odinstalować.</translation>

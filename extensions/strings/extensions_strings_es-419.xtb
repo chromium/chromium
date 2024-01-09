@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">No se puede encontrar la ruta de acceso absoluta al directorio al paquete.</translation>
 <translation id="5160071981665899014">No se pudo cargar <ph name="RELATIVE_PATH" /> de JavaScript para la secuencia de comandos.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">No se admiten las ventanas con formas.</translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no desees incluir ese archivo.</translation>
 <translation id="5486326529110362464">Debe existir un valor de entrada para la clave privada.</translation>
 <translation id="5972529113578162692">El administrador de esta computadora requiere que <ph name="EXTENSION_NAME" /> esté instalada. No se puede desinstalar.</translation>

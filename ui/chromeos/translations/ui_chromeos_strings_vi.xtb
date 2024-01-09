@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
 <translation id="1629521517399325891">Không có chứng chỉ người dùng để xác thực mạng.</translation>
 <translation id="1641780993263690097">Tiếng Trung (bính âm)</translation>
-<translation id="1646019627374511909">Đang chọn chế độ xem được khi không có mạng cho <ph name="NUMBER_OF_ITEMS" /> tệp</translation>
 <translation id="164969095109328410">Thiết bị Chrome</translation>
 <translation id="1661207570040737402">Bạn đã dùng hết bộ nhớ dùng chung trên Google Workspace.</translation>
 <translation id="1661867754829461514">Thiếu PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Chính sách của quản trị viên không cho phép sao chép <ph name="COUNT" /> tệp</translation>
 <translation id="6509122719576673235">Tiếng Na Uy</translation>
 <translation id="6528513914570774834">Cho phép người dùng khác của thiết bị sử dụng mạng này</translation>
-<translation id="653019979737152879">Đang đồng bộ hóa <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Gần đây</translation>
 <translation id="6558280019477628686">Đã xảy ra lỗi. Một số mục có thể chưa được xóa.</translation>
 <translation id="656398493051028875">Đang xóa "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Cho phép các ứng dụng Linux truy cập vào tệp trong thư mục <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Thiết bị hiện không kết nối mạng. Quá trình đồng bộ hoá tệp sẽ tiếp tục khi thiết bị kết nối với Internet</translation>
 <translation id="7589661784326793847">Xin đợi một chút</translation>
-<translation id="7592775719802218421">Đang chọn chế độ sử dụng được khi không có mạng cho <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Tiếng Serbia</translation>
 <translation id="7603724359189955920">Lưới</translation>
 <translation id="7627790789328695202">Rất tiếc, <ph name="FILE_NAME" /> đã tồn tại. Hãy đổi tên tệp và thử lại.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Chọn tệp để mở</translation>
 <translation id="8577897833047451336">Tiếng Croatia</translation>
 <translation id="8578308463707544055">Tiếng Indonesia</translation>
-<translation id="8579285237314169903">Đang đồng bộ hóa <ph name="NUMBER_OF_FILES" /> mục...</translation>
 <translation id="8600173386174225982">Danh sách tệp đã thay đổi thành chế độ xem hình thu nhỏ.</translation>
 <translation id="8601932370724196034">Tệp hình ảnh Crostini</translation>
 <translation id="8609695766746872526">Tiếng Iceland</translation>

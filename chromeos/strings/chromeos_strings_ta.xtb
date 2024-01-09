@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">ரத்து செய்யப்பட்டது</translation>
 <translation id="1020274983236703756">பிரத்தியேக <ph name="PRODUCT_NAME" /> அசெட்டுகள் தற்போது கிடைக்கின்றன</translation>
 <translation id="1022628058306505708">எர்த் ஃப்ளோ</translation>
-<translation id="103306827243002956">சமீபத்திய வால்பேப்பர்கள்</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> தொடரிழைகள், <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">புதிய அம்சம் உள்ளது. மேலும் அறிய, மேல்நோக்கிய அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="1059913517121127803">ஸ்கேன் செய்ய முடியவில்லை</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Chromebookகின், கிரியேட்டர்களுக்கான புதிய டிஜிட்டல் பத்திரிகையைப் பார்க்கவும்</translation>
 <translation id="1270369111467284986">கேப்டிவ் போர்டல் இருப்பது போல் தெரிகிறது</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
+<translation id="1300115153046603471">இந்த APN இயல்பு மற்றும் <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">புதுப்பிப்பிக்கிறது (<ph name="PERCENTAGE_VALUE" />% நிறைவடைந்துள்ளது)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> நிமிடங்கள்</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">குறைந்தது ஒரு ஆர்ட் கேலரி ஆல்பத்தைத் தேர்ந்தெடுக்க வேண்டும்</translation>
 <translation id="2230005943220647148">செல்சியஸ்</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">மேலும் உருவாக்கு</translation>
 <translation id="2236746079896696523">கீபோர்டு பேக்லைட்டை நிலைமாற்றும்</translation>
 <translation id="2240366984605217732">லேஅவுட் ஸ்விட்ச்</translation>
 <translation id="225692081236532131">செயலாக்க நிலை</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
-<translation id="4305367063258930534">Google வழங்கும் வால்பேப்பர்</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> பட்டன் அழுத்தப்பட்டது</translation>
 <translation id="4354430579665871434">பட்டன்</translation>
 <translation id="4361257691546579041">இது ஓர் இயல்பு வகை APN.</translation>
 <translation id="437294888293595148">அனைத்து ஷார்ட்கட்களையும் மீட்டமை</translation>
+<translation id="4376423484621194274"><ph name="APP_NAME" /> ஆப்ஸை மூடுவதை உங்கள் நிர்வாகி அனுமதிக்கவில்லை</translation>
 <translation id="4378373042927530923">இயங்கவில்லை</translation>
 <translation id="4378551569595875038">இணைக்கிறது...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">ஃபாரன்ஹீட்</translation>
 <translation id="584953448295717128">APN தானாகவே கண்டறியப்பட்டது.</translation>
 <translation id="5849570051105887917">உள்நாட்டு மொபைல் சேவை வழங்குநர் குறியீடு</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">ஆர்ட் கேலரி ஆல்பம்</translation>
 <translation id="5859969039821714932">ஷார்ட்கட் இல்லை. <ph name="KEY" /> பட்டனை அழுத்தாமல் புதிய ஷார்ட்கட்டை அழுத்தவும்.</translation>
 <translation id="5860033963881614850">ஆஃப்</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
+<translation id="6108952804512516814">AI மூலம் உருவாக்கு</translation>
 <translation id="6112878310391905610">உங்கள் நிர்வாகிகள் இந்த அமைப்பை நிர்வகிக்கின்றனர்</translation>
 <translation id="6113701710518389813">மேல்நோக்கிய அம்புக்குறி</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, மேலும் <ph name="NUMBER" /> ஆல்பங்கள்</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">வால்பேப்பருடன் பொருத்தும்</translation>
 <translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
 <translation id="6535178685492749208">ஆஃப்லைனில் உள்ளீர்கள். உங்களின் கருத்து பின்னர் அனுப்பப்படும்.</translation>
+<translation id="6557784757915238407">இந்த APN <ph name="ATTACH" /> வகையைச் சேர்ந்தது.</translation>
 <translation id="65587193855025101">ஃபிளாட்பெட்</translation>
 <translation id="6560196641871357166">பிரகாசமான வண்ணம்</translation>
 <translation id="6564646048574748301">பிரிண்டரை அணுக முடியாததால் அச்சிட முடியவில்லை</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">கன்வெர்ஷன்</translation>
 <translation id="7415801143053185905">HTTP கோரிக்கைகள் மிகவும் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">இந்த APNனை முடக்கவோ அகற்றவோ முடியவில்லை. <ph name="ATTACH" /> APNகள் இயக்கப்பட்டிருந்தால் அவை முடக்கப்பட்டிருப்பதை அல்லது அகற்றப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="7458970041932198923">தோற்றப் படங்களைப் பார்க்க மற்றும் அமைக்க நெட்வொர்க்கில் இணைத்து பக்கத்தை ரெஃப்ரெஷ் செய்யவும்.</translation>
 <translation id="7469648432129124067">போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="7481312909269577407">அடுத்த பக்கம்</translation>

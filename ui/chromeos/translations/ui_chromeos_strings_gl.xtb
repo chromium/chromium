@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugués con teclado internacional estadounidense</translation>
 <translation id="1629521517399325891">O certificado de usuario non está dispoñible para a autenticación da rede.</translation>
 <translation id="1641780993263690097">Chinés (pinyin)</translation>
-<translation id="1646019627374511909">Activando acceso sen conexión a <ph name="NUMBER_OF_ITEMS" /> ficheiros</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Tes ocupado todo o espazo de almacenamento de Google Workspace para a unidade compartida.</translation>
 <translation id="1661867754829461514">Non se atopa o PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">A política do administrador bloqueou a función de copiar <ph name="COUNT" /> ficheiros</translation>
 <translation id="6509122719576673235">Noruegués</translation>
 <translation id="6528513914570774834">Permitir que outros usuarios deste dispositivo utilicen esta rede</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">Produciuse un erro. É posible que non se eliminen algúns elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Concede permiso ás aplicacións de Linux para acceder aos ficheiros do cartafol <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Estás sen conexión. Retomarase a sincronización de ficheiros cando teñas conexión a Internet</translation>
 <translation id="7589661784326793847">Espere só un segundo</translation>
-<translation id="7592775719802218421">Activando acceso sen conexión a <ph name="FILE_NAME" /></translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrícula</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> xa existe. Cámbialle o nome e téntao de novo.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Selecciona un ficheiro para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos...</translation>
 <translation id="8600173386174225982">A lista de ficheiros cambiou á vista de miniatura.</translation>
 <translation id="8601932370724196034">Ficheiro de imaxe de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">বাতিল কৰা হ’ল</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" />ৰ বিশেষ সম্পদসমূহ এতিয়া উপলব্ধ</translation>
 <translation id="1022628058306505708">পৃথিৱী প্ৰবাহ</translation>
-<translation id="103306827243002956">শেহতীয়া ৱালপেপাৰ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> টা থ্ৰেড, <ph name="CPU_MAX_CLOCK_SPEED" /> গিগাহাৰ্টজ)</translation>
 <translation id="1047773237499189053">নতুন সুবিধা উপলব্ধ, অধিক জানিবলৈ উপৰমুৱা কাঁড়চিহ্নৰ কী ব্যৱহাৰ কৰক।</translation>
 <translation id="1059913517121127803">স্কেনিং আৰম্ভ কৰিব পৰা নগ’ল</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">কমেও এটা আৰ্ট গেলাৰীৰ এলবাম বাছনি কৰিব লাগিব</translation>
 <translation id="2230005943220647148">চেলছিয়াছ</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">অধিক সৃষ্টি কৰক</translation>
 <translation id="2236746079896696523">কীব’ৰ্ডৰ নেপথ্যৰ পোহৰ সুবিধাটো ট’গল কৰক</translation>
 <translation id="2240366984605217732">লে’আউট ছুইচ</translation>
 <translation id="225692081236532131">সক্ৰিয়কৰণৰ স্থিতি</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">শ্লাইড শ্ব’</translation>
 <translation id="4297501883039923494">বন্ধ হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> খন প্ৰতিচ্ছবি</translation>
-<translation id="4305367063258930534">Googleএ আগবঢ়োৱা ৱালপেপাৰ</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> কীটো টিপিছে</translation>
 <translation id="4354430579665871434">কী</translation>
 <translation id="4361257691546579041">এপিএন ডিফ’ল্ট প্ৰকাৰৰ।</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
+<translation id="6108952804512516814">AIৰ জৰিয়তে সৃষ্টি কৰক</translation>
 <translation id="6112878310391905610">এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6113701710518389813">আপ এৰ’</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, আৰু +<ph name="NUMBER" /> টা এলবাম</translation>

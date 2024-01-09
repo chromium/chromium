@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Не ўдалося знайсці поўны шлях да каталога, які трэба ўпакаваць.</translation>
 <translation id="5160071981665899014">Не ўдалося загрузіць файл JavaScript "<ph name="RELATIVE_PATH" />" для сцэнарыя.</translation>
 <translation id="5356315618422219272">Акно праграмы: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Вокны адвольнай формы не падтрымліваюцца.</translation>
 <translation id="5456409301717116725">Гэта пашырэнне змяшчае файл ключа "<ph name="KEY_PATH" />". Магчыма, вам не варта гэтага рабіць.</translation>
 <translation id="5486326529110362464">Для закрытага ключа павінна існаваць значэнне ўводу.</translation>
 <translation id="5972529113578162692">Адміністратар гэтай прылады патрабуе, каб пашырэнне "<ph name="EXTENSION_NAME" />" было ўсталявана. Выдаліць яго нельга.</translation>

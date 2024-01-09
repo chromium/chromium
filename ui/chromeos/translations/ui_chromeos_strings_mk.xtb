@@ -76,7 +76,6 @@
 <translation id="162175252992296058">португалски со американска меѓународна тастатура</translation>
 <translation id="1629521517399325891">Не е достапен кориснички сертификат за мрежна проверка.</translation>
 <translation id="1641780993263690097">кинески пинјин</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> датотеки се прават достапни офлајн</translation>
 <translation id="164969095109328410">Уред со Chrome</translation>
 <translation id="1661207570040737402">Го искористивте целиот ваш капацитет во споделениот простор на Google Workspace.</translation>
 <translation id="1661867754829461514">Недостасува PIN</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Администраторското правило го блокира копирањето на <ph name="COUNT" /> датотеки</translation>
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволи други корисници на уредов да ја користат мрежава</translation>
-<translation id="653019979737152879">Се синхронизира <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Неодамнешни</translation>
 <translation id="6558280019477628686">Грешка. Некои ставки може да не се избришани.</translation>
 <translation id="656398493051028875">Се брише „<ph name="FILENAME" />“...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Дајте им дозвола на апликациите на Linux да пристапуваат до датотеки во папката „<ph name="FOLDER_NAME" />“</translation>
 <translation id="7555339735447658365">Во моментов сте офлајн. Синхронизацијата на датотеките ќе продолжи кога ќе се поврзете на интернет</translation>
 <translation id="7589661784326793847">Почекајте малку</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> се прави достапна офлајн</translation>
 <translation id="7600126690270271294">српски</translation>
 <translation id="7603724359189955920">Мрежи</translation>
 <translation id="7627790789328695202">Упс, <ph name="FILE_NAME" /> веќе постои. Преименувајте и обидете се повторно.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Избери датотека за отворање</translation>
 <translation id="8577897833047451336">хрватски</translation>
 <translation id="8578308463707544055">индонезиски</translation>
-<translation id="8579285237314169903">Се синхронизираат <ph name="NUMBER_OF_FILES" /> ставки...</translation>
 <translation id="8600173386174225982">Списокот со датотеки се смени во преглед на сликички.</translation>
 <translation id="8601932370724196034">Датотека со слика Crostini</translation>
 <translation id="8609695766746872526">исландски</translation>

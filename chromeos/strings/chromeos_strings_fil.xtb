@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Nakansela</translation>
 <translation id="1020274983236703756">Available na ngayon ang mga eksklusibong asset sa <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="103306827243002956">Mga kamakailang wallpaper</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> (na) thread, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1059913517121127803">Hindi masimulan ang pag-scan</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Kailangang pumili ng hindi bababa sa isang album sa Art gallery</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Gumawa pa</translation>
 <translation id="2236746079896696523">Toggle ng backlight ng keyboard</translation>
 <translation id="2240366984605217732">Switch ng layout</translation>
 <translation id="225692081236532131">Status ng pag-activate</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Slide show</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Larawan</translation>
-<translation id="4305367063258930534">Wallpaper na mula sa Google</translation>
 <translation id="4333390807948134856">Napindot ang key na <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">key</translation>
 <translation id="4361257691546579041">Default ang uri ng APN.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Nakansela ang pag-scan</translation>
 <translation id="6106186594183574873">Para tapusin, ilagay ang iyong lumang password</translation>
 <translation id="6108689792487843350">Hindi makakonekta sa gateway</translation>
+<translation id="6108952804512516814">Gumawa gamit ang AI</translation>
 <translation id="6112878310391905610">Pinapamahalaan ng iyong mga administrator ang setting na ito</translation>
 <translation id="6113701710518389813">Pataas na arrow</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> pang album</translation>

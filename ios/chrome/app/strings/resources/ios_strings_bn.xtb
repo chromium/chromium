@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">নিচে</translation>
 <translation id="3090455602619185166">ম্যানেজ করা অ্যাকাউন্ট ব্যবহার করে সাইন-ইন করুন</translation>
 <translation id="309710370695886264">আপনার কাছে ১টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
+<translation id="3109724472072898302">সঙ্কুচিত</translation>
 <translation id="3112556859945124369">চিহ্নিত করুন…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />আপনি কী সিঙ্ক করতে পারবেন তা দেখুন<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ইতিহাস ও আরও অনেক কিছু</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">কোনও ইন্টারনেট সংযোগ নেই৷</translation>
 <translation id="3789294999358192700">নিচে দেওয়া ধাপগুলি অনুসরণ করুন:</translation>
 <translation id="3789841737615482174">ইনস্টল করুন</translation>
-<translation id="3792713031001122343">{count,plural, =1{আপনার Google অ্যাকাউন্টে ১টি বুকমার্ক সেভ করুন}one{আপনার Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করুন}other{আপনার Google অ্যাকাউন্টে {count}টি বুকমার্ক সেভ করুন}}</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803696231112616155">এই সাইট অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
@@ -1567,7 +1567,6 @@
 <translation id="952704832371081537">বাতিল করুন</translation>
 <translation id="959066944189734975">আপনি <ph name="CHANNEL_NAME" /> ফলো করছেন</translation>
 <translation id="96615566463761848">অন্য ডিভাইসের 'ট্যাব' সংক্রান্ত সাজেশন দেখুন</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}-এর জন্য পাসওয়ার্ড সেভ করতে পারবেন}=2{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE} ও {DOMAIN_TWO}-এর জন্য পাসওয়ার্ড সেভ করতে পারবেন}=3{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}one{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}other{আপনার Google অ্যাকাউন্ট, {EMAIL}-এ {DOMAIN_ONE}, {DOMAIN_TWO} ও অন্যান্য {OTHER_DOMAINS_COUNT}টির জন্য পাসওয়ার্ড সেভ করতে পারবেন}}</translation>
 <translation id="973493300226275298">অনলাইন স্টোর জুড়ে প্রোডাক্টের দাম ট্র্যাক করুন। দাম কমে গেলে আপনি বিজ্ঞপ্তি পাবেন।</translation>
 <translation id="981498610235328462">শুধুমাত্র নির্দিষ্ট অ্যাকাউন্টের মাধ্যমেই আপনার সংস্থা সাইন-ইন করার অনুমতি দেবে। অনুমোদন করা নেই এমন অ্যাকাউন্ট লুকানো আছে।</translation>
 <translation id="984509647832111802">সিঙ্ক কাজ করছে না।</translation>

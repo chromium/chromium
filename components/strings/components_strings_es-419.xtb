@@ -604,6 +604,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2135799067377889518">Ropa masculina</translation>
 <translation id="2137891579555018930">Esperando el permiso…</translation>
 <translation id="213826338245044447">Favoritos del celular</translation>
+<translation id="2141000681034340397">Editar tu entrada</translation>
 <translation id="214556005048008348">Cancelar pago</translation>
 <translation id="2148613324460538318">Agregar tarjeta</translation>
 <translation id="2148716181193084225">Hoy</translation>
@@ -1393,6 +1394,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3736520371357197498">Si comprendes los riesgos para tu seguridad, puedes <ph name="BEGIN_LINK" />visitar este sitio no seguro<ph name="END_LINK" /> antes de que se hayan eliminado los programas peligrosos.</translation>
 <translation id="3736739313435669994">Impediste que los sitios usen cookies de terceros para seguirte mientras navegas. Ve a la configuración para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Tu administrador gestiona el navegador.</translation>
+<translation id="3739842843727261045">La opción Me gusta envía comentarios que indican que te gustan estos resultados.</translation>
 <translation id="3740319564441798148">Autobuses y trenes de larga distancia</translation>
 <translation id="3740447166056383374">Se debe revisar antes de copiar los archivos</translation>
 <translation id="374325029554577103">Productos tecnológicos para la actividad física</translation>
@@ -2614,6 +2616,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6232271601416750929">Belleza ecológica</translation>
 <translation id="6234122620015464377">Cortar después de cada documento</translation>
 <translation id="6236290670123303279">Administrar Configuración</translation>
+<translation id="623825323736974198">Administra los sitios que siempre permanecerán activos y en los que no se liberará memoria</translation>
 <translation id="6240447795304464094">Logotipo de Google Pay</translation>
 <translation id="6240964651812394252">Para utilizar el Administrador de contraseñas de Google con tu sistema operativo, reinicia Chrome y permite el acceso al administrador de contraseñas de la computadora. Las pestañas se volverán a abrir después de que lo reinicies.</translation>
 <translation id="6241121617266208201">Ocultar sugerencias</translation>
@@ -4087,6 +4090,7 @@ Detalles adicionales:
 <translation id="9089260154716455634">Política fuera de horario:</translation>
 <translation id="9090243919347147717">Archivos adjuntos</translation>
 <translation id="9093723786115107672">Pijamas</translation>
+<translation id="9094544726794842788">La opción No me gusta abre un formulario para enviar comentarios detallados sobre los motivos por los que no te gustan estos resultados.</translation>
 <translation id="9095388113577226029">Más idiomas…</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y luego Intro para establecer Chrome como el navegador predeterminado del sistema en la configuración de iOS</translation>
 <translation id="9096679202588811390">Programas de TV</translation>

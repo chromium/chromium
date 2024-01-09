@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1020274983236703756">اب خاص <ph name="PRODUCT_NAME" /> اثاثے دستیاب ہیں</translation>
 <translation id="1022628058306505708">ارتھ فلو</translation>
-<translation id="103306827243002956">حالیہ وال پیپرز</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">‏تخلیق کاران کے لیے Chromebook کی نئی ڈیجیٹل میگزین چیک کریں</translation>
 <translation id="1270369111467284986">مشکوک کیپٹو پورٹل</translation>
 <translation id="1290331692326790741">کمزور سگنل</translation>
+<translation id="1300115153046603471">‏APN کی قسم ڈیفالٹ اور <ph name="ATTACH" /> ہے۔</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">اپ ڈیٹ ہو رہا ہے (<ph name="PERCENTAGE_VALUE" />% مکمل)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> منٹ</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">کم از کم ایک آرٹ گیلری البم کو منتخب کرنے کی ضرورت ہے</translation>
 <translation id="2230005943220647148">سیلسیئس</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">مزید تخلیق کریں</translation>
 <translation id="2236746079896696523">کی بورڈ بیک لائٹ ٹوگل کریں</translation>
 <translation id="2240366984605217732">لے آؤٹ کو سوئچ کرنے کی کلید</translation>
 <translation id="225692081236532131">فعالیت کی صورتحال</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">سلائیڈ شو</translation>
 <translation id="4297501883039923494">رک گیا - نامعلوم خرابی</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> تصاویر</translation>
-<translation id="4305367063258930534">‏Google کے ذریعے تقویت یافتہ وال پیپر</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> کلید دبائی گئی</translation>
 <translation id="4354430579665871434">کلید</translation>
 <translation id="4361257691546579041">‏APN کی قسم ڈیفالٹ پر سیٹ ہے۔</translation>
 <translation id="437294888293595148">تمام شارٹ کٹس کو ری سیٹ کریں</translation>
+<translation id="4376423484621194274">آپ کا منتظم <ph name="APP_NAME" /> کو بند کرنے کی اجازت نہیں دیتا ہے</translation>
 <translation id="4378373042927530923">نہیں چلا</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">فارن ہائیٹ</translation>
 <translation id="584953448295717128">‏APN کا پتا خودکار طور پر چل جاتا ہے۔</translation>
 <translation id="5849570051105887917">گھر فراہم کرنے والے کا کوڈ</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">آرٹ گیلری البم</translation>
 <translation id="5859969039821714932">شارٹ کٹ دستیاب نہیں ہے۔ <ph name="KEY" /> کے بغیر ایک نیا شارٹ کٹ دبائیں۔</translation>
 <translation id="5860033963881614850">آف</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
+<translation id="6108952804512516814">‏AI کے ذریعے تخلیق کریں</translation>
 <translation id="6112878310391905610">یہ ترتیب آپ کے منتظمین کے زیر انتظام ہے</translation>
 <translation id="6113701710518389813">اوپر تیر کا نشان</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />، +<ph name="NUMBER" /> مزید البمز</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">وال پیپر مماثل کریں</translation>
 <translation id="6527081081771465939">‏نامعلوم WiFi سیکیورٹی پروٹوکول</translation>
 <translation id="6535178685492749208">آپ آف لائن ہیں۔ تاثرات بعد میں بھیجے جائیں گے۔</translation>
+<translation id="6557784757915238407">‏APN <ph name="ATTACH" /> کی قسم ہے۔</translation>
 <translation id="65587193855025101">فلیٹ بیڈ</translation>
 <translation id="6560196641871357166">وائبرنٹ</translation>
 <translation id="6564646048574748301">ناکام ہو گیا - پرنٹر ناقابل رسائی ہے</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">تبدیلی</translation>
 <translation id="7415801143053185905">‏بہت زیادہ HTTPS تاخیر</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">‏اس APN کو غیر فعال یا ہٹا نہیں سکتے۔ یقینی بنائیں کہ فعال کردہ <ph name="ATTACH" /> APNs کو غیر فعال یا ہٹا دیا گیا ہے۔</translation>
 <translation id="7458970041932198923">براہ کرم کسی نیٹ ورک سے منسلک ہوں اور اوتار دیکھنے اور سیٹ کرنے کے لیے صفحہ کو دوبارہ لوڈ کریں۔</translation>
 <translation id="7469648432129124067">پورٹل کا پتہ چلا</translation>
 <translation id="7481312909269577407">فارورڈ کریں</translation>

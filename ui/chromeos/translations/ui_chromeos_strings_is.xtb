@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portúgalska með bandarísku alþjóðlegu lyklaborði</translation>
 <translation id="1629521517399325891">Notandavottorð er ekki í boði fyrir netauðkenningu.</translation>
 <translation id="1641780993263690097">Kínverska Pinyin</translation>
-<translation id="1646019627374511909">Gerir <ph name="NUMBER_OF_ITEMS" /> skrár aðgengilegar án nettengingar</translation>
 <translation id="164969095109328410">Chrome tæki</translation>
 <translation id="1661207570040737402">Þú hefur fyllt geymslurýmið þitt á samnýttu drifi Google Workspace.</translation>
 <translation id="1661867754829461514">PIN-númer vantar</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">Skrifar „takk“</translation>
 <translation id="2088690981887365033">VPN-net</translation>
 <translation id="209653272837065803">Þú ert ekki með nægt geymslurými til að halda áfram að samstilla skrár</translation>
+<translation id="2099143626019777139">Kerfisstjórinn þinn sér hvaða vefsvæði þú heimsækir. Þú getur skoðað lista yfir sýnileg vefsvæði.</translation>
 <translation id="2111134541987263231">Kveiktu á <ph name="BEGIN_BOLD" />Leyfa í huliðsstillingu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> atriðum verður eytt og þú munt ekki geta endurheimt þau.</translation>
 <translation id="2122305276694332719">Ef tengt er sjálfkrafa við falið netkerfi geta aðrir séð tækið þitt og sumar netstillingar, og því er það ekki ráðlagt.</translation>
@@ -718,7 +718,6 @@
 <translation id="6503285896705205014">Regla stjórnanda kemur í veg fyrir að hægt sé að afrita <ph name="COUNT" /> skrár</translation>
 <translation id="6509122719576673235">Norskt</translation>
 <translation id="6528513914570774834">Heimila öðrum notendum tækisins að nota þetta netkerfi</translation>
-<translation id="653019979737152879">Samstillir <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Nýlegt</translation>
 <translation id="6558280019477628686">Villa kom upp. Hugsanlega tókst ekki að eyða einhverjum atriðum.</translation>
 <translation id="656398493051028875">Eyðir „<ph name="FILENAME" />“...</translation>
@@ -852,7 +851,6 @@
 <translation id="7553492409867692754">Veita Linux-forritum aðgang að skrám í möppunni <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Þú ert ekki á netinu. Samstilling hefst aftur þegar þú tengist netinu</translation>
 <translation id="7589661784326793847">Hinkraðu augnablik</translation>
-<translation id="7592775719802218421">Gerir <ph name="FILE_NAME" /> aðgengilega án nettengingar</translation>
 <translation id="7600126690270271294">Serbneska</translation>
 <translation id="7603724359189955920">Grind</translation>
 <translation id="7627790789328695202">Obb, <ph name="FILE_NAME" /> er til nú þegar. Veldu nýtt heiti og reyndu aftur.</translation>
@@ -969,6 +967,7 @@
 <translation id="83651606385705612">Veittu <ph name="VM_NAME" /> aðgang að skrám í möppunni „<ph name="FOLDER_NAME" />“</translation>
 <translation id="8372369524088641025">Rangur WEP-lykill</translation>
 <translation id="8372852072747894550">Gríska</translation>
+<translation id="8377269993083688872">Uppsetningar tölvupósts</translation>
 <translation id="8386903983509584791">Skönnun lokið</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> dregin út</translation>
 <translation id="8395901698320285466">Stærð</translation>
@@ -1007,7 +1006,6 @@
 <translation id="8569764466147087991">Veldu skrá til að opna</translation>
 <translation id="8577897833047451336">Króatíska</translation>
 <translation id="8578308463707544055">Indónesíska</translation>
-<translation id="8579285237314169903">Samstillir <ph name="NUMBER_OF_FILES" /> atriði...</translation>
 <translation id="8600173386174225982">Skráalista var breytt í smámyndayfirlit.</translation>
 <translation id="8601932370724196034">Crostini-myndskrá</translation>
 <translation id="8609695766746872526">Íslenska</translation>

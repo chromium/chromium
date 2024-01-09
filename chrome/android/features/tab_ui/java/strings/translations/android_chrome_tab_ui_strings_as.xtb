@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">পুৰণি টেববোৰ বন্ধ কৰিবলৈ বিচাৰে নেকি?</translation>
 <translation id="1215127405478249895">টেবসমূহ পৰ্যালোচনা কৰক</translation>
 <translation id="125153950246128346">অন্য এটা টেব চাবলৈ টিপক</translation>
+<translation id="1326271443836399892">বিশৃংখলতা নাইকীয়া কৰাৰ বৰ্তমানৰ ছেটিংটো পৰ্যালোচনা কৰক।</translation>
 <translation id="1499635324672558517">আটাইবোৰ ইনক’গনিট’ টেব বন্ধ কৰিবনে?</translation>
 <translation id="1657719826150349398">টেবটো তললৈ নিয়ক</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টা টেব}one{<ph name="TABS_COUNT_MANY" />টা টেব}other{<ph name="TABS_COUNT_MANY" />টা টেব}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">গোটৰ পৰা আঁতৰাওক</translation>
 <translation id="3008554597174452548">প্ৰ'ডাক্ট ট্ৰেক কৰাটো বন্ধ কৰক</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{আপোনাৰ ওচৰত <ph name="TABS_COUNT_ONE" /> টা আৰ্কাইভ কৰা টেব আছে}one{আপোনাৰ ওচৰত <ph name="TABS_COUNT_MANY" /> টা আৰ্কাইভ কৰা টেব আছে}other{আপোনাৰ ওচৰত <ph name="TABS_COUNT_MANY" /> টা আৰ্কাইভ কৰা টেব আছে}}</translation>
 <translation id="3194464645767632461">মূল্যাংকন</translation>
 <translation id="3291470810748040983">খোলা থকা কোনো টেবত কম মূল্যৰ তথ্য উপলব্ধ হ’লে আপুনি এটা সতৰ্কবাৰ্তা লাভ কৰিব</translation>
 <translation id="3328308545011660196">পৰামৰ্শ: <ph name="NUMBER_OF_TABS" />টা টেব জড়িত যেন লাগিছে। সেইকেইটা একগোট কৰিবনে?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">এই দোকানৰ বিষয়ে তথ্য দেখুওৱা বন্ধ হৈছে</translation>
 <translation id="9150694013019234766">স্ক্রীণৰ একেবাৰে তলৰ কাষত থকা টেবৰ গোটৰ টেবসমূহ সলনা সলনিকৈ ব্যৱহাৰ কৰক</translation>
 <translation id="9169594135889675189">গোটত নতুন টেব যোগ কৰক</translation>
+<translation id="955558140275419384">এই সম্পাদকটো দি বিশৃংখলতা নাইকীয়া কৰিবলৈ আৰ্কাইভ কৰা আটাইবোৰ টেব পৰ্যালোচনা কৰক।</translation>
 <translation id="959682366969460160">সংগঠিত হৈ থাকক</translation>
 </translationbundle>

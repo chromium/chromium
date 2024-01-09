@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">בוטל</translation>
 <translation id="1020274983236703756">נוספו נכסים בלעדיים ל-<ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">זרימה בכדור הארץ</translation>
-<translation id="103306827243002956">טפטים שנוצרו לאחרונה</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">יש לבחור לפחות אלבום של גלריית אומנות אחד</translation>
 <translation id="2230005943220647148">צלזיוס</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">יצירת טפטים נוספים</translation>
 <translation id="2236746079896696523">החלפת המצב של התאורה האחורית של המקלדת</translation>
 <translation id="2240366984605217732">מתג הפריסה</translation>
 <translation id="225692081236532131">סטטוס הפעלה</translation>
@@ -445,11 +443,11 @@
 <translation id="4289849978083912975">מצגת</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
-<translation id="4305367063258930534">‏טפטים שנוצרו על ידי Google</translation>
 <translation id="4333390807948134856">בוצעה לחיצה על המקש <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">מקש</translation>
 <translation id="4361257691546579041">‏ה-APN הוא מסוג ברירת מחדל.</translation>
 <translation id="437294888293595148">איפוס כל קיצורי הדרך</translation>
+<translation id="4376423484621194274">האדמין שלך לא מאשר לסגור את <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4378551569595875038">התחברות...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -688,6 +686,7 @@
 <translation id="6104112872696127344">הסריקה בוטלה</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
+<translation id="6108952804512516814">‏יצירה באמצעות AI</translation>
 <translation id="6112878310391905610">ההגדרה הזו מנוהלת על ידי האדמינים</translation>
 <translation id="6113701710518389813">חץ למעלה</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> ועוד <ph name="NUMBER" /> אלבומים</translation>

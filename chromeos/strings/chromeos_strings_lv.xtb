@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Atcelts</translation>
 <translation id="1020274983236703756">Tagad ir pieejami ekskluzīvi <ph name="PRODUCT_NAME" /> līdzekļi</translation>
 <translation id="1022628058306505708">Zemes plūsma</translation>
-<translation id="103306827243002956">Nesen izveidotās fona tapetes</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (pavedienu skaits: <ph name="THREAD_COUNT" />; <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Pieejama jauna funkcija. Lai uzzinātu vairāk, nospiediet augšupvērsto bultiņu.</translation>
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Skatiet Chromebook jauno digitālo žurnālu satura veidotājiem.</translation>
 <translation id="1270369111467284986">Aizdomas par caurlaides lapu</translation>
 <translation id="1290331692326790741">Vājš signāls</translation>
+<translation id="1300115153046603471">APN veids ir “noklusējums” un “<ph name="ATTACH" />”.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Notiek atjaunināšana (pabeigti: <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minūtes</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Jāatlasa vismaz viens mākslas galerijas albums</translation>
 <translation id="2230005943220647148">Celsija skala</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Izveidot vēl</translation>
 <translation id="2236746079896696523">Tastatūras fona apgaismojuma slēdzis</translation>
 <translation id="2240366984605217732">Izkārtojuma slēdzis</translation>
 <translation id="225692081236532131">Aktivizācijas statuss</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Slaidrāde</translation>
 <translation id="4297501883039923494">Apturēts — nezināma kļūda</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> attēls(-i)</translation>
-<translation id="4305367063258930534">Google nodrošinātas fona tapetes</translation>
 <translation id="4333390807948134856">Taustiņš “<ph name="KEY_NAME" />” ir nospiests</translation>
 <translation id="4354430579665871434">taustiņš</translation>
 <translation id="4361257691546579041">APN veids ir “noklusējums”.</translation>
 <translation id="437294888293595148">Atiestatīt visus īsinājumtaustiņus</translation>
+<translation id="4376423484621194274">Jūsu administrators neļauj aizvērt lietotni <ph name="APP_NAME" />.</translation>
 <translation id="4378373042927530923">Nav veikta izpilde</translation>
 <translation id="4378551569595875038">Pievienojas...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fārenheita skala</translation>
 <translation id="584953448295717128">APN tiek noteikts automātiski.</translation>
 <translation id="5849570051105887917">Mājas pakalpojumu sniedzēja kods</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Mākslas galerijas albums</translation>
 <translation id="5859969039821714932">Īsinājumtaustiņi nav pieejami. Nospiediet jaunu īsinājumtaustiņu kombināciju, neizmantojot šo taustiņu: <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Izsl.</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Skenēšana ir atcelta</translation>
 <translation id="6106186594183574873">Lai pabeigtu, ievadiet savu iepriekšējo paroli</translation>
 <translation id="6108689792487843350">Vārteja nav sasniedzama</translation>
+<translation id="6108952804512516814">Izveidot, izmantojot MI</translation>
 <translation id="6112878310391905610">Šo iestatījumu pārvalda jūsu administratori.</translation>
 <translation id="6113701710518389813">Augšupvērstais bulttaustiņš</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, vēl <ph name="NUMBER" /> albumi</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Saskaņot fona tapeti</translation>
 <translation id="6527081081771465939">Nezināms Wi-Fi drošības protokols</translation>
 <translation id="6535178685492749208">Jūs esat bezsaistē. Atsauksme tiks nosūtīta vēlāk.</translation>
+<translation id="6557784757915238407">APN veids ir “<ph name="ATTACH" />”.</translation>
 <translation id="65587193855025101">Plakanvirsma</translation>
 <translation id="6560196641871357166">Koša</translation>
 <translation id="6564646048574748301">Neizdevās — printeris nav sasniedzams</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">izteikšana citās mērvienībās</translation>
 <translation id="7415801143053185905">Ļoti liels HTTP latentums</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Nevar atspējot vai noņemt šo APN. Iespējotie APN (“<ph name="ATTACH" />”) ir jāatspējo vai jānoņem.</translation>
 <translation id="7458970041932198923">Lai skatītu un iestatītu iemiesojumus, izveidojiet savienojumu ar tīklu un atkārtoti ielādējiet lapu.</translation>
 <translation id="7469648432129124067">Konstatēts portāls</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>

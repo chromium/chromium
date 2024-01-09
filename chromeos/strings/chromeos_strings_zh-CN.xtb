@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> 专有资源现已推出</translation>
 <translation id="1022628058306505708">地球的风景变化</translation>
-<translation id="103306827243002956">最近创建的壁纸</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" />（<ph name="THREAD_COUNT" /> 个线程，<ph name="CPU_MAX_CLOCK_SPEED" />GHz）</translation>
 <translation id="1047773237499189053">有可用的新功能，使用向上键即可了解详情。</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">您需要选择至少 1 个画廊影集</translation>
 <translation id="2230005943220647148">摄氏度</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">创建更多壁纸</translation>
 <translation id="2236746079896696523">键盘背光切换开关</translation>
 <translation id="2240366984605217732">布局切换</translation>
 <translation id="225692081236532131">激活状态</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">幻灯片</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 张图片</translation>
-<translation id="4305367063258930534">壁纸由 Google 提供</translation>
 <translation id="4333390807948134856">已按下<ph name="KEY_NAME" />键</translation>
 <translation id="4354430579665871434">键</translation>
 <translation id="4361257691546579041">APN 是 default 类型。</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">已取消扫描</translation>
 <translation id="6106186594183574873">要完成更改，请输入您的旧密码</translation>
 <translation id="6108689792487843350">无法连接至网关</translation>
+<translation id="6108952804512516814">利用 AI 创作</translation>
 <translation id="6112878310391905610">此设置由您的管理员管理</translation>
 <translation id="6113701710518389813">向上</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />，以及另外 <ph name="NUMBER" /> 个影集</translation>

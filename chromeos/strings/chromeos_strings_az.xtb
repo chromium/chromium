@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Ləğv edilib</translation>
 <translation id="1020274983236703756">Eksklüziv <ph name="PRODUCT_NAME" /> aktivləri əlçatandır</translation>
 <translation id="1022628058306505708">Aşağıya axın</translation>
-<translation id="103306827243002956">Son divar kağızları</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> mövzu, <ph name="CPU_MAX_CLOCK_SPEED" /> GHs)</translation>
 <translation id="1047773237499189053">Yeni funksiya əlçatandır, ətraflı məlumat üçün Yuxarı ox düyməsini istifadə edin.</translation>
 <translation id="1059913517121127803">Skanlamanı başlatmaq mümkün olmadı</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Chromebook'un yaradıcılar üçün yeni rəqəmsal jurnalına baxın</translation>
 <translation id="1270369111467284986">Avtorizasiya portalı şübhəsi var</translation>
 <translation id="1290331692326790741">Zəif siqnal</translation>
+<translation id="1300115153046603471">APN növü: defolt və <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncəllənir (<ph name="PERCENTAGE_VALUE" />% tamamlanıb)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dəqiqə</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Ən azı bir İncəsənət qalereyası albomu seçilməlidir</translation>
 <translation id="2230005943220647148">Selsi</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Daha çox yaradın</translation>
 <translation id="2236746079896696523">Klaviaturanın arxa işığının keçiricisi</translation>
 <translation id="2240366984605217732">Düzən keçiricisi</translation>
 <translation id="225692081236532131">Aktivləşdirmə statusu</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">Slayd şou</translation>
 <translation id="4297501883039923494">Dayanıb - Naməlum xəta</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> şəkil</translation>
-<translation id="4305367063258930534">Google dəstəkli divar kağızı</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> düyməsi basılıb</translation>
 <translation id="4354430579665871434">düymə</translation>
 <translation id="4361257691546579041">APN növü: defolt.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">Farenheyt</translation>
 <translation id="584953448295717128">APN avtomatik aşkarlanıb.</translation>
 <translation id="5849570051105887917">Əsas səhifə provayder kodu</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">İncəsənət qalereyası albomu</translation>
 <translation id="5859969039821714932">Qısayol əlçatan deyil. <ph name="KEY" /> olmadan yeni qısayol üzərinə basın.</translation>
 <translation id="5860033963881614850">Deaktiv</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
+<translation id="6108952804512516814">AI ilə yaradın</translation>
 <translation id="6112878310391905610">Bu ayar administratorlarınız tərəfindən idarə olunur</translation>
 <translation id="6113701710518389813">Yuxarı ox</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, digər +<ph name="NUMBER" /> albom</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">Divar kağızını uyğunlaşdırın</translation>
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="6535178685492749208">Oflaynsınız. Rəy sonra göndəriləcək.</translation>
+<translation id="6557784757915238407">APN növü: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6560196641871357166">Canlı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">çevirmə</translation>
 <translation id="7415801143053185905">Çox yüksək HTTP gecikməsi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Bu APN-i deaktiv etmək və ya silmək olmur. Aktiv <ph name="ATTACH" /> APN-lər deaktiv edilməli və ya silinməlidir.</translation>
 <translation id="7458970041932198923">Səhifəni görmək və avatarlar ayarlamaq üçün şəbəkəyə qoşulun və səhifəni yenidən yükləyin.</translation>
 <translation id="7469648432129124067">Portal aşkarlanıb</translation>
 <translation id="7481312909269577407">İrəli</translation>

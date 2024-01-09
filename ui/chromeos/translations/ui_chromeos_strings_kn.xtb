@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ಯುಎಸ್ ಅಂತರರಾಷ್ಟ್ರೀಯ ಕೀಬೋರ್ಡ್‌ನಲ್ಲಿ ಪೋರ್ಚುಗೀಸ್</translation>
 <translation id="1629521517399325891">ನೆಟ್‌ವರ್ಕ್ ದೃಢೀಕರಣಕ್ಕಾಗಿ ಬಳಕೆದಾರ ಪ್ರಮಾಣಪತ್ರ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="1641780993263690097">ಚೈನೀಸ್ ಪಿನ್‌ಯಿನ್</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ಫೈಲ್‌ಗಳನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="164969095109328410">Chrome ಸಾಧನ</translation>
 <translation id="1661207570040737402">ನಿಮ್ಮ ಎಲ್ಲಾ ಹಂಚಿಕೊಂಡ ಡ್ರೈವ್‌ನ Google Workspace ಸಂಗ್ರಹಣೆಯನ್ನು ನೀವು ಬಳಸಿದ್ದೀರಿ.</translation>
 <translation id="1661867754829461514">PIN ಕಾಣೆಯಾಗಿದೆ</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">ನಿರ್ವಾಹಕರ ನೀತಿಯ ಪ್ರಕಾರ <ph name="COUNT" /> ಫೈಲ್‌ಗಳನ್ನು ನಕಲಿಸುವುದನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="6509122719576673235">ನಾರ್ವೆಜಿಯನ್</translation>
 <translation id="6528513914570774834">ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು, ಈ ಸಾಧನದ ಇತರ ಬಳಕೆದಾರರಿಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> ಸಿಂಕ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="6549689063733911810">ಇತ್ತೀಚಿನದು</translation>
 <translation id="6558280019477628686">ದೋಷ ಸಂಭವಿಸಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ಫೋಲ್ಡರ್‌ನಲ್ಲಿರುವ ಫೈಲ್‌ಗಳಿಗೆ ಪ್ರವೇಶಿಸಲು, Linux ಆ್ಯಪ್‍ಗಳಿಗೆ ಅನುಮತಿ ನೀಡಿ</translation>
 <translation id="7555339735447658365">ನೀವು ಪ್ರಸ್ತುತ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ. ನೀವು ಇಂಟರ್ನೆಟ್‌ಗೆ ಕನೆಕ್ಟ್ ಆದಾಗ ಫೈಲ್ ಸಿಂಕ್ ಮಾಡುವಿಕೆ ಪುನರಾರಂಭಗೊಳ್ಳುತ್ತದೆ</translation>
 <translation id="7589661784326793847">ಸ್ವಲ್ಪ ಕಾಯಿರಿ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> ಅನ್ನು ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಾಗುವಂತೆ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="7600126690270271294">ಸೆರ್ಬಿಯನ್</translation>
 <translation id="7603724359189955920">ಗ್ರಿಡ್‌ಗಳು</translation>
 <translation id="7627790789328695202">ಓಹ್, <ph name="FILE_NAME" /> ಈಗಾಗಲೇ ಅಸ್ತಿತ್ವದಲ್ಲಿದೆ. ಅದನ್ನು ಮರುಹೆಸರಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -936,6 +933,7 @@
 <translation id="813913629614996137">ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8147028810663464959">ಅಕ್ಷರದ ಅಗಲವು ಪೂರ್ಣವಾಗಿದೆ</translation>
 <translation id="8151638057146502721">ಕಾನ್ಫಿಗರ್ ಮಾಡಿ</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 ದೋಷ.}one{# ದೋಷಗಳು.}other{# ದೋಷಗಳು.}}</translation>
 <translation id="8154842056504218462">ಎಲ್ಲಾ ನಮೂದುಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="8157684860301034423">ಆ್ಯಪ್‌ ಮಾಹಿತಿಯನ್ನು ಪಡೆದುಕೊಳ್ಳಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="8175731104491895765">ಫ್ರೆಂಚ್ (ಬೆಲ್ಜಿಯಂ)</translation>
@@ -1007,7 +1005,6 @@
 <translation id="8569764466147087991">ತೆರೆಯಲು ಫೈಲ್‌ವೊಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8577897833047451336">ಕ್ರೋಯೇಶಿಯನ್</translation>
 <translation id="8578308463707544055">ಇಂಡೋನೇಷಿಯನ್</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ಐಟಂಗಳನ್ನು ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8600173386174225982">ಫೈಲ್ ಪಟ್ಟಿಯನ್ನು, ಥಂಬ್‌ನೇಲ್ ವೀಕ್ಷಣೆಗೆ ಬದಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="8601932370724196034">Crostini ಚಿತ್ರದ ಫೈಲ್</translation>
 <translation id="8609695766746872526">ಐಸ್‌ಲ್ಯಾಂಡಿಕ್</translation>
@@ -1028,6 +1025,7 @@
 <translation id="8787254343425541995">ಹಂಚಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಗಾಗಿ ಪ್ರಾಕ್ಸಿಗಳನ್ನು ಅನುಮತಿಸಿ</translation>
 <translation id="8790981080411996443">ಗಿಡಗಳಿಗೆ ನೀರುಣಿಸುತ್ತಿರುವ ವ್ಯಕ್ತಿ</translation>
 <translation id="8798099450830957504">ಡಿಫಾಲ್ಟ್</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 ಎಚ್ಚರಿಕೆ.}one{# ಎಚ್ಚರಿಕೆಗಳು.}other{# ಎಚ್ಚರಿಕೆಗಳು.}}</translation>
 <translation id="8808686172382650546">ಬೆಕ್ಕು</translation>
 <translation id="8810671769985673465">ಝಿಪ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ, ಈ ಐಟಂ ಈಗಾಗಲೇ ಇದೆ: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">ಸ್ಪ್ಯಾನಿಶ್ (ಸ್ಪೇನ್)</translation>

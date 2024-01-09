@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португальська, міжнародна розкладка США</translation>
 <translation id="1629521517399325891">Сертифікат користувача недоступний для автентифікації в мережі.</translation>
 <translation id="1641780993263690097">Китайська, піньїнь</translation>
-<translation id="1646019627374511909">Файли (<ph name="NUMBER_OF_ITEMS" />) завантажуються на пристрій</translation>
 <translation id="164969095109328410">Пристрій Chrome</translation>
 <translation id="1661207570040737402">Спільний диск Google Workspace заповнено.</translation>
 <translation id="1661867754829461514">Відсутній PIN-код</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Адміністратор заборонив копіювати файли (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Норвезька</translation>
 <translation id="6528513914570774834">Надати іншим користувачам цього пристрою доступ до цієї мережі</translation>
-<translation id="653019979737152879">Синхронізація файлу <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Останні</translation>
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
 <translation id="656398493051028875">Видалення файлу "<ph name="FILENAME" />"…</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Надати додаткам Linux доступ до файлів у папці "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Зараз ви не в мережі. Синхронізація файлів відновиться, коли пристрій підключиться до Інтернету.</translation>
 <translation id="7589661784326793847">Зачекайте</translation>
-<translation id="7592775719802218421">Файл "<ph name="FILE_NAME" />" завантажується на пристрій</translation>
 <translation id="7600126690270271294">Сербська</translation>
 <translation id="7603724359189955920">Сітка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" вже існує. Перейменуйте його та повторіть спробу.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Виберіть файл, який потрібно відкрити</translation>
 <translation id="8577897833047451336">Хорватська</translation>
 <translation id="8578308463707544055">Індонезійська</translation>
-<translation id="8579285237314169903">Синхронізація стількох елементів: <ph name="NUMBER_OF_FILES" />…</translation>
 <translation id="8600173386174225982">Список файлів тепер відображається у вигляді ескізів.</translation>
 <translation id="8601932370724196034">Файл зображення Crostini</translation>
 <translation id="8609695766746872526">Ісландська</translation>

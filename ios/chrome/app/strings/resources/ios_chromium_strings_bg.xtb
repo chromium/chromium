@@ -42,8 +42,6 @@
 <translation id="2109439615198500433">Съвет за Chromium</translation>
 <translation id="2168108852149185974">Някои добавки водят до срив на Chromium. Моля, деинсталирайте:</translation>
 <translation id="2178608107313874732">В момента Chromium не може да използва камерата ви</translation>
-<translation id="219374086636266276">Можете <ph name="BEGIN_LINK" />да управлявате какви данни в Chromium да се запазват<ph name="END_LINK" /> в профила ви в Google.
-За още настройки, които използват данни с цел подобряване на практическата ви работа с Chromium, отворете <ph name="BEGIN_LINK" />услугите на Google<ph name="END_LINK" />.</translation>
 <translation id="2195025571279539885">Искате ли следващия път Chromium да предложи да преведе от <ph name="LANGUAGE_NAME" /> страниците от този сайт?</translation>
 <translation id="2218146227246548550">Организацията ви изисква да влезете в профила си, за да използвате Chromium. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="22313767259766852">Понастоящем този адрес е запазен в Chromium. За да го използвате в продуктите ни, запазете го в профила си в Google (<ph name="USER_EMAIL" />).</translation>

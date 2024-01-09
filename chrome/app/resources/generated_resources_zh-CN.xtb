@@ -468,6 +468,7 @@
 <translation id="1363585519747660921">USB 打印机需要配置</translation>
 <translation id="136378536198524553">节能模式已开启</translation>
 <translation id="136522805455656552">为了确保设备的安全，您应该仅运行和安装来自可信来源和开发者的软件。<ph name="LEARN_MORE" /></translation>
+<translation id="1367817137674340530">生成了 <ph name="COUNT" /> 张图片</translation>
 <translation id="1368603372088757436">您的 <ph name="DEVICE_TYPE" /> 不支持 Linux。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">查看和修改您上次访问此网站时的文件：</translation>
 <translation id="1372841398847029212">同步到您的账号中</translation>
@@ -3215,7 +3216,6 @@
 <translation id="3474218480460386727">新字词最多只能包含 99 个字母</translation>
 <translation id="3474624961160222204">继续以<ph name="NAME" />的身份使用</translation>
 <translation id="3476303763173086583">发送使用情况数据和诊断数据。通过自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。这些数据不会被用来辨识您孩子的身份，而是会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。此设备的所有者可以选择向 Google 发送此设备的诊断数据和使用情况数据。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 账号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>
-<translation id="347670947055184738">糟糕！系统未能成功抓取您设备的政策。</translation>
 <translation id="347785443197175480">继续允许 <ph name="HOST" /> 使用您的摄像头和麦克风</translation>
 <translation id="3479357084663933762">绿色弱</translation>
 <translation id="3479552764303398839">以后再说</translation>
@@ -3224,6 +3224,7 @@
 <translation id="3480612136143976912">为实时字幕自定义字幕大小和样式。部分应用和网站也会使用此设置。</translation>
 <translation id="3480827850068960424">找到了 <ph name="NUM" /> 个标签页</translation>
 <translation id="3481268647794498892">将于 <ph name="COUNTDOWN_SECONDS" /> 秒后在<ph name="ALTERNATIVE_BROWSER_NAME" />中打开</translation>
+<translation id="348247802372410699">选择样式</translation>
 <translation id="348268549820508141">语音识别</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可查看以下文件</translation>
 <translation id="3484595034894304035">对壁纸、屏保、深色主题等进行个性化设置</translation>
@@ -5908,6 +5909,7 @@
 <translation id="560834977503641186">Wi-Fi 同步，了解详情</translation>
 <translation id="5608580678041221894">按以下键可调整或移动剪裁区域</translation>
 <translation id="5609231933459083978">该应用似乎无效。</translation>
+<translation id="5611398002774823980">保存到账号</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">用户须知</translation>
 <translation id="5614553682702429503">要保存密码吗？</translation>
@@ -6076,6 +6078,7 @@
 <translation id="5756163054456765343">帮助中心(&amp;E)</translation>
 <translation id="5757187557809630523">下一首</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
+<translation id="5759397201362801675">选择心情壁纸</translation>
 <translation id="5759728514498647443">您通过“<ph name="APP_NAME" />”发送以进行打印的文档可由“<ph name="APP_NAME" />”读取。</translation>
 <translation id="5762787084360227629">输入 Google 账号信息</translation>
 <translation id="5763751966069581670">未找到任何 USB 设备</translation>
@@ -6367,6 +6370,7 @@
 <translation id="5979421442488174909">翻译成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
 <translation id="5982578203375898585">下载完成后显示下载内容</translation>
+<translation id="5983716913605894570">正在生成…</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5985458664595100876">网址格式无效。支持的格式为 \\server\share 和 smb://server/share。</translation>
 <translation id="598810097218913399">移除分配关系</translation>
@@ -10415,6 +10419,7 @@
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>
 <translation id="9115932142612197835">此设置不会影响谷歌翻译或智能镜头的可用性</translation>
+<translation id="9116366756388192417">选择主题</translation>
 <translation id="9116799625073598554">记事应用</translation>
 <translation id="9117030152748022724">管理应用</translation>
 <translation id="9120362425083889527">无法完成安装。请重试或关闭此窗口</translation>

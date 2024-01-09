@@ -76,7 +76,6 @@
 <translation id="162175252992296058">ABŞ Beynəlxalq klaviaturası ilə Portuqal dili</translation>
 <translation id="1629521517399325891">Şəbəkə doğrulaması üçün istifadəçi sertifikatı əlçatan deyil.</translation>
 <translation id="1641780993263690097">Çin dili (Pinyin)</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fayl oflayn əlçatan edilir</translation>
 <translation id="164969095109328410">Chrome cihazı</translation>
 <translation id="1661207570040737402">Ortaq Disk üzrə bütün Google Workspace yaddaşını istifadə etmisiniz.</translation>
 <translation id="1661867754829461514">PIN çatışmır</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> faylın kopyalanması administrator siyasəti əsasında bloklanıb</translation>
 <translation id="6509122719576673235">Norveç</translation>
 <translation id="6528513914570774834">Bu cihazdakı digər istifadəçilərin şəbəkədən istifadə etmələrinə icazə verin</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> sinxronizasiya olunur...</translation>
 <translation id="6549689063733911810">Son</translation>
 <translation id="6558280019477628686">Xəta baş verdi. Bəzi elementlər silinməmiş ola bilər.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" silinir...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Linux tətbiqlərinə <ph name="FOLDER_NAME" /> qovluğundakı fayllara giriş icazəsi verin</translation>
 <translation id="7555339735447658365">Oflaynsınız. İnternetə qoşulduqda fayl sinxronlaşdırması bərpa ediləcək</translation>
 <translation id="7589661784326793847">Bir saniyə gözləyin</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> oflayn əlçatan edilir</translation>
 <translation id="7600126690270271294">Serb</translation>
 <translation id="7603724359189955920">Cədvəl</translation>
 <translation id="7627790789328695202">Oooohhhh, <ph name="FILE_NAME" /> artıq mövcuddur. Adını dəyişin və yenidən cəhd edin.</translation>
@@ -1005,7 +1002,6 @@
 <translation id="8569764466147087991">Açmaq üçün fayl seçin</translation>
 <translation id="8577897833047451336">Xorvat</translation>
 <translation id="8578308463707544055">İndoneziya</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> element sinxronlaşır...</translation>
 <translation id="8600173386174225982">Fayl siyahısı miniatür görünüşünə dəyişdirilib.</translation>
 <translation id="8601932370724196034">Crostini şəkil faylı</translation>
 <translation id="8609695766746872526">İsland</translation>

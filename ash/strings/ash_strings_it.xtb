@@ -1502,6 +1502,7 @@ Nuova installazione</translation>
 <translation id="7025533177575372252">Connetti il tuo dispositivo <ph name="DEVICE_NAME" /> con il telefono</translation>
 <translation id="7026338066939101231">Diminuisci</translation>
 <translation id="7029814467594812963">Esci da sessione</translation>
+<translation id="7031303610220416229">Visualizza tutte le attività in Google Tasks</translation>
 <translation id="7032161822340700104">Solo 6 modelli consentiti. Rimuovi un modello per salvarne uno nuovo.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" />. Attiva l'interruttore fisico (<ph name="DEVICE_NAME" />) del dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
@@ -1814,6 +1815,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8351131234907093545">Crea nota</translation>
 <translation id="8367948981300340152">In uso: <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Scrivania salvata, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Cerca <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Avanti per lettera</translation>
 <translation id="8371991222807690464">Le prestazioni delle periferiche potrebbero essere limitate in modalità Ospite</translation>
 <translation id="8374601332003098278">Premi invio per registrare una schermata parziale</translation>

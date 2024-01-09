@@ -604,6 +604,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2135799067377889518">Roupas masculinas</translation>
 <translation id="2137891579555018930">Aguardando permissão...</translation>
 <translation id="213826338245044447">Favoritos nos dispositivos móveis</translation>
+<translation id="2141000681034340397">Editar entrada</translation>
 <translation id="214556005048008348">Cancelar pagamento</translation>
 <translation id="2148613324460538318">Adicionar Cartão</translation>
 <translation id="2148716181193084225">Hoje</translation>
@@ -1392,6 +1393,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3736520371357197498">Se você entende os riscos à sua segurança, pode <ph name="BEGIN_LINK" />acessar este site inseguro<ph name="END_LINK" /> antes de os programas perigosos serem removidos.</translation>
 <translation id="3736739313435669994">Você bloqueou o uso de cookies de terceiros para rastreamento durante a navegação. Acesse as configurações para <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Seu navegador é gerenciado pelo administrador.</translation>
+<translation id="3739842843727261045">O botão "Gostei" envia feedback informando que você gostou desses resultados</translation>
 <translation id="3740319564441798148">Ônibus e trens de longa distância</translation>
 <translation id="3740447166056383374">Revise antes de copiar os arquivos</translation>
 <translation id="374325029554577103">Eletrônicos para atividade física</translation>
@@ -2613,6 +2615,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6232271601416750929">Beleza consciente</translation>
 <translation id="6234122620015464377">Cortar a cada página impressa</translation>
 <translation id="6236290670123303279">Gerenciar configurações</translation>
+<translation id="623825323736974198">Gerencie sites que sempre vão ficar ativos e não terão memória liberada</translation>
 <translation id="6240447795304464094">Logotipo do Google Pay</translation>
 <translation id="6240964651812394252">Para usar o Gerenciador de senhas do Google com seu sistema operacional, reinicie o Chrome e permita o acesso ao gerenciador de senhas do computador. Suas guias serão reabertas após a reinicialização.</translation>
 <translation id="6241121617266208201">Ocultar sugestões</translation>
@@ -4086,6 +4089,7 @@ Mais detalhes:
 <translation id="9089260154716455634">Política de horas de inatividade:</translation>
 <translation id="9090243919347147717">Anexos</translation>
 <translation id="9093723786115107672">Pijamas</translation>
+<translation id="9094544726794842788">O botão "Não gostei" abre um formulário para enviar feedback detalhado sobre o motivo de você não ter gostado desses resultados</translation>
 <translation id="9095388113577226029">Mais idiomas…</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como o navegador padrão do sistema nas configurações do iOS</translation>
 <translation id="9096679202588811390">Programas de TV</translation>

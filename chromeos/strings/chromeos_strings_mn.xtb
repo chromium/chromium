@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
 <translation id="1020274983236703756">Одоо <ph name="PRODUCT_NAME" />-н онцгой өмчүүд боломжтой</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="103306827243002956">Саяхны дэлгэцийн зургууд</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> уялдаат, <ph name="CPU_MAX_CLOCK_SPEED" />Гц)</translation>
 <translation id="1047773237499189053">Шинэ онцлог боломжтой байна. Нэмэлт мэдээлэл авах бол Дээш суман товчийг ашиглана уу.</translation>
 <translation id="1059913517121127803">Скан хийхийг эхлүүлж чадсангүй</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Дор хаяж нэг Уран зургийн галерейн цомгийг сонгосон байх шаардлагатай</translation>
 <translation id="2230005943220647148">Цельс</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Илүү ихийг үүсгэх</translation>
 <translation id="2236746079896696523">Гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="2240366984605217732">Бүдүүвчийг сэлгэх</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Слайд харуулалт</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
-<translation id="4305367063258930534">Google-с дэмжсэн дэлгэцийн зураг</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> товчлуур дарагдаагүй</translation>
 <translation id="4354430579665871434">товч</translation>
 <translation id="4361257691546579041">APN нь төрлийн өгөгдмөл юм.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Скан хийхийг цуцалсан</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
+<translation id="6108952804512516814">ХОУ-аар үүсгэх</translation>
 <translation id="6112878310391905610">Энэ тохиргоог таны администратор удирддаг</translation>
 <translation id="6113701710518389813">Дээш сум</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, өөр +<ph name="NUMBER" /> цомог</translation>

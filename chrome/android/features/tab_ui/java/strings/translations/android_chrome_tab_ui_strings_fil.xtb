@@ -5,6 +5,7 @@
 <translation id="1155815720264022949">Gustong isara ang mga lumang tab?</translation>
 <translation id="1215127405478249895">Suriin ang mga tab</translation>
 <translation id="125153950246128346">I-tap para tumingin ng iba pang tab</translation>
+<translation id="1326271443836399892">Suriin ang mga kasalukuyang setting ng pag-declutter.</translation>
 <translation id="1499635324672558517">Isara ang lahat ng tab na Incognito?</translation>
 <translation id="1657719826150349398">Ilipat ang tab sa ibaba</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}one{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> na tab}}</translation>
@@ -25,6 +26,7 @@
 <translation id="2977480621796371840">Alisin sa grupo</translation>
 <translation id="3008554597174452548">Ihinto ang pagsubaybay sa produkto</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
+<translation id="313819129451406482">{TABS_COUNT,plural, =1{Mayroon kang <ph name="TABS_COUNT_ONE" /> naka-archive na tab}one{Mayroon kang <ph name="TABS_COUNT_MANY" /> naka-archive na tab}other{Mayroon kang <ph name="TABS_COUNT_MANY" /> na naka-archive na tab}}</translation>
 <translation id="3194464645767632461">rating</translation>
 <translation id="3291470810748040983">Makakatanggap ka ng alerto kapag may mas mababang presyo sa isang nakabukas na tab</translation>
 <translation id="3328308545011660196">Suhestyon: Mukhang magkaugnay ang <ph name="NUMBER_OF_TABS" /> (na) tab. Igrupo ang mga ito?</translation>
@@ -98,5 +100,6 @@
 <translation id="9090098097337832354">Isinara ang impormasyon tungkol sa store na ito</translation>
 <translation id="9150694013019234766">Magpalipat-lipat sa mga tab sa iyong grupo ng tab malapit sa ibaba ng screen</translation>
 <translation id="9169594135889675189">Magdagdag ng bagong tab sa grupo</translation>
+<translation id="955558140275419384">Suriin ang lahat ng naka-archive na tab na ide-declutter sa pamamagitan ng pagpasok sa editor na ito.</translation>
 <translation id="959682366969460160">Maging organisado</translation>
 </translationbundle>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">İptal Edildi</translation>
 <translation id="1020274983236703756"><ph name="PRODUCT_NAME" /> cihazlara özel öğeler artık kullanılabilir</translation>
 <translation id="1022628058306505708">Toprak Kayması</translation>
-<translation id="103306827243002956">Son duvar kağıtları</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> iş parçacığı, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Yeni özellik mevcut. Daha fazla bilgi için yukarı ok tuşunu kullanın.</translation>
 <translation id="1059913517121127803">Tarama işlemi başlatılamadı</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Chromebook'un içerik üreticiler için hazırladığı yeni dijital dergisine göz atın</translation>
 <translation id="1270369111467284986">Giriş portalı şüpheli</translation>
 <translation id="1290331692326790741">Zayıf sinyal</translation>
+<translation id="1300115153046603471">APN, varsayılan ve <ph name="ATTACH" /> türünde.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Güncelleniyor (%<ph name="PERCENTAGE_VALUE" /> tamamlandı)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> dakika</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">En az bir Sanat galerisi albümü seçilmelidir</translation>
 <translation id="2230005943220647148">Santigrat</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Daha fazla oluşturun</translation>
 <translation id="2236746079896696523">Klavye arka ışığını açma/kapatma</translation>
 <translation id="2240366984605217732">Düzeni değiştir</translation>
 <translation id="225692081236532131">Etkinleştirme durumu</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">Slayt gösterisi</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Resim</translation>
-<translation id="4305367063258930534">Google tarafından desteklenen duvar kağıdı</translation>
 <translation id="4333390807948134856"><ph name="KEY_NAME" /> tuşuna basıldı</translation>
 <translation id="4354430579665871434">anahtar</translation>
 <translation id="4361257691546579041">APN, varsayılan erişim noktası adıdır.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenhayt</translation>
 <translation id="584953448295717128">APN otomatik olarak algılanır.</translation>
 <translation id="5849570051105887917">Ev sağlayıcı kodu</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Sanat galerisi albümü</translation>
 <translation id="5859969039821714932">Kısayol kullanılamıyor. <ph name="KEY" /> içermeyen yeni bir kısayola basın.</translation>
 <translation id="5860033963881614850">Kapalı</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
+<translation id="6108952804512516814">Yapay zeka ile oluştur</translation>
 <translation id="6112878310391905610">Bu ayar, yöneticiniz tarafından belirleniyor</translation>
 <translation id="6113701710518389813">Yukarı ok</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albüm daha</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">Duvar kağıdıyla eşleştir</translation>
 <translation id="6527081081771465939">Bilinmeyen kablosuz ağ güvenlik protokolü</translation>
 <translation id="6535178685492749208">Çevrimdışısınız. Geri bildiriminiz daha sonra gönderilecek.</translation>
+<translation id="6557784757915238407">APN <ph name="ATTACH" /> türünde.</translation>
 <translation id="65587193855025101">Düz Yataklı</translation>
 <translation id="6560196641871357166">Canlı</translation>
 <translation id="6564646048574748301">İşlem başarısız - Yazıcıya ulaşılamıyor</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">dönüştürme</translation>
 <translation id="7415801143053185905">Çok yüksek HTTP gecikmesi</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Bu APN devre dışı bırakılamaz veya kaldırılamaz. Etkin durumdaki <ph name="ATTACH" /> APN'lerin devre dışı bırakıldığından veya kaldırıldığından emin olun.</translation>
 <translation id="7458970041932198923">Avatarları görüntülemek ve ayarlamak için lütfen bir ağa bağlanıp sayfayı yeniden yükleyin.</translation>
 <translation id="7469648432129124067">Portal algılandı</translation>
 <translation id="7481312909269577407">İleri</translation>

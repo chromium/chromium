@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Неможливо знайти абсолютний шлях до каталогу для пакування.</translation>
 <translation id="5160071981665899014">Не вдалося завантажити файл <ph name="RELATIVE_PATH" /> для скрипту.</translation>
 <translation id="5356315618422219272">Тег Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Нестандартні вікна не підтримуються.</translation>
 <translation id="5456409301717116725">Це розширення включає файл ключа "<ph name="KEY_PATH" />". Можливо, ви не хочете цього робити.</translation>
 <translation id="5486326529110362464">Має бути дійсне значення секретного ключа.</translation>
 <translation id="5972529113578162692">Адміністратор цього комп’ютера вимагає встановити розширення <ph name="EXTENSION_NAME" />. Його неможливо видалити.</translation>

@@ -76,7 +76,6 @@
 <translation id="162175252992296058">પોર્ટુગીઝ, યુએસ આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
 <translation id="1629521517399325891">નેટવર્કના પ્રમાણીકરણ માટે વપરાશકર્તા પ્રમાણપત્ર ઉપલબ્ધ નથી.</translation>
 <translation id="1641780993263690097">ચાઇનીઝ પિનયિન</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ફાઇલ ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="164969095109328410">Chrome ઉપકરણ</translation>
 <translation id="1661207570040737402">તમે Google Workspaceની શેર કરેલી તમારી ડ્રાઇવના સ્ટોરેજનો પૂરો ઉપયોગ કરી લીધો છે.</translation>
 <translation id="1661867754829461514">PIN ખૂટે છે</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">ઍડમિનિસ્ટ્રેટર પૉલિસી અનુસાર <ph name="COUNT" /> ફાઇલ કૉપિ કરવાનું બ્લૉક કરેલું છે</translation>
 <translation id="6509122719576673235">નોર્વેજીયન</translation>
 <translation id="6528513914570774834">આ ઉપકરણના અન્ય વપરાશકર્તાઓને આ નેટવર્ક વાપરવાની મંજૂરી આપો</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> સમન્વયિત કરી રહ્યું છે...</translation>
 <translation id="6549689063733911810">તાજેતરનું</translation>
 <translation id="6558280019477628686">એક ભૂલ આવી. અમુક આઇટમ કદાચ ડિલીટ કરી શકાઈ નથી.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" કાઢી નાખી રહ્યું છે...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Linux ઍપને <ph name="FOLDER_NAME" /> ફોલ્ડરમાંની ફાઇલોને ઍક્સેસ કરવાની પરવાનગી આપો</translation>
 <translation id="7555339735447658365">તમે હાલમાં ઑફલાઇન છો. તમે જ્યારે ઇન્ટરનેટ સાથે કનેક્ટ કરશો, ત્યારે ફાઇલ સિંક કરવાની પ્રક્રિયા ફરી શરૂ થશે</translation>
 <translation id="7589661784326793847">ક્ષણભર રોકાવ</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />ને ઑફલાઇન ઉપલબ્ધ કરાવી રહ્યાં છીએ</translation>
 <translation id="7600126690270271294">સર્બિયન</translation>
 <translation id="7603724359189955920">ગ્રીડ</translation>
 <translation id="7627790789328695202">ઉફ્ફ, <ph name="FILE_NAME" /> પહેલાંથી અસ્તિત્વમાં છે. તેનું નામ બદલો અને ફરી પ્રયાસ કરો.</translation>
@@ -1005,7 +1002,6 @@
 <translation id="8569764466147087991">ખોલવા માટે એક ફાઇલ પસંદ કરો</translation>
 <translation id="8577897833047451336">ક્રોએશિયન</translation>
 <translation id="8578308463707544055">ઇન્ડોનેશિયન</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> આઇટમ્સ સમન્વયિત કરી રહ્યાં છે...</translation>
 <translation id="8600173386174225982">ફાઇલ સૂચિને થંબનેલ દૃશ્યમાં બદલી છે.</translation>
 <translation id="8601932370724196034">Crostini છબી ફાઇલ</translation>
 <translation id="8609695766746872526">આઇસલેન્ડિક</translation>

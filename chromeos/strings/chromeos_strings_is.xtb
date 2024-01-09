@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Hætt við</translation>
 <translation id="1020274983236703756">Sérstakar <ph name="PRODUCT_NAME" />-eignir eru nú í boði</translation>
 <translation id="1022628058306505708">Jarðarflæði</translation>
-<translation id="103306827243002956">Nýleg veggfóður</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> þræðir, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Nýr eiginleiki í boði, notaðu ör upp-lykilinn til að fá frekari upplýsingar.</translation>
 <translation id="1059913517121127803">Ekki tókst að skanna</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Skoðaðu nýja stafræna tímaritið frá Chromebook fyrir höfunda</translation>
 <translation id="1270369111467284986">Grunur um innskráningarsíðu</translation>
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
+<translation id="1300115153046603471">Aðgangsstaður er af gerðinni „sjálfgefið“ og „<ph name="ATTACH" />“.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Uppfærir (<ph name="PERCENTAGE_VALUE" />% lokið)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> mínútur</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Velja verður að lágmarki eitt albúm listasafns</translation>
 <translation id="2230005943220647148">Celsíus</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Búa til fleiri</translation>
 <translation id="2236746079896696523">Kveikja/slökkva á baklýsingu lyklaborðs</translation>
 <translation id="2240366984605217732">Uppsetningarrofi</translation>
 <translation id="225692081236532131">Virkjunarstaða</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">Skyggnusýning</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
-<translation id="4305367063258930534">Veggfóður frá Google</translation>
 <translation id="4333390807948134856">Ýtt var á lykilinn <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">lykill</translation>
 <translation id="4361257691546579041">Aðgangsstaður er af gerðinni „sjálfgefið“.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">Aðgangsstaður greinist sjálfkrafa.</translation>
 <translation id="5849570051105887917">Kóði heimaveitu</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Albúm listasafns</translation>
 <translation id="5859969039821714932">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil án <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Slökkt</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">Hætt var við að skanna</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6108689792487843350">Ekki næst í gátt</translation>
+<translation id="6108952804512516814">Búa til með gervigreind</translation>
 <translation id="6112878310391905610">Stjórnendur þínir stjórna þessari stillingu</translation>
 <translation id="6113701710518389813">Ör upp</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albúm í viðbót</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">Samsvara veggfóðri</translation>
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
 <translation id="6535178685492749208">Þú ert ekki á netinu. Ábending verður send síðar.</translation>
+<translation id="6557784757915238407">Aðgangsstaður er af gerðinni „<ph name="ATTACH" />“.</translation>
 <translation id="65587193855025101">Flatur skanni</translation>
 <translation id="6560196641871357166">Líflegur</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">umreikningur</translation>
 <translation id="7415801143053185905">Mjög langur HTTP-biðtími</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Hvorki er hægt að slökkva á né fjarlægja þennan aðgangsstað. Gakktu úr skugga um að slökkt sé á <ph name="ATTACH" />-aðgangsstöðum sem er kveikt á eða þeir fjarlægðir.</translation>
 <translation id="7458970041932198923">Tengstu neti og endurhladdu síðunni til að skoða og stilla notendamyndir.</translation>
 <translation id="7469648432129124067">Gátt greind</translation>
 <translation id="7481312909269577407">Áfram</translation>

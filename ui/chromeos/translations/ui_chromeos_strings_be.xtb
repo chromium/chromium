@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Партугальская з міжнароднай клавіятурай ЗША</translation>
 <translation id="1629521517399325891">Гэты сертыфікат карыстальніка нельга выкарыстаць для аўтэнтыфікацыі сеткі.</translation>
 <translation id="1641780993263690097">Кітайская (піньінь)</translation>
-<translation id="1646019627374511909">Ідзе адкрыццё пазасеткавага доступу да файлаў (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Прылада Chrome</translation>
 <translation id="1661207570040737402">Вы выкарысталі ўвесь даступны вам аб'ём сховішча абагуленага дыска Google Workspace.</translation>
 <translation id="1661867754829461514">Не ўказаны PIN-код</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Зададзеная адміністратарам палітыка блакіруе магчымасць капіраваць файлы (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">Нарвежская</translation>
 <translation id="6528513914570774834">Дазволіць іншым карыстальнікам прылады выкарыстоўваць гэту сетку</translation>
-<translation id="653019979737152879">Ідзе сінхранізацыя файла "<ph name="FILE_NAME" />"...</translation>
 <translation id="6549689063733911810">Нядаўнія</translation>
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Даць праграмам Linux доступ да файлаў у папцы "<ph name="FOLDER_NAME" />"</translation>
 <translation id="7555339735447658365">Вы зараз па-за сеткай. Сінхранізацыя файлаў узновіцца, калі вы падключыцеся да інтэрнэту.</translation>
 <translation id="7589661784326793847">Пачакайце</translation>
-<translation id="7592775719802218421">Ідзе адкрыццё пазасеткавага доступу да файла "<ph name="FILE_NAME" />"</translation>
 <translation id="7600126690270271294">Сербская</translation>
 <translation id="7603724359189955920">Сеткі</translation>
 <translation id="7627790789328695202">Ужо існуе файл з назвай "<ph name="FILE_NAME" />". Пераймянуйце яго і паўтарыце спробу.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Выберыце файл, які трэба адкрыць</translation>
 <translation id="8577897833047451336">Харвацкая</translation>
 <translation id="8578308463707544055">Інданезійская</translation>
-<translation id="8579285237314169903">Ідзе сінхранізацыя элементаў (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Спіс файлаў перайшоў у рэжым мініяцюр.</translation>
 <translation id="8601932370724196034">Файл вобраза Crostini</translation>
 <translation id="8609695766746872526">Ісландская</translation>

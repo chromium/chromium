@@ -76,7 +76,6 @@
 <translation id="162175252992296058">АНУ-ын олон улсын гартай португал</translation>
 <translation id="1629521517399325891">Сүлжээний баталгаажуулалтад хэрэглэгчийн сертификат боломжгүй байна.</translation>
 <translation id="1641780993263690097">Хятад пиньинь</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> файлыг офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="164969095109328410">Chrome төхөөрөмж</translation>
 <translation id="1661207570040737402">Та Google Workspace-н дундын драйвын хадгалах сангаа бүгдийг нь ашигласан байна.</translation>
 <translation id="1661867754829461514">ПИН байхгүй байна</translation>
@@ -716,7 +715,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> файлыг хуулахыг администраторын бодлогоор блоклосон</translation>
 <translation id="6509122719576673235">Норвег хэл</translation>
 <translation id="6528513914570774834">Энэ төхөөрөмжийн бусад хэрэглэгчдэд энэ сүлжээг ашиглах зөвшөөрөл олгох</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> синхрончилж байна...</translation>
 <translation id="6549689063733911810">Сүүлд</translation>
 <translation id="6558280019477628686">Алдаа гарлаа. Зарим зүйлийг устгаагүй байж болзошгүй.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" устгаж байна...</translation>
@@ -850,7 +848,6 @@
 <translation id="7553492409867692754">Linux аппуудад <ph name="FOLDER_NAME" /> фолдерын файлуудад хандах зөвшөөрөл өгнө үү</translation>
 <translation id="7555339735447658365">Та одоогоор офлайн байна. Таныг интернэтэд холбогдсон үед файлыг үргэлжлүүлэн синк хийнэ</translation>
 <translation id="7589661784326793847">Түр хүлээнэ үү</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" />-г офлайнаар ашиглах боломжтой болгож байна</translation>
 <translation id="7600126690270271294">Серб</translation>
 <translation id="7603724359189955920">Toрлол</translation>
 <translation id="7627790789328695202"><ph name="FILE_NAME" /> нь аль ​​хэдийн байна. Нэрийг нь өөрчилөөд, дахин оролдоно уу.</translation>
@@ -1005,7 +1002,6 @@
 <translation id="8569764466147087991">Нээх файлаа сонгоно уу</translation>
 <translation id="8577897833047451336">Хорват</translation>
 <translation id="8578308463707544055">Индонез</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> зүйлийг хуулж байна</translation>
 <translation id="8600173386174225982">Файлын жагсаалтыг өнгөц зургаар харах горимд шилжүүлэв.</translation>
 <translation id="8601932370724196034">Crostini зургийн файл</translation>
 <translation id="8609695766746872526">Исланд</translation>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Canslwyd</translation>
 <translation id="1020274983236703756">Asedau <ph name="PRODUCT_NAME" /> unigryw ar gael nawr</translation>
 <translation id="1022628058306505708">Llif y Ddaear</translation>
-<translation id="103306827243002956">Papurau wal diweddar</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> o drywyddau, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Mae nodwedd newydd ar gael, defnyddiwch y fysell saeth I Fyny i ddysgu rhagor.</translation>
 <translation id="1059913517121127803">Methu â dechrau sganio</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Dewch i weld cylchgrawn digidol newydd Chromebook ar gyfer crewyr</translation>
 <translation id="1270369111467284986">Porth caeth yn debygol</translation>
 <translation id="1290331692326790741">Signal gwan</translation>
+<translation id="1300115153046603471">Mae'r APN yn fath diofyn ac yn <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Wrthi'n diweddaru (<ph name="PERCENTAGE_VALUE" />% wedi'i gwblhau)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> o funudau</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Mae angen dewis o leiaf un albwm oriel Gelf</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Creu rhagor</translation>
 <translation id="2236746079896696523">Toglo ôl-olau'r bysellfwrdd</translation>
 <translation id="2240366984605217732">Switsh cynllun</translation>
 <translation id="225692081236532131">Statws gweithredu</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Sioe sleidiau</translation>
 <translation id="4297501883039923494">Wedi stopio - Gwall anhysbys</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Llun</translation>
-<translation id="4305367063258930534">Papur wal wedi'i bweru gan Google</translation>
 <translation id="4333390807948134856">Mae'r fysell <ph name="KEY_NAME" /> wedi'i phwyso</translation>
 <translation id="4354430579665871434">bysell</translation>
 <translation id="4361257691546579041">Mae'r APN yn fath diofyn.</translation>
 <translation id="437294888293595148">Ailosod pob llwybr byr</translation>
+<translation id="4376423484621194274">Nid yw eich gweinyddwr yn caniatáu cau <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Ni Redwyd</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">Mae APN yn cael ei ganfod yn awtomatig.</translation>
 <translation id="5849570051105887917">Cod darparwr cartref</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Albwm oriel gelf</translation>
 <translation id="5859969039821714932">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd heb <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Diffodd</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Mae sganio wedi'i ganslo</translation>
 <translation id="6106186594183574873">I orffen, rhowch eich hen gyfrinair</translation>
 <translation id="6108689792487843350">Nid oes modd cyrraedd y porth</translation>
+<translation id="6108952804512516814">Creu gydag AI</translation>
 <translation id="6112878310391905610">Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwyr</translation>
 <translation id="6113701710518389813">Saeth i fyny</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> albwm arall</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Paru'r papur wal</translation>
 <translation id="6527081081771465939">Protocol diogelwch Wi-Fi anhysbys</translation>
 <translation id="6535178685492749208">Rydych chi all-lein. Bydd yr adborth yn cael ei anfon yn nes ymlaen.</translation>
+<translation id="6557784757915238407">Mae'r APN yn fath <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Wyneb fflat</translation>
 <translation id="6560196641871357166">Llachar</translation>
 <translation id="6564646048574748301">Wedi methu - Ni ellid cyrraedd yr argraffydd</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">trosi</translation>
 <translation id="7415801143053185905">Cuddni HTTP uchel iawn</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Methu ag analluogi na thynnu'r APN hwn. Sicrhewch fod APNs <ph name="ATTACH" /> sydd wedi'u galluogi wedi'u hanalluogi neu eu tynnu.</translation>
 <translation id="7458970041932198923">Cysylltwch â rhwydwaith ac ail-lwythwch y dudalen i weld a gosod rhithffurfiau.</translation>
 <translation id="7469648432129124067">Canfuwyd porth</translation>
 <translation id="7481312909269577407">Ymlaen</translation>

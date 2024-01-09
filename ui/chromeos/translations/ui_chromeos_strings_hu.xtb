@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugál, amerikai nemzetközi billentyűzettel</translation>
 <translation id="1629521517399325891">Nem áll rendelkezésre felhasználói tanúsítvány a hálózati hitelesítéshez.</translation>
 <translation id="1641780993263690097">kínai pinjin</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> fájl offline hozzáférhetővé tétele…</translation>
 <translation id="164969095109328410">Chrome-eszköz</translation>
 <translation id="1661207570040737402">Felhasználta a megosztott meghajtó Google Workspace-tárhelyét.</translation>
 <translation id="1661867754829461514">Hiányzó PIN-kód</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> fájl másolását rendszergazdai házirend tiltja</translation>
 <translation id="6509122719576673235">norvég</translation>
 <translation id="6528513914570774834">Engedélyezi a hálózat használatát az eszköz többi felhasználója számára</translation>
-<translation id="653019979737152879">A(z) <ph name="FILE_NAME" /> szinkronizálása…</translation>
 <translation id="6549689063733911810">Legutóbbiak</translation>
 <translation id="6558280019477628686">Hiba történt. Előfordulhat, hogy egyes elemek nem törlődtek.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />” törlése...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">A Linux-alkalmazások engedélyt kapnak a(z) <ph name="FOLDER_NAME" /> mappában lévő fájlokhoz való hozzáférésre.</translation>
 <translation id="7555339735447658365">Ön jelenleg offline állapotban van. A fájlok szinkronizálása folytatódik, amint létrejön az internetkapcsolat.</translation>
 <translation id="7589661784326793847">Egy pillanat…</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> offline hozzáférhetővé tétele…</translation>
 <translation id="7600126690270271294">szerb</translation>
 <translation id="7603724359189955920">Rácsok</translation>
 <translation id="7627790789328695202">Hoppá! <ph name="FILE_NAME" /> már létezik. Nevezze át, majd próbálja újra.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Válassza ki a megnyitni kívánt fájlt</translation>
 <translation id="8577897833047451336">horvát</translation>
 <translation id="8578308463707544055">indonéz</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> elem szinkronizálása…</translation>
 <translation id="8600173386174225982">A fájllista nézete indexképnézetre változott.</translation>
 <translation id="8601932370724196034">Crostini-képfájl</translation>
 <translation id="8609695766746872526">izlandi</translation>

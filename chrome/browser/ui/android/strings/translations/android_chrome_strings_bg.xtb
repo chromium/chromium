@@ -1075,6 +1075,7 @@
 <translation id="671481426037969117">Таймерът ви за <ph name="FQDN" /> изтече и ще се стартира отново утре.</translation>
 <translation id="6715020873764921614">Искате ли да изтеглите <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) въпреки това?</translation>
 <translation id="6719634564325948108">Да се установи ли връзка чрез QR код?</translation>
+<translation id="6723740634201835758">В профила ви в Google</translation>
 <translation id="6738516213925468394">На <ph name="TIME" /> данните ви бяха шифровани с <ph name="BEGIN_LINK" />пропуска ви за синхронизиране<ph name="END_LINK" />. Въведете го, за да стартирате синхронизирането.</translation>
 <translation id="6738867403308150051">Изтегля се…</translation>
 <translation id="674388916582496364">Посещаваните от вас сайтове обикновено запомнят нещата, които ви интересуват, за да персонализират практическата ви работа. Те също така могат да съхраняват в Chrome информация за интересите ви.</translation>
@@ -1396,6 +1397,7 @@
 <translation id="8260126382462817229">Опитайте да влезете отново</translation>
 <translation id="8261506727792406068">Изтриване</translation>
 <translation id="82619448491672958">Преглед на другите раздели</translation>
+<translation id="8265018477030547118">Само на това устройство</translation>
 <translation id="8266862848225348053">Местоположение за изтеглянията</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>

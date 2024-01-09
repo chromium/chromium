@@ -272,6 +272,7 @@
 <translation id="1476595624592550506">Промените лозинку</translation>
 <translation id="1482879811280872320">Вожња бициклом</translation>
 <translation id="1483493594462132177">Пошаљи</translation>
+<translation id="1484632730438126438">Ово је прекратко. Напишите бар 3 речи.</translation>
 <translation id="1492194039220927094">Слање смерница:</translation>
 <translation id="14938948731065592">Помоћни делови рачунара</translation>
 <translation id="1495677929897281669">Назад на картицу</translation>
@@ -604,6 +605,7 @@
 <translation id="2135799067377889518">Мушка одећа</translation>
 <translation id="2137891579555018930">Чека се дозвола…</translation>
 <translation id="213826338245044447">Мобилни обележивачи</translation>
+<translation id="2141000681034340397">Измените унос</translation>
 <translation id="214556005048008348">Откажи плаћање</translation>
 <translation id="2148613324460538318">Додај картицу</translation>
 <translation id="2148716181193084225">Данас</translation>
@@ -1392,6 +1394,7 @@
 <translation id="3736520371357197498">Ако разумете безбедносне ризике, можете да <ph name="BEGIN_LINK" />посетите овај небезбедни сајт<ph name="END_LINK" /> пре него што уклонимо опасне програме.</translation>
 <translation id="3736739313435669994">Блокирали сте сајтове да користе колачиће треће стране да би вас пратили док прегледате. Посетите Подешавања да бисте <ph name="LINK" />.</translation>
 <translation id="3738166223076830879">Администратор управља прегледачем.</translation>
+<translation id="3739842843727261045">Опција Свиђа ми се шаље повратне информације да вам се свиђају ови резултати</translation>
 <translation id="3740319564441798148">Међународни аутобуски и железнички превоз</translation>
 <translation id="3740447166056383374">Потребан је преглед пре копирања</translation>
 <translation id="374325029554577103">Технолошки производи за фитнес</translation>
@@ -1402,6 +1405,7 @@
 <translation id="3748009735914587286">Метал (сјајни)</translation>
 <translation id="3748148204939282805">Нападачи на <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> могу да вас наведу да урадите нешто опасно, на пример, да инсталирате софтвер или откријете личне податке (попут лозинки, бројева телефона или бројева кредитних картица). <ph name="BEGIN_LEARN_MORE_LINK" />Сазнајте више<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3748912308089554501">Авиоиндустрија</translation>
+<translation id="3751020515020988516">Захтев није разумљив. Пробајте са другим захтевом.</translation>
 <translation id="3752543821772132562">Занемарује се јер смернице <ph name="POLICY_NAME" /> нису подешене.</translation>
 <translation id="3754210790023674521">Изађи из режима слике у слици</translation>
 <translation id="3759461132968374835">Немате ниједно недавно пријављено отказивање. Отказивања која су се десила док је пријављивање отказивања било онемогућено неће се овде приказати.</translation>
@@ -1458,6 +1462,7 @@
 <translation id="3858860766373142691">Назив</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
+<translation id="3877877650871124156">Ово је предугачко. Скратите га и пробајте поново.</translation>
 <translation id="3881478300875776315">Прикажи мање редова</translation>
 <translation id="3883500545751229739">огласи који ометају</translation>
 <translation id="3884278016824448484">Неусаглашени идентификатор уређаја</translation>
@@ -2566,6 +2571,7 @@
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Сазнајте више о режиму Без архивирања у Chrome-у<ph name="END_LINK" /></translation>
 <translation id="6133320744616005677">Не опозивај дозволу</translation>
 <translation id="6133984428121856852">Екстензија фајла је празна или је у погрешном формату.</translation>
+<translation id="6139769382153674477">Дошло је до грешке. Да ли сте пријављени?</translation>
 <translation id="6139975341602920272">17×22 in</translation>
 <translation id="6146055958333702838">Проверите све каблове и рестартујте све рутере, модеме или друге мрежне уређаје које можда користите.</translation>
 <translation id="614940544461990577">Покушајте:</translation>
@@ -2612,6 +2618,7 @@
 <translation id="6232271601416750929">Природни козметички производи</translation>
 <translation id="6234122620015464377">Скрати после сваког документа</translation>
 <translation id="6236290670123303279">Управљајте подешавањима</translation>
+<translation id="623825323736974198">Управљајте сајтовима који ће увек остати активни и који неће бити уклоњени из меморије</translation>
 <translation id="6240447795304464094">Google Pay логотип</translation>
 <translation id="6240964651812394252">Да бисте користили Google менаџер лозинки са оперативним системом, поново покрените Chrome и дозволите приступ менаџеру лозинки на рачунару. Картице ће се поново отворити после поновног покретања.</translation>
 <translation id="6241121617266208201">Сакриј предлоге</translation>
@@ -4085,6 +4092,7 @@
 <translation id="9089260154716455634">Смернице са временским распоредом:</translation>
 <translation id="9090243919347147717">Прилози</translation>
 <translation id="9093723786115107672">Одећа за спавање</translation>
+<translation id="9094544726794842788">Опција Не свиђа ми се отвара образац за слање детаљних повратних информација о томе зашто вам се не свиђају ови резултати</translation>
 <translation id="9095388113577226029">Још језика...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните tab, па Enter да бисте подесили Chrome као подразумевани прегледач система у подешавањима iOS-а</translation>
 <translation id="9096679202588811390">ТВ емисије и програми</translation>

@@ -1505,6 +1505,7 @@
 <translation id="7025533177575372252">დაუკავშირეთ <ph name="DEVICE_NAME" /> თქვენს ტელეფონს</translation>
 <translation id="7026338066939101231">დეკრემენტი</translation>
 <translation id="7029814467594812963">სესიიდან გამოსვლა</translation>
+<translation id="7031303610220416229">ყველა ამოცანის ნახვა Google Tasks-ში</translation>
 <translation id="7032161822340700104">დაშვებულია მხოლოდ 6 შაბლონი. ახლის დასამატებლად წაშალეთ ერთ-ერთი არსებული.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" />-ს სურს, გამოიყენოს <ph name="DEVICE_NAME" />. ჩართეთ მოწყობილობის ფიზიკური გადამრთველი, რომლითაც რეგულირდება <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google ასისტენტი</translation>
@@ -1817,6 +1818,7 @@
 <translation id="8351131234907093545">ჩანიშვნის შექმნა</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> გამოიყენება.</translation>
 <translation id="8369166482916924789">შენახული სამუშაო მაგიდა, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">მოიძებნოს <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">ერთი ასოთი წინ</translation>
 <translation id="8371991222807690464">პერიფერიული მოწყობილობების წარმადობა, შესაძლოა, შეზღუდული იყოს სტუმრის რეჟიმში</translation>
 <translation id="8374601332003098278">ეკრანის ნაწილობრივ ჩასაწერად დააჭირეთ Enter-ს</translation>

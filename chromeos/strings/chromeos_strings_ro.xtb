@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Anulat</translation>
 <translation id="1020274983236703756">Sunt disponibile elemente <ph name="PRODUCT_NAME" /> exclusive</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="103306827243002956">Imagini de fundal recente</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fire, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Trebuie să selectezi cel puțin un album din Galeria de imagini</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Creează mai multe</translation>
 <translation id="2236746079896696523">Comutator pentru retroiluminarea tastaturii</translation>
 <translation id="2240366984605217732">Schimbarea aspectului</translation>
 <translation id="225692081236532131">Stare de activare</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Slideshow</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagini</translation>
-<translation id="4305367063258930534">Imagine de fundal de la Google</translation>
 <translation id="4333390807948134856">A fost apăsată tasta <ph name="KEY_NAME" /></translation>
 <translation id="4354430579665871434">tastă</translation>
 <translation id="4361257691546579041">APN este tipul prestabilit.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Scanarea a fost anulată</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
+<translation id="6108952804512516814">Creează cu AI</translation>
 <translation id="6112878310391905610">Această setare este gestionată de administratori</translation>
 <translation id="6113701710518389813">Săgeată în sus</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + încă <ph name="NUMBER" /> albume</translation>

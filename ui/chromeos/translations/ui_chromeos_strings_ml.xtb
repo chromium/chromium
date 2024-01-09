@@ -76,7 +76,6 @@
 <translation id="162175252992296058">യുഎസ് അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള പോർച്ചുഗീസ്</translation>
 <translation id="1629521517399325891">നെറ്റ്‍വർക്ക് പരിശോധിച്ചുറപ്പിക്കലിന് ഉപയോക്തൃ സർട്ടിഫിക്കറ്റ് ലഭ്യമല്ല.</translation>
 <translation id="1641780993263690097">ചൈനീസ് പിൻയിൻ</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> ഫയലുകൾ ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="164969095109328410">Chrome ഉപകരണം</translation>
 <translation id="1661207570040737402">പങ്കിട്ട ഡ്രൈവിന്റെ Google Workspace സ്റ്റോറേജ് മുഴുവൻ നിങ്ങൾ ഉപയോഗിച്ചു.</translation>
 <translation id="1661867754829461514">PIN കാണാനില്ല</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> ഫയലുകൾ പകർത്തുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="6509122719576673235">നോര്‍വീജിയന്‍</translation>
 <translation id="6528513914570774834">ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാൻ ഉപകരണത്തിലെ മറ്റ് ഉപയോക്താക്കളെ അനുവദിക്കുക</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> എന്നത് സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="6549689063733911810">പുതിയവ</translation>
 <translation id="6558280019477628686">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ ഇല്ലാതാക്കാൻ ഇടയില്ല.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ഇല്ലാതാക്കുന്നു...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754"><ph name="FOLDER_NAME" /> ഫോൾഡറിലെ ഫയലുകൾ ആക്‌സസ് ചെയ്യാൻ Linux ആപ്പുകൾക്ക് അനുമതി നൽകുക</translation>
 <translation id="7555339735447658365">നിങ്ങൾ നിലവിൽ ഓഫ്‌ലൈനാണ്. നിങ്ങൾ ഇന്റർനെറ്റിലേക്ക് കണക്‌റ്റ് ചെയ്യുമ്പോൾ ഫയൽ സമന്വയിപ്പിക്കൽ പുനരാരംഭിക്കും</translation>
 <translation id="7589661784326793847">ഒരു നിമിഷം കാത്തിരിക്കുക</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> ഓഫ്‌ലൈനിൽ ലഭ്യമാക്കുന്നു</translation>
 <translation id="7600126690270271294">സെർബിയൻ</translation>
 <translation id="7603724359189955920">ഗ്രിഡുകൾ</translation>
 <translation id="7627790789328695202">ക്ഷമിക്കണം, <ph name="FILE_NAME" /> ഇതിനകം നിലവിലുണ്ട്. അതിന്റെ പേരുമാറ്റി വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">തുറക്കുന്നതിന് ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8577897833047451336">ക്രൊയേഷ്യൻ</translation>
 <translation id="8578308463707544055">ഇന്തോനേഷ്യൻ</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ഇനങ്ങൾ സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="8600173386174225982">ഫയൽ ലിസ്‌റ്റ് ലഘുചിത്ര കാഴ്‌ചയിലേക്ക് മാറ്റിയിട്ടുണ്ട്.</translation>
 <translation id="8601932370724196034">Crostini ചിത്ര ഫയൽ</translation>
 <translation id="8609695766746872526">ഐസ്‌ലാന്‍ഡിക്</translation>

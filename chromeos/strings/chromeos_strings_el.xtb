@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Ακυρώθηκε</translation>
 <translation id="1020274983236703756">Διατίθενται πλέον αποκλειστικά στοιχεία <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Κίνηση της Γης</translation>
-<translation id="103306827243002956">Πρόσφατες ταπετσαρίες</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> νήματα, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Νέα διαθέσιμη λειτουργία. Χρησιμοποιήστε το πάνω βέλος για να μάθετε περισσότερα.</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Απαιτείται η επιλογή τουλάχιστον ενός λευκώματος γκαλερί.</translation>
 <translation id="2230005943220647148">Βαθμοί Κελσίου</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Δημιουργία περισσότερων</translation>
 <translation id="2236746079896696523">Εναλλαγή οπίσθιου φωτισμού πληκτρολογίου</translation>
 <translation id="2240366984605217732">Εναλλαγή διάταξης</translation>
 <translation id="225692081236532131">Κατάσταση ενεργοποίησης</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Προβολή διαφανειών</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> εικόνες</translation>
-<translation id="4305367063258930534">Ταπετσαρία που δημιουργήθηκε από την Google</translation>
 <translation id="4333390807948134856">Το πλήκτρο <ph name="KEY_NAME" /> πατήθηκε</translation>
 <translation id="4354430579665871434">πλήκτρο</translation>
 <translation id="4361257691546579041">Το APN είναι τύπου προεπιλογής.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
+<translation id="6108952804512516814">Δημιουργία με AI</translation>
 <translation id="6112878310391905610">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τους διαχειριστές σας</translation>
 <translation id="6113701710518389813">Επάνω βέλος</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> ακόμη λευκώματα</translation>

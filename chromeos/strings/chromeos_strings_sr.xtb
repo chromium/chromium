@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Отказано</translation>
 <translation id="1020274983236703756">Доступни су ексклузивни <ph name="PRODUCT_NAME" /> елементи</translation>
 <translation id="1022628058306505708">Ток Земље</translation>
-<translation id="103306827243002956">Недавне позадине</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> нити, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Доступна је нова функција. Користите тастер са стрелицом нагоре да бисте сазнали више.</translation>
 <translation id="1059913517121127803">Покретање скенирања није успело</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Проверите Chromebook-ов нови дигитални часопис за ауторе</translation>
 <translation id="1270369111467284986">Могућ улазни портал</translation>
 <translation id="1290331692326790741">Слаб сигнал</translation>
+<translation id="1300115153046603471">Тип назива приступне тачке је подразумевани и <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Ажурира се (завршено је <ph name="PERCENTAGE_VALUE" />%)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> минута</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Мора да буде изабран бар један албум ликовне галерије</translation>
 <translation id="2230005943220647148">Целзијус</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Направи још</translation>
 <translation id="2236746079896696523">Укључивање/искључивање позадинског осветљења тастатуре</translation>
 <translation id="2240366984605217732">Прекидач распореда</translation>
 <translation id="225692081236532131">Статус активације</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">Пројекција слајдова</translation>
 <translation id="4297501883039923494">Заустављено – непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слика</translation>
-<translation id="4305367063258930534">Позадину омогућава Google</translation>
 <translation id="4333390807948134856">Тастер <ph name="KEY_NAME" /> је притиснут</translation>
 <translation id="4354430579665871434">тастер</translation>
 <translation id="4361257691546579041">Назив приступне тачке је подразумеваног типа.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">Фаренхајт</translation>
 <translation id="584953448295717128">Назив приступне тачке се аутоматски открива.</translation>
 <translation id="5849570051105887917">Кôд добављача за Home</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Албум ликовне галерије</translation>
 <translation id="5859969039821714932">Пречица није доступна. Притисните нову пречицу без тастера <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Искључено</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">Скенирање је отказано</translation>
 <translation id="6106186594183574873">Да бисте завршили, унесите стару лозинку</translation>
 <translation id="6108689792487843350">Мрежни пролаз је недоступан</translation>
+<translation id="6108952804512516814">Правите помоћу вештачке интелигенције</translation>
 <translation id="6112878310391905610">Овим подешавањем управљају администратори</translation>
 <translation id="6113701710518389813">Стрелица нагоре</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, још <ph name="NUMBER" /> албума</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">Препознај позадину</translation>
 <translation id="6527081081771465939">Непознат безбедносни протокол за WiFi</translation>
 <translation id="6535178685492749208">Офлајн сте. Повратне информације ће бити послате касније.</translation>
+<translation id="6557784757915238407">Тип назива приступне тачке је <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Положено</translation>
 <translation id="6560196641871357166">Живописно</translation>
 <translation id="6564646048574748301">Није успело – штампач није доступан</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">конверзију</translation>
 <translation id="7415801143053185905">Веома велико HTTP кашњење</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Не можете да онемогућите нити уклоните овај назив приступне тачке. Уверите се да су омогућени називи приступних тачака који имају тип <ph name="ATTACH" /> онемогућени или уклоњени.</translation>
 <translation id="7458970041932198923">Повежите се на мрежу и поново учитајте страницу да бисте видели и подесили аватаре.</translation>
 <translation id="7469648432129124067">Откривен је портал</translation>
 <translation id="7481312909269577407">Напред</translation>

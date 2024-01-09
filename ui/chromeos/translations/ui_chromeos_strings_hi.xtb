@@ -76,7 +76,6 @@
 <translation id="162175252992296058">यूएस इंटरनैशनल कीबोर्ड के साथ पॉर्चुगीज़</translation>
 <translation id="1629521517399325891">नेटवर्क की पुष्टि करने के लिए, उपयोगकर्ता प्रमाणपत्र उपलब्ध नहीं है.</translation>
 <translation id="1641780993263690097">चाइनीज़ पिनयिन</translation>
-<translation id="1646019627374511909"><ph name="NUMBER_OF_ITEMS" /> फ़ाइलों को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
 <translation id="164969095109328410">Chrome डिवाइस</translation>
 <translation id="1661207570040737402">आपने Google Workspace के साथ शेयर की गई अपनी ड्राइव के स्टोरेज का इस्तेमाल कर लिया है.</translation>
 <translation id="1661867754829461514">पिन गुम</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">एडमिन नीति के तहत, <ph name="COUNT" /> फ़ाइलों को कॉपी करने की अनुमति नहीं है</translation>
 <translation id="6509122719576673235">नॉर्वेजियाई</translation>
 <translation id="6528513914570774834">इस डिवाइस के दूसरे उपयोगकर्ताओं को इस नेटवर्क का उपयोग करने दें</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> समन्वयित किया जा रहा है...</translation>
 <translation id="6549689063733911810">हाल के संग्रह</translation>
 <translation id="6558280019477628686">कोई गड़बड़ी हुई है. शायद कुछ आइटम नहीं हटाए गए हैं.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" हटा रहा है...</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Linux ऐप्लिकेशन को <ph name="FOLDER_NAME" /> फ़ोल्डर की फ़ाइलें ऐक्सेस करने की अनुमति दें</translation>
 <translation id="7555339735447658365">आप फ़िलहाल ऑफ़लाइन हैं. डिवाइस को इंटरनेट से कनेक्ट करने पर, फ़ाइल सिंक करने की सुविधा फिर से शुरू हो जाएगी</translation>
 <translation id="7589661784326793847">बस एक सेकंड इंतज़ार करें</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> को ऑफ़लाइन इस्तेमाल करने के लिए डाउनलोड किया जा रहा है</translation>
 <translation id="7600126690270271294">सर्बियन</translation>
 <translation id="7603724359189955920">ग्रिड</translation>
 <translation id="7627790789328695202">ओह, <ph name="FILE_NAME" /> पहले से मौजूद है. उसका नाम बदलें और फिर से प्रयास करें.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">खोलने के लिए फ़ाइल को चुनें</translation>
 <translation id="8577897833047451336">क्रोएशियन</translation>
 <translation id="8578308463707544055">इंडोनेशियन</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> आइटम समन्‍वयित कर रहा है...</translation>
 <translation id="8600173386174225982">फ़ाइल की सूची अब थंबनेल की तरह दिखाई जा रही है.</translation>
 <translation id="8601932370724196034">Crostini इमेज फ़ाइल</translation>
 <translation id="8609695766746872526">आइसलैंडिक</translation>

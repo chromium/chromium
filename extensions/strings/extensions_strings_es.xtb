@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">No se puede encontrar la ruta absoluta hasta el directorio donde está la extensión</translation>
 <translation id="5160071981665899014">No se ha podido cargar JavaScript (<ph name="RELATIVE_PATH" />) para la secuencia de comandos.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">No se admiten las ventanas con formas.</translation>
 <translation id="5456409301717116725">Esta extensión incluye el archivo de clave "<ph name="KEY_PATH" />". Probablemente no quieras incluir este archivo.</translation>
 <translation id="5486326529110362464">Debe existir un valor de entrada para la clave privada.</translation>
 <translation id="5972529113578162692"><ph name="EXTENSION_NAME" /> no se puede desinstalar porque el administrador de este ordenador requiere que esté instalado.</translation>

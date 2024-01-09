@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Nije moguće pronaći apsolutnu putanju do direktorijuma za pakovanje.</translation>
 <translation id="5160071981665899014">Učitavanje JavaScript-a <ph name="RELATIVE_PATH" /> za skriptu nije uspelo.</translation>
 <translation id="5356315618422219272">Prikaz aplikacije: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Prozori različitih oblika nisu podržani.</translation>
 <translation id="5456409301717116725">Ovaj dodatak sadrži datoteku ključa „<ph name="KEY_PATH" />“. Verovatno to ne želite.</translation>
 <translation id="5486326529110362464">Ulazna vrednost privatnog ključa mora da postoji.</translation>
 <translation id="5972529113578162692">Administrator ovog računara zahteva da dodatak <ph name="EXTENSION_NAME" /> bude instaliran. Ne možete da ga deinstalirate.</translation>

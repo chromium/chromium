@@ -5632,6 +5632,18 @@ Als je dit beleid niet toepast of niet instelt, staat Glanceables niet aan in <p
 <translation id="5790763087505467169">Minder meldingen voor automatisch starten van beheerde gastsessies</translation>
 <translation id="5800329278018669527">Prompt voor netwerkconfiguratie uitzetten als je offline bent</translation>
 <translation id="5802931736499687181">De Encrypted Reporting Pipeline uitzetten</translation>
+<translation id="5803715507113569033">Met dit beleid kunnen beheerders de activering van <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen.
+
+Als je het beleid instelt op <ph name="ALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> instellen als die dat wil.
+Nadat het instelproces is afgerond, wordt <ph name="MICROSOFT_ONE_DRIVE_NAME" /> geactiveerd in Bestandsbeheer.
+
+Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kan de gebruiker <ph name="MICROSOFT_ONE_DRIVE_NAME" /> niet instellen.
+
+Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, wordt geprobeerd <ph name="MICROSOFT_ONE_DRIVE_NAME" /> automatisch in te stellen. Hiervoor moet de gebruiker inloggen bij <ph name="PRODUCT_OS_NAME" /> met een Microsoft-account. Als dat niet werkt, wordt het instelproces weer getoond.
+
+Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.
+
+Je kunt meer accountbeperkingen toevoegen met het beleid <ph name="MICROSOFT_ONE_DRIVE_ACCOUNT_RESTRICTIONS" />.</translation>
 <translation id="5804795151506109282">Gebruikers niet vragen om te migreren.</translation>
 <translation id="5806128552675651249">Alleen afdrukken zonder achtergrondbeelden toestaan</translation>
 <translation id="5809210507920527553">Beheert instellingen voor de Linux-container (Crostini).</translation>
@@ -6101,6 +6113,21 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="6244210204546589761">URL's die worden geopend bij starten</translation>
 <translation id="624595269193747921">Of het zoeken naar de overeenkomende printer moet worden beperkt tot een specifieke reeks printers.</translation>
 <translation id="6246290059248303618">Mediabediening tonen voor <ph name="PRODUCT_NAME" />-sessies die worden gestart door andere apparaten in het lokale netwerk</translation>
+<translation id="6246420783859339814">Met dit beleid kunnen beheerders beperken welke accounts mogen inloggen bij <ph name="MICROSOFT_ONE_DRIVE_NAME" /> als het beleid <ph name="MICROSOFT_ONE_DRIVE_MOUNT_POLICY_NAME" /> wordt toegepast.
+
+Als dit beleid de waarde <ph name="COMMON_NAME" /> bevat, kan elk account worden gebruikt om in te loggen.
+
+Als dit beleid de waarde <ph name="ORGANIZATIONS_NAME" /> bevat, kunnen werk- of schoolaccounts worden gebruikt om in te loggen.
+
+Als dit beleid de waarde <ph name="CONSUMER_NAME" /> bevat, kunnen persoonlijke <ph name="MICROSOFT_NAME" />-accounts worden gebruikt om in te loggen.
+
+Als dit beleid domeinnamen of tenant-ID's bevat, kunnen accounts van deze domeinnamen of tenant-ID's (zie https://learn.microsoft.com/en-us/azure/active-directory/develop/v2-protocols#endpoints) worden gebruikt om in te loggen.
+
+Als dit beleid niet is ingesteld of alleen een lege waarde bevat, gedraagt het zich alsof '<ph name="COMMON_NAME" />' is aangegeven voor gewone gebruikers. Voor zakelijke gebruikers gedraagt het zich alsof '<ph name="ORGANIZATIONS_NAME" />' is aangegeven.
+
+Als je de beperkingen wijzigt, kunnen gebruikers worden uitgelogd van hun <ph name="MICROSOFT_ONE_DRIVE_NAME" />-account als dit niet voldoet aan de nieuwe beperkingen.
+
+Opmerking: Op dit moment wordt alleen rekening gehouden met de eerste vermelding. Latere extensies ondersteunen meerdere vermeldingen.</translation>
 <translation id="6247316685259031374">Met dit beleid wordt het sandboxproces voor audio beheerd.
       Als dit beleid is toegepast, wordt het audioproces uitgevoerd in een sandbox.
       Als dit beleid niet is toegepast, wordt het audioproces niet uitgevoerd in een sandbox en wordt de WebRTC-audioverwerkingsmodule uitgevoerd in het proces van het weergaveprogramma.
@@ -7103,6 +7130,16 @@ Dit beleid wordt in de toekomst verwijderd nadat de functie voor afdrukstuurprog
       Als U2F is geselecteerd, gedraagt de geïntegreerde tweede factor zich overeenkomstig de FIDO U2F-specificatie.
 
       Als U2F_EXTENDED is geselecteerd, verstrekt de geïntegreerde tweede factor de U2F-functies plus enkele extensies voor individuele bevestiging.</translation>
+<translation id="69942621143543910">Met dit beleid kunnen beheerders het <ph name="CLOUD_UPLOAD_NAME" />-proces instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> op <ph name="PRODUCT_OS_NAME" />.
+
+Als je het beleid instelt op <ph name="ALLOWED_NAME" />, kunnen gebruikers het <ph name="CLOUD_UPLOAD_NAME" />-proces instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> als ze dat willen.
+Nadat het instelproces is afgerond, worden bestanden met overeenkomende bestandsindelingen standaard verplaatst naar <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en door de <ph name="MICROSOFT_365_NAME" />-app verwerkt als de gebruiker ze probeert te openen.
+
+Als je het beleid instelt op <ph name="DISALLOWED_NAME" />, kan de gebruiker het <ph name="CLOUD_UPLOAD_NAME" />-proces niet instellen voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en <ph name="MICROSOFT_365_NAME" /> zoals hierboven beschreven en wordt <ph name="MICROSOFT_365_NAME" /> verwijderd uit de lijst met mogelijke bestandshandlers.
+
+Als je het beleid instelt op <ph name="AUTOMATED_NAME" />, stel je het <ph name="CLOUD_UPLOAD_NAME" />-proces voor <ph name="MICROSOFT_ONE_DRIVE_NAME" /> en<ph name="MICROSOFT_365_NAME" /> automatisch in, zodat bestanden met overeenkomende bestandsindelingen standaard naar<ph name="MICROSOFT_ONE_DRIVE_NAME" /> worden verplaatst en door de <ph name="MICROSOFT_365_NAME" />-app worden verwerkt als de gebruiker ze probeert te openen.
+
+Als je het beleid niet instelt, is dit functioneel gelijk aan het beleid instellen op <ph name="ALLOWED_NAME" /> voor gewone gebruikers. Voor zakelijke gebruikers waarvoor het beleid niet is ingesteld, wordt standaard <ph name="DISALLOWED_NAME" /> gebruikt.</translation>
 <translation id="6999948519306285655">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="PROXY_SETTINGS_POLICY_NAME" />.
 
        Als je het beleid instelt, kun je een URL naar een pac-bestand voor de proxy opgeven. Dit beleid is alleen van kracht als het beleid <ph name="PROXY_SETTINGS_POLICY_NAME" /> niet is opgegeven en je <ph name="PROXY_MODE_ENUM_PAC_SCRIPT" /> hebt geselecteerd met <ph name="PROXY_MODE_POLICY_NAME" />.

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Zrušeno</translation>
 <translation id="1020274983236703756">Jsou k dispozici exkluzivní položky pro <ph name="PRODUCT_NAME" /></translation>
 <translation id="1022628058306505708">Plynoucí Země</translation>
-<translation id="103306827243002956">Nedávné tapety</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (počet vláken: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1059913517121127803">Skenování se nepodařilo zahájit</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Prohlédněte si nový digitální časopis Chromebooku pro autory</translation>
 <translation id="1270369111467284986">Podezření na captive portál</translation>
 <translation id="1290331692326790741">Slabý signál</translation>
+<translation id="1300115153046603471">APN je typu výchozí a <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Aktualizace (dokončeno <ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> min</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Je potřeba vybrat alespoň jedno album v Galerii umění</translation>
 <translation id="2230005943220647148">Stupně Celsia</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Vytvořit další</translation>
 <translation id="2236746079896696523">Přepínač podsvícení klávesnice</translation>
 <translation id="2240366984605217732">Přepnout rozvržení</translation>
 <translation id="225692081236532131">Stav aktivace</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Prezentace</translation>
 <translation id="4297501883039923494">Zastaveno – neznámá chyba</translation>
 <translation id="4300073214558989">Počet obrázků: <ph name="IMAGE_COUNT" /></translation>
-<translation id="4305367063258930534">Tapeta od Googlu</translation>
 <translation id="4333390807948134856">Klávesa <ph name="KEY_NAME" /> byla stisknuta</translation>
 <translation id="4354430579665871434">klávesa</translation>
 <translation id="4361257691546579041">APN je typu výchozí.</translation>
 <translation id="437294888293595148">Resetovat všechny zkratky</translation>
+<translation id="4376423484621194274">Váš administrátor aplikaci <ph name="APP_NAME" /> nedovoluje zavřít</translation>
 <translation id="4378373042927530923">Nespuštěno</translation>
 <translation id="4378551569595875038">Připojování...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Stupně Fahrenheita</translation>
 <translation id="584953448295717128">APN je detekován automaticky.</translation>
 <translation id="5849570051105887917">Kód domácího poskytovatele</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Album galerie umění</translation>
 <translation id="5859969039821714932">Zkratka není k dispozici. Stiskněte novou zkratku bez klávesy <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Vypnuto</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
+<translation id="6108952804512516814">Vytváření pomocí umělé inteligence</translation>
 <translation id="6112878310391905610">Toto nastavení spravuje administrátor.</translation>
 <translation id="6113701710518389813">Šipka nahoru</translation>
 <translation id="6117895505466548728"><ph name="TITLE" /> a další alba (<ph name="NUMBER" />)</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Přizpůsobit tapetě</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
 <translation id="6535178685492749208">Jste offline. Zpětná vazba se odešle později.</translation>
+<translation id="6557784757915238407">APN je typu <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
 <translation id="6560196641871357166">Živá</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">převod</translation>
 <translation id="7415801143053185905">Velmi vysoká latence požadavků HTTP</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Tento APN nelze deaktivovat ani odstranit. Je třeba deaktivovat nebo odstranit aktivované APN typu <ph name="ATTACH" />.</translation>
 <translation id="7458970041932198923">Pokud chcete zobrazit a nastavit avatary, připojte se k síti a znovu načtěte stránku.</translation>
 <translation id="7469648432129124067">Byl zjištěn portál</translation>
 <translation id="7481312909269577407">Vpřed</translation>

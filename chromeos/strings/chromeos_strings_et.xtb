@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Tühistatud</translation>
 <translation id="1020274983236703756">Eksklusiivsed teenuse <ph name="PRODUCT_NAME" /> varad on nüüd saadaval</translation>
 <translation id="1022628058306505708">Maa vool</translation>
-<translation id="103306827243002956">Hiljutised taustapildid</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> haru, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Uued funktsioonid on saadaval. Lisateabe saamiseks kasutage ülesnoolt.</translation>
 <translation id="1059913517121127803">Skannimist ei saanud alustada</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Vaadake Chromebooki uut kujundajatele ja kunstnikele mõeldud digiajakirja</translation>
 <translation id="1270369111467284986">Kahtlustatakse hõiveportaali</translation>
 <translation id="1290331692326790741">Nõrk signaal</translation>
+<translation id="1300115153046603471">APN-i tüüp on vaike-APN ja <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Värskendamine (<ph name="PERCENTAGE_VALUE" />% lõpetatud)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutit</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Valima peab vähemalt ühe kunstigalerii albumi</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Loo veel</translation>
 <translation id="2236746079896696523">Klaviatuuri taustavalguse lüliti</translation>
 <translation id="2240366984605217732">Paigutuse lüliti</translation>
 <translation id="225692081236532131">Aktiveerimise olek</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Slaidiseanss</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
-<translation id="4305367063258930534">Google'i loodud taustapilt</translation>
 <translation id="4333390807948134856">Klahv <ph name="KEY_NAME" /> on alla vajutatud</translation>
 <translation id="4354430579665871434">klahv</translation>
 <translation id="4361257691546579041">APN on vaiketüüp.</translation>
 <translation id="437294888293595148">Lähtesta kõik otseteed</translation>
+<translation id="4376423484621194274">Teie administraator ei luba rakendust <ph name="APP_NAME" /> sulgeda</translation>
 <translation id="4378373042927530923">Ei käitatud</translation>
 <translation id="4378551569595875038">Ühendamine ...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">APN tuvastatakse automaatselt.</translation>
 <translation id="5849570051105887917">Koduteenuse pakkuja kood</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Kunstigalerii album</translation>
 <translation id="5859969039821714932">Otsetee pole saadaval. Vajutage uut otseteed ilma klahvita <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Väljas</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
+<translation id="6108952804512516814">Looge AI-ga</translation>
 <translation id="6112878310391905610">Seda seadet haldavad administraatorid</translation>
 <translation id="6113701710518389813">Ülesnool</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, + veel <ph name="NUMBER" /> albumit</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Ühita taustapildiga</translation>
 <translation id="6527081081771465939">Tundmatu WiFi-turvaprotokoll</translation>
 <translation id="6535178685492749208">Võrguühendus puudub. Tagasiside saadetakse hiljem.</translation>
+<translation id="6557784757915238407">APN-i tüüp: <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Tasaskanner</translation>
 <translation id="6560196641871357166">Ergas</translation>
 <translation id="6564646048574748301">Ebaõnnestus – printeriga ei saa ühendust</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">teisendus</translation>
 <translation id="7415801143053185905">Väga pikk HTTP latentsusaeg</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Seda APN-i ei saa keelata ega eemaldada. Veenduge, et lubatud <ph name="ATTACH" />-tüüpi APN-id oleksid keelatud või eemaldatud.</translation>
 <translation id="7458970041932198923">Avataride vaatamiseks ja määramiseks looge ühendus võrguga ja laadige leht uuesti.</translation>
 <translation id="7469648432129124067">Tuvastati portaal</translation>
 <translation id="7481312909269577407">Edasta</translation>

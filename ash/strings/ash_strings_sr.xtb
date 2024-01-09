@@ -1506,6 +1506,7 @@
 <translation id="7025533177575372252">Повежите <ph name="DEVICE_NAME" /> са телефоном</translation>
 <translation id="7026338066939101231">Смањење</translation>
 <translation id="7029814467594812963">Изађи из сесије</translation>
+<translation id="7031303610220416229">Погледајте све задатке у Google задацима</translation>
 <translation id="7032161822340700104">Дозвољено је само 6 шаблона. Уклоните шаблон да бисте сачували нови.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> жели да користи уређај <ph name="DEVICE_NAME" />. Укључите физички прекидач на уређају за: <ph name="DEVICE_NAME" />.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google помоћник</translation>
@@ -1819,6 +1820,7 @@
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> се користи.</translation>
 <translation id="8369166482916924789">Сачувана радна површина, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8370414029565771236">Потражите <ph name="TEXT" /></translation>
 <translation id="8371779926711439835">Слово унапред</translation>
 <translation id="8371991222807690464">Учинак периферног уређаја је можда ограничен у режиму госта</translation>
 <translation id="8374601332003098278">Притисните Enter да бисте снимили део екрана</translation>

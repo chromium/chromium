@@ -76,7 +76,6 @@
 <translation id="162175252992296058">পর্তুগিজ ভাষায় ইউএস ইন্টারন্যাশনাল কীবোর্ড</translation>
 <translation id="1629521517399325891">নেটওয়ার্ক যাচাইকরণের জন্য ইউজার সার্টিফিকেট উপলভ্য নেই।</translation>
 <translation id="1641780993263690097">চীনা পিনইন</translation>
-<translation id="1646019627374511909">অফলাইনে দেখার জন্য <ph name="NUMBER_OF_ITEMS" />টি ফাইল ডাউনলোড করা হচ্ছে</translation>
 <translation id="164969095109328410">Chrome ডিভাইস</translation>
 <translation id="1661207570040737402">আপনার সমস্ত শেয়ার্ড ড্রাইভ Google Workspace স্টোরেজ ব্যবহার করেছেন।</translation>
 <translation id="1661867754829461514">পিন হারিয়েছে</translation>
@@ -717,7 +716,6 @@
 <translation id="6503285896705205014">অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী <ph name="COUNT" />টি ফাইল কপি করার সুবিধা ব্লক করা হয়েছে</translation>
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
 <translation id="6528513914570774834">এই ডিভাইসের অন্যান্য ব্যবহারকারীদের এই নেটওয়ার্ক ব্যবহার করতে দিন</translation>
-<translation id="653019979737152879"><ph name="FILE_NAME" /> সিঙ্ক হচ্ছে...</translation>
 <translation id="6549689063733911810">সাম্প্রতিক</translation>
 <translation id="6558280019477628686">একটি ত্রুটি হয়েছে৷ কিছু আইটেম হয়ত মোছা যায়নি।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মোছা হচ্ছে...</translation>
@@ -851,7 +849,6 @@
 <translation id="7553492409867692754">Linux অ্যাপকে <ph name="FOLDER_NAME" /> ফোল্ডারের ফাইল অ্যাক্সেস করার অনুমতি দিন</translation>
 <translation id="7555339735447658365">আপনি বর্তমানে অফলাইন আছেন। আপনি ইন্টারনেটের সাথে কানেক্ট করলে, ফাইল সিঙ্ক করার প্রসেস আবার চালু হবে</translation>
 <translation id="7589661784326793847">এক সেকেন্ড অপেক্ষা করুন</translation>
-<translation id="7592775719802218421">অফলাইনে দেখার জন্য <ph name="FILE_NAME" /> ডাউনলোড করা হচ্ছে</translation>
 <translation id="7600126690270271294">সার্বিয়ান</translation>
 <translation id="7603724359189955920">গ্রিড</translation>
 <translation id="7627790789328695202">ওহো, <ph name="FILE_NAME" /> ইতিমধ্যেই বিদ্যমান রয়েছে৷ এটির পুনঃনামকরণ করুন এবং আবার চেষ্টা করুন৷</translation>
@@ -1006,7 +1003,6 @@
 <translation id="8569764466147087991">খুলতে একটি স্ক্রিপ্ট বেছে নিন</translation>
 <translation id="8577897833047451336">ক্রোয়েশিয়ান</translation>
 <translation id="8578308463707544055">ইন্দোনেশিয়ান</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" />টি আইটেম সিঙ্ক করা হচ্ছে...</translation>
 <translation id="8600173386174225982">থাম্বনেল ভিউতে ফাইলের তালিকা পরিবর্তিত হয়েছে।</translation>
 <translation id="8601932370724196034">Crostini ছবির ফাইল</translation>
 <translation id="8609695766746872526">আইসল্যান্ডিক</translation>

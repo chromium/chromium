@@ -470,6 +470,7 @@
 <translation id="1363585519747660921">USB штампач треба да се конфигурише</translation>
 <translation id="136378536198524553">Уштеда енергије је укључена</translation>
 <translation id="136522805455656552">Да бисте заштитили уређај, треба да покрећете и инсталирате софтвер само из поузданих извора и од поузданих програмера. <ph name="LEARN_MORE" /></translation>
+<translation id="1367817137674340530">Број генерисаних слика је <ph name="COUNT" /></translation>
 <translation id="1368603372088757436">Linux није подржан на уређају <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="1370384480654163477">Прегледајте и измените фајлове од последње посете овом сајту:</translation>
 <translation id="1372841398847029212">Синхронизујте са налогом</translation>
@@ -3221,7 +3222,6 @@
 <translation id="3474218480460386727">Користите 99 слова или мање за нове речи</translation>
 <translation id="3474624961160222204">Настави као <ph name="NAME" /></translation>
 <translation id="3476303763173086583">Шаљите податке о коришћењу и дијагностичке податке. Помозите нам да побољшамо Android доживљај за дете тако што ћете аутоматски слати Google-у податке о дијагностици и коришћењу уређаја и апликација. Те информације се неће користити за идентификацију детета и помоћи ће у одржавању стабилности система и апликације и другим подешавањима. Неки обједињени подаци ће такође помоћи Google апликацијама и партнерима, попут Android програмера. То <ph name="BEGIN_LINK1" />подешавање<ph name="END_LINK1" /> примењује власник. Власник може да изабере да се подаци о дијагностици и коришћењу за овај уређај шаљу Google-у. Ако за дете укључите подешавање додатне активности на вебу и у апликацијама, ти подаци ће се можда чувати на Google налогу детета. <ph name="BEGIN_LINK2" />Сазнајте више<ph name="END_LINK2" /></translation>
-<translation id="347670947055184738">Упс! Систем није успео да преузме смернице за уређај.</translation>
 <translation id="347785443197175480">И даље дозвољавај сајту <ph name="HOST" /> да приступа камери и микрофону</translation>
 <translation id="3479357084663933762">Деутераномалија</translation>
 <translation id="3479552764303398839">Не сада</translation>
@@ -3230,6 +3230,7 @@
 <translation id="3480612136143976912">Прилагодите величину и стил титла уживо. Неке апликације и сајтови такође користе ово подешавање.</translation>
 <translation id="3480827850068960424">Пронађених картица: <ph name="NUM" /></translation>
 <translation id="3481268647794498892">Отвара се у прегледачу <ph name="ALTERNATIVE_BROWSER_NAME" /> за <ph name="COUNTDOWN_SECONDS" /> сек</translation>
+<translation id="348247802372410699">Одаберите стил</translation>
 <translation id="348268549820508141">Препознавање говора</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> може да прегледа следеће датотеке</translation>
 <translation id="3484595034894304035">Персонализујте позадину, чувар екрана, тамну тему и друго</translation>
@@ -5914,6 +5915,7 @@
 <translation id="560834977503641186">WiFi синхронизација, сазнајте више</translation>
 <translation id="5608580678041221894">Додирните следеће тастере да бисте прилагодили или преместили област опсецања</translation>
 <translation id="5609231933459083978">Изгледа да је апликација неважећа.</translation>
+<translation id="5611398002774823980">Сачувај на налогу</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Обавештење о кориснику</translation>
 <translation id="5614553682702429503">Желите ли да сачувате лозинку?</translation>
@@ -6085,6 +6087,7 @@
 <translation id="5756163054456765343">Ц&amp;ентар за помоћ</translation>
 <translation id="5757187557809630523">следећа песма</translation>
 <translation id="5758631781033351321">Овде ћете пронаћи листу за читање</translation>
+<translation id="5759397201362801675">Одаберите расположење</translation>
 <translation id="5759728514498647443">Документе које шаљете на штампање преко <ph name="APP_NAME" /> може да чита <ph name="APP_NAME" />.</translation>
 <translation id="5762787084360227629">Унесите информације о Google налогу</translation>
 <translation id="5763751966069581670">Није пронађен ниједан USB уређај</translation>
@@ -6377,6 +6380,7 @@
 <translation id="5979421442488174909">&amp;Преведи на <ph name="LANGUAGE" /> </translation>
 <translation id="5979469435153841984">Да бисте обележили страницу, кликните на звездицу у траци за адресу.</translation>
 <translation id="5982578203375898585">Прикажи преузимања када се заврше</translation>
+<translation id="5983716913605894570">Генерише се…</translation>
 <translation id="5984222099446776634">Недавно посећено</translation>
 <translation id="5985458664595100876">Неважећи формат URL-а. Подржани формати су \\server\share и smb://server/share.</translation>
 <translation id="598810097218913399">Уклоните доделу</translation>
@@ -10431,6 +10435,7 @@
 <translation id="9114663181201435112">Лако се пријављујте</translation>
 <translation id="9115675100829699941">&amp;Обележивачи</translation>
 <translation id="9115932142612197835">Ово подешавање не мења доступност Google преводиоца или Објектива</translation>
+<translation id="9116366756388192417">Одаберите тему</translation>
 <translation id="9116799625073598554">Апликација за прављење белешки</translation>
 <translation id="9117030152748022724">Управљајте апликацијама</translation>
 <translation id="9120362425083889527">Инсталација није успела. Пробајте поново или затворите овај прозор</translation>

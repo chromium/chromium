@@ -604,6 +604,7 @@
 <translation id="2135799067377889518">Kişi geyimləri</translation>
 <translation id="2137891579555018930">İcazə gözlənilir...</translation>
 <translation id="213826338245044447">Mobil Əlfəcinlər</translation>
+<translation id="2141000681034340397">Daxiletməni redaktə edin</translation>
 <translation id="214556005048008348">Ödənişi ləğv edin</translation>
 <translation id="2148613324460538318">Kart Əlavə Edin</translation>
 <translation id="2148716181193084225">Bu gün</translation>
@@ -1388,6 +1389,7 @@
 <translation id="3736520371357197498">Güvənliyinizin üzləşdiyi riskləri anlayırsınızsa, təhlükəli proqramlar silinmədən öncə <ph name="BEGIN_LINK" />güvənsiz sayta daxil ola bilərsiniz<ph name="END_LINK" />.</translation>
 <translation id="3736739313435669994">Saytların baxış zamanı sizi izləmək üçün üçüncü tərəf kukilərindən istifadəsini blokladınız. <ph name="LINK" /> üçün ayarlara daxil olun.</translation>
 <translation id="3738166223076830879">Brauzeriniz administratorunuz tərəfindən idarə edilir.</translation>
+<translation id="3739842843727261045">"Baş barmaq yuxarı" bu nəticələri bəyəndiyinizi göstərir</translation>
 <translation id="3740319564441798148">Uzun məsafəli avtobus və dəmir yolu</translation>
 <translation id="3740447166056383374">Kopyalamazdan əvvəl nəzərdən keçirilməlidir</translation>
 <translation id="374325029554577103">Fitnes texnologiyası məhsulları</translation>
@@ -2609,6 +2611,7 @@
 <translation id="6232271601416750929">Zərərsiz gözəllik məhsulları</translation>
 <translation id="6234122620015464377">Hər sənəddən sonra kəsin</translation>
 <translation id="6236290670123303279">Ayarları idarə edin</translation>
+<translation id="623825323736974198">Həmişə aktiv qalacaq və yaddaşı boşaldılmayacaq saytları idarə edin</translation>
 <translation id="6240447795304464094">Google Pay loqosu</translation>
 <translation id="6240964651812394252">Əməliyyat sisteminiz ilə Google Parol menecerindən istifadə üçün Chrome-u yenidən başladın və kompüterin parol menecerinə giriş imkanı verin. Yenidən başlatmadan sonra tablar təkrar açılacaq.</translation>
 <translation id="6241121617266208201">Təklifləri gizlədin</translation>
@@ -4081,6 +4084,7 @@
 <translation id="9089260154716455634">Qeyri-iş saatları siyasəti:</translation>
 <translation id="9090243919347147717">Qoşmalar</translation>
 <translation id="9093723786115107672">Gecə paltarı</translation>
+<translation id="9094544726794842788">"Baş barmaq aşağı" seçdikdə bu nəticələri bəyənməməyinizlə bağlı ətraflı rəy təqdim etmək üçün forma açılır</translation>
 <translation id="9095388113577226029">Digər dillər...</translation>
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq iOS ayarlarında Chrome'u sistemin defolt brauzeri kimi ayarlayın</translation>
 <translation id="9096679202588811390">TV şoular və proqramlar</translation>

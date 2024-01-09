@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Португальский, американская международная раскладка</translation>
 <translation id="1629521517399325891">Сертификат пользователя нельзя использовать для аутентификации сети.</translation>
 <translation id="1641780993263690097">Китайский, пиньинь</translation>
-<translation id="1646019627374511909">Скачивание файлов (<ph name="NUMBER_OF_ITEMS" />) для офлайн-доступа…</translation>
 <translation id="164969095109328410">Устройство Chrome</translation>
 <translation id="1661207570040737402">Закончилось место на общем диске Google Workspace.</translation>
 <translation id="1661867754829461514">PIN-код отсутствует</translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">Администратор запретил копировать файлы (<ph name="COUNT" />).</translation>
 <translation id="6509122719576673235">Норвежский</translation>
 <translation id="6528513914570774834">Предоставить другим пользователям устройства доступ к этой сети</translation>
-<translation id="653019979737152879">Синхронизация файла "<ph name="FILE_NAME" />"…</translation>
 <translation id="6549689063733911810">Недавние</translation>
 <translation id="6558280019477628686">Произошла ошибка. Возможно, не все элементы были удалены.</translation>
 <translation id="656398493051028875">Удаление файла "<ph name="FILENAME" />"…</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Приложения Linux смогут получать доступ к файлам папки "<ph name="FOLDER_NAME" />".</translation>
 <translation id="7555339735447658365">Сейчас включен офлайн-режим. Синхронизация файлов возобновится, когда вы подключитесь к интернету.</translation>
 <translation id="7589661784326793847">Подождите…</translation>
-<translation id="7592775719802218421">Скачивание файла "<ph name="FILE_NAME" />" для офлайн-доступа…</translation>
 <translation id="7600126690270271294">Сербский</translation>
 <translation id="7603724359189955920">Сетка</translation>
 <translation id="7627790789328695202">Файл "<ph name="FILE_NAME" />" уже существует. Задайте другое название и повторите попытку.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Выберите файл</translation>
 <translation id="8577897833047451336">Хорватский</translation>
 <translation id="8578308463707544055">Индонезийский</translation>
-<translation id="8579285237314169903">Синхронизация файлов (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Файлы отображаются в виде значков.</translation>
 <translation id="8601932370724196034">Графический файл Crostini</translation>
 <translation id="8609695766746872526">Исландский</translation>

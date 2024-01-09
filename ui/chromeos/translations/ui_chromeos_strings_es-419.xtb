@@ -76,7 +76,6 @@
 <translation id="162175252992296058">Portugués con teclado internacional de EE.UU.</translation>
 <translation id="1629521517399325891">El certificado del usuario no está disponible para realizar la autenticación de la red.</translation>
 <translation id="1641780993263690097">Chino (Pinyin)</translation>
-<translation id="1646019627374511909">Habilitando el acceso sin conexión a <ph name="NUMBER_OF_ITEMS" /> archivos</translation>
 <translation id="164969095109328410">Dispositivo Chrome</translation>
 <translation id="1661207570040737402">Usaste todo tu almacenamiento de la unidad compartida de Google Workspace.</translation>
 <translation id="1661867754829461514">Falta el número de PIN </translation>
@@ -718,7 +717,6 @@
 <translation id="6503285896705205014">La política del administrador no permite copiar <ph name="COUNT" /> archivos</translation>
 <translation id="6509122719576673235">Noruego</translation>
 <translation id="6528513914570774834">Permitir que otros usuarios de este dispositivo usen esta red</translation>
-<translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">Recientes</translation>
 <translation id="6558280019477628686">Se produjo un error. Es posible que no se hayan borrado algunos elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"…</translation>
@@ -852,7 +850,6 @@
 <translation id="7553492409867692754">Permitir que las apps de Linux accedan a los archivos de la carpeta <ph name="FOLDER_NAME" />.</translation>
 <translation id="7555339735447658365">Actualmente, no tienes conexión. La sincronización de archivos se reanudará cuando te conectes a Internet.</translation>
 <translation id="7589661784326793847">Espera un momento.</translation>
-<translation id="7592775719802218421">Permitiendo que <ph name="FILE_NAME" /> esté disponible sin conexión</translation>
 <translation id="7600126690270271294">Serbio</translation>
 <translation id="7603724359189955920">Cuadrículas</translation>
 <translation id="7627790789328695202">El archivo <ph name="FILE_NAME" /> ya existe. Cambia el nombre y vuelve a intentarlo.</translation>
@@ -1007,7 +1004,6 @@
 <translation id="8569764466147087991">Seleccionar un archivo para abrir</translation>
 <translation id="8577897833047451336">Croata</translation>
 <translation id="8578308463707544055">Indonesio</translation>
-<translation id="8579285237314169903">Sincronizando <ph name="NUMBER_OF_FILES" /> elementos…</translation>
 <translation id="8600173386174225982">La lista de archivos cambió a la vista de miniaturas.</translation>
 <translation id="8601932370724196034">Archivo de imagen de Crostini</translation>
 <translation id="8609695766746872526">Islandés</translation>

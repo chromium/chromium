@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1020274983236703756">Éléments <ph name="PRODUCT_NAME" /> exclusifs désormais disponibles</translation>
 <translation id="1022628058306505708">Earth Flow</translation>
-<translation id="103306827243002956">Fonds d'écran récents</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> fils d'exécution, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Une nouvelle fonctionnalité est proposée, servez-vous de la touche de flèche vers le haut pour en savoir plus.</translation>
 <translation id="1059913517121127803">Impossible de démarrer la numérisation</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Consultez le nouveau magazine numérique de Chromebook pour les créateurs</translation>
 <translation id="1270369111467284986">Un portail captif semble être présent</translation>
 <translation id="1290331692326790741">Signal faible</translation>
+<translation id="1300115153046603471">Le nom de point d'accès est de type par défaut et <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Mise à jour en cours… (<ph name="PERCENTAGE_VALUE" /> %)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutes</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Vous devez sélectionner au moins un album de galerie d'art</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">En créer plus</translation>
 <translation id="2236746079896696523">Commutateur de rétroéclairage du clavier</translation>
 <translation id="2240366984605217732">Commutateur de la disposition du clavier</translation>
 <translation id="225692081236532131">État de l'activation</translation>
@@ -444,11 +443,11 @@
 <translation id="4289849978083912975">Diaporama</translation>
 <translation id="4297501883039923494">Tâche arrêtée : erreur inconnue</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
-<translation id="4305367063258930534">Fond d'écran produit par Google</translation>
 <translation id="4333390807948134856">Touche <ph name="KEY_NAME" /> enfoncée</translation>
 <translation id="4354430579665871434">touche</translation>
 <translation id="4361257691546579041">Le nom de point d'accès est de type par défaut.</translation>
 <translation id="437294888293595148">Réinitialiser tous les raccourcis</translation>
+<translation id="4376423484621194274">Votre administrateur n'autorise pas la fermeture de <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Routine non exécutée</translation>
 <translation id="4378551569595875038">Connexion...</translation>
 <translation id="4382484599443659549">PDF</translation>
@@ -649,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">Le nom de point d'accès (APN) est automatiquement détecté.</translation>
 <translation id="5849570051105887917">Code de propriétaire</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Album de galerie d'art</translation>
 <translation id="5859969039821714932">Raccourci non accessible. Appuyez sur un nouveau raccourci sans <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Désactivé</translation>
@@ -686,6 +686,7 @@
 <translation id="6104112872696127344">La numérisation a été annulée</translation>
 <translation id="6106186594183574873">Pour terminer cette opération, entrez votre ancien mot de passe</translation>
 <translation id="6108689792487843350">Impossible d'atteindre la passerelle</translation>
+<translation id="6108952804512516814">Créer avec l'IA</translation>
 <translation id="6112878310391905610">Ce paramètre est géré par vos administrateurs</translation>
 <translation id="6113701710518389813">Flèche vers le haut</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, +<ph name="NUMBER" /> autres albums</translation>
@@ -754,6 +755,7 @@
 <translation id="6526200165918397681">Fond d'écran assorti</translation>
 <translation id="6527081081771465939">Protocole de sécurité Wi-Fi inconnu</translation>
 <translation id="6535178685492749208">Vous êtes hors ligne. Les commentaires seront envoyés plus tard.</translation>
+<translation id="6557784757915238407">Le nom de point d'accès est de type <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">À plat</translation>
 <translation id="6560196641871357166">Vibrant</translation>
 <translation id="6564646048574748301">Échec : imprimante inaccessible</translation>
@@ -867,6 +869,7 @@
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>
 <translation id="7469648432129124067">Portail détecté</translation>
 <translation id="7481312909269577407">Suivant</translation>

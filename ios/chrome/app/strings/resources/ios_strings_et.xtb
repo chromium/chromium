@@ -406,6 +406,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3087734570205094154">Alaserv</translation>
 <translation id="3090455602619185166">Sisselogimine hallatud kontoga</translation>
 <translation id="309710370695886264">Teil on 1 korduvalt kasutatud parool. Turvalisuse tagamiseks parandage see kohe.</translation>
+<translation id="3109724472072898302">Ahendatud</translation>
 <translation id="3112556859945124369">Märgi …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Vaadake, mida sünkroonida saate<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Ajalugu ja muu</translation>
@@ -527,7 +528,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3779810277399252432">Interneti-ühendus puudub.</translation>
 <translation id="3789294999358192700">Järgige allolevaid juhiseid.</translation>
 <translation id="3789841737615482174">Installi</translation>
-<translation id="3792713031001122343">{count,plural, =1{Salvestage 1 järjehoidja oma Google'i kontole}other{Salvestage {count} järjehoidjat oma Google'i kontole}}</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803696231112616155">Selle saidi tõlkimise pakkumine</translation>
 <translation id="3810973564298564668">Halda</translation>
@@ -1566,7 +1566,6 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="952704832371081537">Tühista</translation>
 <translation id="959066944189734975">Jälgite kanalit <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Muude seadmete vahelehesoovituste kuvamine</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Saate salvestada domeeni {DOMAIN_ONE} parooli oma Google’i kontole {EMAIL}}=2{Saate salvestada domeenide {DOMAIN_ONE} ja {DOMAIN_TWO} paroolid oma Google’i kontole {EMAIL}}=3{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel{OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}}other{Saate salvestada domeenide {DOMAIN_ONE}, {DOMAIN_TWO} ja veel {OTHER_DOMAINS_COUNT} muu domeeni paroolid oma Google’i kontole {EMAIL}}}</translation>
 <translation id="973493300226275298">Jälgige toote hinda veebipoodides. Saate teavitusi, kui hind langeb.</translation>
 <translation id="981498610235328462">Teie organisatsioon lubab sisse logida vaid teatud kontodega. Kontod, mis pole lubatud, on peidetud.</translation>
 <translation id="984509647832111802">Sünkroonimine ei tööta.</translation>

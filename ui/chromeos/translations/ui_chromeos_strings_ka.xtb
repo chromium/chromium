@@ -76,7 +76,6 @@
 <translation id="162175252992296058">პორტუგალიური აშშ-ის საერთაშორისო კლავიატურით</translation>
 <translation id="1629521517399325891">მომხმარებლის სერტიფიკატი მიუწვდომელია ქსელის ავტორიზაციისთვის.</translation>
 <translation id="1641780993263690097">ჩინური პინ-ინი</translation>
-<translation id="1646019627374511909">მიმდინარეობს <ph name="NUMBER_OF_ITEMS" /> ფაილის ხაზგარეშე ხელმისაწვდომად გარდაქმნა</translation>
 <translation id="164969095109328410">Chrome მოწყობილობა</translation>
 <translation id="1661207570040737402">საზიარო დისკზე მთლიანად გამოყენებული გაქვთ Google Workspace მეხსიერება.</translation>
 <translation id="1661867754829461514">PIN არ არის</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">მადლობის წარწერა</translation>
 <translation id="2088690981887365033">VPN ქსელი</translation>
 <translation id="209653272837065803">ფაილების სინქრონიზაციის გასაგრძელებლად საკმარისი მეხსიერება არ არის</translation>
+<translation id="2099143626019777139">თქვენ მიერ მონახულებული ვებსაიტები ხილულია თქვენი ადმინისტრატორისთვის. შეგიძლიათ ნახოთ ხილული ვებსაიტების სია.</translation>
 <translation id="2111134541987263231">ჩართეთ <ph name="BEGIN_BOLD" />ინკოგნიტოში დაშვება<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">წაშლილებში არსებული <ph name="NUMBER_OF_ITEMS" /> ერთეული წაიშლება და მათ აღდგენას ვეღარ მოახერხებთ.</translation>
 <translation id="2122305276694332719">დამალულ ქსელთან ავტომატურად დაკავშირება საშუალებას მისცემს სხვებს, იხილონ თქვენი მოწყობილობა და ქსელის ზოგიერთი პარამეტრი, ამიტომ ეს არ არის რეკომენდებული.</translation>
@@ -718,7 +718,6 @@
 <translation id="6503285896705205014"><ph name="COUNT" /> ფაილის კოპირება დაბლოკილია ადმინისტრატორის წესების მიხედვით</translation>
 <translation id="6509122719576673235">ნორვეგიული</translation>
 <translation id="6528513914570774834">ამ მოწყობილობის სხვა მომხმარებლებისთვის ამ ქსელის გამოყენების დაშვება</translation>
-<translation id="653019979737152879">სინქრონიზაცია <ph name="FILE_NAME" />…</translation>
 <translation id="6549689063733911810">უახლესი</translation>
 <translation id="6558280019477628686">მოხდა შეცდომა. ზოგიერთი ერთეული შეიძლება არ წაშლილიყო.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“-ის წაშლა…</translation>
@@ -852,7 +851,6 @@
 <translation id="7553492409867692754">მიეცით Linux აპებს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="7555339735447658365">ამჟამად ხაზგარეშე რეჟიმში ხართ. ფაილების სინქრონიზაცია გაგრძელდება, როცა ინტერნეტს დაუკავშირდებით</translation>
 <translation id="7589661784326793847">დაელოდეთ ერთი წამი</translation>
-<translation id="7592775719802218421"><ph name="FILE_NAME" /> გარდაიქმნება ხაზგარეშე ხელმისაწვდომად</translation>
 <translation id="7600126690270271294">სერბული</translation>
 <translation id="7603724359189955920">ბადეები</translation>
 <translation id="7627790789328695202">უპს, <ph name="FILE_NAME" /> უკვე არსებობს. შეუცვალეთ სახელი და სცადეთ კიდევ ერთხელ.</translation>
@@ -969,6 +967,7 @@
 <translation id="83651606385705612">მიეცით <ph name="VM_NAME" />-ს საქაღალდეში „<ph name="FOLDER_NAME" />“ არსებულ ფაილებზე წვდომის ნებართვა</translation>
 <translation id="8372369524088641025">ცუდი WEP გასაღები</translation>
 <translation id="8372852072747894550">ბერძნული</translation>
+<translation id="8377269993083688872">ელფოსტის განლაგებები</translation>
 <translation id="8386903983509584791">სკანირება დასრულდა</translation>
 <translation id="8387733224523483503"><ph name="FILE_NAME" /> ამოღებულია.</translation>
 <translation id="8395901698320285466">ზომები</translation>
@@ -1007,7 +1006,6 @@
 <translation id="8569764466147087991">აირჩიეთ ფაილი გასახსნისათვის</translation>
 <translation id="8577897833047451336">ხორვატიული</translation>
 <translation id="8578308463707544055">ინდონეზიური</translation>
-<translation id="8579285237314169903"><ph name="NUMBER_OF_FILES" /> ელემენტის სინქრონიზაცია…</translation>
 <translation id="8600173386174225982">ფაილების სია ნაჩვენებია ესკიზების ხედში.</translation>
 <translation id="8601932370724196034">Crostini იმიჯის ფაილი</translation>
 <translation id="8609695766746872526">ისლანდიური</translation>

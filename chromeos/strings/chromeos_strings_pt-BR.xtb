@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1020274983236703756">Recursos exclusivos do <ph name="PRODUCT_NAME" /> já estão disponíveis</translation>
 <translation id="1022628058306505708">Fluxo da Terra</translation>
-<translation id="103306827243002956">Planos de fundo recentes</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> threads, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Novo recurso disponível, use a tecla de seta para cima para saber mais.</translation>
 <translation id="1059913517121127803">Não foi possível iniciar a digitalização</translation>
@@ -44,6 +43,7 @@
 <translation id="1264369926465113395">Conheça a nova revista digital do Chromebook para criadores de conteúdo</translation>
 <translation id="1270369111467284986">Suspeita de portal cativo</translation>
 <translation id="1290331692326790741">Sinal fraco</translation>
+<translation id="1300115153046603471">O APN é do tipo padrão e <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1308754910631152188">Atualizando (<ph name="PERCENTAGE_VALUE" />% concluído)</translation>
 <translation id="1309341072016605398"><ph name="MINUTES" /> minutos</translation>
@@ -191,7 +191,6 @@
 <translation id="222447520299472966">Você precisa selecionar pelo menos um álbum da galeria de arte</translation>
 <translation id="2230005943220647148">Celsius</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Criar mais</translation>
 <translation id="2236746079896696523">Alternar luz de fundo do teclado</translation>
 <translation id="2240366984605217732">Alternar layout</translation>
 <translation id="225692081236532131">Status da ativação</translation>
@@ -444,7 +443,6 @@
 <translation id="4289849978083912975">Apresentação de slides</translation>
 <translation id="4297501883039923494">Parado (erro desconhecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imagens</translation>
-<translation id="4305367063258930534">Plano de fundo desenvolvido pelo Google</translation>
 <translation id="4333390807948134856">A tecla <ph name="KEY_NAME" /> está sendo pressionada</translation>
 <translation id="4354430579665871434">chave</translation>
 <translation id="4361257691546579041">O APN é do tipo padrão.</translation>
@@ -650,6 +648,7 @@
 <translation id="5843706793424741864">Fahrenheit</translation>
 <translation id="584953448295717128">O APN é detectado automaticamente.</translation>
 <translation id="5849570051105887917">Código do provedor doméstico</translation>
+<translation id="5856267793478861942"><ph name="ATTACH" /> (<ph name="IA" />)</translation>
 <translation id="5859603669299126575">Álbum da galeria de arte</translation>
 <translation id="5859969039821714932">Atalho indisponível. Pressione um novo atalho sem <ph name="KEY" />.</translation>
 <translation id="5860033963881614850">Desativada</translation>
@@ -687,6 +686,7 @@
 <translation id="6104112872696127344">A digitalização foi cancelada</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
 <translation id="6108689792487843350">Não é possível acessar o gateway</translation>
+<translation id="6108952804512516814">Criar com IA</translation>
 <translation id="6112878310391905610">Esta configuração é gerenciada pelos seus administradores</translation>
 <translation id="6113701710518389813">Seta para cima</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, mais <ph name="NUMBER" /> álbuns</translation>
@@ -755,6 +755,7 @@
 <translation id="6526200165918397681">Combinar com plano de fundo</translation>
 <translation id="6527081081771465939">Protocolo de segurança de Wi-Fi desconhecido</translation>
 <translation id="6535178685492749208">Você está off-line. O feedback será enviado mais tarde.</translation>
+<translation id="6557784757915238407">O APN é do tipo <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Scanner de mesa</translation>
 <translation id="6560196641871357166">Vibrante</translation>
 <translation id="6564646048574748301">Falha - Impressora inacessível</translation>
@@ -868,6 +869,7 @@
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">A latência do HTTP está muito alta</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
+<translation id="7438298994385592770">Não é possível desativar ou remover esse APN. Desative ou remova os APNs <ph name="ATTACH" />.</translation>
 <translation id="7458970041932198923">Conecte-se a uma rede e atualize a página para conferir e definir avatares.</translation>
 <translation id="7469648432129124067">Portal detectado</translation>
 <translation id="7481312909269577407">Avançar</translation>

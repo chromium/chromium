@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Non se pode atopar a ruta absoluta ao directorio que se debe incluír en paquetes.</translation>
 <translation id="5160071981665899014">Non se puido cargar o JavaScript <ph name="RELATIVE_PATH" /> para o script.</translation>
 <translation id="5356315618422219272">Vista da aplicación: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">Non se admiten as ventás con formas.</translation>
 <translation id="5456409301717116725">Esta extensión inclúe o ficheiro de clave "<ph name="KEY_PATH" />". É probable que non queiras realizar esta acción.</translation>
 <translation id="5486326529110362464">Debe existir o valor de entrada da clave privada.</translation>
 <translation id="5972529113578162692">O administrador deste equipo necesita que se instale <ph name="EXTENSION_NAME" />. Non se pode instalar.</translation>

@@ -7,7 +7,6 @@
 <translation id="1018656279737460067">Preklicano</translation>
 <translation id="1020274983236703756">Ekskluzivni elementi za <ph name="PRODUCT_NAME" /> so zdaj na voljo</translation>
 <translation id="1022628058306505708">Tok Zemlje</translation>
-<translation id="103306827243002956">Nedavna zaslonska ozadja</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (št. niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Na voljo je nova funkcija. Uporabite tipko s puščico gor, če želite izvedeti več o tem.</translation>
 <translation id="1059913517121127803">Ni bilo mogoče začeti optično brati</translation>
@@ -192,7 +191,6 @@
 <translation id="222447520299472966">Izbrati morate najmanj en album iz umetnostne galerije.</translation>
 <translation id="2230005943220647148">Celzij</translation>
 <translation id="2230051135190148440">CHAP</translation>
-<translation id="2230624078793142213">Ustvari več</translation>
 <translation id="2236746079896696523">Preklop osvetlitve tipkovnice</translation>
 <translation id="2240366984605217732">Preklop postavitve</translation>
 <translation id="225692081236532131">Stanje aktiviranja</translation>
@@ -445,7 +443,6 @@
 <translation id="4289849978083912975">Diaprojekcija</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
-<translation id="4305367063258930534">Zaslonsko ozadje uporablja tehnologijo Google</translation>
 <translation id="4333390807948134856">Tipka <ph name="KEY_NAME" /> je bila pritisnjena.</translation>
 <translation id="4354430579665871434">tipka</translation>
 <translation id="4361257691546579041">APN je privzete vrste.</translation>
@@ -689,6 +686,7 @@
 <translation id="6104112872696127344">Optično branje je preklicano</translation>
 <translation id="6106186594183574873">Za dokončanje vnesite staro geslo</translation>
 <translation id="6108689792487843350">Prehod ni dosegljiv</translation>
+<translation id="6108952804512516814">Ustvarjanje z umetno inteligenco</translation>
 <translation id="6112878310391905610">To nastavitev upravljajo skrbniki.</translation>
 <translation id="6113701710518389813">Puščica gor</translation>
 <translation id="6117895505466548728"><ph name="TITLE" />, in še toliko albumov: <ph name="NUMBER" /></translation>

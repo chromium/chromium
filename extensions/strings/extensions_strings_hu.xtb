@@ -34,7 +34,6 @@
 <translation id="5098647635849512368">Nem található a csomagolni kívánt könyvtár abszolút elérési útvonala.</translation>
 <translation id="5160071981665899014">A(z) „<ph name="RELATIVE_PATH" />” javascript nem tölthető be a szkripthez.</translation>
 <translation id="5356315618422219272">Alkalmazásnézet: <ph name="APPVIEW_TAG_NAME" /></translation>
-<translation id="5436430103864390185">A formázott ablakok nem támogatottak.</translation>
 <translation id="5456409301717116725">Ez a bővítmény a(z) "<ph name="KEY_PATH" />" kulcsfájlt tartalmazza. Ezt Ön valószínűleg nem szeretné.</translation>
 <translation id="5486326529110362464">Kell lennie beviteli értéknek a privát kulcsnál.</translation>
 <translation id="5972529113578162692">A számítógép adminisztrátorának szüksége van arra, hogy a(z) <ph name="EXTENSION_NAME" /> telepítve legyen. Nem lehet eltávolítani.</translation>

@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">置底</translation>
 <translation id="3090455602619185166">使用代管帳戶登入</translation>
 <translation id="309710370695886264">你有 1 組重複使用的密碼，請立即修正以確保安全。</translation>
+<translation id="3109724472072898302">已收合</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">歷史記錄和其他資料</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">沒有網際網路連線。</translation>
 <translation id="3789294999358192700">步驟如下：</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3792713031001122343">{count,plural, =1{將 1 個書籤儲存到 Google 帳戶}other{將 {count} 個書籤儲存到 Google 帳戶}}</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">針對這個網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -691,6 +691,7 @@
 <translation id="4689564913179979534">管理付款方式...</translation>
 <translation id="469300482518076788">關閉分頁</translation>
 <translation id="4697071790493980729">找不到相符的搜尋結果</translation>
+<translation id="470337593714520080">{count,plural, =1{將 1 個書籤儲存到 Google 帳戶}other{將 {count} 個書籤儲存到 Google 帳戶}}</translation>
 <translation id="470966556546083668">請勿開啟同步功能</translation>
 <translation id="4711809265250406889">開啟時</translation>
 <translation id="4729712004042194392">{count,plural, =1{{website_1}}=2{{website_1}、{website_2}}=3{{website_1}、{website_2} 和另外 1 個}other{{website_1}、{website_2} 和另外 {more_count} 個}}</translation>
@@ -1566,7 +1567,6 @@
 <translation id="952704832371081537">取消</translation>
 <translation id="959066944189734975">你正在追蹤「<ph name="CHANNEL_NAME" />」</translation>
 <translation id="96615566463761848">顯示來自其他裝置的分頁建議</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{你可以將 {DOMAIN_ONE} 的密碼儲存到 Google 帳戶 ({EMAIL})}=2{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼儲存到 Google 帳戶 ({EMAIL})}=3{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})}other{你可以將 {DOMAIN_ONE} 和 {DOMAIN_TWO} 的密碼及另外 {OTHER_DOMAINS_COUNT} 組密碼儲存到 Google 帳戶 ({EMAIL})}}</translation>
 <translation id="973493300226275298">追蹤產品在多個網路商店中的價格。如果產品降價，系統會透過快訊通知你。</translation>
 <translation id="981498610235328462">貴機構規定你只能使用特定帳戶登入。系統已隱藏不適用的帳戶。</translation>
 <translation id="984509647832111802">同步功能無法正常運作。</translation>

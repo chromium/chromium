@@ -76,7 +76,6 @@
 <translation id="162175252992296058">portugalski sa američkom internacionalnom tastaturom</translation>
 <translation id="1629521517399325891">Korisnički sertifikat nije dostupan za potvrdu identiteta mreže.</translation>
 <translation id="1641780993263690097">kineski pinjin</translation>
-<translation id="1646019627374511909">Omogućava se korišćenje fajlova oflajn (<ph name="NUMBER_OF_ITEMS" />)</translation>
 <translation id="164969095109328410">Chrome uređaj</translation>
 <translation id="1661207570040737402">Iskoristili ste sav Google Workspace memorijski prostor na deljenom disku.</translation>
 <translation id="1661867754829461514">Nedostaje PIN</translation>
@@ -136,6 +135,7 @@
 <translation id="2084809735218147718">Osoba piše „Hvala vam“</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
 <translation id="209653272837065803">Nema dovoljno memorijskog prostora da biste i dalje sinhronizovali fajlove</translation>
+<translation id="2099143626019777139">Veb-sajtovi koje posećujete su vidljivi administratoru. Možete da pregledate listu vidljivih veb-sajtova.</translation>
 <translation id="2111134541987263231">Uključite <ph name="BEGIN_BOLD" />Dozvoli u režimu bez arhiviranja<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Stavke (<ph name="NUMBER_OF_ITEMS" />) će biti izbrisane i nećete moći da ih vratite.</translation>
 <translation id="2122305276694332719">Ako se automatski povežete na skrivenu mrežu, drugi mogu da vide vaš uređaj i neka podešavanja mreže, zbog čega vam to ne preporučujemo.</translation>
@@ -718,7 +718,6 @@
 <translation id="6503285896705205014">Smernice administratora blokiraju kopiranje fajlova (<ph name="COUNT" />)</translation>
 <translation id="6509122719576673235">norveški</translation>
 <translation id="6528513914570774834">Dozvolite drugim korisnicima ovog uređaja da koriste ovu mrežu</translation>
-<translation id="653019979737152879">Sinhronizuje se <ph name="FILE_NAME" />...</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6558280019477628686">Došlo je do greške. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje „<ph name="FILENAME" />“...</translation>
@@ -852,7 +851,6 @@
 <translation id="7553492409867692754">Dozvolite da Linux aplikacije pristupaju fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="7555339735447658365">Trenutno ste oflajn. Sinhronizacija će se nastaviti kada se povežete na internet</translation>
 <translation id="7589661784326793847">Sačekajte trenutak</translation>
-<translation id="7592775719802218421">Omogućava se da fajl <ph name="FILE_NAME" /> bude dostupan fajl</translation>
 <translation id="7600126690270271294">srpski</translation>
 <translation id="7603724359189955920">Mreže</translation>
 <translation id="7627790789328695202">Ups, <ph name="FILE_NAME" /> već postoji. Preimenujte datoteku i pokušajte ponovo.</translation>
@@ -969,6 +967,7 @@
 <translation id="83651606385705612">Dozvolite da <ph name="VM_NAME" /> pristupa fajlovima u folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="8372369524088641025">Neispravna WEP šifra</translation>
 <translation id="8372852072747894550">grčki</translation>
+<translation id="8377269993083688872">Izgledi imejla</translation>
 <translation id="8386903983509584791">Skeniranje je završeno</translation>
 <translation id="8387733224523483503">Fajl <ph name="FILE_NAME" /> je izveden.</translation>
 <translation id="8395901698320285466">Dimenzije</translation>
@@ -1007,7 +1006,6 @@
 <translation id="8569764466147087991">Izbor datoteke za otvaranje</translation>
 <translation id="8577897833047451336">hrvatski</translation>
 <translation id="8578308463707544055">indonežanski</translation>
-<translation id="8579285237314169903">Sinhronizuju se stavke (<ph name="NUMBER_OF_FILES" />)...</translation>
 <translation id="8600173386174225982">Lista datoteka se promenila u prikaz sličica.</translation>
 <translation id="8601932370724196034">Crostini datoteka slike</translation>
 <translation id="8609695766746872526">islandski</translation>

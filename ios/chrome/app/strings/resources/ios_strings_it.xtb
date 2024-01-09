@@ -337,6 +337,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2747003861858887689">Campo precedente</translation>
 <translation id="2749231692441336879">Segui <ph name="CHANNEL_NAME" /></translation>
 <translation id="2754492786623500387">Account su questo dispositivo</translation>
+<translation id="2755595981383829244">Ora riceverai notifiche sui contenuti</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="2772667768515195373">Puoi usare gli indirizzi salvati in tutti i prodotti Google. Questo indirizzo viene salvato nel tuo Account Google, <ph name="USER_EMAIL" />.</translation>
 <translation id="2773292004659987824">Ricerca in incognito</translation>
@@ -406,6 +407,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3087734570205094154">In basso</translation>
 <translation id="3090455602619185166">Accesso con account gestito</translation>
 <translation id="309710370695886264">Hai 1 password riutilizzata. Sistemala subito per rimanere al sicuro.</translation>
+<translation id="3109724472072898302">Compresso</translation>
 <translation id="3112556859945124369">Segna come…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">Cronologia e altro ancora</translation>
@@ -527,7 +529,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3779810277399252432">Nessuna connessione a Internet.</translation>
 <translation id="3789294999358192700">Procedi nel seguente modo:</translation>
 <translation id="3789841737615482174">Installa</translation>
-<translation id="3792713031001122343">{count,plural, =1{Salva 1 preferito nel tuo Account Google}other{Salva {count} preferiti nel tuo Account Google}}</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Proponi di tradurre questo sito</translation>
 <translation id="3810973564298564668">Gestisci</translation>
@@ -1566,7 +1567,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="952704832371081537">Annulla</translation>
 <translation id="959066944189734975">Stai seguendo <ph name="CHANNEL_NAME" /></translation>
 <translation id="96615566463761848">Mostra Suggerimenti di schede da Altri dispositivi</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{Puoi salvare la password di {DOMAIN_ONE} nel tuo Account Google {EMAIL}}=2{Puoi salvare le password di {DOMAIN_ONE} e {DOMAIN_TWO} nel tuo Account Google {EMAIL}}=3{Puoi salvare le password di {DOMAIN_ONE}, {DOMAIN_TWO} e {OTHER_DOMAINS_COUNT} altro nel tuo Account Google {EMAIL}}other{Puoi salvare le password di {DOMAIN_ONE}, {DOMAIN_TWO} e di altri {OTHER_DOMAINS_COUNT} utenti nel tuo Account Google {EMAIL}}}</translation>
 <translation id="973493300226275298">Monitora il prezzo di un prodotto nei negozi online. Riceverai avvisi quando il prezzo cala.</translation>
 <translation id="981498610235328462">La tua organizzazione ti consente di accedere solo con determinati account. Gli account non consentiti vengono nascosti.</translation>
 <translation id="984509647832111802">La sincronizzazione non funziona.</translation>

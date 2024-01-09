@@ -406,6 +406,7 @@
 <translation id="3087734570205094154">तल</translation>
 <translation id="3090455602619185166">व्यवस्थापन गरिएको खाता प्रयोग गरी साइन इन गर्नुहोस्</translation>
 <translation id="309710370695886264">तपाईंले एकभन्दा बढी ठाउँमा एउटा पासवर्ड प्रयोग गर्नुभएको छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
+<translation id="3109724472072898302">ध्वस्त भएको</translation>
 <translation id="3112556859945124369">चिन्ह लगाउनुहोस्…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तपाईं के कस्ता कुराहरू सिंक गर्न पाउनुहुन्छ भन्ने कुरा हेर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">इतिहास र अन्य डेटा</translation>
@@ -527,7 +528,6 @@
 <translation id="3779810277399252432">इन्टरनेट छैन</translation>
 <translation id="3789294999358192700">तलका चरणहरू पालना गर्नुहोस्:</translation>
 <translation id="3789841737615482174">स्थापना गर्नुहोस्</translation>
-<translation id="3792713031001122343">{count,plural, =1{एउटा बुकमार्क आफ्नो Google खातामा सेभ गर्नुहोस्}other{{count} वटा बुकमार्क आफ्नो Google खातामा सेभ गर्नुहोस्}}</translation>
 <translation id="380329542618494757">नाम</translation>
 <translation id="3803696231112616155">यो साइट अनुवाद गर्ने प्रस्ताव गर्नुहोस्</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
@@ -1566,7 +1566,6 @@
 <translation id="952704832371081537">रद्द गर्नुहोस्</translation>
 <translation id="959066944189734975">तपाईं <ph name="CHANNEL_NAME" /> फलो गर्दै हुनुहुन्छ</translation>
 <translation id="96615566463761848">अन्य डिभाइसमार्फत ट्याबमा दिइने सुझावहरू देखाइयोस्</translation>
-<translation id="972300586996227526">{COUNT,plural, =1{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} को पासवर्ड सेभ गर्न सक्नुहुन्छ}=2{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE} र {DOMAIN_TWO} का पासवर्डहरू सेभ गर्न सक्नुहुन्छ}=3{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ}other{तपाईं आफ्नो Google खाता {EMAIL} मा {DOMAIN_ONE}, {DOMAIN_TWO} र अन्य {OTHER_DOMAINS_COUNT} वटा डोमेनका पासवर्डहरू सेभ गर्न सक्नुहुन्छ}}</translation>
 <translation id="973493300226275298">विभिन्न अनलाइन स्टोरहरूमा कुनै उत्पादनको मूल्य ट्रयाक गर्नुहोस्। उक्त उत्पादनको मूल्य घटेका खण्डमा तपाईंलाई अलर्ट पठाइने छ।</translation>
 <translation id="981498610235328462">तपाईंको सङ्गठनको नीतिअनुसार तपाईं निश्चित खातामार्फत मात्र साइन इन गर्न पाउनुहुन्छ। साइन इन गर्ने अनुमति नदिइएका खाताहरू लुकाइन्छन्।</translation>
 <translation id="984509647832111802">सिंक गर्ने सुविधाले काम गरिरहेको छैन।</translation>
