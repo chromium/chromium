@@ -200,6 +200,14 @@ class FocusTraversalTest : public FocusManagerTest {
 
   void InitContentView() override;
 
+  void TearDown() override {
+    style_tab_ = nullptr;
+    search_border_view_ = nullptr;
+    left_container_ = nullptr;
+    right_container_ = nullptr;
+    FocusManagerTest::TearDown();
+  }
+
  protected:
   FocusTraversalTest();
 
@@ -242,12 +250,11 @@ class FocusTraversalTest : public FocusManagerTest {
     ReverseChildrenFocusOrderImpl(parent);
   }
 
-  raw_ptr<TabbedPane, AcrossTasksDanglingUntriaged> style_tab_ = nullptr;
-  raw_ptr<BorderView, AcrossTasksDanglingUntriaged> search_border_view_ =
-      nullptr;
+  raw_ptr<TabbedPane> style_tab_ = nullptr;
+  raw_ptr<BorderView> search_border_view_ = nullptr;
   DummyComboboxModel combobox_model_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> left_container_;
-  raw_ptr<PaneView, AcrossTasksDanglingUntriaged> right_container_;
+  raw_ptr<PaneView> left_container_ = nullptr;
+  raw_ptr<PaneView> right_container_ = nullptr;
 
  private:
   // Implementation of `ReverseChildrenFocusOrder`. |seen_views| should not be
