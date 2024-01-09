@@ -95,9 +95,9 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    resp = await wait_for_event(websocket, "cdp.Runtime.consoleAPICalled")
 
-    assert {
+    assert resp == {
         "type": "event",
         "method": "cdp.Runtime.consoleAPICalled",
         "params": {
@@ -115,7 +115,7 @@ async def test_cdp_subscribe_to_all_cdp_events(websocket, get_cdp_session_id,
             },
             "session": session_id
         }
-    } == resp
+    }
 
 
 @pytest.mark.asyncio
