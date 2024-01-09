@@ -30,22 +30,20 @@
 
 namespace partition_alloc::internal {
 
-// Aligns up (on 8B boundary) and returns `ref_count_size` if needed.
-// *  Known to be needed on MacOS 13: https://crbug.com/1378822.
-// *  Thought to be needed on MacOS 14: https://crbug.com/1457756.
-// *  No-op everywhere else.
+// Aligns up (on 8B boundary) `ref_count_size` on Mac as a workaround for crash.
+// Workaround was introduced for MacOS 13: https://crbug.com/1378822.
+// But it has been enabled by default because MacOS 14 and later seems to need
+// it too. https://crbug.com/1457756
 //
 // Placed outside `BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)`
 // intentionally to accommodate usage in contexts also outside
 // this gating.
 PA_ALWAYS_INLINE size_t AlignUpRefCountSizeForMac(size_t ref_count_size) {
 #if BUILDFLAG(IS_MAC)
-  if (internal::base::mac::MacOSMajorVersion() == 13 ||
-      internal::base::mac::MacOSMajorVersion() == 14) {
-    return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
-  }
-#endif  // BUILDFLAG(IS_MAC)
+  return internal::base::bits::AlignUp<size_t>(ref_count_size, 8);
+#else
   return ref_count_size;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
