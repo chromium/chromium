@@ -76,6 +76,9 @@ class SyncSocketServerListener : public IPC::Listener {
     }
     return true;
   }
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
 
  private:
   // This sort of message is sent first, causing the transfer of
@@ -103,18 +106,21 @@ class SyncSocketServerListener : public IPC::Listener {
 
   // When the client responds, it sends back a shutdown message,
   // which causes the message loop to exit.
-  void OnMsgClassShutdown() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
+  void OnMsgClassShutdown() { std::move(quit_closure_).Run(); }
 
   raw_ptr<IPC::Channel> chan_;
+  base::OnceClosure quit_closure_;
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of
 // messages have been received.
 DEFINE_IPC_CHANNEL_MOJO_TEST_CLIENT(SyncSocketServerClient) {
   SyncSocketServerListener listener;
+  base::RunLoop loop;
+  listener.set_quit_closure(loop.QuitWhenIdleClosure());
   Connect(&listener);
   listener.Init(channel());
-  base::RunLoop().Run();
+  loop.Run();
   Close();
 }
 
@@ -140,6 +146,9 @@ class SyncSocketClientListener : public IPC::Listener {
     }
     return true;
   }
+  void set_quit_closure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
 
  private:
   // When a response is received from the server, it sends the same
@@ -156,19 +165,22 @@ class SyncSocketClientListener : public IPC::Listener {
     EXPECT_EQ(0U, socket_->Peek());
     IPC::Message* msg = new MsgClassShutdown();
     EXPECT_TRUE(chan_->Send(msg));
-    base::RunLoop::QuitCurrentWhenIdleDeprecated();
+    std::move(quit_closure_).Run();
   }
 
   raw_ptr<base::SyncSocket> socket_;
   raw_ptr<IPC::Channel, DanglingUntriaged> chan_;
+  base::OnceClosure quit_closure_;
 };
 
 using SyncSocketTest = IPCChannelMojoTestBase;
 
 TEST_F(SyncSocketTest, SanityTest) {
   Init("SyncSocketServerClient");
+  base::RunLoop loop;
 
   SyncSocketClientListener listener;
+  listener.set_quit_closure(loop.QuitWhenIdleClosure());
   CreateChannel(&listener);
   // Create a pair of SyncSockets.
   base::SyncSocket pair[2];
@@ -196,7 +208,7 @@ TEST_F(SyncSocketTest, SanityTest) {
 #endif  // BUILDFLAG(IS_WIN)
   EXPECT_TRUE(sender()->Send(msg));
   // Use the current thread as the I/O thread.
-  base::RunLoop().Run();
+  loop.Run();
   // Shut down.
   pair[0].Close();
   pair[1].Close();
