@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+
 #include <algorithm>
 #include <cstdint>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +28,16 @@ bool CacheIsEnabled() {
   return !base::FeatureList::IsEnabled(
              features::kCookieDeprecationFacilitatedTesting) &&
          base::FeatureList::IsEnabled(features::kFledgeUseInterestGroupCache);
+}
+
+absl::optional<content::SingleStorageInterestGroup>
+ConvertOptionalGroupToSingleStorageInterestGroup(
+    absl::optional<content::StorageInterestGroup> possible_group) {
+  if (possible_group) {
+    return content::SingleStorageInterestGroup(
+        std::move(possible_group.value()));
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -69,6 +81,17 @@ StorageInterestGroups::StorageInterestGroups(
   for (const StorageInterestGroup& group : storage_interest_groups_) {
     expiry_ = std::min(expiry_, group.interest_group.expiry);
   }
+}
+
+absl::optional<SingleStorageInterestGroup> StorageInterestGroups::FindGroup(
+    std::string_view name) {
+  for (const StorageInterestGroup& interest_group : storage_interest_groups_) {
+    if (interest_group.interest_group.name == name) {
+      SingleStorageInterestGroup output(this, &interest_group);
+      return output;
+    }
+  }
+  return absl::nullopt;
 }
 
 StorageInterestGroups::~StorageInterestGroups() = default;
@@ -283,12 +306,26 @@ void InterestGroupCachingStorage::UpdateLastKAnonymityReported(
 
 void InterestGroupCachingStorage::GetInterestGroup(
     const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
-  // TODO(abigailkatcoff): This function could check the cache first for the
-  // group.
+    base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+        callback) {
+  if (CacheIsEnabled()) {
+    auto cached_groups_it = cached_interest_groups_.find(group_key.owner);
+    if (cached_groups_it != cached_interest_groups_.end()) {
+      absl::optional<SingleStorageInterestGroup> output =
+          cached_groups_it->second.get()->FindGroup(group_key.name);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(output)));
+      base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
+                                true);
+      return;
+    }
+    base::UmaHistogramBoolean("Ads.InterestGroup.GetInterestGroupCacheHit",
+                              false);
+  }
   interest_group_storage_.AsyncCall(&InterestGroupStorage::GetInterestGroup)
       .WithArgs(group_key)
-      .Then(std::move(callback));
+      .Then(base::BindOnce(&ConvertOptionalGroupToSingleStorageInterestGroup)
+                .Then(std::move(callback)));
 }
 
 void InterestGroupCachingStorage::GetAllInterestGroupOwners(

@@ -945,6 +945,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.GetInterestGroupCacheHit" enum="Boolean"
+    expires_after="2024-06-20">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    True if there is a cache hit when loading one interest group via
+    InterestGroupCachingStorage::GetInterestGroup. Recorded when
+    GetInterestGroup is called and the cache is enabled via
+    FledgeUseInterestGroupCache.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Net.DownloadTime.{Type}" units="ms"
     expires_after="2024-06-20">
   <owner>pauljensen@chromium.org</owner>

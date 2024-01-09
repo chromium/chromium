@@ -163,16 +163,16 @@ std::vector<std::string> TestInterestGroupManagerImpl::TakeJoinedKAnonSets() {
   return std::exchange(joined_k_anon_sets_, {});
 }
 
-absl::optional<StorageInterestGroup>
+absl::optional<SingleStorageInterestGroup>
 TestInterestGroupManagerImpl::BlockingGetInterestGroup(
     const url::Origin& owner,
     const std::string& name) {
   base::RunLoop run_loop;
-  absl::optional<StorageInterestGroup> out;
+  absl::optional<SingleStorageInterestGroup> out;
   GetInterestGroup(
       {owner, name},
       base::BindLambdaForTesting(
-          [&](absl::optional<StorageInterestGroup> interest_group) {
+          [&](absl::optional<SingleStorageInterestGroup> interest_group) {
             out = std::move(interest_group);
             run_loop.Quit();
           }));

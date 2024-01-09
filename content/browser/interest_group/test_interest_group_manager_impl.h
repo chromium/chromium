@@ -22,8 +22,6 @@
 
 namespace content {
 
-struct StorageInterestGroup;
-
 // An implementation of InterestGroupManagerImpl for tests. It tracks a number
 // of calls to InterestGroupManagerImpl. Its EnqueueReports() overload uses
 // in-memory storage to track reports, rather than sending real network
@@ -112,7 +110,7 @@ class TestInterestGroupManagerImpl
 
   // Retrieves the specified interest group if it exists, spinning a RunLoop
   // until the group is retrieved.
-  absl::optional<StorageInterestGroup> BlockingGetInterestGroup(
+  absl::optional<SingleStorageInterestGroup> BlockingGetInterestGroup(
       const url::Origin& owner,
       const std::string& name);
 

@@ -374,12 +374,14 @@ void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
 void InterestGroupManagerImpl::GetInterestGroup(
     const url::Origin& owner,
     const std::string& name,
-    base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
+    base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+        callback) {
   GetInterestGroup(blink::InterestGroupKey(owner, name), std::move(callback));
 }
 void InterestGroupManagerImpl::GetInterestGroup(
     const blink::InterestGroupKey& group_key,
-    base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback) {
+    base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+        callback) {
   caching_storage_.GetInterestGroup(group_key, std::move(callback));
 }
 

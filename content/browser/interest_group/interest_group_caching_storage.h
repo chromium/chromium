@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,6 +21,7 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/origin.h"
 
 namespace content {
@@ -74,6 +76,8 @@ class CONTENT_EXPORT StorageInterestGroups
     }
     return storage_interest_groups;
   }
+
+  absl::optional<SingleStorageInterestGroup> FindGroup(std::string_view name);
 
   bool IsExpired() { return expiry_ < base::Time::Now(); }
 
@@ -177,7 +181,8 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Gets a single interest group.
   void GetInterestGroup(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+          callback);
   // Gets a list of all interest group owners. Each owner will only appear
   // once.
   void GetAllInterestGroupOwners(

@@ -1167,12 +1167,13 @@ class CONTENT_EXPORT InterestGroupAuction
       AdAuctionRequestContext* request_context,
       data_decoder::DataDecoder::ValueOrError result);
 
-  void OnLoadedWinningGroup(BiddingAndAuctionResponse response,
-                            absl::optional<StorageInterestGroup> maybe_group);
+  void OnLoadedWinningGroup(
+      BiddingAndAuctionResponse response,
+      absl::optional<SingleStorageInterestGroup> maybe_group);
 
   void OnLoadedWinningGroupImpl(
       BiddingAndAuctionResponse response,
-      absl::optional<StorageInterestGroup> maybe_group);
+      absl::optional<SingleStorageInterestGroup> maybe_group);
 
   void CreateBidFromServerResponse();
 

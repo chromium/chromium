@@ -789,12 +789,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const url::Origin& owner,
       const std::string& name,
       absl::optional<ToRenderFrameHost> execution_target = absl::nullopt) {
-    absl::optional<StorageInterestGroup> initial_interest_group =
+    absl::optional<SingleStorageInterestGroup> initial_interest_group =
         GetInterestGroup(owner, name);
 
     std::string result = JoinInterestGroup(owner, name, execution_target);
 
-    absl::optional<StorageInterestGroup> final_interest_group =
+    absl::optional<SingleStorageInterestGroup> final_interest_group =
         GetInterestGroup(owner, name);
 
     if (result == kSuccess) {
@@ -807,12 +807,14 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
 
       if (final_interest_group) {
         if (!initial_interest_group) {
-          EXPECT_EQ(1,
-                    final_interest_group->bidding_browser_signals->join_count);
+          EXPECT_EQ(1, final_interest_group.value()
+                           ->bidding_browser_signals->join_count);
         } else {
-          EXPECT_EQ(
-              initial_interest_group->bidding_browser_signals->join_count + 1,
-              final_interest_group->bidding_browser_signals->join_count);
+          EXPECT_EQ(initial_interest_group.value()
+                            ->bidding_browser_signals->join_count +
+                        1,
+                    final_interest_group.value()
+                        ->bidding_browser_signals->join_count);
         }
 
         // Check that the interest group is as expected.
@@ -821,19 +823,23 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         expected_group.name = name;
         expected_group.priority = 0;
         // Don't compare the expiration.
-        expected_group.expiry = final_interest_group->interest_group.expiry;
-        EXPECT_TRUE(final_interest_group->interest_group.IsEqualForTesting(
-            expected_group));
+        expected_group.expiry =
+            final_interest_group.value()->interest_group.expiry;
+        EXPECT_TRUE(
+            final_interest_group.value()->interest_group.IsEqualForTesting(
+                expected_group));
       }
     } else {
       // On failure, nothing should have changed.
       if (!initial_interest_group) {
         EXPECT_FALSE(final_interest_group);
       } else {
-        EXPECT_EQ(initial_interest_group->bidding_browser_signals->join_count,
-                  final_interest_group->bidding_browser_signals->join_count);
-        EXPECT_TRUE(final_interest_group->interest_group.IsEqualForTesting(
-            initial_interest_group->interest_group));
+        EXPECT_EQ(
+            initial_interest_group.value()->bidding_browser_signals->join_count,
+            final_interest_group.value()->bidding_browser_signals->join_count);
+        EXPECT_TRUE(
+            final_interest_group.value()->interest_group.IsEqualForTesting(
+                initial_interest_group.value()->interest_group));
       }
     }
 
@@ -1155,15 +1161,16 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     return interest_groups;
   }
 
-  absl::optional<StorageInterestGroup> GetInterestGroup(
+  absl::optional<SingleStorageInterestGroup> GetInterestGroup(
       const url::Origin& owner,
       const std::string& name) {
-    absl::optional<StorageInterestGroup> result;
+    absl::optional<SingleStorageInterestGroup> result;
     base::RunLoop run_loop;
     manager_->GetInterestGroup(
         owner, name,
         base::BindLambdaForTesting(
-            [&run_loop, &result](absl::optional<StorageInterestGroup> group) {
+            [&run_loop,
+             &result](absl::optional<SingleStorageInterestGroup> group) {
               result = std::move(group);
               run_loop.Quit();
             }));
@@ -1172,11 +1179,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   }
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
-    absl::optional<StorageInterestGroup> group = GetInterestGroup(owner, name);
+    absl::optional<SingleStorageInterestGroup> group =
+        GetInterestGroup(owner, name);
     if (!group) {
       return 0;
     }
-    return group->bidding_browser_signals->join_count;
+    return group.value()->bidding_browser_signals->join_count;
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -1185,12 +1193,12 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       const blink::InterestGroup& group,
       const absl::optional<ToRenderFrameHost> execution_target =
           absl::nullopt) {
-    absl::optional<StorageInterestGroup> initial_interest_group =
+    absl::optional<SingleStorageInterestGroup> initial_interest_group =
         GetInterestGroup(group.owner, group.name);
 
     std::string result = JoinInterestGroup(group, execution_target);
 
-    absl::optional<StorageInterestGroup> final_interest_group =
+    absl::optional<SingleStorageInterestGroup> final_interest_group =
         GetInterestGroup(group.owner, group.name);
 
     if (result == kSuccess) {
@@ -1199,29 +1207,35 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
       EXPECT_TRUE(final_interest_group);
       if (final_interest_group) {
         if (!initial_interest_group) {
-          EXPECT_EQ(1,
-                    final_interest_group->bidding_browser_signals->join_count);
+          EXPECT_EQ(1, final_interest_group.value()
+                           ->bidding_browser_signals->join_count);
         } else {
-          EXPECT_EQ(
-              initial_interest_group->bidding_browser_signals->join_count + 1,
-              final_interest_group->bidding_browser_signals->join_count);
+          EXPECT_EQ(initial_interest_group.value()
+                            ->bidding_browser_signals->join_count +
+                        1,
+                    final_interest_group.value()
+                        ->bidding_browser_signals->join_count);
         }
         // Check that the interest group in the store matches `group`, except
         // the expiration.
         blink::InterestGroup expected_group = group;
-        expected_group.expiry = final_interest_group->interest_group.expiry;
-        EXPECT_TRUE(final_interest_group->interest_group.IsEqualForTesting(
-            expected_group));
+        expected_group.expiry =
+            final_interest_group.value()->interest_group.expiry;
+        EXPECT_TRUE(
+            final_interest_group.value()->interest_group.IsEqualForTesting(
+                expected_group));
       }
     } else {
       // On failure, nothing should have changed.
       if (!initial_interest_group) {
         EXPECT_FALSE(final_interest_group);
       } else {
-        EXPECT_EQ(initial_interest_group->bidding_browser_signals->join_count,
-                  final_interest_group->bidding_browser_signals->join_count);
-        EXPECT_TRUE(final_interest_group->interest_group.IsEqualForTesting(
-            initial_interest_group->interest_group));
+        EXPECT_EQ(
+            initial_interest_group.value()->bidding_browser_signals->join_count,
+            final_interest_group.value()->bidding_browser_signals->join_count);
+        EXPECT_TRUE(
+            final_interest_group.value()->interest_group.IsEqualForTesting(
+                initial_interest_group.value()->interest_group));
       }
     }
 
@@ -5024,15 +5038,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
                                         test_case.join_dict_contents.c_str())));
 
     // Check that the database has also been updated.
-    absl::optional<StorageInterestGroup> maybe_interest_group =
+    absl::optional<SingleStorageInterestGroup> maybe_interest_group =
         GetInterestGroup(/*owner=*/origin,
                          /*name=*/"cars");
     if (test_case.expected_group) {
       ASSERT_TRUE(maybe_interest_group);
-      maybe_interest_group->interest_group.expiry =
-          test_case.expected_group->expiry;
-      EXPECT_TRUE(maybe_interest_group->interest_group.IsEqualForTesting(
-          *test_case.expected_group));
+      blink::InterestGroup expected_group = test_case.expected_group.value();
+      expected_group.expiry =
+          maybe_interest_group.value()->interest_group.expiry;
+      EXPECT_TRUE(
+          maybe_interest_group.value()->interest_group.IsEqualForTesting(
+              expected_group));
     } else {
       EXPECT_FALSE(maybe_interest_group);
     }

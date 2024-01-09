@@ -62,18 +62,18 @@ class InterestGroupCachingStorageTest : public testing::Test {
     return result;
   }
 
-  absl::optional<StorageInterestGroup> GetInterestGroup(
+  absl::optional<SingleStorageInterestGroup> GetInterestGroup(
       InterestGroupCachingStorage* caching_storage,
       const blink::InterestGroupKey& group_key) {
-    absl::optional<StorageInterestGroup> result;
+    absl::optional<SingleStorageInterestGroup> result;
     base::RunLoop run_loop;
     caching_storage->GetInterestGroup(
-        group_key,
-        base::BindLambdaForTesting(
-            [&result, &run_loop](absl::optional<StorageInterestGroup> group) {
-              result = std::move(group);
-              run_loop.Quit();
-            }));
+        group_key, base::BindLambdaForTesting(
+                       [&result, &run_loop](
+                           absl::optional<SingleStorageInterestGroup> group) {
+                         result = std::move(group);
+                         run_loop.Quit();
+                       }));
     run_loop.Run();
     return result;
   }
@@ -470,6 +470,41 @@ TEST_F(InterestGroupCachingStorageTest, GettersShouldNotModifyCache) {
   ASSERT_EQ(loaded_igs->get(), previously_loaded_igs->get());
 }
 
+TEST_F(InterestGroupCachingStorageTest, GetInterestGroupUsesCache) {
+  std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
+      CreateCachingStorage();
+  url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
+  auto ig = MakeInterestGroup(owner, "name1");
+
+  JoinInterestGroup(caching_storage.get(), ig, GURL("https://www.test.com"));
+
+  base::HistogramTester histogram_tester;
+
+  // GetInterestGroupsForOwner was not called yet -- there is no cached result
+  // to use.
+  absl::optional<SingleStorageInterestGroup> pre_cache_loaded_group =
+      GetInterestGroup(caching_storage.get(),
+                       blink::InterestGroupKey(ig.owner, ig.name));
+
+  absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs =
+      GetInterestGroupsForOwner(caching_storage.get(), owner);
+
+  ASSERT_EQ(loaded_igs->get()->size(), 1u);
+  ASSERT_NE(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
+            &(pre_cache_loaded_group.value()->interest_group));
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.GetInterestGroupCacheHit", false, 1);
+
+  // There should be a cached value to use now.
+  absl::optional<SingleStorageInterestGroup> post_cache_loaded_group =
+      GetInterestGroup(caching_storage.get(),
+                       blink::InterestGroupKey(ig.owner, ig.name));
+  ASSERT_EQ(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
+            &(post_cache_loaded_group.value()->interest_group));
+  histogram_tester.ExpectBucketCount(
+      "Ads.InterestGroup.GetInterestGroupCacheHit", true, 1);
+}
+
 TEST_F(InterestGroupCachingStorageTest, CacheWorksWhenPointerReleased) {
   std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
       CreateCachingStorage();
@@ -732,6 +767,7 @@ TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kFledgeUseInterestGroupCache});
+  base::HistogramTester histogram_tester;
   std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
       CreateCachingStorage();
   url::Origin owner = url::Origin::Create(GURL("https://www.example.com/"));
@@ -744,6 +780,20 @@ TEST_F(InterestGroupCachingStorageTest, NoCachingWhenFeatureDisabled) {
   absl::optional<scoped_refptr<StorageInterestGroups>> loaded_igs_again =
       GetInterestGroupsForOwner(caching_storage.get(), owner);
   ASSERT_NE(loaded_igs->get(), loaded_igs_again->get());
+
+  absl::optional<SingleStorageInterestGroup> single_loaded_group =
+      GetInterestGroup(caching_storage.get(),
+                       blink::InterestGroupKey(ig.owner, ig.name));
+  ASSERT_TRUE(single_loaded_group.has_value());
+  ASSERT_NE(&(loaded_igs->get()->GetInterestGroups()[0]->interest_group),
+            &(single_loaded_group.value()->interest_group));
+
+  ASSERT_TRUE(histogram_tester
+                  .GetAllSamples("Ads.InterestGroup.Auction.LoadGroupsCacheHit")
+                  .empty());
+  ASSERT_TRUE(histogram_tester
+                  .GetAllSamples("Ads.InterestGroup.GetInterestGroupCacheHit")
+                  .empty());
 }
 
 TEST_F(InterestGroupCachingStorageTest,

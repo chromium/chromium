@@ -1060,13 +1060,13 @@ void StorageHandler::OnInterestGroupAccessed(
 namespace {
 void SendGetInterestGroup(
     std::unique_ptr<StorageHandler::GetInterestGroupDetailsCallback> callback,
-    absl::optional<StorageInterestGroup> storage_group) {
+    absl::optional<SingleStorageInterestGroup> storage_group) {
   if (!storage_group) {
     callback->sendFailure(Response::ServerError("Interest group not found"));
     return;
   }
 
-  const blink::InterestGroup& group = storage_group->interest_group;
+  const blink::InterestGroup& group = storage_group.value()->interest_group;
   auto trusted_bidding_signals_keys =
       std::make_unique<protocol::Array<std::string>>();
   if (group.trusted_bidding_signals_keys) {
@@ -1105,7 +1105,7 @@ void SendGetInterestGroup(
           .SetOwnerOrigin(group.owner.Serialize())
           .SetName(group.name)
           .SetExpirationTime(group.expiry.InSecondsFSinceUnixEpoch())
-          .SetJoiningOrigin(storage_group->joining_origin.Serialize())
+          .SetJoiningOrigin(storage_group.value()->joining_origin.Serialize())
           .SetTrustedBiddingSignalsKeys(std::move(trusted_bidding_signals_keys))
           .SetAds(std::move(ads))
           .SetAdComponents(std::move(ad_components))

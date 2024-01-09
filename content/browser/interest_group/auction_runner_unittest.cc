@@ -2042,14 +2042,15 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   }
 
   void OnInterestGroupRetrievedAfterReporterDone(
-      absl::optional<StorageInterestGroup> interest_group) {
+      absl::optional<SingleStorageInterestGroup> interest_group) {
     if (interest_group) {
-      EXPECT_FALSE(interest_group->bidding_browser_signals->prev_wins.empty());
+      EXPECT_FALSE(
+          interest_group.value()->bidding_browser_signals->prev_wins.empty());
       base::Time most_recent_win_time;
       // Find the most recent win and write its metadata to
       // `winning_group_ad_metadata`.
       for (const auto& prev_win :
-           interest_group->bidding_browser_signals->prev_wins) {
+           interest_group.value()->bidding_browser_signals->prev_wins) {
         if (prev_win->time > most_recent_win_time) {
           most_recent_win_time = prev_win->time;
           result_.winning_group_ad_metadata = prev_win->ad_json;
@@ -2062,7 +2063,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   }
 
   // Returns the specified interest group.
-  absl::optional<StorageInterestGroup> GetInterestGroup(
+  absl::optional<SingleStorageInterestGroup> GetInterestGroup(
       const url::Origin& owner,
       const std::string& name) {
     return interest_group_manager_->BlockingGetInterestGroup(owner, name);
@@ -4999,11 +5000,12 @@ TEST_F(AuctionRunnerTest, ComponentAuctionSharedBuyer) {
   interest_group_manager_->GetInterestGroup(
       kBidder1Key,
       base::BindLambdaForTesting(
-          [&](absl::optional<StorageInterestGroup> interest_group) {
+          [&](absl::optional<SingleStorageInterestGroup> interest_group) {
             ASSERT_TRUE(interest_group);
             // MakeInterestGroup() set `bid_count` to 5, so it should be 6
             // (not 7).
-            EXPECT_EQ(6, interest_group->bidding_browser_signals->bid_count);
+            EXPECT_EQ(
+                6, interest_group.value()->bidding_browser_signals->bid_count);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -8420,11 +8422,12 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
   interest_group_manager_->GetInterestGroup(
       kBidder1Key,
       base::BindLambdaForTesting(
-          [&](absl::optional<StorageInterestGroup> interest_group) {
+          [&](absl::optional<SingleStorageInterestGroup> interest_group) {
             ASSERT_TRUE(interest_group);
             // MakeInterestGroup() set `bid_count` to 5, so it should be 6
             // (not 7).
-            EXPECT_EQ(6, interest_group->bidding_browser_signals->bid_count);
+            EXPECT_EQ(
+                6, interest_group.value()->bidding_browser_signals->bid_count);
             run_loop.Quit();
           }));
   run_loop.Run();
@@ -13521,7 +13524,8 @@ TEST_F(AuctionRunnerTest, SetPrioritySignalsOverride) {
   auto storage_interest_group = GetInterestGroup(kBidder1, kBidder1Name);
   ASSERT_TRUE(storage_interest_group);
   EXPECT_EQ((base::flat_map<std::string, double>{{"key", 3}}),
-            storage_interest_group->interest_group.priority_signals_overrides);
+            storage_interest_group.value()
+                ->interest_group.priority_signals_overrides);
 }
 
 // If there's no valid bid, setPrioritySignalsOverride() should still be
@@ -13560,7 +13564,8 @@ TEST_F(AuctionRunnerTest, SetPrioritySignalsOverrideNoBid) {
   auto storage_interest_group = GetInterestGroup(kBidder1, kBidder1Name);
   ASSERT_TRUE(storage_interest_group);
   EXPECT_EQ((base::flat_map<std::string, double>{{"key", 3}}),
-            storage_interest_group->interest_group.priority_signals_overrides);
+            storage_interest_group.value()
+                ->interest_group.priority_signals_overrides);
 }
 
 TEST_F(AuctionRunnerTest, Abort) {

@@ -253,13 +253,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // Gets a single interest group.
   void GetInterestGroup(
       const blink::InterestGroupKey& group_key,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+          callback);
 
   // Gets a single interest group.
   void GetInterestGroup(
       const url::Origin& owner,
       const std::string& name,
-      base::OnceCallback<void(absl::optional<StorageInterestGroup>)> callback);
+      base::OnceCallback<void(absl::optional<SingleStorageInterestGroup>)>
+          callback);
 
   // Gets a list of all interest group owners. Each owner will only appear
   // once.

@@ -4837,7 +4837,7 @@ bool InterestGroupAuction::OnParsedServerResponseImpl(
 
 void InterestGroupAuction::OnLoadedWinningGroup(
     BiddingAndAuctionResponse response,
-    absl::optional<StorageInterestGroup> maybe_group) {
+    absl::optional<SingleStorageInterestGroup> maybe_group) {
   OnLoadedWinningGroupImpl(std::move(response), std::move(maybe_group));
   DCHECK(saved_response_);
 
@@ -4849,7 +4849,7 @@ void InterestGroupAuction::OnLoadedWinningGroup(
 
 void InterestGroupAuction::OnLoadedWinningGroupImpl(
     BiddingAndAuctionResponse response,
-    absl::optional<StorageInterestGroup> maybe_group) {
+    absl::optional<SingleStorageInterestGroup> maybe_group) {
   if (!maybe_group) {
     saved_response_.emplace();
     errors_.emplace_back(
@@ -4857,7 +4857,7 @@ void InterestGroupAuction::OnLoadedWinningGroupImpl(
     return;
   }
 
-  if (!maybe_group->interest_group.bidding_url) {
+  if (!maybe_group.value()->interest_group.bidding_url) {
     // Groups must have a bidding logic URL to bid.
     saved_response_.emplace();
     errors_.emplace_back(
@@ -4866,7 +4866,7 @@ void InterestGroupAuction::OnLoadedWinningGroupImpl(
   }
 
   std::vector<SingleStorageInterestGroup> groups;
-  groups.emplace_back(std::move(*maybe_group));
+  groups.push_back(std::move(*maybe_group));
   auto buyer_helper = std::make_unique<BuyerHelper>(this, std::move(groups));
   buyer_helpers_.emplace_back(std::move(buyer_helper));
 
