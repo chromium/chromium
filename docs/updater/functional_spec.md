@@ -456,7 +456,12 @@ the server indicating an installation failure.
 
 The user interface is localized in the same languages as the Chromium project.
 
-TODO(crbug.com/1286580): Implement and document silent mode.
+No UI will be shown if the `--silent` switch is specified on the command line.
+
+The launch command provided by the application installer via the
+[installer result API](#installer-result-api)
+will be run unconditionally, even for silent modes, if the `--alwayslaunchcmd`
+switch is specified on the command line.
 
 #### Help Button
 If the installation fails, the updater shows an error message with a "Help"
@@ -525,7 +530,7 @@ subsequent update checks.
 All application installs and user-initiated application updates are processed
 as foreground operations and with an `installsource` set to "ondemand".
 
-### Installer APIs
+### Installer Result API
 As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
 specific.
