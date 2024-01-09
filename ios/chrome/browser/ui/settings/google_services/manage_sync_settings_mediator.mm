@@ -1014,7 +1014,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
                  kNeedsTrustedVaultKeyForPasswords &&
          _syncService->GetUserActionableError() !=
              syncer::SyncService::UserActionableError::
-                 kNeedsTrustedVaultKeyForEverything;
+                 kNeedsTrustedVaultKeyForEverything &&
+         _syncService->GetUserSettings()->IsCustomPassphraseAllowed();
 }
 
 - (NSString*)overrideViewControllerTitle {

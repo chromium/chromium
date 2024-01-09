@@ -124,6 +124,9 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     account_info.email = base::SysNSStringToUTF8(fakeSystemIdentity_.userEmail);
     ON_CALL(*sync_service_mock_, GetAccountInfo())
         .WillByDefault(Return(account_info));
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsCustomPassphraseAllowed())
+        .WillByDefault(Return(true));
   }
 
   void SimulateFirstSetupSyncOff() {
@@ -137,6 +140,9 @@ class ManageSyncSettingsMediatorTest : public PlatformTest {
     account_info.email = base::SysNSStringToUTF8(fakeSystemIdentity_.userEmail);
     ON_CALL(*sync_service_mock_, GetAccountInfo())
         .WillByDefault(Return(account_info));
+    ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+            IsCustomPassphraseAllowed())
+        .WillByDefault(Return(true));
   }
 
   void SimulateFirstSetupSyncOffWithSignedInAccount() {
@@ -236,6 +242,28 @@ TEST_F(ManageSyncSettingsMediatorTest, SyncServiceEnabledWithEncryption) {
 
   EXPECT_FALSE([mediator_.consumer.tableViewModel
       hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]);
+}
+
+// Tests that encryption is not accessible when disabled by user settings.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncServiceEnabledWithEncryptionDisabledByUserSettings) {
+  CreateManageSyncSettingsMediator(SyncSettingsAccountState::kSyncing);
+  SimulateFirstSetupSyncOnWithConsentEnabled();
+
+  ON_CALL(*sync_service_mock_->GetMockUserSettings(),
+          IsCustomPassphraseAllowed())
+      .WillByDefault(Return(false));
+
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  NSArray* advanced_settings_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       AdvancedSettingsSectionIdentifier];
+  ASSERT_EQ(3UL, advanced_settings_items.count);
+
+  TableViewImageItem* encryption_item = advanced_settings_items[0];
+  EXPECT_EQ(encryption_item.type, SyncSettingsItemType::EncryptionItemType);
+  EXPECT_FALSE(encryption_item.enabled);
 }
 
 // Tests that "Turn off Sync" is hidden when Sync is disabled.

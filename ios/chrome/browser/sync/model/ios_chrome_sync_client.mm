@@ -266,9 +266,15 @@ IOSChromeSyncClient::GetSyncApiComponentFactory() {
 }
 
 bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
-  // TODO(crbug.com/1502574): Reconsider if this should integrate with
-  // SupervisedUserSettingsServiceFactory, along with corresponding
-  // logic in the UI.
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  supervised_user::SupervisedUserSettingsService*
+      supervised_user_settings_service =
+          SupervisedUserSettingsServiceFactory::GetForBrowserState(
+              browser_state_);
+  if (supervised_user_settings_service) {
+    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  }
+#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return true;
 }
 

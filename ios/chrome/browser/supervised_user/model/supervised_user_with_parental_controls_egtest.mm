@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/supervised_user_settings_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -257,6 +258,23 @@ static const char* kInterstitialFirstTimeBanner =
 
   [SigninEarlGrey verifySignedOut];
   [PolicyAppInterface clearPolicies];
+}
+
+// Tests that the Encryption item is disabled for supervised users.
+- (void)testEncryptionItemDisabledForSupervisedUsers {
+  [self signInSupervisedUser];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsAccountButton()];
+
+  [[[EarlGrey selectElementWithMatcher:
+                  grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                                 IDS_IOS_MANAGE_SYNC_ENCRYPTION),
+                             grey_sufficientlyVisible(), nil)]
+         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
+      onElementWithMatcher:grey_accessibilityID(
+                               kManageSyncTableViewAccessibilityIdentifier)]
+      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
 }
 
 #pragma mark - Filtering Behaviour
