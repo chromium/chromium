@@ -9712,6 +9712,11 @@ void WebContentsImpl::MediaDestroyed(const MediaPlayerId& id) {
   observers_.NotifyObservers(&WebContentsObserver::MediaDestroyed, id);
 }
 
+void WebContentsImpl::MediaSessionCreated(MediaSession* media_session) {
+  observers_.NotifyObservers(&WebContentsObserver::MediaSessionCreated,
+                             media_session);
+}
+
 int WebContentsImpl::GetCurrentlyPlayingVideoCount() {
   return currently_playing_video_count_;
 }

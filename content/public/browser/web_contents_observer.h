@@ -57,6 +57,7 @@ class SharedDictionaryAccessDetails;
 
 namespace content {
 
+class MediaSession;
 class NavigationEntry;
 class NavigationHandle;
 class RenderFrameHost;
@@ -813,6 +814,10 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void MediaPictureInPictureChanged(bool is_picture_in_picture) {}
   virtual void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted) {}
   virtual void MediaDestroyed(const MediaPlayerId& id) {}
+
+  // Invoked when a MediaSession associated with this WebContents has been
+  // created and initialized.
+  virtual void MediaSessionCreated(MediaSession* media_session) {}
 
   // Invoked when the renderer process changes the page scale factor.
   virtual void OnPageScaleFactorChanged(float page_scale_factor) {}

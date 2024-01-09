@@ -44,10 +44,15 @@ AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
   audio_focus_remote->AddObserver(
       audio_focus_observer_receiver_.BindNewPipeAndPassRemote());
 
-  // Connect to receive media session updates.
-  content::MediaSession::Get(web_contents)
-      ->AddObserver(
-          media_session_observer_receiver_.BindNewPipeAndPassRemote());
+  // Connect to receive media session updates if the media session already
+  // exists. If it does not, then we'll become an observer in
+  // `MediaSessionCreated()`.
+  content::MediaSession* media_session =
+      content::MediaSession::GetIfExists(web_contents);
+  if (media_session) {
+    media_session->AddObserver(
+        media_session_observer_receiver_.BindNewPipeAndPassRemote());
+  }
 }
 
 AutoPictureInPictureTabHelper::~AutoPictureInPictureTabHelper() = default;
@@ -84,6 +89,13 @@ void AutoPictureInPictureTabHelper::MediaPictureInPictureChanged(
       MaybeExitAutoPictureInPicture();
     }
   }
+}
+
+void AutoPictureInPictureTabHelper::MediaSessionCreated(
+    content::MediaSession* media_session) {
+  // Connect to receive media session updates.
+  media_session->AddObserver(
+      media_session_observer_receiver_.BindNewPipeAndPassRemote());
 }
 
 void AutoPictureInPictureTabHelper::OnTabActivatedChanged(

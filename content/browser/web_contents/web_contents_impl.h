@@ -121,6 +121,7 @@ class BrowserPluginEmbedder;
 class BrowserPluginGuest;
 class FindRequestManager;
 class JavaScriptDialogManager;
+class MediaSession;
 class MediaWebContentsObserver;
 class NFCHost;
 class RenderFrameHost;
@@ -1138,6 +1139,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Called by MediaWebContentsObserver when a media player is destroyed.
   void MediaDestroyed(const MediaPlayerId& id);
+
+  // Called by MediaSessionImpl when one is created and initialized for this.
+  void MediaSessionCreated(MediaSession* media_session);
 
   int GetCurrentlyPlayingVideoCount() override;
   absl::optional<gfx::Size> GetFullscreenVideoSize() override;

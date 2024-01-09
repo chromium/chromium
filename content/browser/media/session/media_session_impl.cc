@@ -177,6 +177,11 @@ MediaSession* MediaSession::Get(WebContents* web_contents) {
 }
 
 // static
+MediaSession* MediaSession::GetIfExists(WebContents* contents) {
+  return MediaSessionImpl::FromWebContents(contents);
+}
+
+// static
 const base::UnguessableToken& MediaSession::GetSourceId(
     BrowserContext* browser_context) {
   return MediaSessionData::GetOrCreate(browser_context)->source_id();
@@ -231,6 +236,7 @@ MediaSessionImpl* MediaSessionImpl::Get(WebContents* web_contents) {
     CreateForWebContents(web_contents);
     session = FromWebContents(web_contents);
     session->Initialize();
+    static_cast<WebContentsImpl*>(web_contents)->MediaSessionCreated(session);
   }
   return session;
 }

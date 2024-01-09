@@ -47,6 +47,7 @@ class AutoPictureInPictureTabHelper
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
   void MediaPictureInPictureChanged(bool is_in_picture_in_picture) override;
+  void MediaSessionCreated(content::MediaSession* media_session) override;
 
   // Called by `tab_strip_observer_helper_` when the tab changes between
   // activated and unactivated.
