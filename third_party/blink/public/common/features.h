@@ -792,10 +792,6 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kLowPriorityScriptLoadingMainFrameOnlyParam;
 
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMaxUnthrottledTimeoutNestingLevel);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxUnthrottledTimeoutNestingLevelParam;
-
 // Keep strong references in the blink memory cache to maximize resource reuse.
 // See https://crbug.com/1409349.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMemoryCacheStrongReference);
@@ -1449,8 +1445,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 
 BLINK_COMMON_EXPORT bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled();
 
-BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
-
 // Checks both of kAllowPageWithIDBConnectionInBFCache and
 // kAllowPageWithIDBTransactionInBFCache are turned on when determining if a
 // page with IndexedDB transaction is eligible for BFCache.
@@ -1460,8 +1454,6 @@ IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
-
-BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
 
 // This function checks both kNewBaseUrlInheritanceBehavior and
 // kIsolateSandboxedIframes and returns true if either is enabled.

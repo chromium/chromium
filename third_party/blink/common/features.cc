@@ -1321,14 +1321,6 @@ const base::FeatureParam<std::string> kLowPriorityScriptLoadingDenyListParam{
 const base::FeatureParam<bool> kLowPriorityScriptLoadingMainFrameOnlyParam{
     &kLowPriorityScriptLoading, "low_pri_async_loading_main_frame_only", false};
 
-// If enabled, the setTimeout(..., 0) will clamp to 4ms after a custom `nesting`
-// level.
-// Tracking bug: https://crbug.com/1108877.
-BASE_FEATURE(kMaxUnthrottledTimeoutNestingLevel,
-             "MaxUnthrottledTimeoutNestingLevel",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int> kMaxUnthrottledTimeoutNestingLevelParam{
-    &kMaxUnthrottledTimeoutNestingLevel, "nesting", 15};
 BASE_FEATURE(kMixedContentAutoupgrade,
              "AutoupgradeMixedContent",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -2267,11 +2259,6 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
 // Helper functions for querying feature status. Please define any features or
 // constants for features in the section above.
 
-// TODO(https://crbug.com/1331187): Delete the function.
-int GetMaxUnthrottledTimeoutNestingLevel() {
-  return kMaxUnthrottledTimeoutNestingLevelParam.Get();
-}
-
 bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
   return base::FeatureList::IsEnabled(kAllowPageWithIDBConnectionInBFCache) &&
          base::FeatureList::IsEnabled(kAllowPageWithIDBTransactionInBFCache);
@@ -2288,11 +2275,6 @@ bool IsAllowBFCacheWhenClosedMediaStreamTrackEnabled() {
 
 bool IsFencedFramesEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kFencedFrames);
-}
-
-bool IsMaxUnthrottledTimeoutNestingLevelEnabled() {
-  return base::FeatureList::IsEnabled(
-      blink::features::kMaxUnthrottledTimeoutNestingLevel);
 }
 
 bool IsNewBaseUrlInheritanceBehaviorEnabled() {
