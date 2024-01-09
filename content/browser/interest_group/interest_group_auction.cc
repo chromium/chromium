@@ -1174,10 +1174,6 @@ class InterestGroupAuction::BuyerHelper
       if (bid_state->made_bid) {
         interest_groups.emplace(bid_state->bidder->interest_group.owner,
                                 bid_state->bidder->interest_group.name);
-        auction_->interest_group_manager_->NotifyInterestGroupAccessed(
-            InterestGroupManagerImpl::InterestGroupObserver::kBid,
-            bid_state->bidder->interest_group.owner,
-            bid_state->bidder->interest_group.name);
         bid_count++;
       }
     }
@@ -2950,17 +2946,6 @@ void InterestGroupAuction::GetInterestGroupsThatBidAndReportBidCounts(
     buyer_helper->GetInterestGroupsThatBidAndReportBidCounts(interest_groups);
   }
 
-  // Notify devtools of additional bids. These don't go into `interest_groups`,
-  // that's only things in the database.
-  for (const auto& bid_state : bid_states_for_additional_bids_) {
-    CHECK(bid_state->made_bid);
-    interest_group_manager_->NotifyInterestGroupAccessed(
-        InterestGroupManagerImpl::InterestGroupObserver::InterestGroupObserver::
-            kAdditionalBid,
-        bid_state->bidder->interest_group.owner,
-        bid_state->bidder->interest_group.name);
-  }
-
   // Retrieve data from component auctions as well.
   for (const auto& component_auction_info : component_auctions_) {
     component_auction_info.second->GetInterestGroupsThatBidAndReportBidCounts(
@@ -3916,7 +3901,7 @@ void InterestGroupAuction::ScoreQueuedBidsIfReady() {
                      unscored_bid->wait_promises.InMillisecondsF());
           }
         });
-    ScoreBidIfReady(std::move(unscored_bid));
+    ScoreBid(std::move(unscored_bid));
   }
 
   // If no further bids are outstanding, now is the time to send a coalesced
@@ -4173,6 +4158,20 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   any_bid_made_ = true;
 
+  // TODO(https://crbug.com/1516642): Report component auctions participating
+  // in top-level auction, as well as k-anon re-runs.
+  if (component_auctions_.empty() &&
+      IsBidRoleUsedForWinner(kanon_mode_, bid->bid_role)) {
+    interest_group_manager_->NotifyInterestGroupAccessed(
+        bid->bid_state->additional_bid_buyer
+            ? InterestGroupManagerImpl::InterestGroupObserver::
+                  InterestGroupObserver::kAdditionalBid
+            : InterestGroupManagerImpl::InterestGroupObserver::
+                  InterestGroupObserver::kBid,
+        bid->bid_state->bidder->interest_group.owner,
+        bid->bid_state->bidder->interest_group.name);
+  }
+
   // If seller worklet hasn't been received yet, or configuration is still
   // waiting on some promises, wait till everything is ready.
   // TODO(morlovich): Tracing doesn't reflect config wait here.
@@ -4184,7 +4183,13 @@ void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
     unscored_bids_.emplace_back(std::move(bid));
     return;
   }
+  ScoreBid(std::move(bid));
+}
 
+void InterestGroupAuction::ScoreBid(std::unique_ptr<Bid> bid) {
+  DCHECK(ReadyToScoreBids());
+
+  uint64_t bid_trace_id = bid->TraceId();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("fledge", ScoreAdTraceEventName(*bid),
                                     bid_trace_id, "decision_logic_url",
                                     config_->decision_logic_url);

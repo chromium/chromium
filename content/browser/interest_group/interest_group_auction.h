@@ -985,8 +985,12 @@ class CONTENT_EXPORT InterestGroupAuction
   // scoring phase is complete.
   void OnScoringDependencyDone();
 
-  // Calls into the seller asynchronously to score the passed in bid.
+  // If the seller is ready to score bids, calls to it, otherwise saves the bid
+  // to `unscored_bids_`.
   void ScoreBidIfReady(std::unique_ptr<Bid> bid);
+
+  // Calls into the seller asynchronously to score the passed in bid.
+  void ScoreBid(std::unique_ptr<Bid> bid);
 
   // Validates the passed in result from ScoreBidComplete(). On failure, reports
   // a bad message to the active receiver in `score_ad_receivers_` and returns

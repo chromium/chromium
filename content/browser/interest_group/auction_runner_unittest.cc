@@ -10790,8 +10790,14 @@ TEST_F(AuctionRunnerTest, SellerCrash) {
     EXPECT_TRUE(
         private_aggregation_manager_.TakePrivateAggregationRequests().empty());
     EXPECT_TRUE(result_.private_aggregation_event_map.empty());
-    EXPECT_THAT(result_.interest_groups_that_bid,
-                testing::UnorderedElementsAre());
+    if (crash_phase == CrashPhase::kLoad) {
+      EXPECT_THAT(result_.interest_groups_that_bid,
+                  testing::UnorderedElementsAre());
+    } else {
+      EXPECT_THAT(result_.interest_groups_that_bid,
+                  testing::UnorderedElementsAre(kBidder1Key, kBidder2Key));
+    }
+
     MetricsExpectations expectations(AuctionResult::kSellerWorkletCrashed);
     expectations.SetNumInterestGroups(2)
         .SetNumOwnersAndDistinctOwners(2)
@@ -11131,7 +11137,7 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellerBadBidParams) {
     EXPECT_THAT(result_.errors, testing::UnorderedElementsAre());
     EXPECT_FALSE(result_.ad_descriptor);
     EXPECT_THAT(result_.interest_groups_that_bid,
-                testing::UnorderedElementsAre());
+                testing::UnorderedElementsAre(kBidder2Key));
 
     // Since these are security errors rather than script errors, they're
     // reported as bad Mojo messages, instead of in the return error list.
@@ -11214,7 +11220,7 @@ TEST_F(AuctionRunnerTest, TopLevelSellerBadBidParams) {
   EXPECT_EQ("Invalid component_auction_modified_bid_params", TakeBadMessage());
   EXPECT_FALSE(result_.ad_descriptor);
   EXPECT_THAT(result_.interest_groups_that_bid,
-              testing::UnorderedElementsAre());
+              testing::UnorderedElementsAre(kBidder2Key));
 
   CheckMetrics(MetricsExpectations(AuctionResult::kBadMojoMessage)
                    .SetNumInterestGroups(2)
@@ -18500,7 +18506,7 @@ TEST_P(AuctionRunnerBiddingAndScoringDebugReportingAPIEnabledTest,
     EXPECT_FALSE(result_.winning_group_id);
     EXPECT_FALSE(result_.ad_descriptor);
     EXPECT_THAT(result_.interest_groups_that_bid,
-                testing::UnorderedElementsAre());
+                testing::UnorderedElementsAre(kBidder1Key));
 
     EXPECT_EQ(0u, result_.debug_loss_report_urls.size());
     EXPECT_EQ(0u, result_.debug_win_report_urls.size());
