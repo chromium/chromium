@@ -364,9 +364,9 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
-          .pub_key = GetRecoveryHsmPublicKey(),
-          .user_gaia_id = context->GetGaiaID(),
-          .device_user_id = context->GetDeviceId()});
+          GetRecoveryHsmPublicKey(), context->GetGaiaID(),
+          context->GetDeviceId(),
+          /*ensure_fresh_recovery_id=*/true});
 
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());
@@ -381,6 +381,7 @@ void AuthFactorEditor::AddRecoveryFactor(std::unique_ptr<UserContext> context,
 
 void AuthFactorEditor::RotateRecoveryFactor(
     std::unique_ptr<UserContext> context,
+    bool ensure_fresh_recovery_id,
     AuthOperationCallback callback) {
   CHECK(!context->GetAuthSessionId().empty());
 
@@ -400,9 +401,8 @@ void AuthFactorEditor::RotateRecoveryFactor(
 
   cryptohome::AuthFactorInput input(
       cryptohome::AuthFactorInput::RecoveryCreation{
-          .pub_key = GetRecoveryHsmPublicKey(),
-          .user_gaia_id = context->GetGaiaID(),
-          .device_user_id = context->GetDeviceId()});
+          GetRecoveryHsmPublicKey(), context->GetGaiaID(),
+          context->GetDeviceId(), ensure_fresh_recovery_id});
 
   cryptohome::SerializeAuthFactor(factor, request.mutable_auth_factor());
   cryptohome::SerializeAuthInput(ref, input, request.mutable_auth_input());

@@ -12,6 +12,23 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cryptohome {
+
+// =============== `RecoveryCreation` =====================
+AuthFactorInput::RecoveryCreation::RecoveryCreation(
+    const std::string& pub_key,
+    const std::string& user_gaia_id,
+    const std::string& device_user_id,
+    bool ensure_fresh_recovery_id)
+    : pub_key(pub_key),
+      user_gaia_id(user_gaia_id),
+      device_user_id(device_user_id),
+      ensure_fresh_recovery_id(ensure_fresh_recovery_id) {}
+AuthFactorInput::RecoveryCreation::RecoveryCreation(
+    const RecoveryCreation& other) = default;
+AuthFactorInput::RecoveryCreation& AuthFactorInput::RecoveryCreation::operator=(
+    const RecoveryCreation&) = default;
+AuthFactorInput::RecoveryCreation::~RecoveryCreation() = default;
+
 // =============== `SmartCard` =====================
 AuthFactorInput::SmartCard::SmartCard(
     const std::vector<ChallengeResponseKey::SignatureAlgorithm> algorithms,

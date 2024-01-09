@@ -101,6 +101,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
   // must already be configured prior to calling this.
   // Session must be authenticated.
   void RotateRecoveryFactor(std::unique_ptr<UserContext> context,
+                            bool ensure_fresh_recovery_id,
                             AuthOperationCallback callback);
 
   // Remove all recovery keys for the user by `context`.
