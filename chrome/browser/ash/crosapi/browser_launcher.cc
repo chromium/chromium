@@ -444,6 +444,8 @@ std::optional<LaunchResults> BrowserLauncher::LaunchProcess(
     base::OnceClosure mojo_disconnection_cb,
     bool is_keep_alive_enabled,
     EnvironmentProvider& environment_provider) {
+  LOG(WARNING) << "Starting lacros-chrome launching at "
+               << chrome_path.MaybeAsASCII();
   // Creates FD for startup.
   // For backward compatibility, we want to pass all the parameters at
   // startup if we're not launching at login screen.

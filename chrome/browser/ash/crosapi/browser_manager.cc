@@ -1065,9 +1065,6 @@ void BrowserManager::StartWithLogFile(
     WaitForProfileAddedAndThen(base::BindOnce(&RecordDataVerForPrimaryUser));
   }
 
-  std::string chrome_path = lacros_path_.MaybeAsASCII();
-  LOG(WARNING) << "Launching lacros-chrome at " << chrome_path;
-
   // Ensures that this is the first time to initialize `crosapi_id` before
   // calling `browser_launcher_.LaunchProcess`.
   CHECK(!crosapi_id_.has_value());
