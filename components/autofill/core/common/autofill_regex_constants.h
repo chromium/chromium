@@ -181,8 +181,9 @@ inline constexpr char16_t kStateRe[] =
     u"|provinci";                                                     // id
 
 inline constexpr char16_t kOverflowRe[] =
-    u"complemento"               // pt-BR, pt-PT
-    u"|informações adicionais";  // pt-BR
+    u"complemento"              // pt-BR, pt-PT
+    u"|informações adicionais"  // pt-BR
+    u"|adresszusatz";           // de-DE
 
 inline constexpr char16_t kOverflowAndLandmarkRe[] =
     u"complement and reference"  // en (but could be generic)
