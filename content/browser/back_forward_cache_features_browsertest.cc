@@ -4978,13 +4978,19 @@ class BackForwardCacheBrowserTestWithMediaSession
   }
 };
 
-// TODO(crbug.com/1491942): This fails with the field trial testing config.
 class BackForwardCacheBrowserTestWithMediaSessionNoTestingConfig
     : public BackForwardCacheBrowserTestWithMediaSession {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch("disable-field-trial-config");
     DisableFeature(features::kBackForwardCacheMediaSessionService);
+
+    // The MediaSessionEnterPictureInPicture feature depends on the
+    // BackForwardCacheMediaSessionService feature, so we need to also disable
+    // it here.
+    // TODO(https://crbug.com/1510995): Remove these tests since the
+    // BackForwardCacheMediaSessionService feature has been launched.
+    DisableFeature(blink::features::kMediaSessionEnterPictureInPicture);
+
     BackForwardCacheBrowserTestWithMediaSession::SetUpCommandLine(command_line);
   }
 };

@@ -2419,7 +2419,7 @@
     {
       name: "MediaSessionEnterPictureInPicture",
       public: true,
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaSessionSlides",
