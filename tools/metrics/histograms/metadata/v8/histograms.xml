@@ -1151,6 +1151,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.LocalWindowProxy.CreateContextTime" units="ms"
+    expires_after="2024-04-10">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent on creating a new v8 context with the window wrapper, reported
+    immediately after creation.
+  </summary>
+</histogram>
+
+<histogram name="V8.LocalWindowProxy.InitializeTime" units="ms"
+    expires_after="2024-04-10">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Time spent on initializing the local window wrapper, reported immediately
+    after initialization. This includes creating the v8 context with the window
+    wrapper and updating the document properties.
+  </summary>
+</histogram>
+
 <histogram name="V8.MemoryExternalFragmentationCodeSpace" units="%"
     expires_after="2020-03-01">
   <owner>hpayer@chromium.org</owner>
