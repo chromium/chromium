@@ -215,12 +215,6 @@ class SystemNotificationManager {
   // Make notification from the DriveFS offline settings event.
   NotificationPtr MakeDriveConfirmDialogNotification(const Event& event);
 
-  // Update/remove Drive sync progress notification.
-  // |event| is the event object delivered from EventRouter and
-  // |event_arguments| contains ListView serialized version of
-  // file_manager_private::FileTransferStatus.
-  NotificationPtr UpdateDriveSyncNotification(const Event& event);
-
   // Click handler for the removable device notification.
   void HandleRemovableNotificationClick(
       const std::string& path,

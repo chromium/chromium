@@ -733,12 +733,6 @@
   <message name="IDS_FILE_BROWSER_ZIP_FILESYSTEM_ERROR" desc="File Manager error message.">
     Zipping failed. <ph name="ERROR_MESSAGE">$1<ex>An error occurred (code: ABORT)</ex></ph>
   </message>
-  <message name="IDS_FILE_BROWSER_SYNC_FILE_NAME" desc="File Manager status message.">
-    Syncing <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph>...
-  </message>
-  <message name="IDS_FILE_BROWSER_SYNC_FILE_NUMBER" desc="File Manager status message.">
-    Syncing <ph name="NUMBER_OF_FILES">$1<ex>7</ex></ph> items...
-  </message>
   <message name="IDS_FILE_BROWSER_SYNC_DELETE_WITHOUT_PERMISSION_ERROR" desc="File Manager status message shown when the drive sync is failed because a user try to remove shared files that the user does not own.">
     "<ph name="FILENAME">$1<ex>photo.jpg</ex></ph>" has been shared with you. You cannot delete it because you do not own it.
   </message>
@@ -1239,12 +1233,6 @@
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_OFFLINE_BANNER_SUBTITLE" desc="Message title of banner informing user they can make files available offline.">
     Select a file, and toggle <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> on for offline access to your files.
-  </message>
-  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE" desc="Message informing the user a Google Drive file is being downloaded for offline use.">
-    Making <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
-  </message>
-  <message name="IDS_FILE_BROWSER_OFFLINE_PROGRESS_MESSAGE_PLURAL" desc="Message informing the user multiple Google Drive files are being downloaded for offline use.">
-    Making <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> files available offline
   </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_FAILURE_MESSAGE" desc="Message informing the user a Google Drive file failed to be downloaded for offline use.">
     Could not make <ph name="FILE_NAME">$1<ex>document.pdf</ex></ph> available offline
