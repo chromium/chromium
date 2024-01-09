@@ -16,7 +16,6 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -141,7 +140,11 @@ public class TabDragSourceTest {
         mTabBeingDragged = MockTab.createAndInitialize(TAB_ID, mProfile);
         when(mSourceMultiInstanceManager.getCurrentInstanceId()).thenReturn(CURR_INSTANCE_ID);
         when(mDestMultiInstanceManager.getCurrentInstanceId()).thenReturn(ANOTHER_INSTANCE_ID);
-
+        when(mDragDropDelegate.startDragAndDrop(
+                        eq(mTabsToolbarView),
+                        any(DragShadowBuilder.class),
+                        any(DropDataAndroid.class)))
+                .thenReturn(true);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         when(mMultiWindowUtils.hasAtMostOneTabWithHomepageEnabled(any())).thenReturn(false);
@@ -179,19 +182,16 @@ public class TabDragSourceTest {
     }
 
     @After
-    public void reset() {
-        DragDropGlobalState.getInstance().reset();
+    public void cleanup() {
+        if (DragDropGlobalState.hasValue()) {
+            DragDropGlobalState.clearForTesting();
+        }
     }
 
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @Test
     public void test_startTabDragAction_withTabDragDropFF_returnsTrueForValidTab() {
-        when(mDragDropDelegate.startDragAndDrop(
-                        eq(mTabsToolbarView),
-                        any(DragShadowBuilder.class),
-                        any(DropDataAndroid.class)))
-                .thenReturn(true);
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
@@ -202,14 +202,13 @@ public class TabDragSourceTest {
                         eq(mTabsToolbarView),
                         any(DragShadowBuilder.class),
                         any(DropDataAndroid.class));
-        assertEquals(
+        assertTrue(
                 "Global state instanceId not set.",
-                CURR_INSTANCE_ID,
-                DragDropGlobalState.getInstance().dragSourceInstanceId);
+                DragDropGlobalState.getForTesting().isDragSourceInstance(CURR_INSTANCE_ID));
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                DragDropGlobalState.getInstance().tabBeingDragged);
+                DragDropGlobalState.getForTesting().getData().mTab);
         assertNull("Shadow view should be null.", mSourceInstance.getShadowViewForTesting());
     }
 
@@ -217,11 +216,6 @@ public class TabDragSourceTest {
     @EnableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @Test
     public void test_startTabDragAction_withTabLinkDragDropFF_returnsTrueForValidTab() {
-        when(mDragDropDelegate.startDragAndDrop(
-                        eq(mTabsToolbarView),
-                        any(DragShadowBuilder.class),
-                        any(DropDataAndroid.class)))
-                .thenReturn(true);
         // Act and verify.
         boolean res =
                 mSourceInstance.startTabDragAction(
@@ -232,14 +226,13 @@ public class TabDragSourceTest {
                         eq(mTabsToolbarView),
                         any(DragShadowBuilder.class),
                         any(DropDataAndroid.class));
-        assertEquals(
+        assertTrue(
                 "Global state instanceId not set.",
-                CURR_INSTANCE_ID,
-                DragDropGlobalState.getInstance().dragSourceInstanceId);
+                DragDropGlobalState.getForTesting().isDragSourceInstance(CURR_INSTANCE_ID));
         assertEquals(
                 "Global state tabBeingDragged not set.",
                 mTabBeingDragged,
-                DragDropGlobalState.getInstance().tabBeingDragged);
+                DragDropGlobalState.getForTesting().getData().mTab);
         assertNotNull(
                 "Shadow view is unexpectedly null.", mSourceInstance.getShadowViewForTesting());
     }
@@ -253,6 +246,17 @@ public class TabDragSourceTest {
                                 mTabsToolbarView, null, DRAG_START_POINT, TAB_POSITION_X));
     }
 
+    @Test
+    public void test_startTabDragAction_returnFalseForDragInProgress() {
+        // Set state.
+        DragDropGlobalState.store(CURR_INSTANCE_ID, mock(ChromeDropDataAndroid.class), null);
+
+        assertFalse(
+                "Tab drag should not start",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+    }
+
     @EnableFeatures({ChromeFeatureList.TAB_DRAG_DROP_ANDROID})
     @DisableFeatures(ChromeFeatureList.TAB_LINK_DRAG_DROP_ANDROID)
     @Test
@@ -262,6 +266,21 @@ public class TabDragSourceTest {
                 "Should not startTabDragAction since last tab with homepage enabled.",
                 mSourceInstance.startTabDragAction(
                         mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+    }
+
+    @Test
+    public void test_startTabDragAction_releaseTrackerTokenWhenDragDidNotStart() {
+        when(mDragDropDelegate.startDragAndDrop(
+                        eq(mTabsToolbarView),
+                        any(DragShadowBuilder.class),
+                        any(DropDataAndroid.class)))
+                .thenReturn(false);
+
+        assertFalse(
+                "Tab drag should not start",
+                mSourceInstance.startTabDragAction(
+                        mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X));
+        assertFalse("Global state should not be set", DragDropGlobalState.hasValue());
     }
 
     @Test
@@ -304,7 +323,7 @@ public class TabDragSourceTest {
         mSourceInstance.startTabDragAction(
                 mTabsToolbarView, mTabBeingDragged, DRAG_START_POINT, TAB_POSITION_X);
         TabDragShadowBuilder tabDragShadowBuilder =
-                (TabDragShadowBuilder) DragDropGlobalState.getInstance().dragShadowBuilder;
+                (TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder();
         Resources resources = ContextUtils.getApplicationContext().getResources();
 
         // Perform asking the TabDragShadowBuilder what is the anchor point.
@@ -449,8 +468,6 @@ public class TabDragSourceTest {
         // Verify - Tab moved to destination window at TAB_INDEX.
         verify(mDestMultiInstanceManager, times(1))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), eq(TAB_INDEX));
-        verify(mSourceMultiInstanceManager, atLeastOnce()).getCurrentInstanceId();
-        verifyNoMoreInteractions(mSourceMultiInstanceManager);
         // Verify tab cleared.
         verify(mSourceStripLayoutHelper, times(1)).clearActiveClickedTab();
         // Verify destination strip calls.
@@ -473,8 +490,6 @@ public class TabDragSourceTest {
         // Verify - Tab moved to destination window at end.
         verify(mDestMultiInstanceManager, times(1))
                 .moveTabToWindow(any(), eq(mTabBeingDragged), eq(5));
-        verify(mSourceMultiInstanceManager, atLeastOnce()).getCurrentInstanceId();
-        verifyNoMoreInteractions(mSourceMultiInstanceManager);
     }
 
     /** Test for {@link #ONDRAG_TEST_CASES} - Scenario D.3 */
@@ -554,7 +569,7 @@ public class TabDragSourceTest {
     @Test
     public void test_onDrag_invalidMimeType() {
         // Set state.
-        mSourceInstance.setGlobalState(mTabBeingDragged);
+        DragDropGlobalState.store(CURR_INSTANCE_ID, mock(ChromeDropDataAndroid.class), null);
 
         DragEvent event = mock(DragEvent.class);
         when(event.getAction()).thenReturn(DragEvent.ACTION_DRAG_STARTED);
@@ -570,7 +585,7 @@ public class TabDragSourceTest {
     @Test
     public void test_onDrag_invalidClipData() {
         // Set state.
-        mSourceInstance.setGlobalState(mTabBeingDragged);
+        DragDropGlobalState.store(CURR_INSTANCE_ID, mock(ChromeDropDataAndroid.class), null);
 
         // Trigger drop with invalid tabId.
         mSourceInstance.onDrag(
@@ -586,7 +601,6 @@ public class TabDragSourceTest {
                 mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, POS_X, mPosY));
 
         // Verify - Move to new window not invoked.
-        verify(mSourceMultiInstanceManager, atLeastOnce()).getCurrentInstanceId();
         verifyNoMoreInteractions(mSourceMultiInstanceManager);
     }
 
@@ -611,6 +625,7 @@ public class TabDragSourceTest {
     @Test
     public void test_onDrag_stripToStripDisabled() {
         TabUiFeatureUtilities.DISABLE_STRIP_TO_STRIP_DD.setForTesting(true);
+
         // Start tab drag action.
         mSourceInstance.startTabDragAction(
                 mTabsToolbarView, mTabBeingDragged, new PointF(POS_X, mPosY), TAB_POSITION_X);
@@ -694,6 +709,9 @@ public class TabDragSourceTest {
                     mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, 0, 0));
             mDestInstance.onDrag(
                     mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENDED, 0, 0));
+            assertFalse(
+                    "Global state should be cleared on all drag end",
+                    DragDropGlobalState.hasValue());
             return this;
         }
 
@@ -701,7 +719,7 @@ public class TabDragSourceTest {
             assertEquals(
                     "Drag shadow visibility does not match.",
                     visible,
-                    ((TabDragShadowBuilder) DragDropGlobalState.getInstance().dragShadowBuilder)
+                    ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
                             .getShadowShownForTesting());
             return this;
         }

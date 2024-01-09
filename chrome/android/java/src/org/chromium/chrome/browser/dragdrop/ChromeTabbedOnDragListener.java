@@ -50,15 +50,14 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     @Override
     public boolean onDrag(View view, DragEvent dragEvent) {
-        Tab draggedTab = DragDropGlobalState.getInstance().tabBeingDragged;
         switch (dragEvent.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
                 // Only proceed with the dragged tab; otherwise, skip the operations.
-                if (dragEvent
+                if (!DragDropGlobalState.hasValue()
+                        || dragEvent
                                         .getClipDescription()
                                         .filterMimeTypes(MimeTypeUtils.CHROME_MIMETYPE_TAB)
-                                == null
-                        || draggedTab == null) {
+                                == null) {
                     return false;
                 }
                 return true;
@@ -72,30 +71,27 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
                                 .isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                     return false;
                 }
-                if (!isSourceInstance()) {
-                    // Reparent the dragged tab to the position immediately following the selected
-                    // tab in the destination window.
-                    Tab currentTab = mTabModelSelector.getCurrentTab();
-                    mMultiInstanceManager.moveTabToWindow(
-                            mWindowAndroid.getActivity().get(),
-                            draggedTab,
-                            TabModelUtils.getTabIndexById(
-                                            mTabModelSelector.getModel(currentTab.isIncognito()),
-                                            currentTab.getId())
-                                    + 1);
-                    return true;
+
+                DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
+                if (globalState == null
+                        || !globalState.getData().hasTab()
+                        || globalState.isDragSourceInstance(
+                                mMultiInstanceManager.getCurrentInstanceId())) {
+                    return false;
                 }
-                return false;
-            case DragEvent.ACTION_DRAG_ENDED:
-                // Clear drag drop global state.
-                DragDropGlobalState.getInstance().reset();
+
+                // Reparent the dragged tab to the position immediately following the selected
+                // tab in the destination window.
+                Tab currentTab = mTabModelSelector.getCurrentTab();
+                mMultiInstanceManager.moveTabToWindow(
+                        mWindowAndroid.getActivity().get(),
+                        globalState.getData().mTab,
+                        TabModelUtils.getTabIndexById(
+                                        mTabModelSelector.getModel(currentTab.isIncognito()),
+                                        currentTab.getId())
+                                + 1);
                 return true;
         }
         return false;
-    }
-
-    private boolean isSourceInstance() {
-        return DragDropGlobalState.getInstance().dragSourceInstanceId
-                == mMultiInstanceManager.getCurrentInstanceId();
     }
 }
