@@ -37,12 +37,12 @@ class DisplayOverlayController;
 // |----------------------------------|
 // ||"Buttons let..."|                |
 // |----------------------------------|
-// ||"Selected key"       |key labels||
-// ||"key"                            |
-// |----------------------------------|
 // |  |"Choose your button type:"   | |
 // |  |feature_tile|  |feature_title| |
 // |  |            |  |             | |
+// |----------------------------------|
+// ||"Selected key"       |key labels||
+// ||"key"                            |
 // |----------------------------------|
 // -----------------------------------|
 // ||         Delete button          ||
@@ -69,8 +69,8 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   // Add UI components.
   void AddHeader();
   void AddEditTitle();
-  void AddActionEdit();
   void AddActionSelection();
+  void AddActionEdit();
   void AddDeleteButton();
 
   // Functions related to buttons.

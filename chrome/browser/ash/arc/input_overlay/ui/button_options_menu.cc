@@ -185,8 +185,8 @@ void ButtonOptionsMenu::Init() {
       views::BoxLayout::Orientation::kVertical));
   AddHeader();
   AddEditTitle();
-  AddActionEdit();
   AddActionSelection();
+  AddActionEdit();
   AddDeleteButton();
 }
 
@@ -245,16 +245,6 @@ void ButtonOptionsMenu::AddEditTitle() {
                      gfx::Insets::TLBR(0, kHeaderLeftMarginSpacing, 16, 0));
 }
 
-void ButtonOptionsMenu::AddActionEdit() {
-  // ------------------------------
-  // ||"Selected key" |key labels||
-  // ||"key"                      |
-  // ------------------------------
-  action_edit_ = AddChildView(
-      std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
-  action_name_label_->SetText(action_edit_->GetActionName());
-}
-
 void ButtonOptionsMenu::AddActionSelection() {
   // ----------------------------------
   // | |"Choose your button type:"  | |
@@ -262,10 +252,10 @@ void ButtonOptionsMenu::AddActionSelection() {
   // ----------------------------------
   auto* container = AddChildView(std::make_unique<views::View>());
   container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/0,
-      /*bottom_radius=*/16, /*for_border_thickness=*/0));
+      cros_tokens::kCrosSysSystemOnBase, /*top_radius=*/16.0f,
+      /*bottom_radius=*/0.0f, /*for_border_thickness=*/0.0f));
   container->SetUseDefaultFillLayout(true);
-  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(2, 0, 0, 0));
+  container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
   container->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /*inside_border_insets=*/gfx::Insets::TLBR(12, 16, 16, 16),
@@ -282,6 +272,16 @@ void ButtonOptionsMenu::AddActionSelection() {
 
   button_group_ = container->AddChildView(
       ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
+}
+
+void ButtonOptionsMenu::AddActionEdit() {
+  // ------------------------------
+  // ||"Selected key" |key labels||
+  // ||"key"                      |
+  // ------------------------------
+  action_edit_ = AddChildView(
+      std::make_unique<ButtonOptionsActionEdit>(controller_, action_));
+  action_name_label_->SetText(action_edit_->GetActionName());
 }
 
 void ButtonOptionsMenu::AddDeleteButton() {
