@@ -4842,7 +4842,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
-    enum="Boolean" expires_after="2024-01-14">
+    enum="Boolean" expires_after="2024-05-19">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>
@@ -4873,7 +4873,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
-    units="cards" expires_after="2024-01-14">
+    units="cards" expires_after="2024-05-19">
   <owner>mlerman@google.com</owner>
   <owner>tchudakov@google.com</owner>
   <owner>vykochko@google.com</owner>
