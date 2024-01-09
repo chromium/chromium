@@ -493,11 +493,10 @@ class AutoEnrollmentClientImpl::InitialServerStateAvailabilityRequester
         break;
 
       case psm::RlweResult::kConnectionError:
-        RunCallback(
-            base::unexpected(AutoEnrollmentLegacyError::kConnectionError));
-        break;
       case psm::RlweResult::kServerError:
-        RunCallback(base::unexpected(AutoEnrollmentLegacyError::kServerError));
+        DCHECK(psm_result_holder.dm_server_error.has_value());
+        RunCallback(
+            base::unexpected(psm_result_holder.dm_server_error.value()));
         break;
 
       case psm::RlweResult::kEmptyOprfResponseError:

@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1549,12 +1550,10 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
     AutoEnrollmentClientImplBaseTest::SetUp();
   }
 
-  void PsmWillReplyWith(
-      psm::RlweResult psm_result,
-      std::optional<bool> membership_result = std::nullopt,
-      std::optional<base::Time> membership_determination_time = std::nullopt) {
-    fake_psm_rlwe_dmserver_client_ptr_->WillReplyWith(PsmResultHolder(
-        psm_result, membership_result, membership_determination_time));
+  template <typename... Args>
+  void PsmWillReplyWith(Args&&... args) {
+    fake_psm_rlwe_dmserver_client_ptr_->WillReplyWith(
+        PsmResultHolder(std::forward<Args>(args)...));
   }
 
   // Returns the PSM execution result that has been stored in
@@ -1599,7 +1598,9 @@ class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplBaseTest {
 
 TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterNetworkFailureForRlweQueryResponse) {
-  PsmWillReplyWith(psm::RlweResult::kConnectionError);
+  PsmWillReplyWith(AutoEnrollmentDMServerError{
+      .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+      .network_error = net::ERR_CONNECTION_REFUSED});
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1622,12 +1623,15 @@ TEST_F(PsmHelperInitialEnrollmentTest,
   EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
 
   // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyConnectionError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+                        .network_error = net::ERR_CONNECTION_REFUSED}));
 }
 
 TEST_F(PsmHelperInitialEnrollmentTest,
        RetryLogicAfterServerFailureForRlweQueryResponse) {
-  PsmWillReplyWith(psm::RlweResult::kServerError);
+  PsmWillReplyWith(
+      AutoEnrollmentDMServerError{.dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE});
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
@@ -1650,7 +1654,8 @@ TEST_F(PsmHelperInitialEnrollmentTest,
   EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
 
   // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, kAutoEnrollmentLegacyServerError);
+  EXPECT_EQ(state_, ToState(AutoEnrollmentDMServerError{
+                        .dm_error = DM_STATUS_TEMPORARY_UNAVAILABLE}));
 }
 
 TEST_F(PsmHelperInitialEnrollmentTest,
@@ -1691,8 +1696,7 @@ TEST_F(PsmHelperInitialEnrollmentTest,
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
-                   kExpectedMembershipResult,
+  PsmWillReplyWith(kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
   // Fail for DeviceInitialEnrollmentStateRequest if the device has a
@@ -1756,8 +1760,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
         em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   }
 
-  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
-                   kExpectedMembershipResult,
+  PsmWillReplyWith(kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
   client()->Start();
@@ -1800,8 +1803,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
   // server-backed state.
   ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
 
-  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
-                   kExpectedMembershipResult,
+  PsmWillReplyWith(kExpectedMembershipResult,
                    kExpectedPsmDeterminationTimestamp);
 
   client()->Start();
@@ -1836,8 +1838,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalIsEmpty) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
-                   /*membership_result=*/true,
+  PsmWillReplyWith(/*membership_result=*/true,
                    kExpectedPsmDeterminationTimestamp);
 
   ServerWillReplyEmptyStateRetrievalResponse();
@@ -1865,8 +1866,7 @@ TEST_F(PsmHelperInitialEnrollmentTest, PsmSucceedAndDeviceDisabled) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  PsmWillReplyWith(psm::RlweResult::kSuccessfulDetermination,
-                   /*membership_result=*/true,
+  PsmWillReplyWith(/*membership_result=*/true,
                    kExpectedPsmDeterminationTimestamp);
 
   ServerWillSendState("example.com",

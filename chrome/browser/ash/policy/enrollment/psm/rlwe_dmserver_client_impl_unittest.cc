@@ -252,8 +252,7 @@ TEST_P(RlweDmserverClientImplTest, MembershipRetrievedSuccessfully) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kSuccessfulDetermination,
-                                     kExpectedMembershipResult,
+  VerifyResultHolder(PsmResultHolder(kExpectedMembershipResult,
                                      kExpectedPsmDeterminationTimestamp));
 
   ExpectPsmHistograms(psm::RlweResult::kSuccessfulDetermination,
@@ -305,7 +304,8 @@ TEST_P(RlweDmserverClientImplTest, ConnectionErrorForRlweQueryResponse) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kConnectionError));
+  VerifyResultHolder(PsmResultHolder(AutoEnrollmentDMServerError{
+      .dm_error = DM_STATUS_SUCCESS, .network_error = net::ERR_FAILED}));
 
   ExpectPsmHistograms(psm::RlweResult::kConnectionError,
                       /*success_time_recorded=*/false);
@@ -324,7 +324,8 @@ TEST_P(RlweDmserverClientImplTest, ConnectionErrorForRlweOprfResponse) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kConnectionError));
+  VerifyResultHolder(PsmResultHolder(AutoEnrollmentDMServerError{
+      .dm_error = DM_STATUS_SUCCESS, .network_error = net::ERR_FAILED}));
 
   ExpectPsmHistograms(psm::RlweResult::kConnectionError,
                       /*success_time_recorded=*/false);
@@ -341,7 +342,8 @@ TEST_P(RlweDmserverClientImplTest, NetworkFailureForRlweOprfResponse) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kServerError));
+  VerifyResultHolder(PsmResultHolder(
+      AutoEnrollmentDMServerError{.dm_error = DM_STATUS_HTTP_STATUS_ERROR}));
 
   ExpectPsmHistograms(psm::RlweResult::kServerError,
                       /*success_time_recorded=*/false);
@@ -357,7 +359,8 @@ TEST_P(RlweDmserverClientImplTest, NetworkFailureForRlweQueryResponse) {
 
   ASSERT_NO_FATAL_FAILURE(CheckMembershipWithRlweClient());
 
-  VerifyResultHolder(PsmResultHolder(psm::RlweResult::kServerError));
+  VerifyResultHolder(PsmResultHolder(
+      AutoEnrollmentDMServerError{.dm_error = DM_STATUS_HTTP_STATUS_ERROR}));
 
   ExpectPsmHistograms(psm::RlweResult::kServerError,
                       /*success_time_recorded=*/false);

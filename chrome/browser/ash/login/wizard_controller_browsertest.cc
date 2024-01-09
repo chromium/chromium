@@ -1779,7 +1779,10 @@ class WizardControllerDeviceStateWithInitialEnrollmentTest
 
     if (check_fre) {
       // Wait for auto-enrollment controller to encounter the connection error.
-      WaitForAutoEnrollmentState(policy::kAutoEnrollmentLegacyConnectionError);
+      WaitForAutoEnrollmentState(
+          ToAutoEnrollmentState(policy::AutoEnrollmentDMServerError{
+              .dm_error = policy::DM_STATUS_REQUEST_FAILED,
+              .network_error = net::ERR_CONNECTION_REFUSED}));
 
       // Let update screen smooth time process (time = 0ms).
       base::RunLoop().RunUntilIdle();
