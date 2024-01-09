@@ -438,7 +438,7 @@ BASE_FEATURE(kFedCmSelectiveDisclosure,
 // eTLD+1.
 BASE_FEATURE(kFedCmSkipWellKnownForSameSite,
              "FedCmSkipWellKnownForSameSite",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
