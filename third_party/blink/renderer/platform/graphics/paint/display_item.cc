@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 
 #include <cinttypes>
-#include "base/memory/raw_ptr.h"
+
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
