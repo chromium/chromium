@@ -328,8 +328,7 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     // deserialization code and does not need to be tested again here).
     service_ = std::make_unique<LegacySessionRestorationService>(
         /*is_pinned_tabs_enabled=*/true, browser_state_->GetStatePath(),
-        session_service_ios, web_session_state_cache,
-        /*tab_restore_service=*/nullptr);
+        session_service_ios, web_session_state_cache);
   }
 
   ~LegacySessionRestorationServiceTest() override { service_->Shutdown(); }

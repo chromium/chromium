@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "ios/chrome/browser/sessions/session_restoration_observer.h"
@@ -17,9 +16,6 @@
 
 @class SessionServiceIOS;
 @class WebSessionStateCache;
-namespace sessions {
-class TabRestoreService;
-}  // namespace sessions
 
 // Implementation of SessionRestorationService that wraps the legacy API
 // (SessionRestorationBrowserAgent and SessionServiceIOS). Used when the
@@ -34,8 +30,7 @@ class LegacySessionRestorationService final : public SessionRestorationService,
       bool is_pinned_tabs_enabled,
       const base::FilePath& storage_path,
       SessionServiceIOS* session_service_ios,
-      WebSessionStateCache* web_session_state_cache,
-      sessions::TabRestoreService* tab_restore_service);
+      WebSessionStateCache* web_session_state_cache);
 
   ~LegacySessionRestorationService() final;
 
@@ -93,10 +88,6 @@ class LegacySessionRestorationService final : public SessionRestorationService,
 
   // Service used to manage WKWebView native session storage.
   __strong WebSessionStateCache* web_session_state_cache_ = nil;
-
-  // Pointer to the TabRestoreService used to report closed tabs if the
-  // session migration fails.
-  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
 
   // Set of observed Browser objects.
   std::set<Browser*> browsers_;

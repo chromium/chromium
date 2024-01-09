@@ -148,6 +148,10 @@
 #import "ios/chrome/app/dump_documents_statistics.h"
 #endif  // BUILDFLAG(IOS_ENABLE_SANDBOX_DUMP)
 
+// To get access to web::features::kEnableSessionSerializationOptimizations.
+// TODO(crbug.com/1504753): remove once the feature is fully launched.
+#import "ios/web/common/features.h"
+
 namespace {
 
 #if BUILDFLAG(FAST_APP_TERMINATE_ENABLED)
@@ -539,9 +543,18 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 - (void)performBrowserBackgroundInitialisation:(ProceduralBlock)completion {
-  // For the moment there are no background initialisation, call `completion`
-  // immediately.
-  completion();
+  // Migrate the session storage based on the feature.
+  const SessionRestorationServiceFactory::StorageFormat requested_format =
+      web::features::UseSessionSerializationOptimizations()
+          ? SessionRestorationServiceFactory::kOptimized
+          : SessionRestorationServiceFactory::kLegacy;
+
+  // MigrateSessionStorageFormat is synchronous if the storage is already in
+  // the requested format, so this is safe to call and won't block the app
+  // startup.
+  SessionRestorationServiceFactory::GetInstance()->MigrateSessionStorageFormat(
+      self.appState.mainBrowserState, requested_format,
+      base::BindOnce(completion));
 }
 
 // This initialization must happen before any windows are created.

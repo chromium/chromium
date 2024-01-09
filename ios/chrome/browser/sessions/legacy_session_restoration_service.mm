@@ -8,7 +8,6 @@
 #import "base/containers/contains.h"
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/sessions/session_migration.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -23,13 +22,11 @@ LegacySessionRestorationService::LegacySessionRestorationService(
     bool is_pinned_tabs_enabled,
     const base::FilePath& storage_path,
     SessionServiceIOS* session_service_ios,
-    WebSessionStateCache* web_session_state_cache,
-    sessions::TabRestoreService* tab_restore_service)
+    WebSessionStateCache* web_session_state_cache)
     : is_pinned_tabs_enabled_(is_pinned_tabs_enabled),
       storage_path_(storage_path),
       session_service_ios_(session_service_ios),
-      web_session_state_cache_(web_session_state_cache),
-      tab_restore_service_(tab_restore_service) {
+      web_session_state_cache_(web_session_state_cache) {
   DCHECK(session_service_ios_);
   DCHECK(web_session_state_cache_);
 }
@@ -39,7 +36,6 @@ LegacySessionRestorationService::~LegacySessionRestorationService() {}
 void LegacySessionRestorationService::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(browsers_.empty()) << "Disconnect() must be called for all Browser";
-  tab_restore_service_ = nullptr;
 
   [session_service_ios_ shutdown];
   session_service_ios_ = nil;
@@ -83,11 +79,6 @@ void LegacySessionRestorationService::SetSessionID(
   browsers_.insert(browser);
 
   browser->GetWebStateList()->AddObserver(this);
-
-  // Migrate the storage to legacy format before trying to load.
-  ios::sessions::MigrateNamedSessionToLegacy(
-      browser->GetBrowserState()->GetStatePath(), identifier,
-      tab_restore_service_.get());
 
   // Create the SessionRestorationBrowserAgent for browser.
   SessionRestorationBrowserAgent::CreateForBrowser(

@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -21,9 +20,6 @@
 #include "ios/chrome/browser/sessions/session_restoration_service.h"
 
 class WebStateList;
-namespace sessions {
-class TabRestoreService;
-}  // namespace sessions
 
 // Concrete implementation of the SessionRestorationService.
 //
@@ -37,8 +33,7 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
       base::TimeDelta save_delay,
       bool enable_pinned_web_states,
       const base::FilePath& storage_path,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      sessions::TabRestoreService* tab_restore_service);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~SessionRestorationServiceImpl() final;
 
@@ -98,10 +93,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Task runner used to perform background actions.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  // Pointer to the TabRestoreService used to report closed tabs if the
-  // session migration fails.
-  raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
 
   // Maps from observed WebStateList to the object tracking the information
   // about said WebStateList (including the observer).

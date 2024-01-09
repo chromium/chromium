@@ -11,7 +11,6 @@
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/legacy_session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_migration.h"
@@ -22,8 +21,7 @@
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
 
-// To get access to web::features::kEnableSessionSerializationOptimizations.
-// TODO(crbug.com/1383087): remove once the feature is fully launched.
+// TODO(crbug.com/1504753): Remove once the feature has launched.
 #import "ios/web/common/features.h"
 
 namespace {
@@ -141,7 +139,6 @@ SessionRestorationServiceFactory::SessionRestorationServiceFactory()
           "SessionRestorationService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(WebSessionStateCacheFactory::GetInstance());
-  DependsOn(IOSChromeTabRestoreServiceFactory::GetInstance());
 }
 
 void SessionRestorationServiceFactory::MigrateSessionStorageFormat(
@@ -243,22 +240,33 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
 
   const base::FilePath storage_path = browser_state->GetStatePath();
 
+  SessionStorageFormat format =
+      GetSessionStorageFormatPref(browser_state->GetPrefs());
+
+  // During unit tests, it is the method MigrateSessionStorageFormat(...)
+  // will not be called before the service is created and the preference
+  // will have its default value of `SessionStorageFormat::kUnknown`. Use
+  // the feature flag to select which implementation to use.
+  if (format == SessionStorageFormat::kUnknown) {
+    format = web::features::UseSessionSerializationOptimizations()
+                 ? SessionStorageFormat::kOptimized
+                 : SessionStorageFormat::kLegacy;
+  }
+
   // If the optimised session restoration format is not enabled, create a
   // LegacySessionRestorationService instance which wraps the legacy API.
-  if (!web::features::UseSessionSerializationOptimizations()) {
+  if (format == SessionStorageFormat::kLegacy) {
     SessionServiceIOS* session_service_ios =
         [[SessionServiceIOS alloc] initWithSaveDelay:kSaveDelay
                                           taskRunner:task_runner];
 
     return std::make_unique<LegacySessionRestorationService>(
         IsPinnedTabsEnabled(), storage_path, session_service_ios,
-        WebSessionStateCacheFactory::GetForBrowserState(browser_state),
-        IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
+        WebSessionStateCacheFactory::GetForBrowserState(browser_state));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner,
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browser_state));
+      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner);
 }
 
 web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(
