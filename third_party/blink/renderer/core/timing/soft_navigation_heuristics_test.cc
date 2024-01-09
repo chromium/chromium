@@ -10,8 +10,15 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
+
+using TaskScope = scheduler::TaskAttributionTracker::TaskScope;
+using TaskScopeType = scheduler::TaskAttributionTracker::TaskScopeType;
 
 class SoftNavigationHeuristicsTest : public testing::Test {
  protected:
@@ -114,4 +121,47 @@ TEST_F(SoftNavigationHeuristicsTest, UmaHistogramRecording) {
           kUserInteractionTsAndReferenceTsBothNotNull,
       1);
 }
+
+TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
+  auto* heuristics = CreateSoftNavigationHeuristicsForTest();
+  ASSERT_TRUE(heuristics);
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  ASSERT_TRUE(tracker);
+
+  auto* script_state = GetScriptStateForTest();
+  Persistent<scheduler::TaskAttributionInfo> root_task = nullptr;
+  // Simulate a click.
+  {
+    SoftNavigationEventScope event_scope(
+        heuristics, SoftNavigationHeuristics::EventScopeType::kClick,
+        /*is_new_interaction=*/true);
+    std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
+        script_state, /*parent_task=*/nullptr, TaskScopeType::kCallback);
+    root_task = tracker->RunningTask(script_state);
+  }
+  EXPECT_TRUE(root_task);
+  EXPECT_GT(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+
+  // Simulate a descendant task.
+  Persistent<scheduler::TaskAttributionInfo> descendant_task = nullptr;
+  {
+    std::unique_ptr<TaskScope> task_scope = tracker->CreateTaskScope(
+        script_state, root_task, TaskScopeType::kCallback);
+    descendant_task = tracker->RunningTask(script_state);
+  }
+  EXPECT_TRUE(descendant_task);
+
+  root_task = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  // The heuristics still should not have been reset since there is a live
+  // root task, which is being held onto by its descendant task.
+  EXPECT_GT(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+
+  // Finally, this should allow the click task to be GCed, which should cause
+  // the heuristics to be reset.
+  descendant_task = nullptr;
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  EXPECT_EQ(heuristics->GetLastInteractionTaskIdForTest(), 0u);
+}
+
 }  // namespace blink
