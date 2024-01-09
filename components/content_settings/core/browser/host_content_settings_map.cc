@@ -910,6 +910,7 @@ HostContentSettingsMap::~HostContentSettingsMap() {
 void HostContentSettingsMap::ShutdownOnUIThread() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
+  expiration_enforcement_timers_.clear();
   prefs_ = nullptr;
   for (const auto& provider_pair : content_settings_providers_)
     provider_pair.second->ShutdownOnUIThread();
