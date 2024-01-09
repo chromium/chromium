@@ -1529,7 +1529,7 @@ class FakeWebAppPublisher : public apps::AppPublisher {
     ms_web_app->readiness = apps::Readiness::kReady;
     apps.push_back(std::move(ms_web_app));
     Publish(std::move(apps), apps::AppType::kWeb,
-            /*should_notify_initialized=*/true);
+            /*should_notify_initialized=*/false);
   }
 
   void LoadIcon(const std::string& app_id,
