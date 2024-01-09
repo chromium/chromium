@@ -445,12 +445,23 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         @ConsentLevel
         int consentLevel =
                 mSignInState.shouldTurnSyncOn() ? ConsentLevel.SYNC : ConsentLevel.SIGNIN;
+
+        // Retain the sign-in callback since pref commit callback will be called after sign-in is
+        // considered completed and sign-in state is reset.
+        final SignInCallback signInCallback = mSignInState.mCallback;
         @PrimaryAccountError
         int primaryAccountError =
                 mIdentityMutator.setPrimaryAccount(
                         mSignInState.mCoreAccountInfo.getId(),
                         consentLevel,
-                        mSignInState.getAccessPoint());
+                        mSignInState.getAccessPoint(),
+                        () -> {
+                            Log.d(TAG, "Sign-in native prefs written.");
+                            if (signInCallback != null) {
+                                signInCallback.onPrefsCommitted();
+                            }
+                        });
+
         if (primaryAccountError != PrimaryAccountError.NO_ERROR) {
             Log.w(
                     TAG,

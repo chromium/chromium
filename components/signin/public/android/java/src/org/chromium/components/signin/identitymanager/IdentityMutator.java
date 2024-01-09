@@ -48,9 +48,15 @@ public class IdentityMutator {
     public @PrimaryAccountError int setPrimaryAccount(
             CoreAccountId accountId,
             @ConsentLevel int consentLevel,
-            @SigninAccessPoint int accessPoint) {
+            @SigninAccessPoint int accessPoint,
+            Runnable prefsSavedCallback) {
         return IdentityMutatorJni.get()
-                .setPrimaryAccount(mNativeIdentityMutator, accountId, consentLevel, accessPoint);
+                .setPrimaryAccount(
+                        mNativeIdentityMutator,
+                        accountId,
+                        consentLevel,
+                        accessPoint,
+                        prefsSavedCallback);
     }
 
     /**
@@ -94,7 +100,8 @@ public class IdentityMutator {
                 long nativeJniIdentityMutator,
                 CoreAccountId accountId,
                 @ConsentLevel int consentLevel,
-                @SigninAccessPoint int accessPoint);
+                @SigninAccessPoint int accessPoint,
+                Runnable prefsSavedCallback);
 
         public boolean clearPrimaryAccount(
                 long nativeJniIdentityMutator,

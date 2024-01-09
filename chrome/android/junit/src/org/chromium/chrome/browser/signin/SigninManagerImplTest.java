@@ -226,7 +226,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
@@ -252,7 +252,10 @@ public class SigninManagerImplTest {
         mSigninManager.finishSignInAfterPolicyEnforced();
         verify(mIdentityMutator)
                 .setPrimaryAccount(
-                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
+                        eq(ACCOUNT_INFO.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
         verify(mSyncService).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
@@ -273,7 +276,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinAndTurnSyncOn_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
@@ -304,9 +307,10 @@ public class SigninManagerImplTest {
                         coreAccountInfos, primaryAccountInfo.getId());
         verify(mIdentityMutator)
                 .setPrimaryAccount(
-                        primaryAccountInfo.getId(),
-                        ConsentLevel.SYNC,
-                        SigninAccessPoint.START_PAGE);
+                        eq(primaryAccountInfo.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
         verify(mSyncService).setSyncRequested();
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
@@ -326,7 +330,7 @@ public class SigninManagerImplTest {
     @Test
     @DisableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn() {
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
         assertTrue(mSigninManager.isSigninAllowed());
@@ -339,7 +343,10 @@ public class SigninManagerImplTest {
         verify(mNativeMock, never()).fetchAndApplyCloudPolicy(anyLong(), any(), any());
         verify(mIdentityMutator)
                 .setPrimaryAccount(
-                        ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN, SigninAccessPoint.START_PAGE);
+                        eq(ACCOUNT_INFO.getId()),
+                        eq(ConsentLevel.SIGNIN),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
 
         verify(mSyncService, never()).setSyncRequested();
         // Signin should be complete and callback should be invoked.
@@ -358,7 +365,7 @@ public class SigninManagerImplTest {
     @EnableFeatures(SigninFeatures.SEED_ACCOUNTS_REVAMP)
     public void signinNoTurnSyncOn_seedAccountsRevampEnabled() {
         mFakeAccountManagerFacade.addAccount(ACCOUNT_FROM_INFO);
-        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt()))
+        when(mIdentityMutator.setPrimaryAccount(any(), anyInt(), anyInt(), any()))
                 .thenReturn(PrimaryAccountError.NO_ERROR);
 
         assertTrue(mSigninManager.isSigninAllowed());
@@ -380,7 +387,10 @@ public class SigninManagerImplTest {
                         coreAccountInfos, primaryAccountId);
         verify(mIdentityMutator)
                 .setPrimaryAccount(
-                        primaryAccountId, ConsentLevel.SIGNIN, SigninAccessPoint.START_PAGE);
+                        eq(primaryAccountId),
+                        eq(ConsentLevel.SIGNIN),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
 
         verify(mSyncService, never()).setSyncRequested();
         // Signin should be complete and callback should be invoked.
@@ -879,7 +889,10 @@ public class SigninManagerImplTest {
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
                 .setPrimaryAccount(
-                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.UNKNOWN);
+                        eq(ACCOUNT_INFO.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.UNKNOWN),
+                        any());
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
@@ -909,7 +922,10 @@ public class SigninManagerImplTest {
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
                 .setPrimaryAccount(
-                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.UNKNOWN);
+                        eq(ACCOUNT_INFO.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.UNKNOWN),
+                        any());
 
         mSigninManager.signinAndEnableSync(ACCOUNT_FROM_INFO, SigninAccessPoint.UNKNOWN, null);
 
@@ -959,7 +975,10 @@ public class SigninManagerImplTest {
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
                 .setPrimaryAccount(
-                        ACCOUNT_INFO.getId(), ConsentLevel.SYNC, SigninAccessPoint.START_PAGE);
+                        eq(ACCOUNT_INFO.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
 
         mSigninManager.signinAndEnableSync(
                 AccountUtils.createAccountFromName(ACCOUNT_INFO.getEmail()),
@@ -994,9 +1013,10 @@ public class SigninManagerImplTest {
         doAnswer(setPrimaryAccountAnswer)
                 .when(mIdentityMutator)
                 .setPrimaryAccount(
-                        primaryAccountInfo.getId(),
-                        ConsentLevel.SYNC,
-                        SigninAccessPoint.START_PAGE);
+                        eq(primaryAccountInfo.getId()),
+                        eq(ConsentLevel.SYNC),
+                        eq(SigninAccessPoint.START_PAGE),
+                        any());
 
         mSigninManager.signinAndEnableSync(ACCOUNT_FROM_INFO, SigninAccessPoint.START_PAGE, null);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();

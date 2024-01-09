@@ -22,6 +22,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -117,9 +118,13 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // account can only be changed if the user has not consented for sync. If the
   // user has consented for sync already, then use ClearPrimaryAccount() or
   // RevokeSync() instead.
-  void SetPrimaryAccountInfo(const CoreAccountInfo& account_info,
-                             signin::ConsentLevel consent_level,
-                             signin_metrics::AccessPoint access_point);
+  // `prefs_committed_callback` is called once the primary account preferences
+  // are written to the persistent storage.
+  void SetPrimaryAccountInfo(
+      const CoreAccountInfo& account_info,
+      signin::ConsentLevel consent_level,
+      signin_metrics::AccessPoint access_point,
+      base::OnceClosure prefs_committed_callback = base::NullCallback());
 
   // Updates the primary account information from AccountTrackerService.
   void UpdatePrimaryAccountInfo();
@@ -178,7 +183,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // It is forbidden to call this method if the user has already consented for
   // sync  with a different account (this method will DCHECK in that case).
   // |account_id| must not be empty.
-  void SetSyncPrimaryAccountInternal(const CoreAccountInfo& account_info);
+  void SetSyncPrimaryAccountInternal(const CoreAccountInfo& account_info,
+                                     ScopedPrefCommit& scoped_pref_commit);
 
   // Sets |primary_account_info_| and updates the associated preferences.
   void SetPrimaryAccountInternal(const CoreAccountInfo& account_info,
@@ -209,7 +215,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void FirePrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent::State& previous_state,
       absl::variant<signin_metrics::AccessPoint, signin_metrics::ProfileSignout>
-          event_source);
+          event_source,
+      ScopedPrefCommit& scoped_pref_commit);
 
   // ProfileOAuth2TokenServiceObserver:
   void OnRefreshTokensLoaded() override;
@@ -219,7 +226,8 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   void ComputeExplicitBrowserSignin(
       const signin::PrimaryAccountChangeEvent& event_details,
       const absl::variant<signin_metrics::AccessPoint,
-                          signin_metrics::ProfileSignout>& event_source);
+                          signin_metrics::ProfileSignout>& event_source,
+      ScopedPrefCommit& scoped_pref_commit);
 
   // Returns the primary account. Crashes if it is called before the primary
   // account was initialized.

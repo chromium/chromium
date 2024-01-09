@@ -52,7 +52,17 @@ public final class SigninTestUtil {
 
     /** Signs the user into the given account. */
     public static void signin(CoreAccountInfo coreAccountInfo) {
-        CallbackHelper callbackHelper = new CallbackHelper();
+        signin(coreAccountInfo, /* waitForPrefsCommit= */ false);
+    }
+
+    /** Signs the user into the given account and wait for the sign-in prefs to be committed */
+    public static void signinAndWaitForPrefsCommit(CoreAccountInfo coreAccountInfo) {
+        signin(coreAccountInfo, /* waitForPrefsCommit= */ true);
+    }
+
+    private static void signin(CoreAccountInfo coreAccountInfo, boolean waitForPrefsCommit) {
+        CallbackHelper completionCallbackHelper = new CallbackHelper();
+        CallbackHelper prefsCommitCallbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninManager signinManager =
@@ -64,7 +74,12 @@ public final class SigninTestUtil {
                             new SigninManager.SignInCallback() {
                                 @Override
                                 public void onSignInComplete() {
-                                    callbackHelper.notifyCalled();
+                                    completionCallbackHelper.notifyCalled();
+                                }
+
+                                @Override
+                                public void onPrefsCommitted() {
+                                    prefsCommitCallbackHelper.notifyCalled();
                                 }
 
                                 @Override
@@ -74,7 +89,10 @@ public final class SigninTestUtil {
                             });
                 });
         try {
-            callbackHelper.waitForFirst();
+            completionCallbackHelper.waitForFirst();
+            if (waitForPrefsCommit) {
+                prefsCommitCallbackHelper.waitForFirst();
+            }
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }

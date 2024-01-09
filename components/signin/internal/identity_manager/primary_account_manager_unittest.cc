@@ -407,9 +407,11 @@ TEST_F(PrimaryAccountManagerTest, SignIn) {
   CheckSigninMetrics({});
 
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
-  manager_->SetPrimaryAccountInfo(account_tracker()->GetAccountInfo(account_id),
-                                  ConsentLevel::kSync,
-                                  AccessPoint::ACCESS_POINT_SETTINGS);
+  base::RunLoop loop;
+  manager_->SetPrimaryAccountInfo(
+      account_tracker()->GetAccountInfo(account_id), ConsentLevel::kSync,
+      AccessPoint::ACCESS_POINT_SETTINGS, loop.QuitClosure());
+
   EXPECT_EQ(1, num_successful_signins_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
   EXPECT_EQ("user@gmail.com",
@@ -419,6 +421,12 @@ TEST_F(PrimaryAccountManagerTest, SignIn) {
             manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_SETTINGS,
                       .sync_opt_in = AccessPoint::ACCESS_POINT_SETTINGS});
+
+  // The primary account info and metrics should be changed synchronously, only
+  // the prefs commit should happen asynchronously and be verified after the
+  // `loop.Run()` here.
+  loop.Run();
+  EXPECT_TRUE(user_prefs_.user_prefs_store()->committed());
 }
 
 TEST_F(PrimaryAccountManagerTest,
@@ -558,8 +566,12 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   // Set the unconsented primary account.
   CoreAccountId account_id = AddToAccountTracker("gaia_id", "user@gmail.com");
   CoreAccountInfo account_info = account_tracker()->GetAccountInfo(account_id);
+
+  base::RunLoop loop;
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,
-                                  AccessPoint::ACCESS_POINT_SETTINGS);
+                                  AccessPoint::ACCESS_POINT_SETTINGS,
+                                  loop.QuitClosure());
+
   EXPECT_EQ(0, num_successful_signins_);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_EQ(1, num_unconsented_account_changed_);
@@ -568,6 +580,12 @@ TEST_F(PrimaryAccountManagerTest, SetUnconsentedPrimaryAccountInfo) {
   EXPECT_EQ(CoreAccountInfo(),
             manager_->GetPrimaryAccountInfo(ConsentLevel::kSync));
   CheckSigninMetrics({.sign_in = AccessPoint::ACCESS_POINT_SETTINGS});
+
+  // The primary account info and metrics should be changed synchronously, only
+  // the prefs commit should happen asynchronously and be verified after the
+  // `loop.Run()` here.
+  loop.Run();
+  EXPECT_TRUE(user_prefs_.user_prefs_store()->committed());
 
   // Set the same account again.
   manager_->SetPrimaryAccountInfo(account_info, ConsentLevel::kSignin,

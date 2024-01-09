@@ -412,4 +412,16 @@ public class SigninManagerIntegrationTest {
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
                 .onSignedOut();
     }
+
+    @Test
+    @MediumTest
+    public void testSignInWithoutSync_waitForPrefCommit() {
+        CoreAccountInfo coreAccountInfo =
+                mSigninTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        SigninTestUtil.signinAndWaitForPrefsCommit(coreAccountInfo);
+
+        Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
+        verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
+                .onSignedIn();
+    }
 }
