@@ -89,7 +89,7 @@
 <translation id="1498498210836053409">Désactiver le mode rémanent lors de l'édition de texte (mode rémanent intelligent)</translation>
 <translation id="1499041187027566160">augmenter le volume</translation>
 <translation id="1502086903961450562">Élément graphique précédent</translation>
-<translation id="1506187449813838456">Augmenter le timbre de la voix</translation>
+<translation id="1506187449813838456">Lire un ton plus haut</translation>
 <translation id="151784044608172266">Phrase suivante</translation>
 <translation id="1524531499102321782">Ligne suivante (braille)</translation>
 <translation id="1542513807034338907">Faire défiler jusqu'à la page précédente</translation>
@@ -245,7 +245,7 @@
 <translation id="267442004702508783">actualiser</translation>
 <translation id="2675533876313964202">Chartreuse</translation>
 <translation id="2684412629217766642">Fermer le tutoriel ChromeVox</translation>
-<translation id="2692503699962701720">Changer d'intonation pour les types d'éléments et le texte mis en forme</translation>
+<translation id="2692503699962701720">Changer de ton pour la lecture des types d'éléments et du texte mis en forme</translation>
 <translation id="2697408785920771974">autoinl</translation>
 <translation id="2697786971245905543">Proposition de conversion de texte</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parenthèse ouverte}one{# parenthèse ouverte}other{# parenthèses ouvertes}}</translation>
@@ -296,7 +296,7 @@
 <translation id="2988364959384217951">Conseil : Balayez l'écran de droite à gauche avec deux doigts pour quitter ce tutoriel.</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer le timbre de la voix</translation>
-<translation id="3009352964623081324">Recherche+O, puis S. Utilisez ce raccourci pour installer, gérer et personnaliser des voix.</translation>
+<translation id="3009352964623081324">Utilisez la touche Recherche+O puis S pour installer, gérer et personnaliser les voix.</translation>
 <translation id="3014130421870723208">mod@ 8pt</translation>
 <translation id="3018210433491759145">ChromeVox en cours de chargement</translation>
 <translation id="3030432017085518523">Case d'option d'élément de menu</translation>
@@ -359,7 +359,7 @@
 <translation id="3312997241656799641">Lien consulté suivant</translation>
 <translation id="3313245066383501820">Touche de modification ChromeVox</translation>
 <translation id="3317212938060708859">Un curseur</translation>
-<translation id="3321460131042519426">Enable word wrap</translation>
+<translation id="3321460131042519426">Activer le retour ligne</translation>
 <translation id="3322936298410871309">En-tête précédent de niveau 1</translation>
 <translation id="3323447499041942178">Zone de saisie</translation>
 <translation id="3324983252691184275">Pourpre</translation>
@@ -728,7 +728,7 @@
 <translation id="5878908838135392163">Bleu poudre</translation>
 <translation id="588108970619830498">Rétablissez les valeurs par défaut des paramètres de synthèse vocale</translation>
 <translation id="5891934789323004067">Tableau</translation>
-<translation id="5899860758576822363">Lire le contenu à un volume sonore moins élevé pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="5899860758576822363">Réduire le volume lorsque ChromeVox parle</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5906974869830879618">Veuillez saisir un code</translation>
 <translation id="5921587111466148855">Chapitre</translation>
@@ -777,7 +777,7 @@
 <translation id="6280088282605782512">Appuyez deux fois</translation>
 <translation id="6282062888058716985">nav.</translation>
 <translation id="6295699829709583154">Touches essentielles : Recherche</translation>
-<translation id="6305702903308659374">Lire le contenu à un volume sonore normal, même pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="6305702903308659374">Lire à un volume normal, même lorsque ChromeVox parle</translation>
 <translation id="6307969636681130414">Élément sur lequel vous avez appuyé</translation>
 <translation id="6315652249189065725">Ouvrir le menu des raccourcis clavier</translation>
 <translation id="6320690422100602757">Aucun élément de liste suivant</translation>
@@ -1069,8 +1069,8 @@
 <translation id="8463645336674919227">Abandon de l'erreur grammaticale</translation>
 <translation id="8465573210279050749">supprimer le mot précédent</translation>
 <translation id="847040613207937740">Aucune case à cocher suivante</translation>
-<translation id="8473540203671727883">Prononcer le texte sous la souris</translation>
-<translation id="8476408756881832830">Interrompre la lecture pendant la diffusion des commentaires audio ChromeVox</translation>
+<translation id="8473540203671727883">Lire à haute voix le texte sous la souris</translation>
+<translation id="8476408756881832830">Interrompre la lecture lorsque ChromeVox parle</translation>
 <translation id="8476508772960940536">vue d'ensemble des fenêtres</translation>
 <translation id="8480873377842220259">Vous allez maintenant découvrir des commandes pour la navigation de base. Vous pouvez maintenir la touche Recherche enfoncée et appuyer sur les touches fléchées pour naviguer au sein de l'écran. Pour continuer, appuyez sur Recherche+Flèche vers la droite.</translation>
 <translation id="8503360654911991865">Diminuer le niveau de précision de la navigation</translation>

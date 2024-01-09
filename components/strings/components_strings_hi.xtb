@@ -187,7 +187,7 @@
 <translation id="1333745675627230582">Chrome Dino गेम खेलें</translation>
 <translation id="1333989956347591814">आपकी गतिविधि इन्हें <ph name="BEGIN_EMPHASIS" />अब भी दिखाई दे सकती है<ph name="END_EMPHASIS" />:
         <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />उन वेबसाइटों को जो आपके खाते से देखी जाती हैं
+          <ph name="LIST_ITEM" />आपके खाते से देखी जाने वाली वेबसाइटों को
           <ph name="LIST_ITEM" />आपका नियोक्ता या स्कूल
           <ph name="LIST_ITEM" />आपको इंटरनेट सेवा देने वाली कंपनी
         <ph name="END_LIST" /></translation>
@@ -508,7 +508,7 @@
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1956486093533522234">अपने डिवाइस को ढूंढें, सुरक्षित करें या उसे मिटाएं</translation>
 <translation id="1958218078413065209">आपका सबसे ज़्यादा स्कोर <ph name="SCORE" /> है.</translation>
-<translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
+<translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />जिन पेजों को ब्राउज़ किया जाता है उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="196752089528718902">आम तौर पर, साइटों से सुरक्षित तरीके से कनेक्ट किया जाता है. हालांकि, इस बार Chrome को साइट पर सुरक्षित कनेक्शन नहीं मिला. ऐसा हो सकता है कि कोई हमलावर आपके इंटरनेट पर छिपकर नज़र रख रहा हो या उसमें बदलाव करने की कोशिश कर रहा हो. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
@@ -920,7 +920,7 @@
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="2824549017793319782">सीधे पता बार में अपनी खोज का कीवर्ड टाइप करने के लिए चुनें</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
-<translation id="2826760142808435982">कनेक्शन को <ph name="CIPHER" /> का उपयोग करके सुरक्षित किया गया है और उसकी पहचान की गई है और यह मुख्य विनिमय तकनीक के रूप में <ph name="KX" /> का उपयोग करता है.</translation>
+<translation id="2826760142808435982"><ph name="CIPHER" /> का इस्तेमाल करके कनेक्शन को एन्क्रिप्ट (सुरक्षित) किया गया है और उसकी पुष्टि की गई है. साथ ही, यह मुख्य एक्सचेंज तकनीक के रूप में <ph name="KX" /> का इस्तेमाल करता है.</translation>
 <translation id="2835170189407361413">फ़ॉर्म साफ़ करें</translation>
 <translation id="2838682941130655229"><ph name="EMBEDDED_URL" /> को आपके बारे में सेव की गई जानकारी इस्तेमाल करने की अनुमति चाहिए</translation>
 <translation id="2839032553903800133">सूचनाएं ब्लॉक की गईं</translation>
@@ -1019,7 +1019,7 @@
 <translation id="3036894576201005614">घर की साफ़-सफ़ाई में इस्तेमाल होने वाली चीज़ें</translation>
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
-<translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
+<translation id="3041612393474885105">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="305162504811187366">Chrome रिमोट डेस्कटॉप का इतिहास, जिसमें टाइमस्टैंप, होस्ट, और क्लाइंट सेशन आईडी शामिल हैं</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> की कीमत <ph name="PRICE_DROP" /> कम हुई है</translation>
 <translation id="3054512251683174387">Chrome, सूची से उन विषयों को अपने-आप मिटा देता है जो चार हफ़्ते से ज़्यादा पुराने हैं. हालांकि, ब्राउज़ करते समय, विषयों की सूची में कोई पुराना विषय फिर से दिख सकता है. इसके अलावा, आपके पास उन विषयों को ब्लॉक करने का भी विकल्प होता है जिन्हें आपको Chrome की सूची में शामिल नहीं करवाना है. Chrome में विज्ञापन देखने वाले की निजता बनाए रखने के बारे में ज़्यादा जानें.</translation>
@@ -1352,7 +1352,7 @@
 <translation id="3678029195006412963">अनुरोध पर हस्ताक्षर नहीं किया जा सका</translation>
 <translation id="3678529606614285348">पेज को नई गुप्त विंडो में खोलें (Ctrl-Shift-N)</translation>
 <translation id="3678914302246317895">पुष्टि करने के लिए <ph name="OTP_LENGTH" /> अंकों वाला कोड डालें</translation>
-<translation id="3681007416295224113">प्रमाणपत्र जानकारी</translation>
+<translation id="3681007416295224113">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="3681421644246505351">Chrome आपके हाल ही के ब्राउज़िंग इतिहास के आधार पर, आपकी पसंद के विषयों को सेव करता है.</translation>
 <translation id="3689867156802445220">बिल्डिंग का नंबर</translation>
 <translation id="3693327506115126094">अपनी पहचान की पुष्टि करने का तरीका चुनें</translation>
@@ -1795,7 +1795,7 @@
 <translation id="4586607503179159908">पेमेंट के तरीके की पुष्टि हो गई है</translation>
 <translation id="4587425331216688090">Chrome से पता निकालें?</translation>
 <translation id="459089498662672729">एडमिन की नीति के हिसाब से, टेक्स्ट को <ph name="ORIGIN_NAME" /> से इस जगह पर नहीं चिपकाना चाहिए</translation>
-<translation id="4592951414987517459"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी आधुनिक सिफ़र सुइट का उपयोग करके सुरक्षित किया गया है.</translation>
+<translation id="4592951414987517459"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी आधुनिक साइफ़र सुइट का इस्तेमाल करके सुरक्षित किया गया है.</translation>
 <translation id="4594403342090139922">मिटाना &amp;पहले जैसा करें</translation>
 <translation id="4597348597567598915">आकार 8</translation>
 <translation id="4598556348158889687">डिवाइस की मेमोरी का प्रबंधन</translation>
@@ -2401,7 +2401,7 @@
 <translation id="5804241973901381774">अनुमतियां</translation>
 <translation id="5808435672482059465">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="5808542072418270309">सिम्युलेशन वाले गेम</translation>
-<translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी पुराने सिफ़र सुइट का उपयोग करके सुरक्षित किया गया है.</translation>
+<translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी आधुनिक साइफ़र सुइट का इस्तेमाल करके सुरक्षित किया गया है.</translation>
 <translation id="5813119285467412249">&amp;जोड़ना फिर से करें</translation>
 <translation id="5813309815819933152">टीवी रिएलिटी शो</translation>
 <translation id="5813753398265398978">भौतिक विज्ञान</translation>
