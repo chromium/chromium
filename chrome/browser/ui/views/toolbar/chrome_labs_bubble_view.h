@@ -49,6 +49,7 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
   views::View* GetMenuItemContainerForTesting();
   bool IsRestartPromptVisibleForTesting();
+  views::ScrollView* GetScrollViewForTesting();
 
  private:
   void NotifyRestartCallback();
@@ -57,6 +58,8 @@ class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
   raw_ptr<views::FlexLayoutView> menu_item_container_;
 
   raw_ptr<views::View> restart_prompt_;
+
+  raw_ptr<views::ScrollView> scroll_view_;
 
   base::RepeatingClosureList restart_callback_list_;
 };

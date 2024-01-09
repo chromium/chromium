@@ -13,7 +13,7 @@ AskGoogleForSuggestionsDialogTest.*
 BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 BubbleFrameViewBrowserTest.*
-ChromeLabsUiTest.*
+ChromeLabs*UiTest.*
 ConfirmBubbleTest.*
 ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
