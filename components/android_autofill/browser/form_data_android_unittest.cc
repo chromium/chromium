@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/android_autofill/browser/form_data_android.h"
-#include "components/android_autofill/browser/form_field_data_android.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +12,9 @@
 #include <vector>
 
 #include "base/test/bind.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/form_field_data_android.h"
 #include "components/android_autofill/browser/mock_form_data_android_bridge.h"
 #include "components/android_autofill/browser/mock_form_field_data_android_bridge.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -192,10 +193,7 @@ TEST(FormDataAndroidTest, SimilarFormAsWithDiagnosis) {
 
   // Returns the bitwise or of the underlying types of the passed enums.
   auto to_check_result = [](auto... components) {
-    return SimilarityCheckResult(
-        (static_cast<std::underlying_type_t<SimilarityCheckComponent>>(
-             components) |
-         ...));
+    return SimilarityCheckResult((base::to_underlying(components) | ...));
   };
 
   FormDataAndroid af(CreateTestForm(), kSampleSessionId);
