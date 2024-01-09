@@ -539,7 +539,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     const std::vector<ui::AXNodeID>& content_node_ids) {
   // Update Read Aloud state.
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
-  previously_spoken_ids_.clear();
   current_text_index_ = 0;
   processed_sentence_index_ = -1;
   processed_sentences_on_current_page_.clear();
@@ -1361,11 +1360,21 @@ void ReadAnythingAppController::InitAXPositionWithNode(
   if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
-    previously_spoken_ids_.clear();
     current_text_index_ = 0;
     processed_sentence_index_ = -1;
     processed_sentences_on_current_page_.clear();
   }
+}
+
+bool ReadAnythingAppController::NodePreviouslySpoken(ui::AXNodeID id) {
+  for (ReadAnythingAppController::ReadAloudCurrentGranularity granularity :
+       processed_sentences_on_current_page_) {
+    if (base::Contains(granularity.segments, id)) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
@@ -1490,7 +1499,6 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
       //    be added to the current sentence.
       if ((int)current_text.length() != combined_sentence_index) {
         anchor_node = GetNodeFromCurrentPosition();
-        previously_spoken_ids_.push_back(anchor_node->id());
         // Calculate the new sentence index.
         int index_in_new_node = combined_sentence_index - current_text.length();
         // Add the current node to the list of nodes to be returned, with a
@@ -1546,7 +1554,6 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
       current_granularity.AddSegment(segment);
       current_text += anchor_node->GetTextContentUTF16().substr(
           start_index, current_text_index_ - start_index);
-      previously_spoken_ids_.push_back(anchor_node->id());
     } else {
       // If adding the next segment to the list of nodes is greater than the
       // maximum text length, return the current nodes.
@@ -1618,8 +1625,7 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
   ui::AXNode* anchor_node =
       is_leaf ? new_position->GetAnchor()->GetLowestPlatformAncestor()
               : new_position->GetAnchor();
-  bool was_previously_spoken =
-      base::Contains(previously_spoken_ids_, anchor_node->id());
+  bool was_previously_spoken = NodePreviouslySpoken(anchor_node->id());
   // TODO(crbug.com/1474951): Can this be updated to IsText() instead?
   bool is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
   const std::set<ui::AXNodeID>* node_ids = model_.selection_node_ids().empty()
@@ -1648,8 +1654,7 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
     if (is_leaf) {
       anchor_node = anchor_node->GetLowestPlatformAncestor();
     }
-    was_previously_spoken =
-        base::Contains(previously_spoken_ids_, anchor_node->id());
+    was_previously_spoken = NodePreviouslySpoken(anchor_node->id());
     is_text_node = (GetHtmlTag((anchor_node->id())).length() == 0);
     contains_node = base::Contains(*node_ids, anchor_node->id());
   }

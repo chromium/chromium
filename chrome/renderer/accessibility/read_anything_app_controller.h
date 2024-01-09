@@ -155,6 +155,8 @@ class ReadAnythingAppController
   // spoken by Read Aloud.
   ui::AXNode* GetNodeFromCurrentPosition();
 
+  bool NodePreviouslySpoken(ui::AXNodeID id);
+
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;
@@ -338,10 +340,6 @@ class ReadAnythingAppController
   ui::AXNodePosition::AXPositionInstance ax_position_;
   // The current text index within the given node.
   int current_text_index_ = 0;
-
-  // TODO(b/1474951): There should be a way to navigate text without needing
-  //  to store spoken ids.
-  std::vector<ui::AXNodeID> previously_spoken_ids_;
 
   // TODO(crbug.com/1474951): Clear this when granularity changes.
   // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
