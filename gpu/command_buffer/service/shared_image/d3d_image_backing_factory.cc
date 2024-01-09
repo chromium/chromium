@@ -363,14 +363,17 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   const bool needs_shared_handle =
       has_webgpu_usage ||
       (has_gl_usage && (d3d11_device_ != angle_d3d11_device_));
-  if (is_shm_gmb && format.is_single_plane() && !needs_shared_handle &&
-      UseMapOnDefaultTextures()) {
-    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
-  } else {
+  if (needs_shared_handle) {
+    // TODO(crbug.com/1468604): Many texture formats cannot be shared on old
+    // GPUs/drivers to try to detect that and implement a fallback path or
+    // disallow Graphite/WebGPU in those cases.
     desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
                      (gfx::D3DSharedFence::IsSupported(d3d11_device_.Get())
                           ? D3D11_RESOURCE_MISC_SHARED
                           : D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX);
+  } else if (is_shm_gmb && format.is_single_plane() &&
+             !format.IsLegacyMultiplanar() && UseMapOnDefaultTextures()) {
+    desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
   }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
