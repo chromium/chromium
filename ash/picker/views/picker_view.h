@@ -6,6 +6,7 @@
 #define ASH_PICKER_VIEWS_PICKER_VIEW_H_
 
 #include "ash/ash_export.h"
+#include "ash/picker/model/picker_category.h"
 #include "ash/picker/picker_session_metrics.h"
 #include "ash/public/cpp/ash_web_view.h"
 #include "base/memory/weak_ptr.h"
@@ -78,6 +79,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView {
 
   // Selects a search result.
   void SelectSearchResult(const PickerSearchResult& result);
+
+  // Selects a category.
+  void SelectCategory(PickerCategory category);
 
   PickerSessionMetrics session_metrics_;
   raw_ptr<PickerViewDelegate> delegate_ = nullptr;

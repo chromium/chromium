@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/picker/model/picker_category.h"
 #include "ash/picker/model/picker_search_results.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_search_field_view.h"
@@ -71,8 +72,11 @@ PickerView::PickerView(PickerViewDelegate* delegate,
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithWeight(1));
 
-  zero_state_view_ =
-      contents_view_->AddPage(std::make_unique<PickerZeroStateView>());
+  // `base::Unretained` is safe here because this class owns
+  // `zero_state_view_`.
+  zero_state_view_ = contents_view_->AddPage(
+      std::make_unique<PickerZeroStateView>(base::BindRepeating(
+          &PickerView::SelectCategory, base::Unretained(this))));
   // `base::Unretained` is safe here because this class owns
   // `search_results_view_`.
   search_results_view_ = contents_view_->AddPage(
@@ -145,6 +149,10 @@ void PickerView::PublishSearchResults(const PickerSearchResults& results) {
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
   delegate_->InsertResultOnNextFocus(result);
   GetWidget()->Close();
+}
+
+void PickerView::SelectCategory(PickerCategory category) {
+  // TODO: b/316936723 - Show category page with results for that category.
 }
 
 BEGIN_METADATA(PickerView, views::View)
