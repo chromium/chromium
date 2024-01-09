@@ -4777,8 +4777,8 @@
   },
   {
     "name": "incognito-screenshot",
-    "owners": [ "roagarwal@chromium.org", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
-    "expiry_milestone": 120
+    "owners": [ "zalmashni@google.com", "sideyilmaz@chromium.org", "chrome-incognito@google.com" ],
+    "expiry_milestone": 140
   },
   {
     "name": "indexed-db-compress-values-with-snappy",
