@@ -87,6 +87,7 @@ source_set("drive_service_factory") {
     "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/drive:drive_api",
   ]
 }
