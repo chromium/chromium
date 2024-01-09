@@ -27,7 +27,10 @@ class CustomFrameViewTest : public ViewsTestBase {
 
   ~CustomFrameViewTest() override = default;
 
-  CustomFrameView* custom_frame_view() { return custom_frame_view_; }
+  CustomFrameView* custom_frame_view() {
+    return static_cast<CustomFrameView*>(
+        widget()->non_client_view()->frame_view());
+  }
 
   Widget* widget() { return widget_; }
 
@@ -45,18 +48,18 @@ class CustomFrameViewTest : public ViewsTestBase {
   }
 
   ImageButton* minimize_button() {
-    return custom_frame_view_->minimize_button_;
+    return custom_frame_view()->minimize_button_;
   }
 
   ImageButton* maximize_button() {
-    return custom_frame_view_->maximize_button_;
+    return custom_frame_view()->maximize_button_;
   }
 
-  ImageButton* restore_button() { return custom_frame_view_->restore_button_; }
+  ImageButton* restore_button() { return custom_frame_view()->restore_button_; }
 
-  ImageButton* close_button() { return custom_frame_view_->close_button_; }
+  ImageButton* close_button() { return custom_frame_view()->close_button_; }
 
-  gfx::Rect title_bounds() { return custom_frame_view_->title_bounds_; }
+  gfx::Rect title_bounds() { return custom_frame_view()->title_bounds_; }
 
   void SetWindowButtonOrder(
       const std::vector<views::FrameButton> leading_buttons,
@@ -64,12 +67,7 @@ class CustomFrameViewTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<WidgetDelegate> widget_delegate_;
-
-  // Parent container for |custom_frame_view_|
-  raw_ptr<Widget, DanglingUntriaged> widget_;
-
-  // Owned by |widget_|
-  raw_ptr<CustomFrameView, DanglingUntriaged> custom_frame_view_;
+  raw_ptr<Widget> widget_ = nullptr;
 };
 
 void CustomFrameViewTest::SetUp() {
@@ -83,14 +81,12 @@ void CustomFrameViewTest::SetUp() {
   params.delegate->SetCanMinimize(true);
   params.remove_standard_frame = true;
   widget_->Init(std::move(params));
-
-  auto custom_frame_view = std::make_unique<CustomFrameView>(widget_);
-  custom_frame_view_ = custom_frame_view.get();
-  widget_->non_client_view()->SetFrameView(std::move(custom_frame_view));
+  widget_->non_client_view()->SetFrameView(
+      std::make_unique<CustomFrameView>(widget_));
 }
 
 void CustomFrameViewTest::TearDown() {
-  widget_->CloseNow();
+  widget_.ExtractAsDangling()->CloseNow();
 
   ViewsTestBase::TearDown();
 }
