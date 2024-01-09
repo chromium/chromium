@@ -188,13 +188,13 @@ BASE_FEATURE(kUploadOfficeToCloud,
 // Office files support.
 BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
 BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
              "MicrosoftOneDriveIntegrationForEnterprise",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRoundedWindows,
              "RoundedWindows",

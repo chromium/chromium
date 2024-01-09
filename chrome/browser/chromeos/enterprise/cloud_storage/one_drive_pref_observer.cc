@@ -176,6 +176,10 @@ bool OneDrivePrefObserverFactory::ServiceIsCreatedWithBrowserContext() const {
 }
 
 void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
+  if (!event_router_) {
+    return;
+  }
+
   MountInfo metadata;
   metadata.mode = mode;
 
@@ -191,6 +195,10 @@ void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
 
 void OneDrivePrefObserver::BroadcastAccountRestrictionsChanged(
     base::Value::List restrictions) {
+  if (!event_router_) {
+    return;
+  }
+
   std::vector<std::string> restrictions_vector;
   for (auto& restriction : restrictions) {
     if (restriction.is_string()) {

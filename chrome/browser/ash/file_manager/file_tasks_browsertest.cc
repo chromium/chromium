@@ -1132,11 +1132,11 @@ class EnterpriseAccount : public TestAccountBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns false when an
+// Tests that IsEligibleAndEnabledUploadOfficeToCloud() returns true when an
 // enterprise user is logged in and |kUploadOfficeToCloud| is enabled.
 IN_PROC_BROWSER_TEST_F(EnterpriseAccount,
                        IsEligibleAndEnabledUploadOfficeToCloud) {
-  ASSERT_FALSE(
+  ASSERT_TRUE(
       chromeos::IsEligibleAndEnabledUploadOfficeToCloud(browser()->profile()));
 }
 
