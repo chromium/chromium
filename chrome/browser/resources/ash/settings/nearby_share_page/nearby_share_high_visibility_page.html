@@ -122,11 +122,7 @@
     cancel-button-label="$i18n{cancel}"
     close-only="[[getErrorTitle_(errorState_)]]">
   <div id="content" slot="content">
-    <!-- TODO(b/279623883): Remove dark mode handling. -->
-    <iron-media-query query="(prefers-color-scheme: dark)"
-        query-matches="{{isDarkModeActive_}}">
-    </iron-media-query>
-      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_(isDarkModeActive_, isJellyEnabled_)]]"
+      <cros-lottie-renderer id="animation" asset-url="[[getAnimationUrl_()]]"
           autoplay dynamic aria-hidden>
       </cros-lottie-renderer>
     <div id="help">
