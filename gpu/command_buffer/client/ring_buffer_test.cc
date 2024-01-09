@@ -86,7 +86,7 @@ class BaseRingBufferTest : public testing::Test {
   bool delay_set_token_;
 
   std::unique_ptr<int8_t[]> buffer_;
-  raw_ptr<int8_t, DanglingUntriaged> buffer_start_;
+  raw_ptr<int8_t> buffer_start_ = nullptr;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -140,6 +140,7 @@ TEST_F(RingBufferTest, TestBasic) {
 // GetLargestFreeOrPendingSize to try to allocate more memory than was allowed.
 TEST_F(RingBufferTest, TestCanAllocGetLargestFreeOrPendingSize) {
   // Make sure we aren't actually aligned
+  buffer_start_ = nullptr;
   buffer_.reset(new int8_t[kBufferSize + 2 + kBaseOffset]);
   buffer_start_ = buffer_.get() + kBaseOffset;
   allocator_.reset(new RingBuffer(kAlignment, kBaseOffset, kBufferSize + 2,
