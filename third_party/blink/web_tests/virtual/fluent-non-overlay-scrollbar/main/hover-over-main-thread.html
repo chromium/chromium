@@ -41,7 +41,6 @@
       outer.getBoundingClientRect().right - calculateScrollbarThickness() / 2;
     const y = outer.getBoundingClientRect().top + verticalThumb(outer).y;
     await mouseMoveTo(x, y);
-    await waitForCompositorCommit();
 
     testRunner.notifyDone();
   };
