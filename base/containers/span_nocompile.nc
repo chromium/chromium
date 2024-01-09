@@ -172,4 +172,10 @@ void FromVolatileArrayDisallowed() {
   span<int> s(array);  // expected-error {{no matching constructor for initialization of 'span<int>'}}
 }
 
+void FixedSizeCopyTooSmall() {
+  const int src[] = {1, 2, 3};
+  int dst[2];
+  base::make_span(dst).copy_from(base::make_span(src));  // expected-error@*:* {{span size mismatch}}
+}
+
 }  // namespace base

@@ -1672,4 +1672,41 @@ TEST(SpanTest, ExtentMacro) {
   static_assert(EXTENT(plain_array) == kSize, "EXTENT broken for plain arrays");
 }
 
+TEST(SpanTest, CopyFrom) {
+  int arr[] = {1, 2, 3};
+  span<int, 0> empty_static_span;
+  span<int, 3> static_span = base::make_span(arr);
+
+  std::vector<int> vec = {4, 5, 6};
+  span<int> empty_dynamic_span;
+  span<int> dynamic_span = base::make_span(vec);
+
+  // Handle empty cases gracefully.
+  empty_static_span.copy_from(empty_dynamic_span);
+  empty_dynamic_span.copy_from(empty_static_span);
+  static_span.first(empty_static_span.size()).copy_from(empty_static_span);
+  dynamic_span.first(empty_dynamic_span.size()).copy_from(empty_dynamic_span);
+  EXPECT_THAT(arr, ElementsAre(1, 2, 3));
+  EXPECT_THAT(vec, ElementsAre(4, 5, 6));
+
+  // Test too small destinations.
+  EXPECT_DEATH_IF_SUPPORTED(empty_static_span.copy_from(dynamic_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(static_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(empty_dynamic_span.copy_from(dynamic_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(static_span.first(2).copy_from(dynamic_span), "");
+  EXPECT_DEATH_IF_SUPPORTED(dynamic_span.last(2).copy_from(static_span), "");
+
+  static_span.first(2).copy_from(static_span.last(2));
+  EXPECT_THAT(arr, ElementsAre(2, 3, 3));
+
+  dynamic_span.first(2).copy_from(dynamic_span.last(2));
+  EXPECT_THAT(vec, ElementsAre(5, 6, 6));
+
+  static_span.last(1).copy_from(dynamic_span.last(1));
+  EXPECT_THAT(arr, ElementsAre(2, 3, 6));
+
+  dynamic_span.first(1).copy_from(static_span.first(1));
+  EXPECT_THAT(vec, ElementsAre(2, 6, 6));
+}
+
 }  // namespace base

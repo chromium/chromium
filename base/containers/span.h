@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <concepts>
 #include <iterator>
@@ -186,6 +187,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 // - as_chars() function.
 // - as_writable_chars() function.
 // - as_byte_span() function.
+// - copy_from() method.
 //
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
@@ -341,6 +343,24 @@ class GSL_POINTER span {
     return reverse_iterator(begin());
   }
 
+  // Bounds-checked copy of spans into spans. The spans must be the exact
+  // same size or a hard CHECK() occurs. This is a non-std extension that
+  // is inspired by the Rust slice::copy_from_slice() method.
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(M != dynamic_extent && internal::LegalDataConversion<T, U>)
+  {
+    static_assert(N == M, "span size mismatch");
+    std::ranges::copy(other, data());
+  }
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(M == dynamic_extent && internal::LegalDataConversion<T, U>)
+  {
+    CHECK_EQ(size_bytes(), other.size_bytes());
+    std::ranges::copy(other, data());
+  }
+
  private:
   // This field is not a raw_ptr<> because it was filtered by the rewriter
   // for: #constexpr-ctor-field-initializer, #global-scope, #union
@@ -488,6 +508,17 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
 
   constexpr reverse_iterator rend() const noexcept {
     return reverse_iterator(begin());
+  }
+
+  // Bounds-checked copy of spans into spans. The spans must be the exact
+  // same size or a hard CHECK() occurs. This is a non-std extension that
+  // is inspired by the Rust slice::copy_from_slice() method.
+  template <typename U, size_t M>
+  void copy_from(const span<U, M>& other)
+    requires(internal::LegalDataConversion<T, U>)
+  {
+    CHECK_EQ(size_bytes(), other.size_bytes());
+    std::ranges::copy(other, data());
   }
 
  private:
