@@ -205,6 +205,12 @@ class TabStripViewController: UIViewController, TabStripCellDelegate,
         }
       }
     }
+
+    // UICollectionViewDropPlaceholder uses a TabStripCell and needs the class to be
+    // registered.
+    collectionView.register(
+      TabStripCell.self,
+      forCellWithReuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
   }
 
   /// Retuns the cell to be used in the collection view.
@@ -382,7 +388,45 @@ extension TabStripViewController: UICollectionViewDragDelegate, UICollectionView
     _ collectionView: UICollectionView,
     performDropWith coordinator: UICollectionViewDropCoordinator
   ) {
-    // TODO(crbug.com/1515507): Implement this.
+    for item in coordinator.items {
+      // Append to the end of the collection, unless drop index is specified.
+      // The sourceIndexPath is nil if the drop item is not from the same
+      // collection view. Set the destinationIndex to reflect the addition of an
+      // item.
+      let tabsCount = collectionView.numberOfItems(inSection: 0)
+      var destinationIndex = item.sourceIndexPath != nil ? (tabsCount - 1) : tabsCount
+      if let destinationIndexPath = coordinator.destinationIndexPath {
+        destinationIndex = destinationIndexPath.item
+      }
+      let dropIndexPah: IndexPath = IndexPath(item: destinationIndex, section: 0)
+
+      // Drop synchronously if local object is available.
+      if item.dragItem.localObject != nil {
+        coordinator.drop(item.dragItem, toItemAt: dropIndexPah)
+        // The sourceIndexPath is non-nil if the drop item is from this same
+        // collection view.
+        self.dragDropHandler?.drop(
+          item.dragItem, to: UInt(destinationIndex),
+          fromSameCollection: (item.sourceIndexPath != nil))
+      } else {
+        // Drop asynchronously if local object is not available.
+        let placeholder: UICollectionViewDropPlaceholder = UICollectionViewDropPlaceholder(
+          insertionIndexPath: dropIndexPah,
+          reuseIdentifier: TabStripConstants.CollectionView.tabStripCellReuseIdentifier)
+        placeholder.previewParametersProvider = {
+          (placeholderCell: UICollectionViewCell) -> UIDragPreviewParameters? in
+          guard let tabStripCell = placeholderCell as? TabStripCell else {
+            return nil
+          }
+          return tabStripCell.dragPreviewParameters
+        }
+
+        let context: UICollectionViewDropPlaceholderContext = coordinator.drop(
+          item.dragItem, to: placeholder)
+        self.dragDropHandler?.dropItem(
+          from: item.dragItem.itemProvider, to: UInt(destinationIndex), placeholderContext: context)
+      }
+    }
   }
 
 }

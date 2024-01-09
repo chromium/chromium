@@ -89,6 +89,7 @@ class TabStripMediatorTest : public PlatformTest {
     mediator_ = [[TabStripMediator alloc] initWithConsumer:consumer_];
     mediator_.browserState = browser_state_.get();
     mediator_.webStateList = web_state_list_;
+    mediator_.browser = browser_.get();
   }
 
   void AddWebState() {

@@ -842,12 +842,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
                          }) == WebStateList::kInvalidIndex) {
       return UIDropOperationCancel;
     }
-    if (self.browserState->IsOffTheRecord() && tabInfo.incognito) {
+    if (self.browserState->IsOffTheRecord() == tabInfo.incognito) {
       return UIDropOperationMove;
     }
-    if (!self.browserState->IsOffTheRecord() && !tabInfo.incognito) {
-      return UIDropOperationMove;
-    }
+
     // Tabs of different profiles (regular/incognito) cannot be dropped.
     return UIDropOperationForbidden;
   }

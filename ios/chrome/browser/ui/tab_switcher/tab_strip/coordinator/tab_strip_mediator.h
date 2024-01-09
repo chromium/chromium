@@ -12,6 +12,7 @@
 
 @protocol TabStripConsumer;
 
+class Browser;
 class ChromeBrowserState;
 class WebStateList;
 
@@ -25,6 +26,9 @@ class WebStateList;
 
 // The ChromeBrowserState model for the corresponding browser.
 @property(nonatomic, assign) ChromeBrowserState* browserState;
+
+// The associated browser needed to move tabs across browsers.
+@property(nonatomic, assign) Browser* browser;
 
 // Designated initializer. Initializer with a TabStripConsumer.
 - (instancetype)initWithConsumer:(id<TabStripConsumer>)consumer

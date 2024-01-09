@@ -52,6 +52,7 @@
       [[TabStripMediator alloc] initWithConsumer:self.tabStripViewController];
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.browserState = browserState;
+  self.mediator.browser = self.browser;
 
   self.tabStripViewController.mutator = self.mediator;
   self.tabStripViewController.dragDropHandler = self.mediator;

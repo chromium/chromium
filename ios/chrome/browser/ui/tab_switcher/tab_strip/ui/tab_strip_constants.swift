@@ -10,6 +10,7 @@ struct TabStripConstants {
   /// Collection view constants.
   struct CollectionView {
     static let inset: CGFloat = 4
+    static let tabStripCellReuseIdentifier = "tabStripCellReuseIdentifier"
   }
 
   /// Tab item constants.

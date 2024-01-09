@@ -6,10 +6,12 @@
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_COLLECTION_DRAG_DROP_METRICS_H_
 
 // Key of UMA DragDrop histograms.
+extern const char kUmaTabStripViewDragDropTabs[];
 extern const char kUmaGridViewDragDropTabs[];
 extern const char kUmaPinnedViewDragDropTabs[];
 
 // Key of UMA DragOrigin histograms.
+extern const char kUmaTabStripViewDragOrigin[];
 extern const char kUmaGridViewDragOrigin[];
 extern const char kUmaPinnedViewDragOrigin[];
 
