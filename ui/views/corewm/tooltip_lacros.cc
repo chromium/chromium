@@ -76,19 +76,13 @@ void TooltipLacros::Update(aura::Window* parent_window,
   text_ = text;
   position_ = position;
 
-  // TODO(crbug.com/1492220) - Figure out why this is necessary and get the
-  // correctly computed offset.
-  if (parent_window_->GetType() == aura::client::WINDOW_TYPE_POPUP) {
-    position_.Offset(0, 36);
-  }
-
   // Add the distance between `parent_window` and its toplevel window to
   // `position_` since Ash-side server will use this position as relative to
   // wayland toplevel window.
   // TODO(crbug.com/1385219): Use WaylandWindow instead of ToplevelWindow/Popup
   // when it's supported on ozone.
   aura::Window::ConvertPointToTarget(
-      parent_window_, parent_window_->GetToplevelWindow(), &position_);
+      parent_window_, parent_window_->GetRootWindow(), &position_);
   trigger_ = trigger;
 }
 
