@@ -41,6 +41,9 @@ namespace cc {
 ResourcePool::GpuBacking::GpuBacking() = default;
 ResourcePool::GpuBacking::~GpuBacking() = default;
 
+ResourcePool::SoftwareBacking::SoftwareBacking() = default;
+ResourcePool::SoftwareBacking::~SoftwareBacking() = default;
+
 namespace {
 
 // Process-unique number for each resource pool.
@@ -337,9 +340,13 @@ bool ResourcePool::PrepareForExport(
       transferable.synchronization_type =
           viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
+    SoftwareBacking* software_backing = resource->software_backing();
+    const gpu::Mailbox& mailbox =
+        software_backing->shared_image
+            ? software_backing->shared_image->mailbox()
+            : software_backing->shared_bitmap_id;
     transferable = viz::TransferableResource::MakeSoftware(
-        resource->software_backing()->shared_bitmap_id,
-        resource->software_backing()->mailbox_sync_token, resource->size(),
+        mailbox, software_backing->mailbox_sync_token, resource->size(),
         resource->format(), resource_source);
   }
   transferable.color_space = resource->color_space();

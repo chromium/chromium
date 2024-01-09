@@ -130,8 +130,7 @@ struct VIZ_COMMON_EXPORT TransferableResource {
 
   // The |mailbox| inside here holds the gpu::Mailbox when this is a gpu
   // resource, or the SharedBitmapId when it is a software resource.
-  // The |texture_target| and sync_token| inside here only apply for gpu
-  // resources.
+  // The |texture_target| inside here only apply for gpu resources.
   gpu::MailboxHolder mailbox_holder;
 
   // The color space that is used for pixel path operations (e.g, TexImage,

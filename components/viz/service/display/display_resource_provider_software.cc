@@ -50,12 +50,12 @@ DisplayResourceProviderSoftware::LockForRead(ResourceId id) {
     DCHECK(shared_image_manager_ && sync_point_manager_);
     auto it = resource_shared_images_.find(id);
     if (it == resource_shared_images_.end()) {
-      const SharedBitmapId& shared_bitmap_id =
+      const gpu::Mailbox& mailbox =
           resource->transferable.mailbox_holder.mailbox;
       auto access = std::make_unique<SharedImageAccess>();
       WaitSyncToken(resource->transferable.mailbox_holder.sync_token);
-      access->representation = shared_image_manager_->ProduceMemory(
-          shared_bitmap_id, memory_tracker_.get());
+      access->representation =
+          shared_image_manager_->ProduceMemory(mailbox, memory_tracker_.get());
       access->read_access = access->representation->BeginScopedReadAccess();
       resource_shared_images_.emplace(id, std::move(access));
     }

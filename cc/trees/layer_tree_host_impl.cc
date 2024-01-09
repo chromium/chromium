@@ -33,7 +33,6 @@
 #include "base/metrics/histogram.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/process/memory.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
@@ -142,24 +141,6 @@
 
 namespace cc {
 namespace {
-
-base::UnsafeSharedMemoryRegion AllocateSharedMemory(
-    const gfx::Size& size,
-    viz::SharedImageFormat format) {
-  size_t bytes = 0;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
-    DLOG(ERROR) << "AllocateMappedBitmap with size that overflows";
-    size_t alloc_size = std::numeric_limits<int>::max();
-    base::TerminateBecauseOutOfMemory(alloc_size);
-  }
-
-  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(bytes);
-  if (!shared_memory.IsValid()) {
-    DLOG(ERROR) << "Failed to allocate shared memory";
-    base::TerminateBecauseOutOfMemory(bytes);
-  }
-  return shared_memory;
-}
 
 // In BuildHitTestData we iterate all layers to find all layers that overlap
 // OOPIFs, but when the number of layers is greater than
@@ -4711,14 +4692,19 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
     auto* sii = layer_tree_frame_sink_->shared_image_interface();
     CHECK(sii);
 
-    auto unsafe_region = AllocateSharedMemory(upload_size, format);
-    mapping = unsafe_region.Map();
+    const size_t buffer_size = gfx::BufferSizeForBufferFormat(
+        upload_size, gfx::BufferFormat::RGBA_8888);
+    auto shared_memory_region =
+        base::UnsafeSharedMemoryRegion::Create(buffer_size);
+    mapping = shared_memory_region.Map();
+    CHECK(shared_memory_region.IsValid() && mapping.IsValid());
+
     gfx::GpuMemoryBufferHandle handle;
     handle.type = gfx::SHARED_MEMORY_BUFFER;
     handle.offset = 0;
     handle.stride = static_cast<int32_t>(gfx::RowSizeForBufferFormat(
         upload_size.width(), gfx::BufferFormat::RGBA_8888, 0));
-    handle.region = unsafe_region.Duplicate();
+    handle.region = std::move(shared_memory_region);
 
     client_shared_image = sii->CreateSharedImage(
         format, upload_size, color_space, kTopLeft_GrSurfaceOrigin,
