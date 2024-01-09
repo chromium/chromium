@@ -715,6 +715,10 @@ api::autotest_private::WindowStateType ToWindowStateType(
       return api::autotest_private::WindowStateType::kPrimarySnapped;
     case chromeos::WindowStateType::kSecondarySnapped:
       return api::autotest_private::WindowStateType::kSecondarySnapped;
+    case chromeos::WindowStateType::kPinned:
+      return api::autotest_private::WindowStateType::kPinned;
+    case chromeos::WindowStateType::kTrustedPinned:
+      return api::autotest_private::WindowStateType::kTrustedPinned;
     case chromeos::WindowStateType::kPip:
       return api::autotest_private::WindowStateType::kPip;
     case chromeos::WindowStateType::kFloated:
