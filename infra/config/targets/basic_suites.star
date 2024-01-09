@@ -725,7 +725,11 @@ targets.legacy_basic_suite(
         "rust_gtest_interop_unittests": targets.legacy_test_config(),
         "sql_unittests": targets.legacy_test_config(),
         "url_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(),
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_libfake_args",
+            ],
+        ),
     },
 )
 
@@ -3868,7 +3872,11 @@ targets.legacy_basic_suite(
     tests = {
         "cc_unittests": targets.legacy_test_config(),
         "ozone_unittests": targets.legacy_test_config(),
-        "vaapi_unittest": targets.legacy_test_config(),
+        "vaapi_unittest": targets.legacy_test_config(
+            mixins = [
+                "vaapi_unittest_libfake_args",
+            ],
+        ),
     },
 )
 

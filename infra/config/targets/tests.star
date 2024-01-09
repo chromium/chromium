@@ -2202,18 +2202,6 @@ targets.tests.gtest_test(
 
 targets.tests.gtest_test(
     name = "vaapi_unittest",
-    args = [
-        "--stop-ui",
-        # Tell libva to do dummy encoding/decoding. For more info, see:
-        # https://github.com/intel/libva/blob/master/va/va_fool.c#L47
-        "--env-var",
-        "LIBVA_DRIVERS_PATH",
-        "./",
-        "--env-var",
-        "LIBVA_DRIVER_NAME",
-        "libfake",
-        "--gtest_filter=\"VaapiTest.*\"",
-    ],
 )
 
 targets.tests.isolated_script_test(

@@ -1439,6 +1439,22 @@ targets.mixin(
     ),
 )
 
+targets.mixin(
+    name = "vaapi_unittest_libfake_args",
+    args = [
+        "--stop-ui",
+        "--gtest_filter=\"VaapiTest.*\"",
+        # Tell libva to do dummy encoding/decoding. For more info, see:
+        # https://github.com/intel/libva/blob/v2.14-branch/va/va_fool.c#L52
+        "--env-var",
+        "LIBVA_DRIVERS_PATH",
+        "./",
+        "--env-var",
+        "LIBVA_DRIVER_NAME",
+        "libfake",
+    ],
+)
+
 # Pixel 2
 targets.mixin(
     name = "walleye",

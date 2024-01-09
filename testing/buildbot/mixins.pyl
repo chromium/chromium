@@ -1132,6 +1132,18 @@
       },
     },
   },
+  'vaapi_unittest_libfake_args': {
+    'args': [
+      '--stop-ui',
+      '--gtest_filter="VaapiTest.*"',
+      '--env-var',
+      'LIBVA_DRIVERS_PATH',
+      './',
+      '--env-var',
+      'LIBVA_DRIVER_NAME',
+      'libfake',
+    ],
+  },
   'walleye': {
     'swarming': {
       'dimensions': {
