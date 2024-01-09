@@ -1255,10 +1255,16 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   // If the user has has been prompted or will be, assume that the user has
   // approved the download. A programmatic download is considered safe unless it
   // contains malware.
+  bool user_approved_path =
+      !download_->GetForcedFilePath().empty() &&
+      // Drag and drop download paths are not approved by the user. See
+      // https://crbug.com/1513639
+      download_->GetDownloadSource() != download::DownloadSource::DRAG_AND_DROP;
   if (HasPromptedForPath() ||
       confirmation_reason_ != DownloadConfirmationReason::NONE ||
-      !download_->GetForcedFilePath().empty())
+      user_approved_path) {
     return DownloadFileType::NOT_DANGEROUS;
+  }
 
   // User-initiated extension downloads from pref-whitelisted sources are not
   // considered dangerous.
