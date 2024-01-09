@@ -173,10 +173,7 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return cr23 ? vector_icons::kVideocamOffChromeRefreshIcon
                   : vector_icons::kVideocamOffIcon;
     case RequestType::kCapturedSurfaceControl:
-      // TODO(crbug.com/1466247): Either add an Off version of this icon,
-      // or drop a NOTRECHED here with an explanation that this cannot
-      // be blocked.
-      return vector_icons::kTouchpadMouseIcon;
+      return vector_icons::kTouchpadMouseOffIcon;
     case RequestType::kClipboard:
       return cr23 ? vector_icons::kContentPasteOffChromeRefreshIcon
                   : vector_icons::kContentPasteOffIcon;

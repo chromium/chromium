@@ -215,6 +215,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sync_problem_chrome_refresh.icon",
     "tenancy.icon",
     "touchpad_mouse.icon",
+    "touchpad_mouse_off.icon",
     "translate_chrome_refresh.icon",
     "troubleshoot.icon",
     "undo.icon",
