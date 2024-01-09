@@ -157,7 +157,7 @@ class ASH_EXPORT NotificationListView
 
  protected:
   // Virtual for testing.
-  virtual message_center::MessageView* CreateMessageView(
+  virtual std::unique_ptr<message_center::MessageView> CreateMessageView(
       const message_center::Notification& notification);
 
   void ConfigureMessageView(message_center::MessageView* message_view);
