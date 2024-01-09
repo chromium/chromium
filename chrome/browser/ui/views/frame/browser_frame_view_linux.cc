@@ -77,7 +77,8 @@ void BrowserFrameViewLinux::PaintRestoredFrameBorder(
     gfx::Canvas* canvas) const {
   PaintRestoredFrameBorderLinux(
       *canvas, *this, frame_background(), GetRestoredClipRegion(),
-      ShouldDrawRestoredFrameShadow(), layout_->MirroredFrameBorderInsets(),
+      ShouldDrawRestoredFrameShadow(), ShouldPaintAsActive(),
+      layout_->MirroredFrameBorderInsets(),
       GetShadowValues(ShouldPaintAsActive()));
 }
 
@@ -94,8 +95,9 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
 }
 
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
-  if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported())
+  if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported()) {
     return 0;
+  }
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
 }

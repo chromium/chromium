@@ -27,6 +27,7 @@ void PaintRestoredFrameBorderLinux(gfx::Canvas& canvas,
                                    views::FrameBackground* frame_background,
                                    const SkRRect& clip,
                                    bool showing_shadow,
+                                   bool is_active,
                                    const gfx::Insets& border,
                                    const gfx::ShadowValues& shadow_values);
 

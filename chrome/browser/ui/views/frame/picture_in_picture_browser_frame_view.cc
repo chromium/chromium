@@ -1100,8 +1100,8 @@ void PictureInPictureBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     frame_background_->set_top_area_height(GetTopAreaHeight());
     PaintRestoredFrameBorderLinux(
         *canvas, *this, frame_background_.get(), GetRestoredClipRegion(),
-        ShouldDrawFrameShadow(), MirroredFrameBorderInsets(),
-        GetShadowValues());
+        ShouldDrawFrameShadow(), ShouldPaintAsActive(),
+        MirroredFrameBorderInsets(), GetShadowValues());
   }
 #endif
   BrowserNonClientFrameView::OnPaint(canvas);
