@@ -1440,7 +1440,7 @@ BASE_FEATURE(kHoldingSpaceCameraAppIntegration,
 // Enables Photoshop Web integration with holding space.
 BASE_FEATURE(kHoldingSpacePhotoshopWebIntegration,
              "HoldingSpacePhotoshopWeb",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables holding space icon to be permanently displayed with extended file
 // expiration to increase predictability of the feature.
