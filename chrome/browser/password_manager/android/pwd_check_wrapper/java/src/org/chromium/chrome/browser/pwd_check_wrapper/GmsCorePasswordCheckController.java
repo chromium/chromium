@@ -84,6 +84,11 @@ class GmsCorePasswordCheckController
         return mPasswordCheckResult;
     }
 
+    @Override
+    public void destroy() {
+        mPasswordStoreBridge.removeObserver(this);
+    }
+
     /**
      * Combines the result of the password check and passwords loading from the store and provides
      * the password check result.

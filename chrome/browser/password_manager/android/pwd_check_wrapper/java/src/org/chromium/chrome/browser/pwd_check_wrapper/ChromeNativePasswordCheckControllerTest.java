@@ -162,4 +162,13 @@ public class ChromeNativePasswordCheckControllerTest {
         assertEquals(OptionalInt.of(10), passwordCheckResult.getTotalPasswordsCount());
         assertEquals(null, passwordCheckResult.getError());
     }
+
+    @Test
+    public void passwordCheckControllerIsDestroyedProperly() {
+        mController.checkPasswords(PasswordStoreType.PROFILE_STORE);
+
+        mController.destroy();
+        verify(mPasswordCheck).stopCheck();
+        verify(mPasswordCheck).removeObserver(mController);
+    }
 }

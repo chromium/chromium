@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.pwd_check_wrapper;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CollectionUtil;
@@ -28,7 +29,6 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSuppor
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
-import org.chromium.chrome.browser.password_manager.PasswordStoreBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordCheckResult;
 import org.chromium.chrome.browser.pwd_check_wrapper.PasswordCheckController.PasswordStoreType;
@@ -49,11 +49,11 @@ import java.util.concurrent.ExecutionException;
 public class GmsCorePasswordCheckControllerTest {
     private static final String TEST_EMAIL_ADDRESS = "test@example.com";
 
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SyncService mSyncService;
-    @Mock private PasswordStoreBridge.Natives mPasswordStoreBridgeNativeMock;
+    @Mock private PasswordStoreBridge mPasswordStoreBridge;
     @Mock private Profile mProfile;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
@@ -62,16 +62,15 @@ public class GmsCorePasswordCheckControllerTest {
 
     private GmsCorePasswordCheckController mController;
 
-    public GmsCorePasswordCheckControllerTest() {
+    @Before
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
 
         setupUserProfileWithMockPrefService();
         configureMockSyncServiceToSyncPasswords();
         configurePasswordManagerBackendSupport();
         setFakePasswordCheckupClientHelper();
-        mController =
-                new GmsCorePasswordCheckController(
-                        mSyncService, createAndSetupPasswordStoreBridge());
+        mController = new GmsCorePasswordCheckController(mSyncService, mPasswordStoreBridge);
     }
 
     private void configurePasswordManagerBackendSupport() {
@@ -107,11 +106,6 @@ public class GmsCorePasswordCheckControllerTest {
         Profile.setLastUsedProfileForTesting(mProfile);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
-    }
-
-    private PasswordStoreBridge createAndSetupPasswordStoreBridge() {
-        mJniMocker.mock(PasswordStoreBridgeJni.TEST_HOOKS, mPasswordStoreBridgeNativeMock);
-        return new PasswordStoreBridge();
     }
 
     /**
@@ -154,8 +148,6 @@ public class GmsCorePasswordCheckControllerTest {
 
     /**
      * The flow: passwords loading has finished -> checkPasswords throws an error.
-     *
-     * <p>Expected result: PasswordsState.ERROR.
      */
     @Test
     public void passwordCheckThrowsError() throws ExecutionException, InterruptedException {
@@ -168,5 +160,13 @@ public class GmsCorePasswordCheckControllerTest {
         Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getBreachedCount());
         Assert.assertEquals(OptionalInt.empty(), passwordCheckResult.getTotalPasswordsCount());
         Assert.assertEquals(error, passwordCheckResult.getError());
+    }
+
+    @Test
+    public void passwordCheckControllerIsDestroyedProperly() {
+        mController.checkPasswords(PasswordStoreType.PROFILE_STORE);
+
+        mController.destroy();
+        verify(mPasswordStoreBridge).removeObserver(mController);
     }
 }

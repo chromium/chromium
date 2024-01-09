@@ -64,4 +64,7 @@ public interface PasswordCheckController {
      */
     CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
             @PasswordStoreType int passwordStoreType);
+
+    /** Cancels pending password check and removes any registered observers. */
+    void destroy();
 }

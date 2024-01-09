@@ -33,6 +33,12 @@ class ChromeNativePasswordCheckController
     }
 
     @Override
+    public void destroy() {
+        mPasswordCheck.stopCheck();
+        mPasswordCheck.removeObserver(this);
+    }
+
+    @Override
     public CompletableFuture<PasswordCheckResult> getBreachedCredentialsCount(
             int passwordStoreType) {
         mPasswordCheckResult = new CompletableFuture<>();
