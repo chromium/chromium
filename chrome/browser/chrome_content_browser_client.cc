@@ -138,8 +138,7 @@
 #include "chrome/browser/profiling_host/chrome_browser_main_extra_parts_profiling.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/renderer_preferences_util.h"
-#include "chrome/browser/safe_browsing/certificate_reporting_service.h"
-#include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/delayed_warning_navigation_throttle.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -283,7 +282,6 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/insecure_form_navigation_throttle.h"
-#include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/content/ssl_error_handler.h"
 #include "components/security_interstitials/content/ssl_error_navigation_throttle.h"
 #include "components/security_state/core/security_state.h"
@@ -827,7 +825,6 @@ void HandleSSLErrorWrapper(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     SSLErrorHandler::BlockingPageReadyCallback blocking_page_ready_callback) {
   DCHECK(request_url.SchemeIsCryptographic());
 
@@ -849,7 +846,7 @@ void HandleSSLErrorWrapper(
 
   SSLErrorHandler::HandleSSLError(
       web_contents, cert_error, ssl_info, request_url,
-      std::move(ssl_cert_reporter), std::move(blocking_page_ready_callback),
+      std::move(blocking_page_ready_callback),
       g_browser_process->network_time_tracker(), captive_portal_service,
       std::make_unique<ChromeSecurityBlockingPageFactory>(),
       is_ssl_error_override_allowed_for_origin);
@@ -1063,34 +1060,6 @@ void SetApplicationLocaleOnIOThread(const std::string& locale) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   GetIOThreadApplicationLocale() = locale;
 }
-
-// An implementation of the SSLCertReporter interface used by
-// SSLErrorHandler. Uses CertificateReportingService to send reports. The
-// service handles queueing and re-sending of failed reports. Each certificate
-// error creates a new instance of this class.
-class CertificateReportingServiceCertReporter : public SSLCertReporter {
- public:
-  explicit CertificateReportingServiceCertReporter(
-      content::WebContents* web_contents)
-      : service_(CertificateReportingServiceFactory::GetForBrowserContext(
-            web_contents->GetBrowserContext())) {}
-
-  CertificateReportingServiceCertReporter(
-      const CertificateReportingServiceCertReporter&) = delete;
-  CertificateReportingServiceCertReporter& operator=(
-      const CertificateReportingServiceCertReporter&) = delete;
-
-  ~CertificateReportingServiceCertReporter() override {}
-
-  // SSLCertReporter implementation
-  void ReportInvalidCertificateChain(
-      const std::string& serialized_report) override {
-    service_->Send(serialized_report);
-  }
-
- private:
-  raw_ptr<CertificateReportingService> service_;
-};
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -5092,10 +5061,8 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
   // the relevant extension API whenever an SSL interstitial is shown.
   SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
       base::BindRepeating(&MaybeTriggerSecurityInterstitialShownEvent));
-  content::WebContents* web_contents = handle->GetWebContents();
   throttles.push_back(std::make_unique<SSLErrorNavigationThrottle>(
       handle,
-      std::make_unique<CertificateReportingServiceCertReporter>(web_contents),
       base::BindOnce(&HandleSSLErrorWrapper), base::BindOnce(&IsInHostedApp),
       base::BindOnce(
           &ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps)));

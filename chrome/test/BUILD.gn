@@ -2603,8 +2603,6 @@ if (!is_android && !is_fuchsia) {
       "../browser/site_isolation/origin_agent_cluster_browsertest.cc",
       "../browser/site_isolation/site_details_browsertest.cc",
       "../browser/spellchecker/spellcheck_service_browsertest.cc",
-      "../browser/ssl/certificate_reporting_test_utils.cc",
-      "../browser/ssl/certificate_reporting_test_utils.h",
       "../browser/ssl/certificate_transparency_browsertest.cc",
       "../browser/ssl/connection_help_tab_helper_browsertest.cc",
       "../browser/ssl/crlset_browsertest.cc",
@@ -5206,7 +5204,6 @@ if (!is_android && !is_fuchsia) {
     }
     if (safe_browsing_mode == 1) {
       sources += [
-        "../browser/safe_browsing/certificate_reporting_service_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_browsertest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_sync_browsertest.cc",
         "../browser/safe_browsing/client_side_detection_host_browsertest.cc",
@@ -6451,8 +6448,6 @@ if (!is_fuchsia) {
       "../browser/signin/signin_profile_attributes_updater_unittest.cc",
       "../browser/site_isolation/chrome_site_isolation_policy_unittest.cc",
       "../browser/ssl/certificate_error_reporter_unittest.cc",
-      "../browser/ssl/certificate_reporting_test_utils.cc",
-      "../browser/ssl/certificate_reporting_test_utils.h",
       "../browser/ssl/daily_navigation_counter_unittest.cc",
       "../browser/ssl/https_first_mode_settings_tracker_unittest.cc",
       "../browser/ssl/security_state_tab_helper_unittest.cc",
@@ -9455,7 +9450,6 @@ if (!is_fuchsia) {
 
     if (safe_browsing_mode > 0) {
       sources += [
-        "../browser/safe_browsing/certificate_reporting_service_unittest.cc",
         "../browser/safe_browsing/chrome_password_protection_service_unittest.cc",
         "../browser/safe_browsing/chrome_ui_manager_delegate_unittest.cc",
         "../browser/safe_browsing/chrome_user_population_helper_unittest.cc",

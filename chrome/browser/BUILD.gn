@@ -8513,20 +8513,6 @@ static_library("test_support") {
     ]
   }
 
-  if (safe_browsing_mode != 0) {
-    # "Safe Browsing Basic" files used for safe browsing in full mode
-    #(safe_browsing = 1) and mobile(=2)
-    sources += [
-      "safe_browsing/certificate_reporting_service_test_utils.cc",
-      "safe_browsing/certificate_reporting_service_test_utils.h",
-    ]
-    deps += [
-      "//chrome/browser/safe_browsing",
-      "//components/encrypted_messages",
-      "//components/security_interstitials/content:security_interstitial_page",
-    ]
-  }
-
   if (safe_browsing_mode == 1) {
     sources += [
       "extensions/fake_safe_browsing_database_manager.cc",

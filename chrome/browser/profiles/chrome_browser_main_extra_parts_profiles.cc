@@ -141,7 +141,6 @@
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/reduce_accept_language/reduce_accept_language_factory.h"
-#include "chrome/browser/safe_browsing/certificate_reporting_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
@@ -675,9 +674,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
-#endif
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  CertificateReportingServiceFactory::GetInstance();
 #endif
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   ChildAccountServiceFactory::GetInstance();

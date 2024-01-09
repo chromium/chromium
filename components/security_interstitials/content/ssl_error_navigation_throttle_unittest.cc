@@ -30,16 +30,6 @@ CreateMetricsHelperForTest(const GURL& request_url) {
       request_url, report_details, /*history_service=*/nullptr);
 }
 
-// A minimal SSLCertReporter implementation.
-class FakeSSLCertReporter : public SSLCertReporter {
- public:
-  void ReportInvalidCertificateChain(
-      const std::string& serialized_report) override {
-    // Reports are not expected to be sent in this context.
-    NOTREACHED();
-  }
-};
-
 // A SecurityInterstitialPage implementation that does the minimum necessary
 // to satisfy SSLErrorNavigationThrottle's expectations of the instance passed
 // to its ShowInterstitial() method, in particular populates the data
@@ -91,7 +81,6 @@ void MockHandleSSLError(
     int cert_error,
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
-    std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     base::OnceCallback<
         void(std::unique_ptr<security_interstitials::SecurityInterstitialPage>)>
         blocking_page_ready_callback) {
@@ -124,7 +113,6 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
           on_cancel_deferred_navigation)
       : SSLErrorNavigationThrottle(
             handle,
-            std::make_unique<FakeSSLCertReporter>(),
             base::BindOnce(&MockHandleSSLError, async_handle_ssl_error),
             base::BindOnce(&IsInHostedApp),
             base::BindOnce(
