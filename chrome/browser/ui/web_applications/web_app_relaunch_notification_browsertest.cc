@@ -105,12 +105,6 @@ class WebAppRelaunchNotificationBrowserTest
     return GetAllNotifications().size();
   }
 
-  void WaitUntilDisplayNotificationCount(size_t display_count) {
-    ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-      return GetDisplayedNotificationsCount() == display_count;
-    }));
-  }
-
  protected:
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
 
