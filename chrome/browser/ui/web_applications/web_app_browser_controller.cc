@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -46,6 +48,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/native_theme/native_theme.h"
@@ -575,6 +578,19 @@ std::u16string WebAppBrowserController::GetTitle() const {
 
   std::u16string app_name = base::UTF8ToUTF16(
       provider_->registrar_unsafe().GetAppShortName(app_id()));
+
+  // If app title is set, then use that with the app name as the title.
+  std::u16string app_title;
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  if (web_contents) {
+    app_title = web_contents->GetAppTitle();
+  }
+
+  if (!app_title.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_WEB_APP_WITH_APP_TITLE, app_name,
+                                      app_title);
+  }
   if (base::StartsWith(raw_title, app_name)) {
     return raw_title;
   }

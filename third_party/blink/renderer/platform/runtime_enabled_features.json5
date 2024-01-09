@@ -327,6 +327,10 @@
       base_feature: "none",
     },
     {
+      name: "AppTitle",
+      status: "experimental",
+    },
+    {
       // crbug.com/484651
       name: "ArrowKeysInVerticalWritingModes",
       status: "stable",

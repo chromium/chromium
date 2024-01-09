@@ -110,6 +110,12 @@ class NavigationEntry : public base::SupportsUserData {
   virtual void SetTitle(const std::u16string& title) = 0;
   virtual const std::u16string& GetTitle() = 0;
 
+  // The app title as set by the page. This will be empty if there is no app
+  // title set. This information is provided by an experimental meta tag. See:
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  virtual void SetAppTitle(const std::u16string& app_title) = 0;
+  virtual const std::u16string& GetAppTitle() = 0;
+
   // Page state is an opaque blob created by Blink that represents the state of
   // the page. This includes form entries and scroll position for each frame.
   // We store it so that we can supply it back to Blink to restore form state

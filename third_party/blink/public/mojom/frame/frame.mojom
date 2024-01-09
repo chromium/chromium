@@ -399,6 +399,11 @@ interface LocalFrameHost {
   UpdateTitle(mojo_base.mojom.String16? title,
               mojo_base.mojom.TextDirection title_direction);
 
+  // Updates the app title for a document. If non-empty, a web app displayed in an app
+  // window may use this string instead of the regular title.
+  // See https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  UpdateAppTitle(mojo_base.mojom.String16 app_title);
+
   // Indicates that the user activation state in the current frame has been
   // updated, so the replicated states need to be synced (in the browser process
   // as well as in all other renderer processes).

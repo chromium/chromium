@@ -2016,6 +2016,9 @@ class CORE_EXPORT Document : public ContainerNode,
   // it.
   bool HasAtLeastOneDataList() const { return data_list_count_; }
 
+  // Updates app title based to the latest app title meta tag value.
+  void UpdateAppTitle();
+
   void ResetAgent(Agent& agent);
 
   bool SupportsLegacyDOMMutations();

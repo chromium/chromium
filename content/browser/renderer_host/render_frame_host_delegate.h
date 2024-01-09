@@ -255,6 +255,10 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                            const std::u16string& title,
                            base::i18n::TextDirection title_direction) {}
 
+  // Update app title.
+  virtual void UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
+                              const std::u16string& app_title) {}
+
   // The destination URL has changed and should be updated.
   virtual void UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
                                const GURL& url) {}

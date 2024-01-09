@@ -547,6 +547,9 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
              EqualIgnoringASCIICase(name_value, "view-transition")) {
     ViewTransitionSupplement::From(GetDocument())
         ->OnMetaTagChanged(g_null_atom);
+  } else if (RuntimeEnabledFeatures::AppTitleEnabled() &&
+             EqualIgnoringASCIICase(name_value, "app-title")) {
+    GetDocument().UpdateAppTitle();
   }
 }
 
@@ -724,6 +727,9 @@ void HTMLMetaElement::ProcessContent() {
              EqualIgnoringASCIICase(name_value, "view-transition")) {
     ViewTransitionSupplement::From(GetDocument())
         ->OnMetaTagChanged(content_value);
+  } else if (RuntimeEnabledFeatures::AppTitleEnabled() &&
+             EqualIgnoringASCIICase(name_value, "app-title")) {
+    GetDocument().UpdateAppTitle();
   }
 }
 

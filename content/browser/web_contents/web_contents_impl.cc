@@ -2195,6 +2195,10 @@ const std::u16string& WebContentsImpl::GetTitle() {
   return GetNavigationEntryForTitle()->GetTitleForDisplay();
 }
 
+const std::u16string& WebContentsImpl::GetAppTitle() {
+  return GetNavigationEntryForTitle()->GetAppTitle();
+}
+
 SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
   return GetRenderManager()->current_frame_host()->GetSiteInstance();
 }
@@ -8417,6 +8421,36 @@ void WebContentsImpl::UpdateTitle(RenderFrameHostImpl* render_frame_host,
   if (title_changed && render_frame_host == GetPrimaryMainFrame()) {
     NotifyTitleUpdateForEntry(entry);
   }
+}
+
+void WebContentsImpl::UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
+                                     const std::u16string& app_title) {
+  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateTitle",
+                        "render_frame_host", render_frame_host, "app_title",
+                        app_title);
+  // Same logic as UpdateTitle() above.
+  NavigationEntryImpl* entry =
+      render_frame_host->frame_tree()->controller().GetEntryWithUniqueID(
+          render_frame_host->nav_entry_id());
+  if (!entry) {
+    if (render_frame_host->GetParent() || !render_frame_host->frame_tree()
+                                               ->controller()
+                                               .GetLastCommittedEntry()
+                                               ->IsInitialEntry()) {
+      return;
+    }
+    entry =
+        render_frame_host->frame_tree()->controller().GetLastCommittedEntry();
+  }
+  std::u16string final_app_title;
+  base::TrimWhitespace(app_title, base::TRIM_ALL, &final_app_title);
+
+  if (final_app_title == entry->GetAppTitle()) {
+    return;
+  }
+
+  entry->SetAppTitle(final_app_title);
+  NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
 }
 
 void WebContentsImpl::UpdateTargetURL(RenderFrameHostImpl* render_frame_host,

@@ -7747,6 +7747,25 @@ absl::optional<Color> Document::ThemeColor() {
   return absl::nullopt;
 }
 
+void Document::UpdateAppTitle() {
+  auto* root_element = documentElement();
+  if (!root_element) {
+    return;
+  }
+
+  for (HTMLMetaElement& meta_element :
+       Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
+    if (EqualIgnoringASCIICase(meta_element.GetName(), "app-title")) {
+      GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(
+          meta_element.Content().GetString());
+      return;
+    }
+  }
+
+  // Handle case of meta tag being removed by setting app title to empty string.
+  GetFrame()->GetLocalFrameHostRemote().UpdateAppTitle(String(""));
+}
+
 void Document::ColorSchemeMetaChanged() {
   const CSSValue* color_scheme = nullptr;
   if (auto* root_element = documentElement()) {

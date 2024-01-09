@@ -376,6 +376,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsWebContentsOnlyAccessibilityModeForTesting() override;
   bool IsFullAccessibilityModeForTesting() override;
   const std::u16string& GetTitle() override;
+  const std::u16string& GetAppTitle() override;
   void UpdateTitleForEntry(NavigationEntry* entry,
                            const std::u16string& title) override;
   SiteInstanceImpl* GetSiteInstance() override;
@@ -641,6 +642,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void UpdateTitle(RenderFrameHostImpl* render_frame_host,
                    const std::u16string& title,
                    base::i18n::TextDirection title_direction) override;
+  // The app title is an alternative title. If non-empty, the browser may choose
+  // to use the app title instead of the regular title for a web app displayed
+  // in an app window. See
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/DocumentSubtitle/explainer.md
+  void UpdateAppTitle(RenderFrameHostImpl* render_frame_host,
+                      const std::u16string& app_title) override;
   void UpdateTargetURL(RenderFrameHostImpl* render_frame_host,
                        const GURL& url) override;
   bool IsNeverComposited() override;

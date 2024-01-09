@@ -3388,6 +3388,11 @@ are declared in tools/grit/grit_rule.gni.
                desc="Status text for a download item that is being checked for malware.">
         Checking for malware...
       </message>
+      
+      <!-- Web App Window Title string -->
+      <message name="IDS_WEB_APP_WITH_APP_TITLE" desc="Title of the web app window with app_title.">
+        <ph name="APP_NAME">$1<ex>Sample App</ex></ph> - <ph name="APP_TITLE">$2<ex>News</ex></ph>
+      </message>
 
       <!-- Desktop omnibox PWA install icon -->
       <if expr="not is_android">

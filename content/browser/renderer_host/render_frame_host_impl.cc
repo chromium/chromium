@@ -6661,6 +6661,11 @@ void RenderFrameHostImpl::UpdateTitle(
   delegate_->UpdateTitle(this, received_title, title_direction);
 }
 
+// Update app title.
+void RenderFrameHostImpl::UpdateAppTitle(const ::std::u16string& app_title) {
+  delegate_->UpdateAppTitle(this, app_title);
+}
+
 void RenderFrameHostImpl::DidInferColorScheme(
     blink::mojom::PreferredColorScheme color_scheme) {
   if (is_main_frame()) {
