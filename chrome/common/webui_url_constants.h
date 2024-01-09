@@ -425,6 +425,7 @@ extern const char kOsUIHelpAppURL[];
 extern const char kOsUIPrintManagementAppURL[];
 extern const char kOsUIScanningAppURL[];
 extern const char kOsUIShortcutCustomizationAppURL[];
+extern const char kOsUISystemURL[];
 extern const char kOsUIVersionURL[];
 #endif
 

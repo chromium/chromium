@@ -71,6 +71,31 @@
   }
 </style>
 
+<if expr="is_chromeos">
+    <link rel="stylesheet" href="chrome://resources/css/os_header.css">
+</if>
+
+<if expr="is_chromeos">
+    <!--
+      For Ash, we need to use the JavaScript handler to open the system page
+      in Lacros. For Lacros we can use href="os://system" instead.
+    -->
+    <div class="os-link-container-container"
+        id="osLinkContainer"
+<if expr="chromeos_ash">
+        hidden$="[[!isLacrosEnabled_]]"
+        on-click="onOsLinkContainerClick_"
+        on-auxclick="onOsLinkContainerAuxClick_"
+</if>
+    >
+      <div class="os-link-container">
+        <span class="os-link-icon"></span>
+        <!-- This includes an <a> tag with id='osLinkHref'. -->
+        $i18nRaw{osLinkContainer}
+      </div>
+    </div>
+</if>
+
 <div id="header">
   <h1>$i18n{title}</h1>
   <p>$i18n{description}</p>
