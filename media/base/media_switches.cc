@@ -133,6 +133,10 @@ const char kSystemAecEnabled[] = "system-aec-enabled";
 const char kUnsafelyAllowProtectedMediaIdentifierForDomain[] =
     "unsafely-allow-protected-media-identifier-for-domain";
 
+// Skip the permission prompt for Captured Surface Control.
+const char kAutoGrantCapturedSurfaceControlPrompt[] =
+    "auto-grant-captured-surface-control-prompt";
+
 // Use fake device for Media Stream to replace actual camera and microphone.
 // For the list of allowed parameters, see
 // FakeVideoCaptureDeviceFactory::ParseFakeDevicesConfigFromOptionsString().

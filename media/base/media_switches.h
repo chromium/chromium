@@ -70,6 +70,7 @@ MEDIA_EXPORT extern const char kSystemAecEnabled[];
 MEDIA_EXPORT extern const char
     kUnsafelyAllowProtectedMediaIdentifierForDomain[];
 
+MEDIA_EXPORT extern const char kAutoGrantCapturedSurfaceControlPrompt[];
 MEDIA_EXPORT extern const char kUseFakeDeviceForMediaStream[];
 MEDIA_EXPORT extern const char kUseFileForFakeVideoCapture[];
 MEDIA_EXPORT extern const char kUseFileForFakeAudioCapture[];

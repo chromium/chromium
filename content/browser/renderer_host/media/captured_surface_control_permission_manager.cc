@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/captured_surface_control_permission_manager.h"
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
@@ -11,6 +12,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -78,7 +80,9 @@ void PromptForPermissionOnUIThread(
 CapturedSurfaceControlPermissionManager::
     CapturedSurfaceControlPermissionManager(
         GlobalRenderFrameHostId capturer_rfh_id)
-    : capturer_rfh_id_(capturer_rfh_id) {}
+    : capturer_rfh_id_(capturer_rfh_id),
+      granted_(base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAutoGrantCapturedSurfaceControlPrompt)) {}
 
 CapturedSurfaceControlPermissionManager::
     ~CapturedSurfaceControlPermissionManager() = default;
