@@ -7511,6 +7511,7 @@ if (!is_fuchsia) {
         "../browser/translate/translate_manager_render_view_host_android_unittest.cc",
         "../browser/ui/android/autofill/autofill_cvc_save_message_delegate_unittest.cc",
         "../browser/ui/android/autofill/autofill_save_card_delegate_android_unittest.cc",
+        "../browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge_unittest.cc",
         "../browser/ui/android/autofill/autofill_save_iban_delegate_unittest.cc",
         "../browser/ui/android/autofill/autofill_vcn_enroll_bottom_sheet_bridge_unittest.cc",
         "../browser/ui/android/autofill/facilitated_payment_bottom_sheet_bridge_unittest.cc",
