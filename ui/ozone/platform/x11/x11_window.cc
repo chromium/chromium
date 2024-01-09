@@ -1064,17 +1064,6 @@ void X11Window::SizeConstraintsChanged() {
   X11Window::UpdateMinAndMaxSize();
 }
 
-bool X11Window::IsTranslucentWindowOpacitySupported() const {
-  // If this function may be called before InitX11Window() (which
-  // initializes |visual_has_alpha_|), return whether it is possible
-  // to create windows with ARGB visuals.
-  if (xwindow_ == x11::Window::None) {
-    connection_->GetOrCreateVisualManager().ArgbVisualAvailable();
-  }
-
-  return visual_has_alpha_;
-}
-
 void X11Window::SetOpacity(float opacity) {
   // X server opacity is in terms of 32 bit unsigned int space, and counts from
   // the opposite direction.

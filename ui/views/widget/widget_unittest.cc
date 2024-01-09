@@ -94,11 +94,6 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/platform_gl_egl_utility.h"
-#endif
-
 namespace views::test {
 
 namespace {
@@ -1685,11 +1680,6 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, IsStackedAbove) {
   std::unique_ptr<Widget> other_widget = CreateTestWidget();
   widget()->IsStackedAbove(other_widget->GetNativeView());
-}
-
-TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
-       IsTranslucentWindowOpacitySupported) {
-  widget()->IsTranslucentWindowOpacitySupported();
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, IsVisible) {
@@ -5931,28 +5921,6 @@ TEST_F(DesktopWidgetTest, StackAboveTest) {
 
 namespace {
 
-bool CanHaveCompositingManager() {
-#if BUILDFLAG(IS_OZONE)
-  auto* const egl_utility =
-      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-  return (egl_utility != nullptr) && egl_utility->HasVisualManager();
-#else
-  return false;
-#endif
-}
-
-bool ExpectWidgetTransparency(Widget::InitParams::WindowOpacity opacity) {
-  switch (opacity) {
-    case Widget::InitParams::WindowOpacity::kOpaque:
-      return false;
-    case Widget::InitParams::WindowOpacity::kTranslucent:
-      return true;
-    case Widget::InitParams::WindowOpacity::kInferred:
-      ADD_FAILURE() << "WidgetOpacity must be explicitly set";
-      return false;
-  }
-}
-
 class CompositingWidgetTest : public DesktopWidgetTest {
  public:
   CompositingWidgetTest()
@@ -6011,13 +5979,6 @@ class CompositingWidgetTest : public DesktopWidgetTest {
 
       EXPECT_EQ(IsNativeWindowTransparent(widget->GetNativeWindow()),
                 should_be_transparent);
-
-      if (CanHaveCompositingManager()) {
-        if (HasCompositingManager() && ExpectWidgetTransparency(opacity))
-          EXPECT_TRUE(widget->IsTranslucentWindowOpacitySupported());
-        else
-          EXPECT_FALSE(widget->IsTranslucentWindowOpacitySupported());
-      }
     }
   }
 

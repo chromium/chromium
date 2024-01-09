@@ -195,17 +195,6 @@ bool IsValidCharToInsert(const char16_t& ch) {
   return (ch >= 0x20 && ch < 0x7F) || ch > 0x9F;
 }
 
-bool CanUseTransparentBackgroundForDragImage() {
-#if BUILDFLAG(IS_OZONE)
-  const auto* const egl_utility =
-      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-  return egl_utility ? egl_utility->IsTransparentBackgroundSupported() : false;
-#else
-  // Other platforms allow this.
-  return true;
-#endif
-}
-
 #if BUILDFLAG(IS_MAC)
 const float kAlmostTransparent = 1.0 / 255.0;
 const float kOpaque = 1.0;
@@ -1245,7 +1234,7 @@ void Textfield::WriteDragDataForView(View* sender,
 
   SkBitmap bitmap;
   float raster_scale = ScaleFactorForDragFromWidget(GetWidget());
-  SkColor color = CanUseTransparentBackgroundForDragImage()
+  SkColor color = views::Widget::IsWindowCompositingSupported()
                       ? SK_ColorTRANSPARENT
                       : GetBackgroundColor();
   label.Paint(PaintInfo::CreateRootPaintInfo(

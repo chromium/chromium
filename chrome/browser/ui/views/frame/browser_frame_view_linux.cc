@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/desktop_browser_frame_aura_linux.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/linux/linux_ui.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/window/window_button_order_provider.h"
 
@@ -95,7 +96,8 @@ bool BrowserFrameViewLinux::ShouldDrawRestoredFrameShadow() const {
 }
 
 float BrowserFrameViewLinux::GetRestoredCornerRadiusDip() const {
-  if (!UseCustomFrame() || !IsTranslucentWindowOpacitySupported()) {
+  if (!UseCustomFrame() ||
+      !ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     return 0;
   }
   return ChromeLayoutProvider::Get()->GetCornerRadiusMetric(

@@ -193,9 +193,6 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   // animations.
   virtual bool IsAnimatingClosed() const = 0;
 
-  // Returns true if the Widget supports translucency.
-  virtual bool IsTranslucentWindowOpacitySupported() const = 0;
-
   // Called when the window's size constraints change.
   virtual void SizeConstraintsChanged() = 0;
 

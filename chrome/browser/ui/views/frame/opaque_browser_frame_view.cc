@@ -581,10 +581,6 @@ void OpaqueBrowserFrameView::UpdateWindowControlsOverlay(
   }
 }
 
-bool OpaqueBrowserFrameView::IsTranslucentWindowOpacitySupported() const {
-  return frame()->IsTranslucentWindowOpacitySupported();
-}
-
 bool OpaqueBrowserFrameView::ShouldDrawRestoredFrameShadow() const {
   return false;
 }

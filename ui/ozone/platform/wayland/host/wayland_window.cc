@@ -536,11 +536,6 @@ void WaylandWindow::SetAspectRatio(const gfx::SizeF& aspect_ratio) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
-bool WaylandWindow::IsTranslucentWindowOpacitySupported() const {
-  // Wayland compositors always support translucency.
-  return true;
-}
-
 void WaylandWindow::SetDecorationInsets(const gfx::Insets* insets_px) {
   // TODO(crbug.com/1395267): Add window geometry to WaylandWindow::State.
   if ((!frame_insets_px_ && !insets_px) ||

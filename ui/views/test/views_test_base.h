@@ -92,8 +92,6 @@ class ViewsTestBase : public PlatformTest {
 
   virtual std::unique_ptr<Widget> CreateTestWidget(Widget::InitParams params);
 
-  bool HasCompositingManager() const;
-
   // Simulate an OS-level destruction of the native window held by non-desktop
   // |widget|.
   void SimulateNativeDestroy(Widget* widget);
@@ -177,7 +175,6 @@ class ViewsTestBase : public PlatformTest {
   bool interactive_setup_called_ = false;
   bool setup_called_ = false;
   bool teardown_called_ = false;
-  bool has_compositing_manager_ = false;
 
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;

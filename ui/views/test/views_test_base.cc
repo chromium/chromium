@@ -30,24 +30,9 @@
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/platform_gl_egl_utility.h"
-#endif
-
 namespace views {
 
 namespace {
-
-bool DoesVisualHaveAlphaForTest() {
-#if BUILDFLAG(IS_OZONE)
-  const auto* const egl_utility =
-      ui::OzonePlatform::GetInstance()->GetPlatformGLEGLUtility();
-  return egl_utility ? egl_utility->X11DoesVisualHaveAlphaForTest() : false;
-#else
-  return false;
-#endif
-}
 
 }  // namespace
 
@@ -67,8 +52,6 @@ ViewsTestBase::~ViewsTestBase() {
 }
 
 void ViewsTestBase::SetUp() {
-  has_compositing_manager_ = DoesVisualHaveAlphaForTest();
-
   testing::Test::SetUp();
   setup_called_ = true;
 
@@ -133,10 +116,6 @@ std::unique_ptr<Widget> ViewsTestBase::CreateTestWidget(
   std::unique_ptr<Widget> widget = AllocateTestWidget();
   widget->Init(std::move(params));
   return widget;
-}
-
-bool ViewsTestBase::HasCompositingManager() const {
-  return has_compositing_manager_;
 }
 
 void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {

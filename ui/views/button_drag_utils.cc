@@ -90,7 +90,7 @@ void SetDragImage(const GURL& url,
                        color_provider->GetColor(ui::kColorTextfieldForeground));
 
   SkColor bg_color = color_provider->GetColor(ui::kColorTextfieldBackground);
-  if (drag_widget->IsTranslucentWindowOpacitySupported()) {
+  if (views::Widget::IsWindowCompositingSupported()) {
     button->SetTextShadows(gfx::ShadowValues(
         10, gfx::ShadowValue(gfx::Vector2d(0, 0), 2.0f, bg_color)));
   } else {

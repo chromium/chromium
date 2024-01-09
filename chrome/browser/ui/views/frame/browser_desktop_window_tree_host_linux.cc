@@ -179,7 +179,7 @@ void BrowserDesktopWindowTreeHostLinux::TabDraggingKindChanged(
 
 bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
   return platform_window()->CanSetDecorationInsets() &&
-         platform_window()->IsTranslucentWindowOpacitySupported();
+         views::Widget::IsWindowCompositingSupported();
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
@@ -216,7 +216,7 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
         showing_frame ? std::optional<gfx::Rect>(input_bounds) : std::nullopt);
   }
 
-  if (window->IsTranslucentWindowOpacitySupported()) {
+  if (ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported()) {
     // Set the opaque region.
     std::vector<gfx::Rect> opaque_region;
     if (showing_frame) {

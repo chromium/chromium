@@ -58,6 +58,10 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace views {
 
 namespace {
@@ -356,6 +360,17 @@ gfx::Size Widget::GetLocalizedContentsSize(int col_resource_id,
 // static
 bool Widget::RequiresNonClientView(InitParams::Type type) {
   return type == InitParams::TYPE_WINDOW || type == InitParams::TYPE_BUBBLE;
+}
+
+// static
+bool Widget::IsWindowCompositingSupported() {
+#if BUILDFLAG(IS_WIN)
+  return true;
+#elif BUILDFLAG(IS_OZONE)
+  return ui::OzonePlatform::GetInstance()->IsWindowCompositingSupported();
+#else
+  return false;
+#endif
 }
 
 void Widget::Init(InitParams params) {
@@ -1320,11 +1335,6 @@ void Widget::SynthesizeMouseMoveEvent() {
   ui::MouseEvent mouse_event(ui::ET_MOUSE_MOVED, mouse_location, mouse_location,
                              ui::EventTimeForNow(), ui::EF_IS_SYNTHESIZED, 0);
   root_view_->OnMouseMoved(mouse_event);
-}
-
-bool Widget::IsTranslucentWindowOpacitySupported() const {
-  return native_widget_ ? native_widget_->IsTranslucentWindowOpacitySupported()
-                        : false;
 }
 
 ui::GestureRecognizer* Widget::GetGestureRecognizer() {

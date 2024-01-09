@@ -251,9 +251,6 @@ x11::Future<void> SendClientMessage(
 // Return true if VulkanSurface is supported.
 COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();
 
-// Returns whether ARGB visuals are supported.
-COMPONENT_EXPORT(UI_BASE_X) bool DoesVisualHaveAlphaForTest();
-
 // Returns an icon for a native window referred by |target_window_id|. Can be
 // any window on screen.
 COMPONENT_EXPORT(UI_BASE_X)

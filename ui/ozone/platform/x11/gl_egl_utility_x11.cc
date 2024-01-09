@@ -27,10 +27,6 @@ void GLEGLUtilityX11::ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
   ChoosePlatformCustomAlphaAndBufferSize(alpha_size, buffer_size);
 }
 
-bool GLEGLUtilityX11::IsTransparentBackgroundSupported() const {
-  return ui::IsTransparentBackgroundSupported();
-}
-
 void GLEGLUtilityX11::CollectGpuExtraInfo(
     bool enable_native_gpu_memory_buffers,
     gfx::GpuExtraInfo& gpu_extra_info) const {
@@ -44,10 +40,6 @@ void GLEGLUtilityX11::CollectGpuExtraInfo(
     // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
     gpu_extra_info.gpu_memory_buffer_support_x11.clear();
   }
-}
-
-bool GLEGLUtilityX11::X11DoesVisualHaveAlphaForTest() const {
-  return ui::DoesVisualHaveAlphaForTest();
 }
 
 bool GLEGLUtilityX11::HasVisualManager() {

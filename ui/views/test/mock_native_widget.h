@@ -161,7 +161,6 @@ class MockNativeWidget : public internal::NativeWidgetPrivate {
               SetVisibilityAnimationTransition,
               (Widget::VisibilityTransition transition),
               (override));
-  MOCK_METHOD(bool, IsTranslucentWindowOpacitySupported, (), (const override));
   MOCK_METHOD(ui::GestureRecognizer*, GetGestureRecognizer, (), (override));
   MOCK_METHOD(ui::GestureConsumer*, GetGestureConsumer, (), (override));
   MOCK_METHOD(void, OnSizeConstraintsChanged, (), (override));

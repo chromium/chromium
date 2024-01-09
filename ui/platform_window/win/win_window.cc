@@ -239,11 +239,6 @@ bool WinWindow::IsAnimatingClosed() const {
   return false;
 }
 
-bool WinWindow::IsTranslucentWindowOpacitySupported() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
-}
-
 bool WinWindow::IsFullscreen() const {
   return GetPlatformWindowState() == PlatformWindowState::kFullScreen;
 }

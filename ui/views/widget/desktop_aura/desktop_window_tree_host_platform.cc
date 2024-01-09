@@ -796,11 +796,6 @@ bool DesktopWindowTreeHostPlatform::IsAnimatingClosed() const {
   return platform_window()->IsAnimatingClosed();
 }
 
-bool DesktopWindowTreeHostPlatform::IsTranslucentWindowOpacitySupported()
-    const {
-  return platform_window()->IsTranslucentWindowOpacitySupported();
-}
-
 void DesktopWindowTreeHostPlatform::SizeConstraintsChanged() {
   platform_window()->SizeConstraintsChanged();
 }

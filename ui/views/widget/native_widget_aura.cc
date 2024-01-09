@@ -977,10 +977,6 @@ void NativeWidgetAura::SetVisibilityAnimationTransition(
   wm::SetWindowVisibilityAnimationTransition(window_, wm_transition);
 }
 
-bool NativeWidgetAura::IsTranslucentWindowOpacitySupported() const {
-  return true;
-}
-
 ui::GestureRecognizer* NativeWidgetAura::GetGestureRecognizer() {
   return aura::Env::GetInstance()->gesture_recognizer();
 }

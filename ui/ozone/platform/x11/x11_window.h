@@ -116,7 +116,6 @@ class X11Window : public PlatformWindow,
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
-  bool IsTranslucentWindowOpacitySupported() const override;
   void SetOpacity(float opacity) override;
   bool CanSetDecorationInsets() const override;
   void SetDecorationInsets(const gfx::Insets* insets_px) override;
