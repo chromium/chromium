@@ -105,7 +105,9 @@ PlusAddressCreationControllerAndroid::get_plus_profile_for_testing() {
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!suppress_ui_for_testing_) {
+  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+  // prior to service response, `view_` will be null.
+  if (view_) {
     view_->ShowReserveResult(maybe_plus_profile);
   }
   if (maybe_plus_profile.has_value()) {
@@ -115,7 +117,9 @@ void PlusAddressCreationControllerAndroid::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerAndroid::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
-  if (!suppress_ui_for_testing_) {
+  // Note that in case of `suppress_ui_for_testing_` or bottom sheet dismissal
+  // prior to service response, `view_` will be null.
+  if (view_) {
     view_->ShowConfirmResult(maybe_plus_profile);
   }
   if (maybe_plus_profile.has_value()) {
