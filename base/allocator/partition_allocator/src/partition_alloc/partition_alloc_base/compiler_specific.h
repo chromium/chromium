@@ -7,14 +7,21 @@
 
 #include "build/build_config.h"
 
-// A wrapper around `__has_attribute`, similar to HAS_CPP_ATTRIBUTE.
+// A wrapper around `__has_cpp_attribute`.
+#if defined(__has_cpp_attribute)
+#define PA_HAS_CPP_ATTRIBUTE(x) __has_cpp_attribute(x)
+#else
+#define PA_HAS_CPP_ATTRIBUTE(x) 0
+#endif
+
+// A wrapper around `__has_attribute`, similar to PA_HAS_CPP_ATTRIBUTE.
 #if defined(__has_attribute)
 #define PA_HAS_ATTRIBUTE(x) __has_attribute(x)
 #else
 #define PA_HAS_ATTRIBUTE(x) 0
 #endif
 
-// A wrapper around `__has_builtin`, similar to HAS_CPP_ATTRIBUTE.
+// A wrapper around `__has_builtin`, similar to PA_HAS_CPP_ATTRIBUTE.
 #if defined(__has_builtin)
 #define PA_HAS_BUILTIN(x) __has_builtin(x)
 #else
@@ -244,6 +251,35 @@ inline constexpr bool AnalyzerAssumeTrue(bool arg) {
 #define PA_CONSTEXPR_DTOR constexpr
 #else
 #define PA_CONSTEXPR_DTOR
+#endif
+
+// PA_LIFETIME_BOUND indicates that a resource owned by a function parameter or
+// implicit object parameter is retained by the return value of the annotated
+// function (or, for a parameter of a constructor, in the value of the
+// constructed object). This attribute causes warnings to be produced if a
+// temporary object does not live long enough.
+//
+// When applied to a reference parameter, the referenced object is assumed to be
+// retained by the return value of the function. When applied to a non-reference
+// parameter (for example, a pointer or a class type), all temporaries
+// referenced by the parameter are assumed to be retained by the return value of
+// the function.
+//
+// See also the upstream documentation:
+// https://clang.llvm.org/docs/AttributeReference.html#lifetimebound
+//
+// This attribute is based on `ABSL_ATTRIBUTE_LIFETIME_BOUND`, but:
+// * A separate definition is provided to avoid PartitionAlloc => Abseil
+//   dependency
+// * The definition is tweaked to avoid `__attribute__(lifetime))` because it
+//   can't be applied in the same places as `[[clang::lifetimebound]]`.  In
+//   particular `operator T*&() && __attribute__(lifetime))` fails to compile on
+//   `clang` with the following error: 'lifetimebound' attribute only applies to
+//   parameters and implicit object parameters
+#if PA_HAS_CPP_ATTRIBUTE(clang::lifetimebound)
+#define PA_LIFETIME_BOUND [[clang::lifetimebound]]
+#else
+#define PA_LIFETIME_BOUND
 #endif
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_SRC_PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPILER_SPECIFIC_H_

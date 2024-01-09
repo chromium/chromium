@@ -567,9 +567,13 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     void* operator new(size_t, void*) = delete;
     PA_ALWAYS_INLINE PA_CONSTEXPR_DTOR ~EphemeralRawAddr() { original = copy; }
 
-    PA_ALWAYS_INLINE constexpr T** operator&() && { return &copy; }
+    PA_ALWAYS_INLINE constexpr T** operator&() && PA_LIFETIME_BOUND {
+      return &copy;
+    }
     // NOLINTNEXTLINE(google-explicit-constructor)
-    PA_ALWAYS_INLINE constexpr operator T*&() && { return copy; }
+    PA_ALWAYS_INLINE constexpr operator T*&() && PA_LIFETIME_BOUND {
+      return copy;
+    }
 
    private:
     friend class raw_ptr;

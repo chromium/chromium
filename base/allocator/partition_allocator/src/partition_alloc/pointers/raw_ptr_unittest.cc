@@ -147,8 +147,10 @@ static_assert([]() constexpr {
     [[maybe_unused]] Int* i2 = r;               // operator T*()
     [[maybe_unused]] IntBase* i3 = r;           // operator Convertible*()
 
-    [[maybe_unused]] Int** i4 = &r.AsEphemeralRawAddr();
-    [[maybe_unused]] Int*& i5 = r.AsEphemeralRawAddr();
+    auto func_taking_ptr_to_ptr = [](Int**) {};
+    auto func_taking_ref_to_ptr = [](Int*&) {};
+    func_taking_ptr_to_ptr(&r.AsEphemeralRawAddr());
+    func_taking_ref_to_ptr(r.AsEphemeralRawAddr());
 
     Int* array = new Int[3]();
     {
