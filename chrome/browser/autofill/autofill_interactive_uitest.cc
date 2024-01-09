@@ -3218,9 +3218,17 @@ IN_PROC_BROWSER_TEST_F(
 
 // Test that we can autofill forms that dynamically change the element that
 // has been clicked on, even though there are multiple forms with no name.
+// TODO(crbug.com/1481004): Flaky on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms \
+  DISABLED_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms
+#else
+#define MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms \
+  DynamicFormFill_FirstElementDisappearsMultipleNoNameForms
+#endif
 IN_PROC_BROWSER_TEST_F(
     AutofillInteractiveTestDynamicForm,
-    DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
+    MAYBE_DynamicFormFill_FirstElementDisappearsMultipleNoNameForms) {
   CreateTestProfile();
   GURL url = embedded_test_server()->GetURL(
       "a.com",
