@@ -196,7 +196,7 @@ targets.mixin(
         dimensions = {
             "cpu": "x86",
             "kvm": "1",
-            "os": "Ubuntu-18.04",
+            "os": "Ubuntu-22.04",
             "pool": "chromium.tests",
         },
         optional_dimensions = {

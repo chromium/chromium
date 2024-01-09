@@ -113,9 +113,6 @@ luci.cq_group(
             groups = "project-chromium-tryjob-access",
         ),
     ],
-    additional_modes = [
-        cq.run_mode(cq.MODE_QUICK_DRY_RUN, 1, "Quick-Run", 1),
-    ],
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
 )
 
