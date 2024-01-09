@@ -139,11 +139,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="IceconnectionClosed"/>
 </enum>
 
-<enum name="IceRegatheringReason">
-  <int value="0" label="NetworkChange"/>
-  <int value="1" label="NetworkFailure"/>
-</enum>
-
 <enum name="MediaStreamRequestState">
   <int value="0" label="Explicitly Cancelled"/>
   <int value="1" label="Stream Not Generated"/>
