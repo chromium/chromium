@@ -89,18 +89,60 @@ struct ChromeMLModelDescriptor {
   size_t ts_dimension;
 };
 
+// A status value included with each output chunk.
+enum class ChromeMLExecutionStatus {
+  // Model execution is still in progress and more outputs should be expected.
+  kInProgress,
+
+  // Model execution either completed normally or was cancelled. This is the
+  // last output.
+  kComplete,
+};
+
+// Structure conveying sequential output from an in-progress model execution.
+struct ChromeMLExecutionOutput {
+  // Status of this model execution.
+  ChromeMLExecutionStatus status;
+
+  // Null-terminated text content for this output chunk, or null if there is no
+  // new text output.
+  const char* text;
+
+  // Optional TS scores for the full output so far, up to and including this
+  // chunk. Only included as specified by `score_ts_interval` in
+  // ChromeMLExecuteOptions.
+  //
+  // If no new scores are provided for this output, this field is null and
+  // `num_ts_scores` is zero.
+  float* ts_scores;
+  size_t num_ts_scores;
+};
+
 // Function provided from the library that will cancel the corresponding input
 // and output when called. This is safe to call on any thread.
 using ChromeMLCancelFn = std::function<void()>;
+
+// Receives tokens an other information from a call to ExecuteModel(). This will
+// be called on the internal thread executing the model. May be multiple times,
+// and the final invocation will be indicated by the `status` field within
+// `output`. Note that `output` and any pointer fields therein are only valid
+// through the extent of the function invocation and must not be retained by
+// the callee.
+using ChromeMLExecutionOutputFn =
+    std::function<void(const ChromeMLExecutionOutput* output)>;
 
 // Receives tokens from a call to RunModel(). This will be called on the
 // internal thread executing the model. If no completion callback is provided to
 // ExecuteModel(), this function will be invoked with std::nullopt to signify
 // that model execution is complete.
+//
+// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
 using ChromeMLOutputFn = std::function<void(const std::optional<std::string>&)>;
 
 // Receives periodic updates to TS scores, per `score_ts_interval` set in
 // ChromeMLExecuteOptions.
+//
+// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
 using ChromeMLScoreTSFn = std::function<void(const std::vector<float>&)>;
 
 // Called with the number of tokens processed after a call to RunModel()
@@ -119,6 +161,8 @@ struct ChromeMLExecutionResult {
 
 // Called when a model has finished executing. No other functions given to
 // ExecuteModel() will be invoked after this.
+//
+// DEPRECATED: Use a ChromeMLExecutionOutputFn instead.
 using ChromeMLCompletionFn =
     std::function<void(const ChromeMLExecutionResult&)>;
 
@@ -128,11 +172,12 @@ struct ChromeMLExecuteOptions {
   uint32_t max_tokens;
   uint32_t token_offset;
   uint32_t max_output_tokens;
-  uint32_t score_ts_interval;
+  int32_t score_ts_interval;
   const ChromeMLOutputFn* output_fn;
   const ChromeMLScoreTSFn* score_ts_fn;
   const ChromeMLContextSavedFn* context_saved_fn;
   const ChromeMLCompletionFn* completion_fn;
+  const ChromeMLExecutionOutputFn* execution_output_fn;
 };
 
 // Performance data filled out by GetEstimatedPerformance().
