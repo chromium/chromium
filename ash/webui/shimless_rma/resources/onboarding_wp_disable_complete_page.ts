@@ -5,16 +5,19 @@
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_wp_disable_complete_page.html.js';
 import {ShimlessRmaServiceInterface, StateResult, WriteProtectDisableCompleteAction} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
 
-/** @type {!Object<WriteProtectDisableCompleteAction, string>} */
-const disableActionTextKeys = {
+type DisableActionTextKeys = {
+  [key in WriteProtectDisableCompleteAction]: string;
+};
+
+const disableActionTextKeys: DisableActionTextKeys = {
   [WriteProtectDisableCompleteAction.kSkippedAssembleDevice]:
       'wpDisableReassembleNowText',
   [WriteProtectDisableCompleteAction.kCompleteAssembleDevice]:
@@ -29,19 +32,12 @@ const disableActionTextKeys = {
  * disable was successful, and what steps must be taken next.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingWpDisableCompletePageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OnboardingWpDisableCompletePageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class OnboardingWpDisableCompletePage extends
     OnboardingWpDisableCompletePageBase {
   static get is() {
-    return 'onboarding-wp-disable-complete-page';
+    return 'onboarding-wp-disable-complete-page' as const;
   }
 
   static get template() {
@@ -50,7 +46,6 @@ export class OnboardingWpDisableCompletePage extends
 
   static get properties() {
     return {
-      /** @protected */
       actionString: {
         type: String,
         computed: 'getActionString(action)',
@@ -58,8 +53,11 @@ export class OnboardingWpDisableCompletePage extends
     };
   }
 
-  /** @override */
-  ready() {
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  protected actionString: string;
+  private action: WriteProtectDisableCompleteAction = WriteProtectDisableCompleteAction.kUnknown;
+
+  override ready() {
     super.ready();
     enableNextButton(this);
 
@@ -68,44 +66,37 @@ export class OnboardingWpDisableCompletePage extends
 
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-    /** @private {WriteProtectDisableCompleteAction} */
-    this.action = WriteProtectDisableCompleteAction.kUnknown;
 
     this.shimlessRmaService.getWriteProtectDisableCompleteAction().then(
-        (res) => {
+        (res: {action: WriteProtectDisableCompleteAction }) => {
           if (res) {
             this.action = res.action;
           }
         });
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getActionString() {
+  protected getActionString(): string {
     return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
             this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         this.i18n(disableActionTextKeys[this.action]);
   }
 
-  /** @return {!Promise<!{stateResult: !StateResult}>} */
-  onNextButtonClick() {
+  onNextButtonClick(): Promise<{stateResult: StateResult}> {
     return this.shimlessRmaService.confirmManualWpDisableComplete();
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getVerificationIcon() {
+  protected getVerificationIcon(): string {
     return (this.action === WriteProtectDisableCompleteAction.kUnknown ||
             this.action === WriteProtectDisableCompleteAction.kCompleteNoOp) ?
         '' :
         'shimless-icon:check';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingWpDisableCompletePage.is]: OnboardingWpDisableCompletePage;
   }
 }
 
