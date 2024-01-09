@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/shimless_rma/backend/shimless_rma_delegate.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -44,6 +45,7 @@
 #include "extensions/common/verifier_formats.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace context {
 class BrowserContext;
@@ -57,6 +59,14 @@ namespace {
 constexpr base::TimeDelta kExtensionReadyPollingInterval =
     base::Milliseconds(50);
 constexpr base::TimeDelta kExtensionReadyPollingTimeout = base::Seconds(3);
+
+// The set of allowlisted permission policy for diagnostics IWA.
+constexpr auto kAllowlistedPermissionPolicy =
+    base::MakeFixedFlatSet<blink::mojom::PermissionsPolicyFeature>(
+        {blink::mojom::PermissionsPolicyFeature::kCamera,
+         blink::mojom::PermissionsPolicyFeature::kFullscreen,
+         blink::mojom::PermissionsPolicyFeature::kMicrophone,
+         blink::mojom::PermissionsPolicyFeature::kHid});
 
 extensions::ExtensionService* GetExtensionService(
     content::BrowserContext* context) {
@@ -157,8 +167,12 @@ void OnIsolatedWebAppInstalled(
   // custom checker. For now, we just install the IWA. Because we won't return
   // the profile and won't launch the IWA it should be fine.
   if (!web_app->permissions_policy().empty()) {
-    ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
-    return;
+    for (const auto& permission_policy : web_app->permissions_policy()) {
+      if (!kAllowlistedPermissionPolicy.contains(permission_policy.feature)) {
+        ReportError(std::move(state), k3pDiagErrorIWACannotHasPermissionPolicy);
+        return;
+      }
+    }
   }
   state->name = web_app->untranslated_name();
 
