@@ -1544,8 +1544,8 @@ AutofillSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
         u" " +
         CreditCard::GetObfuscatedStringForCardDigits(GetObfuscationLength(),
                                                      virtual_card_last_four);
-    if (IsKeyboardAccessoryEnabled()) {
-      // For keyboard accessory, we concatenate all the content to the
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      // For Android keyboard accessory, we concatenate all the content to the
       // `main_text` to prevent the suggestion descriptor from being cut off.
       suggestion.main_text.value = base::StrCat(
           {main_text, u"  ", credit_card.CardNameForAutofillDisplay()});
@@ -1807,18 +1807,18 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     AdjustVirtualCardSuggestionContent(suggestion, credit_card,
                                        trigger_field_type);
   } else if (card_linked_offer_available) {
+#if BUILDFLAG(IS_ANDROID)
     // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
     // suggestion icon only if card linked offers are also enabled.
-    if (IsKeyboardAccessoryEnabled() &&
-        base::FeatureList::IsEnabled(
+    if (base::FeatureList::IsEnabled(
             features::kAutofillEnableOffersInClankKeyboardAccessory)) {
-#if BUILDFLAG(IS_ANDROID)
       suggestion.feature_for_iph =
           feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature.name;
       suggestion.icon = Suggestion::Icon::kOfferTag;
-#endif
     } else {
-      // On Desktop/Android dropdown, populate an offer label.
+#else   // Add the offer label on Desktop unconditionally.
+    {
+#endif  // BUILDFLAG(IS_ANDROID)
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(
               l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
@@ -1929,17 +1929,18 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
   // If the focused field is not a card number field AND the card number is NOT
   // empty.
-  // On Android keyboard accessory, the label is formatted as "••1234".
-  if (IsKeyboardAccessoryEnabled()) {
+
+  if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
+    // On Mobile, the label is formatted as either "••••1234" or "••1234",
+    // depending on the obfuscation length.
     return {
         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetObfuscationLength()))};
   }
 
-  // On Desktop/Android dropdown, the label is formatted as
-  // "Product Description/Nickname/Network  ••••1234". If the card name is too
-  // long, it will be truncated from the tail.
   if (ShouldSplitCardNameAndLastFourDigits()) {
+    // Format the label as "Product Description/Nickname/Network  ••••1234".
+    // If the card name is too long, it will be truncated from the tail.
     return {
         Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
                          Suggestion::Text::IsPrimary(false),
@@ -1948,22 +1949,10 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
             GetObfuscationLength()))};
   }
 
-#if BUILDFLAG(IS_IOS)
-  // On iOS, the label is formatted as either "••••1234" or "••1234", depending
-  // on the obfuscation length.
-  return {
-      Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-          GetObfuscationLength()))};
-#elif BUILDFLAG(IS_ANDROID)
-  // On Android dropdown, the label is formatted as
-  // "Nickname/Network  ••••1234".
-  return {Suggestion::Text(credit_card.CardNameAndLastFourDigits(nickname))};
-#else
-  // On Desktop, the label is formatted as
+  // Format the label as
   // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
   return {Suggestion::Text(
       credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))};
-#endif
 }
 
 void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
@@ -1991,7 +1980,8 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
           features::kAutofillEnableVirtualCardMetadata)) {
     suggestion.minor_text.value = suggestion.main_text.value;
     suggestion.main_text.value = VIRTUAL_CARD_LABEL;
-  } else if (IsKeyboardAccessoryEnabled()) {
+  } else {
+#if BUILDFLAG(IS_ANDROID)
     // The keyboard accessory chips can only accommodate 2 strings which are
     // displayed on a single row. The minor_text and the labels are
     // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
@@ -2026,7 +2016,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       // removed.
       suggestion.labels = {};
     }
-  } else {  // Desktop/Android dropdown.
+#else   // Desktop/Android dropdown.
     if (trigger_field_type == CREDIT_CARD_NUMBER) {
       // If the focused field is a credit card number field, reset all labels
       // and populate only the virtual card text.
@@ -2037,6 +2027,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(VIRTUAL_CARD_LABEL)});
     }
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

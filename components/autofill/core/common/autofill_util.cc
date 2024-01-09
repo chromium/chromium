@@ -11,10 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +19,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 
 namespace autofill {
@@ -53,14 +49,6 @@ struct Compare : base::CaseInsensitiveCompareASCII<Char> {
 bool IsShowAutofillSignaturesEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kShowAutofillSignatures);
-}
-
-bool IsKeyboardAccessoryEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return true;
-#else  // !BUILDFLAG(IS_ANDROID)
-  return false;
-#endif
 }
 
 bool IsPrefixOfEmailEndingWithAtSign(const std::u16string& full_string,

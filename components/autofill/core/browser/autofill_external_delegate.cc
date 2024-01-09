@@ -1219,10 +1219,9 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
         base::FeatureList::IsEnabled(features::kAutofillUndo)
             ? l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)
             : l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-#if BUILDFLAG(IS_ANDROID)
-    if (IsKeyboardAccessoryEnabled())
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
       value = base::i18n::ToUpper(value);
-#endif
+    }
 
     suggestions->emplace_back(value);
     suggestions->back().popup_item_id = PopupItemId::kClearForm;
