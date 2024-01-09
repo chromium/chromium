@@ -27,9 +27,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
 
 namespace media {
 
-#if BUILDFLAG(IS_LINUX)
-MEDIA_EXPORT bool IsPulseaudioLoopbackCaptureSupported();
-#endif  // BUILDFLAG(IS_LINUX)
+// Returns true if system audio loopback capture is implemented for the current
+// OS.
+MEDIA_EXPORT bool IsSystemLoopbackCaptureSupported();
 
 }  // namespace media
 

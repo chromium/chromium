@@ -13,7 +13,10 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "media/audio/audio_features.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h"
@@ -34,6 +37,8 @@ constexpr base::StringPiece kDesktopMediaUrnPrefix =
 constexpr base::StringPiece kDesktopMediaUrnAudioParam = "?with_audio=true";
 constexpr base::StringPiece kUnchosenDesktopMediaUrn =
     "urn:x-org.chromium.media:source:desktop";
+constexpr base::StringPiece kUnchosenDesktopWithAudioMediaUrn =
+    "urn:x-org.chromium.media:source:desktop:?with_audio=true";
 
 // List of non-http(s) schemes that are allowed in a Presentation URL.
 constexpr std::array<const char* const, 5> kAllowedSchemes{
@@ -46,6 +51,19 @@ bool IsSchemeAllowed(const GURL& url) {
          base::ranges::any_of(
              kAllowedSchemes,
              [&url](const char* const scheme) { return url.SchemeIs(scheme); });
+}
+
+bool IsSystemAudioCaptureSupported() {
+  if (!media::IsSystemLoopbackCaptureSupported()) {
+    return false;
+  }
+#if BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(media::kMacLoopbackAudioForCast);
+#elif BUILDFLAG(IS_LINUX)
+  return base::FeatureList::IsEnabled(media::kPulseaudioLoopbackForCast);
+#else
+  return true;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace
@@ -124,7 +142,11 @@ MediaSource MediaSource::ForDesktop(const std::string& desktop_media_id,
 
 // static
 MediaSource MediaSource::ForUnchosenDesktop() {
-  return MediaSource(std::string(kUnchosenDesktopMediaUrn));
+  return IsSystemAudioCaptureSupported() &&
+                 base::FeatureList::IsEnabled(
+                     media::kCastLoopbackAudioToAudioReceivers)
+             ? MediaSource(std::string(kUnchosenDesktopWithAudioMediaUrn))
+             : MediaSource(std::string(kUnchosenDesktopMediaUrn));
 }
 
 bool MediaSource::IsTabMirroringSource() const {
@@ -133,6 +155,7 @@ bool MediaSource::IsTabMirroringSource() const {
 
 bool MediaSource::IsDesktopMirroringSource() const {
   return id() == kUnchosenDesktopMediaUrn ||
+         id() == kUnchosenDesktopWithAudioMediaUrn ||
          base::StartsWith(id(), kDesktopMediaUrnPrefix,
                           base::CompareCase::SENSITIVE);
 }
