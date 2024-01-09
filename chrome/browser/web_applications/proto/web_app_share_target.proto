@@ -12,7 +12,7 @@ package web_app;
 // A proto representing a ShareTargetParamsFile
 // https://w3c.github.io/web-share-target/level-2/#sharetargetfiles-and-its-members
 message ShareTargetParamsFile {
-  required string name = 1;
+  optional string name = 1;  // Required.
   repeated string accept = 2;
 }
 
@@ -46,8 +46,8 @@ message ShareTarget {
   };
 
   // The URL to be resolved when sharing.
-  required string action = 1;
-  required Method method = 2;
-  required Enctype enctype = 3;
-  required ShareTargetParams params = 4;
+  optional string action = 1;             // Required.
+  optional Method method = 2;             // Required.
+  optional Enctype enctype = 3;           // Required.
+  optional ShareTargetParams params = 4;  // Required.
 }
