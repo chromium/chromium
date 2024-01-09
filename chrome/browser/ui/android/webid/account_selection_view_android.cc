@@ -259,7 +259,6 @@ std::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
 
 content::WebContents* AccountSelectionViewAndroid::ShowModalDialog(
     const GURL& url) {
-  // TODO(crbug.com/1510449): Connect dismiss callback to closing of CCT.
   if (!MaybeCreateJavaObject()) {
     // The Java object is tied to the bottomsheet availability, so if we hadn't
     // created one and the bottomsheet is not available then the CCT will not be
