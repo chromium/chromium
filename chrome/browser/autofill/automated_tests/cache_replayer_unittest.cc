@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill/automated_tests/cache_replayer.h"
 
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -86,7 +87,7 @@ RequestResponsePair MakeQueryRequestResponsePair(
 
 // Returns a query request URL. If |query| is not empty, the corresponding
 // query is encoded into the URL.
-bool MakeQueryRequestURL(const absl::optional<AutofillPageQueryRequest>& query,
+bool MakeQueryRequestURL(const std::optional<AutofillPageQueryRequest>& query,
                          std::string* request_url) {
   if (!query.has_value()) {
     *request_url = CreateQueryUrl("");
@@ -114,7 +115,7 @@ bool MakeSerializedRequest(const AutofillPageQueryRequest& query,
                            std::string* request_url) {
   // Make body and query content for URL depending on the |type|.
   std::string body;
-  absl::optional<AutofillPageQueryRequest> query_for_url;
+  std::optional<AutofillPageQueryRequest> query_for_url;
   if (type == RequestType::kQueryProtoGET) {
     query_for_url = std::move(query);
   } else {

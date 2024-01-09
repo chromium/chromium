@@ -4,15 +4,15 @@
 
 #include "chrome/browser/autofill/autofill_flow_test_util.h"
 
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
 
-#include "base/time/time.h"
-
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -121,7 +121,7 @@ struct ShowAutofillPopupParams {
   int num_profile_suggestions = 1;
   size_t max_tries = 5;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
+  std::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
 // A helper function for showing the popup in AutofillFlow().
@@ -259,7 +259,7 @@ struct AutofillSuggestionParams {
   int current_index = 0;
   int target_index = 0;
   base::TimeDelta timeout = kAutofillFlowDefaultTimeout;
-  absl::optional<content::ToRenderFrameHost> execution_target = {};
+  std::optional<content::ToRenderFrameHost> execution_target = {};
 };
 
 // A helper function for selecting a suggestion in AutofillFlow().

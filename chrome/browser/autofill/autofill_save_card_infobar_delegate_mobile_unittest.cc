@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -187,7 +188,7 @@ AutofillSaveCardInfoBarDelegateMobileTest::
         CreditCard credit_card) {
   LegalMessageLines legal_message_lines;
   if (!legal_message_string.empty()) {
-    absl::optional<base::Value> value =
+    std::optional<base::Value> value =
         base::JSONReader::Read(legal_message_string);
     EXPECT_TRUE(value);
     LegalMessageLine::Parse(value->GetDict(), &legal_message_lines,

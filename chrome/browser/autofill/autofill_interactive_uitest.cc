@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
-
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -28,6 +27,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/autofill/autofill_flow_test_util.h"
 #include "chrome/browser/autofill/autofill_uitest.h"
@@ -88,7 +88,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -371,7 +370,7 @@ class ValueWaiter {
 
   // Returns the non-empty value of the observed form-control element, or
   // absl::nullopt if no value change is observed before `timeout`.
-  [[nodiscard]] absl::optional<std::string> Wait(
+  [[nodiscard]] std::optional<std::string> Wait(
       base::TimeDelta timeout = kDefaultTimeout) && {
     const std::string kFunction = R"(
       // Polls the value of `window[observedValueSlots]` and replies with the
@@ -448,7 +447,7 @@ class ValueWaiter {
 // Event 9 happens no later than 5 seconds after that.
 [[nodiscard]] ValueWaiter ListenForValueChange(
     const std::string& id,
-    const absl::optional<std::string>& unblock_variable,
+    const std::optional<std::string>& unblock_variable,
     content::ToRenderFrameHost execution_target) {
   const std::string kFunction = R"(
     // This function observes the DOM for an attached form-control element `id`.
@@ -2905,7 +2904,7 @@ class AutofillInteractiveTestDynamicForm : public AutofillInteractiveTest {
 
   ValueWaiter ListenForRefill(
       const std::string& id,
-      absl::optional<std::string> unblock_variable = "refill") {
+      std::optional<std::string> unblock_variable = "refill") {
     return ListenForValueChange(id, unblock_variable, GetWebContents());
   }
 };

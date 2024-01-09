@@ -7,6 +7,7 @@
 
 #include <fstream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -64,7 +65,7 @@ enum ExpectedResult { kPass, kFail };
 struct CapturedSiteParams {
   std::string scenario_dir;
   std::string site_name;
-  absl::optional<int> bug_number;
+  std::optional<int> bug_number;
   ExpectedResult expectation = kPass;
   bool is_disabled = false;
   base::FilePath capture_file_path;
@@ -90,7 +91,7 @@ struct GetParamAsString {
   }
 };
 
-absl::optional<base::FilePath> GetCommandFilePath();
+std::optional<base::FilePath> GetCommandFilePath();
 
 // Prints tips on how to run captured-site tests.
 // |test_file_name| should be without the .cc suffix.
@@ -183,14 +184,14 @@ class ProfileDataController {
   const autofill::AutofillProfile& profile() { return profile_; }
   bool AddAutofillProfileInfo(const std::string& field_type,
                               const std::string& field_value);
-  absl::optional<std::u16string> cvc() const { return cvc_; }
+  std::optional<std::u16string> cvc() const { return cvc_; }
 
  private:
   // If a CVC is available in the Action Recorder receipt, this test uses a
   // server card to autofill the payment form. So the "Enter CVC" dialog will
   // pop up for card autofill. Otherwise, this test uses a local card to
   // autofill the payment form.
-  absl::optional<std::u16string> cvc_;
+  std::optional<std::u16string> cvc_;
   autofill::AutofillProfile profile_;
   autofill::CreditCard card_;
 };
@@ -221,7 +222,7 @@ class TestRecipeReplayChromeFeatureActionExecutor {
       const std::vector<std::string>& iframe_path,
       const int attempts,
       content::RenderFrameHost* frame,
-      absl::optional<autofill::FieldType> triggered_field_type);
+      std::optional<autofill::FieldType> triggered_field_type);
   virtual bool AddAutofillProfileInfo(const std::string& field_type,
                                       const std::string& field_value);
   virtual bool SetupAutofillProfile();
@@ -286,7 +287,7 @@ class TestRecipeReplayer {
   // 2. Replaying the specified Test Recipe file.
   bool ReplayTest(const base::FilePath& capture_file_path,
                   const base::FilePath& recipe_file_path,
-                  const absl::optional<base::FilePath>& command_file_path);
+                  const std::optional<base::FilePath>& command_file_path);
 
   const std::vector<testing::AssertionResult> GetValidationFailures() const;
 
@@ -332,7 +333,7 @@ class TestRecipeReplayer {
   bool StopWebPageReplayServer(base::Process* web_page_replay_server);
   bool ReplayRecordedActions(
       const base::FilePath& recipe_file_path,
-      const absl::optional<base::FilePath>& command_file_path);
+      const std::optional<base::FilePath>& command_file_path);
   bool InitializeBrowserToExecuteRecipe(base::Value::Dict& recipe);
   bool ExecuteAutofillAction(base::Value::Dict action);
   bool ExecuteClickAction(base::Value::Dict action);

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_MOCK_CREDIT_CARD_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_MOCK_CREDIT_CARD_ACCESSORY_CONTROLLER_H_
 
+#include <optional>
+
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
@@ -24,7 +26,7 @@ class MockCreditCardAccessoryController
               RegisterFillingSourceObserver,
               (FillingSourceObserver),
               (override));
-  MOCK_METHOD(absl::optional<autofill::AccessorySheetData>,
+  MOCK_METHOD(std::optional<autofill::AccessorySheetData>,
               GetSheetData,
               (),
               (const, override));

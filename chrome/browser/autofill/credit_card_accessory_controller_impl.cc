@@ -150,7 +150,7 @@ void CreditCardAccessoryControllerImpl::RegisterFillingSourceObserver(
   source_observer_ = std::move(observer);
 }
 
-absl::optional<AccessorySheetData>
+std::optional<AccessorySheetData>
 CreditCardAccessoryControllerImpl::GetSheetData() const {
   // Note that also GetManager() can return nullptr.
   const BrowserAutofillManager* autofill_manager =
@@ -322,7 +322,7 @@ void CreditCardAccessoryControllerImpl::RefreshSuggestions() {
   } else {
     // TODO(crbug.com/1169167): Remove once filling controller pulls this
     // information instead of waiting to get it pushed.
-    absl::optional<AccessorySheetData> data = GetSheetData();
+    std::optional<AccessorySheetData> data = GetSheetData();
     DCHECK(data.has_value());
     GetManualFillingController()->RefreshSuggestions(std::move(data.value()));
   }
