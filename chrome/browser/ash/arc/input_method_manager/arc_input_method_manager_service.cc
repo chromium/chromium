@@ -227,9 +227,13 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   // ash::input_method::InputMethodEngineObserver overrides:
   void OnActivate(const std::string& engine_id) override {
     owner_->is_arc_ime_active_ = true;
-    // TODO(yhanada): Remove this line after we migrate to SPM completely.
     owner_->OnInputContextHandlerChanged();
   }
+  void OnDeactivated(const std::string& engine_id) override {
+    owner_->is_arc_ime_active_ = false;
+    owner_->OnInputContextHandlerChanged();
+  }
+
   void OnFocus(const std::string& engine_id,
                int context_id,
                const ash::TextInputMethod::InputContext& context) override {
@@ -238,6 +242,7 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
   void OnBlur(const std::string& engine_id, int context_id) override {
     owner_->Blur();
   }
+
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
@@ -255,11 +260,6 @@ class ArcInputMethodManagerService::InputMethodEngineObserver
     std::move(key_data).Run(ui::ime::KeyEventHandledState::kNotHandled);
   }
   void OnReset(const std::string& engine_id) override {}
-  void OnDeactivated(const std::string& engine_id) override {
-    owner_->is_arc_ime_active_ = false;
-    // TODO(yhanada): Remove this line after we migrate to SPM completely.
-    owner_->OnInputContextHandlerChanged();
-  }
   void OnCaretBoundsChanged(const gfx::Rect& caret_bounds) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,
                                 const std::u16string& text,
