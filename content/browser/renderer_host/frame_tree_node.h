@@ -593,7 +593,7 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // the fenced frame properties interact with urn iframes.
   // TODO(crbug.com/1355857): Once navigation support for urn::uuid in iframes
   // is deprecated, remove the parameter `node_source`.
-  const absl::optional<FencedFrameProperties>& GetFencedFrameProperties(
+  absl::optional<FencedFrameProperties>& GetFencedFrameProperties(
       FencedFramePropertiesNodeSource node_source =
           FencedFramePropertiesNodeSource::kClosestAncestor);
 
@@ -788,11 +788,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // should be allowed, this returns true and also clears corresponding pending
   // user activation state in the widget. Otherwise, this returns false.
   bool VerifyUserActivation();
-
-  // See comments for `GetFencedFrameProperties()`.
-  absl::optional<FencedFrameProperties>& GetFencedFramePropertiesForEditing(
-      FencedFramePropertiesNodeSource node_source =
-          FencedFramePropertiesNodeSource::kClosestAncestor);
 
   // See `RestartBackForwardCachedNavigationAsync()`.
   void RestartBackForwardCachedNavigationImpl(int nav_entry_id);

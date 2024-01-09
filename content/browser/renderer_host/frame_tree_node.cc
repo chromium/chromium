@@ -907,14 +907,7 @@ bool FrameTreeNode::IsInFencedFrameTree() const {
   return fenced_frame_status_ != FencedFrameStatus::kNotNestedInFencedFrame;
 }
 
-const absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFrameProperties(
-    FencedFramePropertiesNodeSource node_source) {
-  return GetFencedFramePropertiesForEditing(node_source);
-}
-
-absl::optional<FencedFrameProperties>&
-FrameTreeNode::GetFencedFramePropertiesForEditing(
+absl::optional<FencedFrameProperties>& FrameTreeNode::GetFencedFrameProperties(
     FencedFramePropertiesNodeSource node_source) {
   if (node_source == FencedFramePropertiesNodeSource::kFrameTreeRoot) {
     return frame_tree().root()->fenced_frame_properties_;
@@ -938,7 +931,7 @@ FrameTreeNode::GetFencedFramePropertiesForEditing(
 void FrameTreeNode::MaybeResetFencedFrameAutomaticBeaconReportEventData(
     blink::mojom::AutomaticBeaconType event_type) {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing();
+      GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid.
   if (!properties) {
@@ -954,7 +947,7 @@ void FrameTreeNode::SetFencedFrameAutomaticBeaconReportEventData(
     bool once,
     bool cross_origin_exposed) {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing();
+      GetFencedFrameProperties();
   // `properties` will exist for both fenced frames as well as iframes loaded
   // with a urn:uuid. This allows URN iframes to call this function without
   // getting bad-messaged.
@@ -1094,7 +1087,7 @@ FrameTreeNode::FindSharedStorageBudgetMetadata() {
 absl::optional<std::u16string>
 FrameTreeNode::GetEmbedderSharedStorageContextIfAllowed() {
   absl::optional<FencedFrameProperties>& properties =
-      GetFencedFramePropertiesForEditing();
+      GetFencedFrameProperties();
   // We only return embedder context for frames that are same origin with the
   // fenced frame root or ancestor URN iframe.
   if (!properties || !properties->mapped_url().has_value() ||
