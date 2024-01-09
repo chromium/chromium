@@ -210,7 +210,6 @@ IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest, MotionNullTest) {
   EXPECT_EQ("pass", shell()->web_contents()->GetLastCommittedURL().ref());
 }
 
-// Disabled due to flakiness: https://crbug.com/783891
 IN_PROC_BROWSER_TEST_F(DeviceSensorBrowserTest,
                        MotionOnlySomeSensorsAreAvailableTest) {
   // The test page registers an event handler for motion events and
