@@ -162,22 +162,6 @@ class ArcMetricsService : public KeyedService,
   void ReportProvisioningPreSignIn() override;
   void ReportWaylandLateTimingEvent(mojom::WaylandTimingEvent event,
                                     base::TimeDelta duration) override;
-  void ReportNonAndroidPlayFilesCount(
-      uint32_t number_of_directories,
-      uint32_t number_of_non_directories) override;
-  void ReportPerAppFileStatsOfAndroidDataDirs(
-      uint32_t number_of_directories,
-      uint32_t number_of_non_directories,
-      uint32_t size_in_kilobytes) override;
-  void ReportTotalFileStatsOfAndroidDataDirs(uint32_t number_of_directories,
-                                             uint32_t number_of_non_directories,
-                                             uint32_t size_in_kilobytes,
-                                             base::TimeDelta duration) override;
-  void ReportTotalFileStatsOfAndroidDataSubdir(
-      mojom::AndroidDataSubdirectory target,
-      uint32_t number_of_directories,
-      uint32_t number_of_non_directories,
-      uint32_t size_in_kilobytes) override;
   void ReportWebViewProcessStarted() override;
   void ReportArcKeyMintError(mojom::ArcKeyMintError error) override;
 
