@@ -184,4 +184,31 @@ TEST_F(PictureInPictureWindowManagerTest,
       gfx::Rect(), /* anchor_view = */ nullptr,
       views::BubbleBorder::TOP_CENTER));
 }
+
+TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("https://foo.com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("http://foo.com")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("http://localhost")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("https://localhost")));
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("file://foo/com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("blob://foo.com")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("")));
+  EXPECT_FALSE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("about:blank")));
+}
 #endif

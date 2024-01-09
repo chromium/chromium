@@ -24,6 +24,7 @@
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_helper.h"
 #include "media/base/media_switches.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/views/view.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -359,6 +360,20 @@ void PictureInPictureWindowManager::SetWindowParams(NavigateParams& params) {
   params.window_action = ShouldFocusPictureInPictureWindow(params)
                              ? NavigateParams::SHOW_WINDOW
                              : NavigateParams::SHOW_WINDOW_INACTIVE;
+#endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+// static
+bool PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+    const GURL& url) {
+#if !BUILDFLAG(IS_ANDROID)
+  // Only allow document PiP to be opened if the URL is of a type that we know
+  // how to display in the title bar.  Otherwise, the title bar might be
+  // misleading in certain scenarios.  See https://crbug.com/1460025 .
+  return url.SchemeIs(url::kHttpsScheme) || url.SchemeIsFile() ||
+         net::IsLocalhost(url);
+#else
+  return false;
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
