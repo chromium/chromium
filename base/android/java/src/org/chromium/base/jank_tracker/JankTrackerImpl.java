@@ -60,19 +60,19 @@ public class JankTrackerImpl implements JankTracker {
     }
 
     @Override
-    public void startTrackingScenario(@JankScenario int scenario) {
+    public void startTrackingScenario(JankScenario scenario) {
         if (!IS_TRACKING_ENABLED) return;
 
         mReportingScheduler.startTrackingScenario(scenario);
     }
 
     @Override
-    public void finishTrackingScenario(@JankScenario int scenario) {
+    public void finishTrackingScenario(JankScenario scenario) {
         finishTrackingScenario(scenario, -1);
     }
 
     @Override
-    public void finishTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs) {
+    public void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
         if (!IS_TRACKING_ENABLED) return;
 
         mReportingScheduler.finishTrackingScenario(scenario, endScenarioTimeNs);

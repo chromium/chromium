@@ -7,7 +7,6 @@ package org.chromium.base.jank_tracker;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -17,13 +16,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JankReportingScheduler {
     private static final long PERIODIC_METRIC_DELAY_MS = 5_000;
     private final FrameMetricsStore mFrameMetricsStore;
-    // TODO(b/308551047): Fix/cleanup this member variable. We do query the map but we never add
-    // anything to it.
-    private final HashMap<Integer, JankReportingRunnable> mRunnableStore;
 
     public JankReportingScheduler(FrameMetricsStore frameMetricsStore) {
         mFrameMetricsStore = frameMetricsStore;
-        mRunnableStore = new HashMap<Integer, JankReportingRunnable>();
         LazyHolder.HANDLER.post(
                 new Runnable() {
                     @Override
@@ -64,16 +59,7 @@ public class JankReportingScheduler {
 
     private final AtomicBoolean mIsPeriodicReporterLooping = new AtomicBoolean(false);
 
-    public void startTrackingScenario(@JankScenario int scenario) {
-        // We check to see if there was already a stop task queued at some point and attempt to
-        // cancel it. Regardless we send the startTracking runnable because we will ignore this
-        // start if the stop did get canceled and the stopTask already ran we'll start a new
-        // scenario.
-        JankReportingRunnable stopTask = mRunnableStore.get(scenario);
-        if (stopTask != null) {
-            LazyHolder.HANDLER.removeCallbacks(stopTask);
-            mRunnableStore.remove(scenario);
-        }
+    public void startTrackingScenario(JankScenario scenario) {
         LazyHolder.HANDLER.post(
                 new JankReportingRunnable(
                         mFrameMetricsStore,
@@ -83,27 +69,24 @@ public class JankReportingScheduler {
                         null));
     }
 
-    public void finishTrackingScenario(@JankScenario int scenario) {
+    public void finishTrackingScenario(JankScenario scenario) {
         finishTrackingScenario(scenario, -1);
     }
 
-    public void finishTrackingScenario(@JankScenario int scenario, long endScenarioTimeNs) {
+    public void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs) {
         finishTrackingScenario(scenario, JankEndScenarioTime.endAt(endScenarioTimeNs));
     }
 
-    public void finishTrackingScenario(
-            @JankScenario int scenario, JankEndScenarioTime endScenarioTime) {
+    public void finishTrackingScenario(JankScenario scenario, JankEndScenarioTime endScenarioTime) {
         // We store the stop task in case the delay is greater than zero and we start this scenario
         // again.
         JankReportingRunnable runnable =
-                mRunnableStore.getOrDefault(
+                new JankReportingRunnable(
+                        mFrameMetricsStore,
                         scenario,
-                        new JankReportingRunnable(
-                                mFrameMetricsStore,
-                                scenario,
-                                /* isStartingTracking= */ false,
-                                LazyHolder.HANDLER,
-                                endScenarioTime));
+                        /* isStartingTracking= */ false,
+                        LazyHolder.HANDLER,
+                        endScenarioTime);
         LazyHolder.HANDLER.post(runnable);
     }
 

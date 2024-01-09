@@ -15,7 +15,7 @@ import org.chromium.base.TraceEvent;
  */
 class JankReportingRunnable implements Runnable {
     private final FrameMetricsStore mMetricsStore;
-    private final @JankScenario int mScenario;
+    private final JankScenario mScenario;
     private final boolean mIsStartingTracking;
     // This must be the same handler that this is running on.
     private final Handler mHandler;
@@ -29,7 +29,7 @@ class JankReportingRunnable implements Runnable {
     private class FinalReportingRunnable implements Runnable {
         @Override
         public void run() {
-            try (TraceEvent e = TraceEvent.scoped("ReportingCUJScenarioData", mScenario)) {
+            try (TraceEvent e = TraceEvent.scoped("ReportingCUJScenarioData", mScenario.type())) {
                 JankMetrics metrics;
                 if (mJankEndScenarioTime == null) {
                     metrics = mMetricsStore.stopTrackingScenario(mScenario);
@@ -57,14 +57,14 @@ class JankReportingRunnable implements Runnable {
                 JankMetricUMARecorderJni.get();
                 // TODO(salg@): Cache metrics in case native takes >30s to initialize.
                 JankMetricUMARecorder.recordJankMetricsToUMA(
-                        metrics, startTime, endTime, mScenario);
+                        metrics, startTime, endTime, mScenario.type());
             }
         }
     }
 
     JankReportingRunnable(
             FrameMetricsStore metricsStore,
-            @JankScenario int scenario,
+            JankScenario scenario,
             boolean isStartingTracking,
             Handler handler,
             JankEndScenarioTime endScenarioTime) {
@@ -83,7 +83,7 @@ class JankReportingRunnable implements Runnable {
                         "StartingScenario:"
                                 + Boolean.toString(mIsStartingTracking)
                                 + ",Scenario:"
-                                + Integer.toString(mScenario))) {
+                                + Integer.toString(mScenario.type()))) {
             if (mIsStartingTracking) {
                 if (mMetricsStore == null) {
                     TraceEvent.instant("StartTrackingScenario metrics store null");
