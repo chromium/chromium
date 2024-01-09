@@ -6214,6 +6214,7 @@
       field_template: "keyword",
       keywords: ["read-only", "read-write", "read-write-plaintext-only"],
       default_value: "read-only",
+      affected_by_all: false,
     },
     {
       name: "user-select",
