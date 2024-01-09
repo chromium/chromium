@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 3, NextIndex: 22
+// NextMinVersion: 4, NextIndex: 23
 [Stable, Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -51,6 +51,7 @@ enum ProbeCategoryEnum {
   kInput = 19,
   [MinVersion=1] kAudioHardware = 20,
   [MinVersion=2] kSensor = 21,
+  [MinVersion=3] kThermal = 22,
 };
 
 // An enumeration of the different categories of errors that can occur when
@@ -1978,6 +1979,50 @@ struct Sensor {
   Location location@3;
 };
 
+// Thermal result.
+[Stable]
+union ThermalResult {
+  // Valid ThermalInfo.
+  ThermalInfo thermal_info;
+  // The error that occurred attempting to retrieve the ThermalInfo.
+  ProbeError error;
+};
+
+// Information about the various thermal sensors.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct ThermalInfo {
+  // An array containing all the information retrieved for thermal sensors.
+  array<ThermalSensorInfo> thermal_sensors@0;
+};
+
+// Information about various thermal sensors.
+//
+// NextMinVersion: 1, NextIndex: 3
+[Stable]
+struct ThermalSensorInfo {
+  // The location of sensor.
+  //
+  // NextMinVersion: 1, NextIndex: 3
+  [Stable, Extensible]
+  enum ThermalSensorSource {
+    // For mojo backward compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Thermal sensor is located in the EC.
+    kEc = 1,
+    // Thermal sensor is located in SysFs.
+    kSysFs = 2,
+  };
+
+  // Name of the thermal sensor.
+  string name@0;
+  // Temperature detected by the thermal sensor in celsius.
+  double temperature_celsius@1;
+  // Where the thermal sensor is detected from.
+  ThermalSensorSource source@2;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -1986,7 +2031,7 @@ struct Sensor {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 6, NextIndex: 22
+// NextMinVersion: 7, NextIndex: 23
 [Stable]
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
@@ -2057,4 +2102,6 @@ struct TelemetryInfo {
   [MinVersion=4] AudioHardwareResult? audio_hardware_result@20;
   // Information about sensor. Only present when kSensor was included.
   [MinVersion=5] SensorResult? sensor_result@21;
+  // Information about thermal. Only present when kThermal was included.
+  [MinVersion=6] ThermalResult? thermal_result@22;
 };
