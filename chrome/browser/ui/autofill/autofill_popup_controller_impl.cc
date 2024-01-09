@@ -640,7 +640,7 @@ bool AutofillPopupControllerImpl::RemoveSuggestion(
           AutofillMetrics::LogDeleteAddressProfileFromPopup();
           break;
         case AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory:
-          // TODO(1509457): Add metrics for keyboard accessory deletion.
+          AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory();
           break;
         case AutofillMetrics::SingleEntryRemovalMethod::kDeleteButtonClicked:
           NOTREACHED_NORETURN();

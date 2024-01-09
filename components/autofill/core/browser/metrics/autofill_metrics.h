@@ -1375,6 +1375,10 @@ class AutofillMetrics {
   // using shift+delete.
   static void LogDeleteAddressProfileFromPopup();
 
+  // This metric is recorded when an address is deleted from the keyboard
+  // accessory.
+  static void LogDeleteAddressProfileFromKeyboardAccessory();
+
  private:
   static void Log(AutocompleteEvent event);
 };

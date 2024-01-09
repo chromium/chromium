@@ -3541,29 +3541,37 @@ chromium-metrics-reviews@google.com.
 <histogram name="Autofill.ProfileDeleted.{DeletionType}"
     enum="BooleanAutofillDeleteAddress" expires_after="2024-10-01">
   <owner>tchudakov@google.com</owner>
+  <owner>theocristea@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
-    Autofill.ProfileDeleted can be emitted in 3 scenarios: ExtendedMenu,
-    Settings and Popup. This metric is emitted for the {DeletionType} scenario.
-    For ExtendedMenu and Settings, it counts how many users clicked on the
-    &quot;Delete Address&quot; option in the extended autofill menu or in
-    chrome://settings and whether they canceled or confirmed the deletion. The
-    metric is logged when the user closes the delete address profile dialog. For
-    Popup, it counts how many users deleted an address using shift+delete while
-    hovering on a first-level popup. This metric is emitted only for the
-    &quot;Confirmed&quot; bucket, as the user cannot cancel it. There is also
-    the &quot;Any&quot; variant, which is also recorded in all of the 3
-    scenarios in order to keep track of the total number of deletions regardless
-    where they come from.
+    Autofill.ProfileDeleted is emitted in the following scenarios: ExtendedMenu,
+    Settings, Popup and KeyboardAccessory. There is also an &quot;Any&quot;
+    bucket, which sums all of the above.
+
+    {DeletionType}
   </summary>
   <token key="DeletionType">
     <variant name="Any"
-        summary="All deletions are also recorded in this bucket."/>
+        summary="This metric records how many users tried to delete an
+                 address and whether they canceled or confirmed the deletion
+                 (regardless of how the address was deleted)."/>
     <variant name="ExtendedMenu"
-        summary="Delete from the extended autofill menu."/>
+        summary="This metric records how many users clicked on the
+                 &quot;Delete Address&quot; button in the autofill extended
+                 menu, and whether they canceled or confirmed the deletion."/>
+    <variant name="KeyboardAccessory"
+        summary="This metric records how many users long-pressed on an
+                 address suggestion button in the keyboard accessory, and
+                 whether they canceled or confirmed the deletion."/>
     <variant name="Popup"
-        summary="Delete using shift+delete on a first-level popup."/>
-    <variant name="Settings" summary="Delete from chrome://settings."/>
+        summary="Counts how many users deleted an address using shift+delete
+                 while hovering on a first-level popup. This metric is
+                 emitted only for the &quot;Confirmed&quot; bucket, as the
+                 user cannot cancel this process."/>
+    <variant name="Settings"
+        summary="This metric records how many users pressed the &quot;Delete
+                 address&quot; button in chrome://settings, and whether they
+                 canceled or confirmed the deletion."/>
   </token>
 </histogram>
 

@@ -3208,7 +3208,19 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
 
 // static
 void AutofillMetrics::LogDeleteAddressProfileFromPopup() {
+  // Only the "confirmed" bucket can be recorded, as the user cannot cancel this
+  // type of deletion.
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Popup",
+                            /*delete_confirmed=*/true);
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
+                            /*delete_confirmed=*/true);
+}
+
+// static
+void AutofillMetrics::LogDeleteAddressProfileFromKeyboardAccessory() {
+  // Only the "confirmed" bucket is recorded here, as the cancelation can only
+  // be recorded from Java.
+  base::UmaHistogramBoolean("Autofill.ProfileDeleted.KeyboardAccessory",
                             /*delete_confirmed=*/true);
   base::UmaHistogramBoolean("Autofill.ProfileDeleted.Any",
                             /*delete_confirmed=*/true);
