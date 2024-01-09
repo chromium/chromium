@@ -34,6 +34,11 @@ class PrivacySandboxInternalsHandler
   void ContentSettingsPatternToString(
       const ContentSettingsPattern& pattern,
       ContentSettingsPatternToStringCallback callback) override;
+
+  void StringToContentSettingsPattern(
+      const std::string& s,
+      StringToContentSettingsPatternCallback callback) override;
+
   void GetCookieSettings(GetCookieSettingsCallback callback) override;
   void GetTpcdMetadataGrants(GetTpcdMetadataGrantsCallback callback) override;
   void GetTpcdHeuristicsGrants(GetTpcdMetadataGrantsCallback callback) override;

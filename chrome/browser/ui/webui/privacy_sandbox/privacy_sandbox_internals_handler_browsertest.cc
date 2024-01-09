@@ -93,6 +93,11 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
     waiter_.Notify();
   }
 
+  void ContentSettingsPatternCallback(const ContentSettingsPattern& pattern) {
+    content_settings_pattern_cb_data_ = pattern;
+    waiter_.Notify();
+  }
+
  protected:
   mojo::Remote<PageHandler> remote_;
   std::unique_ptr<PrivacySandboxInternalsHandler> handler_;
@@ -103,6 +108,7 @@ class PrivacySandboxInternalsMojoTest : public InProcessBrowserTest {
   std::vector<ContentSettingPatternSource> content_settings_cb_data_;
   std::string string_cb_data_;
   base::Value value_cb_data_;
+  ContentSettingsPattern content_settings_pattern_cb_data_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, ReadPref) {
@@ -211,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, GetTpcdSupport) {
                 Field(&ContentSettingPatternSource::source, "preference")))));
 }
 
-IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, PatternPartsToString) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
+                       ContentSettingsPatternToString) {
   for (const std::string& regex :
        {"[*.]example.com", "http://example.net", "example.org"}) {
     ContentSettingsPattern pattern = ContentSettingsPattern::FromString(regex);
@@ -225,5 +232,21 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest, PatternPartsToString) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMojoTest,
+                       StringToContentSettingsPattern) {
+  for (const std::string& regex :
+       {"[*.]example.com", "http://example.net", "example.org"}) {
+    remote_->StringToContentSettingsPattern(
+        regex,
+        base::BindOnce(
+            &PrivacySandboxInternalsMojoTest::ContentSettingsPatternCallback,
+            base::Unretained(this)));
+    ContentSettingsPattern expected_pattern =
+        ContentSettingsPattern::FromString(regex);
+    waiter_.Wait();
+    waiter_.Reset();
+    EXPECT_THAT(content_settings_pattern_cb_data_, Eq(expected_pattern));
+  }
+}
 }  // namespace
 }  // namespace privacy_sandbox_internals

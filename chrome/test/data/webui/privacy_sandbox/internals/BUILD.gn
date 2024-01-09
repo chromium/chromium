@@ -5,7 +5,10 @@
 import("../../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  files = [ "privacy_sandbox_internals_test.ts" ]
+  files = [
+    "privacy_sandbox_internals_test.ts",
+    "content_settings_test.ts",
+  ]
   ts_path_mappings = [ "chrome://privacy-sandbox-internals/*|" + rebase_path(
                            "$root_gen_dir/chrome/browser/resources/privacy_sandbox/internals/tsc/*",
                            target_gen_dir) ]

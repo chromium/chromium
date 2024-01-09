@@ -71,4 +71,10 @@ void PrivacySandboxInternalsHandler::ContentSettingsPatternToString(
   std::move(callback).Run(pattern.ToString());
 }
 
+void PrivacySandboxInternalsHandler::StringToContentSettingsPattern(
+    const std::string& s,
+    StringToContentSettingsPatternCallback callback) {
+  std::move(callback).Run(ContentSettingsPattern::FromString(s));
+}
+
 }  // namespace privacy_sandbox_internals

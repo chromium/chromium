@@ -31,4 +31,9 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMochaTest, CustomElements) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(PrivacySandboxInternalsMochaTest,
+                       ContentSettingsCustomElement) {
+  RunTest("privacy_sandbox/internals/content_settings_test.js", "mocha.run();");
+}
+
 }  // namespace

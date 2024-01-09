@@ -33,9 +33,14 @@ interface PageHandler {
   GetTpcdSupport() => (
     array<content_settings.mojom.ContentSettingPatternSource> content_settings);
 
-  // Convert PatternParts into a string representation.
+  // Convert ContentSettingsPattern into a string representation.
   ContentSettingsPatternToString(
     content_settings.mojom.ContentSettingsPattern pattern) => (string s);
+
+  // Converts a string into a ContentSettingsPattern.
+  StringToContentSettingsPattern(string s) => (
+    content_settings.mojom.ContentSettingsPattern pattern);
+
 };
 
 

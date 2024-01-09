@@ -11,7 +11,7 @@ import {Value} from 'chrome://resources/mojo/mojo/public/mojom/base/values.mojom
 
 import {getTemplate} from './content_setting_pattern_source.html.js';
 import {ContentSetting, ContentSettingPatternSource, SessionModel} from './content_settings.mojom-webui.js';
-import {PageHandlerRemote} from './privacy_sandbox_internals.mojom-webui.js';
+import {PageHandlerInterface} from './privacy_sandbox_internals.mojom-webui.js';
 import {defaultLogicalFn, LogicalFn} from './value_display.js';
 
 function contentSettingLogicalValue(v: Value) {
@@ -40,7 +40,7 @@ function sessionModelLogicalValue(v: Value) {
   return el;
 }
 
-class ContentSettingPatternSourceElement extends CustomElement {
+export class ContentSettingPatternSourceElement extends CustomElement {
   static observedAttributes = ['collapsed'];
 
   static override get template() {
@@ -90,23 +90,25 @@ class ContentSettingPatternSourceElement extends CustomElement {
     }
   }
 
-  configure(pageHandler: PageHandlerRemote, cs: ContentSettingPatternSource) {
-    pageHandler.contentSettingsPatternToString(cs.primaryPattern)
-        .then(
-            (obj) => {
-              this.setField('primary-pattern', obj.s);
-            },
-            (err) => {
-              console.error(err);
-            });
-    pageHandler.contentSettingsPatternToString(cs.secondaryPattern)
-        .then(
-            (obj) => {
-              this.setField('secondary-pattern', obj.s);
-            },
-            (err) => {
-              console.error(err);
-            });
+  async configure(
+      pageHandler: PageHandlerInterface, cs: ContentSettingPatternSource) {
+    try {
+      this.setField(
+          'primary-pattern',
+          (await pageHandler.contentSettingsPatternToString(cs.primaryPattern))
+              .s);
+    } catch (e) {
+      console.error('Error parsing primary pattern ', e);
+    }
+    try {
+      this.setField(
+          'secondary-pattern',
+          (await pageHandler.contentSettingsPatternToString(
+               cs.secondaryPattern))
+              .s);
+    } catch (e) {
+      console.error('Error parsing secondary pattern ', e);
+    }
     this.setFieldValue('value', cs.settingValue, contentSettingLogicalValue);
     this.setField('source', cs.source);
 
