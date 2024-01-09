@@ -117,10 +117,11 @@ public class TabSuggestionMessageServiceUnitTest {
 
         mMessageService =
                 new TabSuggestionMessageService(
-                        mContext, () -> mTabGroupModelFilter, () -> mTabListEditorController);
+                        mContext,
+                        mProfile,
+                        () -> mTabGroupModelFilter,
+                        () -> mTabListEditorController);
         mMessageService.addObserver(mMessageObserver);
-
-        Profile.setLastUsedProfileForTesting(mProfile);
     }
 
     // Tests for Close suggestions.

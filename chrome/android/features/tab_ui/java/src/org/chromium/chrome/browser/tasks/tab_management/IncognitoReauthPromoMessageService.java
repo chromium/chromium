@@ -355,8 +355,7 @@ public class IncognitoReauthPromoMessageService extends MessageService
      * A method which gets fired when the re-authentication was successful after the review action.
      */
     private void onAfterReviewActionSuccessful() {
-        UserPrefs.get(Profile.getLastUsedRegularProfile())
-                .setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
+        UserPrefs.get(mProfile).setBoolean(Pref.INCOGNITO_REAUTHENTICATION_FOR_ANDROID, true);
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.IncognitoReauth.PromoAcceptedOrDismissed",
                 IncognitoReauthPromoActionType.PROMO_ACCEPTED,

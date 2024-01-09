@@ -84,8 +84,6 @@ public class PriceMessageServiceUnitTest {
                 "true");
         FeatureList.setTestValues(testValues);
 
-        Profile.setLastUsedProfileForTesting(mProfile);
-
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(true);
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
@@ -101,7 +99,7 @@ public class PriceMessageServiceUnitTest {
 
         mMessageService =
                 new PriceMessageService(
-                        mMessageProvider, mReviewActionProvider, mNotificationManager);
+                        mProfile, mMessageProvider, mReviewActionProvider, mNotificationManager);
         mMessageService.addObserver(mMessageObserver);
     }
 

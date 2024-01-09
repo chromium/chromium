@@ -213,6 +213,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             mTabSuggestionMessageService =
                     new TabSuggestionMessageService(
                             mContext,
+                            profile,
                             mCurrentTabModelFilterSupplier,
                             mTabListEditorControllerSupplier::get);
             mTabSuggestionsOrchestrator.addObserver(mTabSuggestionMessageService);
@@ -221,7 +222,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
 
         mTabGridIphDialogCoordinator =
                 new TabGridIphDialogCoordinator(mContext, mContainer, mModalDialogManager);
-        IphMessageService iphMessageService = new IphMessageService(mTabGridIphDialogCoordinator);
+        IphMessageService iphMessageService =
+                new IphMessageService(profile, mTabGridIphDialogCoordinator);
         mMessageCardProviderCoordinator.subscribeMessageService(iphMessageService);
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
@@ -476,6 +478,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             if (mPriceMessageService == null) {
                 mPriceMessageService =
                         new PriceMessageService(
+                                mProfile,
                                 mTabListCoordinator,
                                 mPriceWelcomeMessageReviewActionProvider,
                                 notificationManager);

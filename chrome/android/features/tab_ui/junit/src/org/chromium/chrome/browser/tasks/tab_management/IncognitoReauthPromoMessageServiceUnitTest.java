@@ -88,7 +88,6 @@ public class IncognitoReauthPromoMessageServiceUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
 

@@ -8,10 +8,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.components.site_engagement.SiteEngagementService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -101,11 +99,6 @@ public class TabContext {
                     tab.getTimestampMillis(),
                     tab.getUrl().getSpec(),
                     tab.isIncognito());
-        }
-
-        public double getSiteEngagementScore() {
-            return SiteEngagementService.getForBrowserContext(Profile.getLastUsedRegularProfile())
-                    .getScore(visibleUrl);
         }
 
         @Override

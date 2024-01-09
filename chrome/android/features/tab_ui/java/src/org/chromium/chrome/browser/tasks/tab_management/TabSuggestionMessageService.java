@@ -52,17 +52,14 @@ public class TabSuggestionMessageService extends MessageService
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
         private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
-        private Profile mProfile;
         private CustomMessageCardProvider mCustomMessageCardProvider;
 
         public TabSuggestionMessageData(
                 TabSuggestion tabSuggestion,
                 Callback<TabSuggestionFeedback> feedbackCallback,
-                Profile profile,
                 CustomMessageCardProvider customMessageCardProvider) {
             mTabSuggestion = tabSuggestion;
             mTabSuggestionFeedback = feedbackCallback;
-            mProfile = profile;
             mCustomMessageCardProvider = customMessageCardProvider;
         }
 
@@ -123,6 +120,7 @@ public class TabSuggestionMessageService extends MessageService
     }
 
     private final Context mContext;
+    private final Profile mProfile;
     private final Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
     private final Supplier<TabListEditorCoordinator.TabListEditorController>
             mTabListEditorControllerSupplier;
@@ -132,11 +130,13 @@ public class TabSuggestionMessageService extends MessageService
 
     public TabSuggestionMessageService(
             Context context,
+            Profile profile,
             Supplier<TabModelFilter> currentTabModelFilterSupplier,
             Supplier<TabListEditorCoordinator.TabListEditorController>
                     tabListEditorControllerSupplier) {
         super(MessageType.TAB_SUGGESTION);
         mContext = context;
+        mProfile = profile;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mCustomMessageCardProvider = this;
@@ -291,7 +291,6 @@ public class TabSuggestionMessageService extends MessageService
                     new TabSuggestionMessageData(
                             tabSuggestion,
                             tabSuggestionFeedback,
-                            Profile.getLastUsedRegularProfile(),
                             mCustomMessageCardProvider));
         }
     }
