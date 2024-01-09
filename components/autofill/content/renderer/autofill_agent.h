@@ -423,9 +423,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // happen for that form.
   std::set<FormRendererId> submitted_forms_;
 
-  // The query node autofill state prior to previewing the form.
-  blink::WebAutofillState query_node_autofill_state_;
-
   // Whether the Autofill popup is possibly visible.  This is tracked as a
   // performance improvement, so that the IPC channel isn't flooded with
   // messages to close the Autofill popup when it can't possibly be showing.

@@ -323,7 +323,6 @@ AutofillAgent::AutofillAgent(
       form_cache_(std::make_unique<FormCache>(render_frame->GetWebFrame())),
       password_autofill_agent_(std::move(password_autofill_agent)),
       password_generation_agent_(std::move(password_generation_agent)),
-      query_node_autofill_state_(WebAutofillState::kNotFilled),
       is_popup_possibly_visible_(false),
       is_secure_context_required_(false),
       form_tracker_(std::make_unique<FormTracker>(render_frame)),
@@ -714,14 +713,12 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
   ClearPreviewedForm();
 
   if (action_persistence == mojom::ActionPersistence::kPreview) {
-    query_node_autofill_state_ = last_queried_element.GetAutofillState();
     previewed_elements_ =
         form_util::ApplyFormAction(fields, last_queried_element, action_type,
                                    action_persistence, field_data_manager());
   } else {
     was_last_action_fill_ = true;
 
-    query_node_autofill_state_ = last_queried_element.GetAutofillState();
     std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields =
         form_util::ApplyFormAction(fields, last_queried_element, action_type,
                                    action_persistence, field_data_manager());
@@ -856,7 +853,6 @@ void AutofillAgent::ApplyFieldAction(
                 << "Previewing replacement of selection is not implemented";
             break;
           case mojom::TextReplacement::kReplaceAll:
-            query_node_autofill_state_ = form_control.GetAutofillState();
             previewed_elements_.emplace_back(last_queried_element_,
                                              form_control.GetAutofillState());
             form_control.SetSuggestedValue(blink::WebString::FromUTF16(value));
