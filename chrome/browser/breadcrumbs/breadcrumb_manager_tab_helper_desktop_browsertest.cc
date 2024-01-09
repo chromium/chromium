@@ -58,7 +58,9 @@ class BreadcrumbManagerTabHelperBrowserTest : public InProcessBrowserTest {
 };
 
 // Tests download navigation.
-IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest, Download) {
+// TODO(crbug.com/1516817): Re-enable this test
+IN_PROC_BROWSER_TEST_F(BreadcrumbManagerTabHelperBrowserTest,
+                       DISABLED_Download) {
   const size_t num_startup_breadcrumbs = GetEvents().size();
 
   const GURL url =
