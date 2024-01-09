@@ -322,6 +322,11 @@ AttributionHost::TopFrameOriginForSecureContext() {
     return absl::nullopt;
   }
 
+  if (!render_frame_host->IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)) {
+    return absl::nullopt;
+  }
+
   return suitable_top_frame_origin;
 }
 
