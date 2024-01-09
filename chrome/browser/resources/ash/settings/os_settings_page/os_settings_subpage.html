@@ -68,6 +68,13 @@
     /* Keep normal icon spacing from subpage-title-extra controls. */
     margin-inline-start: 16px;
   }
+
+  /* Use ID to increase specificity over cros-color-overrides. */
+  :host-context(body.revamp-wayfinding-enabled)
+      #searchField::part(searchInput) {
+    /* Add contrast between the search input and the subpage backdrop. */
+    --cr-input-background-color: var(--cros-sys-input_field_on_shaded);
+  }
 </style>
 <div id="subpageHeader" class="cr-row first">
   <cr-icon-button id="closeButton" class="icon-arrow-back"
@@ -86,7 +93,8 @@
     </cr-icon-button>
   </template>
   <template is="dom-if" if="[[searchLabel]]">
-    <cr-search-field label="[[searchLabel]]"
+    <cr-search-field id="searchField"
+        label="[[searchLabel]]"
         on-search-changed="onSearchChanged_"
         clear-label="$i18n{clearSearch}">
     </cr-search-field>
