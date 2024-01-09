@@ -2628,6 +2628,7 @@ data/accessibility/form-controls/img-form-expected-blink.txt
 data/accessibility/form-controls/img-form.html
 data/accessibility/form-controls/img-map-pseudo.html
 data/accessibility/form-controls/map-inside-map.html
+data/accessibility/form-controls/progress-meter-crash.html
 data/accessibility/form-controls/role-group-expected-android.txt
 data/accessibility/form-controls/role-group-expected-blink.txt
 data/accessibility/form-controls/role-group.html
