@@ -11,7 +11,7 @@ FaceGazeMediaPipeTest = class extends E2ETestBase {
     await super.setUpDeferred();
     await importModule(
         ['FaceLandmarker', 'FilesetResolver'],
-        '/accessibility_common/facegaze/mediapipe_task_vision/task_vision.js');
+        '/accessibility_common/third_party/mediapipe_task_vision/task_vision.js');
   }
 
   /** @override */
@@ -49,11 +49,12 @@ AX_TEST_F('FaceGazeMediaPipeTest', 'SmokeTest', async function() {
   assertTrue(Boolean(FaceLandmarker));
 
   const resolver = await FilesetResolver.forVisionTasks(
-      '/accessibility_common/facegaze/mediapipe_task_vision');
+      '/accessibility_common/third_party/mediapipe_task_vision');
   assertTrue(Boolean(resolver));
   const faceLandmarker = await FaceLandmarker.createFromOptions(resolver, {
     baseOptions: {
-      modelAssetPath: '/accessibility_common/facegaze/mediapipe_task_vision/' +
+      modelAssetPath:
+          '/accessibility_common/third_party/mediapipe_task_vision/' +
           'face_landmarker.task',
     },
     runningMode: 'VIDEO',

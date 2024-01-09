@@ -142,6 +142,12 @@ group("build") {
 run_jsbundler("copied_files") {
   mode = "copy"
   dest_dir = accessibility_common_dir
+  clear_dest_dirs = [
+    "autoclick",
+    "dictation",
+    "facegaze",
+    "magnifier",
+  ]
   deps = [
     ":ts_build",
     "../common:copied_files",
@@ -249,9 +255,9 @@ js2gtest("accessibility_common_extjs_tests") {
 action("pumpkin_test_files") {
   testonly = true
 
-  pumpkin_output_dir = "$accessibility_common_dir/dictation/parse/pumpkin"
-  script = "dictation/parse/pumpkin/unpack_pumpkin.py"
-  sources = [ "dictation/parse/pumpkin/pumpkin-3.0.tar.xz" ]
+  pumpkin_output_dir = "$accessibility_common_dir/third_party/pumpkin"
+  script = "third_party/pumpkin/unpack_pumpkin.py"
+  sources = [ "third_party/pumpkin/pumpkin-3.0.tar.xz" ]
   files_to_extract = [
     "$pumpkin_output_dir/js_pumpkin_tagger_bin.js",
     "$pumpkin_output_dir/tagger_wasm_main.js",
@@ -268,8 +274,8 @@ action("pumpkin_test_files") {
     "$pumpkin_output_dir/es_es/pumpkin_config.binarypb",
   ]
   args = [
-    "--dest-dir=resources/chromeos/accessibility/accessibility_common/dictation/parse/pumpkin",
-    rebase_path("dictation/parse/pumpkin/pumpkin-3.0.tar.xz", root_build_dir),
+    "--dest-dir=resources/chromeos/accessibility/accessibility_common/third_party/pumpkin",
+    rebase_path("third_party/pumpkin/pumpkin-3.0.tar.xz", root_build_dir),
     string_join(",", files_to_extract),
     pumpkin_output_dir,
   ]
@@ -277,8 +283,8 @@ action("pumpkin_test_files") {
 }
 
 action("extract_mediapipe_task_vision_files") {
-  script = "facegaze/mediapipe_task_vision/unpack.py"
-  sources = [ "facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
+  script = "third_party/mediapipe_task_vision/unpack.py"
+  sources = [ "third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz" ]
   out_dir = "$tsc_preprocess_folder/accessibility_common/facegaze/mediapipe_task_vision"
 
   # Always extract vision.d.ts, as it's always needed for type-checking.
@@ -301,7 +307,7 @@ action("extract_mediapipe_task_vision_files") {
 
   args = [
     "--dest-dir=$dest_dir",
-    rebase_path("facegaze/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
+    rebase_path("third_party/mediapipe_task_vision/mediapipe_task_vision.tar.xz",
                 root_build_dir),
     string_join(",", files_to_extract),
   ]

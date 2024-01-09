@@ -555,7 +555,7 @@ class MockAccessibilityPrivate {
     };
 
     const data = {};
-    const pumpkinDir = '../../accessibility_common/dictation/parse/pumpkin';
+    const pumpkinDir = '../../accessibility_common/third_party/pumpkin';
     data.js_pumpkin_tagger_bin_js =
         await getFileBytes(`${pumpkinDir}/js_pumpkin_tagger_bin.js`);
     data.tagger_wasm_main_js =
