@@ -1152,7 +1152,8 @@ void AutofillExternalDelegate::FillAutofillFormData(
     static constexpr auto kAutofillAddressSuggestions =
         base::MakeFixedFlatSet<PopupItemId>(
             {PopupItemId::kAddressEntry, PopupItemId::kFillFullAddress,
-             PopupItemId::kFillFullPhoneNumber, PopupItemId::kFillFullName,
+             PopupItemId::kFillFullPhoneNumber, PopupItemId::kFillFullEmail,
+             PopupItemId::kFillFullName,
              PopupItemId::kFillEverythingFromAddressProfile});
     const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
     if (autofill_trigger_field &&
