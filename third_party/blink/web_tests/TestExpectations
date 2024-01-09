@@ -6747,10 +6747,8 @@ crbug.com/1455263 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-fram
 crbug.com/1502794 external/wpt/html/semantics/invokers/invoketarget-on-video-behavior.tentative.html [ Failure Pass Timeout ]
 
 # Gardener 2023-11-17
-crbug.com/1503108 [ Debug Mac13-arm64 ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
-crbug.com/1503108 [ Mac11 Release ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
-crbug.com/1503108 [ Mac12 Release ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
-crbug.com/1503108 [ Mac13 ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
+crbug.com/1503108 [ Mac ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
+crbug.com/1503108 [ Win ] external/wpt/credential-management/fedcm-disconnect.sub.https.html [ Timeout ]
 crbug.com/1503051 [ Mac ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/audioworklet.https.sub.html [ Failure Pass ]
 crbug.com/1503119 [ Mac11 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Timeout ]
 
