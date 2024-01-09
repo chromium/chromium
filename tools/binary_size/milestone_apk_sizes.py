@@ -149,6 +149,13 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
           'arm_64/for-signing-only/TrichromeChromeGoogleSystemStable.apk',
           prefix=unsigned_prefix),
   ]
+  trichrome64_system_apks_high = [
+      make_artifact('high-arm_64/TrichromeWebViewGoogle6432SystemStable.apk'),
+      make_artifact('high-arm_64/TrichromeLibraryGoogle6432SystemStable.apk'),
+      make_artifact(('high-arm_64/for-signing-only/'
+                     'TrichromeChromeGoogle6432SystemStable.apk'),
+                    prefix=unsigned_prefix),
+  ]
   trichrome_system_stubs = [
       make_artifact('arm/TrichromeWebViewGoogleSystemStubStable.apk'),
       make_artifact('arm/TrichromeLibraryGoogleSystemStubStable.apk'),
@@ -189,6 +196,8 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
                                              for x in trichrome_system_apks)
   metrics['System Image Size (arm64)'] = sum(x.GetApkSize()
                                              for x in trichrome64_system_apks)
+  metrics['System Image Size (arm64-high)'] = sum(
+      x.GetApkSize() for x in trichrome64_system_apks_high)
 
   go_install_size = (trichrome_chrome.GetAndroidGoSize() +
                      trichrome_webview.GetAndroidGoSize() +
@@ -211,7 +220,7 @@ def _DownloadAndAnalyze(signed_prefix, unsigned_prefix, staging_dir):
   _DumpCsvAndClear(metrics)
 
 
-def _CheckGnArgs(unsigned_prefix):
+def _CheckGnArgs(unsigned_prefix, version):
   args = [_GSUTIL, 'cat', unsigned_prefix + '/arm/gn-args-derived.txt']
   logging.warning(' '.join(args))
   gn_args_data = subprocess.check_output(args, text=True)
@@ -227,7 +236,11 @@ def _CheckGnArgs(unsigned_prefix):
       sys.stderr.write('Manually verify via: ' + ' '.join(args) + '\n')
       sys.exit(1)
 
-  check_arg('v8_is_on_release_branch', 'true')
+  if int(version.split('.')[0]) < 120:
+    check_arg('is_on_release_branch', 'true')
+  else:
+    check_arg('v8_is_on_release_branch', 'true')
+
   check_arg('v8_enable_runtime_call_stats', 'false')
 
 
@@ -246,9 +259,9 @@ def main():
   signed_prefix = posixpath.join(options.signed_bucket, options.version)
   unsigned_prefix = signed_prefix.replace('signed', 'unsigned')
 
-  # Ensure the binary size isn't inflated by is_on_release_branch=true not
-  # being set yet.
-  _CheckGnArgs(unsigned_prefix)
+  # Ensure the binary size isn't inflated by v8_is_on_release_branch=true
+  # not being set yet.
+  _CheckGnArgs(unsigned_prefix, options.version)
 
   with tempfile.TemporaryDirectory() as staging_dir:
     if options.keep_files:
