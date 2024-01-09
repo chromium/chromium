@@ -122,7 +122,7 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters) {
 
 void StartEchoCancellationDump(webrtc::AudioProcessing* audio_processing,
                                base::File aec_dump_file,
-                               rtc::TaskQueue* worker_queue) {
+                               webrtc::TaskQueueBase* worker_queue) {
   DCHECK(aec_dump_file.IsValid());
 
   FILE* stream = base::FileToFILE(std::move(aec_dump_file), "w");

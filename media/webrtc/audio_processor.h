@@ -20,9 +20,9 @@
 #include "media/webrtc/audio_delay_stats_reporter.h"
 #include "media/webrtc/webrtc_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/webrtc/api/task_queue/task_queue_base.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing_statistics.h"
-#include "third_party/webrtc/rtc_base/task_queue.h"
 
 namespace media {
 class AudioBus;
@@ -217,7 +217,7 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) AudioProcessor {
   // Low-priority task queue for doing AEC dump recordings. It has to
   // created/destroyed on the same sequence and it must outlive
   // any aecdump recording in |webrtc_audio_processing_|.
-  std::unique_ptr<rtc::TaskQueue> worker_queue_
+  std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter> worker_queue_
       GUARDED_BY_CONTEXT(owning_sequence_);
 
   // Cached value for the playout delay latency. Updated on the playout thread
