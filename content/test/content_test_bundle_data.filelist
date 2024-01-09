@@ -5423,6 +5423,8 @@ data/accessibility/regression/add-child-of-not-included-in-tree-chain-expected-b
 data/accessibility/regression/add-child-of-not-included-in-tree-chain.html
 data/accessibility/regression/add-click-ignored-changed-expected-blink.txt
 data/accessibility/regression/add-click-ignored-changed.html
+data/accessibility/regression/add-display-none-children-expected-blink.txt
+data/accessibility/regression/add-display-none-children.html
 data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree-expected-blink.txt
 data/accessibility/regression/aria-hidden-negative-tabindex-ignored-in-tree.html
 data/accessibility/regression/aria-hidden-tabindex-change-expected-blink.txt

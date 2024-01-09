@@ -1,0 +1,51 @@
+<!--
+@WAIT-FOR:done
+@BLINK-ALLOW:htmlTag*
+-->
+<html>
+<body>
+  <!-- This whole subtree is display:none, so all nodes will be
+       ignored, and the default will be for all of them to be
+       not included in the tree unless there's a good reason to
+       include them.
+
+       Adding lang="en" forces a node to be included in the tree
+       without many other side effects, so when you see lang="en"
+       on a node here, that ensures it will be included in the tree.
+       The other nodes will not. -->
+  <div hidden>
+    <h2 lang="en">
+      <div>
+        <here>
+        </here>
+      </div>
+    </h2>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        // After the page finishes loading...
+        //
+        // Add a paragraph child to the node <here> and include it
+        // in the tree (using lang=en). Because <here> and its
+        // parent <div> are both not included in the tree, it
+        // should be added as a child of the heading.
+        let here = document.querySelector('here');
+        let child = document.createElement('p');
+        child.setAttribute('lang', 'en');
+        here.appendChild(child);
+        // Now add a child of that paragraph and include it in the tree.
+        let grandchild = document.createElement('li');
+        grandchild.setAttribute('lang', 'en');
+        child.appendChild(grandchild);
+        document.title = 'done';
+      });
+    });
+  });
+
+
+  </script>
+</body>
+</html>

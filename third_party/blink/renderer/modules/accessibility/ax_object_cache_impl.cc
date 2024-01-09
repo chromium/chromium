@@ -2443,8 +2443,14 @@ void AXObjectCacheImpl::NodeIsConnected(Node* node) {
         pause_tree_updates_until_more_loaded_content_ = true;
       }
     }
+  } else {
+    // Handle case where neither NodeIsAttached() nor SubtreeIsAttached() will
+    // be called for this node. This occurs for nodes that are added to
+    // display:none subtrees. Ensure that these nodes partake in the AX tree.
+    ChildrenChanged(node->parentNode());
   }
 
+  // Process relations.
   if (Element* element = DynamicTo<Element>(node)) {
     if (relation_cache_) {
       // Register relation ids so that reverse relations can be computed.

@@ -3608,6 +3608,21 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AddChildOfNotIncludedInTreeChain) {
+  RunRegressionTest(
+      FILE_PATH_LITERAL("add-child-of-not-included-in-tree-chain.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AddDisplayNoneChildren) {
+  RunRegressionTest(FILE_PATH_LITERAL("add-display-none-children.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
+                       AddDisplayNoneChildren) {
+  RunRegressionTest(FILE_PATH_LITERAL("add-display-none-children.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, ComputeNameWhileFreezing) {
   RunRegressionTest(FILE_PATH_LITERAL("compute-name-while-freezing.html"));
 }
