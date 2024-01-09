@@ -582,7 +582,6 @@ class HostResolverManager::RequestImpl
               NetworkAnonymizationKey network_anonymization_key,
               absl::optional<ResolveHostParameters> optional_parameters,
               base::WeakPtr<ResolveContext> resolve_context,
-              HostCache* host_cache,
               base::WeakPtr<HostResolverManager> resolver,
               const base::TickClock* tick_clock)
       : source_net_log_(std::move(source_net_log)),
@@ -594,7 +593,6 @@ class HostResolverManager::RequestImpl
         parameters_(optional_parameters ? std::move(optional_parameters).value()
                                         : ResolveHostParameters()),
         resolve_context_(std::move(resolve_context)),
-        host_cache_(host_cache),
         host_resolver_flags_(
             HostResolver::ParametersToHostResolverFlags(parameters_)),
         priority_(parameters_.initial_priority),
@@ -738,7 +736,7 @@ class HostResolverManager::RequestImpl
     HostCache::Entry results = resolver_->ResolveLocally(
         only_ipv6_reachable_, job_key_, ip_address_, parameters_.cache_usage,
         parameters_.secure_dns_policy, parameters_.source, source_net_log_,
-        host_cache_, &tasks_, &stale_info);
+        host_cache(), &tasks_, &stale_info);
     if (results.error() != ERR_DNS_CACHE_MISS ||
         parameters_.source == HostResolverSource::LOCAL_ONLY ||
         tasks_.empty()) {
@@ -888,7 +886,9 @@ class HostResolverManager::RequestImpl
 
   ResolveContext* resolve_context() const { return resolve_context_.get(); }
 
-  HostCache* host_cache() const { return host_cache_; }
+  HostCache* host_cache() const {
+    return resolve_context_ ? resolve_context_->host_cache() : nullptr;
+  }
 
   HostResolverFlags host_resolver_flags() const { return host_resolver_flags_; }
 
@@ -991,7 +991,6 @@ class HostResolverManager::RequestImpl
   const NetworkAnonymizationKey network_anonymization_key_;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
-  const raw_ptr<HostCache, DanglingUntriaged> host_cache_;
   const HostResolverFlags host_resolver_flags_;
 
   RequestPriority priority_;
@@ -2654,8 +2653,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     RequestImpl* req = requests_.head()->value();
     nat64_task_ = std::make_unique<HostResolverNat64Task>(
         std::string{GetHostname(key_.host)}, req->network_anonymization_key(),
-        req->source_net_log(), req->resolve_context(), req->host_cache(),
-        resolver_);
+        req->source_net_log(), req->resolve_context(), resolver_);
     nat64_task_->Start(base::BindOnce(&Job::OnNat64TaskComplete,
                                       weak_ptr_factory_.GetWeakPtr()));
   }
@@ -3026,12 +3024,10 @@ HostResolverManager::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     absl::optional<ResolveHostParameters> optional_parameters,
-    ResolveContext* resolve_context,
-    HostCache* host_cache) {
+    ResolveContext* resolve_context) {
   return CreateRequest(HostResolver::Host(std::move(host)),
                        std::move(network_anonymization_key), std::move(net_log),
-                       std::move(optional_parameters), resolve_context,
-                       host_cache);
+                       std::move(optional_parameters), resolve_context);
 }
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
@@ -3040,8 +3036,7 @@ HostResolverManager::CreateRequest(
     NetworkAnonymizationKey network_anonymization_key,
     NetLogWithSource net_log,
     absl::optional<ResolveHostParameters> optional_parameters,
-    ResolveContext* resolve_context,
-    HostCache* host_cache) {
+    ResolveContext* resolve_context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!invalidation_in_progress_);
 
@@ -3052,7 +3047,7 @@ HostResolverManager::CreateRequest(
 
   return std::make_unique<RequestImpl>(
       std::move(net_log), std::move(host), std::move(network_anonymization_key),
-      std::move(optional_parameters), resolve_context->GetWeakPtr(), host_cache,
+      std::move(optional_parameters), resolve_context->GetWeakPtr(),
       weak_ptr_factory_.GetWeakPtr(), tick_clock_);
 }
 
