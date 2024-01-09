@@ -32,6 +32,10 @@ TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
   EXPECT_FALSE(settings.high_pass_filter);
   EXPECT_FALSE(settings.stereo_mirroring);
   EXPECT_FALSE(settings.force_apm_creation);
+
+  EXPECT_EQ(
+      properties.voice_isolation,
+      AudioProcessingProperties::VoiceIsolationType::kVoiceIsolationDefault);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
