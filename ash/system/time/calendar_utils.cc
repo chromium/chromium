@@ -26,8 +26,7 @@ namespace ash {
 namespace calendar_utils {
 
 bool IsForGlanceablesV2() {
-  return features::AreGlanceablesV2Enabled() &&
-         features::IsGlanceablesV2CalendarViewEnabled();
+  return features::IsGlanceablesV2CalendarViewEnabled();
 }
 
 bool IsToday(const base::Time selected_date) {

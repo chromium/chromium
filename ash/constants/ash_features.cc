@@ -3527,7 +3527,8 @@ bool IsGlanceablesV2ClassroomTeacherViewEnabled() {
 }
 
 bool IsGlanceablesV2CalendarViewEnabled() {
-  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView);
+  return base::FeatureList::IsEnabled(kGlanceablesV2CalendarView) ||
+         AreAnyGlanceablesTimeManagementViewsEnabled();
 }
 
 bool IsGlanceablesV2ErrorMessageEnabled() {
