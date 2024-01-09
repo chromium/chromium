@@ -7526,9 +7526,10 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     content::FencedFrameEntity entity =
         content::FencedFrameEntity::kSameOriginContent;
     if (computed_fenced_frame_properties->mapped_url().has_value() &&
-        !url::Origin::Create(common_params_->url)
-             .IsSameOriginWith(computed_fenced_frame_properties->mapped_url()
-                                   ->GetValueIgnoringVisibility())) {
+        origin_to_commit.has_value() &&
+        !origin_to_commit->IsSameOriginWith(
+            computed_fenced_frame_properties->mapped_url()
+                ->GetValueIgnoringVisibility())) {
       entity = content::FencedFrameEntity::kCrossOriginContent;
     }
     commit_params_->fenced_frame_properties =
