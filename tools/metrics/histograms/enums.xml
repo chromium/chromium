@@ -48205,6 +48205,7 @@ Called by update_scheduler_enums.py.-->
   <int value="63" label="WebSocketSticky"/>
   <int value="64" label="WebRTCSticky"/>
   <int value="65" label="SmartCard"/>
+  <int value="66" label="LiveMediaStreamTrack"/>
 </enum>
 
 <enum name="WebShareMethod">
