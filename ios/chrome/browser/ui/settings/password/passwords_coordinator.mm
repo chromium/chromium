@@ -193,23 +193,16 @@ using password_manager::WarningType;
 
   self.mediator.consumer = self.passwordsViewController;
 
-  BOOL startBlockedForReauth =
-      password_manager::features::IsAuthOnEntryEnabled() ||
-      password_manager::features::IsAuthOnEntryV2Enabled();
   // Disable animation when content will be blocked for reauth to prevent
   // flickering in navigation bar.
   [self.baseNavigationController pushViewController:self.passwordsViewController
-                                           animated:!startBlockedForReauth];
+                                           animated:NO];
 
   _visitsRecorder = [[IOSPasswordManagerVisitsRecorder alloc]
       initWithPasswordManagerSurface:password_manager::PasswordManagerSurface::
                                          kPasswordList];
 
-  if (startBlockedForReauth) {
-    [self startReauthCoordinatorWithAuthOnStart:YES];
-  } else {
-    [_visitsRecorder maybeRecordVisitMetric];
-  }
+  [self startReauthCoordinatorWithAuthOnStart:YES];
 
   // Start a password check.
   [self checkSavedPasswords];

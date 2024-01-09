@@ -6,16 +6,6 @@
 
 namespace password_manager::features {
 // When enabled, local authentication (Face ID, Touch ID or Passcode) is
-// required to view saved credentials in the Password Manager Main Page.
-BASE_FEATURE(kIOSPasswordAuthOnEntry,
-             "IOSPasswordAuthOnEntry",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAuthOnEntryEnabled() {
-  return base::FeatureList::IsEnabled(kIOSPasswordAuthOnEntry);
-}
-
-// When enabled, local authentication (Face ID, Touch ID or Passcode) is
 // required to view saved credentials in all Password Manager Surfaces.
 BASE_FEATURE(kIOSPasswordAuthOnEntryV2,
              "IOSPasswordAuthOnEntryV2",

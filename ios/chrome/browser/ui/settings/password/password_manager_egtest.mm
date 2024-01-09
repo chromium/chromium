@@ -714,16 +714,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
             (testOpenPasswordSettingsSubmenuWithFailedAuth)] ||
       [self isRunningTest:@selector(testAddNewPasswordWithFailedAuth)]) {
     config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
-    config.features_enabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntryV2);
-  }
-
-  if ([self isRunningTest:@selector
-            (testPasswordManagerVisitMetricWithoutAuthRequired)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
-    config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
 
@@ -754,8 +744,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.features_enabled.push_back(
         password_manager::features::
             kIOSPasswordSettingsBulkUploadLocalPasswords);
-    config.features_disabled.push_back(
-        password_manager::features::kIOSPasswordAuthOnEntry);
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordAuthOnEntryV2);
   }
@@ -3368,9 +3356,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testSavePasswordsInAccountFlowAuthFailed {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
-                                    ReauthenticationResult::kFailure];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3385,6 +3370,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kFailure];
 
   // Tap on "Save in Account" (accept) button.
   [SaveInAccountConfirmationDialogButton() performAction:grey_tap()];
@@ -3399,8 +3387,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 - (void)testSavePasswordsInAccountFlowNoAuthSetOnDevice {
   SavePasswordFormToProfileStore(@"password1", @"user1",
                                  @"https://example1.com");
-
-  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
 
@@ -3415,6 +3401,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)]
       performAction:grey_tap()];
   [ChromeEarlGreyUI waitForAppToIdle];
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
 
   // Tap on "Save in Account" (accept) button.
   [SaveInAccountConfirmationDialogButton() performAction:grey_tap()];
@@ -3573,16 +3561,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   // Check password manager visit metric.
   CheckPasswordManagerVisitMetricCount(0);
-}
-
-// Tests that password manager visit histogram is recorded after opening
-// password manager without authentication required.
-- (void)testPasswordManagerVisitMetricWithoutAuthRequired {
-  OpenPasswordManager();
-
-  CheckPasswordManagerVisitMetricCount(1);
-
-  CheckReauthenticationUIEventMetricTotalCount(0);
 }
 
 // Tests that the Password Manager is opened is search mode when opened from the

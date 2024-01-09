@@ -510,18 +510,11 @@ const char kIOSParcelTrackingName[] = "Parcel Tracking";
 const char kIOSParcelTrackingDescription[] =
     "When enabled, the user will be able to track their packages.";
 
-const char kIOSPasswordAuthOnEntryName[] = "Password Manager Auth on Entry";
-const char kIOSPasswordAuthOnEntryDescription[] =
-    "Requires Local Authentication before showing saved credentials in "
-    "the Password Manager Main Page. Ignored if 'Password Manager Auth on "
-    "Entry V2' is enabled.";
-
 const char kIOSPasswordAuthOnEntryV2Name[] =
     "Password Manager Auth on Entry V2";
 const char kIOSPasswordAuthOnEntryV2Description[] =
     "Requires Local Authentication before showing saved credentials in "
-    "Password Manager subpages. Supersedes `Password Manager Auth on Entry` if "
-    "enabled.";
+    "Password Manager subpages.";
 
 const char kIOSSaveToDriveName[] = "IOS Save to Drive";
 const char kIOSSaveToDriveDescription[] =

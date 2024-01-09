@@ -438,11 +438,6 @@ extern const char kIOSParcelTrackingName[];
 extern const char kIOSParcelTrackingDescription[];
 
 // Title and description for the flag to require Local Authentication before
-// accessing the Password Manager Main Page.
-extern const char kIOSPasswordAuthOnEntryName[];
-extern const char kIOSPasswordAuthOnEntryDescription[];
-
-// Title and description for the flag to require Local Authentication before
 // accessing the any of the Password Manager surfaces.
 extern const char kIOSPasswordAuthOnEntryV2Name[];
 extern const char kIOSPasswordAuthOnEntryV2Description[];
