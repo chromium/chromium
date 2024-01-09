@@ -58,7 +58,8 @@ struct AppUpdateExpectation {
                        const int error_code = static_cast<int>(
                            UpdateService::Result::kUpdateCanceled),
                        const int event_type = /*EVENT_UPDATE_COMPLETE=*/3,
-                       const std::string& custom_app_response = {});
+                       const std::string& custom_app_response = {},
+                       const std::string& response_status = {});
   AppUpdateExpectation(const AppUpdateExpectation&);
   ~AppUpdateExpectation();
 
@@ -77,6 +78,7 @@ struct AppUpdateExpectation {
   const int error_code;
   const int event_type;
   const std::string custom_app_response;
+  const std::string response_status;
 };
 
 // Returns the path to the updater installer program (in the build output

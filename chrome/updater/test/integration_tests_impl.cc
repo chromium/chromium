@@ -119,11 +119,12 @@ std::string GetUpdateResponseForApp(
     const base::FilePath& update_file,
     const std::string& run_action,
     const std::string& arguments,
-    const std::optional<std::string>& file_hash = std::nullopt) {
+    const std::optional<std::string>& file_hash = std::nullopt,
+    const std::optional<std::string>& status = std::nullopt) {
   return base::StringPrintf(
       R"(    {)"
       R"(      "appid":"%s",)"
-      R"(      "status":"ok",)"
+      R"(      "status":"%s",)"
       R"(%s)"
       R"(      "updatecheck":{)"
       R"(        "status":"ok",)"
@@ -140,7 +141,7 @@ std::string GetUpdateResponseForApp(
       R"(        })"
       R"(      })"
       R"(    })",
-      base::ToLowerASCII(app_id).c_str(),
+      base::ToLowerASCII(app_id).c_str(), status ? status->c_str() : "ok",
       !install_data_index.empty()
           ? base::StringPrintf(
                 R"(     "data":[{ "status":"ok", "name":"install", )"
@@ -337,7 +338,8 @@ AppUpdateExpectation::AppUpdateExpectation(
     const UpdateService::ErrorCategory error_category,
     const int error_code,
     const int event_type,
-    const std::string& custom_app_response)
+    const std::string& custom_app_response,
+    const std::string& response_status)
     : args(args),
       app_id(app_id),
       from_version(from_version),
@@ -352,7 +354,8 @@ AppUpdateExpectation::AppUpdateExpectation(
       error_category(error_category),
       error_code(error_code),
       event_type(event_type),
-      custom_app_response(custom_app_response) {}
+      custom_app_response(custom_app_response),
+      response_status(response_status.empty() ? "ok" : response_status) {}
 AppUpdateExpectation::AppUpdateExpectation(const AppUpdateExpectation&) =
     default;
 AppUpdateExpectation::~AppUpdateExpectation() = default;
@@ -570,7 +573,8 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                                       : base_name;
     app_responses.push_back(GetUpdateResponseForApp(
         app.app_id, "", test_server->update_url().spec(), app.to_version,
-        crx_path, run_action.MaybeAsASCII().c_str(), app.args));
+        crx_path, run_action.MaybeAsASCII().c_str(), app.args, std::nullopt,
+        app.response_status));
   }
   test_server->ExpectOnce({request::GetPathMatcher(test_server->update_path()),
                            request::GetUpdaterUserAgentMatcher(),
@@ -606,7 +610,7 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                app.from_version.GetString().c_str(),
                app.to_version.GetString().c_str())})},
           ")]}'\n");
-    } else if (app.custom_app_response.empty()) {
+    } else if (app.custom_app_response.empty() && app.response_status == "ok") {
       // Event ping for apps that doesn't update.
       test_server->ExpectOnce(
           {request::GetPathMatcher(test_server->update_path()),

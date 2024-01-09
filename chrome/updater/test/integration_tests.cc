@@ -547,16 +547,15 @@ class IntegrationTest : public ::testing::Test {
     std::wstring pv;
     EXPECT_EQ(
         ERROR_SUCCESS,
-        base::win::RegKey(UpdaterScopeToHKeyRoot(UpdaterScope::kSystem),
+        base::win::RegKey(UpdaterScopeToHKeyRoot(GetTestScope()),
                           GetAppClientsKey(appid).c_str(), Wow6432(KEY_READ))
             .ReadValue(kRegValuePV, &pv));
     EXPECT_EQ(pv, base::ASCIIToWide(expected_version.GetString()));
 #else
-    const base::FilePath app_json_path =
-        GetInstallDirectory(UpdaterScope::kSystem)
-            ->DirName()
-            .AppendASCII(appid)
-            .AppendASCII("app.json");
+    const base::FilePath app_json_path = GetInstallDirectory(GetTestScope())
+                                             ->DirName()
+                                             .AppendASCII(appid)
+                                             .AppendASCII("app.json");
     JSONFileValueDeserializer parser(app_json_path,
                                      base::JSON_ALLOW_TRAILING_COMMAS);
     int error_code = 0;
@@ -581,8 +580,9 @@ class IntegrationTest : public ::testing::Test {
       ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
       const base::CommandLine command = app.GetInstallCommandLine(install_v1);
       VLOG(2) << "Launch app setup command: " << command.GetCommandLineString();
-      const base::Process process =
-          base::LaunchProcess(MakeElevated(command), {});
+      const base::Process process = base::LaunchProcess(
+          IsSystemInstall(GetTestScope()) ? MakeElevated(command) : command,
+          {});
       if (!process.IsValid()) {
         VLOG(2) << "Failed to launch the app setup command.";
       }
@@ -591,10 +591,9 @@ class IntegrationTest : public ::testing::Test {
                                                  &exit_code));
       EXPECT_EQ(0, exit_code);
 #if !BUILDFLAG(IS_WIN)
-      SetExistenceCheckerPath(app.appid,
-                              GetInstallDirectory(UpdaterScope::kSystem)
-                                  ->DirName()
-                                  .AppendASCII(app.appid));
+      SetExistenceCheckerPath(app.appid, GetInstallDirectory(GetTestScope())
+                                             ->DirName()
+                                             .AppendASCII(app.appid));
 #endif
     });
 
@@ -637,6 +636,29 @@ class IntegrationTest : public ::testing::Test {
   void DMCleanup() { test_commands_->DMCleanup(); }
 
   scoped_refptr<IntegrationTestCommands> test_commands_;
+
+#if BUILDFLAG(IS_WIN)
+  static constexpr char kGlobalPolicyKey[] = "";
+  const TestApp kApp1 = {"test1", base::Version("1.0.0.0"),
+                         "Testapp2Setup.crx3", base::Version("2.0.0.0"),
+                         "Testapp2Setup.crx3"};
+  const TestApp kApp2 = {"test2", base::Version("100.0.0.0"),
+                         "Testapp2Setup.crx3", base::Version("101.0.0.0"),
+                         "Testapp2Setup.crx3"};
+  const TestApp kApp3 = {"test3", base::Version("1.0"), "Testapp2Setup.crx3",
+                         base::Version("1.1"), "Testapp2Setup.crx3"};
+#else
+  static constexpr char kGlobalPolicyKey[] = "global";
+  const TestApp kApp1 = {
+      "test1", base::Version("1.0.0.0"), "test_installer_test1_v1.crx3",
+      base::Version("2.0.0.0"), "test_installer_test1_v2.crx3"};
+  const TestApp kApp2 = {
+      "test2", base::Version("100.0.0.0"), "test_installer_test2_v1.crx3",
+      base::Version("101.0.0.0"), "test_installer_test2_v2.crx3"};
+  const TestApp kApp3 = {"test3", base::Version("1.0"),
+                         "test_installer_test3_v1.crx3", base::Version("1.1"),
+                         "test_installer_test3_v2.crx3"};
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   base::test::TaskEnvironment environment_;
@@ -982,6 +1004,45 @@ TEST_F(IntegrationTest, UpdateBadHash) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
+TEST_F(IntegrationTest, UpdateErrorStatus) {
+  ScopedServer test_server(test_commands_);
+
+  ASSERT_NO_FATAL_FAILURE(Install());
+  ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
+  ASSERT_NO_FATAL_FAILURE(InstallTestApp(kApp1, /*install_v1=*/true));
+
+  for (const char* app_response_status :
+       {"noupdate", "error-internal", "error-hash", "error-osnotsupported",
+        "error-hwnotsupported", "error-unsupportedprotocol"}) {
+    ExpectAppsUpdateSequence(
+        GetTestScope(), &test_server, {},
+        {
+            AppUpdateExpectation(
+                kApp1.GetInstallCommandLineArgs(/*install_v1=*/false),
+                kApp1.appid, kApp1.v1, kApp1.v2,
+                /*is_install=*/false,
+                /*should_update=*/false, false, "", "",
+                GetInstallerPath(kApp1.v2_crx),
+                /*always_serve_crx=*/false,
+                /*error_category=*/UpdateService::ErrorCategory::kNone,
+                /*error_code=*/0,
+                /*event_type=*/0,
+                /*custom_app_response=*/{}, app_response_status),
+        });
+    ASSERT_NO_FATAL_FAILURE(RunWake(0));
+    ASSERT_TRUE(WaitForUpdaterExit());
+    ASSERT_NO_FATAL_FAILURE(ExpectAppInstalled(kApp1.appid, kApp1.v1))
+        << "App is unexpectedly updated with update check status: "
+        << app_response_status;
+    ASSERT_NO_FATAL_FAILURE(SetLastChecked(base::Time::Now() - base::Hours(9)))
+        << "Failed to set last-checked to force next update check.";
+  }
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
@@ -1570,7 +1631,7 @@ TEST_F(IntegrationTest, MAYBE_UpdateServiceStress) {
 
 TEST_F(IntegrationTest, IdleServerExits) {
 #if BUILDFLAG(IS_WIN)
-  if (GetTestScope() == UpdaterScope::kSystem) {
+  if (IsSystemInstall(GetTestScope())) {
     GTEST_SKIP() << "System server startup is complicated on Windows.";
   }
 #endif
@@ -1925,25 +1986,8 @@ class IntegrationTestDeviceManagement : public IntegrationTest {
 
 #if BUILDFLAG(IS_WIN)
   static constexpr char kGlobalPolicyKey[] = "";
-  const TestApp kApp1 = {"test1", base::Version("1.0.0.0"),
-                         "Testapp2Setup.crx3", base::Version("2.0.0.0"),
-                         "Testapp2Setup.crx3"};
-  const TestApp kApp2 = {"test2", base::Version("100.0.0.0"),
-                         "Testapp2Setup.crx3", base::Version("101.0.0.0"),
-                         "Testapp2Setup.crx3"};
-  const TestApp kApp3 = {"test3", base::Version("1.0"), "Testapp2Setup.crx3",
-                         base::Version("1.1"), "Testapp2Setup.crx3"};
 #else
   static constexpr char kGlobalPolicyKey[] = "global";
-  const TestApp kApp1 = {
-      "test1", base::Version("1.0.0.0"), "test_installer_test1_v1.crx3",
-      base::Version("2.0.0.0"), "test_installer_test1_v2.crx3"};
-  const TestApp kApp2 = {
-      "test2", base::Version("100.0.0.0"), "test_installer_test2_v1.crx3",
-      base::Version("101.0.0.0"), "test_installer_test2_v2.crx3"};
-  const TestApp kApp3 = {"test3", base::Version("1.0"),
-                         "test_installer_test3_v1.crx3", base::Version("1.1"),
-                         "test_installer_test3_v2.crx3"};
 #endif  // BUILDFLAG(IS_WIN)
 };
 
