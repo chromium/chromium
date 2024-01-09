@@ -13,15 +13,10 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "chrome/browser/profiles/profile_manager_observer.h"
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/profiles/profile_manager.h"
-#endif
 
 class ChromeBrowserMainParts;
 class PrefRegistrySimple;
@@ -47,8 +42,7 @@ void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
 }
 
 class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
-                                           public display::DisplayObserver,
-                                           public ProfileManagerObserver {
+                                           public display::DisplayObserver {
  public:
   ChromeBrowserMainExtraPartsMetrics();
 
@@ -66,7 +60,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreBrowserStart() override;
   void PostBrowserStart() override;
   void PreMainMessageLoopRun() override;
-  void PostMainMessageLoopRun() override;
 
   // Registers local state prefs used by this class.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -105,11 +98,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // If the number of displays has changed, emit a UMA metric.
   void EmitDisplaysChangedMetric();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On ChromeOS, we must wait for post login to have a valid browser Profile*.
-  void OnProfileAdded(Profile* profile) override;
-#endif
-
   // A cached value for the number of displays.
   int display_count_;
 
@@ -130,11 +118,6 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // Reports pressure metrics.
   std::unique_ptr<PressureMetricsReporter> pressure_metrics_reporter_;
 #endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::ScopedObservation<ProfileManager, ChromeBrowserMainExtraPartsMetrics>
-      profile_manager_observation_{this};
-#endif
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

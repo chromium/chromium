@@ -1168,12 +1168,6 @@ void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
   }
 }
 
-void ChromeBrowserMainExtraPartsMetrics::PostMainMessageLoopRun() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_manager_observation_.Reset();
-#endif
-}
-
 void ChromeBrowserMainExtraPartsMetrics::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kEnableBenchmarkingPrefId,
@@ -1210,16 +1204,23 @@ void ChromeBrowserMainExtraPartsMetrics::HandleEnableBenchmarkingCountdown(
 
 void ChromeBrowserMainExtraPartsMetrics::
     HandleEnableBenchmarkingCountdownAsync() {
-  // On ChromeOS we must wait until post-login to be able to accurately assess
-  // whether the enable-benchmarking flag has been enabled. This logic assumes
-  // that it always runs pre-login.
+  Profile* profile = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  profile_manager_observation_.Observe(g_browser_process->profile_manager());
-#else
-  about_flags::GetStorage(/*profile=*/nullptr,
+  // This logic is subtle. There are two ways for ash-chrome PostBrowserStart to
+  // be called on ChromeOS. The first is when the device first shows the login
+  // screen. In this case the profile is the login profile. The second is after
+  // the user logs in. If any flags have been changed from the login profile's
+  // flags, then all of ash is restarted. We only care about invoking this logic
+  // in the second case. Thus we check if IsUserLoggedIn() to guard the logic.
+  if (!user_manager::UserManager::IsInitialized() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return;
+  }
+  profile = g_browser_process->profile_manager()->GetPrimaryUserProfile();
+#endif
+  about_flags::GetStorage(profile,
                           base::BindOnce(&HandleEnableBenchmarkingCountdown,
                                          g_browser_process->local_state()));
-#endif
 }
 
 void ChromeBrowserMainExtraPartsMetrics::OnDisplayAdded(
@@ -1249,23 +1250,6 @@ void ChromeBrowserMainExtraPartsMetrics::EmitDisplaysChangedMetric() {
                                 display_count_);
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void ChromeBrowserMainExtraPartsMetrics::OnProfileAdded(Profile* profile) {
-  // This may be called with the login profile which is a side effect when
-  // ash-chrome restarts during login. We only want to trigger the
-  // HandleEnableBenchmarkingCountdown logic for the primary profile.
-
-  if (!user_manager::UserManager::Get()->IsPrimaryUser(
-          ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile))) {
-    return;
-  }
-
-  about_flags::GetStorage(profile,
-                          base::BindOnce(&HandleEnableBenchmarkingCountdown,
-                                         g_browser_process->local_state()));
-}
-#endif
 
 namespace chrome {
 
