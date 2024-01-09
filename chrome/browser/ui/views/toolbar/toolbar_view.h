@@ -51,6 +51,7 @@ class ExtensionsToolbarContainer;
 class ChromeLabsButton;
 class HomeButton;
 class IntentChipButton;
+class ExtensionsToolbarCoordinator;
 class MediaToolbarButtonView;
 class ReloadButton;
 class SidePanelToolbarContainer;
@@ -310,6 +311,8 @@ class ToolbarView : public views::AccessiblePaneView,
   AppMenuIconController app_menu_icon_controller_;
 
   std::unique_ptr<ChromeLabsModel> chrome_labs_model_;
+  std::unique_ptr<ExtensionsToolbarCoordinator>
+      extensions_toolbar_coordinator_ = nullptr;
 
   // Controls whether or not a home button should be shown on the toolbar.
   BooleanPrefMember show_home_button_;

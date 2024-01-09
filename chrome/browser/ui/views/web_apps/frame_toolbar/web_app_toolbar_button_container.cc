@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -150,6 +151,10 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
     extensions_container_ =
         AddChildView(std::make_unique<ExtensionsToolbarContainer>(
             browser_view_->browser(), display_mode));
+    extensions_toolbar_coordinator_ =
+        std::make_unique<ExtensionsToolbarCoordinator>(
+            browser_view_->GetProfile(), extensions_container_);
+
     extensions_container_->GetExtensionsButton()
         ->SetAppearDisabledInInactiveWidget(true);
     extensions_container_->SetProperty(

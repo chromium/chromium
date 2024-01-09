@@ -37,14 +37,11 @@ class ExtensionsMenuCoordinator;
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-class ExtensionsToolbarContainer
-    : public ToolbarIconContainerView,
-      public ExtensionsContainer,
-      public TabStripModelObserver,
-      public ToolbarActionsModel::Observer,
-      public ToolbarActionView::Delegate,
-      public views::WidgetObserver,
-      public extensions::PermissionsManager::Observer {
+class ExtensionsToolbarContainer : public ToolbarIconContainerView,
+                                   public ExtensionsContainer,
+                                   public TabStripModelObserver,
+                                   public ToolbarActionView::Delegate,
+                                   public views::WidgetObserver {
   METADATA_HEADER(ExtensionsToolbarContainer, ToolbarIconContainerView)
 
  public:
@@ -85,6 +82,36 @@ class ExtensionsToolbarContainer
   ExtensionsToolbarContainer& operator=(const ExtensionsToolbarContainer&) =
       delete;
   ~ExtensionsToolbarContainer() override;
+
+  // Creates toolbar actions and icons corresponding to the model. This is only
+  // called in the constructor or when the model initializes and should not be
+  // called for subsequent changes to the model.
+  void CreateActions();
+
+  // Adds the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void AddAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Removes the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void RemoveAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Updates the action view corresponding to `action_id` to the toolbar and
+  // updates the container visibility, reordering views if necessary.
+  void UpdateAction(const ToolbarActionsModel::ActionId& action_id);
+
+  // Adds the visible action views the toolbar and updates the container
+  // visibility, reordering views if necessary.
+  void UpdatePinnedActions();
+
+  // Updates the `request_access_button_` given user `site_setting` for the
+  // current `web_contents`.
+  void UpdateRequestAccessButton(
+      extensions::PermissionsManager::UserSiteSetting site_setting,
+      content::WebContents* web_contents);
+
+  // Updates the controls visibility.
+  void UpdateControlsVisibility();
 
   const ToolbarIcons& icons_for_testing() const { return icons_; }
   ToolbarActionViewController* popup_owner_for_testing() {
@@ -234,11 +261,6 @@ class ExtensionsToolbarContainer
   // Posted from |ShowWidgetForExtension|.
   void AnchorAndShowWidgetImmediately(MayBeDangling<views::Widget> widget);
 
-  // Creates toolbar actions and icons corresponding to the model. This is only
-  // called in the constructor or when the model initializes and should not be
-  // called for subsequent changes to the model.
-  void CreateActions();
-
   // Creates an action and toolbar button for the corresponding ID.
   void CreateActionForId(const ToolbarActionsModel::ActionId& action_id);
 
@@ -266,9 +288,6 @@ class ExtensionsToolbarContainer
   // animation ends.
   void UpdateContainerVisibilityAfterAnimation();
 
-  // Updates the controls visibility.
-  void UpdateControlsVisibility();
-
   // Maybe displays the In-Product-Help with a specific priority order.
   void MaybeShowIPH();
 
@@ -283,26 +302,6 @@ class ExtensionsToolbarContainer
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
-
-  // ToolbarActionsModel::Observer:
-  void OnToolbarActionAdded(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionRemoved(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarActionUpdated(
-      const ToolbarActionsModel::ActionId& action_id) override;
-  void OnToolbarModelInitialized() override;
-  void OnToolbarPinnedActionsChanged() override;
-
-  // PermissionsManager::Observer:
-  void OnUserPermissionsSettingsChanged(
-      const extensions::PermissionsManager::UserPermissionsSettings& settings)
-      override;
-  void OnShowAccessRequestsInToolbarChanged(
-      const extensions::ExtensionId& extension_id,
-      bool can_show_requests) override;
-  void OnExtensionDismissedRequests(const extensions::ExtensionId& extension_id,
-                                    const url::Origin& origin) override;
 
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
@@ -328,12 +327,6 @@ class ExtensionsToolbarContainer
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<ToolbarActionsModel> model_;
-
-  base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
-      model_observation_{this};
-  base::ScopedObservation<extensions::PermissionsManager,
-                          extensions::PermissionsManager::Observer>
-      permissions_manager_observation_{this};
 
   // Coordinator to show and hide the ExtensionsMenuView.
   const std::unique_ptr<ExtensionsMenuCoordinator> extensions_menu_coordinator_;

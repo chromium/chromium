@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_coordinator.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_background.h"
@@ -385,9 +386,13 @@ void ToolbarView::Init() {
 
   location_bar_ = container_view_->AddChildView(std::move(location_bar));
 
-  if (extensions_container)
+  if (extensions_container) {
     extensions_container_ =
         container_view_->AddChildView(std::move(extensions_container));
+    extensions_toolbar_coordinator_ =
+        std::make_unique<ExtensionsToolbarCoordinator>(browser_->profile(),
+                                                       extensions_container_);
+  }
 
   if (toolbar_divider) {
     toolbar_divider_ =
