@@ -3916,6 +3916,14 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Cancel
       </message>
 
+      <!-- Account bookmarks strings -->
+      <message name="IDS_LOCAL_BOOKMARKS_SECTION_HEADER">
+        Only on this device
+      </message>
+      <message name="IDS_ACCOUNT_BOOKMARKS_SECTION_HEADER">
+        In your Google Account
+      </message>
+
       <!-- Read later strings -->
       <message name="IDS_READING_LIST_READ" desc="The header for the read section in the reading list UI.">
         Read

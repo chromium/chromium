@@ -185,24 +185,23 @@ public class BookmarkManagerMediatorTest {
     @Captor private ArgumentCaptor<Runnable> mFinishLoadingBookmarkModelCaptor;
     @Captor private ArgumentCaptor<OnScrollListener> mOnScrollListenerCaptor;
 
+    private int mId = 1;
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean>
             mSelectableListLayoutHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
-    private final BookmarkId mRootFolderId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
-    private final BookmarkId mDesktopFolderId = new BookmarkId(/* id= */ 2, BookmarkType.NORMAL);
-    private final BookmarkId mMobileFolderId = new BookmarkId(/* id= */ 3, BookmarkType.NORMAL);
-    private final BookmarkId mOtherFolderId = new BookmarkId(/* id= */ 4, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId1 = new BookmarkId(/* id= */ 5, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId2 = new BookmarkId(/* id= */ 6, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId3 = new BookmarkId(/* id= */ 7, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkId21 = new BookmarkId(/* id= */ 8, BookmarkType.NORMAL);
+    private final BookmarkId mRootFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mDesktopFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mMobileFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mOtherFolderId = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId1 = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId2 = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId3 = new BookmarkId(mId++, BookmarkType.NORMAL);
+    private final BookmarkId mBookmarkId21 = new BookmarkId(mId++, BookmarkType.NORMAL);
     private final BookmarkId mReadingListFolderId =
-            new BookmarkId(/* id= */ 9, BookmarkType.READING_LIST);
-    private final BookmarkId mReadingListId =
-            new BookmarkId(/* id= */ 10, BookmarkType.READING_LIST);
-    private final BookmarkId mPriceTrackedBookmarkId =
-            new BookmarkId(/* id= */ 11, BookmarkType.NORMAL);
+            new BookmarkId(mId++, BookmarkType.READING_LIST);
+    private final BookmarkId mReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
+    private final BookmarkId mPriceTrackedBookmarkId = new BookmarkId(mId++, BookmarkType.NORMAL);
 
     private final BookmarkItem mDesktopFolderItem =
             new BookmarkItem(
@@ -1562,6 +1561,65 @@ public class BookmarkManagerMediatorTest {
                         .get(2)
                         .model
                         .get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS,
+        ChromeFeatureList.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE
+    })
+    public void testRootLevelFolders_accountFoldersPresent() {
+        BookmarkId accountReadingListId = new BookmarkId(mId++, BookmarkType.READING_LIST);
+        BookmarkItem accountReadingListItem =
+                new BookmarkItem(
+                        accountReadingListId,
+                        "Reading list",
+                        null,
+                        /* isFolder= */ true,
+                        mRootFolderId,
+                        /* isEditable= */ false,
+                        /* isManaged= */ false,
+                        /* dateAdded= */ 0,
+                        /* read= */ false,
+                        /* dateLastOpened= */ 0,
+                        /* isAccountBookmark= */ true);
+        doReturn(accountReadingListItem).when(mBookmarkModel).getBookmarkById(accountReadingListId);
+        doReturn(
+                        Arrays.asList(
+                                accountReadingListId,
+                                mDesktopFolderId,
+                                mMobileFolderId,
+                                mOtherFolderId,
+                                mReadingListFolderId))
+                .when(mBookmarkModel)
+                .getTopLevelFolderIds();
+
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        finishLoading();
+
+        mMediator.openFolder(mRootFolderId);
+
+        assertEquals(8, mModelList.size());
+        verifyCurrentBookmarkIds(
+                null, // Search bar
+                null, // Account heading
+                accountReadingListId,
+                null, //  Local heading.
+                mDesktopFolderId,
+                mMobileFolderId,
+                mOtherFolderId,
+                mReadingListFolderId);
+
+        assertEquals(ViewType.SECTION_HEADER, mModelList.get(1).type);
+        BookmarkListEntry entry =
+                mModelList.get(1).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        assertEquals(
+                R.string.account_bookmarks_section_header, entry.getSectionHeaderData().titleRes);
+
+        assertEquals(ViewType.SECTION_HEADER, mModelList.get(3).type);
+        entry = mModelList.get(3).model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
+        assertEquals(
+                R.string.local_bookmarks_section_header, entry.getSectionHeaderData().titleRes);
     }
 
     // Tests directly related to a regression.

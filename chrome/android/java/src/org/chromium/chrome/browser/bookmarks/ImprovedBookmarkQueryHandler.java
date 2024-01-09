@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.content.res.Resources;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -20,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /** New implementation of {@link BookmarkQueryHandler} that expands the root. */
 public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
@@ -68,6 +71,9 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         if (!isReadingList) {
             applyPowerFilters(bookmarkListEntries, powerFilter);
             sortByStoredPref(bookmarkListEntries);
+            if (parentId.equals(mBookmarkModel.getRootFolderId())) {
+                maybeInsertLocalSectionHeader(bookmarkListEntries);
+            }
         }
 
         return bookmarkListEntries;
@@ -93,6 +99,13 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                 (BookmarkListEntry entry1, BookmarkListEntry entry2) -> {
                     BookmarkItem item1 = entry1.getBookmarkItem();
                     BookmarkItem item2 = entry2.getBookmarkItem();
+
+                    // Sort account-bound bookmarks before anything else.
+                    int accountComparison =
+                            Boolean.compare(item2.isAccountBookmark(), item1.isAccountBookmark());
+                    if (accountComparison != 0) {
+                        return accountComparison;
+                    }
 
                     // Sort folders before urls.
                     int folderComparison = Boolean.compare(item2.isFolder(), item1.isFolder());
@@ -175,5 +188,43 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
                                 mBookmarkUiPrefs.getBookmarkRowDisplayPref()));
             }
         }
+    }
+
+    private void maybeInsertLocalSectionHeader(List<BookmarkListEntry> entries) {
+        if (!BookmarkFeatures.isBookmarksAccountStorageEnabled()) {
+            return;
+        }
+
+        Predicate<BookmarkListEntry> accountPredicate =
+                (entry) -> {
+                    BookmarkItem item = entry.getBookmarkItem();
+                    return item != null && item.isAccountBookmark();
+                };
+
+        int firstAccountBookmarkIndex = getFirstIndexOf(entries, accountPredicate);
+        int firstLocalBookmarkIndex = getFirstIndexOf(entries, accountPredicate.negate());
+        if (firstAccountBookmarkIndex == -1 || firstLocalBookmarkIndex == -1) {
+            return;
+        }
+
+        entries.add(
+                firstLocalBookmarkIndex,
+                BookmarkListEntry.createSectionHeader(
+                        R.string.local_bookmarks_section_header, Resources.ID_NULL));
+        entries.add(
+                firstAccountBookmarkIndex,
+                BookmarkListEntry.createSectionHeader(
+                        R.string.account_bookmarks_section_header, Resources.ID_NULL));
+    }
+
+    private int getFirstIndexOf(
+            List<BookmarkListEntry> entries, Predicate<BookmarkListEntry> entryPredicate) {
+        for (int i = 0; i < entries.size(); i++) {
+            if (entryPredicate.test(entries.get(i))) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }

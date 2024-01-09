@@ -108,7 +108,7 @@ public class FakeBookmarkModel extends BookmarkModel {
                         BookmarkType.READING_LIST,
                         mRootFolderId,
                         READING_LIST_FOLDER_TITLE,
-                        /* isAccountBookmark= */ false);
+                        /* isAccountBookmark= */ true);
     }
 
     private BookmarkId addBookmark(
@@ -482,11 +482,12 @@ public class FakeBookmarkModel extends BookmarkModel {
 
         @Override
         public boolean isAccountBookmark(long nativeBookmarkBridge, BookmarkId id) {
-            if (id.equals(mAccountReadingListFolderId)) {
-                return true;
-            }
-
-            return false;
+            BookmarkItem item = FakeBookmarkModel.this.getBookmarkById(id);
+            BookmarkId parentId = item.getParentId();
+            BookmarkItem parentItem =
+                    parentId == null ? null : FakeBookmarkModel.this.getBookmarkById(parentId);
+            return item.isAccountBookmark()
+                    || (parentItem != null && parentItem.isAccountBookmark());
         }
 
         @Override

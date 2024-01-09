@@ -339,6 +339,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kSeedAccountsRevamp,
     &switches::kTangibleSync,
     &syncer::kPassExplicitSyncPassphraseToGmsCore,
+    &syncer::kEnableBookmarkFoldersForAccountStorage,
     &syncer::kReplaceSyncPromosWithSignInPromos,
     &syncer::kSyncAndroidLimitNTPPromoImpressions,
     &syncer::kSyncDecoupleAddressPaymentSettings,

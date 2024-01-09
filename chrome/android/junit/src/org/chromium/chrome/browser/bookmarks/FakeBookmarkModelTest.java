@@ -66,6 +66,7 @@ public class FakeBookmarkModelTest {
                         mBookmarkModel.getLocalOrSyncableReadingListFolder(),
                         mBookmarkModel.getAccountReadingListFolder());
         assertEquals(expected, mBookmarkModel.getTopLevelFolderIds());
+        assertTrue(mBookmarkModel.isAccountBookmark(mBookmarkModel.getAccountReadingListFolder()));
 
         expected = Arrays.asList(mBookmarkModel.getPartnerFolderId());
         assertEquals(expected, mBookmarkModel.getChildIds(mBookmarkModel.getMobileFolderId()));
