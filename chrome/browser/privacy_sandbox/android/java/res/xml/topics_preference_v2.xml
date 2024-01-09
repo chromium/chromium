@@ -45,7 +45,8 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="manage_topics"
         android:title="@string/settings_topics_page_manage_topics_heading"
-        android:summary="@string/settings_topics_page_manage_topics_description" />
+        android:summary="@string/settings_topics_page_manage_topics_description"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment" />
 
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="topics_page_footer"
