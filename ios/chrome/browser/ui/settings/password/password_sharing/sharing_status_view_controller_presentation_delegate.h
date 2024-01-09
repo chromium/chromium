@@ -18,9 +18,6 @@
 // sharing coordinator.
 - (void)startPasswordSharing;
 
-// Handles taps on the link to learn more about the password sharing feature.
-- (void)learnMoreLinkWasTapped;
-
 // Handles taps on the link to the site where the user can change the password
 // that was shared.
 - (void)changePasswordLinkWasTapped;

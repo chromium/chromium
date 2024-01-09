@@ -135,14 +135,6 @@
   [self.delegate startPasswordSharing];
 }
 
-- (void)learnMoreLinkWasTapped {
-  LogPasswordSharingInteraction(
-      PasswordSharingInteraction::kSharingConfirmationLearnMoreClicked);
-
-  [self openURLInNewTabAndCloseSettings:GURL(kPasswordSharingLearnMoreURL)];
-  [self.delegate sharingStatusCoordinatorWasDismissed:self];
-}
-
 - (void)changePasswordLinkWasTapped {
   CHECK(_changePasswordURL.has_value());
 

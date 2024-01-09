@@ -67,7 +67,6 @@ NSString* const kEndBoldTag = @"[ \t]*END_BOLD";
 
 // Accessibility identifiers of text views with links.
 NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
-NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
 
 }  // namespace
 
@@ -249,11 +248,7 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
               interaction:(UITextItemInteraction)interaction {
-  if (textView.accessibilityIdentifier == kSharingStatusSubtitleId) {
-    [self.delegate learnMoreLinkWasTapped];
-  } else if (textView.accessibilityIdentifier == kSharingStatusFooterId) {
-    [self.delegate changePasswordLinkWasTapped];
-  }
+  [self.delegate changePasswordLinkWasTapped];
   return NO;
 }
 
@@ -652,17 +647,14 @@ NSString* const kSharingStatusSubtitleId = @"SharingStatusViewSubtitle";
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   subtitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  subtitle.accessibilityIdentifier = kSharingStatusSubtitleId;
 
   StringWithTags stringWithBolds =
       ParseStringWithTags(self.subtitleString, kBeginBoldTag, kEndBoldTag);
-  StringWithTags stringWithLinks = ParseStringWithLinks(stringWithBolds.string);
-  subtitle.text = stringWithLinks.string;
+  subtitle.text = stringWithBolds.string;
 
   for (const NSRange& range : stringWithBolds.ranges) {
     [self addBoldAttributeToTextView:subtitle range:range];
   }
-  [self addLinkAttributeToTextView:subtitle range:stringWithLinks.ranges[0]];
 
   return subtitle;
 }
