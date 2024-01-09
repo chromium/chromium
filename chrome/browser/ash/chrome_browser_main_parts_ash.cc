@@ -1447,11 +1447,6 @@ void ChromeBrowserMainPartsAsh::PostBrowserStart() {
       MemoryMetrics::kDefaultPeriodInSeconds);
   memory_pressure_detail_->Start();
 
-  if (memory::ZramWritebackController::IsSupportedAndEnabled()) {
-    zram_writeback_controller_ = memory::ZramWritebackController::Create();
-    zram_writeback_controller_->Start();
-  }
-
   // ARCVM defers to Android's LMK to kill apps in low memory situations because
   // memory can't be reclaimed directly to ChromeOS.
   if (!arc::IsArcVmEnabled() &&
@@ -1489,10 +1484,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Do this early to keep logging from taking time during shutdown.
   if (memory_pressure_detail_ != nullptr) {
     memory_pressure_detail_->Stop();
-  }
-
-  if (zram_writeback_controller_ != nullptr) {
-    zram_writeback_controller_->Stop();
   }
 
   apn_migrator_.reset();

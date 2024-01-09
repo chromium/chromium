@@ -3539,9 +3539,6 @@ extern const char kEnableTouchscreensInDiagnosticsAppDescription[];
 extern const char kEnableWifiQosName[];
 extern const char kEnableWifiQosDescription[];
 
-extern const char kEnableZramWriteback[];
-extern const char kEnableZramWritebackDescription[];
-
 extern const char kEnableSuspendToDisk[];
 extern const char kEnableSuspendToDiskDescription[];
 

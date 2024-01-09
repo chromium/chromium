@@ -6159,11 +6159,6 @@ const char kEnableWifiQosDescription[] =
     "If enabled the system will start automatic prioritization of egress "
     "traffic with WiFi QoS/WMM.";
 
-const char kEnableZramWriteback[] = "Enable Zram Writeback";
-const char kEnableZramWritebackDescription[] =
-    "If enabled zram swap will be able to write back to disk increasing "
-    "overall swap capacity";
-
 const char kEnableSuspendToDisk[] = "Enable Suspend to Disk";
 const char kEnableSuspendToDiskDescription[] =
     "If enabled the system will attempt to suspend to disk (hibernate) "

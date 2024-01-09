@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 #include "chrome/browser/chrome_browser_main_linux.h"
 #include "chrome/browser/memory/memory_kills_monitor.h"
-#include "chromeos/ash/components/memory/zram_writeback_controller.h"
 
 class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
@@ -290,8 +289,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<AudioSurveyHandler> audio_survey_handler_;
 
   std::unique_ptr<CameraGeneralSurveyHandler> camera_general_survey_handler_;
-
-  std::unique_ptr<memory::ZramWritebackController> zram_writeback_controller_;
 
   std::unique_ptr<ApnMigrator> apn_migrator_;
 
