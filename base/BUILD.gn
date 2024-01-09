@@ -4225,22 +4225,15 @@ if (is_android || is_robolectric) {
       ]
     }
 
-    public_deps = [
-      ":android_runtime_jni_headers",
-      ":android_runtime_unchecked_jni_headers",
-    ]
+    public_deps = [ ":android_runtime_jni_headers" ]
   }
 
   generate_jar_jni("android_runtime_jni_headers") {
     classes = [
+      "java/lang/Runnable.class",
       "java/lang/Runtime.class",
       "java/lang/Throwable.class",
     ]
-  }
-
-  generate_jar_jni("android_runtime_unchecked_jni_headers") {
-    classes = [ "java/lang/Runnable.class" ]
-    unchecked_exceptions = true
   }
 
   generate_jni("process_launcher_jni") {
