@@ -346,6 +346,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowBoundsChanged(aura::Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override;
   void OnWindowDestroyed(aura::Window* window) override;
 
   // WindowStateObserver:
@@ -456,11 +460,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Updates |divider_position_| according to the current event location during
   // resizing.
   void UpdateDividerPosition(const gfx::Point& location_in_screen);
-
-  // Updates `divider_position_` and notifies observers that the divider
-  // position has changed.
-  void UpdateDividerPositionOnWindowResize(aura::Window* window,
-                                           const gfx::Rect& new_bounds);
 
   // Ends overview if the divider position is outside the fixed positions.
   void MaybeEndOverviewOnWindowResize(aura::Window* window);

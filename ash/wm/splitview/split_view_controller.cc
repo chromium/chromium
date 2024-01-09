@@ -1210,6 +1210,46 @@ void SplitViewController::OnWindowPropertyChanged(aura::Window* window,
   ShowAppCannotSnapToast();
 }
 
+void SplitViewController::OnWindowBoundsChanged(
+    aura::Window* window,
+    const gfx::Rect& old_bounds,
+    const gfx::Rect& new_bounds,
+    ui::PropertyChangeReason reason) {
+  if (!InClamshellSplitViewMode() || split_view_divider_) {
+    // Divider width is not taken into consideration in the calculation below.
+    // Early exit if `split_view_divider_` exists in clamshell mode.
+    // TODO(michelefan): Remove the check after separating clamshell and tablet
+    // mode split view.
+    return;
+  }
+
+  if (WindowState* window_state = WindowState::Get(window);
+      window_state->is_dragged()) {
+    DCHECK_NE(WindowResizer::kBoundsChange_None,
+              window_state->drag_details()->bounds_change);
+    DCHECK(window_state->drag_details()->bounds_change &
+           WindowResizer::kBoundsChange_Resizes);
+    if (presentation_time_recorder_) {
+      presentation_time_recorder_->RequestNext();
+    }
+  }
+
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
+          root_window_);
+
+  if (IsLayoutHorizontal(window)) {
+    divider_position_ = window == primary_window_
+                            ? new_bounds.width()
+                            : work_area.width() - new_bounds.width();
+  } else {
+    divider_position_ = window == primary_window_
+                            ? new_bounds.height()
+                            : work_area.height() - new_bounds.height();
+  }
+  NotifyDividerPositionChanged();
+}
+
 void SplitViewController::OnWindowDestroyed(aura::Window* window) {
   DCHECK(InSplitViewMode());
   DCHECK(IsWindowInSplitView(window));
@@ -1457,7 +1497,7 @@ void SplitViewController::OnDisplayMetricsChanged(
   }
 
   // In clamshell split view mode, the divider position will be adjusted in
-  // |OnWindowBoundsChanged|.
+  // `SplitViewOverviewSession::OnWindowBoundsChanged`.
   if (!InTabletMode()) {
     return;
   }
@@ -1767,26 +1807,6 @@ void SplitViewController::NotifyWindowResized() {
 void SplitViewController::NotifyWindowSwapped() {
   for (auto& observer : observers_)
     observer.OnSplitViewWindowSwapped();
-}
-
-void SplitViewController::UpdateDividerPositionOnWindowResize(
-    aura::Window* window,
-    const gfx::Rect& new_bounds) {
-  CHECK_EQ(root_window_, window->GetRootWindow());
-  const gfx::Rect work_area =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          root_window_);
-
-  if (IsLayoutHorizontal(window)) {
-    divider_position_ = window == primary_window_
-                            ? new_bounds.width()
-                            : work_area.width() - new_bounds.width();
-  } else {
-    divider_position_ = window == primary_window_
-                            ? new_bounds.height()
-                            : work_area.height() - new_bounds.height();
-  }
-  NotifyDividerPositionChanged();
 }
 
 void SplitViewController::MaybeEndOverviewOnWindowResize(aura::Window* window) {
