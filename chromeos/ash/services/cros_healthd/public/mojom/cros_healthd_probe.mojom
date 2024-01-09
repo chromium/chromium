@@ -843,8 +843,8 @@ struct BluetoothDeviceInfo {
 enum BluetoothDeviceType {
   // An enum value not defined in this version of the enum definition.
   [Default] kUnmappedEnumField = 0,
-  // Unfound type.
-  kUnfound = 1,
+  // Unknown type.
+  kUnknown = 1,
   // BR/EDR.
   kBrEdr = 2,
   // LE.
