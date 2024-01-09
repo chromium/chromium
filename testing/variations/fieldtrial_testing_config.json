@@ -3425,6 +3425,25 @@
             ]
         }
     ],
+    "ChromeCompose": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillContentEditables",
+                        "Compose",
+                        "ComposeNudge"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeLabs": [
         {
             "platforms": [
