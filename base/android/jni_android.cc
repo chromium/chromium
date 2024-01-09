@@ -221,21 +221,11 @@ template jmethodID MethodID::LazyGet<MethodID::TYPE_INSTANCE>(
     JNIEnv* env, jclass clazz, const char* method_name,
     const char* jni_signature, std::atomic<jmethodID>* atomic_method_id);
 
-bool HasException(JNIEnv* env) {
-  return env->ExceptionCheck() != JNI_FALSE;
-}
-
-bool ClearException(JNIEnv* env) {
-  if (!HasException(env))
-    return false;
-  env->ExceptionDescribe();
-  env->ExceptionClear();
-  return true;
-}
 
 void CheckException(JNIEnv* env) {
-  if (!HasException(env))
+  if (!jni_zero::HasException(env)) {
     return;
+  }
 
   static thread_local bool g_reentering = false;
   if (g_reentering) {
