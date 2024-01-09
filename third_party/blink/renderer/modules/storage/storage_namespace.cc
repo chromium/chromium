@@ -230,17 +230,15 @@ void StorageNamespace::DidDispatchStorageEvent(
 }
 
 void StorageNamespace::BindStorageArea(
-    const LocalDOMWindow& local_dom_window,
+    const BlinkStorageKey& storage_key,
+    const LocalFrameToken& local_frame_token,
     mojo::PendingReceiver<mojom::blink::StorageArea> receiver) {
   if (IsSessionStorage()) {
     controller_->dom_storage()->BindSessionStorageArea(
-        local_dom_window.GetSessionStorageKey(),
-        local_dom_window.GetLocalFrameToken(), namespace_id_,
-        std::move(receiver));
+        storage_key, local_frame_token, namespace_id_, std::move(receiver));
   } else {
-    controller_->dom_storage()->OpenLocalStorage(
-        local_dom_window.GetStorageKey(), local_dom_window.GetLocalFrameToken(),
-        std::move(receiver));
+    controller_->dom_storage()->OpenLocalStorage(storage_key, local_frame_token,
+                                                 std::move(receiver));
   }
 }
 
