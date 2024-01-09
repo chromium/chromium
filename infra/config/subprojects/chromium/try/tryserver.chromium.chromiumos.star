@@ -424,6 +424,7 @@ This builder should be removed after migrating linux-chromeos-compile-dbg from N
         is_compile_only = True,
     ),
     gn_args = "try/linux-chromeos-compile-dbg",
+    builderless = False,
     contact_team_email = "chrome-build-team@google.com",
     main_list_view = "try",
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,

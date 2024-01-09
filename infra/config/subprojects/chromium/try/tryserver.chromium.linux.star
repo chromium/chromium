@@ -666,6 +666,7 @@ This builder should be removed after migrating linux_chromium_compile_dbg_ng fro
         is_compile_only = True,
     ),
     gn_args = "try/linux_chromium_compile_dbg_ng",
+    builderless = False,
     caches = [
         swarming.cache(
             name = "builder",
