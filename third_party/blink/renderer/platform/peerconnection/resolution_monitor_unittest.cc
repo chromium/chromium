@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/resolution_monitor.h"
+#include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 
 #include "base/files/file_util.h"
 #include "media/base/decoder_buffer.h"
@@ -10,24 +10,25 @@
 #include "media/filters/ivf_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media {
+namespace blink {
+
 namespace {
-const VideoCodec kCodecs[] = {
-    VideoCodec::kH264,
-    VideoCodec::kVP8,
-    VideoCodec::kVP9,
-    VideoCodec::kAV1,
+const media::VideoCodec kCodecs[] = {
+    media::VideoCodec::kH264,
+    media::VideoCodec::kVP8,
+    media::VideoCodec::kVP9,
+    media::VideoCodec::kAV1,
 };
 
 class ResolutionMonitorTestWithInvalidFrame
-    : public ::testing::TestWithParam<VideoCodec> {
+    : public ::testing::TestWithParam<media::VideoCodec> {
  protected:
   std::string kInvalidData = "This is invalid data and causes a parser error";
 };
 
 TEST_P(ResolutionMonitorTestWithInvalidFrame, ReturnNullOpt) {
-  const VideoCodec codec = GetParam();
-  auto invalid_buffer = DecoderBuffer::CopyFrom(
+  const media::VideoCodec codec = GetParam();
+  auto invalid_buffer = media::DecoderBuffer::CopyFrom(
       reinterpret_cast<const uint8_t*>(kInvalidData.data()),
       kInvalidData.size());
   invalid_buffer->set_is_key_frame(true);
@@ -43,7 +44,7 @@ INSTANTIATE_TEST_SUITE_P(,
 
 struct FrameData {
   std::string file_name;
-  VideoCodec codec;
+  media::VideoCodec codec;
   gfx::Size resolution;
 };
 
@@ -52,7 +53,7 @@ class ResolutionMonitorTestWithValidFrame
 
 TEST_P(ResolutionMonitorTestWithValidFrame, ReturnExpectedResolution) {
   const auto param = GetParam();
-  auto buffer = ReadTestDataFile(param.file_name);
+  auto buffer = media::ReadTestDataFile(param.file_name);
   ASSERT_TRUE(buffer);
   buffer->set_is_key_frame(true);
 
@@ -62,30 +63,30 @@ TEST_P(ResolutionMonitorTestWithValidFrame, ReturnExpectedResolution) {
 }
 
 const FrameData kH264Frames[] = {
-    // 320x192 because we acquire coded size.
-    {"h264-320x180-frame-0", VideoCodec::kH264, gfx::Size(320, 192)},
-    {"bear-320x192-baseline-frame-0.h264", VideoCodec::kH264,
+    // 320x180 because we acquire visible size here.
+    {"h264-320x180-frame-0", media::VideoCodec::kH264, gfx::Size(320, 180)},
+    {"bear-320x192-baseline-frame-0.h264", media::VideoCodec::kH264,
      gfx::Size(320, 192)},
-    {"bear-320x192-high-frame-0.h264", VideoCodec::kH264, gfx::Size(320, 192)},
+    {"bear-320x192-high-frame-0.h264", media::VideoCodec::kH264, gfx::Size(320, 192)},
 };
 
 const FrameData kVP8Frames[] = {
-    {"vp8-I-frame-160x240", VideoCodec::kVP8, gfx::Size(160, 240)},
-    {"vp8-I-frame-320x120", VideoCodec::kVP8, gfx::Size(320, 120)},
-    {"vp8-I-frame-320x240", VideoCodec::kVP8, gfx::Size(320, 240)},
-    {"vp8-I-frame-320x480", VideoCodec::kVP8, gfx::Size(320, 480)},
-    {"vp8-I-frame-640x240", VideoCodec::kVP8, gfx::Size(640, 240)},
+    {"vp8-I-frame-160x240", media::VideoCodec::kVP8, gfx::Size(160, 240)},
+    {"vp8-I-frame-320x120", media::VideoCodec::kVP8, gfx::Size(320, 120)},
+    {"vp8-I-frame-320x240", media::VideoCodec::kVP8, gfx::Size(320, 240)},
+    {"vp8-I-frame-320x480", media::VideoCodec::kVP8, gfx::Size(320, 480)},
+    {"vp8-I-frame-640x240", media::VideoCodec::kVP8, gfx::Size(640, 240)},
 };
 
 const FrameData kVP9Frames[] = {
-    {"vp9-I-frame-1280x720", VideoCodec::kVP9, gfx::Size(1280, 720)},
-    {"vp9-I-frame-320x240", VideoCodec::kVP9, gfx::Size(320, 240)},
+    {"vp9-I-frame-1280x720", media::VideoCodec::kVP9, gfx::Size(1280, 720)},
+    {"vp9-I-frame-320x240", media::VideoCodec::kVP9, gfx::Size(320, 240)},
 };
 
 const FrameData kAV1Frames[] = {
-    {"av1-I-frame-320x240", VideoCodec::kAV1, gfx::Size(320, 240)},
-    {"av1-I-frame-1280x720", VideoCodec::kAV1, gfx::Size(1280, 720)},
-    {"av1-monochrome-I-frame-320x240-8bpp", VideoCodec::kAV1,
+    {"av1-I-frame-320x240", media::VideoCodec::kAV1, gfx::Size(320, 240)},
+    {"av1-I-frame-1280x720", media::VideoCodec::kAV1, gfx::Size(1280, 720)},
+    {"av1-monochrome-I-frame-320x240-8bpp", media::VideoCodec::kAV1,
      gfx::Size(320, 240)},
 };
 
@@ -102,22 +103,22 @@ INSTANTIATE_TEST_SUITE_P(AV1,
                          ResolutionMonitorTestWithValidFrame,
                          ::testing::ValuesIn(kAV1Frames));
 
-std::vector<scoped_refptr<DecoderBuffer>> ReadIVF(const std::string& fname) {
+std::vector<scoped_refptr<media::DecoderBuffer>> ReadIVF(const std::string& fname) {
   std::string ivf_data;
-  auto input_file = GetTestDataFilePath(fname);
+  auto input_file = media::GetTestDataFilePath(fname);
   EXPECT_TRUE(base::ReadFileToString(input_file, &ivf_data));
 
-  IvfParser ivf_parser;
-  IvfFileHeader ivf_header{};
+  media::IvfParser ivf_parser;
+  media::IvfFileHeader ivf_header{};
   EXPECT_TRUE(
       ivf_parser.Initialize(reinterpret_cast<const uint8_t*>(ivf_data.data()),
                             ivf_data.size(), &ivf_header));
 
-  std::vector<scoped_refptr<DecoderBuffer>> buffers;
-  IvfFrameHeader ivf_frame_header{};
+  std::vector<scoped_refptr<media::DecoderBuffer>> buffers;
+  media::IvfFrameHeader ivf_frame_header{};
   const uint8_t* data;
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &data)) {
-    buffers.push_back(DecoderBuffer::CopyFrom(
+    buffers.push_back(media::DecoderBuffer::CopyFrom(
         reinterpret_cast<const uint8_t*>(data), ivf_frame_header.frame_size));
   }
   return buffers;
@@ -125,7 +126,7 @@ std::vector<scoped_refptr<DecoderBuffer>> ReadIVF(const std::string& fname) {
 
 struct VideoData {
   std::string file_name;
-  VideoCodec codec;
+  media::VideoCodec codec;
   gfx::Size resolution;
 };
 
@@ -144,20 +145,20 @@ TEST_P(ResolutionMonitorTestWithValidVideo, ReturnExpectedResolution) {
 }
 
 const VideoData kVP8Videos[] = {
-    {"test-25fps.vp8", VideoCodec::kVP8, gfx::Size(320, 240)},
-    {"bear-1280x720.ivf", VideoCodec::kVP8, gfx::Size(1280, 720)},
+    {"test-25fps.vp8", media::VideoCodec::kVP8, gfx::Size(320, 240)},
+    {"bear-1280x720.ivf", media::VideoCodec::kVP8, gfx::Size(1280, 720)},
 };
 
 const VideoData kVP9Videos[] = {
-    {"test-25fps.vp9", VideoCodec::kVP9, gfx::Size(320, 240)},
-    {"test-25fps.vp9_2", VideoCodec::kVP9, gfx::Size(320, 240)},
-    {"bear-vp9.ivf", VideoCodec::kVP9, gfx::Size(320, 240)},
+    {"test-25fps.vp9", media::VideoCodec::kVP9, gfx::Size(320, 240)},
+    {"test-25fps.vp9_2", media::VideoCodec::kVP9, gfx::Size(320, 240)},
+    {"bear-vp9.ivf", media::VideoCodec::kVP9, gfx::Size(320, 240)},
 };
 
 const VideoData kAV1Videos[] = {
-    {"test-25fps.av1.ivf", VideoCodec::kAV1, gfx::Size(320, 240)},
-    {"av1-show_existing_frame.ivf", VideoCodec::kAV1, gfx::Size(208, 144)},
-    {"av1-svc-L1T2.ivf", VideoCodec::kAV1, gfx::Size(640, 360)},
+    {"test-25fps.av1.ivf", media::VideoCodec::kAV1, gfx::Size(320, 240)},
+    {"av1-show_existing_frame.ivf", media::VideoCodec::kAV1, gfx::Size(208, 144)},
+    {"av1-svc-L1T2.ivf", media::VideoCodec::kAV1, gfx::Size(640, 360)},
 };
 
 INSTANTIATE_TEST_SUITE_P(VP8,
@@ -169,5 +170,7 @@ INSTANTIATE_TEST_SUITE_P(VP9,
 INSTANTIATE_TEST_SUITE_P(AV1,
                          ResolutionMonitorTestWithValidVideo,
                          ::testing::ValuesIn(kAV1Videos));
+
 }  // namespace
-}  // namespace media
+
+}  // namespace blink

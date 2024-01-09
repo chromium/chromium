@@ -494,7 +494,7 @@ std::atomic_int RTCVideoDecoderAdapter::g_num_decoders_{0};
 std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const webrtc::SdpVideoFormat& format,
-    std::unique_ptr<media::ResolutionMonitor> resolution_monitor) {
+    std::unique_ptr<ResolutionMonitor> resolution_monitor) {
   DVLOG(1) << __func__ << "(" << format.name << ")";
 
   const webrtc::VideoCodecType video_codec_type =
@@ -514,7 +514,7 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
   config.set_is_rtc(true);
 
   if (!resolution_monitor) {
-    resolution_monitor = media::ResolutionMonitor::Create(config.codec());
+    resolution_monitor = ResolutionMonitor::Create(config.codec());
     if (!resolution_monitor) {
       DLOG(ERROR) << "Failed to create ResolutionMonitor for codec: "
                   << media::GetCodecName(config.codec());
@@ -544,7 +544,7 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
 RTCVideoDecoderAdapter::RTCVideoDecoderAdapter(
     media::GpuVideoAcceleratorFactories* gpu_factories,
     const media::VideoDecoderConfig& config,
-    std::unique_ptr<media::ResolutionMonitor> resolution_monitor)
+    std::unique_ptr<ResolutionMonitor> resolution_monitor)
     : media_task_runner_(gpu_factories->GetTaskRunner()),
       config_(config),
       resolution_monitor_(std::move(resolution_monitor)) {

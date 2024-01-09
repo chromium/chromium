@@ -29,10 +29,10 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
-#include "media/filters/resolution_monitor.h"
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_video_decoder_adapter.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
@@ -52,7 +52,7 @@ namespace blink {
 
 namespace {
 
-class FakeResolutionMonitor : public media::ResolutionMonitor {
+class FakeResolutionMonitor : public ResolutionMonitor {
  public:
   explicit FakeResolutionMonitor(bool pass_resolution_monitor,
                                  const webrtc::SdpVideoFormat& format)
