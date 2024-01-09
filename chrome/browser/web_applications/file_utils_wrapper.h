@@ -39,8 +39,6 @@ class FileUtilsWrapper : public base::RefCountedThreadSafe<FileUtilsWrapper> {
 
   bool PathExists(const base::FilePath& path);
 
-  bool PathIsWritable(const base::FilePath& path);
-
   bool DirectoryExists(const base::FilePath& path);
 
   bool CreateDirectory(const base::FilePath& full_path);

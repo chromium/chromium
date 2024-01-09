@@ -15,10 +15,6 @@ bool FileUtilsWrapper::PathExists(const base::FilePath& path) {
   return base::PathExists(path);
 }
 
-bool FileUtilsWrapper::PathIsWritable(const base::FilePath& path) {
-  return base::PathIsWritable(path);
-}
-
 bool FileUtilsWrapper::DirectoryExists(const base::FilePath& path) {
   return base::DirectoryExists(path);
 }
