@@ -4,13 +4,22 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_v2_gatt_client.h"
 
+#include "base/logging.h"
 #include "base/notreached.h"
 
 namespace nearby::chrome {
 
-BleV2GattClient::BleV2GattClient() = default;
+BleV2GattClient::BleV2GattClient(
+    mojo::PendingRemote<bluetooth::mojom::Device> device)
+    : remote_device_(std::move(device)) {
+  // TODO(b/311430390): For now, just tear down the connection on disconnect. In
+  // the future, this should call Disconnect.
+  remote_device_.reset_on_disconnect();
+}
 
-BleV2GattClient::~BleV2GattClient() = default;
+BleV2GattClient::~BleV2GattClient() {
+  Disconnect();
+}
 
 bool BleV2GattClient::DiscoverServiceAndCharacteristics(
     const Uuid& service_uuid,
@@ -55,8 +64,9 @@ bool BleV2GattClient::SetCharacteristicSubscription(
 }
 
 void BleV2GattClient::Disconnect() {
-  // TODO(b/311430390): Implement this function.
-  NOTIMPLEMENTED();
+  // TODO(b/311430390): For now, just tear down the connection when we call
+  // Disconnect. In the future this should clean up state.
+  remote_device_.reset();
 }
 
 }  // namespace nearby::chrome
