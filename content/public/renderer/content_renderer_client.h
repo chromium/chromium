@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -260,7 +261,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual bool IsPrefetchOnly(RenderFrame* render_frame);
 
   // See blink::Platform.
-  virtual uint64_t VisitedLinkHash(const char* canonical_url, size_t length);
+  virtual uint64_t VisitedLinkHash(std::string_view canonical_url);
   virtual bool IsLinkVisited(uint64_t link_hash);
 
   // Creates a WebPrescientNetworking instance for |render_frame|. The returned

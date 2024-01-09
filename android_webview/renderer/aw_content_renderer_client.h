@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "android_webview/common/mojom/render_message_filter.mojom.h"
 #include "android_webview/renderer/aw_render_thread_observer.h"
@@ -51,7 +52,7 @@ class AwContentRendererClient : public content::ContentRendererClient,
                         content::mojom::AlternativeErrorPageOverrideInfoPtr
                             alternative_error_page_info,
                         std::string* error_html) override;
-  uint64_t VisitedLinkHash(const char* canonical_url, size_t length) override;
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t link_hash) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;

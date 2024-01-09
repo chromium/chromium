@@ -4,6 +4,8 @@
 
 #include "content/public/renderer/content_renderer_client.h"
 
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -135,8 +137,8 @@ bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }
 
-uint64_t ContentRendererClient::VisitedLinkHash(const char* canonical_url,
-                                                size_t length) {
+uint64_t ContentRendererClient::VisitedLinkHash(
+    std::string_view canonical_url) {
   return 0;
 }
 

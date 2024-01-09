@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -279,9 +280,9 @@ bool RendererBlinkPlatformImpl::sandboxEnabled() {
       switches::kSingleProcess);
 }
 
-uint64_t RendererBlinkPlatformImpl::VisitedLinkHash(const char* canonical_url,
-                                                    size_t length) {
-  return GetContentClient()->renderer()->VisitedLinkHash(canonical_url, length);
+uint64_t RendererBlinkPlatformImpl::VisitedLinkHash(
+    std::string_view canonical_url) {
+  return GetContentClient()->renderer()->VisitedLinkHash(canonical_url);
 }
 
 bool RendererBlinkPlatformImpl::IsLinkVisited(uint64_t link_hash) {

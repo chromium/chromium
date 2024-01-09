@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/containers/id_map.h"
 #include "base/memory/raw_ptr.h"
@@ -78,7 +79,7 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
   // blink::Platform implementation.
   blink::WebSandboxSupport* GetSandboxSupport() override;
   virtual bool sandboxEnabled();
-  uint64_t VisitedLinkHash(const char* canonicalURL, size_t length) override;
+  uint64_t VisitedLinkHash(std::string_view canonical_url) override;
   bool IsLinkVisited(uint64_t linkHash) override;
   blink::WebString UserAgent() override;
   blink::UserAgentMetadata UserAgentMetadata() override;

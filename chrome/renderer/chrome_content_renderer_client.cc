@@ -6,6 +6,7 @@
 
 #include <functional>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -1476,10 +1477,10 @@ bool ChromeContentRendererClient::IsPrefetchOnly(
   return prerender::NoStatePrefetchHelper::IsPrefetching(render_frame);
 }
 
-uint64_t ChromeContentRendererClient::VisitedLinkHash(const char* canonical_url,
-                                                      size_t length) {
+uint64_t ChromeContentRendererClient::VisitedLinkHash(
+    std::string_view canonical_url) {
   return chrome_observer_->visited_link_reader()->ComputeURLFingerprint(
-      canonical_url, length);
+      canonical_url);
 }
 
 bool ChromeContentRendererClient::IsLinkVisited(uint64_t link_hash) {
