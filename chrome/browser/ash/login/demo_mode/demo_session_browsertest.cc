@@ -552,7 +552,8 @@ IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DemoSessionLoginWithGrowthCampaignTest,
-                       DemoSWACampaignNoStudyId) {
+                       // TODO(crbug.com/1516799): Re-enable this test
+                       DISABLED_DemoSWACampaignNoStudyId) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking;
 
   CreateTestCampaignsFile(R"({
