@@ -825,6 +825,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "MojoChannelAssociatedSendUsesRunOrPostTask",
                 "Enables optimization for sending messages on channel-associated interfaces"),
+        Flag.baseFeature(
+                BlinkFeatures.FORM_CONTROLS_VERTICAL_WRITING_MODE_DIRECTION_SUPPORT,
+                "Enables support for CSS direction ltr and rtl on vertical slider elements"
+                        + " progress, meter and range."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
