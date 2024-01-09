@@ -613,7 +613,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
 // Tests that performing session restoration to a Safe Browsing warning page
 // preserves navigation history.
-- (void)testRestoreToWarningPagePreservesHistory {
+// TODO(crbug.com/1516583):  Test is flaky on device. Re-enable the test.
+#if !TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreToWarningPagePreservesHistory \
+  FLAKY_testRestoreToWarningPagePreservesHistory
+#else
+#define MAYBE_testRestoreToWarningPagePreservesHistory \
+  testRestoreToWarningPagePreservesHistory
+#endif
+- (void)MAYBE_testRestoreToWarningPagePreservesHistory {
   // Build up navigation history that consists of a safe URL, a warning page,
   // and another safe URL.
   [ChromeEarlGrey loadURL:_safeURL1];
