@@ -11,7 +11,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherConsta
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
@@ -89,7 +88,6 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     private final boolean mIsIncognito;
 
     private boolean mNativeInitialized;
-    private OnClickListener mNewTabButtonClickListener;
 
     /**
      * @param context The activity context.

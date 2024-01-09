@@ -21,6 +21,10 @@ public interface Pane extends BackPressHandler {
     @NonNull
     View getRootView();
 
+    /** Returns the desired color scheme. Should be constant for individual panes. */
+    @HubColorScheme
+    int getColorScheme();
+
     /** Destroys the pane. Called when the Hub is destroyed. */
     void destroy();
 

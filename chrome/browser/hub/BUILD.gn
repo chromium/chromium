@@ -12,6 +12,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/DisplayButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/DrawableButtonData.java",
     "android/java/src/org/chromium/chrome/browser/hub/FullButtonData.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubColorScheme.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubContainerView.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubFieldTrial.java",

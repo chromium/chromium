@@ -16,6 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
+import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
@@ -44,7 +45,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
      * @param tabModelFilterSupplier The supplier of the regular {@link TabModelFilter}.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
-     * @param tabSwitcherPaneDrawableCoordinator The drawable to represent the pane.
+     * @param tabSwitcherDrawableCoordinator The drawable to represent the pane.
      */
     TabSwitcherPane(
             @NonNull Context context,
@@ -84,6 +85,16 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public @PaneId int getPaneId() {
+        return PaneId.TAB_SWITCHER;
+    }
+
+    @Override
+    public @HubColorScheme int getColorScheme() {
+        return HubColorScheme.DEFAULT;
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         mTabSwitcherPaneDrawableCoordinator.destroy();
@@ -91,11 +102,6 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
             mSharedPreferences.unregisterOnSharedPreferenceChangeListener(
                     mPriceAnnotationsPrefListener);
         }
-    }
-
-    @Override
-    public @PaneId int getPaneId() {
-        return PaneId.TAB_SWITCHER;
     }
 
     @Override

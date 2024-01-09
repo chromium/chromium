@@ -15,6 +15,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
+import org.chromium.chrome.browser.hub.HubColorScheme;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
@@ -138,6 +139,16 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     }
 
     @Override
+    public @PaneId int getPaneId() {
+        return PaneId.INCOGNITO_TAB_SWITCHER;
+    }
+
+    @Override
+    public @HubColorScheme int getColorScheme() {
+        return HubColorScheme.INCOGNITO;
+    }
+
+    @Override
     public void destroy() {
         super.destroy();
         IncognitoTabModel incognitoTabModel = getIncognitoTabModel();
@@ -161,11 +172,6 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         if (incognitoTabModel.getCount() > 0) {
             mIncognitoTabModelObserver.wasFirstTabCreated();
         }
-    }
-
-    @Override
-    public @PaneId int getPaneId() {
-        return PaneId.INCOGNITO_TAB_SWITCHER;
     }
 
     @Override
