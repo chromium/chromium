@@ -184,7 +184,7 @@ public class AutofillProviderUMA {
             // If a bottom sheet was shown, we record an additional, separate metric for it.
             if ((mState & EVENT_BOTTOM_SHEET_SHOWN) != 0) {
                 RecordHistogram.recordEnumeratedHistogram(
-                        UMA_AUTOFILL_AUTOFILL_SESSION,
+                        UMA_AUTOFILL_AUTOFILL_SESSION_WITH_BOTTOM_SHEET,
                         sessionValue,
                         AUTOFILL_SESSION_HISTOGRAM_COUNT);
             }
