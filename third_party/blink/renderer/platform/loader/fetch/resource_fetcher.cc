@@ -2001,26 +2001,42 @@ void ResourceFetcher::ScheduleWarnUnusedPreloads() {
 }
 
 void ResourceFetcher::WarnUnusedPreloads() {
+  int unused_resource_count = 0;
   for (const auto& pair : preloads_) {
     Resource* resource = pair.value;
-    if (!resource || !resource->IsLinkPreload() || !resource->IsUnusedPreload())
+    if (!resource || !resource->IsUnusedPreload()) {
       continue;
-    String message =
-        "The resource " + resource->Url().GetString() + " was preloaded " +
-        "using link preload but not used within a few seconds from the " +
-        "window's load event. Please make sure it has an appropriate `as` " +
-        "value and it is preloaded intentionally.";
-    console_logger_->AddConsoleMessage(
-        mojom::blink::ConsoleMessageSource::kJavaScript,
-        mojom::blink::ConsoleMessageLevel::kWarning, message);
-    TRACE_EVENT1("blink,blink.resource", "ResourceFetcher::WarnUnusedPreloads",
-                 "data",
-                 CreateTracedValueForUnusedPreload(
-                     resource->Url(), Resource::MatchStatus::kOk,
-                     resource->GetResourceRequest().GetDevToolsId()));
-    UMA_HISTOGRAM_COUNTS_100("Renderer.Preload.UnusedResource",
-                             static_cast<int>(resource->GetType()));
+    }
+
+    ++unused_resource_count;
+    if (resource->IsLinkPreload()) {
+      String message =
+          "The resource " + resource->Url().GetString() + " was preloaded " +
+          "using link preload but not used within a few seconds from the " +
+          "window's load event. Please make sure it has an appropriate `as` " +
+          "value and it is preloaded intentionally.";
+      console_logger_->AddConsoleMessage(
+          mojom::blink::ConsoleMessageSource::kJavaScript,
+          mojom::blink::ConsoleMessageLevel::kWarning, message);
+      TRACE_EVENT1("blink,blink.resource",
+                   "ResourceFetcher::WarnUnusedPreloads", "data",
+                   CreateTracedValueForUnusedPreload(
+                       resource->Url(), Resource::MatchStatus::kOk,
+                       resource->GetResourceRequest().GetDevToolsId()));
+
+      base::UmaHistogramCounts100("Renderer.Preload.UnusedResource",
+                                  static_cast<int>(resource->GetType()));
+    }
+    base::UmaHistogramEnumeration("Renderer.Preload.UnusedResource2",
+                                  resource->GetType());
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Renderer.Preload.UnusedResource2.",
+             resource->IsLinkPreload() ? "LinkPreload" : "NoLinkPreload"}),
+        resource->GetType());
   }
+  base::UmaHistogramCounts100("Renderer.Preload.UnusedResourceCount",
+                              unused_resource_count);
 
   for (auto& pair : early_hints_preloaded_resources_) {
     if (pair.value.state == EarlyHintsPreloadEntry::State::kWarnedUnused)

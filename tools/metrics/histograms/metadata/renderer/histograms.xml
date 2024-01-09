@@ -531,9 +531,40 @@ chromium-metrics-reviews@google.com.
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Counts the number of unused preloads per ResourceType.
+    Renderer.Preload.UnusedResource2.LinkPreload is an equivalent metric that
+    records as enum values.
 
     Warning: an unexpected reorder happened in Apr 2021
     (https://crrev.com/c/2798954). Please do not trust older reports.
+  </summary>
+</histogram>
+
+<histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
+    expires_after="2024-03-21">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Counts the number of unused preloads created {Trigger} per ResourceType.
+    Unlike Renderer.Preload.UnusedResource, this records enum value as it is,
+    not BooleanSuccess.
+
+    This is recorded after the document completes.
+  </summary>
+  <token key="Trigger">
+    <variant name="" summary="regardless of whether link preload or not"/>
+    <variant name=".LinkPreload" summary="by link preload"/>
+    <variant name=".NoLinkPreload" summary="by not link preload"/>
+  </token>
+</histogram>
+
+<histogram name="Renderer.Preload.UnusedResourceCount" units="count"
+    expires_after="2024-03-21">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Counts the total number of unused preloads.
+
+    This is recorded after the document completes.
   </summary>
 </histogram>
 
