@@ -52,7 +52,7 @@ typedef int (*DLL_MAIN)(HINSTANCE, sandbox::SandboxInterfaceInfo*, int64_t);
 typedef void (*RelaunchChromeBrowserWithNewCommandLineIfNeededFunc)();
 
 void RecordDidRun(const base::FilePath& dll_path) {
-  installer::UpdateDidRunState(true);
+  installer::UpdateDidRunState();
 }
 
 // Indicates whether a file can be opened using the same flags that

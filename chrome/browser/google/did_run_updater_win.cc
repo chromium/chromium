@@ -8,5 +8,5 @@
 
 void DidRunUpdater::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
-  installer::UpdateDidRunState(true);
+  installer::UpdateDidRunState();
 }
