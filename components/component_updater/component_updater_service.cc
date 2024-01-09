@@ -144,9 +144,8 @@ base::Version CrxUpdateService::GetRegisteredVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::Version registered_version =
       config_->GetPersistedData()->GetProductVersion(app_id);
-
-  return (registered_version.IsValid()) ? registered_version
-                                        : base::Version(kNullVersion);
+  return registered_version.IsValid() ? registered_version
+                                      : base::Version(kNullVersion);
 }
 
 void CrxUpdateService::Start() {
