@@ -149,13 +149,14 @@ using partition_alloc::internal::RawPtrTraits;
 
 namespace raw_ptr_traits {
 
-// IsSupportedType<T>::value answers whether raw_ptr<T> 1) compiles and 2) is
-// always safe at runtime.  Templates that may end up using `raw_ptr<T>` should
-// use IsSupportedType to ensure that raw_ptr is not used with unsupported
-// types.  As an example, see how base::internal::StorageTraits uses
-// IsSupportedType as a condition for using base::internal::UnretainedWrapper
-// (which has a `ptr_` field that will become `raw_ptr<T>` after the Big
-// Rewrite).
+// IsSupportedType<T>::value answers whether raw_ptr<T>:
+//   1) compiles
+//   2) is safe at runtime
+//
+// Templates that may end up using raw_ptr should use IsSupportedType to ensure
+// that raw_ptr is not used with unsupported types. As an example, see how
+// base::internal::Unretained(Ref)Wrapper uses IsSupportedType to decide whether
+// it should use `raw_ptr<T>` or `T*`.
 template <typename T, typename SFINAE = void>
 struct IsSupportedType {
   static constexpr bool value = true;
