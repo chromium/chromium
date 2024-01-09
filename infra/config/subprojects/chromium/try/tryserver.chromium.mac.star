@@ -119,7 +119,7 @@ try_.builder(
     mirrors = ["ci/Mac Builder Next"],
     gn_args = "ci/Mac Builder Next",
     builderless = False,
-    os = os.MAC_13,
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
 )

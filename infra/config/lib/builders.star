@@ -83,6 +83,7 @@ os = struct(
     MAC_14 = os_enum(os_category.MAC, "Mac-14"),
     MAC_DEFAULT = os_enum(os_category.MAC, "Mac-13"),
     MAC_ANY = os_enum(os_category.MAC, "Mac"),
+    MAC_BETA = os_enum(os_category.MAC, "Mac-14"),
     WINDOWS_10 = os_enum(os_category.WINDOWS, "Windows-10"),
     WINDOWS_11 = os_enum(os_category.WINDOWS, "Windows-11"),
     WINDOWS_DEFAULT = os_enum(os_category.WINDOWS, "Windows-10"),

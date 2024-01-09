@@ -2522,7 +2522,7 @@ fyi_mac_builder(
         ],
     ),
     cores = None,
-    os = os.MAC_13,
+    os = os.MAC_BETA,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
