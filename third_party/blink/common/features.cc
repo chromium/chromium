@@ -1208,6 +1208,10 @@ const base::FeatureParam<base::TimeDelta>
         &kHttpDiskCachePrewarming,
         "http_disk_cache_prewarming_reprewarm_period", base::Minutes(10)};
 
+const base::FeatureParam<bool> kHttpDiskCachePrewarmingTriggerOnNavigation{
+    &kHttpDiskCachePrewarming,
+    "http_disk_cache_prewarming_trigger_on_navigation", true};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

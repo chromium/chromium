@@ -202,6 +202,15 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
   }
 }
 
+void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
+    content::NavigationHandle& navigation_handle,
+    LoadingPredictor& predictor) {
+  if (navigation_handle.IsInOutermostMainFrame() && blink::LcppEnabled() &&
+      blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get()) {
+    predictor.MaybePrewarmResources(navigation_handle.GetURL());
+  }
+}
+
 NavigationId GetNextId() {
   static NavigationId::Generator generator;
   return generator.GenerateNextId();
@@ -309,6 +318,9 @@ void LoadingPredictorTabHelper::DidStartNavigation(
 
   MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
 
+  MaybePrewarmMainResourceAndSubresourcesOnNavigation(*navigation_handle,
+                                                      *predictor_);
+
   PageData& page_data = PageData::CreateForNavigationHandle(*navigation_handle);
 
   page_data.has_local_preconnect_predictions_for_current_navigation_ =
@@ -353,6 +365,9 @@ void LoadingPredictorTabHelper::DidRedirectNavigation(
     return;
 
   MaybeSetLCPPNavigationHint(*navigation_handle, *predictor_);
+
+  MaybePrewarmMainResourceAndSubresourcesOnNavigation(*navigation_handle,
+                                                      *predictor_);
 
   auto* page_data = PageData::GetForNavigationHandle(*navigation_handle);
   // PageData may not be created in DidStartNavigation if IsHandledNavigation()
