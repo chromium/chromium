@@ -210,8 +210,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.Incognito.MovedToBackgroundAfterDuration"
-    units="minutes" expires_after="2024-02-04">
-  <owner>rhalavati@chromium.org</owner>
+    units="minutes" expires_after="2024-06-01">
+  <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
   <summary>
     This histogram records the duration of an Incognito session on Android, when
@@ -223,7 +223,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Profile.Incognito.ResumedAfterReportedDuration"
     units="minutes" expires_after="never">
 <!-- expires-never: One of the top level productmetrics we want to track closely,
-    which helps measure session duration. -->
+    which which in conjunction with MovedToBackgroundAfterDuration helps measure
+    session duration. -->
 
   <owner>arabm@google.com</owner>
   <owner>chrome-incognito@google.com</owner>
