@@ -19,6 +19,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/platform_file.h"
 #include "base/linux_util.h"
@@ -459,8 +460,9 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
 
     // Now read back our real PID from the zygote.
     base::ProcessId real_pid;
-    if (!base::ReadFromFD(read_pipe.get(), reinterpret_cast<char*>(&real_pid),
-                          sizeof(real_pid))) {
+    if (!base::ReadFromFD(
+            read_pipe.get(),
+            base::as_writable_chars(base::make_span(&real_pid, 1u)))) {
       LOG(FATAL) << "Failed to synchronise with parent zygote process";
     }
     if (real_pid <= 0) {
