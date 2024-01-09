@@ -22,7 +22,6 @@ import "third_party/blink/public/mojom/loader/fetch_later.mojom";
 import "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
-import "third_party/blink/public/mojom/loader/resource_cache.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
 import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
@@ -303,7 +302,6 @@ interface NavigationClient {
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host_for_background,
-      pending_remote<blink.mojom.ResourceCache>? resource_cache,
       CookieManagerInfo? cookie_manager_info,
       StorageInfo? storage_info)
       => (DidCommitProvisionalLoadParams params,

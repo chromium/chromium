@@ -3254,11 +3254,6 @@ void WebLocalFrameImpl::AddHitTestOnTouchStartCallback(
       event_type_names::kTouchstart, touch_start_event_listener, &options);
 }
 
-void WebLocalFrameImpl::SetResourceCacheRemote(
-    CrossVariantMojoRemote<mojom::blink::ResourceCacheInterfaceBase> remote) {
-  GetFrame()->SetResourceCacheRemote(std::move(remote));
-}
-
 void WebLocalFrameImpl::BlockParserForTesting() {
   // Avoid blocking for MHTML tests since MHTML archives are loaded
   // synchronously during commit. WebFrameTestProxy only has a chance to act at

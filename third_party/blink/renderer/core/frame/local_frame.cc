@@ -173,7 +173,6 @@
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
-#include "third_party/blink/renderer/core/loader/resource_cache_impl.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_controller.h"
@@ -472,7 +471,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(background_color_paint_image_generator_);
   visitor->Trace(box_shadow_paint_image_generator_);
   visitor->Trace(clip_path_paint_image_generator_);
-  visitor->Trace(resource_cache_);
   visitor->Trace(lcpp_);
   visitor->Trace(v8_local_compile_hints_producer_);
 #if !BUILDFLAG(IS_ANDROID)
@@ -2994,11 +2992,6 @@ void LocalFrame::DidFreeze() {
     DomWindow()->SetIsInBackForwardCache(true);
   }
 
-  if (resource_cache_) {
-    resource_cache_->ClearReceivers();
-    resource_cache_.Clear();
-  }
-
   LoaderFreezeMode freeze_mode = GetLoaderFreezeMode();
   GetDocument()->Fetcher()->SetDefersLoading(freeze_mode);
   Loader().SetDefersLoading(freeze_mode);
@@ -3795,22 +3788,6 @@ void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {
       return;
     }
   }
-}
-
-void LocalFrame::BindResourceCache(
-    mojo::PendingReceiver<mojom::blink::ResourceCache> receiver) {
-  if (resource_cache_) {
-    resource_cache_->AddReceiver(std::move(receiver));
-  } else {
-    resource_cache_ =
-        MakeGarbageCollected<ResourceCacheImpl>(this, std::move(receiver));
-  }
-}
-
-void LocalFrame::SetResourceCacheRemote(
-    mojo::PendingRemote<mojom::blink::ResourceCache> remote) {
-  CHECK(GetDocument());
-  GetDocument()->Fetcher()->SetResourceCache(std::move(remote));
 }
 
 bool LocalFrame::IsSameOrigin() {

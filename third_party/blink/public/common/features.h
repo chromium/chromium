@@ -1050,12 +1050,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kRegisterJSSourceLocationBlockingBFCache);
 
-// If enabled, renderers look for cached resources from another renderer
-// that has the same process isolation policies. Note that renderers don't
-// use cached resources in other rendereres yet, just record histograms.
-// See https://crbug.com/1414262
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRemoteResourceCache);
-
 // Makes preloaded fonts render-blocking up to the limits below.
 // See https://crbug.com/1412861
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderBlockingFonts);

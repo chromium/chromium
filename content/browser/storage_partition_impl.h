@@ -96,7 +96,6 @@ class PrivateAggregationDataModel;
 class PrivateAggregationManager;
 class PrivateAggregationManagerImpl;
 class PushMessagingContext;
-class ResourceCacheManager;
 class QuotaContext;
 class SharedDictionaryAccessObserver;
 class SharedStorageHeaderObserver;
@@ -288,7 +287,6 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
-  ResourceCacheManager* GetResourceCacheManager();
 
   // blink::mojom::DomStorage interface.
   void OpenLocalStorage(
@@ -726,8 +724,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
 
   std::unique_ptr<PrivateAggregationManagerImpl> private_aggregation_manager_;
-
-  std::unique_ptr<ResourceCacheManager> resource_cache_manager_;
 
   std::unique_ptr<CookieDeprecationLabelManagerImpl>
       cookie_deprecation_label_manager_;

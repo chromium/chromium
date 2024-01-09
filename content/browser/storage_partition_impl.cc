@@ -77,7 +77,6 @@
 #include "content/browser/indexed_db/indexed_db_control_wrapper.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
-#include "content/browser/loader/resource_cache_manager.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/locks/lock_manager.h"
 #include "content/browser/navigation_or_document_handle.h"
@@ -1635,10 +1634,6 @@ void StoragePartitionImpl::Initialize(
         std::make_unique<PrivateAggregationManagerImpl>(is_in_memory(), path,
                                                         this);
   }
-
-  if (base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache)) {
-    resource_cache_manager_ = std::make_unique<ResourceCacheManager>();
-  }
 }
 
 void StoragePartitionImpl::OnStorageServiceDisconnected() {
@@ -2005,11 +2000,6 @@ PrivateAggregationDataModel*
 StoragePartitionImpl::GetPrivateAggregationDataModel() {
   DCHECK(initialized_);
   return private_aggregation_manager_.get();
-}
-
-ResourceCacheManager* StoragePartitionImpl::GetResourceCacheManager() {
-  CHECK(initialized_);
-  return resource_cache_manager_.get();
 }
 
 CookieDeprecationLabelManager*

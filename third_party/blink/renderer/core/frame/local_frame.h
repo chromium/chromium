@@ -60,7 +60,6 @@
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom-blink.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/loader/resource_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
@@ -151,7 +150,6 @@ class NodeTraversal;
 class PerformanceMonitor;
 class PluginData;
 class PolicyContainer;
-class ResourceCacheImpl;
 class ScrollSnapshotClient;
 class SmoothScrollSequencer;
 class SpellChecker;
@@ -907,13 +905,6 @@ class CORE_EXPORT LocalFrame final
       const BFCacheBlockingFeatureAndLocations&,
       const BFCacheBlockingFeatureAndLocations&);
 
-  // Binds a ResourceCache. Creates a new ResourceCache when there is no
-  // existing one.
-  void BindResourceCache(mojo::PendingReceiver<mojom::blink::ResourceCache>);
-
-  // Sets a ResourceCache hosted by another frame in a different renderer.
-  void SetResourceCacheRemote(mojo::PendingRemote<mojom::blink::ResourceCache>);
-
   bool IsSameOrigin();
 
   v8_compile_hints::V8LocalCompileHintsProducer&
@@ -1131,9 +1122,6 @@ class CORE_EXPORT LocalFrame final
   // ScrollSnapshotClients owned by elements in this frame. The clients must
   // be registered at the actual elements as the references here are weak.
   HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
-
-  // Set lazily, when the browser asks to host a resource cache in this frame.
-  Member<ResourceCacheImpl> resource_cache_;
 
   // Manages a transient affordance for this frame to enter fullscreen.
   TransientAllowFullscreen transient_allow_fullscreen_;

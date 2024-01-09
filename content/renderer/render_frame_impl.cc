@@ -174,7 +174,6 @@
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
-#include "third_party/blink/public/mojom/loader/resource_cache.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
@@ -2257,12 +2256,6 @@ void RenderFrameImpl::GetSerializedHtmlWithLocalLinks(
                                 save_with_empty_url);
 }
 
-void RenderFrameImpl::SetResourceCache(
-    mojo::PendingRemote<blink::mojom::ResourceCache> remote) {
-  CHECK(base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache));
-  frame_->SetResourceCacheRemote(std::move(remote));
-}
-
 void RenderFrameImpl::SetWantErrorMessageStackTrace() {
   want_error_message_stack_trace_ = true;
   GetAgentGroupScheduler().Isolate()->SetCaptureStackTraceForUncaughtExceptions(
@@ -2602,7 +2595,6 @@ void RenderFrameImpl::CommitNavigation(
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojo::PendingRemote<blink::mojom::CodeCacheHost>
         code_cache_host_for_background,
-    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
@@ -2663,9 +2655,8 @@ void RenderFrameImpl::CommitNavigation(
       std::move(subresource_proxying_loader_factory),
       std::move(keep_alive_loader_factory),
       std::move(fetch_later_loader_factory), std::move(code_cache_host),
-      std::move(code_cache_host_for_background), std::move(resource_cache),
-      std::move(cookie_manager_info), std::move(storage_info),
-      std::move(document_state));
+      std::move(code_cache_host_for_background), std::move(cookie_manager_info),
+      std::move(storage_info), std::move(document_state));
 
   // Handle a navigation that has a non-empty `data_url_as_string`, or perform
   // a "loadDataWithBaseURL" navigation, which is different from a normal data:
@@ -2789,7 +2780,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojo::PendingRemote<blink::mojom::CodeCacheHost>
         code_cache_host_for_background,
-    mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
     std::unique_ptr<DocumentState> document_state,
@@ -2899,7 +2889,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
   pending_code_cache_host_ = std::move(code_cache_host);
   pending_code_cache_host_for_background_ =
       std::move(code_cache_host_for_background);
-  pending_resource_cache_ = std::move(resource_cache);
   pending_cookie_manager_info_ = std::move(cookie_manager_info);
   pending_storage_info_ = std::move(storage_info);
   original_storage_key_ = navigation_params->storage_key;
@@ -3953,11 +3942,6 @@ void RenderFrameImpl::DidCommitNavigation(
       frame_->SetSessionStorageArea(
           std::move(pending_storage_info_->session_storage_area));
     }
-  }
-
-  if (pending_resource_cache_.is_valid()) {
-    CHECK(base::FeatureList::IsEnabled(blink::features::kRemoteResourceCache));
-    frame_->SetResourceCacheRemote(std::move(pending_resource_cache_));
   }
 
   DidCommitNavigationInternal(
