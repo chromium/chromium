@@ -207,6 +207,15 @@ public class HubLayout extends Layout implements HubLayoutController {
 
         forceAnimationToFinish();
 
+        // TODO(crbug/1516760): This is a stop gap solution that will work until we have more panes.
+        // While we only have tab switcher panes, selecting the pane based on the currently
+        // selected tab model is correct. However, if we have more panes we likely want to be able
+        // to "select" a pane to focus as part of the HubLayout show transition.
+        mPaneManager.focusPane(
+                mTabModelSelector.isIncognitoSelected()
+                        ? PaneId.INCOGNITO_TAB_SWITCHER
+                        : PaneId.TAB_SWITCHER);
+
         mHubController.onHubLayoutShow();
 
         HubContainerView containerView = mHubController.getContainerView();
