@@ -310,6 +310,7 @@ struct ActivationOperatorDesc {
                 DML_ACTIVATION_RELU_OPERATOR_DESC,
                 DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
                 DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC,
+                DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
                 DML_ACTIVATION_TANH_OPERATOR_DESC>
       desc;
 
@@ -341,6 +342,10 @@ struct ActivationOperatorDesc {
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_SOFTPLUS,
               &absl::get<DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC>(desc)};
+    } else if (absl::holds_alternative<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(
+                   desc)) {
+      return {DML_OPERATOR_ACTIVATION_SOFTSIGN,
+              &absl::get<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC>(desc)};
     } else if (absl::holds_alternative<DML_ACTIVATION_TANH_OPERATOR_DESC>(
                    desc)) {
       return {DML_OPERATOR_ACTIVATION_TANH,
@@ -385,6 +390,9 @@ CreateActivationOperatorDesc(const mojom::ActivationPtr& activation) {
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{
               .Steepness = activation->get_softplus()->steepness}};
+    case mojom::Activation::Tag::kSoftsign:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
     case mojom::Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
@@ -2943,6 +2951,15 @@ void GraphImpl::CreateAndBuild(
         create_operator_result = CreateOperatorNodeForSoftplus(
             id_to_operand_map, operation->get_softplus(), graph_builder,
             id_to_node_output_map);
+        break;
+      }
+      case Operation::Tag::kSoftsign: {
+        create_operator_result =
+            CreateOperatorNodeForUnary<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
+                                       DML_OPERATOR_ACTIVATION_SOFTSIGN>(
+                id_to_operand_map, operation->get_softsign(), graph_builder,
+                id_to_node_output_map);
+
         break;
       }
       case mojom::Operation::Tag::kSplit: {

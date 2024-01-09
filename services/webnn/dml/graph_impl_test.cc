@@ -622,6 +622,33 @@ TEST_F(WebNNGraphDMLImplTest, BuildSingleOperatorBatchNormalization) {
         .Test();
   }
   {
+    // Test batchNormalization with 1-D input with activation = softsign.
+    BatchNormalizationTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2},
+                  .values = {-1, 1}},
+        .mean = {.type = mojom::Operand::DataType::kFloat32,
+                 .dimensions = {2},
+                 .values = {-1, 1}},
+        .variance = {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {2},
+                     .values = {1.0, 1.5}},
+        .scale = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                    .dimensions = {2},
+                                    .values = {1.0, 1.5}},
+        .bias = OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                                   .dimensions = {2},
+                                   .values = {0, 1}},
+        .attributes = {.axis = 0,
+                       .activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {2},
+                   .values = {0, 0.5}}}
+        .Test();
+  }
+  {
     // Test batchNormalization with 4-D input with axis = 3.
     BatchNormalizationTester<float>{
         .input = {.type = mojom::Operand::DataType::kFloat32,
@@ -1141,6 +1168,24 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorConv2d) {
         .output = {.type = mojom::Operand::DataType::kFloat32,
                    .dimensions = {1, 1, 3, 3},
                    .values = {5, 6, 7, 8, 9, 10, 11, 12, 13}}}
+        .Test();
+  }
+  // Test conv2d with NCHW layout, float 32 data type, fusing with softsign
+  // activation.
+  {
+    Conv2dTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 1, 3, 3},
+                  .values = {-3, -2, -1, -4, 0, 2, 1, 3, 4}},
+        .filter = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = std::vector<float>(4, 1)},
+        .attributes = {.activation =
+                           Activation{.kind =
+                                          mojom::Activation::Tag::kSoftsign}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 1, 2, 2},
+                   .values = {-0.9, -0.5, 0, 0.9}}}
         .Test();
   }
   // Test conv2d with NCHW layout, fusing with tanh activation.
@@ -3169,7 +3214,7 @@ struct UnaryOperatorTester {
   absl::optional<float> linear_alpha;
   absl::optional<float> linear_beta;
   absl::optional<float> softplus_steepness;
-  OperandInfo<float> output;
+  OperandInfo<T> output;
   void Test(BuildAndComputeExpectation expectation =
                 BuildAndComputeExpectation::kSuccess) {
     // Build the graph with mojo type.
@@ -3218,6 +3263,9 @@ struct UnaryOperatorTester {
         CHECK(softplus_steepness);
         builder.BuildSoftplus(input_operand_id, output_operand_id,
                               softplus_steepness.value());
+        break;
+      case mojom::Operation::Tag::kSoftsign:
+        builder.BuildSoftsign(input_operand_id, output_operand_id);
         break;
       case mojom::Operation::Tag::kTanh:
         builder.BuildTanh(input_operand_id, output_operand_id);
@@ -3439,6 +3487,35 @@ TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftplus) {
                    .dimensions = {1, 1, 1, 1},
                    .values = {200}}}
         .Test(BuildAndComputeExpectation::kCreateGraphFailure);
+  }
+}
+
+// Test building and computing a DML graph with single operator softsign.
+TEST_F(WebNNGraphDMLImplTest, BuildAndComputeSingleOperatorSoftsign) {
+  {
+    // Test softsign with a float32 input.
+    UnaryOperatorTester<float>{
+        .tag = mojom::Operation::Tag::kSoftsign,
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {1, 2, 1, 3},
+                  .values = {-9, -7, -4, -3, -1, 0}},
+        .output = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {1, 2, 1, 3},
+                   .values = {-0.9, -0.875, -0.8, -0.75, -0.5, 0}}}
+        .Test();
+  }
+  {
+    // Test softsign with a float16 input.
+    UnaryOperatorTester<float16>{
+        .tag = mojom::Operation::Tag::kSoftsign,
+        .input = {.type = mojom::Operand::DataType::kFloat16,
+                  .dimensions = {1, 2, 3, 1},
+                  .values = Float16FromFloat32({0, 1, 3, 4, 7, 9})},
+        .output = {.type = mojom::Operand::DataType::kFloat16,
+                   .dimensions = {1, 2, 3, 1},
+                   .values =
+                       Float16FromFloat32({0, 0.5, 0.75, 0.8, 0.875, 0.9})}}
+        .Test();
   }
 }
 
