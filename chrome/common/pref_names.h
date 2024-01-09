@@ -2002,6 +2002,10 @@ inline constexpr char kOpenPdfDownloadInSystemReader[] =
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+// A boolean specifying whether pdf files triggered by external apps are
+// auto opened after download completion.
+inline constexpr char kAutoOpenPdfEnabled[] = "download.auto_open_pdf_enabled";
+
 // Int (as defined by DownloadPromptStatus) which specifies whether we should
 // ask the user where they want to download the file (only for Android).
 inline constexpr char kPromptForDownloadAndroid[] =

@@ -18,6 +18,7 @@
 #include "chrome/browser/download/android/jni_headers/OpenDownloadDialogBridge_jni.h"
 #include "chrome/browser/download/android/open_download_dialog_bridge_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -41,6 +42,7 @@ OpenDownloadDialogBridge::~OpenDownloadDialogBridge() {
 }
 
 void OpenDownloadDialogBridge::Show(content::WebContents* web_contents,
+                                    Profile* profile,
                                     const std::string& download_guid) {
   DCHECK(web_contents);
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -53,6 +55,7 @@ void OpenDownloadDialogBridge::Show(content::WebContents* web_contents,
 
   Java_OpenDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
+      ProfileAndroid::FromProfile(profile)->GetJavaObject(),
       base::android::ConvertUTF8ToJavaString(env, download_guid));
 }
 

@@ -14,6 +14,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.download.dialogs.OpenDownloadDialog;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -64,7 +67,7 @@ public class OpenDownloadDialogBridge {
      * @param fileName Name of the download file.
      */
     @CalledByNative
-    public void showDialog(WindowAndroid windowAndroid, String guid) {
+    public void showDialog(WindowAndroid windowAndroid, Profile profile, String guid) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onCancel(guid, windowAndroid);
@@ -77,8 +80,7 @@ public class OpenDownloadDialogBridge {
                         ((ModalDialogManagerHolder) activity).getModalDialogManager(),
                         (result) -> {
                             if (result == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                                // TODO(qinmin): write the decision to the preference so we don't
-                                // prompt again. Also need to cancel other outstanding open dialogs.
+                                UserPrefs.get(profile).setBoolean(Pref.AUTO_OPEN_PDF_ENABLED, true);
                                 recordOpenDownloadDialogEvent(
                                         OpenDownloadDialogEvent.OPEN_DOWNLOAD_DIALOG_ALWAYS_OPEN);
                                 onConfirmed(guid);

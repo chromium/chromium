@@ -44,7 +44,12 @@ void OpenDownloadDialogBridgeDelegate::CreateDialog(
   download_item->AddObserver(this);
   download_items_.push_back(download_item);
 
-  open_download_dialog_bridge_->Show(web_contents, download_item->GetGuid());
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(download_item);
+
+  open_download_dialog_bridge_->Show(
+      web_contents, Profile::FromBrowserContext(browser_context),
+      download_item->GetGuid());
 }
 
 void OpenDownloadDialogBridgeDelegate::OnConfirmed(

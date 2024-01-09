@@ -17,6 +17,7 @@ class WebContents;
 }  // namespace content
 
 class OpenDownloadDialogBridgeDelegate;
+class Profile;
 
 // Class for showing dialogs to asks whether user wants to open a downloaded
 // file from an external app.
@@ -33,6 +34,7 @@ class OpenDownloadDialogBridge : public download::DownloadItem::Observer {
 
   // Called to create and show a dialog for a download.
   void Show(content::WebContents* web_contents,
+            Profile* profile,
             const std::string& download_guid);
 
   // Called from Java via JNI.
