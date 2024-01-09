@@ -61,11 +61,6 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
-#if BUILDFLAG(IS_OZONE)
-#include "ui/ozone/public/ozone_platform.h"
-#include "ui/ozone/public/surface_factory_ozone.h"
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <va/va_prot.h>
 using media_gpu_vaapi::kModuleVa_prot;
@@ -410,7 +405,7 @@ bool FillVADRMPRIMESurfaceDescriptor(const gfx::NativePixmap& pixmap,
   for (size_t i = 0u; i < num_planes; i++) {
     const int dma_buf_fd = pixmap.GetDmaBufFd(i);
     if (dma_buf_fd < 0) {
-      LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
+      LOG(ERROR) << "Failed to get dmabuf from a NativePixmap";
       return false;
     }
     const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
@@ -484,7 +479,7 @@ bool FillVASurfaceAttribExternalBuffers(
 
   const int dma_buf_fd = pixmap.GetDmaBufFd(0);
   if (dma_buf_fd < 0) {
-    LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
+    LOG(ERROR) << "Failed to get dmabuf from a NativePixmap";
     return false;
   }
   const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
