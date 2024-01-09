@@ -279,6 +279,7 @@ void DeskProfilesButton::UpdateIcon() {
           desk_->lacros_profile_id())) {
     icon_image_ = summary->icon;
     icon_->SetImage(icon_image_);
+    icon_->SetTooltipText(base::UTF8ToUTF16(summary->name));
   }
 }
 
