@@ -568,6 +568,8 @@ crbug.com/882975 [ Win10.20h2 ] virtual/threaded/fast/events/pinch/scroll-visual
 crbug.com/898394 [ Debug ] virtual/android/url-bar/bottom-and-top-fixed-sticks-to-top.html [ Failure Timeout ]
 
 crbug.com/1046784 http/tests/devtools/elements/styles-3/styles-disable-then-delete.js [ Crash Failure Pass Timeout ]
+# Temporaily disabled to unblock crrev.com/c/5046552
+crbug.com/1504820 http/tests/devtools/elements/styles-4/styles-source-lines.js [ Failure Pass ]
 
 # Subpixel rounding differences that are incorrect.
 crbug.com/997202 compositing/overflow/scaled-overflow.html [ Failure ]
