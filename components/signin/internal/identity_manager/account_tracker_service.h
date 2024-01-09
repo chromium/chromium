@@ -115,9 +115,9 @@ class AccountTrackerService {
 
   // Seeds the accounts with |core_account_infos|. The primary account id is
   // passed to keep it from getting removed.
-  void SeedAccountsInfo(
-      const std::vector<CoreAccountInfo>& core_account_infos,
-      const absl::optional<CoreAccountId>& primary_account_id);
+  void SeedAccountsInfo(const std::vector<CoreAccountInfo>& core_account_infos,
+                        const absl::optional<CoreAccountId>& primary_account_id,
+                        bool should_remove_stale_accounts);
 
   // Sets whether the account is a Unicorn account.
   void SetIsChildAccount(const CoreAccountId& account_id,
