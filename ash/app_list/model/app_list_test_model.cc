@@ -20,6 +20,7 @@
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {
@@ -280,6 +281,10 @@ AppListTestModel::AppListTestItem* AppListTestModel::CreateAndAddPromiseItem(
     const std::string& id) {
   std::unique_ptr<AppListTestItem> test_item(CreateItem(id));
   test_item->UpdateAppStatusForTesting(AppStatus::kPending);
+  const int icon_dimension = 48;
+  const gfx::ImageSkia fake_promise_icon =
+      gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+          icon_dimension, CreateImageSkia(icon_dimension, icon_dimension));
   AppListItem* item = AppListModel::AddItem(std::move(test_item));
   return static_cast<AppListTestItem*>(item);
 }

@@ -788,11 +788,6 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
             resized_icon_image);
   }
 
-  if (is_promise_app_ || ShouldUseFallbackIconImageModel()) {
-    resized_icon_image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-        icon_size.width(), resized_icon_image);
-  }
-
   icon_->SetImage(resized_icon_image);
 
   Layout();
@@ -2222,6 +2217,9 @@ void AppListItemView::UpdateProgressRingBounds() {
   // The Progress indicator paints the ring within the bounds of the layer, so
   // add padding for the promise ring.
   progress_bounds.Inset(-gfx::Insets(kPromiseRingStrokeSize));
+
+  // The masked icons include 1px padding.
+  progress_bounds.Inset(1);
 
   progress_indicator_->layer()->SetBounds(progress_bounds);
 

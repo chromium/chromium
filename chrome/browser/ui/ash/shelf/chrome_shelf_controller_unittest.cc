@@ -6294,7 +6294,7 @@ TEST_F(ChromeShelfControllerPromiseAppsTest,
   const ash::ShelfItem* item = shelf_controller_->GetItem(id);
   SkBitmap result_bitmap = *item->image.bitmap();
   SkBitmap expected_bitmap =
-      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kNone);
+      ApplyEffectsToBitmap(base_bitmap, apps::IconEffects::kCrOsStandardMask);
   EXPECT_TRUE(gfx::BitmapsAreEqual(result_bitmap, expected_bitmap));
 }
 

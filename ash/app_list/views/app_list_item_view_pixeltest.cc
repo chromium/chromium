@@ -427,7 +427,7 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::JoinString({"promise_app_waiting", GenerateScreenshotName()}, "."),
-      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/1, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
@@ -455,7 +455,7 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::JoinString({"promise_app_installing", GenerateScreenshotName()},
                        "."),
-      /*revision_number=*/0, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/1, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 class AppListItemViewWebAppShortcutPixelTest
