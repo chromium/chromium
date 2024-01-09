@@ -173,7 +173,7 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
     NSSize newTagSize = attachment.image.size;
 
     // The baseline offset of the badge image to the menu text baseline.
-    const int kBadgeBaselineOffset = -4;
+    const int kBadgeBaselineOffset = -3;
     attachment.bounds = NSMakeRect(0, kBadgeBaselineOffset, newTagSize.width,
                                    newTagSize.height);
 
