@@ -108,6 +108,10 @@ class AppListToastContainerView : public views::View {
   // Fires an accessibility alert to notify the users that the sort is reverted.
   void AnnounceUndoSort();
 
+  // Updates the toast preferred size to fit `available_width` of available
+  // horizontal space.
+  void ConfigureLayoutForAvailableWidth(int available_width);
+
   // This function expects that `toast_view_` exists.
   views::LabelButton* GetToastButton();
 
@@ -172,6 +176,9 @@ class AppListToastContainerView : public views::View {
 
   // True if committing the sort order via the close button is in progress.
   bool committing_sort_order_ = false;
+
+  // The amount of horizontal space available for the toast container.
+  absl::optional<int> available_width_;
 
   // The abort handle for the `toast_view_` fade out animation.
   std::unique_ptr<views::AnimationAbortHandle>

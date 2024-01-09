@@ -619,6 +619,21 @@ void AppListBubbleAppsPage::VisibilityChanged(views::View* starting_from,
   }
 }
 
+void AppListBubbleAppsPage::OnBoundsChanged(const gfx::Rect& old_bounds) {
+  // Toast container, and continue section may contain toasts with multiline
+  // labels, whose preferred height will depend on the apps page bounds (in
+  // particular, the amount of horizontal space available to lay out labels).
+  // Propagate the amount of available width for toasts before layout starts, so
+  // the toast views can correctly calculate their preferred size during the
+  // ensuing layout pass (otherwise, the preferred toast size may change as
+  // result of the layout).
+  toast_container_->ConfigureLayoutForAvailableWidth(
+      bounds().width() - 2 * kHorizontalInteriorMargin);
+  continue_section_->ConfigureLayoutForAvailableWidth(
+      bounds().width() - 2 * kHorizontalInteriorMargin -
+      kContinueSectionInsets.width());
+}
+
 void AppListBubbleAppsPage::OnActiveAppListModelsChanged(
     AppListModel* model,
     SearchModel* search_model) {
