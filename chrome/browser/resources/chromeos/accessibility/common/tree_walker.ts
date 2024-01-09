@@ -77,7 +77,7 @@ export class AutomationTreeWalker {
 
   constructor(
       node: AutomationNode, dir: constants.Dir,
-      optRestrictions?: AutomationTreeWalkerRestriction) {
+      restrictions: AutomationTreeWalkerRestriction = {}) {
     this.node_ = node;
     this.phase_ = AutomationTreeWalkerPhase.INITIAL;
     this.dir_ = dir;
@@ -87,8 +87,7 @@ export class AutomationTreeWalker {
      * Deepest common ancestor of initialNode and node. Valid only when moving
      * backward.
      */
-    this.backwardAncestor_ = node.parent || null;
-    const restrictions: AutomationTreeWalkerRestriction = optRestrictions || {};
+    this.backwardAncestor_ = node.parent ?? null;
 
     this.visitPred_ = function(node) {
       if (this.skipInitialAncestry_ &&
@@ -108,16 +107,10 @@ export class AutomationTreeWalker {
 
       return true;
     };
-    /** @private {AutomationPredicate.Unary} */
-    this.leafPred_ = restrictions.leaf ? restrictions.leaf :
-                                         AutomationTreeWalker.falsePredicate_;
-    /** @private {AutomationPredicate.Unary} */
-    this.rootPred_ = restrictions.root ? restrictions.root :
-                                         AutomationTreeWalker.falsePredicate_;
-    /** @private {boolean} */
-    this.skipInitialAncestry_ = restrictions.skipInitialAncestry || false;
-    /** @private {boolean} */
-    this.skipInitialSubtree_ = restrictions.skipInitialSubtree || false;
+    this.leafPred_ = restrictions.leaf ?? AutomationTreeWalker.falsePredicate_;
+    this.rootPred_ = restrictions.root ?? AutomationTreeWalker.falsePredicate_;
+    this.skipInitialAncestry_ = restrictions.skipInitialAncestry ?? false;
+    this.skipInitialSubtree_ = restrictions.skipInitialSubtree ?? false;
   }
 
   private static falsePredicate_(_node: AutomationNode): boolean {
