@@ -124,6 +124,10 @@ class AutofillDriverIOS : public AutofillDriver,
   // "" if frame messaging is disabled.
   std::string web_frame_id_;
 
+  // A LocalFrameToken containing a value equivalent to `web_frame_id_` if that
+  // string is populated with a valid 128-bit hex value, or empty otherwise.
+  LocalFrameToken local_frame_token_;
+
   // AutofillDriverIOSBridge instance that is passed in.
   __unsafe_unretained id<AutofillDriverIOSBridge> bridge_;
 

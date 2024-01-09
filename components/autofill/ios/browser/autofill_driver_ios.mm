@@ -2,21 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 
-#include "base/memory/ptr_util.h"
-#include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
-#include "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
-#include "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "base/memory/ptr_util.h"
+#import "components/autofill/core/browser/form_structure.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
+#import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#include "ios/web/public/browser_state.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/rect_f.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/accessibility/ax_tree_id.h"
+#import "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
 
@@ -39,18 +42,36 @@ AutofillDriverIOS::AutofillDriverIOS(web::WebState* web_state,
       browser_autofill_manager_(
           std::make_unique<BrowserAutofillManager>(this, client, app_locale)) {
   web_frame_id_ = web_frame ? web_frame->GetFrameId() : "";
+
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    std::optional<base::UnguessableToken> token_temp =
+        DeserializeJavaScriptFrameId(web_frame_id_);
+    if (token_temp) {
+      local_frame_token_ = LocalFrameToken(*token_temp);
+    }
+  }
 }
 
 AutofillDriverIOS::~AutofillDriverIOS() = default;
 
 LocalFrameToken AutofillDriverIOS::GetFrameToken() const {
-  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
-  return LocalFrameToken();
+  return local_frame_token_;
 }
 
-absl::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
-  NOTIMPLEMENTED();  // TODO(crbug.com/1441921) implement.
-  return absl::nullopt;
+std::optional<LocalFrameToken> AutofillDriverIOS::Resolve(FrameToken query) {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAcrossIframesIos)) {
+    return std::nullopt;
+  }
+
+  if (absl::holds_alternative<LocalFrameToken>(query)) {
+    return absl::get<LocalFrameToken>(query);
+  }
+  CHECK(absl::holds_alternative<RemoteFrameToken>(query));
+  auto remote_token = absl::get<RemoteFrameToken>(query);
+  auto* registrar = ChildFrameRegistrar::FromWebState(web_state_);
+  return registrar ? registrar->LookupChildFrame(remote_token) : std::nullopt;
 }
 
 AutofillDriverIOS* AutofillDriverIOS::GetParent() {
