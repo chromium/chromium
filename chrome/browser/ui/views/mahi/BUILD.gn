@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("mahi") {
+  sources = [
+    "mahi_menu_controller.cc",
+    "mahi_menu_controller.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

@@ -13,6 +13,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -35,6 +36,10 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     editor_menu_controller_ =
         std::make_unique<editor_menu::EditorMenuControllerImpl>();
   }
+
+  if (chromeos::features::IsMahiEnabled()) {
+    mahi_menu_controller_ = std::make_unique<mahi::MahiMenuController>();
+  }
 }
 
 ReadWriteCardsManagerImpl::~ReadWriteCardsManagerImpl() = default;
@@ -56,12 +61,12 @@ ReadWriteCardController* ReadWriteCardsManagerImpl::GetController(
     }
   }
 
-  if (!QuickAnswersState::Get()->is_eligible()) {
-    return nullptr;
+  if (params.selection_text.empty()) {
+    return chromeos::features::IsMahiEnabled() ? mahi_menu_controller_.get()
+                                               : nullptr;
   }
 
-  // Skip if no text selected.
-  if (params.selection_text.empty()) {
+  if (!QuickAnswersState::Get()->is_eligible()) {
     return nullptr;
   }
 

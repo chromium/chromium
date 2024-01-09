@@ -22,6 +22,10 @@ namespace editor_menu {
 class EditorMenuControllerImpl;
 }  // namespace editor_menu
 
+namespace mahi {
+class MahiMenuController;
+}  // namespace mahi
+
 class ReadWriteCardController;
 
 // `ReadWriteCardsManagerImpl` provides supported UI controller to given context
@@ -48,6 +52,7 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   std::unique_ptr<QuickAnswersControllerImpl> quick_answers_controller_;
   std::unique_ptr<chromeos::editor_menu::EditorMenuControllerImpl>
       editor_menu_controller_;
+  std::unique_ptr<chromeos::mahi::MahiMenuController> mahi_menu_controller_;
 };
 
 }  // namespace chromeos

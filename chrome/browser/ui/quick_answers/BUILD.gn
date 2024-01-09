@@ -42,6 +42,7 @@ source_set("quick_answers") {
     "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/views/editor_menu",
     "//chrome/browser/ui/views/editor_menu:utils",
+    "//chrome/browser/ui/views/mahi",
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/components/quick_answers",
     "//chromeos/components/quick_answers/public/cpp:cpp",
