@@ -1146,7 +1146,7 @@
   "STATE": {
     "en": [
       {
-        "positive_pattern": "state|county|region|province|county|principality",
+        "positive_pattern": "state|region|province|county|principality",
         "positive_score": 1.1,
         "negative_pattern": "(united|hist|history).?state",
         "match_field_attributes": ["LABEL", "NAME"],
