@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/compose/chrome_compose_client.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,7 +18,6 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/unified_consent/pref_names.h"
 #include "content/public/test/browser_test.h"
@@ -55,10 +55,8 @@ class ComposeEnablingBrowserTest : public InProcessBrowserTest {
 // PRE_ step simulates a browser restart.
 IN_PROC_BROWSER_TEST_F(ComposeEnablingBrowserTest,
                        PRE_EnableComposeViaSettings) {
-  // Sign-in.
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(browser()->profile()),
-      "test@example.com", signin::ConsentLevel::kSync);
+  optimization_guide::EnableSigninAndModelExecutionCapability(
+      browser()->profile());
   // Turn on MSBB.
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(

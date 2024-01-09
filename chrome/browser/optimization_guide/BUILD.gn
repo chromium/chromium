@@ -16,6 +16,7 @@ source_set("test_support") {
     "//chrome/browser",
     "//components/metrics:content",
     "//components/optimization_guide/core",
+    "//components/signin/public/identity_manager:test_support",
     "//content/test:test_support",
   ]
 }

@@ -35,9 +35,12 @@ enum class SettingsVisibilityResult {
   kVisibleFieldTrialEnabled = 4,
   // Not visible because feature was disabled by enterprise policy.
   kNotVisibleEnterprisePolicy = 5,
+  // Not visible because model execution capability was disabled for the user
+  // account.
+  kNotVisibleModelExecutionCapability = 6,
   // Updates should match with FeaturesSettingsVisibilityResult enum in
   // enums.xml.
-  kMaxValue = kNotVisibleEnterprisePolicy
+  kMaxValue = kNotVisibleModelExecutionCapability
 };
 
 // Util class for recording the construction and validation of Settings
@@ -81,8 +84,11 @@ enum class FeatureCurrentlyEnabledResult {
   // Returned result as not enabled because feature was disabled by enterprise
   // policy.
   kNotEnabledEnterprisePolicy = 4,
+  // Returned result as not enabled because model execution capability was
+  // disabled for the user account.
+  kNotEnabledModelExecutionCapability = 5,
   // Updates should match with FeatureCurrentlyEnabledResult enum in enums.xml.
-  kMaxValue = kNotEnabledEnterprisePolicy
+  kMaxValue = kNotEnabledModelExecutionCapability
 };
 
 // Util class for recording the construction and validation of Settings
@@ -113,6 +119,21 @@ class ScopedFeatureCurrentlyEnabledHistogramRecorder {
   FeatureCurrentlyEnabledResult result_;
 };
 
+bool CanUseModelExecutionFeatures(signin::IdentityManager* identity_manager) {
+  if (!identity_manager) {
+    return false;
+  }
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.capabilities.can_use_model_execution_features() !=
+         signin::Tribool::kFalse;
+}
+
 }  // namespace
 
 ModelExecutionFeaturesController::ModelExecutionFeaturesController(
@@ -131,6 +152,10 @@ ModelExecutionFeaturesController::ModelExecutionFeaturesController(
 
   is_signed_in_ = identity_manager && identity_manager->HasPrimaryAccount(
                                           signin::ConsentLevel::kSignin);
+  if (is_signed_in_) {
+    can_use_model_execution_features_ =
+        CanUseModelExecutionFeatures(identity_manager);
+  }
 
   StartObservingAccountChanges();
 }
@@ -153,6 +178,12 @@ bool ModelExecutionFeaturesController::ShouldFeatureBeCurrentlyEnabledForUser(
         kInvalidEnterprisePolicy:
       metrics_recorder.SetResult(
           feature, FeatureCurrentlyEnabledResult::kNotEnabledEnterprisePolicy);
+      return false;
+    case ModelExecutionFeaturesController::UserValidityResult::
+        kInvalidModelExecutionCapability:
+      metrics_recorder.SetResult(
+          feature,
+          FeatureCurrentlyEnabledResult::kNotEnabledModelExecutionCapability);
       return false;
     case ModelExecutionFeaturesController::UserValidityResult::kValid:
       break;
@@ -215,6 +246,12 @@ ModelExecutionFeaturesController::GetCurrentUserValidityResult(
         kInvalidUnsignedUser;
   }
 
+  // Check user account is allowed to use model execution, when signed-in.
+  if (is_signed_in_ && !can_use_model_execution_features_) {
+    return ModelExecutionFeaturesController::UserValidityResult::
+        kInvalidModelExecutionCapability;
+  }
+
   if (!IsAllowedByEnterprisePolicy(feature)) {
     return ModelExecutionFeaturesController::UserValidityResult::
         kInvalidEnterprisePolicy;
@@ -239,6 +276,12 @@ bool ModelExecutionFeaturesController::IsSettingVisible(
         kInvalidEnterprisePolicy:
       metrics_recorder.SetResult(
           feature, SettingsVisibilityResult::kNotVisibleEnterprisePolicy);
+      return false;
+    case ModelExecutionFeaturesController::UserValidityResult::
+        kInvalidModelExecutionCapability:
+      metrics_recorder.SetResult(
+          feature,
+          SettingsVisibilityResult::kNotVisibleModelExecutionCapability);
       return false;
     case ModelExecutionFeaturesController::UserValidityResult::kValid:
       break;
@@ -375,10 +418,31 @@ void ModelExecutionFeaturesController::OnPrimaryAccountChanged(
     return;
   }
 
-  if (is_signed_in_) {
+  if (!is_signed_in_) {
+    can_use_model_execution_features_ = false;
+    ResetInvalidFeaturePrefs();
     return;
   }
+  can_use_model_execution_features_ =
+      CanUseModelExecutionFeatures(identity_manager_);
+  ResetInvalidFeaturePrefs();
+}
 
+void ModelExecutionFeaturesController::OnExtendedAccountInfoUpdated(
+    const AccountInfo& info) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (!is_signed_in_) {
+    can_use_model_execution_features_ = false;
+    ResetInvalidFeaturePrefs();
+    return;
+  }
+  can_use_model_execution_features_ =
+      CanUseModelExecutionFeatures(identity_manager_);
+  ResetInvalidFeaturePrefs();
+}
+
+void ModelExecutionFeaturesController::ResetInvalidFeaturePrefs() {
   // Reset prefs to `kNotInitialized`.
   for (int i = proto::ModelExecutionFeature_MIN;
        i <= proto::ModelExecutionFeature_MAX; ++i) {

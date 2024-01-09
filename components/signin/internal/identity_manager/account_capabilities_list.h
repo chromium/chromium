@@ -42,6 +42,10 @@ ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
                    CAN_USE_CHROME_IP_PROTECTION_NAME,
                    "accountcapabilities/geydgnznmnqxa")
 
+ACCOUNT_CAPABILITY(kCanUseModelExecutionFeaturesName,
+                   CAN_USE_MODEL_EXECUTION_FEATURES_NAME,
+                   "accountcapabilities/gezdcnbnmnqxa")
+
 ACCOUNT_CAPABILITY(kIsAllowedForMachineLearningCapabilityName,
                    IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME,
                    "accountcapabilities/g42tslldmfya")

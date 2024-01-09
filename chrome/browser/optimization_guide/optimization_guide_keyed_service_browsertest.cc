@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+
 #include <memory>
 
 #include "base/base64.h"
@@ -20,7 +22,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -46,6 +47,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -356,9 +358,14 @@ class OptimizationGuideKeyedServiceBrowserTest
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
   void EnableSignIn() {
+    auto account_info =
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@gmail.com",
+                                          signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(true);
     identity_test_env_adaptor_->identity_test_env()
-        ->MakePrimaryAccountAvailable("user@gmail.com",
-                                      signin::ConsentLevel::kSignin);
+        ->UpdateAccountInfoForAccount(account_info);
   }
 
   void SignOut() {

@@ -67,6 +67,7 @@ class ModelExecutionFeaturesController
     kValid,
     kInvalidUnsignedUser,
     kInvalidEnterprisePolicy,
+    kInvalidModelExecutionCapability,
   };
 
   // Called when the main setting toggle pref is changed.
@@ -77,9 +78,10 @@ class ModelExecutionFeaturesController
 
   void StartObservingAccountChanges();
 
+  // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
-
+  void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
 
@@ -101,6 +103,9 @@ class ModelExecutionFeaturesController
   // callbacks.
   void InitializePrefListener();
 
+  // Resets the prefs for features that were invalid.
+  void ResetInvalidFeaturePrefs();
+
   // Computed at the time `this` is constructed. Stores the set of features
   // that were enabled at the time when browser started.
   std::unordered_set<int> features_enabled_at_startup_;
@@ -116,6 +121,10 @@ class ModelExecutionFeaturesController
   PrefChangeRegistrar pref_change_registrar_;
 
   bool is_signed_in_ = false;
+
+  // Obtained from the user account capability. Updated whenever sign-in changes
+  // or account capability changes.
+  bool can_use_model_execution_features_ = false;
 
   base::ObserverList<SettingsEnabledObserver> observers_;
 

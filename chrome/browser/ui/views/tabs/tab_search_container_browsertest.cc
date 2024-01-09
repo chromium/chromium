@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,6 +34,19 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
          features::kChromeWebuiRefresh2023},
         {});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  }
+
+  void EnableOptGuide() {
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
+
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetInteger(
+        optimization_guide::prefs::GetSettingEnabledPrefName(
+            optimization_guide::proto::ModelExecutionFeature::
+                MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION),
+        static_cast<int>(
+            optimization_guide::prefs::FeatureOptInState::kEnabled));
   }
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
