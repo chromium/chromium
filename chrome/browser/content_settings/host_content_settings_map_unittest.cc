@@ -102,25 +102,29 @@ class MockUserModifiableProvider
 
   MOCK_METHOD0(ShutdownOnUIThread, void());
 
-  MOCK_METHOD4(UpdateLastUsedTime,
+  MOCK_METHOD5(UpdateLastUsedTime,
                bool(const GURL& primary_url,
                     const GURL& secondary_url,
                     ContentSettingsType content_type,
-                    const base::Time time));
-  MOCK_METHOD3(UpdateLastVisitTime,
+                    const base::Time time,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD4(UpdateLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type));
-  MOCK_METHOD3(ResetLastVisitTime,
+                    ContentSettingsType content_type,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD4(ResetLastVisitTime,
                bool(const ContentSettingsPattern& primary_pattern,
                     const ContentSettingsPattern& secondary_pattern,
-                    ContentSettingsType content_type));
-  MOCK_METHOD4(RenewContentSetting,
+                    ContentSettingsType content_type,
+                    const content_settings::PartitionKey& partition_key));
+  MOCK_METHOD5(RenewContentSetting,
                absl::optional<base::TimeDelta>(
                    const GURL& primary_url,
                    const GURL& secondary_url,
                    ContentSettingsType content_type,
-                   absl::optional<ContentSetting> setting_to_match));
+                   absl::optional<ContentSetting> setting_to_match,
+                   const content_settings::PartitionKey& partition_key));
 
   MOCK_METHOD1(SetClockForTesting, void(base::Clock*));
 };

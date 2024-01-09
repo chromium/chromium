@@ -287,7 +287,8 @@ bool PrefProvider::UpdateSetting(
 bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
                                       const GURL& secondary_url,
                                       ContentSettingsType content_type,
-                                      const base::Time time) {
+                                      const base::Time time,
+                                      const PartitionKey& partition_key) {
   return UpdateSetting(
       content_type,
       [&](const Rule& rule) -> bool {
@@ -303,7 +304,8 @@ bool PrefProvider::UpdateLastUsedTime(const GURL& primary_url,
 bool PrefProvider::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
                           base::Time());
 }
@@ -311,7 +313,8 @@ bool PrefProvider::ResetLastVisitTime(
 bool PrefProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const PartitionKey& partition_key) {
   return SetLastVisitTime(primary_pattern, secondary_pattern, content_type,
                           GetCoarseVisitedTime(clock_->Now()));
 }
@@ -320,7 +323,8 @@ absl::optional<base::TimeDelta> PrefProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    absl::optional<ContentSetting> setting_to_match) {
+    absl::optional<ContentSetting> setting_to_match,
+    const PartitionKey& partition_key) {
   absl::optional<base::TimeDelta> delta_to_expiration;
   UpdateSetting(
       content_type,

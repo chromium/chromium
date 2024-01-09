@@ -148,7 +148,8 @@ bool OneTimePermissionProvider::UpdateLastUsedTime(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    const base::Time time) {
+    const base::Time time,
+    const content_settings::PartitionKey& partition_key) {
   // Last used time is not tracked for one-time permissions.
   return false;
 }
@@ -156,7 +157,8 @@ bool OneTimePermissionProvider::UpdateLastUsedTime(
 bool OneTimePermissionProvider::ResetLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   // LastVisit time is not currently tracked for one-time permissions.
   return false;
 }
@@ -164,7 +166,8 @@ bool OneTimePermissionProvider::ResetLastVisitTime(
 bool OneTimePermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type) {
+    ContentSettingsType content_type,
+    const content_settings::PartitionKey& partition_key) {
   // LastVisit time is not tracked for one-time permissions.
   return false;
 }
@@ -173,7 +176,8 @@ absl::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType type,
-    absl::optional<ContentSetting> setting_to_match) {
+    absl::optional<ContentSetting> setting_to_match,
+    const content_settings::PartitionKey& partition_key) {
   // Setting renewal is not supported for one-time permissions.
   return absl::nullopt;
 }
@@ -199,7 +203,8 @@ void OneTimePermissionProvider::SetClockForTesting(base::Clock* clock) {
 void OneTimePermissionProvider::ExpireWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_settings_type) {
+    ContentSettingsType content_settings_type,
+    const content_settings::PartitionKey& partition_key) {
   // Custom scope because NotifyObservers also requires value_map_'s exclusive
   // lock.
   {

@@ -62,18 +62,22 @@ class PrefProvider : public UserModifiableProvider {
   bool UpdateLastUsedTime(const GURL& primary_url,
                           const GURL& secondary_url,
                           ContentSettingsType content_type,
-                          const base::Time time) override;
+                          const base::Time time,
+                          const PartitionKey& partition_key) override;
   bool ResetLastVisitTime(const ContentSettingsPattern& primary_pattern,
                           const ContentSettingsPattern& secondary_pattern,
-                          ContentSettingsType content_type) override;
+                          ContentSettingsType content_type,
+                          const PartitionKey& partition_key) override;
   bool UpdateLastVisitTime(const ContentSettingsPattern& primary_pattern,
                            const ContentSettingsPattern& secondary_pattern,
-                           ContentSettingsType content_type) override;
+                           ContentSettingsType content_type,
+                           const PartitionKey& partition_key) override;
   absl::optional<base::TimeDelta> RenewContentSetting(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
-      absl::optional<ContentSetting> setting_to_match) override;
+      absl::optional<ContentSetting> setting_to_match,
+      const PartitionKey& partition_key) override;
   void SetClockForTesting(base::Clock* clock) override;
 
   void ClearPrefs();
