@@ -35,6 +35,18 @@ const zooms = [
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
 let zoomLevel = 5;
 
+// Graphics event types which are used in the model JSON data. These must match
+// the graphics event types in
+// chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h. To aid in
+// maintaining consistency, do not modify values once added - deprecation and
+// removal are allowed.
+const kExoSurfaceCommit = 206;
+const kExoSurfaceCommitJank = 207;
+const kChromeOSPresentationDone = 503;
+const kChromeOSSwapDone = 504;
+const kChromeOSPerceivedJank = 506;
+const kChromeOSSwapJank = 507;
+
 /**
  * Keep in sync with ArcTracingGraphicsModel::EventType
  * See chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h.
@@ -67,6 +79,8 @@ const eventAttributes = {
   // kBufferFillJank
   106: {color: '#ff0000', name: 'buffer filling jank', width: 1.0, radius: 4.0},
 
+  [kExoSurfaceCommitJank]: {name: 'commit jank', radius: 4.0},
+
   // kChromeBarrierOrder.
   300: {color: '#ff9933', name: 'barrier order'},
   // kChromeBarrierFlush
@@ -96,6 +110,14 @@ const eventAttributes = {
     color: '#ff0000',
     name: 'Chrome composition jank',
     width: 1.0,
+    radius: 4.0,
+  },
+  [kChromeOSPerceivedJank]: {
+    name: 'perceived jank',
+    radius: 4.0,
+  },
+  [kChromeOSSwapJank]: {
+    name: 'swap jank',
     radius: 4.0,
   },
 
@@ -915,9 +937,18 @@ class EventBands {
    * @param {Events} events to add.
    * @param {string} renderType defines how to render events, can be underfined
    *                 for default or set to 'circle'.
+   * @param {string} color the color (fill color if rendered as a circle), or
+   *                 omitted to use the color defined in eventAttributes for
+   *                 each event type.
+   * @param {number} y for circles, the y position, as a fraction of this band's
+   *                 height, such as 0.5 for vertically-centered, or 0.95 for
+   *                 close to the bottom.
    */
-  addGlobal(events, renderType) {
+  addGlobal(events, renderType, color, y) {
     let eventIndex = -1;
+    if (typeof y == 'undefined') {
+      y = 0.5;
+    }
     while (true) {
       eventIndex = events.getNextEvent(eventIndex, 1 /* direction */);
       if (eventIndex < 0) {
@@ -926,13 +957,13 @@ class EventBands {
       const event = events.events[eventIndex];
       const attributes = events.getEventAttributes(eventIndex);
       const x = this.timestampToOffset(event[1]) + this.bandOffsetX;
+      const evColor = color || attributes.color;
       if (renderType == 'circle') {
         SVG.addCircle(
-            this.svg, x, this.height / 2, attributes.radius,
-            1 /* strokeWidth */, attributes.color, 'black' /* strokeColor */);
+            this.svg, x, this.height * y, attributes.radius,
+            1 /* strokeWidth */, evColor, 'black' /* strokeColor */);
       } else {
-        SVG.addLine(
-            this.svg, x, 0, x, this.height, attributes.color, attributes.width);
+        SVG.addLine(this.svg, x, 0, x, this.height, evColor, attributes.width);
       }
     }
     this.globalEvents.push(events);

@@ -49,15 +49,6 @@ const modelColors = new Map();
  */
 const targetFrameTime = 16667;
 
-// Graphics event types which are used in the model JSON data. These must match
-// the graphics event types in
-// chrome/browser/ash/arc/tracing/arc_tracing_graphics_model.h. To aid in
-// maintaining consistency, do not modify values once added - deprecation and
-// removal are allowed.
-const kExoSurfaceCommit = 206;
-const kChromeOSPresentationDone = 503;
-const kChromeOSSwapDone = 504;
-
 function initializeOverviewUi() {
   initializeUi(8 /* zoomLevel */, function() {
     // Update function.
@@ -696,8 +687,10 @@ function addFPSHistograms(parent, anchor, timeBasedView, eventTypes) {
  * @param {number} duration length of the chart in microseconds.
  * @param {string} title the title of the view
  * @param {number} eventType type of event whose rate to track
+ * @param {number} jankEventType type of event indicating a jank (optional)
  */
-function addDeltaView(parent, resolution, duration, title, eventType) {
+function addDeltaView(
+    parent, resolution, duration, title, eventType, jankEventType) {
   // time range from 0 to 67ms. 66.67ms is for 15 FPS.
   // 1 ms 1 pixel resolution.  Each grid lines correspond 1/120 FPS time update.
   const bands = createChart(
@@ -716,6 +709,14 @@ function addDeltaView(parent, resolution, duration, title, eventType) {
     const timeEvents = createDeltaEvents(events);
     attributes.color = modelColors.get(models[i]);
     bands.addChartSources([timeEvents], false /* smooth */, attributes);
+    if (jankEventType) {
+      // Offset each model's janks at a different y position, avoiding max and
+      // min positions (0 or 1), as these are awkward when the models are few.
+      const y = (i + 1) / (models.length + 1);
+      bands.addGlobal(
+          getGraphicsEvents(models[i], jankEventType), 'circle',
+          attributes.color, y);
+    }
   }
 }
 
@@ -790,14 +791,16 @@ function refreshModels() {
 
   addFPSView(parent, resolution, duration, 'App FPS', kExoSurfaceCommit);
   addDeltaView(
-      parent, resolution, duration, 'App commit time', kExoSurfaceCommit);
+      parent, resolution, duration, 'App commit time', kExoSurfaceCommit,
+      kExoSurfaceCommitJank);
   addDeltaView(
-      parent, resolution, duration, 'ChromeOS swap time', kChromeOSSwapDone);
+      parent, resolution, duration, 'ChromeOS swap time', kChromeOSSwapDone,
+      kChromeOSSwapJank);
   addFPSView(
       parent, resolution, duration, 'Perceived FPS', kChromeOSPresentationDone);
   addDeltaView(
       parent, resolution, duration, 'Perceived swap time',
-      kChromeOSPresentationDone);
+      kChromeOSPresentationDone, kChromeOSPerceivedJank);
 
   addFPSHistograms(
       parent, parent.lastChild, false /* timeBasedView */,

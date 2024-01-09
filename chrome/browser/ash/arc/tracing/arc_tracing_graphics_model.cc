@@ -39,8 +39,6 @@ using BufferEvent = ArcTracingGraphicsModel::BufferEvent;
 using BufferEvents = ArcTracingGraphicsModel::BufferEvents;
 using EventType = ArcTracingGraphicsModel::EventType;
 
-constexpr char kCustomTracePrefix[] = "customTrace";
-
 constexpr char kUnknownActivity[] = "unknown";
 
 constexpr char kKeyActivity[] = "activity";
@@ -200,43 +198,19 @@ void DetermineHierarchy(std::vector<const ArcTracingEvent*>* route,
   route->pop_back();
 }
 
-void ScanForCustomEvents(
-    const ArcTracingEvent* event,
-    ArcTracingGraphicsModel::BufferEvents* out_custom_events) {
-  if (base::StartsWith(event->GetName(), kCustomTracePrefix,
-                       base::CompareCase::SENSITIVE)) {
-    DCHECK(!event->GetArgs() || event->GetArgs()->empty());
-    out_custom_events->emplace_back(
-        ArcTracingGraphicsModel::EventType::kCustomEvent, event->GetTimestamp(),
-        event->GetName().substr(std::size(kCustomTracePrefix) - 1));
-  }
-  for (const auto& child : event->children())
-    ScanForCustomEvents(child.get(), out_custom_events);
-}
-
-// Extracts custom events from the model. Custom events start from customTrace
-ArcTracingGraphicsModel::BufferEvents GetCustomEvents(
-    const ArcTracingModel& common_model) {
-  ArcTracingGraphicsModel::BufferEvents custom_events;
-  for (const ArcTracingEvent* root : common_model.GetRoots())
-    ScanForCustomEvents(root, &custom_events);
-  return custom_events;
-}
-
 // Adds jank events into |ArcTracingGraphicsModel::EventsContainer|.
 // |pulse_event_type| defines the type of the event that should appear
 // periodically. Once it is missed in analyzed buffer events, new jank event is
 // added. |jank_event_type| defines the type of jank.
-void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
+void AddJanks(std::vector<BufferEvent>* events,
               EventType pulse_event_type,
               EventType jank_event_type) {
   // Detect rate first.
   BufferEvents pulse_events;
 
-  for (const auto& it : result->buffer_events()) {
-    for (const auto& it_event : it) {
-      if (it_event.type == pulse_event_type)
-        pulse_events.emplace_back(it_event);
+  for (const auto& ev : *events) {
+    if (ev.type == pulse_event_type) {
+      pulse_events.emplace_back(ev);
     }
   }
   SortBufferEventsByTimestamp(&pulse_events);
@@ -248,7 +222,7 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
             BufferEvent(jank_event_type,
                         timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()));
       },
-      jank_event_type, &result->global_events()));
+      jank_event_type, events));
 
   for (const auto& it : pulse_events) {
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
@@ -266,6 +240,8 @@ void AddJanks(ArcTracingGraphicsModel::EventsContainer* result,
     jank_detector.OnSample(base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(it.timestamp)));
   }
+
+  SortBufferEventsByTimestamp(events);
 }
 
 // Helper that performs query in |common_model| for top level Chrome GPU events
@@ -280,8 +256,6 @@ void GetChromeTopLevelEvents(const ArcTracingModel& common_model,
   }
 
   SortBufferEventsByTimestamp(&result->buffer_events()[0]);
-
-  // TODO(matvore): Record Janks in the ChromeOS swap done pulse.
 }
 
 // Helper that serializes events |events| to the |base::Value::List|.
@@ -341,12 +315,13 @@ bool LoadEvents(const base::Value::List* value,
     if (!IsInRange(type, EventType::kBufferQueueDequeueStart,
                    EventType::kBufferFillJank) &&
         !IsInRange(type, EventType::kExoSurfaceAttach,
-                   EventType::kExoSurfaceCommit) &&
+                   EventType::kExoLastEvent) &&
         !IsInRange(type, EventType::kChromeBarrierOrder,
                    EventType::kChromeBarrierFlush) &&
         !IsInRange(type, EventType::kSurfaceFlingerVsyncHandler,
                    EventType::kVsyncTimestamp) &&
-        !IsInRange(type, EventType::kChromeOSDraw, EventType::kChromeOSJank) &&
+        !IsInRange(type, EventType::kChromeOSDraw,
+                   EventType::kChromeOSLastEvent) &&
         !IsInRange(type, EventType::kCustomEvent, EventType::kCustomEvent) &&
         !IsInRange(type, EventType::kInputEventCreated,
                    EventType::kInputEventDeliverEnd)) {
@@ -463,24 +438,16 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
   for (int64_t ticks : present_frames.commits()) {
     buffer_events[0].emplace_back(EventType::kExoSurfaceCommit, ticks);
   }
+  AddJanks(&buffer_events[0], EventType::kExoSurfaceCommit,
+           EventType::kExoSurfaceCommitJank);
+
   for (int64_t ticks : present_frames.presents()) {
     chrome_top_level_.global_events().emplace_back(
         EventType::kChromeOSPresentationDone, ticks);
   }
-
-  // TODO(khmel): Add more information to resolve owner of custom events. At
-  // this moment add custom events to each view.
-  const ArcTracingGraphicsModel::BufferEvents custom_events =
-      GetCustomEvents(common_model);
-  for (auto& it : view_buffers_) {
-    AddJanks(&it.second, EventType::kBufferQueueDequeueStart,
-             EventType::kBufferFillJank);
-    AddJanks(&it.second, EventType::kExoSurfaceCommit, EventType::kExoJank);
-    it.second.global_events().insert(it.second.global_events().end(),
-                                     custom_events.begin(),
-                                     custom_events.end());
-    SortBufferEventsByTimestamp(&it.second.global_events());
-  }
+  AddJanks(&chrome_top_level_.global_events(),
+           EventType::kChromeOSPresentationDone,
+           EventType::kChromeOSPerceivedJank);
 
   GetChromeTopLevelEvents(common_model, &chrome_top_level_);
   if (chrome_top_level_.buffer_events().empty()) {
@@ -488,6 +455,8 @@ bool ArcTracingGraphicsModel::Build(const ArcTracingModel& common_model,
     if (!skip_structure_validation_)
       return false;
   }
+  AddJanks(&chrome_top_level_.buffer_events()[0], EventType::kChromeOSSwapDone,
+           EventType::kChromeOSSwapJank);
 
   system_model_.CopyFrom(common_model.system_model());
 
