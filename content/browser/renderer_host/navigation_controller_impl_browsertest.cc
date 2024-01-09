@@ -3617,9 +3617,17 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
 // Verify that navigations to the same WebUI URL are correctly classified as
 // EXISTING_ENTRY (it becomes a reload).
+// TODO(crbug.com/1516015): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NavigationTypeClassification_ExistingEntrySameURL_WebUI \
+  DISABLED_NavigationTypeClassification_ExistingEntrySameURL_WebUI
+#else
+#define MAYBE_NavigationTypeClassification_ExistingEntrySameURL_WebUI \
+  NavigationTypeClassification_ExistingEntrySameURL_WebUI
+#endif
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
-    NavigationTypeClassification_ExistingEntrySameURL_WebUI) {
+    MAYBE_NavigationTypeClassification_ExistingEntrySameURL_WebUI) {
   // Navigate to a WebUI page.
   GURL web_ui_url(std::string(kChromeUIScheme) + "://" +
                   std::string(kChromeUIGpuHost));
