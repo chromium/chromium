@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] private to local: failure.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] public to local: failure.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] public to private: failure.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to local: failure.
+  assert_equals: expected "timeout" but got "success"
+[FAIL] treat-as-public-address to private: failure.
+  assert_equals: expected "timeout" but got "success"
+Harness: the test ran to completion.
+
