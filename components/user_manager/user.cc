@@ -58,16 +58,6 @@ bool User::TypeIsKiosk(UserType type) {
          type == USER_TYPE_WEB_KIOSK_APP;
 }
 
-class GuestUser : public User {
- public:
-  explicit GuestUser(const AccountId& guest_account_id);
-
-  GuestUser(const GuestUser&) = delete;
-  GuestUser& operator=(const GuestUser&) = delete;
-
-  ~GuestUser() override;
-};
-
 class DeviceLocalAccountUserBase : public User {
  public:
   DeviceLocalAccountUserBase(const DeviceLocalAccountUserBase&) = delete;
@@ -300,7 +290,7 @@ User* User::CreateRegularUser(const AccountId& account_id,
 }
 
 User* User::CreateGuestUser(const AccountId& guest_account_id) {
-  return new GuestUser(guest_account_id);
+  return new User(guest_account_id, USER_TYPE_GUEST);
 }
 
 User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
@@ -345,14 +335,6 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_index_ = image_index;
   image_is_stub_ = true;
   image_is_loading_ = is_loading;
-}
-
-GuestUser::GuestUser(const AccountId& guest_account_id)
-    : User(guest_account_id, user_manager::USER_TYPE_GUEST) {
-  set_display_email(std::string());
-}
-
-GuestUser::~GuestUser() {
 }
 
 DeviceLocalAccountUserBase::DeviceLocalAccountUserBase(
