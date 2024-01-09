@@ -26,11 +26,18 @@ class ASH_EXPORT PickerContentsView : public views::View {
   template <typename T>
   T* AddPage(std::unique_ptr<T> view) {
     view->SetVisible(false);
-    return AddChildView(std::move(view));
+    return page_container_->AddChildView(std::move(view));
   }
 
   // Sets the visible page to be `view`.
   void SetActivePage(views::View* view);
+
+  const views::View* page_container_for_testing() const {
+    return page_container_;
+  }
+
+ private:
+  raw_ptr<views::View> page_container_ = nullptr;
 };
 
 }  // namespace ash

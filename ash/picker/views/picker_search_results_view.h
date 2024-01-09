@@ -12,10 +12,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-namespace views {
-class ScrollView;
-}  // namespace views
-
 namespace ash {
 
 class PickerSearchResult;
@@ -50,9 +46,6 @@ class ASH_EXPORT PickerSearchResultsView : public views::View {
 
   SelectSearchResultCallback select_search_result_callback_;
   PickerSearchResults search_results_;
-
-  // The scroll view that contains all the section_views_.
-  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // The views for each section of results.
   std::vector<raw_ptr<PickerSectionView>> section_views_;
