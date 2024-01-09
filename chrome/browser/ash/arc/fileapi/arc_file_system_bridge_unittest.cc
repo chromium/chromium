@@ -259,7 +259,7 @@ TEST_F(ArcFileSystemBridgeTest, OpenFileToRead) {
 
   // Requested number of bytes are written to the pipe.
   std::vector<char> buf(kTestFileSize);
-  ASSERT_TRUE(base::ReadFromFD(pipe_read_end.get(), buf.data(), buf.size()));
+  ASSERT_TRUE(base::ReadFromFD(pipe_read_end.get(), buf));
 
   // ID is released.
   EXPECT_TRUE(arc_file_system_bridge_->HandleIdReleased(kId));
