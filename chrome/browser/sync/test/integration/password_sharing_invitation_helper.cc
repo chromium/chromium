@@ -52,8 +52,8 @@ std::vector<uint8_t> EncryptInvitationData(
           syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
               sender_key_pair.GetRawPrivateKey());
   CHECK(sender_key_pair_copy);
-  sender_cryptographer->EmplaceKeyPair(std::move(sender_key_pair_copy.value()),
-                                       kSenderKeyVersion);
+  sender_cryptographer->SetKeyPair(std::move(sender_key_pair_copy.value()),
+                                   kSenderKeyVersion);
   sender_cryptographer->SelectDefaultCrossUserSharingKey(kSenderKeyVersion);
 
   std::string serialized_data;

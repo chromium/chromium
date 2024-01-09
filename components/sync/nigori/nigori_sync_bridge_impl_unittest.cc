@@ -158,7 +158,7 @@ CrossUserSharingKeys CreateNewCrossUserSharingKeys() {
   const uint32_t kKeyVersion = 0;
   CrossUserSharingKeys cross_user_sharing_keys =
       CrossUserSharingKeys::CreateEmpty();
-  cross_user_sharing_keys.AddKeyPair(
+  cross_user_sharing_keys.SetKeyPair(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), kKeyVersion);
   return cross_user_sharing_keys;
 }
@@ -491,7 +491,7 @@ TEST_F(
   const auto raw_private_key = key_pair.GetRawPrivateKey();
   const auto raw_public_key = key_pair.GetRawPublicKey();
   const uint32_t kKeyVersion = 0;
-  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+  cross_user_sharing_keys.SetKeyPair(std::move(key_pair), kKeyVersion);
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
       BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
@@ -1051,7 +1051,7 @@ TEST_F(NigoriSyncBridgeImplTest,
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   const auto raw_public_key = key_pair.GetRawPublicKey();
   const uint32_t kKeyVersion = 0;
-  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyVersion);
+  cross_user_sharing_keys.SetKeyPair(std::move(key_pair), kKeyVersion);
 
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
@@ -2263,14 +2263,8 @@ TEST_F(NigoriSyncBridgeImplTest,
       "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
-TEST_F(NigoriSyncBridgeImplTest, ShouldDropLocalStateWithCorruptedKeyPair) {
+TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
   ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
-
-  // Verify that the initial sync is done.
-  ASSERT_NE(bridge()->GetCryptographerImplForTesting().KeyBagSizeForTesting(),
-            0u);
-  ASSERT_TRUE(bridge()->GetCryptographerImplForTesting().HasKeyPair(
-      /*key_pair_version=*/0u));
 
   sync_pb::NigoriLocalData local_data = nigori_local_data();
 
@@ -2283,21 +2277,34 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldDropLocalStateWithCorruptedKeyPair) {
       ->set_x25519_public_key(
           std::string(raw_public_key.begin(), raw_public_key.end()));
 
+  std::string new_public_key;
+  EXPECT_CALL(*processor(), Put(HasPublicKeyVersion(0)))
+      .WillOnce([&new_public_key](auto committed_entity_data) {
+        new_public_key = committed_entity_data->specifics.nigori()
+                             .cross_user_sharing_public_key()
+                             .x25519_public_key();
+      });
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*processor(),
-              ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
   MimicRestartWithLocalData(local_data);
+
+  // Verify that local state wasn't dropped.
+  ASSERT_THAT(bridge()->GetData(), HasKeystoreNigori());
 
   // Verify that the key pair is corrupted.
   histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
                                       /*kCorruptedKeyPair*/ 3,
                                       /*expected_bucket_count=*/1);
 
-  // Check that the initial sync is not done and the local state remains empty.
-  EXPECT_EQ(bridge()->GetCryptographerImplForTesting().KeyBagSizeForTesting(),
-            0u);
-  EXPECT_FALSE(bridge()->GetCryptographerImplForTesting().HasKeyPair(
-      /*key_pair_version=*/0u));
+  // Mimic commit completion.
+  EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(absl::nullopt),
+              Eq(absl::nullopt));
+
+  // Key version and material should be consistent across the processor and the
+  // bridge.
+  EXPECT_THAT(bridge()->GetData(),
+              HasPublicKeyVersionAndValue(0, new_public_key));
+  EXPECT_NE(new_public_key,
+            std::string(raw_public_key.begin(), raw_public_key.end()));
 }
 
 }  // namespace

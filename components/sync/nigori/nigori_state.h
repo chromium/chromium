@@ -53,6 +53,7 @@ struct NigoriState {
   bool NeedsKeystoreReencryption() const;
 
   ModelTypeSet GetEncryptedTypes() const;
+  bool NeedsGenerateCrossUserSharingKeyPair() const;
 
   // TODO(crbug.com/1109221): Make this const unique_ptr to avoid the object
   // being destroyed after it's been injected to the ModelTypeWorker-s.

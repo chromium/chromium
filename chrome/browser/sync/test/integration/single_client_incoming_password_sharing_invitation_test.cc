@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientIncomingPasswordSharingInvitationTest,
   // public key to be able to inject invitations.
   ASSERT_TRUE(SetupSyncTransportWithoutPasswordAccountStorage());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
-  ASSERT_TRUE(CrossUserSharingKeysChecker().Wait());
+  ASSERT_TRUE(ServerCrossUserSharingPublicKeyChangedChecker().Wait());
 
   // Let the user opt in to the account-scoped password storage, and wait for it
   // to become active.

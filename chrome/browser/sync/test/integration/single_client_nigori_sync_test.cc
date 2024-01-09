@@ -149,7 +149,7 @@ syncer::CrossUserSharingKeys GenerateNewKeyPair() {
       syncer::CrossUserSharingKeys::CreateEmpty();
   syncer::CrossUserSharingPublicPrivateKeyPair key_pair =
       syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
-  cross_user_sharing_keys.AddKeyPair(std::move(key_pair), kKeyPairVersion);
+  cross_user_sharing_keys.SetKeyPair(std::move(key_pair), kKeyPairVersion);
   return cross_user_sharing_keys;
 }
 
@@ -348,14 +348,12 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
   void InjectNigoriWithCrossUserSharingKey(
       const std::vector<uint8_t>& keystore_key,
       const syncer::CrossUserSharingKeys& key_pair) {
-    const KeyParamsForTesting kDefaultKeyParams =
-        Pbkdf2PassphraseKeyParamsForTesting("password");
     const KeyParamsForTesting keystore_key_params =
         KeystoreKeyParamsForTesting(keystore_key);
     SetNigoriInFakeServer(
         BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
-            /*keybag_keys_params=*/{kDefaultKeyParams, keystore_key_params},
-            /*keystore_decryptor_params*/ {kDefaultKeyParams},
+            /*keybag_keys_params=*/{keystore_key_params},
+            /*keystore_decryptor_params*/ {keystore_key_params},
             /*keystore_key_params=*/keystore_key_params,
             /*cross_user_sharing_keys=*/key_pair,
             /*cross_user_sharing_public_key=*/
@@ -364,6 +362,41 @@ class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
                 .value(),
             /*cross_user_sharing_public_key_version=*/kKeyPairVersion),
         GetFakeServer());
+  }
+
+  // This method injects a Nigori node with two different generated keys for
+  // public and private keys. This causes the key pair to mismatch.
+  void InjectNigoriWithCorruptedCrossUserSharingKey(
+      const std::vector<uint8_t>& keystore_key) {
+    const KeyParamsForTesting keystore_key_params =
+        KeystoreKeyParamsForTesting(keystore_key);
+    SetNigoriInFakeServer(
+        BuildKeystoreNigoriSpecificsWithCrossUserSharingKeys(
+            /*keybag_keys_params=*/{keystore_key_params},
+            /*keystore_decryptor_params*/ {keystore_key_params},
+            /*keystore_key_params=*/keystore_key_params,
+            /*cross_user_sharing_keys=*/GenerateNewKeyPair(),
+            /*cross_user_sharing_public_key=*/
+            syncer::CrossUserSharingPublicKey::CreateByImport(
+                GenerateNewKeyPair()
+                    .GetKeyPair(kKeyPairVersion)
+                    .GetRawPublicKey())
+                .value(),
+            /*cross_user_sharing_public_key_version=*/kKeyPairVersion),
+        GetFakeServer());
+  }
+
+  // Waits for the Nigori node to be downloaded from the server. Avoid using
+  // this method if possible (e.g. prefer waiting for passphrase type change).
+  bool WaitForNigoriDownloaded() {
+    // There is no easy way to wait for Cryptographer update to make it sure
+    // that the new key pair is propagated, so use bookmarks to verify that
+    // there was a sync cycle before testing password sharing.
+    // TODO(crbug.com/1511180): consider waiting for Cryptographer update rather
+    // than relying on bookmarks.
+    GetFakeServer()->InjectEntity(bookmarks_helper::CreateBookmarkServerEntity(
+        "title", GURL("http://abc.com")));
+    return bookmarks_helper::BookmarksTitleChecker(0, "title", 1).Wait();
   }
 
  private:
@@ -821,15 +854,7 @@ IN_PROC_BROWSER_TEST_F(
   // honor the server version of the key pair with the same version.
   syncer::CrossUserSharingKeys new_key_pair = GenerateNewKeyPair();
   InjectNigoriWithCrossUserSharingKey(keystore_keys.front(), new_key_pair);
-
-  // There is no easy way to wait for Cryptographer update to make it sure that
-  // the new key pair is propagated, so use bookmarks to verify that there was a
-  // sync cycle before testing password sharing.
-  // TODO(crbug.com/1511180): consider waiting for Cryptographer update rather
-  // than relying on bookmarks.
-  GetFakeServer()->InjectEntity(bookmarks_helper::CreateBookmarkServerEntity(
-      "title", GURL("http://abc.com")));
-  ASSERT_TRUE(bookmarks_helper::BookmarksTitleChecker(0, "title", 1).Wait());
+  ASSERT_TRUE(WaitForNigoriDownloaded());
 
   // Add a new invitation encrypted using the new generated public key. The
   // client should be able to decrypt this invitation.
@@ -948,7 +973,64 @@ IN_PROC_BROWSER_TEST_F(
     SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     ShouldRecreateKeyPairUponClientServerInconsistency) {
   ASSERT_TRUE(SetupClients());
-  EXPECT_TRUE(CrossUserSharingKeysChecker().Wait());
+  EXPECT_TRUE(ServerCrossUserSharingPublicKeyChangedChecker().Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    PRE_ShouldRecreateKeyPairUponCorruptedServerKeyPair) {
+  ASSERT_TRUE(SetupSync());
+
+  sync_pb::NigoriSpecifics specifics;
+  ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
+  ASSERT_TRUE(
+      specifics.cross_user_sharing_public_key().has_x25519_public_key());
+
+  const std::vector<std::vector<uint8_t>>& keystore_keys =
+      GetFakeServer()->GetKeystoreKeys();
+  ASSERT_THAT(keystore_keys, SizeIs(1));
+  ASSERT_THAT(
+      specifics.encryption_keybag(),
+      IsDataEncryptedWith(KeystoreKeyParamsForTesting(keystore_keys.back())));
+
+  InjectNigoriWithCorruptedCrossUserSharingKey(keystore_keys.front());
+
+  // When the Nigori node is downloaded, the new state is also stored to the
+  // disk.
+  ASSERT_TRUE(WaitForNigoriDownloaded());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    ShouldRecreateKeyPairUponCorruptedServerKeyPair) {
+  base::HistogramTester histogram_tester;
+  const std::string old_public_key =
+      GetPublicKeyFromServer().x25519_public_key();
+  ASSERT_FALSE(old_public_key.empty());
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
+
+  // Verify that the key pair was corrupted on browser startup.
+  histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
+                                      /*kCorruptedKeyPair*/ 3,
+                                      /*expected_bucket_count=*/1);
+
+  EXPECT_TRUE(
+      ServerCrossUserSharingPublicKeyChangedChecker(old_public_key).Wait());
+
+  // Add a new invitation encrypted using the new generated public key. The
+  // client should be able to decrypt this invitation.
+  PasswordFormsAddedChecker password_forms_added_checker(
+      GetProfilePasswordStoreInterface(0),
+      /*expected_new_password_forms=*/1);
+  InjectInvitationToServer(CreateEncryptedIncomingInvitationSpecifics(
+      CreateDefaultIncomingInvitation("username", "password"),
+      CreateDefaultSenderDisplayInfo(),
+      /*recipient_public_key=*/GetPublicKeyFromServer(),
+      syncer::CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()));
+
+  // Wait the invitation to be processed and the password stored.
+  EXPECT_TRUE(password_forms_added_checker.Wait());
 }
 
 // Performs initial sync for Nigori, but doesn't allow initialized Nigori to be

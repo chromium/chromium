@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
@@ -47,13 +46,6 @@ enum class KeyDerivationMethodStateForMetrics {
   SCRYPT_8192_8_11 = 3,
   kMaxValue = SCRYPT_8192_8_11
 };
-
-// When enabled, if the local state contains a corrupted cross-user sharing key
-// pair (i.e. the public key does not match the private key), the whole state
-// will be dropped and re-downloaded from the server.
-BASE_FEATURE(kSyncDropNigoriStateWhenKeyPairCorrupted,
-             "SyncDropNigoriStateWhenKeyPairCorrupted",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 KeyDerivationMethodStateForMetrics GetKeyDerivationMethodStateForMetrics(
     const absl::optional<KeyDerivationParams>& key_derivation_params) {
@@ -241,48 +233,6 @@ absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
   return CrossUserSharingPublicKey::CreateByImport(key);
 }
 
-// These values are persisted to UMA. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class CrossUserSharingKeyPairState {
-  kValidKeyPair = 0,
-  kPublicKeyNotInitialized = 1,
-  kPublicKeyVersionInvalid = 2,
-  kCorruptedKeyPair = 3,
-
-  // The key pair can't be checked while pending keys are not decrypted.
-  kPendingKeysNotEmpty = 4,
-
-  kMaxValue = kPendingKeysNotEmpty,
-};
-
-CrossUserSharingKeyPairState GetCrossUserSharingPublicKeyState(
-    const NigoriState& nigori_state) {
-  if (nigori_state.pending_keys) {
-    return CrossUserSharingKeyPairState::kPendingKeysNotEmpty;
-  }
-
-  if (!nigori_state.cross_user_sharing_public_key.has_value()) {
-    return CrossUserSharingKeyPairState::kPublicKeyNotInitialized;
-  }
-
-  // Key version existence is guaranteed by NigoriState::CreateFromLocalProto().
-  CHECK(nigori_state.cross_user_sharing_key_pair_version);
-
-  if (!nigori_state.cryptographer->HasKeyPair(
-          nigori_state.cross_user_sharing_key_pair_version.value())) {
-    return CrossUserSharingKeyPairState::kPublicKeyVersionInvalid;
-  }
-
-  const CrossUserSharingPublicPrivateKeyPair& key_pair =
-      nigori_state.cryptographer->GetCrossUserSharingKeyPair(
-          nigori_state.cross_user_sharing_key_pair_version.value());
-  if (key_pair.GetRawPublicKey() !=
-      nigori_state.cross_user_sharing_public_key->GetRawPublicKey()) {
-    return CrossUserSharingKeyPairState::kCorruptedKeyPair;
-  }
-  return CrossUserSharingKeyPairState::kValidKeyPair;
-}
-
 }  // namespace
 
 class NigoriSyncBridgeImpl::BroadcastingObserver
@@ -373,24 +323,8 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
   }
 
   // Restore data.
-  syncer::NigoriState restored_state =
-      syncer::NigoriState::CreateFromLocalProto(
-          deserialized_data->nigori_model());
-
-  CrossUserSharingKeyPairState key_pair_state =
-      GetCrossUserSharingPublicKeyState(restored_state);
-  base::UmaHistogramEnumeration("Sync.CrossUserSharingKeyPairState",
-                                key_pair_state);
-  if (key_pair_state == CrossUserSharingKeyPairState::kCorruptedKeyPair &&
-      base::FeatureList::IsEnabled(kSyncDropNigoriStateWhenKeyPairCorrupted)) {
-    // The public key doesn't match the private key. This is likely just a local
-    // state, so drop the current state and re-download the Nigori node from the
-    // server.
-    processor_->ModelReadyToSync(this, NigoriMetadataBatch());
-    return;
-  }
-
-  state_ = std::move(restored_state);
+  state_ = syncer::NigoriState::CreateFromLocalProto(
+      deserialized_data->nigori_model());
 
   // Restore metadata.
   NigoriMetadataBatch metadata_batch;
@@ -406,12 +340,7 @@ NigoriSyncBridgeImpl::NigoriSyncBridgeImpl(
         PendingLocalNigoriCommit::ForKeystoreInitialization());
   }
 
-  if (base::FeatureList::IsEnabled(kSharingOfferKeyPairBootstrap) &&
-      !state_.cross_user_sharing_public_key.has_value()) {
-    // Generate a new key pair if there is no public key in the local state.
-    // Note that this can trigger a key pair generation if the current client
-    // has been just upgraded from the older version (so it wasn't aware of key
-    // pairs). Other clients are expected to apply the newly generated key pair.
+  if (state_.NeedsGenerateCrossUserSharingKeyPair()) {
     QueuePendingLocalCommit(
         PendingLocalNigoriCommit::
             ForCrossUserSharingPublicPrivateKeyInitializer());

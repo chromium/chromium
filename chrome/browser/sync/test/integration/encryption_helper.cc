@@ -115,25 +115,25 @@ bool ServerPassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
              expected_passphrase_type_;
 }
 
-CrossUserSharingKeysChecker::CrossUserSharingKeysChecker() = default;
+ServerCrossUserSharingPublicKeyChangedChecker::
+    ServerCrossUserSharingPublicKeyChangedChecker(
+        const std::string& previous_public_key)
+    : previous_public_key_(previous_public_key) {}
 
-bool CrossUserSharingKeysChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for a Nigori node with cross-user sharing keys to be "
-         "available on the server.";
+bool ServerCrossUserSharingPublicKeyChangedChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  *os << "Waiting for a Nigori node with a new cross-user sharing public key"
+      << " available on the server";
 
   std::vector<sync_pb::SyncEntity> nigori_entities =
       fake_server()->GetPermanentSyncEntitiesByModelType(syncer::NIGORI);
   EXPECT_LE(nigori_entities.size(), 1U);
   return !nigori_entities.empty() &&
          nigori_entities[0]
-             .specifics()
-             .nigori()
-             .has_cross_user_sharing_public_key() &&
-         nigori_entities[0]
-             .specifics()
-             .nigori()
-             .cross_user_sharing_public_key()
-             .has_x25519_public_key();
+                 .specifics()
+                 .nigori()
+                 .cross_user_sharing_public_key()
+                 .x25519_public_key() != previous_public_key_;
 }
 
 ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
