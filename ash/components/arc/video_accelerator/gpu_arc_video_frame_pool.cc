@@ -74,8 +74,6 @@ GpuArcVideoFramePool::GpuArcVideoFramePool(
   weak_this_ = weak_this_factory_.GetWeakPtr();
 
   client_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
-  vda_video_frame_pool_ = std::make_unique<media::VdaVideoFramePool>(
-      weak_this_, client_task_runner_);
 }
 
 GpuArcVideoFramePool::~GpuArcVideoFramePool() {
