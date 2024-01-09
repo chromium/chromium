@@ -176,11 +176,11 @@ class PrimaryAccountManager::ScopedPrefCommit {
     pref_service_->SetString(path, value);
   }
 
-  void ClearBooleanPref(const std::string& path) {
-    if (pref_service_->GetBoolean(path) ==
-        pref_service_->GetDefaultPrefValue(path)->GetBool()) {
+  void ClearPref(const std::string& path) {
+    if (!pref_service_->HasPrefPath(path)) {
       return;
     }
+
     need_commit_ = true;
     pref_service_->ClearPref(path);
   }
@@ -517,11 +517,19 @@ void PrimaryAccountManager::SetPrimaryAccountInternal(
   // 'account_info' might be a reference to the contents of `primary_account_`.
   // Create a PrimaryAccount object before calling emplace to avoid crashes.
   primary_account_.emplace(PrimaryAccount(account_info, consented_to_sync));
-  scoped_pref_commit.SetString(
-      prefs::kGoogleServicesAccountId,
-      GetPrimaryAccount().account_info.account_id.ToString());
+  std::string account_id =
+      GetPrimaryAccount().account_info.account_id.ToString();
+  scoped_pref_commit.SetString(prefs::kGoogleServicesAccountId, account_id);
   scoped_pref_commit.SetBoolean(prefs::kGoogleServicesConsentedToSync,
                                 GetPrimaryAccount().consented_to_sync);
+  // If this was a sign-out (account ID is empty), also clear the "account was
+  // migrated" prefs.
+  if (account_id.empty()) {
+    scoped_pref_commit.ClearPref(
+        prefs::kGoogleServicesSyncingGaiaIdMigratedToSignedIn);
+    scoped_pref_commit.ClearPref(
+        prefs::kGoogleServicesSyncingUsernameMigratedToSignedIn);
+  }
 }
 
 void PrimaryAccountManager::RecordHadPreviousSyncAccount() const {
@@ -695,7 +703,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
     case PrimaryAccountChangeEvent::Type::kNone:
       return;
     case PrimaryAccountChangeEvent::Type::kCleared:
-      scoped_pref_commit.ClearBooleanPref(prefs::kExplicitBrowserSignin);
+      scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       return;
     case PrimaryAccountChangeEvent::Type::kSet:
       CHECK(absl::holds_alternative<signin_metrics::AccessPoint>(event_source));
@@ -705,7 +713,7 @@ void PrimaryAccountManager::ComputeExplicitBrowserSignin(
       if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN ||
           access_point ==
               signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-        scoped_pref_commit.ClearBooleanPref(prefs::kExplicitBrowserSignin);
+        scoped_pref_commit.ClearPref(prefs::kExplicitBrowserSignin);
       } else {
         // All others access points are explicit sign ins except the Web
         // Signin event.
