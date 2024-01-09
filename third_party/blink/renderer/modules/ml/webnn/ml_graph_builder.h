@@ -34,6 +34,7 @@ class MLEluOptions;
 class MLGatherOptions;
 class MLGemmOptions;
 class MLGraph;
+class MLHardSigmoidOptions;
 class MLInstanceNormalizationOptions;
 class MLLayerNormalizationOptions;
 class MLLeakyReluOptions;
@@ -194,6 +195,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                   const MLOperand* b,
                   const MLGemmOptions* options,
                   ExceptionState& exception_state);
+
+  MLOperand* hardSigmoid(const MLOperand* input,
+                         const MLHardSigmoidOptions* options,
+                         ExceptionState& exception_state);
+  MLActivation* hardSigmoid(const MLHardSigmoidOptions* options,
+                            ExceptionState& exception_state);
 
   MLOperand* hardSwish(const MLOperand* input, ExceptionState& exception_state);
   MLActivation* hardSwish(ExceptionState& exception_state);

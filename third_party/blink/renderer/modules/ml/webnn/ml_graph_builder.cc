@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gather_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_hard_sigmoid_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_instance_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_layer_normalization_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
@@ -1078,6 +1079,29 @@ MLActivation* MLGraphBuilder::hardSwish(ExceptionState& exception_state) {
   // function.
   return MakeGarbageCollected<MLActivation>(
       this, MLOperator::OperatorKind::kHardSwish);
+}
+
+MLOperand* MLGraphBuilder::hardSigmoid(const MLOperand* input,
+                                       const MLHardSigmoidOptions* options,
+                                       ExceptionState& exception_state) {
+  // The current spec doesn't specify the operand data type constraints of
+  // hardSigmoid. An issue has been filed to track it:
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  //
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-hardsigmoid, the output
+  // tensor of softplus has the same type and dimensions as its input.
+  return BuildUnaryOperator(this, exception_state,
+                            MLOperator::OperatorKind::kHardSigmoid,
+                            webnn::DataTypeConstraint::kFloat, input, options);
+}
+
+MLActivation* MLGraphBuilder::hardSigmoid(const MLHardSigmoidOptions* options,
+                                          ExceptionState& exception_state) {
+  // Create the hardSigmoid operator that would be used as an activation
+  // function.
+  return MakeGarbageCollected<MLActivation>(
+      this, MLOperator::OperatorKind::kHardSigmoid, options);
 }
 
 MLOperand* MLGraphBuilder::instanceNormalization(

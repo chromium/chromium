@@ -3191,6 +3191,73 @@ TEST_F(MLGraphBuilderTest, ReluTest) {
   }
 }
 
+MLOperand* BuildHardSigmoid(V8TestingScope& scope,
+                            MLGraphBuilder* builder,
+                            const MLOperand* input,
+                            const MLHardSigmoidOptions* options) {
+  auto* output =
+      builder->hardSigmoid(input, options, scope.GetExceptionState());
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->DataType(), input->DataType());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* hard_sigmoid = output->Operator();
+  EXPECT_NE(hard_sigmoid, nullptr);
+  EXPECT_EQ(hard_sigmoid->Kind(), MLOperator::OperatorKind::kHardSigmoid);
+  EXPECT_TRUE(hard_sigmoid->IsConnected());
+  EXPECT_NE(hard_sigmoid->Options(), nullptr);
+  return output;
+}
+
+TEST_F(MLGraphBuilderTest, HardSigmoidTest) {
+  V8TestingScope scope;
+  auto* builder =
+      CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
+                           scope.GetExceptionState());
+  {
+    // Test building hardSigmoid with a scalar input and default options.
+    auto* input =
+        BuildInput(builder, "input", {}, V8MLOperandDataType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    BuildHardSigmoid(scope, builder, input);
+  }
+  {
+    // Test building hardSigmoid with a 2-D input and alpha = 0.1, beta = 0.2.
+    auto* input = BuildInput(builder, "input", {3, 4},
+                             V8MLOperandDataType::Enum::kFloat16,
+                             scope.GetExceptionState());
+    auto* options = MLHardSigmoidOptions::Create();
+    options->setAlpha(0.1);
+    options->setBeta(0.2);
+    BuildHardSigmoid(scope, builder, input, options);
+  }
+  {
+    // Test building hardSigmoid activation.
+    auto* output = builder->hardSigmoid(MLHardSigmoidOptions::Create(),
+                                        scope.GetExceptionState());
+    ASSERT_NE(output, nullptr);
+    const MLOperator* hard_sigmoid = output->Operator();
+    ASSERT_NE(hard_sigmoid, nullptr);
+    EXPECT_EQ(hard_sigmoid->Kind(), MLOperator::OperatorKind::kHardSigmoid);
+    EXPECT_FALSE(hard_sigmoid->IsConnected());
+    EXPECT_NE(hard_sigmoid->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building hardSigmoid with int32 input.
+    Vector<uint32_t> input_shape({3, 4});
+    auto* input = BuildInput(builder, "input", input_shape,
+                             V8MLOperandDataType::Enum::kInt32,
+                             scope.GetExceptionState());
+    auto* output = builder->hardSigmoid(input, MLHardSigmoidOptions::Create(),
+                                        scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input data type must be one of the float32,float16 types.");
+  }
+}
+
 TEST_F(MLGraphBuilderTest, HardSwishTest) {
   V8TestingScope scope;
   MLGraphBuilder* builder =
