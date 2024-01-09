@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
 
+#import <UserNotifications/UserNotifications.h>
+
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/browser/push_notification/model/notifications_alert_presenter.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -263,6 +267,32 @@ using base::UserMetricsAction;
   return self.identityManager->HasPrimaryAccount(consent);
 }
 
+// Returns true if notifications are enabled in Chime or at the OS level.
+- (BOOL)isNotificationsEnabled {
+  DCHECK([self isUserSignedIn]);
+  id<SystemIdentity> identity = self.authenticationService->GetPrimaryIdentity(
+      signin::ConsentLevel::kSignin);
+  // Check if user has notifications enabled at the Chime level.
+  BOOL isChimeEnabled =
+      push_notification_settings::IsMobileNotificationsEnabledForAnyClient(
+          base::SysNSStringToUTF8(identity.gaiaID), self.prefService);
+  if (isChimeEnabled) {
+    return true;
+  }
+  // Check the user's OS notification permission status for Chrome.
+  __block UNAuthorizationStatus status;
+  [PushNotificationUtil
+      getPermissionSettings:^(UNNotificationSettings* settings) {
+        status = settings.authorizationStatus;
+      }];
+
+  if (status != UNAuthorizationStatusNotDetermined &&
+      status != UNAuthorizationStatusDenied) {
+    return true;
+  }
+  return false;
+}
+
 // TODO(b/315161586): Disable notifications promo if DSE changes.
 - (BOOL)shouldShowNotificationsPromo {
   // Check feature flag.
@@ -278,6 +308,11 @@ using base::UserMetricsAction;
   // Check if override is active. Override only works if the user is signed in.
   if (experimental_flags::ShouldForceContentNotificationsPromo()) {
     return true;
+  }
+
+  // Check if notifications are enabled of any type at the Chime level.
+  if ([self isNotificationsEnabled]) {
+    return false;
   }
 
   int notificationsPromoTimesShown =

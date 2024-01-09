@@ -34,6 +34,11 @@ ClientPermissionState GetClientPermissionState(
     const std::string& gaia_id,
     PrefService* pref_service);
 
+// Returns whether the push notification permission status is enabled for any
+// client for mobile notifications.
+BOOL IsMobileNotificationsEnabledForAnyClient(const std::string& gaia_id,
+                                              PrefService* pref_service);
+
 // Returns whether the push notification client's, `client_id`,
 // permission status for mobile notifications is enabled or disabled for the
 // current user.
