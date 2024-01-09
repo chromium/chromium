@@ -51,11 +51,6 @@ VirtualCardEnrollBubbleViews::VirtualCardEnrollBubbleViews(
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    SetFootnoteView(CreateLegalMessageView())->SetID(DialogViewId::FOOTNOTE_VIEW);
-  }
 }
 
 VirtualCardEnrollBubbleViews::~VirtualCardEnrollBubbleViews() = default;
@@ -121,11 +116,8 @@ void VirtualCardEnrollBubbleViews::Init() {
   ChromeLayoutProvider* const provider = ChromeLayoutProvider::Get();
 
   // If terms of service on top enabled, add padding between TOS and Buttons
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    set_margins(provider->GetDialogInsetsForContentType(
-        views::DialogContentType::kText, views::DialogContentType::kText));
-  }
+  set_margins(provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText));
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
@@ -205,11 +197,8 @@ void VirtualCardEnrollBubbleViews::Init() {
       ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
       views::style::STYLE_SECONDARY));
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    AddChildView(CreateLegalMessageView())
-        ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
-  }
+  AddChildView(CreateLegalMessageView())
+      ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
 }
 
 std::unique_ptr<views::View>

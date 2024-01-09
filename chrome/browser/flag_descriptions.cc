@@ -610,12 +610,6 @@ const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[] =
     "and other values that are not changed by accepting the preview should "
     "not be highlighted.";
 
-const char kAutofillMoveLegalTermsAndIconForNewCardEnrollmentName[] =
-    "Move legal terms for new card enrollment";
-const char kAutofillMoveLegalTermsAndIconForNewCardEnrollmentDescription[] =
-    "When enabled, legal terms will be moved before action buttons in autofill "
-    "save card and virtual card enrollment bubbles and dialogs.";
-
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[] =
     "Parse standalone CVC fields for VCN card on file in forms";
 const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[] =

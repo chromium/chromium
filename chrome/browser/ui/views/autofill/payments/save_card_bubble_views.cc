@@ -156,9 +156,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::CreateMainContentView() {
   // Flex |card_identifier_view| to fill up space before the expiry date or CVC
   // icon.
   if (controller()->GetBubbleType() == BubbleType::LOCAL_CVC_SAVE ||
-      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+      controller()->GetBubbleType() == BubbleType::UPLOAD_CVC_SAVE) {
     description_view->SetFlexForView(card_identifier_view, 1);
   }
 
@@ -181,9 +179,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   // Else, the card name, last 4 digit and expiration date or CVC icon will be
   // shown in the same line
   auto card_identifier_view = std::make_unique<views::BoxLayoutView>();
-  if (is_cvc_only_save ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+  if (is_cvc_only_save) {
     card_identifier_view->SetBetweenChildSpacing(
         ChromeLayoutProvider::Get()->GetDistanceMetric(
             views::DISTANCE_RELATED_BUTTON_HORIZONTAL));
@@ -210,9 +206,7 @@ std::unique_ptr<views::View> SaveCardBubbleViews::GetCardIdentifierView() {
   // Flex |card_identifier_label| to fill up remaining space and tail align
   // the expiry date or CVC icon if the card info will be shown in the same
   // line.
-  if (is_cvc_only_save ||
-      !base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
+  if (is_cvc_only_save) {
     card_identifier_view->SetFlexForView(card_identifier_label, /*flex=*/1);
   }
 
@@ -252,17 +246,14 @@ void SaveCardBubbleViews::Init() {
   // For server cards, there is an explanation between the title and the
   // controls; use DialogContentType::kText. For local cards, since there is no
   // explanation, use DialogContentType::kControl instead.
-  // When feature kAutofillMoveLegalTermsAndIconForNewCardEnrollment is enabled,
-  // there are legal messages before the buttons for server cards, so use
+  // There are legal messages before the buttons for server cards, so use
   // DialogContentType::kText. For local card, since there is no legal message,
   // use DialogContentType::kControl instead.
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       controller_->GetExplanatoryMessage().empty()
           ? views::DialogContentType::kControl
           : views::DialogContentType::kText,
-      base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment) &&
-              !controller_->GetLegalMessageLines().empty()
+      !controller_->GetLegalMessageLines().empty()
           ? views::DialogContentType::kText
           : views::DialogContentType::kControl));
   AddChildView(CreateMainContentView());

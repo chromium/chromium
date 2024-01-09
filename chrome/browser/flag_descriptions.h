@@ -354,10 +354,6 @@ extern const char kAutofillEnableVirtualCardMetadataDescription[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeName[];
 extern const char kAutofillHighlightOnlyChangedValuesInPreviewModeDescription[];
 
-extern const char kAutofillMoveLegalTermsAndIconForNewCardEnrollmentName[];
-extern const char
-    kAutofillMoveLegalTermsAndIconForNewCardEnrollmentDescription[];
-
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsName[];
 extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 

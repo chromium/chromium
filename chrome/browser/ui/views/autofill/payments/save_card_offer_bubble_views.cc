@@ -64,17 +64,6 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    std::unique_ptr<LegalMessageView> legal_message_view =
-        CreateLegalMessageView();
-
-    if (legal_message_view != nullptr) {
-      legal_message_view_ = SetFootnoteView(std::move(legal_message_view));
-      InitFootnoteView(legal_message_view_);
-    }
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   HatsService* hats_service =
@@ -280,14 +269,9 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     view->AddChildView(CreateRequestExpirationDateView());
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillMoveLegalTermsAndIconForNewCardEnrollment)) {
-    std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView();
-
-    if (legal_message_view != nullptr) {
-      legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
-      view->AddChildView(std::move(legal_message_view));
-    }
+  if (std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView()) {
+    legal_message_view->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
+    view->AddChildView(std::move(legal_message_view));
   }
 
   return view;

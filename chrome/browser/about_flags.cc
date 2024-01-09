@@ -9291,15 +9291,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
-    {"autofill-move-legal-terms-and-icon-for-new-card-enrollment",
-     flag_descriptions::kAutofillMoveLegalTermsAndIconForNewCardEnrollmentName,
-     flag_descriptions::
-         kAutofillMoveLegalTermsAndIconForNewCardEnrollmentDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillMoveLegalTermsAndIconForNewCardEnrollment)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"lacros-shared-components-dir",
      flag_descriptions::kLacrosSharedComponentsDirName,

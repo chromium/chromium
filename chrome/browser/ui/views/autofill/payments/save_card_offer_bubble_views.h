@@ -59,7 +59,6 @@ class SaveCardOfferBubbleViews : public SaveCardBubbleViews,
   void LinkClicked(const GURL& url);
 
   raw_ptr<views::Textfield> cardholder_name_textfield_ = nullptr;
-  raw_ptr<LegalMessageView> legal_message_view_ = nullptr;
 
   // Holds expiration inputs:
   raw_ptr<views::Combobox> month_input_dropdown_ = nullptr;

@@ -716,11 +716,6 @@
     "expiry_milestone": 123
   },
   {
-    "name": "autofill-move-legal-terms-and-icon-for-new-card-enrollment",
-    "owners": [ "yishuil@google.com" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "autofill-parse-vcn-card-on-file-standalone-cvc-fields",
     "owners": [ "jsaul@google.com", "alexandertekle@google.com" ],
     "expiry_milestone": 125
