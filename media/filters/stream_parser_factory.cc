@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
@@ -515,6 +516,18 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 #endif
 #endif
 };
+
+std::unique_ptr<StreamParser> StreamParserFactory::CreateHLSProbeParser(
+    std::string_view mime,
+    base::span<const std::string> codecs) {
+  for (const auto& type_info : kSupportedTypeInfo) {
+    if (type_info.type == mime) {
+      NullMediaLog log;
+      return base::WrapUnique((*type_info.factory_function)(codecs, &log));
+    }
+  }
+  return nullptr;
+}
 
 // Verify that |codec_info| is supported on this platform.
 //

@@ -14,11 +14,11 @@
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/base/mime_util.h"
+#include "media/base/stream_parser.h"
 
 namespace media {
 
 class AudioDecoderConfig;
-class StreamParser;
 class VideoDecoderConfig;
 
 class MEDIA_EXPORT StreamParserFactory {
@@ -62,6 +62,14 @@ class MEDIA_EXPORT StreamParserFactory {
       std::unique_ptr<AudioDecoderConfig> audio_config);
   static std::unique_ptr<StreamParser> Create(
       std::unique_ptr<VideoDecoderConfig> video_config);
+
+  // Creates a parser used for determining which codecs are present in a media
+  // file. This parser won't log to media log because failure to parse is not
+  // itself an error in hls media playback. This function may return null if
+  // the mime type isn't supported.
+  static std::unique_ptr<StreamParser> CreateHLSProbeParser(
+      std::string_view mime,
+      base::span<const std::string> codecs);
 };
 
 }  // namespace media
