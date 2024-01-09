@@ -14,7 +14,11 @@ namespace manta::features {
 // the google chrome Manta project.
 COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kMantaService);
 
+COMPONENT_EXPORT(MANTA) BASE_DECLARE_FEATURE(kOrcaUseProdServer);
+
 COMPONENT_EXPORT(MANTA) bool IsMantaServiceEnabled();
+
+COMPONENT_EXPORT(MANTA) bool IsOrcaUseProdServerEnabled();
 
 }  // namespace manta::features
 
