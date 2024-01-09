@@ -85,7 +85,7 @@ async function lintScript({ name, text } /*: { name: string, text: string }*/) {
     rules: {
       "no-undef": ["error"],
       "no-unused-vars": [
-        "warn",
+        "error",
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",

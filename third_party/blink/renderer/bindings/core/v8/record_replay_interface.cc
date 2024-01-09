@@ -227,6 +227,7 @@ function log(...args) {
   log_(args.join(' '));
 }
 
+// eslint-disable-next-line no-unused-vars
 function logTrace(...args) {
   logTrace_(args.join(' '));
 }
@@ -249,6 +250,11 @@ function isFunction(val) {
 
 function isObject(val) {
   return !!val && (typeof val === "object" || isFunction(val))
+}
+
+// eslint-disable-next-line no-unused-vars
+function isNonNullObject(obj) {
+  return obj && (typeof obj == "object" || typeof obj == "function");
 }
 
 function typeofMaybeNull(value) {
@@ -980,10 +986,6 @@ function registerPlainObject(plainObject) {
   return rrpId;
 }
 
-function isNonNullObject(obj) {
-  return obj && (typeof obj == "object" || typeof obj == "function");
-}
-
 function getPlainObjectByCdpId(cdpId) {
   const rrpId = gRrpIdByCdpId.get(cdpId);
   assert(rrpId);
@@ -1009,12 +1011,6 @@ function getPlainObjectByRrpId(rrpId) {
     gPlainObjectByRrpId.set(rrpId, plainObject);
   }
   return plainObject;
-}
-
-function getPlainObjectFromCdpObject(cdpObject) {
-  const cdpId = cdpObject.objectId;
-  assert(cdpId);
-  return fromJsGetObjectByCdpId(cdpId);
 }
 
 /**
@@ -1532,14 +1528,6 @@ ProtocolObjectPreview.prototype = {
   }
 };
 
-// Get a count from an object description like "Array(42)"
-function getDescriptionCount(description) {
-  const match = /\((\d+)\)/.exec(description || "");
-  if (match) {
-    return +match[1];
-  }
-}
-
 function getExtraObjectPreviewData(cdpObject, cdpProperties) {
   const cdpId = cdpObject.objectId;
   const rrpId = gRrpIdByCdpId.get(cdpId);
@@ -1664,7 +1652,7 @@ function previewBlinkStyle(style) {
   };
 }
 
-function previewArray(cdpProperties) {
+function previewArray(_cdpProperties) {
   // TODO: [RUN-2223] Find out why Array.length does not always return a value.
   // this.addGetterValue('length', this.cdpObj, /* force */ true);
 
@@ -2210,43 +2198,6 @@ function CSS_getComputedStyle({ node }) {
  * {@link CSS_getAppliedRules}
  * ##########################################################################*/
 
-// This set is the intersection of the elements described at [1] and the
-// elements which the firefox devtools server actually operates on [2].
-//
-// [1] https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-elements
-// [2] PSEUDO_ELEMENTS in devtools/shared/css/generated/properties-db.js
-const PseudoElements = [
-  ":after",
-  ":backdrop",
-  ":before",
-  ":cue",
-  ":first-letter",
-  ":first-line",
-  ":marker",
-  ":placeholder",
-  ":selection",
-];
-
-/**
- * @see https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
- * @see https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleRule
- * @see https://static.replay.io/protocol/tot/CSS/#type-Rule
- */
-class CssRule {
-  /**
-   * @deprecated
-   */
-  type;
-  cssText;
-  parentStyleSheet;
-  startLine;
-  startColumn;
-  originalLocation;
-  selectorText;
-  style;
-}
-
-
 /**
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/API/CSSRule
@@ -2421,7 +2372,7 @@ function convertCdpToRrpCssRules(nodeObj, cdpMatchedStyles) {
   for (const cdpInheritedEntry of inheritedEntries) {
     // see https://chromedevtools.github.io/devtools-protocol/tot/CSS/#type-InheritedStyleEntry
     const {
-      inlineStyle, // inherited inline style
+      // inlineStyle, // inherited inline style
       matchedCSSRules  // inherited non-inline rules
     } = cdpInheritedEntry;
 
@@ -3564,7 +3515,7 @@ function onCommitFiberUnmount(rendererID, fiber) {
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 }
 
-function onCommitFiberRoot(rendererID, root, priorityLevel) {
+function onCommitFiberRoot(rendererID, root, _priorityLevel) {
   // The "commit" handler should be the only one the routine needs to do the work as of 2023-05-01.
   // We capture unmounted fibers in the unmount handler above, and the routine
   // will process them when we evaluate at the commit annotation point.
@@ -3595,7 +3546,7 @@ function onCommitFiberRoot(rendererID, root, priorityLevel) {
   unmountedFibersSet.clear();
 }
 
-function onPostCommitFiberRoot(rendererID, root) {
+function onPostCommitFiberRoot(_rendererID, _root) {
   const annotationType = "post-commit-fiber-root";
   window.__RECORD_REPLAY_ANNOTATION_HOOK__("react-devtools-hook:v1:" + annotationType, "");
 }
@@ -3641,7 +3592,6 @@ function isFiltered(action, localFilter) {
 
 
 const listeners = {};
-const source = '@devtools-page';
 function isArray(arg) {
   return Array.isArray(arg);
 }
@@ -3674,7 +3624,7 @@ function saveReplayAnnotation(action, state, connectionType, extractedConfig, co
     config
   };
 }
-function sendMessage(action, state, preConfig = {}, instanceId, name) {
+function sendMessage(action, state, preConfig = {}, _instanceId, _name) {
   if (!action || !action.type) {
     action = {
       type: 'update'
@@ -3685,7 +3635,6 @@ function sendMessage(action, state, preConfig = {}, instanceId, name) {
     };
   }
   const [config, extractedExtensionConfig] = extractExtensionConfig(preConfig);
-  instanceId = instanceId ?? extractedExtensionConfig.instanceId;
   saveReplayAnnotation(action, state, 'generic', extractedExtensionConfig, config);
 }
 function extractExtensionConfig(preConfig) {
@@ -3736,14 +3685,14 @@ function connect(preConfig) {
     saveReplayAnnotation(amendedAction, state, 'generic', extractedExtensionConfig, config);
     return;
   };
-  const init = (state, liftedData) => {
+  const init = (_state, _liftedData) => {
     window.__RECORD_REPLAY_ANNOTATION_HOOK__('redux-devtools-setup', JSON.stringify({
       type: 'init',
       connectionType: 'generic',
       instanceId
     }));
   };
-  const error = payload => {};
+  const error = (_payload) => {};
   return {
     init,
     subscribe,
