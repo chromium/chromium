@@ -601,11 +601,6 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate() {
             ImmersiveModeController::ANIMATE_REVEAL_YES);
   }
 
-  // If the IPH is showing, close it to avoid showing the download dialog over
-  // it.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHDownloadToolbarButtonFeature);
-
   auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
       this, views::BubbleBorder::TOP_RIGHT);
   bubble_delegate->SetTitle(
@@ -722,14 +717,6 @@ void DownloadToolbarButtonView::OnPartialViewClosed() {
     return;
   }
 #endif
-
-  if (download::ShouldSuppressDownloadBubbleIph(
-          browser_->profile()->GetOriginalProfile())) {
-    return;
-  }
-
-  browser_->window()->MaybeShowFeaturePromo(
-      feature_engagement::kIPHDownloadToolbarButtonFeature);
 }
 
 void DownloadToolbarButtonView::DeactivateAutoClose() {

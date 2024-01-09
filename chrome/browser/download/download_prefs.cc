@@ -288,9 +288,7 @@ void DownloadPrefs::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kDownloadBubblePartialViewEnabled, true);
   registry->RegisterIntegerPref(prefs::kDownloadBubblePartialViewImpressions,
                                 0);
-  registry->RegisterBooleanPref(
-      prefs::kDownloadBubbleIphSuppression, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+
   registry->RegisterBooleanPref(prefs::kSafeBrowsingForTrustedSourcesEnabled,
                                 true);
 

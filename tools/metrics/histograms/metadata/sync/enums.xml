@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
   <int value="100148" label="DefaultTasksBySuffix"/>
   <int value="100149" label="DevToolsSyncPreferences"/>
   <int value="100150" label="DevToolsSyncedPreferencesSyncEnabled"/>
-  <int value="100151" label="DownloadBubbleIphSuppression"/>
+  <int value="100151" label="(obsolete) DownloadBubbleIphSuppression"/>
   <int value="100152" label="EnableDoNotTrack"/>
   <int value="100153" label="ExtensionCommands"/>
   <int value="100154" label="ExtensionsUIDeveloperMode"/>

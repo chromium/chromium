@@ -744,16 +744,6 @@ void MaybeRegisterChromeFeaturePromos(
               FeaturePromoSpecification::PromoSubtype::kActionableAlert)));
 #endif
 
-  // kIPHDownloadToolbarButtonFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForToastPromo(
-                    feature_engagement::kIPHDownloadToolbarButtonFeature,
-                    kToolbarDownloadButtonElementId, IDS_DOWNLOAD_BUBBLE_PROMO,
-                    IDS_DOWNLOAD_BUBBLE_PROMO_SCREENREADER,
-                    FeaturePromoSpecification::AcceleratorInfo())
-                    .SetBubbleArrow(HelpBubbleArrow::kTopRight)
-                    .SetBubbleTitleText(IDS_DOWNLOAD_BUBBLE_PROMO_TITLE)));
-
   // kIPHBackNavigationMenuFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForSnoozePromo(

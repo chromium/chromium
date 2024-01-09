@@ -67,13 +67,6 @@ inline constexpr char kDownloadBubblePartialViewEnabled[] =
 inline constexpr char kDownloadBubblePartialViewImpressions[] =
     "download_bubble.partial_view_impressions";
 
-// A boolean specifying whether the download bubble IPH should be suppressed.
-// This will be set to true for users who are using the download bubble prior
-// to the addition of the IPH, so that the IPH will not be shown to users who
-// have already used the download bubble.
-inline constexpr char kDownloadBubbleIphSuppression[] =
-    "suppress_download_bubble_iph";
-
 // If set to true profiles are created in ephemeral mode and do not store their
 // data in the profile folder on disk but only in memory.
 inline constexpr char kForceEphemeralProfiles[] = "profile.ephemeral_mode";

@@ -19,10 +19,6 @@ bool ShouldShowDownloadBubble(Profile* profile);
 // mode. This returns false if the connector is disabled.
 bool DoesDownloadConnectorBlock(Profile* profile, const GURL& url);
 
-// Whether to suppress the download bubble IPH. This will be true for users
-// who have interacted with the download bubble prior to the IPH being added.
-bool ShouldSuppressDownloadBubbleIph(Profile* profile);
-
 // Whether the partial view is controlled by prefs. If not controlled by prefs,
 // the partial view defaults to disabled.
 bool IsDownloadBubblePartialViewControlledByPref();

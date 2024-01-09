@@ -662,7 +662,6 @@ void DownloadBubbleRowView::OnMainButtonPressed(const ui::Event& event) {
       input_protector_->IsPossiblyUnintendedInteraction(event)) {
     return;
   }
-  bubble_controller_->RecordDownloadBubbleInteraction();
   if (info_->has_subpage()) {
     DownloadItemWarningData::AddWarningActionEvent(
         info_->model()->GetDownloadItem(),

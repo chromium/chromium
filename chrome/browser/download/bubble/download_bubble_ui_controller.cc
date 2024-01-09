@@ -114,13 +114,11 @@ void DownloadBubbleUIController::HideDownloadUi() {
 }
 
 void DownloadBubbleUIController::HandleButtonPressed() {
-  RecordDownloadBubbleInteraction();
   display_controller_->HandleButtonPressed();
 }
 
 bool DownloadBubbleUIController::OpenMostSpecificDialog(
     const offline_items_collection::ContentId& content_id) {
-  RecordDownloadBubbleInteraction();
   return display_controller_->OpenMostSpecificDialog(content_id);
 }
 
@@ -242,7 +240,6 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
     base::WeakPtr<DownloadUIModel> model,
     DownloadCommands::Command command,
     bool is_main_view) {
-  RecordDownloadBubbleInteraction();
   if (!model) {
     return;
   }
@@ -374,13 +371,6 @@ void DownloadBubbleUIController::ScheduleCancelForEphemeralWarning(
   if (delegate) {
     delegate->ScheduleCancelForEphemeralWarning(guid);
   }
-}
-
-void DownloadBubbleUIController::RecordDownloadBubbleInteraction() {
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser_->profile());
-  tracker->NotifyEvent("download_bubble_interaction");
 }
 
 void DownloadBubbleUIController::RecordDangerousDownloadShownToUser() {

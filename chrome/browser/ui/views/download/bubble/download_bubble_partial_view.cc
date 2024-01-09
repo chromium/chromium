@@ -163,7 +163,6 @@ class SuppressBubbleSettingRow : public views::View,
 
   void SettingsLinkClicked() {
     if (bubble_controller_ && browser_) {
-      bubble_controller_->RecordDownloadBubbleInteraction();
       chrome::ShowSettingsSubPage(browser_.get(), chrome::kDownloadsSubPage);
     }
   }

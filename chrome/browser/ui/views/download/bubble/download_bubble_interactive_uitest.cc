@@ -103,8 +103,7 @@ class DownloadBubbleInteractiveUiTest : public DownloadTestBase,
  public:
   DownloadBubbleInteractiveUiTest() {
     test_features_.InitAndEnableFeatures(
-        {feature_engagement::kIPHDownloadEsbPromoFeature,
-         feature_engagement::kIPHDownloadToolbarButtonFeature
+        {feature_engagement::kIPHDownloadEsbPromoFeature
 #if BUILDFLAG(IS_MAC)
          ,
          features::kImmersiveFullscreen
@@ -302,37 +301,20 @@ IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       DownloadBubbleInteractedWith_NoIPHShown) {
-  RunTestSequence(
-      Do(ChangeButtonVisibility(true)),
-      WaitForShow(kToolbarDownloadButtonElementId),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      // Press the button to register an interaction (which should
-      // suppress the IPH) which opens the main view.
-      PressButton(kToolbarDownloadButtonElementId),
-      // Close the main view.
-      Do(ChangeBubbleVisibility(false)),
-      // Now download a file to show the partial view, if enabled.
-      Do(DownloadTestFile()),
-      Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-      // Hide the partial view, if enabled. No IPH is shown.
-      Do(ChangeBubbleVisibility(false)),
-      Check(DownloadBubbleIsShowingDetails(false)),
-      Check(DownloadBubblePromoIsActive(
-          false, feature_engagement::kIPHDownloadToolbarButtonFeature)));
-}
-
-IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       DownloadBubbleShownAfterDownload_IPHShown) {
-  RunTestSequence(Do(DownloadTestFile()),
+                       DownloadBubbleMainView) {
+  RunTestSequence(Do(ChangeButtonVisibility(true)),
                   WaitForShow(kToolbarDownloadButtonElementId),
-                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
-                  // Hide the partial view, if enabled. The IPH should be shown.
-                  Do(ChangeBubbleVisibility(false)),
                   Check(DownloadBubbleIsShowingDetails(false)),
-                  Check(DownloadBubblePromoIsActive(
-                      IsPartialViewEnabled(),
-                      feature_engagement::kIPHDownloadToolbarButtonFeature)));
+                  // Press the button to open the main view.
+                  PressButton(kToolbarDownloadButtonElementId),
+                  // Close the main view.
+                  Do(ChangeBubbleVisibility(false)),
+                  // Now download a file to show the partial view, if enabled.
+                  Do(DownloadTestFile()),
+                  Check(DownloadBubbleIsShowingDetails(IsPartialViewEnabled())),
+                  // Hide the partial view, if enabled.
+                  Do(ChangeBubbleVisibility(false)),
+                  Check(DownloadBubbleIsShowingDetails(false)));
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

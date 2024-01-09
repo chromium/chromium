@@ -532,23 +532,6 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHDownloadToolbarButtonFeature.name == feature->name) {
-    absl::optional<FeatureConfig> config = FeatureConfig();
-    config->valid = true;
-    config->availability = Comparator(ANY, 0);
-    config->session_rate = Comparator(ANY, 0);
-    SessionRateImpact session_rate_impact;
-    session_rate_impact.type = SessionRateImpact::Type::NONE;
-    config->session_rate_impact = session_rate_impact;
-    // Show the promo max once a year if the user hasn't interacted with the
-    // download bubble within the last 21 days.
-    config->trigger = EventConfig("download_bubble_iph_trigger",
-                                  Comparator(EQUAL, 0), 360, 360);
-    config->used = EventConfig("download_bubble_interaction",
-                               Comparator(EQUAL, 0), 21, 360);
-    return config;
-  }
-
   if (kIPHBackNavigationMenuFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
