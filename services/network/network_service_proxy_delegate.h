@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
-#include "services/network/ip_protection/ip_protection_config_cache.h"
+#include "services/network/ip_protection/ip_protection_proxy_delegate.h"
 #include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -45,7 +45,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   void SetIpProtectionConfigCache(
       std::unique_ptr<IpProtectionConfigCache> ipp_config_cache) {
-    ipp_config_cache_ = std::move(ipp_config_cache);
+    if (ipp_proxy_delegate_) {
+      ipp_proxy_delegate_->SetIpProtectionConfigCache(
+          std::move(ipp_config_cache));
+    }
   }
 
   // net::ProxyDelegate implementation:
@@ -67,7 +70,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
       net::ProxyResolutionService* proxy_resolution_service) override;
 
   IpProtectionConfigCache* GetIpProtectionConfigCache() {
-    return ipp_config_cache_.get();
+    return ipp_proxy_delegate_
+               ? ipp_proxy_delegate_->GetIpProtectionConfigCache()
+               : nullptr;
   }
 
  private:
@@ -111,7 +116,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   raw_ptr<net::ProxyResolutionService> proxy_resolution_service_ = nullptr;
 
-  std::unique_ptr<IpProtectionConfigCache> ipp_config_cache_;
+  std::unique_ptr<IpProtectionProxyDelegate> ipp_proxy_delegate_;
 };
 
 }  // namespace network
