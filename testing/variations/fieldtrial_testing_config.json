@@ -10843,6 +10843,69 @@
             ]
         }
     ],
+    "MiracleParameterForAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Combined_20231205",
+                    "params": {
+                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroidFor1GBTo2GB": "1024",
+                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroidFor2GBTo4GB": "1024",
+                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroidFor512MBTo1GB": "256",
+                        "PartitionAllocLargeThreadCacheSizeValueForLowRAMAndroidForLessThan512MB": "512",
+                        "ThreadCacheDefaultPurgeIntervalFor16GBAndAbove": "2s",
+                        "ThreadCacheDefaultPurgeIntervalFor1GBTo2GB": "10s",
+                        "ThreadCacheDefaultPurgeIntervalFor2GBTo4GB": "30s",
+                        "ThreadCacheDefaultPurgeIntervalFor4GBTo8GB": "2s",
+                        "ThreadCacheDefaultPurgeIntervalFor512MBTo1GB": "2s",
+                        "ThreadCacheDefaultPurgeIntervalFor8GBTo16GB": "2s",
+                        "ThreadCacheDefaultPurgeIntervalForLessThan512MB": "2s",
+                        "ThreadCacheMaxPurgeIntervaFor16GBAndAbove": "60s",
+                        "ThreadCacheMaxPurgeIntervaFor1GBTo2GB": "60s",
+                        "ThreadCacheMaxPurgeIntervaFor2GBTo4GB": "60s",
+                        "ThreadCacheMaxPurgeIntervaFor4GBTo8GB": "120s",
+                        "ThreadCacheMaxPurgeIntervaFor512MBTo1GB": "60s",
+                        "ThreadCacheMaxPurgeIntervaFor8GBTo16GB": "60s",
+                        "ThreadCacheMaxPurgeIntervaForLessThan512MB": "60s",
+                        "ThreadCacheMinPurgeIntervalFor16GBAndAbove": "1s",
+                        "ThreadCacheMinPurgeIntervalFor1GBTo2GB": "5s",
+                        "ThreadCacheMinPurgeIntervalFor2GBTo4GB": "2s",
+                        "ThreadCacheMinPurgeIntervalFor4GBTo8GB": "1s",
+                        "ThreadCacheMinPurgeIntervalFor512MBTo1GB": "1s",
+                        "ThreadCacheMinPurgeIntervalFor8GBTo16GB": "1s",
+                        "ThreadCacheMinPurgeIntervalForLessThan512MB": "1s",
+                        "default-parser-budgetFor16GBAndAbove": "200ms",
+                        "default-parser-budgetFor1GBTo2GB": "10ms",
+                        "default-parser-budgetFor2GBTo4GB": "10ms",
+                        "default-parser-budgetFor4GBTo8GB": "10ms",
+                        "default-parser-budgetFor512MBTo1GB": "10ms",
+                        "default-parser-budgetFor8GBTo16GB": "10ms",
+                        "default-parser-budgetForLessThan512MB": "10ms",
+                        "long-parser-budgetFor16GBAndAbove": "500ms",
+                        "long-parser-budgetFor1GBTo2GB": "50ms",
+                        "long-parser-budgetFor2GBTo4GB": "500ms",
+                        "long-parser-budgetFor4GBTo8GB": "100ms",
+                        "long-parser-budgetFor512MBTo1GB": "20ms",
+                        "long-parser-budgetFor8GBTo16GB": "100ms",
+                        "long-parser-budgetForLessThan512MB": "50ms",
+                        "num-yields-with-default-budgetFor16GBAndAbove": "2",
+                        "num-yields-with-default-budgetFor1GBTo2GB": "2",
+                        "num-yields-with-default-budgetFor2GBTo4GB": "6",
+                        "num-yields-with-default-budgetFor4GBTo8GB": "6",
+                        "num-yields-with-default-budgetFor512MBTo1GB": "2",
+                        "num-yields-with-default-budgetFor8GBTo16GB": "6",
+                        "num-yields-with-default-budgetForLessThan512MB": "2"
+                    },
+                    "enable_features": [
+                        "TimedHTMLParserBudget"
+                    ]
+                }
+            ]
+        }
+    ],
     "MmapSafeBrowsingDatabase": [
         {
             "platforms": [
@@ -18408,24 +18471,6 @@
                         "default-parser-budget": "10ms",
                         "long-parser-budget": "500ms",
                         "num-yields-with-default-budget": "6"
-                    },
-                    "enable_features": [
-                        "TimedHTMLParserBudget"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "group_10_50_2_20230911",
-                    "params": {
-                        "default-parser-budget": "10ms",
-                        "long-parser-budget": "50ms",
-                        "num-yields-with-default-budget": "2"
                     },
                     "enable_features": [
                         "TimedHTMLParserBudget"
