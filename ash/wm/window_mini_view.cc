@@ -13,6 +13,7 @@
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
@@ -145,6 +146,9 @@ void WindowMiniView::RefreshPreviewRoundedCorners(bool show) {
   layer->SetRoundedCornerRadius(GetRoundedCornersForPreviewView(
       source_window_, backdrop_view_, preview_view_->GetBoundsInScreen(),
       layer->transform().To2dScale().x(), show, preview_view_rounded_corners_));
+  if (!chromeos::features::IsRoundedWindowsEnabled()) {
+    layer->SetIsFastRoundedCorner(true);
+  }
 }
 
 void WindowMiniView::RefreshHeaderViewRoundedCorners() {
