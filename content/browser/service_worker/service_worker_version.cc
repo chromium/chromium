@@ -1594,7 +1594,8 @@ void ServiceWorkerVersion::ClaimClients(ClaimClientsCallback callback) {
       context_->GetLiveRegistration(registration_id_);
   // Registration must be kept alive by ServiceWorkerGlobalScope#registration.
   if (!registration) {
-    mojo::ReportBadMessage("ClaimClients: No live registration");
+    associated_interface_receiver_.ReportBadMessage(
+        "ClaimClients: No live registration");
     // ReportBadMessage() will kill the renderer process, but Mojo complains if
     // the callback is not run. Just run it with nonsense arguments.
     std::move(callback).Run(blink::mojom::ServiceWorkerErrorType::kUnknown,
@@ -1679,7 +1680,7 @@ void ServiceWorkerVersion::OpenPaymentHandlerWindow(
   }
 
   if (!url.is_valid() || !key_.origin().IsSameOriginWith(url)) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received PaymentRequestEvent#openWindow() request for a cross-origin "
         "URL.");
     receiver_.reset();
@@ -1720,7 +1721,7 @@ void ServiceWorkerVersion::PostMessageToClient(
 
   if (container_host->url().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received Client#postMessage() request for a cross-origin client.");
     receiver_.reset();
     return;
@@ -1748,7 +1749,7 @@ void ServiceWorkerVersion::PostMessageToClient(
     // ServiceWorkerObjectHost not associated with its
     // ServiceWorkerContainerHost. If that world should occur, we should queue
     // the message instead of crashing.
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received Client#postMessage() request for a reserved client.");
     receiver_.reset();
     return;
@@ -1774,14 +1775,14 @@ void ServiceWorkerVersion::FocusClient(const std::string& client_uuid,
   }
   if (container_host->url().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#focus() request for a cross-origin client.");
     receiver_.reset();
     return;
   }
   if (!container_host->IsContainerForWindowClient()) {
     // focus() should be called only for WindowClient.
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#focus() request for a non-window client.");
     receiver_.reset();
     return;
@@ -1803,7 +1804,7 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
 
   if (!url.is_valid() ||
       !base::Uuid::ParseCaseInsensitive(client_uuid).is_valid()) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received unexpected invalid URL/UUID from renderer process.");
     receiver_.reset();
     return;
@@ -1830,14 +1831,14 @@ void ServiceWorkerVersion::NavigateClient(const std::string& client_uuid,
   }
   if (container_host->url().DeprecatedGetOriginAsURL() !=
       script_url_.DeprecatedGetOriginAsURL()) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#navigate() request for a cross-origin client.");
     receiver_.reset();
     return;
   }
   if (!container_host->IsContainerForWindowClient()) {
     // navigate() should be called only for WindowClient.
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received WindowClient#navigate() request for a non-window client.");
     receiver_.reset();
     return;
@@ -1898,7 +1899,7 @@ void ServiceWorkerVersion::RegisterRouter(
     RegisterRouterCallback callback) {
   if (!IsStaticRouterEnabled()) {
     // This renderer should have called this only when the feature is enabled.
-    receiver_.ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Unexpected router registration call during the feature is disabled.");
     return;
   }
@@ -1911,7 +1912,7 @@ void ServiceWorkerVersion::RegisterRouter(
       // The renderer should have denied calling both RegisterRouter() and
       // AddRoutes().
       CHECK(router_evaluator());
-      receiver_.ReportBadMessage(
+      associated_interface_receiver_.ReportBadMessage(
           "The ServiceWorker router rules are set twice.");
       return;
   }
@@ -1919,7 +1920,7 @@ void ServiceWorkerVersion::RegisterRouter(
     // The renderer should have denied calling this method while the setup
     // fails.
     // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
-    receiver_.ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Failed to configure a router. Possibly a syntax error");
     return;
   }
@@ -1932,7 +1933,7 @@ void ServiceWorkerVersion::AddRoutes(
     RegisterRouterCallback callback) {
   if (!IsStaticRouterEnabled()) {
     // This renderer should have called this only when the feature is enabled.
-    receiver_.ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Unexpected router registration call during the feature is disabled.");
     return;
   }
@@ -1944,7 +1945,7 @@ void ServiceWorkerVersion::AddRoutes(
       // The renderer should have denied calling both RegisterRouter() and
       // AddRoutes().
       CHECK(router_evaluator());
-      receiver_.ReportBadMessage(
+      associated_interface_receiver_.ReportBadMessage(
           "The ServiceWorker router rules are set twice.");
       return;
   }
@@ -1952,7 +1953,7 @@ void ServiceWorkerVersion::AddRoutes(
     // The renderer should have denied calling this method while the setup
     // fails.
     // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
-    receiver_.ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Failed to configure a router. Possibly a syntax error");
     return;
   }
@@ -1996,7 +1997,7 @@ void ServiceWorkerVersion::OpenWindow(
   }
 
   if (!url.is_valid()) {
-    mojo::ReportBadMessage(
+    associated_interface_receiver_.ReportBadMessage(
         "Received unexpected invalid URL from renderer process.");
     receiver_.reset();
     return;
