@@ -11,6 +11,8 @@ struct CastApplicationMediaInfo {
   // True if WebApplication has MIXER_AUDIO feature enabled.
   // This value is set in Chromecast internal code.
   bool mixer_audio_enabled;
+  // True if the session is an audio only session.
+  bool is_audio_only_session;
 };
 
 // This is a service attached to RenderFrameHost.

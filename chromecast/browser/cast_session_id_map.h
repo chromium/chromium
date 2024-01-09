@@ -64,6 +64,11 @@ class CastSessionIdMap : public media::CastAudioManagerHelper::Delegate {
   // Must be called on the sequence for |task_runner_|.
   bool IsGroup(const std::string& session_id) override;
 
+  // Async version of IsAudioOnlySession. It can be called from any thread.
+  using IsAudioOnlySessionAsyncCallback = base::OnceCallback<void(bool)>;
+  void IsAudioOnlySessionAsync(const std::string& session_id,
+                               IsAudioOnlySessionAsyncCallback callback);
+
  private:
   class GroupObserver;
   friend class base::NoDestructor<CastSessionIdMap>;

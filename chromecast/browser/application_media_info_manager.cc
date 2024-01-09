@@ -9,10 +9,21 @@
 #include "base/logging.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/browser/cast_renderer_block_data.h"
+#include "chromecast/browser/cast_session_id_map.h"
 #include "content/public/browser/web_contents.h"
 
 namespace chromecast {
 namespace media {
+namespace {
+void RunGetCastApplicationMediaInfoCallback(
+    ApplicationMediaInfoManager::GetCastApplicationMediaInfoCallback callback,
+    const std::string& session_id,
+    bool mixer_audio_enabled,
+    bool is_audio_only_session) {
+  std::move(callback).Run(::media::mojom::CastApplicationMediaInfo::New(
+      session_id, mixer_audio_enabled, is_audio_only_session));
+}
+}  // namespace
 
 void ApplicationMediaInfoManager::Create(
     content::RenderFrameHost* render_frame_host,
@@ -61,10 +72,12 @@ void ApplicationMediaInfoManager::SetRendererBlock(bool renderer_blocked) {
             << renderer_blocked_
             << "(Pending call set: " << (!pending_call_.is_null()) << ")";
   if (renderer_blocked_ && !renderer_blocked && pending_call_) {
-    // Move callbacks in case CanStartRenderer() is called.
-    std::move(pending_call_)
-        .Run(::media::mojom::CastApplicationMediaInfo::New(
-            application_session_id_, mixer_audio_enabled_));
+    shell::CastSessionIdMap::GetInstance()->IsAudioOnlySessionAsync(
+        application_session_id_,
+        base::BindOnce(&RunGetCastApplicationMediaInfoCallback,
+                       // Move callbacks in case CanStartRenderer() is called.
+                       std::move(pending_call_), application_session_id_,
+                       mixer_audio_enabled_));
     pending_call_.Reset();
   }
 
@@ -85,8 +98,11 @@ void ApplicationMediaInfoManager::GetCastApplicationMediaInfo(
     return;
   }
 
-  std::move(callback).Run(::media::mojom::CastApplicationMediaInfo::New(
-      application_session_id_, mixer_audio_enabled_));
+  shell::CastSessionIdMap::GetInstance()->IsAudioOnlySessionAsync(
+      application_session_id_,
+      base::BindOnce(&RunGetCastApplicationMediaInfoCallback,
+                     std::move(callback), application_session_id_,
+                     mixer_audio_enabled_));
 }
 
 }  // namespace media

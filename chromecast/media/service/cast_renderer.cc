@@ -146,7 +146,9 @@ void CastRenderer::OnSubscribeToVideoGeometryChange(
     // default CastApplicationMediaInfo value below will be used.
     OnApplicationMediaInfoReceived(
         media_resource, client,
-        ::media::mojom::CastApplicationMediaInfo::New(std::string(), true));
+        ::media::mojom::CastApplicationMediaInfo::New(
+            std::string(), true /* mixer_audio_enabled */,
+            false /* is_audio_only_session */));
   }
 }
 
