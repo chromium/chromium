@@ -13,7 +13,6 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ui/ash/shelf/isolated_web_app_installer_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/lacros_shelf_item_controller.h"
 #include "chromeos/crosapi/mojom/lacros_shelf_item_tracker.mojom.h"
 #include "components/exo/shell_surface_util.h"
@@ -154,8 +153,8 @@ LacrosShelfItemTracker::CreateDelegateByInstanceType(
     mojom::InstanceType instance_type) {
   switch (instance_type) {
     case mojom::InstanceType::kIsolatedWebAppInstaller: {
-      return std::make_unique<IsolatedWebAppInstallerShelfItemController>(
-          shelf_id);
+      // TODO(crbug.com/1479140): implement.
+      return nullptr;
     }
   }
   return nullptr;
