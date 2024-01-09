@@ -652,6 +652,10 @@ wgpu::Texture DawnIOSurfaceRepresentation::BeginAccess(
 
   texture_ = shared_texture_memory_.CreateTexture(&texture_descriptor);
   if (!shared_texture_memory_.BeginAccess(texture_, &begin_access_desc)) {
+    // NOTE: WebGPU CTS tests intentionally pass in formats that are
+    // incompatible with the format of the backing IOSurface to check error
+    // handling.
+    LOG(ERROR) << "SharedTextureMemory::BeginAccess() failed";
     texture_ = {};
   }
   return texture_.Get();
