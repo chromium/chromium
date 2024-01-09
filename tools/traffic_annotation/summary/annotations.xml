@@ -442,4 +442,5 @@ Refer to README.md for content description and update process.
  <item id="search_engine_adapter" added_in_milestone="121" content_hash_code="07bed22d" os_list="android" file_path="chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/settings/SearchEngineAdapter.java" />
  <item id="launcher_manatee" added_in_milestone="122" content_hash_code="044566df" os_list="chromeos" file_path="chrome/browser/ash/app_list/search/manatee/manatee_cache.cc" />
  <item id="chromeos_picker_gif_fetcher" added_in_milestone="122" content_hash_code="0071e5db" os_list="chromeos" file_path="chrome/browser/ui/ash/picker/picker_client_impl.cc" />
+ <item id="prewarm_http_disk_cache" added_in_milestone="122" content_hash_code="0797a094" os_list="linux,windows,android,chromeos" file_path="chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.cc" />
 </annotations>

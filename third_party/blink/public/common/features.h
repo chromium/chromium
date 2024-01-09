@@ -717,6 +717,12 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kHttpDiskCachePrewarming);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kHttpDiskCachePrewarmingMaxUrlLength;
 
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kHttpDiskCachePrewarmingHistorySize;
+
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kHttpDiskCachePrewarmingReprewarmPeriod;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.

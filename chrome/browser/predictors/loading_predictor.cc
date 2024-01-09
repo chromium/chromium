@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
+#include "chrome/browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
 #include "chrome/browser/predictors/predictors_features.h"
@@ -160,6 +161,9 @@ bool LoadingPredictor::PrepareForPageLoad(
   if (shutdown_)
     return true;
 
+  // Prewarm disk cache before preconnecting network.
+  MaybePrewarmResources(url);
+
   MaybeWarmUpServiceWorker(url, profile_);
 
   if (origin == HintOrigin::OMNIBOX) {
@@ -282,6 +286,27 @@ PrefetchManager* LoadingPredictor::prefetch_manager() {
   }
 
   return prefetch_manager_.get();
+}
+
+PrewarmHttpDiskCacheManager*
+LoadingPredictor::prewarm_http_disk_cache_manager() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kHttpDiskCachePrewarming)) {
+    return nullptr;
+  }
+
+  if (shutdown_) {
+    return nullptr;
+  }
+
+  if (!prewarm_http_disk_cache_manager_) {
+    prewarm_http_disk_cache_manager_ =
+        std::make_unique<PrewarmHttpDiskCacheManager>(
+            profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess());
+  }
+
+  return prewarm_http_disk_cache_manager_.get();
 }
 
 void LoadingPredictor::Shutdown() {
@@ -513,6 +538,30 @@ void LoadingPredictor::PreconnectURLIfAllowed(
 
   preconnect_manager()->StartPreconnectUrl(url, allow_credentials,
                                            network_anonymization_key);
+}
+
+void LoadingPredictor::MaybePrewarmResources(
+    const GURL& top_frame_main_resource_url) {
+  PrewarmHttpDiskCacheManager* manager = prewarm_http_disk_cache_manager();
+
+  if (!manager) {
+    return;
+  }
+
+  if (!top_frame_main_resource_url.is_valid() ||
+      !top_frame_main_resource_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  absl::optional<LcppData> lcpp_data =
+      resource_prefetch_predictor()->GetLcppData(top_frame_main_resource_url);
+
+  if (!lcpp_data || !IsValidLcppStat(lcpp_data->lcpp_stat())) {
+    return;
+  }
+
+  manager->MaybePrewarmResources(top_frame_main_resource_url,
+                                 PredictFetchedSubresourceUrls(*lcpp_data));
 }
 
 }  // namespace predictors

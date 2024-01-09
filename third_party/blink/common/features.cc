@@ -1200,6 +1200,14 @@ const base::FeatureParam<int> kHttpDiskCachePrewarmingMaxUrlLength{
     &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_max_url_length",
     1024};
 
+const base::FeatureParam<int> kHttpDiskCachePrewarmingHistorySize{
+    &kHttpDiskCachePrewarming, "http_disk_cache_prewarming_history_size", 1024};
+
+const base::FeatureParam<base::TimeDelta>
+    kHttpDiskCachePrewarmingReprewarmPeriod{
+        &kHttpDiskCachePrewarming,
+        "http_disk_cache_prewarming_reprewarm_period", base::Minutes(10)};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

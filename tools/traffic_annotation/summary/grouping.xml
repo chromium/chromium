@@ -300,6 +300,7 @@ after discussions on the right group.
       <annotation id="search_engine_adapter"/>
       <annotation id="launcher_manatee"/>
       <annotation id="chromeos_picker_gif_fetcher"/>
+      <annotation id="prewarm_http_disk_cache"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

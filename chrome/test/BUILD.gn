@@ -6346,6 +6346,7 @@ if (!is_fuchsia) {
       "../browser/predictors/autocomplete_action_predictor_table_unittest.cc",
       "../browser/predictors/autocomplete_action_predictor_unittest.cc",
       "../browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util_unittest.cc",
+      "../browser/predictors/lcp_critical_path_predictor/prewarm_http_disk_cache_manager_unittest.cc",
       "../browser/predictors/loading_data_collector_unittest.cc",
       "../browser/predictors/loading_predictor_config_unittest.cc",
       "../browser/predictors/loading_predictor_tab_helper_unittest.cc",
