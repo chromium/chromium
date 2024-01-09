@@ -83,6 +83,7 @@ import "chromeos/crosapi/mojom/network_settings_service.mojom";
 import "chromeos/crosapi/mojom/parent_access.mojom";
 import "chromeos/crosapi/mojom/passkeys.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
+import "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom";
 import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
@@ -155,8 +156,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 129
-// Next method id: 131
+// Next version: 130
+// Next method id: 132
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -568,6 +569,11 @@ interface Crosapi {
   // Binds the prefs service which allows get, set, and notify update of prefs.
   // Added in M89.
   [MinVersion=11] BindPrefs@16(pending_receiver<Prefs> receiver);
+
+  // Binds the prevent close service which can be used to provide user feedback
+  // about nonclosable web apps.
+  [MinVersion=129] BindNonclosableAppToastService@131(
+      pending_receiver<NonclosableAppToastService> receiver);
 
   // Binds the RemoteAppsLacrosBridge for the Remote Apps private Mojo API.
   // Added in M103.

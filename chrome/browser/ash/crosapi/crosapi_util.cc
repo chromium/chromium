@@ -116,6 +116,7 @@
 #include "chromeos/crosapi/mojom/network_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/networking_private.mojom.h"
+#include "chromeos/crosapi/mojom/nonclosable_app_toast_service.mojom.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "chromeos/crosapi/mojom/passkeys.mojom.h"
 #include "chromeos/crosapi/mojom/policy_service.mojom.h"
@@ -307,7 +308,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 128,
+static_assert(crosapi::mojom::Crosapi::Version_ == 129,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -400,6 +401,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::PolicyService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::NonclosableAppToastService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetrics>(),
     MakeInterfaceVersionEntry<crosapi::mojom::PrintingMetricsForProfile>(),
     MakeInterfaceVersionEntry<

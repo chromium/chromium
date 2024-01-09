@@ -13,6 +13,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
@@ -949,6 +950,11 @@ void TestControllerAsh::SetAlmanacEndpointUrlForTesting(
     SetAlmanacEndpointUrlForTestingCallback callback) {
   apps::SetAlmanacEndpointUrlForTesting(url_override);
   std::move(callback).Run();
+}
+
+void TestControllerAsh::IsToastShown(const std::string& toast_id,
+                                     IsToastShownCallback callback) {
+  std::move(callback).Run(ash::ToastManager::Get()->IsToastShown(toast_id));
 }
 
 void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {

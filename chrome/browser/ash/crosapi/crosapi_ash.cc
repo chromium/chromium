@@ -86,6 +86,7 @@
 #include "chrome/browser/ash/crosapi/network_settings_service_ash.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
 #include "chrome/browser/ash/crosapi/networking_private_ash.h"
+#include "chrome/browser/ash/crosapi/nonclosable_app_toast_service_ash.h"
 #include "chrome/browser/ash/crosapi/parent_access_ash.h"
 #include "chrome/browser/ash/crosapi/payment_app_instance_ash.h"
 #include "chrome/browser/ash/crosapi/policy_service_ash.h"
@@ -294,6 +295,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       prefs_ash_(
           std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
                                      g_browser_process->local_state())),
+      nonclosable_app_toast_service_ash_(
+          std::make_unique<NonclosableAppToastServiceAsh>()),
 #if BUILDFLAG(USE_CUPS)
       printing_metrics_ash_(std::make_unique<PrintingMetricsAsh>()),
 #endif  // BUILDFLAG(USE_CUPS)
@@ -856,6 +859,11 @@ void CrosapiAsh::BindPower(mojo::PendingReceiver<mojom::Power> receiver) {
 
 void CrosapiAsh::BindPrefs(mojo::PendingReceiver<mojom::Prefs> receiver) {
   prefs_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindNonclosableAppToastService(
+    mojo::PendingReceiver<mojom::NonclosableAppToastService> receiver) {
+  nonclosable_app_toast_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindPrintingMetrics(

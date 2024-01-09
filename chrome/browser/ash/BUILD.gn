@@ -1962,6 +1962,8 @@ source_set("ash") {
     "login/smart_lock/smart_lock_service.h",
     "login/smart_lock/smart_lock_service_factory.cc",
     "login/smart_lock/smart_lock_service_factory.h",
+    "nonclosable_app_ui_utils.cc",
+    "nonclosable_app_ui_utils.h",
 
     # Template used by the `tools/oobe/generate_screen_template.py` script.
     "login/screens/placeholder_screen.cc",
