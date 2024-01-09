@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -67,10 +68,12 @@ public class HubPaneHostMediatorUnitTest {
         mPaneSupplier.set(mPane);
         HubPaneHostMediator mediator = new HubPaneHostMediator(mModel, mPaneSupplier);
         ShadowLooper.idleMainLooper();
+        assertNotNull(mModel.get(PANE_ROOT_VIEW));
         assertTrue(mPaneSupplier.hasObservers());
         assertTrue(mActionButtonSupplier.hasObservers());
 
         mediator.destroy();
+        assertNull(mModel.get(PANE_ROOT_VIEW));
         assertFalse(mPaneSupplier.hasObservers());
         assertFalse(mActionButtonSupplier.hasObservers());
     }
