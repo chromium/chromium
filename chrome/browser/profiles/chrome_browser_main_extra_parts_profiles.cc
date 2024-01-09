@@ -210,6 +210,7 @@
 #include "components/captive_portal/core/buildflags.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
 #include "components/commerce/core/proto/persisted_state_db_content.pb.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/content/clipboard_restriction_service.h"
 #include "components/media_effects/media_effects_service_factory.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -506,6 +507,10 @@
 
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "chrome/browser/enterprise/data_controls/rules_service.h"
+#endif
+
 namespace chrome {
 
 void AddProfilesExtraParts(ChromeBrowserMainParts* main_parts) {
@@ -737,6 +742,9 @@ void ChromeBrowserMainExtraPartsProfiles::
           chromeos::features::kCrosAppsBackgroundEventHandling)) {
     CrosAppsKeyEventHandlerFactory::GetInstance();
   }
+#endif
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  data_controls::RulesServiceFactory::GetInstance();
 #endif
   data_sharing::DataSharingServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
