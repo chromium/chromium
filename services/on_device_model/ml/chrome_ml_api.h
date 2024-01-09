@@ -211,7 +211,8 @@ struct ChromeMLAPI {
   // functions.
   void (*InitDawnProcs)(const DawnProcTable& procs);
 
-  // Sets an error handling function for fatal errors.
+  // Sets an error handling function for fatal errors in the GPU. See also
+  // SetFatalErrorNonGpuFn.
   void (*SetFatalErrorFn)(ChromeMLFatalErrorFn error_fn) = nullptr;
 
   // Creates a new ChromeML model instance as described by `model`. The returned
@@ -238,6 +239,10 @@ struct ChromeMLAPI {
   // Returns the GpuConfig in `config`. Returns true on success, false if there
   // was an error calculating it.
   bool (*GetGpuConfig)(GpuConfig& config);
+
+  // Same as SetFatalErrorFn(), but for fatal errors that occur outside of the
+  // gpu.
+  void (*SetFatalErrorNonGpuFn)(ChromeMLFatalErrorFn error_fn) = nullptr;
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

@@ -67,8 +67,8 @@ enum class GpuErrorReason {
   kMaxValue = kDxgiErrorDeviceRemoved,
 };
 
-void FatalErrorFn(const char* msg) {
-  SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
+void FatalGpuErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING1024("ChromeML(GPU)", "error_msg", msg);
   std::string msg_str(msg);
   GpuErrorReason error_reason = GpuErrorReason::kOther;
   if (msg_str.find("DXGI_ERROR_DEVICE_HUNG") != std::string::npos) {
@@ -79,10 +79,15 @@ void FatalErrorFn(const char* msg) {
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
   if (error_reason == GpuErrorReason::kOther) {
     // Collect crash reports on unknown errors.
-    CHECK(false) << "ChromeML Error: " << msg;
+    CHECK(false) << "ChromeML(GPU) Error: " << msg;
   } else {
     base::Process::TerminateCurrentProcessImmediately(0);
   }
+}
+
+void FatalErrorFn(const char* msg) {
+  SCOPED_CRASH_KEY_STRING1024("ChromeML", "error_msg", msg);
+  CHECK(false) << "ChromeML Error: " << msg;
 }
 
 }  // namespace
@@ -149,7 +154,10 @@ std::unique_ptr<ChromeML> ChromeML::Create(
 
   api->InitDawnProcs(dawn::native::GetProcs());
   if (api->SetFatalErrorFn) {
-    api->SetFatalErrorFn(&FatalErrorFn);
+    api->SetFatalErrorFn(&FatalGpuErrorFn);
+  }
+  if (api->SetFatalErrorNonGpuFn) {
+    api->SetFatalErrorNonGpuFn(&FatalErrorFn);
   }
   return std::make_unique<ChromeML>(base::PassKey<ChromeML>(),
                                     std::move(scoped_library), api);
