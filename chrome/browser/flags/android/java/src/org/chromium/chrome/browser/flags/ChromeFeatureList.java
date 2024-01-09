@@ -513,7 +513,7 @@ public abstract class ChromeFeatureList {
             new CachedFlag(HIDE_TAB_ON_TAB_SWITCHER, true);
     public static final CachedFlag sMagicStackAndroid = new CachedFlag(MAGIC_STACK_ANDROID, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
-            new CachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, true);
+            new CachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNewTabSearchEngineUrlAndroid =
             new CachedFlag(NEW_TAB_SEARCH_ENGINE_URL_ANDROID, false);
     public static final CachedFlag sPriceChangeModule = new CachedFlag(PRICE_CHANGE_MODULE, false);
