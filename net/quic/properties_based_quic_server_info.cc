@@ -55,8 +55,7 @@ bool PropertiesBasedQuicServerInfo::Load() {
 }
 
 void PropertiesBasedQuicServerInfo::Persist() {
-  string encoded;
-  base::Base64Encode(Serialize(), &encoded);
+  string encoded = base::Base64Encode(Serialize());
   http_server_properties_->SetQuicServerInfo(
       server_id_, network_anonymization_key_, encoded);
 }

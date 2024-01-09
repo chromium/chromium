@@ -61,11 +61,8 @@ class HttpAuthHandlerNtlmPortableTest : public PlatformTest {
   }
 
   std::string CreateNtlmAuthHeader(base::span<const uint8_t> buffer) {
-    std::string output;
-    base::Base64Encode(
-        base::StringPiece(reinterpret_cast<const char*>(buffer.data()),
-                          buffer.size()),
-        &output);
+    std::string output = base::Base64Encode(base::StringPiece(
+        reinterpret_cast<const char*>(buffer.data()), buffer.size()));
 
     return "NTLM " + output;
   }

@@ -11230,26 +11230,16 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Generate the NTLM messages based on known test data.
-  std::string negotiate_msg;
-  std::string challenge_msg;
-  std::string authenticate_msg;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          std::size(ntlm::test::kExpectedNegotiateMsg)),
-      &negotiate_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
-      &challenge_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          std::size(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
-      &authenticate_msg);
+  std::string negotiate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
   MockWrite data_writes1[] = {
       MockWrite("GET /kids/login.aspx HTTP/1.1\r\n"
@@ -11386,26 +11376,16 @@ TEST_P(HttpNetworkTransactionTest, NTLMAuthV2WrongThenRightPassword) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Generate the NTLM messages based on known test data.
-  std::string negotiate_msg;
-  std::string challenge_msg;
-  std::string authenticate_msg;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          std::size(ntlm::test::kExpectedNegotiateMsg)),
-      &negotiate_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
-      &challenge_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          std::size(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
-      &authenticate_msg);
+  std::string negotiate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
   // The authenticate message when |kWrongPassword| is sent.
   std::string wrong_password_authenticate_msg(
@@ -11638,26 +11618,16 @@ TEST_P(HttpNetworkTransactionTest, NTLMOverHttp2) {
   spdy_util_.UpdateWithStreamDestruction(1);
 
   // Generate the NTLM messages based on known test data.
-  std::string negotiate_msg;
-  std::string challenge_msg;
-  std::string authenticate_msg;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          std::size(ntlm::test::kExpectedNegotiateMsg)),
-      &negotiate_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
-      &challenge_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          std::size(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
-      &authenticate_msg);
+  std::string negotiate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
   MockWrite writes0[] = {CreateMockWrite(request0, 0)};
   MockRead reads0[] = {CreateMockRead(resp, 1),
@@ -12023,26 +11993,16 @@ TEST_P(HttpNetworkTransactionTest, NTLMProxyTLSHandshakeReset) {
   std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
 
   // Generate the NTLM messages based on known test data.
-  std::string negotiate_msg;
-  std::string challenge_msg;
-  std::string authenticate_msg;
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
-          std::size(ntlm::test::kExpectedNegotiateMsg)),
-      &negotiate_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
-          std::size(ntlm::test::kChallengeMsgFromSpecV2)),
-      &challenge_msg);
-  base::Base64Encode(
-      base::StringPiece(
-          reinterpret_cast<const char*>(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
-          std::size(
-              ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)),
-      &authenticate_msg);
+  std::string negotiate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kExpectedNegotiateMsg),
+      std::size(ntlm::test::kExpectedNegotiateMsg)));
+  std::string challenge_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(ntlm::test::kChallengeMsgFromSpecV2),
+      std::size(ntlm::test::kChallengeMsgFromSpecV2)));
+  std::string authenticate_msg = base::Base64Encode(base::StringPiece(
+      reinterpret_cast<const char*>(
+          ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2),
+      std::size(ntlm::test::kExpectedAuthenticateMsgEmptyChannelBindingsV2)));
 
   MockWrite data_writes[] = {
       // The initial CONNECT request.

@@ -62,9 +62,8 @@ base::Value NetLogBinaryValue(base::span<const uint8_t> bytes) {
 }
 
 base::Value NetLogBinaryValue(const void* bytes, size_t length) {
-  std::string b64;
-  base::Base64Encode(
-      base::StringPiece(reinterpret_cast<const char*>(bytes), length), &b64);
+  std::string b64 = base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(bytes), length));
   return base::Value(std::move(b64));
 }
 
