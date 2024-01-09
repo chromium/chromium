@@ -23,7 +23,7 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
   // session, so guarantee it will never crash.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
-  std::vector<AccountInfo> primary_accounts;
+  std::vector<supervised_user::LogSegment> log_segments;
   for (Profile* profile : profile_list) {
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(b/274889379): Mock call to GetBrowserCount().
@@ -35,12 +35,12 @@ bool FamilyLinkUserMetricsProvider::ProvideHistograms() {
       continue;
     }
 #endif
-    signin::IdentityManager* identity_manager_ =
-        IdentityManagerFactory::GetForProfile(profile);
-    AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-        identity_manager_->GetPrimaryAccountInfo(
-            signin::ConsentLevel::kSignin));
-    primary_accounts.push_back(std::move(account_info));
+    absl::optional<supervised_user::LogSegment> log_segment =
+        supervised_user::SupervisionStatusForUser(
+            IdentityManagerFactory::GetForProfile(profile));
+    if (log_segment.has_value()) {
+      log_segments.push_back(log_segment.value());
+    }
   }
-  return supervised_user::EmitLogSegmentHistogram(primary_accounts);
+  return supervised_user::EmitLogSegmentHistogram(log_segments);
 }
