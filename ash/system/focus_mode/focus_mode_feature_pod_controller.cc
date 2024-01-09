@@ -120,20 +120,8 @@ void FocusModeFeaturePodController::UpdateUI() {
   const base::TimeDelta session_duration_remaining =
       in_focus_session ? controller->end_time() - base::Time::Now()
                        : controller->session_duration();
-
-  // We only show seconds if there is less than a minute remaining. This can
-  // only happen during a focus session.
-  // TODO(b/302044981): `UpdateUI` shouldn't have to know about internal
-  // implementation details of `focus_mode_util` (i.e. needing to round up the
-  // seconds, which time format to use, etc.) in order to function correctly. We
-  // should clean this up to provide a better API.
-  const bool should_show_seconds =
-      base::ClampRound<int64_t>(session_duration_remaining.InSecondsF()) <
-      base::Time::kSecondsPerMinute;
   const std::u16string duration_string = focus_mode_util::GetDurationString(
-      session_duration_remaining,
-      should_show_seconds ? focus_mode_util::TimeFormatType::kFull
-                          : focus_mode_util::TimeFormatType::kMinutesOnly);
+      session_duration_remaining, /*digital_format=*/false);
   tile_->SetSubLabel(
       in_focus_session
           ? l10n_util::GetStringFUTF16(

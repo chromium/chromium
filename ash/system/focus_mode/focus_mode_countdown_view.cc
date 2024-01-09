@@ -154,15 +154,15 @@ void FocusModeCountdownView::UpdateUI() {
   const base::TimeDelta time_remaining =
       controller->end_time() - base::Time::Now();
   time_remaining_label_->SetText(focus_mode_util::GetDurationString(
-      time_remaining, focus_mode_util::TimeFormatType::kDigital));
+      time_remaining, /*digital_format=*/true));
 
   const base::TimeDelta session_duration = controller->session_duration();
   time_total_label_->SetText(focus_mode_util::GetDurationString(
-      session_duration, focus_mode_util::TimeFormatType::kDigital));
+      session_duration, /*digital_format=*/true));
 
   const base::TimeDelta time_elapsed = session_duration - time_remaining;
   time_elapsed_label_->SetText(focus_mode_util::GetDurationString(
-      time_elapsed, focus_mode_util::TimeFormatType::kDigital));
+      time_elapsed, /*digital_format=*/true));
 
   progress_bar_->SetValue(time_elapsed / session_duration);
 
