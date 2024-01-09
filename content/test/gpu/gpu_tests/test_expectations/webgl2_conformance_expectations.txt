@@ -735,6 +735,11 @@ crbug.com/1502174 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/
 
 crbug.com/1147232 [ linux amd-0x7340 angle-opengl passthrough ] conformance/textures/misc/texture-size-limit.html [ Failure ]
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
+crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_lines.html [ RetryOnFailure ]
+crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_triangles.html [ RetryOnFailure ]
+crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ RetryOnFailure ]
+crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ RetryOnFailure ]
+crbug.com/1516822 [ linux amd-0x7340 angle-opengl passthrough ] deqp/functional/gles3/uniformapi/value_assigned.html [ RetryOnFailure ]
 
 ####################
 # Android failures #
