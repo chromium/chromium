@@ -28,6 +28,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -501,6 +502,15 @@ void IsolatedWebAppInstallerViewImpl::ShowDialog(
       &Delegate::OnChildDialogAccepted, base::Unretained(delegate_)));
 
   views::BubbleDialogDelegate::CreateBubble(std::move(bubble_delegate))->Show();
+}
+
+gfx::Size IsolatedWebAppInstallerViewImpl::GetMaximumSize() const {
+  // `SetCanResize` only works in ash. ash will consider Lacros windows to be
+  // non-resizable if their min and max height are the same. To achieve this,
+  // we set the max size to the View's preferred size.
+  int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
+  return gfx::Size(width, GetHeightForWidth(width));
 }
 
 void IsolatedWebAppInstallerViewImpl::ShowChildView(views::View* view) {

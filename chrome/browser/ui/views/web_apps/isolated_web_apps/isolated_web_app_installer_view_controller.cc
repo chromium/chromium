@@ -11,7 +11,6 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/callback_delayer.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
@@ -26,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -444,6 +444,7 @@ void IsolatedWebAppInstallerViewController::OnModelChanged() {
 std::unique_ptr<views::DialogDelegate>
 IsolatedWebAppInstallerViewController::CreateDialogDelegate(
     std::unique_ptr<views::View> contents_view) {
+  gfx::Size contents_max_size = contents_view->GetMaximumSize();
   auto delegate = std::make_unique<OnCompleteDialogDelegate>();
   delegate->set_internal_name("Isolated Web App Installer");
   delegate->SetOwnedByWidget(true);
@@ -451,8 +452,8 @@ IsolatedWebAppInstallerViewController::CreateDialogDelegate(
   delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
   delegate->SetShowCloseButton(false);
   delegate->SetHasWindowSizeControls(false);
-  delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+  delegate->SetCanResize(false);
+  delegate->set_fixed_width(contents_max_size.width());
   // TODO(crbug.com/1479140): Set the title of the dialog for Alt+Tab
   delegate->SetShowTitle(false);
 
