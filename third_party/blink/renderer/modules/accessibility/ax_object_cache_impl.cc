@@ -1451,9 +1451,12 @@ AXObject* AXObjectCacheImpl::RepairChildrenOfIncludedParent(Node* child) {
     if (ancestor) {
       ancestors_to_repair.push_front(ancestor);
     }
-    if (ax_ancestor && ax_ancestor->LastKnownIsIncludedInTreeValue()) {
-      ax_included_ancestor = ax_ancestor;
-      break;
+    if (ax_ancestor) {
+      if (ax_ancestor->LastKnownIsIncludedInTreeValue()) {
+        ax_included_ancestor = ax_ancestor;
+        break;
+      }
+      ax_ancestor->SetNeedsToUpdateChildren();
     }
   };
 
