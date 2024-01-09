@@ -345,7 +345,9 @@ GtkCssContext::GtkCssContext(const GtkCssContext&) = default;
 GtkCssContext::GtkCssContext(GtkCssContext&&) = default;
 GtkCssContext& GtkCssContext::operator=(const GtkCssContext&) = default;
 GtkCssContext& GtkCssContext::operator=(GtkCssContext&&) = default;
-GtkCssContext::~GtkCssContext() = default;
+GtkCssContext::~GtkCssContext() {
+  widget_.ExtractAsDangling();
+}
 
 GtkCssContext::operator GtkStyleContext*() {
   if (GtkCheckVersion(4)) {
