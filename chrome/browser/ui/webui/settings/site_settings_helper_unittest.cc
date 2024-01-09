@@ -49,6 +49,7 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -371,6 +372,44 @@ TEST_F(SiteSettingsHelperTest, ExceptionListFedCmEmbargo) {
       exceptions[0].GetDict().FindString(site_settings::kOrigin);
   ASSERT_TRUE(primary_pattern);
   EXPECT_EQ(kOriginToEmbargo, *primary_pattern);
+}
+
+TEST_F(SiteSettingsHelperTest, ExceptionListIgnoresWebUIAllowlist) {
+  TestingProfile profile;
+  auto* allowlist = WebUIAllowlist::GetOrCreate(&profile);
+
+  // Confirm that WebUI allowlist entries are excluded from the exception list.
+  allowlist->RegisterAutoGrantedPermission(
+      url::Origin::Create(GURL("chrome://example.com")),
+      ContentSettingsType::COOKIES);
+
+  // Secondary patterns should also be ignored.
+  allowlist->RegisterAutoGrantedThirdPartyCookies(
+      url::Origin::Create(GURL("chrome-untrusted://another-example.com")),
+      {
+          ContentSettingsPattern::FromURL(GURL("https://embedded-1.com")),
+          ContentSettingsPattern::FromURL(GURL("https://embedded-2.com")),
+      });
+
+  base::Value::List exceptions;
+  site_settings::GetExceptionsForContentType(ContentSettingsType::COOKIES,
+                                             &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+  ASSERT_EQ(0U, exceptions.size());
+
+  // Exceptions from other sources that use a WebUI scheme should however be
+  // displayed.
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  map->SetContentSettingDefaultScope(
+      GURL("chrome://example"), GURL("chrome-untrusted://another-example"),
+      ContentSettingsType::COOKIES, CONTENT_SETTING_BLOCK);
+
+  site_settings::GetExceptionsForContentType(ContentSettingsType::COOKIES,
+                                             &profile,
+                                             /*web_ui=*/nullptr,
+                                             /*incognito=*/false, &exceptions);
+  ASSERT_EQ(1U, exceptions.size());
 }
 
 TEST_F(SiteSettingsHelperTest, CheckExceptionOrder) {
