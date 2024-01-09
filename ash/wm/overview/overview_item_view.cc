@@ -8,19 +8,20 @@
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
+#include "ash/wm/wm_constants.h"
 #include "base/containers/contains.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/animation/animation_builder.h"
@@ -184,13 +185,13 @@ void OverviewItemView::RefreshItemVisuals() {
       SetRoundedCornersRadius(
           window == snap_group->window1()
               ? gfx::RoundedCornersF(
-                    /*upper_left=*/kOverviewItemCornerRadius,
+                    /*upper_left=*/kWindowMiniViewCornerRadius,
                     /*upper_right=*/0, /*lower_right=*/0,
-                    /*lower_left=*/kOverviewItemCornerRadius)
+                    /*lower_left=*/kWindowMiniViewCornerRadius)
               : gfx::RoundedCornersF(
                     /*upper_left=*/0,
-                    /*upper_right=*/kOverviewItemCornerRadius,
-                    /*lower_right=*/kOverviewItemCornerRadius,
+                    /*upper_right=*/kWindowMiniViewCornerRadius,
+                    /*lower_right=*/kWindowMiniViewCornerRadius,
                     /*lower_left=*/0));
     }
   }

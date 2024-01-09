@@ -63,6 +63,7 @@
 #include "ash/wm/window_restore/pine_contents_view.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "ash/wm/workspace/backdrop_controller.h"
 #include "ash/wm/workspace/workspace_layout_manager.h"
 #include "ash/wm/workspace_controller.h"
@@ -1746,7 +1747,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
 
       scale = ScopedOverviewTransformWindow::GetItemScale(
           target_size.height(), height, GetTopViewInset(dragged_windows),
-          kHeaderHeightDp);
+          kWindowMiniViewHeaderHeight);
     }
   }
 
@@ -1771,7 +1772,8 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   // is nothing from the original window to be shown and nothing to be clipped.
   std::optional<gfx::RectF> split_view_bounds =
       GetSplitviewBoundsMaintainingAspectRatio();
-  if (!split_view_bounds || split_view_bounds->height() < kHeaderHeightDp) {
+  if (!split_view_bounds ||
+      split_view_bounds->height() < kWindowMiniViewHeaderHeight) {
     item->set_unclipped_size(std::nullopt);
     return width;
   }
@@ -1785,7 +1787,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
   const float target_aspect_ratio =
       split_view_bounds->width() / split_view_bounds->height();
   const bool clip_horizontally = aspect_ratio > target_aspect_ratio;
-  const int window_height = height - kHeaderHeightDp;
+  const int window_height = height - kWindowMiniViewHeaderHeight;
   gfx::Size unclipped_size;
   if (clip_horizontally) {
     unclipped_size.set_width(width);
@@ -1807,7 +1809,7 @@ int OverviewGrid::CalculateWidthAndMaybeSetUnclippedBounds(
     const int unclipped_height =
         width * target_size.height() / target_size.width();
     unclipped_size.set_width(width);
-    unclipped_size.set_height(unclipped_height + kHeaderHeightDp);
+    unclipped_size.set_height(unclipped_height + kWindowMiniViewHeaderHeight);
   }
 
   DCHECK(!unclipped_size.IsEmpty());

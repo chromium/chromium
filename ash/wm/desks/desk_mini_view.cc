@@ -28,9 +28,9 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
 #include "ash/wm/float/float_controller.h"
-#include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/wm_constants.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
@@ -142,7 +142,8 @@ DeskMiniView::DeskMiniView(DeskBarViewBase* owner_bar,
   views::FocusRing* preview_focus_ring = views::FocusRing::Get(desk_preview_);
   preview_focus_ring->SetOutsetFocusRingDisabled(true);
   views::InstallRoundRectHighlightPathGenerator(
-      desk_preview_, gfx::Insets(kFocusRingHaloInset), kPreviewFocusRingRadius);
+      desk_preview_, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
+      kPreviewFocusRingRadius);
 
   preview_focus_ring->SetHasFocusPredicate(base::BindRepeating(
       [](const DeskMiniView* mini_view, const views::View* view) {

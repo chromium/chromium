@@ -107,18 +107,9 @@ class ASH_EXPORT WindowMiniView : public WindowMiniViewBase,
   WindowMiniView& operator=(const WindowMiniView&) = delete;
   ~WindowMiniView() override;
 
-  static constexpr int kHeaderHeightDp = 40;
   // The size in dp of the window icon shown on the alt-tab/overview window next
   // to the title.
   static constexpr gfx::Size kIconSize = gfx::Size(24, 24);
-
-  // The corner radius for WindowMiniView. Note that instead of setting the
-  // corner radius directly on the window mini view, setting the corner radius
-  // on its children (header view, preview header). The reasons are:
-  // 1. The WindowMiniView might have a non-empty border.
-  // 2. The focus ring which is a child view of the WindowMiniView couldn't be
-  // drawn correctly if its parent's layer is clipped.
-  static constexpr int kWindowMiniViewCornerRadius = 16;
 
   aura::Window* source_window() { return source_window_; }
   const aura::Window* source_window() const { return source_window_; }

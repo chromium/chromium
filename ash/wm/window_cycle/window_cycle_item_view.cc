@@ -15,6 +15,7 @@
 #include "ash/wm/window_mini_view_header_view.h"
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -124,7 +125,7 @@ gfx::Size WindowCycleItemView::CalculatePreferredSize() const {
       std::clamp(preview_size.width(), kMinPreviewWidthDp, kMaxPreviewWidthDp));
 
   const int margin = GetInsets().width();
-  preview_size.Enlarge(margin, margin + WindowMiniView::kHeaderHeightDp);
+  preview_size.Enlarge(margin, margin + kWindowMiniViewHeaderHeight);
   return preview_size;
 }
 
@@ -202,13 +203,13 @@ void GroupContainerCycleView::SetShowPreview(bool show) {
 void GroupContainerCycleView::RefreshItemVisuals() {
   if (mini_views_.size() == 2u) {
     mini_views_[0]->SetRoundedCornersRadius(gfx::RoundedCornersF(
-        /*upper_left=*/WindowMiniView::kWindowMiniViewCornerRadius,
+        /*upper_left=*/kWindowMiniViewCornerRadius,
         /*upper_right=*/0, /*lower_right=*/0,
-        /*lower_left=*/WindowMiniView::kWindowMiniViewCornerRadius));
+        /*lower_left=*/kWindowMiniViewCornerRadius));
     mini_views_[1]->SetRoundedCornersRadius(gfx::RoundedCornersF(
         /*upper_left=*/0,
-        /*upper_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
-        /*lower_right=*/WindowMiniView::kWindowMiniViewCornerRadius,
+        /*upper_right=*/kWindowMiniViewCornerRadius,
+        /*lower_right=*/kWindowMiniViewCornerRadius,
         /*lower_left=*/0));
   }
 

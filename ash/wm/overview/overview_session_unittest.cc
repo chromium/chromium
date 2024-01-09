@@ -80,6 +80,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
+#include "ash/wm/wm_constants.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
 #include "base/containers/contains.h"
@@ -864,7 +865,8 @@ TEST_P(OverviewSessionTest, CloseButtonOnMultipleDisplay) {
   std::unique_ptr<views::Widget> widget(CreateTestWidget());
   widget->SetBounds(gfx::Rect(650, 0, 400, 400));
   aura::Window* window2 = widget->GetNativeWindow();
-  window2->SetProperty(aura::client::kTopViewInset, kHeaderHeightDp);
+  window2->SetProperty(aura::client::kTopViewInset,
+                       kWindowMiniViewHeaderHeight);
   views::Widget::ReparentNativeView(window2, window->parent());
   ASSERT_EQ(Shell::GetAllRootWindows()[1], window2->GetRootWindow());
 

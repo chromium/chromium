@@ -2777,6 +2777,7 @@ component("ash") {
     "wm/window_transient_descendant_iterator.h",
     "wm/window_util.cc",
     "wm/window_util.h",
+    "wm/wm_constants.h",
     "wm/wm_default_layout_manager.cc",
     "wm/wm_default_layout_manager.h",
     "wm/wm_event.cc",
