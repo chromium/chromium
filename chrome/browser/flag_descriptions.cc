@@ -5586,6 +5586,12 @@ const char kAudioHFPSwbName[] = "Audio Bluetooth HFP Super-wide-band support";
 const char kAudioHFPSwbDescription[] =
     "Enable Bluetooth HFP Super-wide-band codec if supported.";
 
+const char kAudioOffloadCrasDSPToSOFName[] =
+    "Offload CRAS DSP modules to Audio FW if supported";
+const char kAudioOffloadCrasDSPToSOFDescription[] =
+    "While enabled, CRAS DSP modules are offloaded to Audio Firmware (SOF) "
+    "if supported by device.";
+
 const char kAudioSuppressSetRTCAudioActiveName[] =
     "Suppress calling the SetRTCAudioActive D-Bus method";
 const char kAudioSuppressSetRTCAudioActiveDescription[] =
