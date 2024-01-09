@@ -5961,6 +5961,14 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Originated from Background"/>
 </enum>
 
+<enum name="BackgroundTracingScenarioNameHash">
+  <summary>
+    The hash of a Background Tracing Scenario name generated using
+    `variations::HashName()`.
+  </summary>
+  <int value="1173339970" label="007_GenericPool"/>
+</enum>
+
 <enum name="BackgroundTracingState">
   <int value="0" label="Scenario activation requested"/>
   <int value="1" label="Scenario successfully activated"/>

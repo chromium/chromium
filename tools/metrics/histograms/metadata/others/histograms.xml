@@ -10750,6 +10750,21 @@ features through Chrome Labs. -->
   </summary>
 </histogram>
 
+<histogram name="Tracing.Background.Scenario.{Event}"
+    enum="BackgroundTracingScenarioNameHash" expires_after="2024-04-28">
+  <owner>etiennep@chromium.org</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Records Background Tracing scenario name hash when event {Event} occurs.
+  </summary>
+  <token key="Event">
+    <variant name="Active"/>
+    <variant name="Idle"/>
+    <variant name="Recording"/>
+    <variant name="SaveTrace"/>
+  </token>
+</histogram>
+
 <histogram name="Tracing.Background.ScenarioState"
     enum="BackgroundTracingState" expires_after="2024-06-30">
   <owner>oysteine@chromium.org</owner>

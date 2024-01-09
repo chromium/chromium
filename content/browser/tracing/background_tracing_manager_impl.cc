@@ -23,6 +23,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/tracing/common/trace_startup_config.h"
+#include "components/variations/hashing.h"
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 #include "content/browser/tracing/background_tracing_active_scenario.h"
 #include "content/browser/tracing/background_tracing_agent_client_impl.h"
@@ -580,7 +581,8 @@ bool BackgroundTracingManagerImpl::OnScenarioActive(
     return false;
   }
   active_scenario_ = active_scenario;
-  // TODO(crbug.com/1418116): Record scenario started metrics.
+  UMA_HISTOGRAM_SPARSE("Tracing.Background.Scenario.Active",
+                       variations::HashName(active_scenario->scenario_name()));
   for (auto* observer : background_tracing_observers_) {
     observer->OnScenarioActive(active_scenario_->scenario_name());
   }
@@ -597,6 +599,8 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
     TracingScenario* idle_scenario) {
   DCHECK_EQ(active_scenario_, idle_scenario);
   active_scenario_ = nullptr;
+  UMA_HISTOGRAM_SPARSE("Tracing.Background.Scenario.Idle",
+                       variations::HashName(idle_scenario->scenario_name()));
   for (auto* observer : background_tracing_observers_) {
     observer->OnScenarioIdle(idle_scenario->scenario_name());
   }
@@ -612,6 +616,8 @@ bool BackgroundTracingManagerImpl::OnScenarioIdle(
 void BackgroundTracingManagerImpl::OnScenarioRecording(
     TracingScenario* scenario) {
   DCHECK_EQ(active_scenario_, scenario);
+  UMA_HISTOGRAM_SPARSE("Tracing.Background.Scenario.Recording",
+                       variations::HashName(scenario->scenario_name()));
   OnStartTracingDone();
 }
 
@@ -802,6 +808,9 @@ void BackgroundTracingManagerImpl::OnProtoDataComplete(
   }
   if (!receive_callback_) {
     DCHECK(trace_database_);
+
+    UMA_HISTOGRAM_SPARSE("Tracing.Background.Scenario.SaveTrace",
+                         variations::HashName(scenario_name));
 
     SkipUploadReason skip_reason = SkipUploadReason::kNoSkip;
     if (!requires_anonymized_data_) {
