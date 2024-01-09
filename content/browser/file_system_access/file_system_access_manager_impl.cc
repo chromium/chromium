@@ -1747,7 +1747,10 @@ void FileSystemAccessManagerImpl::DidCleanupAccessHandleCapacityAllocation(
   // `CreateAccessHandleHost`) which is undefined behavior. Instead, we'll move
   // it out of the set before erasing and then destroying.
   size_t initial_size = access_handle_host_receivers_.size();
+
   auto iter = access_handle_host_receivers_.find(access_handle_host);
+  CHECK(iter != access_handle_host_receivers_.end());
+
   auto access_handle_host_receiver = std::move(*iter);
   access_handle_host_receivers_.erase(iter);
 
