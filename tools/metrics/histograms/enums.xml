@@ -20576,47 +20576,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="5" label="Journeys"/>
 </enum>
 
-<enum name="HistoryTopSitesRecoveryEnum">
-  <summary>Error states noted in top_sites_database.cc recovery code.</summary>
-  <int value="0" label="RECOVERY_EVENT_RECOVERED">Successful recovery.</int>
-  <int value="1" label="RECOVERY_EVENT_DEPRECATED">
-    Recovery found deprecated version and razed.
-  </int>
-  <int value="2" label="RECOVERY_EVENT_FAILED_SCOPER (obsolete Mar 2017)">
-    sql::Recovery failed init.
-  </int>
-  <int value="3" label="RECOVERY_EVENT_FAILED_META_VERSION">
-    Failed sql::Recovery::SetupMeta() or GetMetaVersionNumber().
-  </int>
-  <int value="4" label="RECOVERY_EVENT_FAILED_META_WRONG_VERSION">
-    Recovery meta table has an unexpected version.
-  </int>
-  <int value="5" label="RECOVERY_EVENT_FAILED_META_INIT (obsolete Mar 2017)">
-    Failed sql::MetaTable::Init().
-  </int>
-  <int value="6" label="RECOVERY_EVENT_FAILED_SCHEMA_INIT (obsolete Mar 2017)">
-    Failed to init target schema.
-  </int>
-  <int value="7"
-      label="RECOVERY_EVENT_FAILED_AUTORECOVER_THUMBNAILS (obsolete Mar 2017)">
-    Failed recovery on thumbnails table.
-  </int>
-  <int value="8" label="RECOVERY_EVENT_FAILED_COMMIT">
-    Failure from sql::Recovery::Recovered().
-  </int>
-  <int value="9" label="RECOVERY_EVENT_INVARIANT_RANK">
-    Rows were deleted because |url_rank| and |last_forced| didn't agree. Does
-    not prevent recovery.
-  </int>
-  <int value="10" label="RECOVERY_EVENT_INVARIANT_REDIRECT">
-    Rows were deleted because |redirects| did not contain |url|. Does not
-    prevent recovery.
-  </int>
-  <int value="11" label="RECOVERY_EVENT_INVARIANT_CONTIGUOUS">
-    |url_rank| was renumbered due to missing rows. Does not prevent recovery.
-  </int>
-</enum>
-
 <enum name="HomepageLocationType">
   <int value="0" label="POLICY_NTP"/>
   <int value="1" label="POLICY_OTHER"/>
