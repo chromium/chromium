@@ -20,26 +20,6 @@ bool IsFeedBackgroundRefreshEnabledOnly() {
   return base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh);
 }
 
-// Whether feed is refreshed in the background soon after the app is
-// backgrounded. This only checks if the feature is enabled, not if the
-// capability was enabled at startup.
-bool IsFeedAppCloseBackgroundRefreshEnabledOnly() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedInvisibleForegroundRefresh,
-      kEnableFeedAppCloseBackgroundRefresh,
-      /*default=*/false);
-}
-
-// Returns the override value from the Foreground Refresh section of Feed
-// Refresh Settings in Experimental Settings in the Settings App.
-bool IsFeedOverrideForegroundDefaultsEnabled() {
-  if (GetChannel() == version_info::Channel::STABLE) {
-    return false;
-  }
-  return [[NSUserDefaults standardUserDefaults]
-      boolForKey:@"FeedOverrideForegroundDefaultsEnabled"];
-}
-
 }  // namespace
 
 BASE_FEATURE(kIOSKeyboardAccessoryUpgrade,
@@ -377,20 +357,12 @@ BASE_FEATURE(kEnableFeedBackgroundRefresh,
              "EnableFeedBackgroundRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableFeedInvisibleForegroundRefresh,
-             "EnableFeedInvisibleForegroundRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCreateDiscoverFeedServiceEarly,
              "CreateDiscoverFeedServiceEarly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFeedAblation,
              "EnableFeedAblation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kFeedDisableHotStartRefresh,
-             "FeedDisableHotStartRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFollowUIUpdate,
@@ -449,18 +421,6 @@ const char kBackgroundRefreshIntervalInSeconds[] =
     "BackgroundRefreshIntervalInSeconds";
 const char kBackgroundRefreshMaxAgeInSeconds[] =
     "BackgroundRefreshMaxAgeInSeconds";
-const char kEnableFeedAppCloseForegroundRefresh[] =
-    "EnableFeedAppCloseForegroundRefresh";
-const char kEnableFeedAppCloseBackgroundRefresh[] =
-    "EnableFeedAppCloseBackgroundRefresh";
-const char kAppCloseBackgroundRefreshIntervalInSeconds[] =
-    "AppCloseBackgroundRefreshIntervalInSeconds";
-const char kFeedSeenRefreshThresholdInSeconds[] =
-    "FeedSeenRefreshThresholdInSeconds";
-const char kFeedUnseenRefreshThresholdInSeconds[] =
-    "FeedUnseenRefreshThresholdInSeconds";
-const char kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[] =
-    "EnableFeedUseInteractivityInvalidationForForegroundRefreshes";
 const char kIOSHideFeedWithSearchChoiceTargeted[] =
     "IOSHideFeedWithSearchChoiceTargeted";
 
@@ -506,10 +466,8 @@ bool IsFeedBackgroundRefreshCapabilityEnabled() {
 
 void SaveFeedBackgroundRefreshCapabilityEnabledForNextColdStart() {
   DCHECK(base::FeatureList::GetInstance());
-  BOOL enabled = IsFeedBackgroundRefreshEnabledOnly() ||
-                 IsFeedAppCloseBackgroundRefreshEnabledOnly();
   [[NSUserDefaults standardUserDefaults]
-      setBool:enabled
+      setBool:IsFeedBackgroundRefreshEnabledOnly()
        forKey:kEnableFeedBackgroundRefreshCapabilityForNextColdStart];
 }
 
@@ -596,69 +554,6 @@ double GetBackgroundRefreshMaxAgeInSeconds() {
       /*default=*/0);
 }
 
-bool IsFeedInvisibleForegroundRefreshEnabled() {
-  return base::FeatureList::IsEnabled(kEnableFeedInvisibleForegroundRefresh);
-}
-
-bool IsFeedAppCloseForegroundRefreshEnabled() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedInvisibleForegroundRefresh,
-      kEnableFeedAppCloseForegroundRefresh,
-      /*default=*/true);
-}
-
-bool IsFeedAppCloseBackgroundRefreshEnabled() {
-  return IsFeedBackgroundRefreshCapabilityEnabled() &&
-         IsFeedAppCloseBackgroundRefreshEnabledOnly();
-}
-
-double GetAppCloseBackgroundRefreshIntervalInSeconds() {
-  double override_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:@"AppCloseBackgroundRefreshIntervalInSeconds"];
-  if (override_value > 0.0) {
-    return override_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedInvisibleForegroundRefresh,
-      kAppCloseBackgroundRefreshIntervalInSeconds,
-      /*default=*/base::Minutes(5).InSecondsF());
-}
-
-double GetFeedSeenRefreshThresholdInSeconds() {
-  double override_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:@"FeedSeenRefreshThresholdInSeconds"];
-  if (override_value > 0.0) {
-    return override_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedInvisibleForegroundRefresh, kFeedSeenRefreshThresholdInSeconds,
-      /*default=*/base::Hours(1).InSecondsF());
-}
-
-double GetFeedUnseenRefreshThresholdInSeconds() {
-  double override_value = [[NSUserDefaults standardUserDefaults]
-      doubleForKey:@"FeedUnseenRefreshThresholdInSeconds"];
-  if (override_value > 0.0) {
-    return override_value;
-  }
-  return base::GetFieldTrialParamByFeatureAsDouble(
-      kEnableFeedInvisibleForegroundRefresh,
-      kFeedUnseenRefreshThresholdInSeconds,
-      /*default=*/base::Hours(6).InSecondsF());
-}
-
-bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled() {
-  if (IsFeedOverrideForegroundDefaultsEnabled()) {
-    return [[NSUserDefaults standardUserDefaults]
-        doubleForKey:
-            @"FeedUseInteractivityInvalidationForForegroundRefreshesEnabled"];
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kEnableFeedInvisibleForegroundRefresh,
-      kEnableFeedUseInteractivityInvalidationForForegroundRefreshes,
-      /*default=*/false);
-}
-
 bool IsIOSHideFeedWithSearchChoiceTargeted() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kIOSHideFeedWithSearchChoice, kIOSHideFeedWithSearchChoiceTargeted,
@@ -667,10 +562,6 @@ bool IsIOSHideFeedWithSearchChoiceTargeted() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
-}
-
-bool IsFeedHotStartRefreshDisabled() {
-  return base::FeatureList::IsEnabled(kFeedDisableHotStartRefresh);
 }
 
 bool IsFollowUIUpdateEnabled() {

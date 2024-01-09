@@ -330,19 +330,12 @@ BASE_DECLARE_FEATURE(kLinkAccountSettingsToPrivacyFooter);
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
 
-// Feature flag to enable feed invisible foreground refresh. Check feature
-// params instead of using this constant.
-BASE_DECLARE_FEATURE(kEnableFeedInvisibleForegroundRefresh);
-
 // Feature flag to enable the Following feed in the NTP.
 // Use IsWebChannelsEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableWebChannels);
 
 // Feature flag to disable the feed.
 BASE_DECLARE_FEATURE(kEnableFeedAblation);
-
-// Feature flag to disable Discover-controlled foregrounding refreshes.
-BASE_DECLARE_FEATURE(kFeedDisableHotStartRefresh);
 
 // Feature flag to enable the Follow UI update.
 BASE_DECLARE_FEATURE(kEnableFollowUIUpdate);
@@ -397,35 +390,6 @@ extern const char kBackgroundRefreshIntervalInSeconds[];
 // max age in seconds. This value is compared against the age of the feed when
 // performing a background refresh. A zero value means the age check is ignored.
 extern const char kBackgroundRefreshMaxAgeInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// on app backgrounding.
-extern const char kEnableFeedAppCloseForegroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable refresh
-// soon after the app is backgrounded.
-extern const char kEnableFeedAppCloseBackgroundRefresh[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the
-// background refresh interval in seconds.
-extern const char kAppCloseBackgroundRefreshIntervalInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
-// threshold when the last refresh was seen.
-extern const char kFeedSeenRefreshThresholdInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` for the refresh
-// threshold when the last refresh was unseen.
-extern const char kFeedUnseenRefreshThresholdInSeconds[];
-
-// Feature param under `kEnableFeedInvisibleForegroundRefresh` to enable using
-// engagement as a signal to invalidate the cache when the app is foregrounded.
-// This can result in a visible refresh when the NTP is visible during
-// foregrounding, or invisible refresh when a non-NTP is shown during
-// foregrounding. The engagement signals may include a deep scroll or 4 views,
-// and no sooner than 5 minutes from the last refresh.
-extern const char
-    kEnableFeedUseInteractivityInvalidationForForegroundRefreshes[];
 
 // Feature param under `kIOSHideFeedWithSearchChoice` to only target the
 // feature at certain countries (i.e. only hide the feed when the device is
@@ -493,44 +457,12 @@ double GetBackgroundRefreshIntervalInSeconds();
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
 
-// Whether feed can be refreshed while not visible.
-bool IsFeedInvisibleForegroundRefreshEnabled();
-
-// Whether feed is refreshed at the moment the app is backgrounding. This is
-// different from background refresh.
-bool IsFeedAppCloseForegroundRefreshEnabled();
-
-// Whether feed is refreshed in the background soon after the app is
-// backgrounded, and the capability was enabled at startup.
-bool IsFeedAppCloseBackgroundRefreshEnabled();
-
-// The earliest interval to refresh in the background after app enters the
-// background in app close background refresh.
-double GetAppCloseBackgroundRefreshIntervalInSeconds();
-
-// Returns the refresh threshold (aka feed expiration) for a feed that has been
-// seen.
-double GetFeedSeenRefreshThresholdInSeconds();
-
-// Returns the refresh threshold (aka feed expiration) for an unseen feed.
-double GetFeedUnseenRefreshThresholdInSeconds();
-
 // Returns whether the feed hide with search choice feature should be targeted
 // only at devices from certain countries.
 bool IsIOSHideFeedWithSearchChoiceTargeted();
 
-// YES if user engagement is used as a signal to invalidate the cache when the
-// app is foregrounded. This can result in a visible refresh when the NTP is
-// visible during foregrounding, or invisible refresh when a non-NTP is shown
-// during foregrounding. The engagement signals may include a deep scroll or 4
-// views, and no sooner than 5 minutes from the last refresh.
-bool IsFeedUseInteractivityInvalidationForForegroundRefreshesEnabled();
-
 // Whether the feed is disabled.
 bool IsFeedAblationEnabled();
-
-// Whether Discover-controlled foregrounding refreshes are disabled.
-bool IsFeedHotStartRefreshDisabled();
 
 // YES when Follow UI Update is enabled.
 bool IsFollowUIUpdateEnabled();
