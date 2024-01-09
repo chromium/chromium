@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
@@ -177,6 +178,7 @@ bool OneDrivePrefObserverFactory::ServiceIsCreatedWithBrowserContext() const {
 
 void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
   if (!event_router_) {
+    CHECK_IS_TEST();
     return;
   }
 
@@ -196,6 +198,7 @@ void OneDrivePrefObserver::BroadcastModeChanged(Mount mode) {
 void OneDrivePrefObserver::BroadcastAccountRestrictionsChanged(
     base::Value::List restrictions) {
   if (!event_router_) {
+    CHECK_IS_TEST();
     return;
   }
 
