@@ -291,6 +291,10 @@ message LineBox {
 
   // Content type for this line.
   ContentType content_type = 8;
+
+  // Line bounding box relative to the original image with bottom edge
+  // representing estimated baseline of text.
+  Rect baseline_box = 9;
 }
 
 // Word with associated bounding box.
