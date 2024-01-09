@@ -11177,10 +11177,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::UNKNOWN;
   }
 
-  // Only show sea-pen flag if channel is one of Beta/Dev/Canary/Unknown.
+  // Only show sea-pen flag if channel is one of Dev/Canary/Unknown.
   if (!strcmp(kSeaPenInternalName, entry.internal_name)) {
-    return channel != version_info::Channel::BETA &&
-           channel != version_info::Channel::DEV &&
+    return channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
            channel != version_info::Channel::UNKNOWN;
   }
