@@ -610,17 +610,21 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
   return detected;
 }
 
-std::string RedactionTool::Redact(const std::string& input) {
+std::string RedactionTool::Redact(const std::string& input,
+                                  const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return RedactAndKeepSelected(input, /*pii_types_to_keep=*/{});
+  return RedactAndKeepSelected(input, /*pii_types_to_keep=*/{}, location);
 }
 
 std::string RedactionTool::RedactAndKeepSelected(
     const std::string& input,
-    const std::set<PIIType>& pii_types_to_keep) {
+    const std::set<PIIType>& pii_types_to_keep,
+    const base::Location& location) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AssertLongCPUWorkAllowed();
 
+  RedactionToolCaller caller = GetCaller(location);
+  metrics_recorder_->RecordRedactionToolCallerHistogram(caller);
   const base::TimeTicks redaction_start = base::TimeTicks::Now();
 
   // Copy |input| so we can modify it.
@@ -1091,6 +1095,33 @@ void RedactionTool::DetectWithCustomPatterns(
   }
   for (const auto& pattern : kCustomPatternsWithoutContext) {
     RedactCustomPatternWithoutContext(input, pattern, detected);
+  }
+}
+
+RedactionToolCaller RedactionTool::GetCaller(const base::Location& location) {
+  std::string filePath = location.file_name();
+  if (filePath.empty() || filePath.c_str() == nullptr) {
+    return RedactionToolCaller::kUndetermined;
+  }
+
+  std::string fileName = filePath.substr(filePath.find_last_of("/\\") + 1);
+
+  if (fileName == "redaction_tool_unittest.cc") {
+    return RedactionToolCaller::kUnitTest;
+  } else if (fileName == "system_log_uploader.cc") {
+    return RedactionToolCaller::kSysLogUploader;
+  } else if (fileName == "system_logs_fetcher.cc") {
+    return RedactionToolCaller::kSysLogFetcher;
+  } else if (fileName == "log_source_access_manager.cc") {
+    return RedactionToolCaller::kBrowserSystemLogs;
+  } else if (fileName == "feedback_common.cc") {
+    return RedactionToolCaller::kFeedbackTool;
+  } else if (filePath.find("support_tool") != std::string::npos) {
+    return RedactionToolCaller::kSupportTool;
+  } else if (filePath.find("error_reporting") != std::string::npos) {
+    return RedactionToolCaller::kErrorReporting;
+  } else {
+    return RedactionToolCaller::kUnknown;
   }
 }
 

@@ -22,6 +22,7 @@ class InprocessMetricsRecorder : public RedactionToolMetricsRecorder {
   // redaction::RedactionToolMetricsRecorder:
   void RecordPIIRedactedHistogram(PIIType pii_type) override;
   void RecordCreditCardRedactionHistogram(CreditCardDetection step) override;
+  void RecordRedactionToolCallerHistogram(RedactionToolCaller step) override;
   void RecordTimeSpentRedactingHistogram(base::TimeDelta time_spent) override;
 };
 

@@ -683,6 +683,25 @@ TEST_F(RedactionToolTest, RedactChunk) {
   redactor_.EnableCreditCardRedaction(true);
   std::string redaction_input;
   std::string redaction_output;
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnitTest, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogUploader, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogFetcher, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSupportTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kErrorReporting, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kBrowserSystemLogs, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUndetermined, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnknown, 0);
+
   using enum CreditCardDetection;
   ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 0);
   ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 0);
@@ -723,6 +742,24 @@ TEST_F(RedactionToolTest, RedactChunk) {
   // This isn't handled by the redaction tool but rather in Shill. It's part of
   // the enum for historical reasons.
   ExpectBucketCount(kPIIRedactedHistogram, PIIType::kEAP, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnitTest, 1);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogUploader, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSysLogFetcher, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kSupportTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kErrorReporting, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kFeedbackTool, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kBrowserSystemLogs, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUndetermined, 0);
+  ExpectBucketCount(kRedactionToolCallerHistogram,
+                    RedactionToolCaller::kUnknown, 0);
 
   ExpectBucketCount(kCreditCardRedactionHistogram, kRegexMatch, 16);
   ExpectBucketCount(kCreditCardRedactionHistogram, kTimestamp, 2);
