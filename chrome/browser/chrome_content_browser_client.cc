@@ -111,6 +111,8 @@
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/preloading/navigation_ablation_throttle.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_speculation_host_delegate.h"
@@ -8133,4 +8135,18 @@ network::mojom::IpProtectionProxyBypassPolicy
 ChromeContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
   return network::mojom::IpProtectionProxyBypassPolicy::
       kFirstPartyToTopLevelFrame;
+}
+
+void ChromeContentBrowserClient::MaybePrewarmHttpDiskCache(
+    content::WebContents& web_contents,
+    const GURL& navigation_url) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  CHECK(profile);
+
+  // `loading_predictor` can be nullptr if the profile `IsOffTheRecord`.
+  if (predictors::LoadingPredictor* loading_predictor =
+          predictors::LoadingPredictorFactory::GetForProfile(profile)) {
+    loading_predictor->MaybePrewarmResources(navigation_url);
+  }
 }

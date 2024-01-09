@@ -1657,4 +1657,8 @@ ContentBrowserClient::GetIpProtectionProxyBypassPolicy() {
   return network::mojom::IpProtectionProxyBypassPolicy::kNone;
 }
 
+void ContentBrowserClient::MaybePrewarmHttpDiskCache(
+    WebContents& web_contents,
+    const GURL& navigation_url) {}
+
 }  // namespace content

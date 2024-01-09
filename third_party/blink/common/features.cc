@@ -1212,6 +1212,11 @@ const base::FeatureParam<bool> kHttpDiskCachePrewarmingTriggerOnNavigation{
     &kHttpDiskCachePrewarming,
     "http_disk_cache_prewarming_trigger_on_navigation", true};
 
+const base::FeatureParam<bool>
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover{
+        &kHttpDiskCachePrewarming,
+        "http_disk_cache_prewarming_trigger_on_pointer_down_or_hover", true};
+
 // Enables reporting as LCP of the time the first frame of a video was painted.
 BASE_FEATURE(kLCPVideoFirstFrame,
              "LCPVideoFirstFrame",

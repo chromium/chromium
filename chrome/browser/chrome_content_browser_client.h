@@ -986,6 +986,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       blink::WebMediaDeviceInfoArray& infos) override;
   network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy() override;
+  void MaybePrewarmHttpDiskCache(content::WebContents& web_contents,
+                                 const GURL& navigation_url) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

@@ -2746,6 +2746,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // By default, there is no bypass policy used.
   virtual network::mojom::IpProtectionProxyBypassPolicy
   GetIpProtectionProxyBypassPolicy();
+
+  // Prewarms the HTTP disk cache entries for the given URL and the
+  // subresources if possible.
+  virtual void MaybePrewarmHttpDiskCache(WebContents& web_contents,
+                                         const GURL& navigation_url);
 };
 
 }  // namespace content

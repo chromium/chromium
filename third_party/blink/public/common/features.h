@@ -726,6 +726,9 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
     kHttpDiskCachePrewarmingTriggerOnNavigation;
 
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kHttpDiskCachePrewarmingTriggerOnPointerDownOrHover;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLCPVideoFirstFrame);
 
 // Kill-switch for new parsing behaviour of the X-Content-Type-Options header.
