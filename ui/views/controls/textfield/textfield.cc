@@ -2681,6 +2681,8 @@ void Textfield::UpdateCursorVisibility() {
 gfx::Rect Textfield::CalculateCursorViewBounds() const {
   gfx::Rect location(GetRenderText()->GetUpdatedCursorBounds());
   location.set_x(GetMirroredXForRect(location));
+  // Shrink the cursor bounds to fit within the view.
+  location.Intersect(GetLocalBounds());
   return location;
 }
 
@@ -2866,11 +2868,9 @@ void Textfield::OnEditFailed() {
 bool Textfield::ShouldShowCursor() const {
   // Show the cursor when the primary selected range is empty; secondary
   // selections do not affect cursor visibility.
-  // TODO(crbug.com/1434319): The cursor will be entirely hidden if partially
-  // occluded. It would be better if only the occluded part is hidden.
   return HasFocus() && !HasSelection(true) && GetEnabled() && !GetReadOnly() &&
          !drop_cursor_visible_ && GetRenderText()->cursor_enabled() &&
-         GetLocalBounds().Contains(cursor_view_->bounds());
+         !cursor_view_->bounds().IsEmpty();
 }
 
 int Textfield::CharsToDips(int width_in_chars) const {
