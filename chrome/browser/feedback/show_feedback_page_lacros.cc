@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_params_proxy.h"
 
 namespace chrome {
 namespace internal {
@@ -40,6 +41,8 @@ crosapi::mojom::LacrosFeedbackSource ToMojoLacrosFeedbackSource(
           kFeedbackSourceProfileErrorDialog;
     case kFeedbackSourceQuickOffice:
       return crosapi::mojom::LacrosFeedbackSource::kFeedbackSourceQuickOffice;
+    case kFeedbackSourceAI:
+      return crosapi::mojom::LacrosFeedbackSource::kFeedbackSourceAI;
     default:
       LOG(ERROR) << "ShowFeedbackPage is called by unknown Lacros source: "
                  << static_cast<int>(source);
@@ -55,7 +58,8 @@ crosapi::mojom::FeedbackInfoPtr ToMojoFeedbackInfo(
     const std::string& description_placeholder_text,
     const std::string& category_tag,
     const std::string& extra_diagnostics,
-    base::Value::Dict autofill_metadata) {
+    base::Value::Dict autofill_metadata,
+    base::Value::Dict ai_metadata) {
   auto mojo_feedback = crosapi::mojom::FeedbackInfo::New();
   mojo_feedback->page_url = page_url;
   mojo_feedback->source = ToMojoLacrosFeedbackSource(source);
@@ -64,6 +68,7 @@ crosapi::mojom::FeedbackInfoPtr ToMojoFeedbackInfo(
   mojo_feedback->category_tag = category_tag;
   mojo_feedback->extra_diagnostics = extra_diagnostics;
   mojo_feedback->autofill_metadata = base::Value(std::move(autofill_metadata));
+  mojo_feedback->ai_metadata = base::Value(std::move(ai_metadata));
   return mojo_feedback;
 }
 
@@ -77,12 +82,22 @@ void ShowFeedbackPageLacros(const GURL& page_url,
                             const std::string& description_placeholder_text,
                             const std::string& category_tag,
                             const std::string& extra_diagnostics,
-                            base::Value::Dict autofill_metadata) {
+                            base::Value::Dict autofill_metadata,
+                            base::Value::Dict ai_metadata) {
+  if (source == kFeedbackSourceAI) {
+    auto capabilities = chromeos::BrowserParamsProxy::Get()->AshCapabilities();
+    if (!capabilities || !base::Contains(*capabilities, "crbug/1501057")) {
+      LOG(WARNING) << "Unsupported feedback source AI for ash.";
+      return;
+    }
+  }
+
   chromeos::LacrosService::Get()
       ->GetRemote<crosapi::mojom::Feedback>()
       ->ShowFeedbackPage(ToMojoFeedbackInfo(
           page_url, source, description_template, description_placeholder_text,
-          category_tag, extra_diagnostics, std::move(autofill_metadata)));
+          category_tag, extra_diagnostics, std::move(autofill_metadata),
+          std::move(ai_metadata)));
 }
 
 }  // namespace internal

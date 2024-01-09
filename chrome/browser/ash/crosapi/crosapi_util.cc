@@ -205,6 +205,10 @@ constexpr char kAshAppInstallServicePackageIdFix[] = "b/304680258";
 // Bug fix to launch tabbed web app windows in new windows when requested.
 // We can remove this capability once Ash and Lacros are both past M122.
 constexpr char kAshShelfNewWindowFix[] = "crbug/1490336";
+// Support feedback dialog ai flow.
+// TODO(crbug/1501057): Remove this capability once Ash and Lacros are both past
+// M123.
+constexpr char kAshFeedbackFlowAi[] = "crbug/1501057";
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
@@ -630,6 +634,7 @@ void InjectBrowserInitParams(
       kAshExtensionKeeplistCmdlineSwitchCapability,
       kAshAppInstallServicePackageIdFix,
       kAshShelfNewWindowFix,
+      kAshFeedbackFlowAi,
   };
   params->ash_capabilities = {std::move(ash_capabilities)};
 

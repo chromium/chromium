@@ -276,7 +276,8 @@ void ShowFeedbackPageLacros(const GURL& page_url,
                             const std::string& description_placeholder_text,
                             const std::string& category_tag,
                             const std::string& extra_diagnostics,
-                            base::Value::Dict autofill_metadata);
+                            base::Value::Dict autofill_metadata,
+                            base::Value::Dict ai_metadata);
 }  // namespace internal
 #endif
 
@@ -350,7 +351,8 @@ void ShowFeedbackPage(const GURL& page_url,
   // Send request to ash via crosapi mojo to show Feedback ui from ash.
   internal::ShowFeedbackPageLacros(
       page_url, source, description_template, description_placeholder_text,
-      category_tag, extra_diagnostics, std::move(autofill_metadata));
+      category_tag, extra_diagnostics, std::move(autofill_metadata),
+      std::move(ai_metadata));
 #else
   // Show feedback dialog using feedback extension API.
   RequestFeedbackFlow(page_url, profile, source, description_template,
