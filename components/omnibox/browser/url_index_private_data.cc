@@ -39,10 +39,16 @@
 #include "components/omnibox/browser/tailored_word_break_iterator.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
+
+GURL ClearUsernameAndPassword(const GURL& url) {
+  GURL::Replacements r;
+  r.ClearUsername();
+  r.ClearPassword();
+  return url.ReplaceComponents(r);
+}
 
 // Algorithm Functions ---------------------------------------------------------
 
@@ -385,6 +391,7 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
       OmniboxFieldTrial::MaxNumHQPUrlsIndexedAtStartup();
   int num_urls_indexed = 0;
   for (history::URLRow row; history_enum.GetNextURL(&row);) {
+    CHECK(row.url().is_valid());
     // Do not use >= to account for case of -1 for unlimited urls.
     if (rebuilt_data->IndexRow(history_db, nullptr, row, scheme_allowlist,
                                nullptr) &&
@@ -754,15 +761,13 @@ bool URLIndexPrivateData::IndexRow(
 
   const history::URLID row_id = row.id();
   // Strip out username and password before saving and indexing.
-  std::u16string url(url_formatter::FormatUrl(
-      gurl, url_formatter::kFormatUrlOmitUsernamePassword,
-      base::UnescapeRule::NONE, nullptr, nullptr, nullptr));
+  const GURL new_url = ClearUsernameAndPassword(gurl);
 
   HistoryID history_id = static_cast<HistoryID>(row_id);
   DCHECK_LT(history_id, std::numeric_limits<HistoryID>::max());
 
   // Add the row for quick lookup in the history info store.
-  history::URLRow new_row(GURL(url), row_id);
+  history::URLRow new_row(new_url, row_id);
   new_row.set_visit_count(row.visit_count());
   new_row.set_typed_count(row.typed_count());
   new_row.set_last_visit(row.last_visit());
