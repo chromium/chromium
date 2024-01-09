@@ -143,10 +143,10 @@ void Install(UpdaterScope scope);
 // Installs the updater and an app via the command line.
 void InstallUpdaterAndApp(UpdaterScope scope,
                           const std::string& app_id,
-                          const bool is_silent_install,
+                          bool is_silent_install,
                           const std::string& tag,
                           const std::string& child_window_text_to_find,
-                          const bool always_launch_cmd);
+                          bool always_launch_cmd);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
