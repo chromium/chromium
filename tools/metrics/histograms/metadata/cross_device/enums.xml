@@ -364,6 +364,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Failure"/>
 </enum>
 
+<enum name="InstantTethering_ConnectionToHostResult_UnavoidableError">
+  <int value="0" label="Other"/>
+  <int value="1" label="Provisioning failed"/>
+  <int value="2" label="User cancellation"/>
+  <int value="3" label="Tethering unsupported"/>
+  <int value="4" label="No cellular data"/>
+</enum>
+
 <enum name="InstantTethering_FeatureState">
   <int value="0" label="Shut down (deprecated)"/>
   <int value="1" label="BLE advertising not supported"/>

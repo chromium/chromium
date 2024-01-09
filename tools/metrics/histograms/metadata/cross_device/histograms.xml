@@ -1328,6 +1328,8 @@ chromium-metrics-reviews@google.com.
   <owner>hansberry@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
+    Please prefer this metric as it becomes more populated.
+
     Provides a breakdown of the times a connection to a host was either
     unsuccessful due to provisioning failure (the carrier disallows tethering)
     or &quot;other&quot; (this is captured under
@@ -1357,6 +1359,22 @@ chromium-metrics-reviews@google.com.
     This metric provides an immediate understanding of the Instant Tethering
     connection success rate. The counts of failure are broken down in
     InstantTethering.ConnectionToHostResult.Failure.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.ConnectionToHostResult.UnavoidableError"
+    enum="InstantTethering_ConnectionToHostResult_UnavoidableError"
+    expires_after="2024-12-01">
+  <owner>joeantonetti@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Breaks down the result of a connection result. Classifies a result as either
+    &quot;Other&quot;, or explains why the connection attempt failed for an
+    unavoidable reason.
+
+    The &quot;Other&quot; bucket is broken down by
+    InstantTethering.ConnectionToHostResult.SuccessRate.Background and it's
+    children.
   </summary>
 </histogram>
 

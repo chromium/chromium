@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/tether/host_connection_metrics_logger.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
 
@@ -29,6 +30,8 @@ void HostConnectionMetricsLogger::RecordConnectionToHostResult(
     active_host_device_id_.clear();
   }
 
+  RecordUnavoidableError(result);
+
   if (result == ConnectionToHostResult::INTERNAL_ERROR) {
     CHECK(internal_error.has_value());
     RecordInternalError(internal_error.value());
@@ -40,6 +43,10 @@ void HostConnectionMetricsLogger::RecordConnectionToHostResult(
       "InstantTethering.ConnectionToHostResult.EndResult", result,
       ConnectionToHostResult::CONNECTION_TO_HOST_RESULT_MAX);
 
+  // TODO(b/319123591): Remove this metric once its replacement,
+  // InstantTethering.ConnectionToHostResult.UnavoidableError, is populated
+  // with several months of data.
+  //
   // Preserve legacy
   // InstantTethering.ConnectionToHostResult.ProvisioningFailureRate metric by
   // counting the PROVISIONING_FAILED result as a provisioning failure, and
@@ -57,20 +64,6 @@ void HostConnectionMetricsLogger::RecordConnectionToHostResult(
         ConnectionToHostResult_ProvisioningFailureEventType::OTHER,
         ConnectionToHostResult_ProvisioningFailureEventType::
             PROVISIONING_FAILURE_MAX);
-
-    // Preserve InstantTethering.ConnectionToHostResult.SuccessRate.Background
-    // by counting "success" as success, and all other results as failures.
-    if (result == ConnectionToHostResult::SUCCESS) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
-          ConnectionToHostResult_SuccessEventType::SUCCESS,
-          ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(
-          "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
-          ConnectionToHostResult_SuccessEventType::FAILURE,
-          ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
-    }
   }
 }
 
@@ -193,6 +186,45 @@ void HostConnectionMetricsLogger::RecordConnectToHostDuration(
   UMA_HISTOGRAM_MEDIUM_TIMES(
       "InstantTethering.Performance.ConnectToHostDuration.Background",
       connect_to_host_duration);
+}
+
+void HostConnectionMetricsLogger::RecordUnavoidableError(
+    ConnectionToHostResult result) {
+  ConnectionToHostResult_UnavoidableErrorEventType event_type;
+  switch (result) {
+    case ConnectionToHostResult::NO_CELLULAR_DATA:
+      event_type =
+          ConnectionToHostResult_UnavoidableErrorEventType::NO_CELLULAR_DATA;
+      break;
+    case ConnectionToHostResult::TETHERING_UNSUPPORTED:
+      event_type = ConnectionToHostResult_UnavoidableErrorEventType::
+          TETHERING_UNSUPPORTED;
+      break;
+    case ConnectionToHostResult::USER_CANCELLATION:
+      event_type =
+          ConnectionToHostResult_UnavoidableErrorEventType::USER_CANCELLATION;
+      break;
+    case ConnectionToHostResult::PROVISIONING_FAILURE:
+      event_type =
+          ConnectionToHostResult_UnavoidableErrorEventType::PROVISIONING_FAILED;
+      break;
+    default:
+      event_type = ConnectionToHostResult_UnavoidableErrorEventType::OTHER;
+      break;
+  }
+
+  base::UmaHistogramEnumeration(
+      "InstantTethering.ConnectionToHostResult.UnavoidableError", event_type,
+      ConnectionToHostResult_UnavoidableErrorEventType::kMax);
+
+  if (event_type == ConnectionToHostResult_UnavoidableErrorEventType::OTHER) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "InstantTethering.ConnectionToHostResult.SuccessRate.Background",
+        result == ConnectionToHostResult::SUCCESS
+            ? ConnectionToHostResult_SuccessEventType::SUCCESS
+            : ConnectionToHostResult_SuccessEventType::FAILURE,
+        ConnectionToHostResult_SuccessEventType::SUCCESS_MAX);
+  }
 }
 
 void HostConnectionMetricsLogger::SetClockForTesting(base::Clock* test_clock) {
