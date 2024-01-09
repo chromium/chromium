@@ -26,10 +26,5 @@
             from: "parent",
             to: "#context_provider",
         },
-        {
-              directory: "tzdata-icu",
-              from: "parent",
-              to: "#context_provider",
-        },
     ],
 }

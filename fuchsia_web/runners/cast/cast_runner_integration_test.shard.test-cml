@@ -5,7 +5,7 @@
   offer: [
     {
       directory: [
-		"config-data",
+        "config-data",
         "tzdata-icu",
       ],
       from: "parent",
