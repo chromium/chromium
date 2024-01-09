@@ -4,6 +4,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "builder", "builders", "cpu", "defaults", "goma", "os", "xcode")
+load("//lib/gn_args.star", "gn_args")
 load("//lib/structs.star", "structs")
 
 luci.bucket(
@@ -79,6 +80,13 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "goma",
+        ],
+    ),
 )
 
 fyi_goma_rbe_canary_builder(
@@ -96,6 +104,13 @@ fyi_goma_rbe_canary_builder(
             ),
             build_gs_bucket = "chromium-fyi-archive",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "goma",
+        ],
     ),
     cores = None,
     os = os.MAC_DEFAULT,
@@ -118,6 +133,14 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "goma",
+            "arm64",
+        ],
+    ),
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -137,6 +160,18 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "ozone_headless",
+            "dcheck_off",
+            "amd64-generic-vm",
+            "use_fake_dbus_clients",
+            "also_build_lacros_chrome_for_architecture_amd64",
+            "goma",
+            "no_reclient",
+        ],
+    ),
     goma_enable_ats = True,
 )
 
@@ -155,6 +190,17 @@ fyi_goma_rbe_canary_builder(
             ),
             build_gs_bucket = "chromium-fyi-archive",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "compile_only",
+            "ios_device",
+            "arm64",
+            "ios_google_cert",
+            "ios_disable_code_signing",
+            "release_builder",
+            "goma",
+        ],
     ),
     cores = None,
     os = os.MAC_DEFAULT,
@@ -176,6 +222,12 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+        ],
+    ),
     goma_enable_ats = True,
 )
 
@@ -194,6 +246,12 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+        ],
+    ),
 )
 
 fyi_goma_rbe_canary_builder(
@@ -210,6 +268,13 @@ fyi_goma_rbe_canary_builder(
             ),
             build_gs_bucket = "chromium-fyi-archive",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+            "minimal_symbols",
+        ],
     ),
     cores = None,
     os = os.MAC_DEFAULT,
@@ -231,6 +296,15 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "debug_builder",
+            "goma",
+            "x86",
+            "no_symbols",
+        ],
+    ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
     goma_enable_ats = False,
@@ -251,6 +325,15 @@ fyi_goma_rbe_canary_builder(
             ),
             build_gs_bucket = "chromium-fyi-archive",
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "gpu_tests",
+            "release_builder",
+            "goma",
+            "x86",
+            "minimal_symbols",
+        ],
     ),
     builderless = False,
     os = os.WINDOWS_DEFAULT,
@@ -284,6 +367,12 @@ goma_builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+        ],
+    ),
     goma_backend = goma.backend.RBE_STAGING,
 )
 
@@ -300,12 +389,30 @@ goma_builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "goma",
+        ],
+    ),
     goma_backend = goma.backend.RBE_STAGING,
 )
 
 goma_builder(
     name = "chromeos-amd64-generic-rel-goma-rbe-staging",
     builder_spec = builder_config.copy_from("ci/chromeos-amd64-generic-rel-renamed"),
+    gn_args = gn_args.config(
+        configs = [
+            "chromeos_device",
+            "ozone_headless",
+            "dcheck_off",
+            "amd64-generic-vm",
+            "use_fake_dbus_clients",
+            "also_build_lacros_chrome_for_architecture_amd64",
+            "goma",
+            "no_reclient",
+        ],
+    ),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = True,
 )
@@ -337,6 +444,12 @@ goma_mac_builder(
             target_bits = 64,
         ),
     ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+        ],
+    ),
     goma_backend = goma.backend.RBE_STAGING,
 )
 
@@ -352,6 +465,12 @@ goma_mac_builder(
             ],
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "debug_builder",
+            "goma",
+        ],
     ),
     goma_backend = goma.backend.RBE_STAGING,
 )
@@ -382,6 +501,14 @@ goma_windows_builder(
             ],
             target_bits = 64,
         ),
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "release_builder",
+            "goma",
+            "x86",
+            "minimal_symbols",
+        ],
     ),
     goma_backend = goma.backend.RBE_STAGING,
     goma_enable_ats = False,

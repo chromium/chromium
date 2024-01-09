@@ -1,6 +1,9 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
+      "additional_exclusions": [
+        "infra/config/generated/builders/goma/Mac M1 Builder (dbg) Goma RBE Canary (clobber)/gn-args.json"
+      ],
       "builder_db": {
         "entries": [
           {

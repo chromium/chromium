@@ -332,6 +332,26 @@
     "win11-wpt-content-shell-fyi-rel": "ci/win11-wpt-content-shell-fyi-rel/gn-args.json",
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },
+  "chromium.goma": {
+    "Chromium Linux Goma RBE Staging": "goma/Chromium Linux Goma RBE Staging/gn-args.json",
+    "Chromium Linux Goma RBE Staging (dbg)": "goma/Chromium Linux Goma RBE Staging (dbg)/gn-args.json",
+    "Chromium Mac Goma RBE Staging": "goma/Chromium Mac Goma RBE Staging/gn-args.json",
+    "Chromium Mac Goma RBE Staging (dbg)": "goma/Chromium Mac Goma RBE Staging (dbg)/gn-args.json",
+    "Chromium Win Goma RBE Staging": "goma/Chromium Win Goma RBE Staging/gn-args.json",
+    "chromeos-amd64-generic-rel-goma-rbe-staging": "goma/chromeos-amd64-generic-rel-goma-rbe-staging/gn-args.json"
+  },
+  "chromium.goma.fyi": {
+    "Linux Builder Goma RBE Canary": "goma/Linux Builder Goma RBE Canary/gn-args.json",
+    "Mac Builder (dbg) Goma RBE Canary (clobber)": "goma/Mac Builder (dbg) Goma RBE Canary (clobber)/gn-args.json",
+    "Mac M1 Builder (dbg) Goma RBE Canary (clobber)": "goma/Mac M1 Builder (dbg) Goma RBE Canary (clobber)/gn-args.json",
+    "Win Builder (dbg) Goma RBE Canary": "goma/Win Builder (dbg) Goma RBE Canary/gn-args.json",
+    "Win Builder Goma RBE Canary": "goma/Win Builder Goma RBE Canary/gn-args.json",
+    "chromeos-amd64-generic-rel-goma-rbe-canary": "goma/chromeos-amd64-generic-rel-goma-rbe-canary/gn-args.json",
+    "ios-device-goma-rbe-canary-clobber": "goma/ios-device-goma-rbe-canary-clobber/gn-args.json",
+    "linux-archive-rel-goma-rbe-ats-canary": "goma/linux-archive-rel-goma-rbe-ats-canary/gn-args.json",
+    "linux-archive-rel-goma-rbe-canary": "goma/linux-archive-rel-goma-rbe-canary/gn-args.json",
+    "mac-archive-rel-goma-rbe-canary": "goma/mac-archive-rel-goma-rbe-canary/gn-args.json"
+  },
   "chromium.gpu": {
     "Android Release (Nexus 5X)": "ci/Android Release (Nexus 5X)/gn-args.json",
     "GPU Linux Builder": "ci/GPU Linux Builder/gn-args.json",
@@ -486,6 +506,25 @@
     "win32-updater-builder-dbg": "ci/win32-updater-builder-dbg/gn-args.json",
     "win32-updater-builder-rel": "ci/win32-updater-builder-rel/gn-args.json"
   },
+  "chromium.webrtc": {
+    "WebRTC Chromium Android Builder": "webrtc/WebRTC Chromium Android Builder/gn-args.json",
+    "WebRTC Chromium Linux Builder": "webrtc/WebRTC Chromium Linux Builder/gn-args.json",
+    "WebRTC Chromium Mac Builder": "webrtc/WebRTC Chromium Mac Builder/gn-args.json",
+    "WebRTC Chromium Win Builder": "webrtc/WebRTC Chromium Win Builder/gn-args.json"
+  },
+  "chromium.webrtc.fyi": {
+    "WebRTC Chromium FYI Android Builder": "webrtc.fyi/WebRTC Chromium FYI Android Builder/gn-args.json",
+    "WebRTC Chromium FYI Android Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Android Builder (dbg)/gn-args.json",
+    "WebRTC Chromium FYI Android Builder ARM64 (dbg)": "webrtc.fyi/WebRTC Chromium FYI Android Builder ARM64 (dbg)/gn-args.json",
+    "WebRTC Chromium FYI Linux Builder": "webrtc.fyi/WebRTC Chromium FYI Linux Builder/gn-args.json",
+    "WebRTC Chromium FYI Linux Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Linux Builder (dbg)/gn-args.json",
+    "WebRTC Chromium FYI Mac Builder": "webrtc.fyi/WebRTC Chromium FYI Mac Builder/gn-args.json",
+    "WebRTC Chromium FYI Mac Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Mac Builder (dbg)/gn-args.json",
+    "WebRTC Chromium FYI Win Builder": "webrtc.fyi/WebRTC Chromium FYI Win Builder/gn-args.json",
+    "WebRTC Chromium FYI Win Builder (dbg)": "webrtc.fyi/WebRTC Chromium FYI Win Builder (dbg)/gn-args.json",
+    "WebRTC Chromium FYI ios-device": "webrtc.fyi/WebRTC Chromium FYI ios-device/gn-args.json",
+    "WebRTC Chromium FYI ios-simulator": "webrtc.fyi/WebRTC Chromium FYI ios-simulator/gn-args.json"
+  },
   "chromium.win": {
     "Win Builder": "ci/Win Builder/gn-args.json",
     "Win Builder (dbg)": "ci/Win Builder (dbg)/gn-args.json",
@@ -627,6 +666,17 @@
     "linux-chromeos-rel": "try/linux-chromeos-rel/gn-args.json",
     "linux-lacros-dbg": "try/linux-lacros-dbg/gn-args.json",
     "linux-lacros-rel": "try/linux-lacros-rel/gn-args.json"
+  },
+  "tryserver.chromium.codesearch": {
+    "gen-android-try": "codesearch/gen-android-try/gn-args.json",
+    "gen-chromiumos-try": "codesearch/gen-chromiumos-try/gn-args.json",
+    "gen-fuchsia-try": "codesearch/gen-fuchsia-try/gn-args.json",
+    "gen-ios-try": "codesearch/gen-ios-try/gn-args.json",
+    "gen-lacros-try": "codesearch/gen-lacros-try/gn-args.json",
+    "gen-linux-try": "codesearch/gen-linux-try/gn-args.json",
+    "gen-mac-try": "codesearch/gen-mac-try/gn-args.json",
+    "gen-webview-try": "codesearch/gen-webview-try/gn-args.json",
+    "gen-win-try": "codesearch/gen-win-try/gn-args.json"
   },
   "tryserver.chromium.dawn": {
     "android-dawn-arm-rel": "try/android-dawn-arm-rel/gn-args.json",

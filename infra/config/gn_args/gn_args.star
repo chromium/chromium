@@ -180,6 +180,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "blink_enable_generated_code_formatting",
+    args = {
+        "blink_enable_generated_code_formatting": True,
+    },
+)
+
+gn_args.config(
     name = "blink_symbol",
     args = {
         "blink_symbol_level": 1,
@@ -334,6 +341,16 @@ gn_args.config(
     },
     configs = [
         "clang",
+    ],
+)
+gn_args.config(
+    name = "codesearch_builder",
+    args = {
+        "clang_use_chrome_plugins": False,
+        "enable_kythe_annotations": True,
+    },
+    configs = [
+        "blink_enable_generated_code_formatting",
     ],
 )
 
@@ -671,6 +688,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "ios_build_chrome_false",
+    args = {
+        "ios_build_chrome": False,
+    },
+)
+
+gn_args.config(
     name = "ios_catalyst",
     args = {
         "target_environment": "catalyst",
@@ -769,6 +793,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "mac",
+    args = {
+        "target_os": "mac",
+    },
+)
+
+gn_args.config(
     name = "mac_strip",
     args = {
         "enable_stripping": True,
@@ -819,6 +850,13 @@ gn_args.config(
         "media_use_ffmpeg": False,
         "proprietary_codecs": False,
         "enable_ffmpeg_video_decoders": False,
+    },
+)
+
+gn_args.config(
+    name = "no_com_init_hooks",
+    args = {
+        "com_init_check_hook_disabled": True,
     },
 )
 
