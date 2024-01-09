@@ -99,7 +99,8 @@ bool DlpRulesManagerFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DlpRulesManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!CanBuildServiceForProfile(profile))
@@ -110,6 +111,6 @@ KeyedService* DlpRulesManagerFactory::BuildServiceInstanceFor(
   if (!local_state)
     return nullptr;
 
-  return new DlpRulesManagerImpl(local_state, profile);
+  return std::make_unique<DlpRulesManagerImpl>(local_state, profile);
 }
 }  // namespace policy

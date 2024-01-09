@@ -34,6 +34,7 @@ class DlpRulesManagerImpl : public DlpRulesManager,
   using RuleId = int;
   using UrlConditionId = base::MatcherStringPattern::ID;
 
+  explicit DlpRulesManagerImpl(PrefService* local_state, Profile* profile);
   ~DlpRulesManagerImpl() override;
 
   // Registers the policy pref.
@@ -63,8 +64,6 @@ class DlpRulesManagerImpl : public DlpRulesManager,
 
  protected:
   friend class DlpRulesManagerFactory;
-
-  DlpRulesManagerImpl(PrefService* local_state, Profile* profile);
 
  private:
   void OnDataLeakPreventionRulesUpdate() override;
