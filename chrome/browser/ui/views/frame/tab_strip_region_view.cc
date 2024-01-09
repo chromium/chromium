@@ -59,8 +59,9 @@
 namespace {
 
 class FrameGrabHandle : public views::View {
+  METADATA_HEADER(FrameGrabHandle, views::View)
+
  public:
-  METADATA_HEADER(FrameGrabHandle);
   gfx::Size CalculatePreferredSize() const override {
     // Reserve some space for the frame to be grabbed by, even if the tabstrip
     // is full.
@@ -69,7 +70,7 @@ class FrameGrabHandle : public views::View {
   }
 };
 
-BEGIN_METADATA(FrameGrabHandle, views::View)
+BEGIN_METADATA(FrameGrabHandle)
 END_METADATA
 
 bool ShouldShowNewTabButton(const Browser* browser) {
@@ -534,5 +535,5 @@ void TabStripRegionView::UpdateTabStripMargin() {
   }
 }
 
-BEGIN_METADATA(TabStripRegionView, views::AccessiblePaneView)
+BEGIN_METADATA(TabStripRegionView)
 END_METADATA

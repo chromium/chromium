@@ -16,8 +16,9 @@
 // The views-specific implementation of InfoBarContainer.
 class InfoBarContainerView : public views::AccessiblePaneView,
                              public infobars::InfoBarContainer {
+  METADATA_HEADER(InfoBarContainerView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(InfoBarContainerView);
   explicit InfoBarContainerView(Delegate* delegate);
   InfoBarContainerView(const InfoBarContainerView&) = delete;
   InfoBarContainerView& operator=(const InfoBarContainerView&) = delete;

@@ -137,7 +137,7 @@ JavaScriptTabModalDialogViewViews::CreateAlertDialogForTesting(
       base::NullCallback(), base::NullCallback());
 }
 
-BEGIN_METADATA(JavaScriptTabModalDialogViewViews, views::DialogDelegateView)
+BEGIN_METADATA(JavaScriptTabModalDialogViewViews)
 END_METADATA
 
 // Creates a new JS dialog. Note the two callbacks; |dialog_callback| is for

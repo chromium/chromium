@@ -54,8 +54,9 @@ class WebUITabStripContainerView : public TabStripUIEmbedder,
                                    public views::ViewObserver,
                                    public views::WidgetObserver,
                                    public content::WebContentsObserver {
+  METADATA_HEADER(WebUITabStripContainerView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(WebUITabStripContainerView);
   WebUITabStripContainerView(BrowserView* browser_view,
                              views::View* tab_contents_container,
                              views::View* top_container,

@@ -64,9 +64,9 @@ class PictureInPictureBrowserFrameView
       public ContentSettingImageView::Delegate,
       public views::WidgetObserver,
       public gfx::AnimationDelegate {
- public:
-  METADATA_HEADER(PictureInPictureBrowserFrameView);
+  METADATA_HEADER(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
 
+ public:
   PictureInPictureBrowserFrameView(BrowserFrame* frame,
                                    BrowserView* browser_view);
   PictureInPictureBrowserFrameView(const PictureInPictureBrowserFrameView&) =

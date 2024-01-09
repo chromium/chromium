@@ -376,7 +376,7 @@ void InfoBarView::CloseButtonPressed() {
   RemoveSelf();
 }
 
-BEGIN_METADATA(InfoBarView, views::View)
+BEGIN_METADATA(InfoBarView)
 ADD_READONLY_PROPERTY_METADATA(int, ContentMinimumWidth)
 ADD_READONLY_PROPERTY_METADATA(int, StartX)
 ADD_READONLY_PROPERTY_METADATA(int, EndX)

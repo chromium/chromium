@@ -157,6 +157,6 @@ void ContentsWebView::RenderViewReady() {
   WebView::RenderViewReady();
 }
 
-BEGIN_METADATA(ContentsWebView, views::WebView)
+BEGIN_METADATA(ContentsWebView)
 ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
 END_METADATA

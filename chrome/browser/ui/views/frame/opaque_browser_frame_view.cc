@@ -895,7 +895,7 @@ void OpaqueBrowserFrameView::
 }
 #endif
 
-BEGIN_METADATA(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+BEGIN_METADATA(OpaqueBrowserFrameView)
 ADD_READONLY_PROPERTY_METADATA(gfx::Rect, IconBounds)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowWindowTitleBar)
 END_METADATA

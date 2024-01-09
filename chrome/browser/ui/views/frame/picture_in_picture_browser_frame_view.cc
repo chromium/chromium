@@ -115,9 +115,9 @@ constexpr std::array<base::TimeDelta, 3> kCloseButtonAnimationDurations = {
     kAnimationDuration * 0.4};
 
 class BackToTabButton : public OverlayWindowImageButton {
- public:
-  METADATA_HEADER(BackToTabButton);
+  METADATA_HEADER(BackToTabButton, OverlayWindowImageButton)
 
+ public:
   explicit BackToTabButton(PressedCallback callback)
       : OverlayWindowImageButton(std::move(callback)) {
     auto* icon = &vector_icons::kBackToTabIcon;
@@ -137,7 +137,7 @@ class BackToTabButton : public OverlayWindowImageButton {
   ~BackToTabButton() override = default;
 };
 
-BEGIN_METADATA(BackToTabButton, OverlayWindowImageButton)
+BEGIN_METADATA(BackToTabButton)
 END_METADATA
 
 // Helper class for observing mouse and key events from native window.
@@ -1321,5 +1321,5 @@ bool PictureInPictureBrowserFrameView::IsOverlayViewVisible() const {
   return auto_pip_setting_overlay_ && auto_pip_setting_overlay_->GetVisible();
 }
 
-BEGIN_METADATA(PictureInPictureBrowserFrameView, BrowserNonClientFrameView)
+BEGIN_METADATA(PictureInPictureBrowserFrameView)
 END_METADATA

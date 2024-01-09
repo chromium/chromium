@@ -36,8 +36,9 @@ class HatsNextWebDialog : public views::BubbleDialogDelegateView,
                           public content::WebContentsDelegate,
                           public ProfileObserver,
                           public HatsPageHandlerDelegate {
+  METADATA_HEADER(HatsNextWebDialog, views::BubbleDialogDelegateView)
+
  public:
-  METADATA_HEADER(HatsNextWebDialog);
   HatsNextWebDialog(Browser* browser,
                     const std::string& trigger_id,
                     base::OnceClosure success_callback,

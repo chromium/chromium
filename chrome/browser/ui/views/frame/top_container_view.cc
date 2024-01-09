@@ -53,5 +53,5 @@ void TopContainerView::ChildPreferredSizeChanged(views::View* child) {
   PreferredSizeChanged();
 }
 
-BEGIN_METADATA(TopContainerView, views::View)
+BEGIN_METADATA(TopContainerView)
 END_METADATA

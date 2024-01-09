@@ -26,8 +26,9 @@ class MenuButtonController;
 // dots and adds a status badge when there's a need to alert the user. Clicking
 // displays the app menu.
 class AppMenuButton : public ToolbarButton {
+  METADATA_HEADER(AppMenuButton, ToolbarButton)
+
  public:
-  METADATA_HEADER(AppMenuButton);
   explicit AppMenuButton(PressedCallback callback);
 
   AppMenuButton(const AppMenuButton&) = delete;

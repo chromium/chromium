@@ -105,12 +105,12 @@ using AppSelectedCallback =
 // A Button which displays an app icon and name, as part of a grid layout of
 // apps.
 class IntentPickerAppGridButton : public views::Button {
+  METADATA_HEADER(IntentPickerAppGridButton, views::Button)
+
  public:
   // Callback for when this app is selected. Parameter is true if the dialog
   // should be immediately accepted.
   using ButtonSelectedCallback = base::RepeatingCallback<void(bool)>;
-
-  METADATA_HEADER(IntentPickerAppGridButton);
 
   IntentPickerAppGridButton(ButtonSelectedCallback selected_callback,
                             const ui::ImageModel& icon_model,
@@ -219,15 +219,16 @@ class IntentPickerAppGridButton : public views::Button {
   ButtonSelectedCallback selected_callback_;
 };
 
-BEGIN_METADATA(IntentPickerAppGridButton, views::Button)
+BEGIN_METADATA(IntentPickerAppGridButton)
 END_METADATA
 
 // Displays a list of apps as a grid of buttons.
 class IntentPickerAppGridView
     : public IntentPickerBubbleView::IntentPickerAppsView {
- public:
-  METADATA_HEADER(IntentPickerAppGridView);
+  METADATA_HEADER(IntentPickerAppGridView,
+                  IntentPickerBubbleView::IntentPickerAppsView)
 
+ public:
   IntentPickerAppGridView(
       const std::vector<IntentPickerBubbleView::AppInfo>& apps,
       AppSelectedCallback selected_callback)
@@ -322,7 +323,7 @@ class IntentPickerAppGridView
   std::optional<size_t> selected_app_index_ = 0;
 };
 
-BEGIN_METADATA(IntentPickerAppGridView, views::ScrollView)
+BEGIN_METADATA(IntentPickerAppGridView)
 ADD_PROPERTY_METADATA(std::optional<size_t>, SelectedIndex)
 END_METADATA
 
@@ -330,9 +331,9 @@ END_METADATA
 
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
- public:
-  METADATA_HEADER(IntentPickerLabelButton);
+  METADATA_HEADER(IntentPickerLabelButton, views::LabelButton)
 
+ public:
   IntentPickerLabelButton(PressedCallback callback,
                           const ui::ImageModel& icon_model,
                           const std::string& display_name)
@@ -365,14 +366,15 @@ class IntentPickerLabelButton : public views::LabelButton {
   }
 };
 
-BEGIN_METADATA(IntentPickerLabelButton, views::LabelButton)
+BEGIN_METADATA(IntentPickerLabelButton)
 END_METADATA
 
 class IntentPickerAppListView
     : public IntentPickerBubbleView::IntentPickerAppsView {
- public:
-  METADATA_HEADER(IntentPickerAppListView);
+  METADATA_HEADER(IntentPickerAppListView,
+                  IntentPickerBubbleView::IntentPickerAppsView)
 
+ public:
   IntentPickerAppListView(
       const std::vector<IntentPickerBubbleView::AppInfo>& apps,
       AppSelectedCallback selected_callback)
@@ -485,7 +487,7 @@ class IntentPickerAppListView
   size_t selected_app_index_ = 0;
 };
 
-BEGIN_METADATA(IntentPickerAppListView, views::ScrollView)
+BEGIN_METADATA(IntentPickerAppListView)
 ADD_PROPERTY_METADATA(std::optional<size_t>, SelectedIndex)
 END_METADATA
 
@@ -804,5 +806,8 @@ void IntentPickerBubbleView::ClearIntentPickerBubbleView() {
     intent_picker_bubble_ = nullptr;
 }
 
-BEGIN_METADATA(IntentPickerBubbleView, LocationBarBubbleDelegateView)
+BEGIN_METADATA(IntentPickerBubbleView)
+END_METADATA
+
+BEGIN_METADATA(IntentPickerBubbleView, IntentPickerAppsView, views::ScrollView)
 END_METADATA

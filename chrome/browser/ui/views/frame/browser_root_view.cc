@@ -515,5 +515,5 @@ void BrowserRootView::NavigateToDropUrl(
   output_drag_op = GetDropEffect(event, url);
 }
 
-BEGIN_METADATA(BrowserRootView, views::internal::RootView)
+BEGIN_METADATA(BrowserRootView)
 END_METADATA

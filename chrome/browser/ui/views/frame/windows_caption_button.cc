@@ -254,7 +254,7 @@ void WindowsCaptionButton::PaintSymbol(gfx::Canvas* canvas) {
   }
 }
 
-BEGIN_METADATA(WindowsCaptionButton, views::Button)
+BEGIN_METADATA(WindowsCaptionButton)
 ADD_READONLY_PROPERTY_METADATA(int, BetweenButtonSpacing)
 ADD_READONLY_PROPERTY_METADATA(int, ButtonDisplayOrderIndex)
 ADD_READONLY_PROPERTY_METADATA(SkColor,

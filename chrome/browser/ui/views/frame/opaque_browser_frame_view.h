@@ -42,8 +42,9 @@ class Label;
 class OpaqueBrowserFrameView : public BrowserNonClientFrameView,
                                public TabIconViewModel,
                                public OpaqueBrowserFrameViewLayoutDelegate {
+  METADATA_HEADER(OpaqueBrowserFrameView, BrowserNonClientFrameView)
+
  public:
-  METADATA_HEADER(OpaqueBrowserFrameView);
   // Constructs a non-client view for an BrowserFrame.
   OpaqueBrowserFrameView(BrowserFrame* frame,
                          BrowserView* browser_view,

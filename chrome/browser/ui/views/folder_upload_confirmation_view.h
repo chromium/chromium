@@ -28,8 +28,9 @@ class Widget;
 // trick a user into pressing enter, which would instantly confirm the OS folder
 // picker and share the default folder selection without explicit user approval.
 class FolderUploadConfirmationView : public views::DialogDelegateView {
+  METADATA_HEADER(FolderUploadConfirmationView, views::DialogDelegateView)
+
  public:
-  METADATA_HEADER(FolderUploadConfirmationView);
   FolderUploadConfirmationView(
       const base::FilePath& path,
       base::OnceCallback<void(const std::vector<ui::SelectedFileInfo>&)>

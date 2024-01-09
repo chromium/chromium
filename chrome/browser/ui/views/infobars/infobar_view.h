@@ -26,8 +26,9 @@ class MenuRunner;
 class InfoBarView : public infobars::InfoBar,
                     public views::View,
                     public views::ExternalFocusTracker {
+  METADATA_HEADER(InfoBarView, views::View)
+
  public:
-  METADATA_HEADER(InfoBarView);
   explicit InfoBarView(std::unique_ptr<infobars::InfoBarDelegate> delegate);
   InfoBarView(const InfoBarView&) = delete;
   InfoBarView& operator=(const InfoBarView&) = delete;

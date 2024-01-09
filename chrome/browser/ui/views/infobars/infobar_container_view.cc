@@ -29,8 +29,9 @@
 namespace {
 
 class ContentShadow : public views::View {
+  METADATA_HEADER(ContentShadow, views::View)
+
  public:
-  METADATA_HEADER(ContentShadow);
   ContentShadow();
 
  protected:
@@ -59,7 +60,7 @@ void ContentShadow::OnPaint(gfx::Canvas* canvas) {
                                            canvas, GetColorProvider());
 }
 
-BEGIN_METADATA(ContentShadow, views::View)
+BEGIN_METADATA(ContentShadow)
 END_METADATA
 
 }  // namespace
@@ -168,5 +169,5 @@ void InfoBarContainerView::PlatformSpecificInfoBarStateChanged(
   }
 }
 
-BEGIN_METADATA(InfoBarContainerView, views::AccessiblePaneView)
+BEGIN_METADATA(InfoBarContainerView)
 END_METADATA

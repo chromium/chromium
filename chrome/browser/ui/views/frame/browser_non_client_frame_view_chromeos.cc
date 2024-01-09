@@ -1242,7 +1242,7 @@ aura::Window* BrowserNonClientFrameViewChromeOS::GetFrameWindow() {
   return frame()->GetNativeWindow();
 }
 
-BEGIN_METADATA(BrowserNonClientFrameViewChromeOS, BrowserNonClientFrameView)
+BEGIN_METADATA(BrowserNonClientFrameViewChromeOS)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtons)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowCaptionButtonsWhenNotInOverview)
 ADD_READONLY_PROPERTY_METADATA(int, ToolbarLeftInset)

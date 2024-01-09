@@ -448,5 +448,5 @@ void HungRendererDialogView::BypassActiveBrowserRequirementForTests() {
   g_bypass_active_browser_requirement = true;
 }
 
-BEGIN_METADATA(HungRendererDialogView, views::DialogDelegateView)
+BEGIN_METADATA(HungRendererDialogView)
 END_METADATA

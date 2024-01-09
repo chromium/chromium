@@ -25,8 +25,9 @@ class TabStripScrollContainer;
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
 class TabStripRegionView final : public views::AccessiblePaneView {
+  METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
+
  public:
-  METADATA_HEADER(TabStripRegionView);
   explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
   TabStripRegionView(const TabStripRegionView&) = delete;
   TabStripRegionView& operator=(const TabStripRegionView&) = delete;

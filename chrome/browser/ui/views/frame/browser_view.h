@@ -124,9 +124,9 @@ class BrowserView : public BrowserWindow,
                     public extensions::ExtensionKeybindingRegistry::Delegate,
                     public ImmersiveModeController::Observer,
                     public webapps::AppBannerManager::Observer {
- public:
-  METADATA_HEADER(BrowserView);
+  METADATA_HEADER(BrowserView, views::ClientView)
 
+ public:
   explicit BrowserView(std::unique_ptr<Browser> browser);
   BrowserView(const BrowserView&) = delete;
   BrowserView& operator=(const BrowserView&) = delete;
