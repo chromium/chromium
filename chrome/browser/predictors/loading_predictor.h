@@ -77,7 +77,6 @@ class LoadingPredictor : public KeyedService,
   LoadingDataCollector* loading_data_collector();
   PreconnectManager* preconnect_manager();
   PrefetchManager* prefetch_manager();
-  PrewarmHttpDiskCacheManager* prewarm_http_disk_cache_manager();
 
   // KeyedService:
   void Shutdown() override;

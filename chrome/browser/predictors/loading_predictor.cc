@@ -288,27 +288,6 @@ PrefetchManager* LoadingPredictor::prefetch_manager() {
   return prefetch_manager_.get();
 }
 
-PrewarmHttpDiskCacheManager*
-LoadingPredictor::prewarm_http_disk_cache_manager() {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kHttpDiskCachePrewarming)) {
-    return nullptr;
-  }
-
-  if (shutdown_) {
-    return nullptr;
-  }
-
-  if (!prewarm_http_disk_cache_manager_) {
-    prewarm_http_disk_cache_manager_ =
-        std::make_unique<PrewarmHttpDiskCacheManager>(
-            profile_->GetDefaultStoragePartition()
-                ->GetURLLoaderFactoryForBrowserProcess());
-  }
-
-  return prewarm_http_disk_cache_manager_.get();
-}
-
 void LoadingPredictor::Shutdown() {
   DCHECK(!shutdown_);
   resource_prefetch_predictor_->Shutdown();
@@ -542,9 +521,12 @@ void LoadingPredictor::PreconnectURLIfAllowed(
 
 void LoadingPredictor::MaybePrewarmResources(
     const GURL& top_frame_main_resource_url) {
-  PrewarmHttpDiskCacheManager* manager = prewarm_http_disk_cache_manager();
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kHttpDiskCachePrewarming)) {
+    return;
+  }
 
-  if (!manager) {
+  if (shutdown_) {
     return;
   }
 
@@ -560,8 +542,15 @@ void LoadingPredictor::MaybePrewarmResources(
     return;
   }
 
-  manager->MaybePrewarmResources(top_frame_main_resource_url,
-                                 PredictFetchedSubresourceUrls(*lcpp_data));
+  if (!prewarm_http_disk_cache_manager_) {
+    prewarm_http_disk_cache_manager_ =
+        std::make_unique<PrewarmHttpDiskCacheManager>(
+            profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess());
+  }
+
+  prewarm_http_disk_cache_manager_->MaybePrewarmResources(
+      top_frame_main_resource_url, PredictFetchedSubresourceUrls(*lcpp_data));
 }
 
 }  // namespace predictors
