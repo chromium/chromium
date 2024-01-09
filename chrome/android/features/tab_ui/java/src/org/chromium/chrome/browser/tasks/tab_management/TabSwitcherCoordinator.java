@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -289,29 +288,6 @@ public class TabSwitcherCoordinator
                             mode);
 
             mMenuOrKeyboardActionController = menuOrKeyboardActionController;
-
-            if (mode == TabListCoordinator.TabListMode.GRID) {
-                if (ProfileManager.isInitialized()
-                        && PriceTrackingFeatures.isPriceTrackingEnabled(
-                                Profile.getLastUsedRegularProfile())) {
-                    mPriceAnnotationsPrefListener =
-                            (sharedPrefs, key) -> {
-                                if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
-                                        && !mTabModelSelector.isIncognitoSelected()
-                                        && mTabModelSelector.isTabStateInitialized()) {
-                                    resetWithTabList(
-                                            mTabModelSelector
-                                                    .getTabModelFilterProvider()
-                                                    .getCurrentTabModelFilter(),
-                                            false);
-                                }
-                            };
-                    ContextUtils.getAppSharedPreferences()
-                            .registerOnSharedPreferenceChangeListener(
-                                    mPriceAnnotationsPrefListener);
-                }
-            }
-
             mTabSwitcherMenuActionHandler =
                     new MenuOrKeyboardActionController.MenuOrKeyboardActionHandler() {
                         @Override
@@ -387,14 +363,34 @@ public class TabSwitcherCoordinator
                             && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
                             && !(ChromeFeatureList.sGridTabSwitcherAndroidAnimations.isEnabled()
                                     && ReturnToChromeUtil.isStartSurfaceRefactorEnabled(mActivity));
+
+            Profile profile = mTabModelSelector.getModel(false).getProfile();
+            assert profile != null;
             mTabListCoordinator.initWithNative(
                     shouldUseDynamicResource ? mDynamicResourceLoaderSupplier.get() : null);
 
-            mMessageManager.initWithNative();
+            mMessageManager.initWithNative(profile);
 
-            mMultiThumbnailCardProvider.initWithNative(
-                    mTabModelSelector.getModel(false).getProfile());
+            mMultiThumbnailCardProvider.initWithNative(profile);
             mMediator.initWithNative(mSnackbarManager);
+
+            if (mMode == TabListCoordinator.TabListMode.GRID
+                    && PriceTrackingFeatures.isPriceTrackingEnabled(profile)) {
+                mPriceAnnotationsPrefListener =
+                        (sharedPrefs, key) -> {
+                            if (PriceTrackingUtilities.TRACK_PRICES_ON_TABS.equals(key)
+                                    && !mTabModelSelector.isIncognitoSelected()
+                                    && mTabModelSelector.isTabStateInitialized()) {
+                                resetWithTabList(
+                                        mTabModelSelector
+                                                .getTabModelFilterProvider()
+                                                .getCurrentTabModelFilter(),
+                                        false);
+                            }
+                        };
+                ContextUtils.getAppSharedPreferences()
+                        .registerOnSharedPreferenceChangeListener(mPriceAnnotationsPrefListener);
+            }
 
             mIsInitialized = true;
         }

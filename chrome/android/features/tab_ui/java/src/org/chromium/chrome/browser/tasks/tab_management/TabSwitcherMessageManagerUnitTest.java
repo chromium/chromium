@@ -130,7 +130,7 @@ public class TabSwitcherMessageManagerUnitTest {
         mMessageManager.addObserver(mMessageUpdateObserver);
 
         mMessageManager.setPriceMessageServiceForTesting(mPriceMessageService);
-        mMessageManager.initWithNative();
+        mMessageManager.initWithNative(mProfile);
 
         assertTrue(mCurrentTabModelFilterSupplier.hasObservers());
     }

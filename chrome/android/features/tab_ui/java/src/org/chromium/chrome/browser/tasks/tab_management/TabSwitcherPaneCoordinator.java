@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -256,12 +257,13 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public void initWithNative() {
         mTabListCoordinator.initWithNative(/* dynamicResourceLoader= */ null);
 
-        mMessageManager.initWithNative();
-
         ProfileProvider profileProvider = mProfileProviderSupplier.get();
         assert profileProvider != null;
+        Profile originalProfile = profileProvider.getOriginalProfile();
 
-        mMultiThumbnailCardProvider.initWithNative(profileProvider.getOriginalProfile());
+        mMessageManager.initWithNative(originalProfile);
+
+        mMultiThumbnailCardProvider.initWithNative(originalProfile);
     }
 
     // TODO(crbug/1505772): Some additional methods are needed here for animation geometry and back
