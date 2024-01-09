@@ -187,6 +187,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -3518,9 +3519,9 @@ std::u16string BrowserView::GetAccessibleTabLabel(int index,
 
   // Tab has a pending permission request.
   if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->chip_controller() &&
+      toolbar_->location_bar()->GetChipController() &&
       toolbar_->location_bar()
-          ->chip_controller()
+          ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
     return l10n_util::GetStringFUTF16(
         IDS_TAB_AX_LABEL_PERMISSION_REQUESTED_FORMAT, title);
@@ -4072,15 +4073,28 @@ void BrowserView::GetAccessiblePanes(std::vector<views::View*>* panes) {
   if (webui_tab_strip_)
     panes->push_back(webui_tab_strip_);
 #endif
-  // When permission is requested, permission chip must be first pane in the
-  // pane traversal order to be easily accessible for keyboard users.
-  if (toolbar_ && toolbar_->location_bar() &&
-      toolbar_->location_bar()->chip_controller() &&
-      toolbar_->location_bar()
-          ->chip_controller()
-          ->IsPermissionPromptChipVisible()) {
-    panes->push_back(toolbar_->location_bar()->chip_controller()->chip());
+  // If activity indicators or a permission request chip is visible, it must be
+  // in the first position in the pane traversal order to be easily accessible
+  // for keyboard users.
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    if (toolbar_ && toolbar_->location_bar() &&
+        toolbar_->location_bar()
+            ->permission_dashboard_controller()
+            ->permission_dashboard_view()
+            ->GetVisible()) {
+      panes->push_back(toolbar_->location_bar()
+                           ->permission_dashboard_controller()
+                           ->permission_dashboard_view());
+    }
+  } else if (toolbar_ && toolbar_->location_bar() &&
+             toolbar_->location_bar()->GetChipController() &&
+             toolbar_->location_bar()
+                 ->GetChipController()
+                 ->IsPermissionPromptChipVisible()) {
+    panes->push_back(toolbar_->location_bar()->GetChipController()->chip());
   }
+
   panes->push_back(toolbar_button_provider_->GetAsAccessiblePaneView());
   if (tab_strip_region_view_)
     panes->push_back(tab_strip_region_view_);

@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "components/permissions/features.h"
+#include "components/content_settings/core/common/features.h"
 #include "ui/views/bubble/bubble_border.h"
 
 // This file contains the bubble_anchor_util implementation for a Views
@@ -22,21 +22,37 @@ namespace bubble_anchor_util {
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor anchor) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (anchor == kLocationBar &&
-      browser_view->GetLocationBarView()->chip_controller() &&
-      browser_view->GetLocationBarView()
-          ->chip_controller()
-          ->chip()
-          ->GetVisible()) {
-    return {browser_view->GetLocationBarView()->chip_controller()->chip(),
-            browser_view->GetLocationBarView()->chip_controller()->chip(),
-            views::BubbleBorder::TOP_LEFT};
+  auto* location_bar_view = browser_view->GetLocationBarView();
+
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    auto* permission_dashboard_view =
+        location_bar_view->permission_dashboard_controller()
+            ->permission_dashboard_view();
+
+    if (anchor == kLocationBar && permission_dashboard_view->GetVisible()) {
+      if (permission_dashboard_view->GetIndicatorChip()->GetVisible()) {
+        return {permission_dashboard_view->GetIndicatorChip(),
+                permission_dashboard_view->GetIndicatorChip(),
+                views::BubbleBorder::TOP_LEFT};
+      }
+
+      return {permission_dashboard_view->GetRequestChip(),
+              permission_dashboard_view->GetRequestChip(),
+              views::BubbleBorder::TOP_LEFT};
+    }
+  } else {
+    auto* request_chip_view = location_bar_view->GetChipController()->chip();
+    if (anchor == kLocationBar && request_chip_view->GetVisible()) {
+      return {request_chip_view, request_chip_view,
+              views::BubbleBorder::TOP_LEFT};
+    }
   }
 
-  if (anchor == kLocationBar && browser_view->GetLocationBarView()->IsDrawn())
-    return {browser_view->GetLocationBarView(),
-            browser_view->GetLocationBarView()->location_icon_view(),
+  if (anchor == kLocationBar && location_bar_view->IsDrawn()) {
+    return {location_bar_view, location_bar_view->location_icon_view(),
             views::BubbleBorder::TOP_LEFT};
+  }
 
   if (anchor == kLocationBar && browser_view->GetIsPictureInPictureType()) {
     auto* frame_view = static_cast<PictureInPictureBrowserFrameView*>(
@@ -69,12 +85,12 @@ AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
     Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (browser_view->GetLocationBarView()->chip_controller() &&
+  if (browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()
-          ->chip_controller()
+          ->GetChipController()
           ->IsPermissionPromptChipVisible()) {
     return {browser_view->GetLocationBarView(),
-            browser_view->GetLocationBarView()->chip_controller()->chip(),
+            browser_view->GetLocationBarView()->GetChipController()->chip(),
             views::BubbleBorder::TOP_LEFT};
   }
   return GetPageInfoAnchorConfiguration(browser);

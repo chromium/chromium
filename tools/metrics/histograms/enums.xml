@@ -30641,6 +30641,7 @@ from previous Chrome versions.
   <int value="508272289" label="SharedHighlightingAmp:disabled"/>
   <int value="510066229"
       label="AutofillEnforceMinRequiredFieldsForQuery:enabled"/>
+  <int value="510759575" label="LeftHandSideActivityIndicators:disabled"/>
   <int value="510814146" label="OfflineBookmarks:enabled"/>
   <int value="510833540" label="UseOutOfProcessVideoDecoding:enabled"/>
   <int value="511179195" label="ShoppingAssist:disabled"/>
@@ -33829,6 +33830,7 @@ from previous Chrome versions.
   <int value="2001520126" label="AccountManagementFlowsV2:enabled"/>
   <int value="2001562962"
       label="enable-manual-fallback-for-password-saving:enabled"/>
+  <int value="2002003766" label="LeftHandSideActivityIndicators:enabled"/>
   <int value="2002113900" label="AdaptiveButtonInTopToolbar:disabled"/>
   <int value="2002573873" label="ChromeHomeMenuItemsExpandSheet:enabled"/>
   <int value="2002724184" label="MouseAndTrackpadDropdownMenu:enabled"/>

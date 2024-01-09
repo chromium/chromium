@@ -8127,6 +8127,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          content_settings::features::kImprovedSemanticsActivityIndicators)},
 
+    {"left-hand-side-activity-indicators",
+     flag_descriptions::kLeftHandSideActivityIndicatorsName,
+     flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         content_settings::features::kLeftHandSideActivityIndicators)},
+
     {"attribution-reporting-debug-mode",
      flag_descriptions::kAttributionReportingDebugModeName,
      flag_descriptions::kAttributionReportingDebugModeDescription, kOsAll,

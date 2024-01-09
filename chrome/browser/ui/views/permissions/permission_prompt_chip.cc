@@ -33,10 +33,6 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   DCHECK(delegate_);
   LocationBarView* lbv = GetLocationBarView();
 
-  if (!lbv->chip_controller()->chip()) {
-    lbv->CreateChip();
-  }
-
   // Before showing a chip make sure the LocationBar is in a valid state. That
   // fixes a bug when a chip overlays the padlock icon.
   lbv->InvalidateLayout();
@@ -44,7 +40,7 @@ PermissionPromptChip::PermissionPromptChip(Browser* browser,
   if (delegate->ShouldCurrentRequestUseQuietUI())
     PreemptivelyResolvePermissionRequest(web_contents, delegate);
 
-  chip_controller_ = lbv->chip_controller();
+  chip_controller_ = lbv->GetChipController();
   chip_controller_->ShowPermissionPrompt(delegate->GetWeakPtr());
 }
 
@@ -107,8 +103,8 @@ views::Widget* PermissionPromptChip::GetPromptBubbleWidgetForTesting() {
   LocationBarView* lbv = GetLocationBarView();
 
   return chip_controller_->IsPermissionPromptChipVisible() &&
-                 lbv->chip_controller()->IsBubbleShowing()
-             ? lbv->chip_controller()->GetBubbleWidget()
+                 lbv->GetChipController()->IsBubbleShowing()
+             ? lbv->GetChipController()->GetBubbleWidget()
              : nullptr;
 }
 

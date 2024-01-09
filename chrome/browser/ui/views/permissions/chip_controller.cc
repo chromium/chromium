@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -20,11 +21,13 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view_factory.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
@@ -76,8 +79,13 @@ class BubbleButtonController : public views::ButtonController {
   raw_ptr<BubbleOwnerDelegate, DanglingUntriaged> bubble_owner_ = nullptr;
 };
 
-ChipController::ChipController(Browser* browser, OmniboxChipButton* chip_view)
-    : chip_(chip_view), browser_(browser) {
+ChipController::ChipController(
+    Browser* browser,
+    OmniboxChipButton* chip_view,
+    PermissionDashboardView* permission_dashboard_view)
+    : browser_(browser),
+      chip_(chip_view),
+      permission_dashboard_view_(permission_dashboard_view) {
   chip_->SetVisible(false);
 }
 
@@ -235,6 +243,9 @@ void ChipController::InitializePermissionPrompt(
   // a request chip is shown --> only once a confirmation should be displayed,
   // the chip should become visible.
   chip_->SetVisible(false);
+  if (permission_dashboard_view_) {
+    permission_dashboard_view_->SetVisible(false);
+  }
   permission_prompt_model_ =
       std::make_unique<PermissionPromptChipModel>(delegate);
 
@@ -289,6 +300,9 @@ void ChipController::ShowPermissionPrompt(
   AnnouncePermissionRequestForAccessibility(
       permission_prompt_model_->GetAccessibilityChipText());
   chip_->SetVisible(true);
+  if (permission_dashboard_view_) {
+    permission_dashboard_view_->SetVisible(true);
+  }
 
   SyncChipWithModel();
 
@@ -413,6 +427,9 @@ void ChipController::AnimateExpand() {
   chip_->ResetAnimation();
   chip_->AnimateExpand(GetAnimationDuration(base::Milliseconds(350)));
   chip_->SetVisible(true);
+  if (permission_dashboard_view_) {
+    permission_dashboard_view_->SetVisible(true);
+  }
 }
 
 void ChipController::HandleConfirmation(
@@ -426,7 +443,10 @@ void ChipController::HandleConfirmation(
       permission_prompt_model_->CanDisplayConfirmation()) {
     is_confirmation_showing_ = true;
 
-    if (chip_->GetVisible()) {
+    // AnimateToFit isn't working for `PermissionDashboardView`.
+    if (chip_->GetVisible() &&
+        !base::FeatureList::IsEnabled(
+            content_settings::features::kLeftHandSideActivityIndicators)) {
       chip_->AnimateToFit(GetAnimationDuration(base::Milliseconds(200)));
     } else {
       // No request chip was shown, always expand independently of what contents
@@ -497,6 +517,9 @@ void ChipController::HideChip() {
     return;
 
   chip_->SetVisible(false);
+  if (permission_dashboard_view_) {
+    permission_dashboard_view_->SetVisible(false);
+  }
   // When the chip visibility changed from visible -> hidden, the locationbar
   // layout should be updated.
   GetLocationBarView()->InvalidateLayout();

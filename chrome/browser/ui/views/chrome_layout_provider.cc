@@ -166,6 +166,8 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 24;
     case DISTANCE_OMNIBOX_CELL_VERTICAL_PADDING:
       return OmniboxFieldTrial::IsCr23LayoutEnabled() ? 12 : 8;
+    case DISTANCE_OMNIBOX_CHIPS_OVERLAP:
+      return 10;
     case DISTANCE_OMNIBOX_TWO_LINE_CELL_VERTICAL_PADDING:
       return 4;
     case DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE:

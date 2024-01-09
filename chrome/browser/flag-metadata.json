@@ -5174,6 +5174,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "left-hand-side-activity-indicators",
+    "owners": [ "elklm@chromium.org", "//components/permissions/PERMISSIONS_OWNERS" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "legacy-tech-report-enable-cookie-issue-reports",
     "owners": ["sandormajor@google.com", "zmin@chromium.org", "parastoog@chromium.org"],
     "expiry_milestone": 125

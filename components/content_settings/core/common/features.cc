@@ -74,6 +74,10 @@ BASE_FEATURE(kImprovedSemanticsActivityIndicators,
              "ImprovedSemanticsActivityIndicators",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLeftHandSideActivityIndicators,
+             "LeftHandSideActivityIndicators",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTrackingProtection3pcd,
              "TrackingProtection3pcd",
              base::FEATURE_DISABLED_BY_DEFAULT);

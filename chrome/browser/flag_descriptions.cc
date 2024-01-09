@@ -2789,6 +2789,11 @@ const char kImprovedSemanticsActivityIndicatorsName[] =
 const char kImprovedSemanticsActivityIndicatorsDescription[] =
     "Enables experimental improved semantics indicators in the location bar.";
 
+const char kLeftHandSideActivityIndicatorsName[] =
+    "Left-hand side activity indicators";
+const char kLeftHandSideActivityIndicatorsDescription[] =
+    "Moves activity indicators to the left-hand side of location bar.";
+
 const char kPermissionPredictionsName[] = "Permission Predictions";
 const char kPermissionPredictionsDescription[] =
     "Use the Permission Predictions Service to surface permission requests "

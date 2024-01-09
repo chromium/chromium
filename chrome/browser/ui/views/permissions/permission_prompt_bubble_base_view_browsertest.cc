@@ -141,7 +141,7 @@ class PermissionPromptBubbleBaseViewBrowserTest : public DialogBrowserTest {
   ChipController* GetChipController() {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->toolbar()->location_bar()->chip_controller();
+    return browser_view->toolbar()->location_bar()->GetChipController();
   }
 
   ContentSettingImageView& GetContentSettingImageView(

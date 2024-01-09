@@ -21,7 +21,7 @@ PermissionPromptBubble::PermissionPromptBubble(
   LocationBarView* lbv = GetLocationBarView();
   if (lbv && lbv->IsDrawn() &&
       delegate->Requests()[0]->IsConfirmationChipSupported()) {
-    lbv->chip_controller()->InitializePermissionPrompt(
+    lbv->GetChipController()->InitializePermissionPrompt(
         delegate->GetWeakPtr(),
         base::BindOnce(&PermissionPromptBubble::ShowBubble,
                        weak_factory_.GetWeakPtr()));
@@ -127,7 +127,7 @@ bool PermissionPromptBubble::UpdateAnchor() {
 
     if (lbv && lbv->IsDrawn() && !lbv->GetWidget()->IsFullscreen() &&
         !lbv->IsEditingOrEmpty()) {
-      auto* chip_controller = lbv->chip_controller();
+      auto* chip_controller = lbv->GetChipController();
       chip_controller->InitializePermissionPrompt(delegate()->GetWeakPtr());
     }
   }

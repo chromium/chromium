@@ -158,7 +158,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
   }
 
   OmniboxChipButton* GetChip() {
-    return GetLocationBarView()->chip_controller()->chip();
+    return GetLocationBarView()->GetChipController()->chip();
   }
 
   ChipController* GetChipController() {
@@ -166,7 +166,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
         BrowserView::GetBrowserViewForBrowser(browser());
     LocationBarView* lbv = browser_view->toolbar()->location_bar();
 
-    return lbv->chip_controller();
+    return lbv->GetChipController();
   }
 
   PermissionPromptChip* GetPermissionPromptChip() {
@@ -1592,7 +1592,7 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveTest,
   LocationBarView* location_bar =
       BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBarView();
   ASSERT_TRUE(location_bar);
-  ChipController* chip_controller = location_bar->chip_controller();
+  ChipController* chip_controller = location_bar->GetChipController();
   ChipExpansionObserver chip_expansion_observer(chip_controller->chip());
 
   EXPECT_FALSE(manager->IsRequestInProgress());

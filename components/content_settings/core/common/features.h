@@ -97,6 +97,10 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kImprovedSemanticsActivityIndicators);
 
+// Move activity indicators to the left-hand side of Omnibox.
+COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
+BASE_DECLARE_FEATURE(kLeftHandSideActivityIndicators);
+
 // Feature to enable redesigned tracking protection UX + prefs for 3PCD.
 COMPONENT_EXPORT(CONTENT_SETTINGS_FEATURES)
 BASE_DECLARE_FEATURE(kTrackingProtection3pcd);

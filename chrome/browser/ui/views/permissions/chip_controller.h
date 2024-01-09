@@ -21,6 +21,7 @@
 
 class PermissionPromptChipModel;
 class LocationBarView;
+class PermissionDashboardView;
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
 // immediately after being closed via losing focus.
@@ -42,7 +43,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
                        public BubbleOwnerDelegate,
                        public OmniboxChipButton::Observer {
  public:
-  ChipController(Browser* browser_, OmniboxChipButton* chip_view);
+  ChipController(Browser* browser,
+                 OmniboxChipButton* chip_view,
+                 PermissionDashboardView* permission_dashboard_view = nullptr);
 
   ~ChipController() override;
   ChipController(const ChipController&) = delete;
@@ -207,10 +210,13 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   bool is_confirmation_showing_ = false;
   bool is_waiting_for_confirmation_collapse_ = false;
 
+  raw_ptr<Browser> browser_;
+
   // The chip view this controller modifies.
   raw_ptr<OmniboxChipButton> chip_;
 
-  raw_ptr<Browser> browser_;
+  // `PermissionDashboardView` is owner of OmniboxChipButton.
+  raw_ptr<PermissionDashboardView> permission_dashboard_view_;
 
   // The time when the request chip was displayed.
   base::TimeTicks request_chip_shown_time_;

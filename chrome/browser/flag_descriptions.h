@@ -1605,6 +1605,9 @@ extern const char kWindowsScrollingPersonalityDescription[];
 extern const char kImprovedSemanticsActivityIndicatorsName[];
 extern const char kImprovedSemanticsActivityIndicatorsDescription[];
 
+extern const char kLeftHandSideActivityIndicatorsName[];
+extern const char kLeftHandSideActivityIndicatorsDescription[];
+
 extern const char kPermissionPredictionsName[];
 extern const char kPermissionPredictionsDescription[];
 
