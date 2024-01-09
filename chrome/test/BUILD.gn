@@ -3114,6 +3114,7 @@ if (!is_android && !is_fuchsia) {
             "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc",
           ]
           deps += [
+            "//components/headless/test",
             "//components/printing/browser",
             "//pdf",
           ]
