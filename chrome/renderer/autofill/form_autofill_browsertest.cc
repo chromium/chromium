@@ -2128,42 +2128,47 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
-    std::vector<WebFormControlElement> elements;
-    elements.push_back(GetInputElementById("firstname"));
-    elements.push_back(GetInputElementById("lastname"));
-    elements.push_back(GetInputElementById("email"));
-    elements.push_back(GetInputElementById("email2"));
-    elements.push_back(GetInputElementById("phone"));
-    WebInputElement firstname = elements[0].To<WebInputElement>();
-    WebInputElement lastname = elements[1].To<WebInputElement>();
+    std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+    elements.emplace_back(GetInputElementById("firstname"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("lastname"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email2"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("phone"),
+                          WebAutofillState::kNotFilled);
+    WebInputElement firstname = elements[0].first.To<WebInputElement>();
+    WebInputElement lastname = elements[1].first.To<WebInputElement>();
 
     // Set the auto-filled attribute.
-    for (WebFormControlElement& e : elements) {
-      e.SetAutofillState(WebAutofillState::kPreviewed);
+    for (auto& [element, state] : elements) {
+      element.SetAutofillState(WebAutofillState::kPreviewed);
     }
 
     // Set the suggested values on two of the elements.
     firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     std::vector<bool> is_value_empty(elements.size());
     for (size_t i = 0; i < elements.size(); ++i) {
-      is_value_empty[i] = elements[i].Value().IsEmpty();
+      is_value_empty[i] = elements[i].first.Value().IsEmpty();
     }
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, lastname,
-                           WebAutofillState::kNotFilled);
+    ClearPreviewedElements(mojom::ActionType::kFill, elements, lastname);
 
     // Verify the previewed fields are cleared.
     for (size_t i = 0; i < elements.size(); ++i) {
+      WebFormControlElement& element = elements[i].first;
       SCOPED_TRACE(testing::Message() << "Element " << i);
-      EXPECT_EQ(elements[i].Value().IsEmpty(), is_value_empty[i]);
-      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
-      EXPECT_FALSE(elements[i].IsAutofilled());
+      EXPECT_EQ(element.Value().IsEmpty(), is_value_empty[i]);
+      EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+      EXPECT_FALSE(element.IsAutofilled());
     }
 
     // Verify that the cursor position has been updated.
@@ -2180,30 +2185,34 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
-    std::vector<WebFormControlElement> elements;
-    elements.push_back(GetInputElementById("firstname"));
-    elements.push_back(GetInputElementById("lastname"));
-    elements.push_back(GetInputElementById("email"));
-    elements.push_back(GetInputElementById("email2"));
-    elements.push_back(GetInputElementById("phone"));
-    WebInputElement firstname = elements[0].To<WebInputElement>();
-    WebInputElement lastname = elements[1].To<WebInputElement>();
+    std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+    elements.emplace_back(GetInputElementById("firstname"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("lastname"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email2"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("phone"),
+                          WebAutofillState::kNotFilled);
+    WebInputElement firstname = elements[0].first.To<WebInputElement>();
+    WebInputElement lastname = elements[1].first.To<WebInputElement>();
 
     // Set the auto-filled attribute.
-    for (WebFormControlElement& e : elements) {
-      e.SetAutofillState(WebAutofillState::kPreviewed);
+    for (auto& [element, state] : elements) {
+      element.SetAutofillState(WebAutofillState::kPreviewed);
     }
 
     // Set the suggested values on all of the elements.
     firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname,
-                           WebAutofillState::kNotFilled);
+    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(u"W", firstname.Value().Utf16());
@@ -2214,10 +2223,11 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     // Verify the previewed fields are cleared.
     for (size_t i = 1; i < elements.size(); ++i) {
+      WebFormControlElement& element = elements[i].first;
       SCOPED_TRACE(testing::Message() << "Element " << i);
-      EXPECT_TRUE(elements[i].Value().IsEmpty());
-      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
-      EXPECT_FALSE(elements[i].IsAutofilled());
+      EXPECT_TRUE(element.Value().IsEmpty());
+      EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+      EXPECT_FALSE(element.IsAutofilled());
     }
   }
 
@@ -2230,30 +2240,34 @@ class FormAutofillTest : public ChromeRenderViewTest {
     std::vector<FormData> forms = UpdateFormCache(form_cache).updated_forms;
     ASSERT_EQ(1U, forms.size());
 
-    std::vector<WebFormControlElement> elements;
-    elements.push_back(GetInputElementById("firstname"));
-    elements.push_back(GetInputElementById("lastname"));
-    elements.push_back(GetInputElementById("email"));
-    elements.push_back(GetInputElementById("email2"));
-    elements.push_back(GetInputElementById("phone"));
-    WebInputElement firstname = elements[0].To<WebInputElement>();
-    WebInputElement lastname = elements[1].To<WebInputElement>();
+    std::vector<std::pair<WebFormControlElement, WebAutofillState>> elements;
+    elements.emplace_back(GetInputElementById("firstname"),
+                          WebAutofillState::kAutofilled);
+    elements.emplace_back(GetInputElementById("lastname"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("email2"),
+                          WebAutofillState::kNotFilled);
+    elements.emplace_back(GetInputElementById("phone"),
+                          WebAutofillState::kNotFilled);
+    WebInputElement firstname = elements[0].first.To<WebInputElement>();
+    WebInputElement lastname = elements[1].first.To<WebInputElement>();
 
     // Set the auto-filled attribute.
-    for (WebFormControlElement& e : elements) {
-      e.SetAutofillState(WebAutofillState::kPreviewed);
+    for (auto& [element, state] : elements) {
+      element.SetAutofillState(WebAutofillState::kPreviewed);
     }
 
     // Set the suggested values on all of the elements.
     firstname.SetSuggestedValue(WebString::FromASCII("Wyatt"));
     lastname.SetSuggestedValue(WebString::FromASCII("Earp"));
-    elements[2].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[3].SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
-    elements[4].SetSuggestedValue(WebString::FromASCII("650-777-9999"));
+    elements[2].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[3].first.SetSuggestedValue(WebString::FromASCII("wyatt@earp.com"));
+    elements[4].first.SetSuggestedValue(WebString::FromASCII("650-777-9999"));
 
     // Clear the previewed fields.
-    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname,
-                           WebAutofillState::kAutofilled);
+    ClearPreviewedElements(mojom::ActionType::kFill, elements, firstname);
 
     // Fields with non-empty values are restored.
     EXPECT_EQ(u"W", firstname.Value().Utf16());
@@ -2264,10 +2278,11 @@ class FormAutofillTest : public ChromeRenderViewTest {
 
     // Verify the previewed fields are cleared.
     for (size_t i = 1; i < elements.size(); ++i) {
+      WebFormControlElement& element = elements[i].first;
       SCOPED_TRACE(testing::Message() << "Element " << i);
-      EXPECT_TRUE(elements[i].Value().IsEmpty());
-      EXPECT_TRUE(elements[i].SuggestedValue().IsEmpty());
-      EXPECT_FALSE(elements[i].IsAutofilled());
+      EXPECT_TRUE(element.Value().IsEmpty());
+      EXPECT_TRUE(element.SuggestedValue().IsEmpty());
+      EXPECT_FALSE(element.IsAutofilled());
     }
   }
 

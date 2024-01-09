@@ -32,6 +32,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 
@@ -323,6 +324,44 @@ TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
                                    mojom::ActionPersistence::kFill,
                                    form.unique_renderer_id, form.fields);
   EXPECT_FALSE(autofill_agent().focused_element().IsNull());
+}
+
+// Tests that AutofillAgent::ApplyFormAction(kFill, kPreview) and
+// AutofillAgent::ClearPreviewedForm correctly set/reset the autofill state of a
+// field.
+TEST_F(AutofillAgentTest, PreviewThenClear) {
+  LoadHTML(R"(
+    <form id="form_id">
+      <input id="text_id">
+    </form>
+  )");
+
+  blink::WebVector<blink::WebFormElement> forms =
+      GetMainFrame()->GetDocument().Forms();
+  ASSERT_EQ(1U, forms.size());
+  FormData form = *form_util::WebFormElementToFormData(
+      forms[0], blink::WebFormControlElement(),
+      *base::MakeRefCounted<FieldDataManager>(),
+      {form_util::ExtractOption::kValue}, nullptr);
+  ASSERT_EQ(form.fields.size(), 1u);
+  blink::WebFormControlElement field =
+      GetMainFrame()
+          ->GetDocument()
+          .GetElementById("text_id")
+          .DynamicTo<blink::WebFormControlElement>();
+  ASSERT_FALSE(field.IsNull());
+
+  std::u16string prior_value = form.fields[0].value;
+  form.fields[0].value += u"AUTOFILLED";
+  form.fields[0].is_autofilled = true;
+
+  ASSERT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
+  autofill_agent().ApplyFormAction(mojom::ActionType::kFill,
+                                   mojom::ActionPersistence::kPreview,
+                                   form.unique_renderer_id, form.fields);
+  EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kPreviewed);
+  autofill_agent().ClearPreviewedForm();
+  EXPECT_EQ(field.GetAutofillState(), blink::WebAutofillState::kNotFilled);
 }
 
 TEST_F(AutofillAgentTest, HideElementTriggersFormTracker_DisplayNone) {

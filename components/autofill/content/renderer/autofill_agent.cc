@@ -5,6 +5,7 @@
 #include "components/autofill/content/renderer/autofill_agent.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <tuple>
@@ -59,6 +60,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -720,14 +722,14 @@ void AutofillAgent::ApplyFormAction(mojom::ActionType action_type,
     was_last_action_fill_ = true;
 
     query_node_autofill_state_ = last_queried_element.GetAutofillState();
-    std::vector<FieldRef> filled_fields =
+    std::vector<std::pair<FieldRef, blink::WebAutofillState>> filled_fields =
         form_util::ApplyFormAction(fields, last_queried_element, action_type,
                                    action_persistence, field_data_manager());
 
     // Notify Password Manager of filled fields.
-    for (const auto& field : filled_fields) {
+    for (const auto& [filled_field, field_autofill_state] : filled_fields) {
       WebInputElement input_element =
-          field.GetField().DynamicTo<WebInputElement>();
+          filled_field.GetField().DynamicTo<WebInputElement>();
       if (!input_element.IsNull()) {
         password_autofill_agent_->UpdatePasswordStateForTextChange(
             input_element);
@@ -801,13 +803,15 @@ void AutofillAgent::ClearPreviewedForm() {
           last_queried_element)) {
     return;
   }
-  std::vector<WebFormControlElement> previewed_elements;
-  for (const FieldRef& previewed_element : previewed_elements_) {
-    previewed_elements.push_back(previewed_element.GetField());
+  std::vector<std::pair<WebFormControlElement, WebAutofillState>>
+      previewed_elements;
+  for (const auto& [previewed_element, prior_autofill_state] :
+       previewed_elements_) {
+    previewed_elements.emplace_back(previewed_element.GetField(),
+                                    prior_autofill_state);
   }
   form_util::ClearPreviewedElements(last_action_type_, previewed_elements,
-                                    last_queried_element,
-                                    query_node_autofill_state_);
+                                    last_queried_element);
   previewed_elements_ = {};
 }
 
@@ -853,11 +857,12 @@ void AutofillAgent::ApplyFieldAction(
             break;
           case mojom::TextReplacement::kReplaceAll:
             query_node_autofill_state_ = form_control.GetAutofillState();
+            previewed_elements_.emplace_back(last_queried_element_,
+                                             form_control.GetAutofillState());
             form_control.SetSuggestedValue(blink::WebString::FromUTF16(value));
             form_util::PreviewSuggestion(form_control.SuggestedValue().Utf16(),
                                          form_control.Value().Utf16(),
                                          &form_control);
-            previewed_elements_.emplace_back(last_queried_element_);
             break;
         }
         break;
