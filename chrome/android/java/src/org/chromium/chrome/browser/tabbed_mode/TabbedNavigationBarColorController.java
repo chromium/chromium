@@ -227,6 +227,6 @@ class TabbedNavigationBarColorController {
     }
 
     private @ColorInt int applyCurrentScrimToColor(@ColorInt int color) {
-        return ColorUtils.overlayColor(color, mDefaultScrimColor);
+        return ColorUtils.overlayColor(color, mDefaultScrimColor, mNavigationBarScrimFraction);
     }
 }
