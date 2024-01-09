@@ -405,7 +405,7 @@
     <cr-grid columns="3" disable-arrow-navigation>
       <template is="dom-repeat" id="historyRepeat" items="[[history_]]">
         <div class="tile result" tabindex="0" role="button"
-            aria-label$="[[getHistoryTileTitle_(index)]]"
+            aria-label$="[[getHistoryResultAriaLabel_(index, item)]]"
             on-click="onHistoryImageClick_"
             aria-current$="[[getBackgroundCheckedStatus_(item.id, theme_)]]">
           <customize-chrome-check-mark-wrapper class="image-check-mark"

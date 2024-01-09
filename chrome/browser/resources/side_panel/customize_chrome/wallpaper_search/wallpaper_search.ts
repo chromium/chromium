@@ -35,7 +35,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -408,9 +408,28 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     return this.selectedHue_ !== undefined ? 'true' : 'false';
   }
 
-  private getHistoryTileTitle_(index: number): string {
+  private getHistoryResultAriaLabel_(
+      index: number, result: WallpaperSearchResult): string {
+    if (!result.descriptors || !result.descriptors.subject) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchHistoryResultLabelNoDescriptor', index + 1);
+    } else if (result.descriptors.style && result.descriptors.mood) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchHistoryResultLabelBC', index + 1,
+          result.descriptors.subject, result.descriptors.style,
+          result.descriptors.mood);
+    } else if (result.descriptors.style) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchHistoryResultLabelB', index + 1,
+          result.descriptors.subject, result.descriptors.style);
+    } else if (result.descriptors.mood) {
+      return loadTimeData.getStringF(
+          'wallpaperSearchHistoryResultLabelC', index + 1,
+          result.descriptors.subject, result.descriptors.mood);
+    }
     return loadTimeData.getStringF(
-        'wallpaperSearchHistoryTileTitle', index + 1);
+        'wallpaperSearchHistoryResultLabel', index + 1,
+        result.descriptors.subject);
   }
 
   private getResultAriaLabel_(index: number): string {
@@ -520,7 +539,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private onHistoryImageClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_HISTORY_IMAGE_SELECTED);
-    this.wallpaperSearchHandler_.setBackgroundToHistoryImage(e.model.item.id);
+    this.wallpaperSearchHandler_.setBackgroundToHistoryImage(
+        e.model.item.id, e.model.item.descriptors ?? {});
   }
 
   private onLearnMoreClick_(e: Event) {
@@ -583,8 +603,14 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private async onResultClick_(e: DomRepeatEvent<WallpaperSearchResult>) {
     recordCustomizeChromeAction(
         CustomizeChromeAction.WALLPAPER_SEARCH_RESULT_IMAGE_SELECTED);
+    const descriptors: ResultDescriptors = {
+      subject: this.selectedDescriptorA_!,
+      style: this.selectedDescriptorB_ ?? undefined,
+      mood: this.selectedDescriptorC_ ?? undefined,
+      color: this.selectedDescriptorD_ ?? undefined,
+    };
     this.wallpaperSearchHandler_.setBackgroundToWallpaperSearchResult(
-        e.model.item.id, WindowProxy.getInstance().now());
+        e.model.item.id, WindowProxy.getInstance().now(), descriptors);
   }
 
   private onStatusChange_() {

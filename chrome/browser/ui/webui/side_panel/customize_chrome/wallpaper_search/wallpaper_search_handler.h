@@ -75,9 +75,15 @@ class WallpaperSearchHandler
       GetWallpaperSearchResultsCallback callback) override;
   void SetResultRenderTime(const std::vector<base::Token>& result_ids,
                            double time) override;
-  void SetBackgroundToHistoryImage(const base::Token& result_id) override;
-  void SetBackgroundToWallpaperSearchResult(const base::Token& result_id,
-                                            double time) override;
+  void SetBackgroundToHistoryImage(
+      const base::Token& result_id,
+      side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors)
+      override;
+  void SetBackgroundToWallpaperSearchResult(
+      const base::Token& result_id,
+      double time,
+      side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors)
+      override;
   void UpdateHistory() override;
   void SetUserFeedback(side_panel::customize_chrome::mojom::UserFeedback
                            selected_option) override;
@@ -96,7 +102,7 @@ class WallpaperSearchHandler
                               std::unique_ptr<std::string> response_body);
   void OnDescriptorsJsonParsed(GetDescriptorsCallback callback,
                                data_decoder::DataDecoder::ValueOrError result);
-  void OnHistoryDecoded(std::vector<base::Token> history,
+  void OnHistoryDecoded(std::vector<HistoryEntry> history,
                         std::vector<std::pair<SkBitmap, base::Token>> results);
   void OnWallpaperSearchResultsRetrieved(
       GetWallpaperSearchResultsCallback callback,
@@ -109,9 +115,11 @@ class WallpaperSearchHandler
       std::vector<
           std::pair<optimization_guide::proto::WallpaperSearchImageQuality*,
                     SkBitmap>> bitmaps);
-  void SelectHistoryImage(const base::Token& id,
-                          base::ElapsedTimer timer,
-                          const gfx::Image& image);
+  void SelectHistoryImage(
+      const base::Token& id,
+      base::ElapsedTimer timer,
+      side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors,
+      const gfx::Image& image);
 
   raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;

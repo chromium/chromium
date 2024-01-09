@@ -630,7 +630,15 @@ suite('WallpaperSearchTest', () => {
       createWallpaperSearchElement();
 
       wallpaperSearchCallbackRouterRemote.setHistory([
-        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {
+          image: '123',
+          id: {high: BigInt(10), low: BigInt(1)},
+          descriptors: {
+            subject: 'foo',
+            mood: 'bar',
+            style: 'foobar',
+          },
+        },
         {image: '456', id: {high: BigInt(8), low: BigInt(2)}},
       ]);
       await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
@@ -641,10 +649,12 @@ suite('WallpaperSearchTest', () => {
       (historyTile as HTMLElement).click();
 
       assertEquals(1, handler.getCallCount('setBackgroundToHistoryImage'));
-      assertEquals(
-          BigInt(10), handler.getArgs('setBackgroundToHistoryImage')[0].high);
-      assertEquals(
-          BigInt(1), handler.getArgs('setBackgroundToHistoryImage')[0].low);
+      const args = handler.getArgs('setBackgroundToHistoryImage');
+      assertEquals(BigInt(10), args[0][0].high);
+      assertEquals(BigInt(1), args[0][0].low);
+      assertEquals('foo', args[0][1].subject);
+      assertEquals('bar', args[0][1].mood);
+      assertEquals('foobar', args[0][1].style);
     });
 
     test('current history theme is checked', async () => {
@@ -686,6 +696,64 @@ suite('WallpaperSearchTest', () => {
       assertEquals(
           checkedResults[0]!.parentElement!.getAttribute('aria-current'),
           'true');
+    });
+
+    test('labels history', async () => {
+      loadTimeData.overrideValues({
+        'wallpaperSearchHistoryResultLabelNoDescriptor': 'Image $1',
+        'wallpaperSearchHistoryResultLabel': 'Image $1 of $2',
+        'wallpaperSearchHistoryResultLabelB': 'Image $1 of $2, $3',
+        'wallpaperSearchHistoryResultLabelC': 'Image $1 of $2, $3',
+        'wallpaperSearchHistoryResultLabelBC': 'Image $1 of $2, $3, $4',
+      });
+      createWallpaperSearchElement();
+
+      wallpaperSearchCallbackRouterRemote.setHistory([
+        {image: '123', id: {high: BigInt(10), low: BigInt(1)}},
+        {
+          image: '456',
+          id: {high: BigInt(8), low: BigInt(2)},
+          descriptors: {
+            subject: 'foo',
+          },
+        },
+        {
+          image: '789',
+          id: {high: BigInt(8), low: BigInt(3)},
+          descriptors: {
+            subject: 'foo',
+            mood: 'bar',
+          },
+        },
+        {
+          image: '012',
+          id: {high: BigInt(8), low: BigInt(4)},
+          descriptors: {
+            subject: 'foo',
+            style: 'foobar',
+          },
+        },
+        {
+          image: '345',
+          id: {high: BigInt(10), low: BigInt(5)},
+          descriptors: {
+            subject: 'foo',
+            mood: 'bar',
+            style: 'foobar',
+          },
+        },
+      ]);
+      await wallpaperSearchCallbackRouterRemote.$.flushForTesting();
+
+      const historyTiles =
+          wallpaperSearchElement.$.historyCard.querySelectorAll('.tile.result');
+
+      assertEquals(historyTiles.length, 5);
+      assertEquals('Image 1', historyTiles[0]!.ariaLabel);
+      assertEquals('Image 2 of foo', historyTiles[1]!.ariaLabel);
+      assertEquals('Image 3 of foo, bar', historyTiles[2]!.ariaLabel);
+      assertEquals('Image 4 of foo, foobar', historyTiles[3]!.ariaLabel);
+      assertEquals('Image 5 of foo, foobar, bar', historyTiles[4]!.ariaLabel);
     });
   });
 

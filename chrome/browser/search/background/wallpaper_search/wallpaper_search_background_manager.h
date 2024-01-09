@@ -30,7 +30,7 @@ class WallpaperSearchBackgroundManager {
   virtual ~WallpaperSearchBackgroundManager();
 
   // Gets the current history list.
-  virtual std::vector<base::Token> GetHistory();
+  virtual std::vector<HistoryEntry> GetHistory();
 
   // Sets a history image to the NTP background and sets matching theme color.
   virtual void SelectHistoryImage(const base::Token& id,

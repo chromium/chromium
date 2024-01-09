@@ -162,8 +162,6 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
        IDS_NTP_WALLPAPER_SEARCH_REQUEST_THROTTLED_TITLE},
       {"tryAgain", IDS_NTP_WALLPAPER_SEARCH_TRY_AGAIN_CTA},
       {"wallpaperSearchHistoryHeader", IDS_NTP_WALLPAPER_SEARCH_HISTORY_HEADER},
-      {"wallpaperSearchHistoryTileTitle",
-       IDS_NTP_WALLPAPER_SEARCH_HISTORY_TILE_TITLE},
       {"wallpaperSearchMoodLabel", IDS_NTP_WALLPAPER_SEARCH_MOOD_LABEL},
       {"wallpaperSearchMoodDefaultOptionLabel",
        IDS_NTP_WALLPAPER_SEARCH_MOOD_DEFAULT_OPTION_LABEL},
@@ -194,7 +192,17 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"wallpaperSearchLoadingA11yMessage",
        IDS_NTP_WALLPAPER_SEARCH_LOADING_A11Y_MESSAGE},
       {"wallpaperSearchSuccessA11yMessage",
-       IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE}};
+       IDS_NTP_WALLPAPER_SEARCH_SUCCESS_A11Y_MESSAGE},
+      {"wallpaperSearchHistoryResultLabelNoDescriptor",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_NO_DESCRIPTOR},
+      {"wallpaperSearchHistoryResultLabel",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL},
+      {"wallpaperSearchHistoryResultLabelB",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_B},
+      {"wallpaperSearchHistoryResultLabelC",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTOR_C},
+      {"wallpaperSearchHistoryResultLabelBC",
+       IDS_NTP_WALLPAPER_SEARCH_HISTORY_RESULT_LABEL_WITH_DESCRIPTORS_B_AND_C}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(

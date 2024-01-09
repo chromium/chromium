@@ -275,7 +275,8 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
 }
 
 void WallpaperSearchHandler::SetBackgroundToHistoryImage(
-    const base::Token& result_id) {
+    const base::Token& result_id,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(
@@ -283,16 +284,18 @@ void WallpaperSearchHandler::SetBackgroundToHistoryImage(
           profile_->GetPath().AppendASCII(
               result_id.ToString() +
               chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
-      base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
-                                    weak_ptr_factory_.GetWeakPtr(), result_id,
-                                    base::ElapsedTimer())));
+      base::BindOnce(
+          &WallpaperSearchHandler::DecodeHistoryImage,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindOnce(&WallpaperSearchHandler::SelectHistoryImage,
+                         weak_ptr_factory_.GetWeakPtr(), result_id,
+                         base::ElapsedTimer(), std::move(descriptors))));
 }
 
 void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     const base::Token& result_id,
-    double time) {
+    double time,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors) {
   CHECK(base::Contains(wallpaper_search_results_, result_id));
   auto& [image_quality, render_time, bitmap] =
       wallpaper_search_results_[result_id];
@@ -305,6 +308,13 @@ void WallpaperSearchHandler::SetBackgroundToWallpaperSearchResult(
     }
   }
   history_entry_ = std::make_unique<HistoryEntry>(result_id);
+  history_entry_->subject = descriptors->subject;
+  if (descriptors->style) {
+    history_entry_->style = descriptors->style;
+  }
+  if (descriptors->mood) {
+    history_entry_->mood = descriptors->mood;
+  }
   wallpaper_search_background_manager_->SelectLocalBackgroundImage(
       result_id, bitmap, base::ElapsedTimer());
 }
@@ -324,7 +334,7 @@ void WallpaperSearchHandler::UpdateHistory() {
         base::BindOnce(
             &ReadFile,
             profile_->GetPath().AppendASCII(
-                entry.ToString() +
+                entry.id.ToString() +
                 chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
         base::BindOnce(&WallpaperSearchHandler::DecodeHistoryImage,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -335,7 +345,7 @@ void WallpaperSearchHandler::UpdateHistory() {
                              std::move(barrier).Run(
                                  std::pair(image.AsBitmap(), id));
                            },
-                           barrier, entry)));
+                           barrier, entry.id)));
   }
 }
 
@@ -509,7 +519,7 @@ void WallpaperSearchHandler::OnDescriptorsJsonParsed(
 }
 
 void WallpaperSearchHandler::OnHistoryDecoded(
-    std::vector<base::Token> history,
+    std::vector<HistoryEntry> history,
     std::vector<std::pair<SkBitmap, base::Token>> results) {
   std::vector<side_panel::customize_chrome::mojom::WallpaperSearchResultPtr>
       thumbnails;
@@ -518,7 +528,7 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   // O(n^2) but there should never be more than 6 in each vector.
   for (const auto& entry : history) {
     for (auto& [bitmap, id] : results) {
-      if (entry == id) {
+      if (entry.id == id) {
         auto dimensions =
             CalculateResizeDimensions(bitmap.width(), bitmap.height(), 100);
         SkBitmap small_bitmap = skia::ImageOperations::Resize(
@@ -533,6 +543,17 @@ void WallpaperSearchHandler::OnHistoryDecoded(
               side_panel::customize_chrome::mojom::WallpaperSearchResult::New();
           thumbnail->image = base::Base64Encode(encoded);
           thumbnail->id = std::move(id);
+          if (entry.subject) {
+            thumbnail->descriptors =
+                side_panel::customize_chrome::mojom::ResultDescriptors::New();
+            thumbnail->descriptors->subject = *entry.subject;
+            if (entry.style) {
+              thumbnail->descriptors->style = *entry.style;
+            }
+            if (entry.mood) {
+              thumbnail->descriptors->mood = *entry.mood;
+            }
+          }
           thumbnails.push_back(std::move(thumbnail));
         }
         break;
@@ -542,10 +563,21 @@ void WallpaperSearchHandler::OnHistoryDecoded(
   client_->SetHistory(std::move(thumbnails));
 }
 
-void WallpaperSearchHandler::SelectHistoryImage(const base::Token& id,
-                                                base::ElapsedTimer timer,
-                                                const gfx::Image& image) {
+void WallpaperSearchHandler::SelectHistoryImage(
+    const base::Token& id,
+    base::ElapsedTimer timer,
+    side_panel::customize_chrome::mojom::ResultDescriptorsPtr descriptors,
+    const gfx::Image& image) {
   history_entry_ = std::make_unique<HistoryEntry>(id);
+  if (descriptors->subject) {
+    history_entry_->subject = descriptors->subject;
+  }
+  if (descriptors->style) {
+    history_entry_->style = descriptors->style;
+  }
+  if (descriptors->mood) {
+    history_entry_->mood = descriptors->mood;
+  }
   wallpaper_search_background_manager_->SelectHistoryImage(id, image,
                                                            std::move(timer));
 }

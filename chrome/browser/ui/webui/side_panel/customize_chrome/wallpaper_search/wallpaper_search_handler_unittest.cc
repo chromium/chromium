@@ -89,7 +89,7 @@ class MockWallpaperSearchBackgroundManager
  public:
   explicit MockWallpaperSearchBackgroundManager(Profile* profile)
       : WallpaperSearchBackgroundManager(profile) {}
-  MOCK_METHOD0(GetHistory, std::vector<base::Token>());
+  MOCK_METHOD0(GetHistory, std::vector<HistoryEntry>());
   MOCK_METHOD3(SelectHistoryImage,
                void(const base::Token&,
                     const gfx::Image&,
@@ -246,8 +246,12 @@ TEST_F(WallpaperSearchHandlerTest, GetHistory) {
                       std::string(encoded.begin(), encoded.end()))));
 
   // Return test image from WallpaperSearchBackgroundManager::GetHistory().
-  std::vector<base::Token> history;
-  history.push_back(token);
+  std::vector<HistoryEntry> history;
+  HistoryEntry history_entry = HistoryEntry(token);
+  history_entry.subject = "foo";
+  history_entry.mood = "bar";
+  history_entry.style = "foobar";
+  history.push_back(history_entry);
   ON_CALL(mock_wallpaper_search_background_manager(), GetHistory())
       .WillByDefault(testing::Return(history));
 
@@ -270,6 +274,9 @@ TEST_F(WallpaperSearchHandlerTest, GetHistory) {
       resized_bitmap, /*discard_transparency=*/false, &resized_encoded);
   EXPECT_EQ(history_images[0]->image, base::Base64Encode(resized_encoded));
   EXPECT_EQ(history_images[0]->id.ToString(), token.ToString());
+  EXPECT_EQ(history_images[0]->descriptors->subject, history_entry.subject);
+  EXPECT_EQ(history_images[0]->descriptors->mood, history_entry.mood);
+  EXPECT_EQ(history_images[0]->descriptors->style, history_entry.style);
 }
 
 TEST_F(WallpaperSearchHandlerTest,
@@ -1100,7 +1107,12 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
               SaveCurrentBackgroundToHistory(_))
       .WillOnce(MoveArgAndReturn<0>(&history_entry_arg, token));
 
-  handler->SetBackgroundToHistoryImage(token);
+  side_panel::customize_chrome::mojom::ResultDescriptorsPtr result_descriptors =
+      side_panel::customize_chrome::mojom::ResultDescriptors::New();
+  result_descriptors->subject = "foo";
+  result_descriptors->mood = "bar";
+  result_descriptors->style = "foobar";
+  handler->SetBackgroundToHistoryImage(token, std::move(result_descriptors));
   task_environment().RunUntilIdle();
   task_environment().AdvanceClock(base::Milliseconds(321));
 
@@ -1121,6 +1133,9 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToHistoryImage) {
   // Check that the set theme is saved to history on destruction.
   handler.reset();
   EXPECT_EQ(token_arg.ToString(), history_entry_arg.id.ToString());
+  EXPECT_EQ("foo", history_entry_arg.subject);
+  EXPECT_EQ("bar", history_entry_arg.mood);
+  EXPECT_EQ("foobar", history_entry_arg.style);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
@@ -1228,9 +1243,14 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       .WillOnce(
           DoAll(SaveArg<0>(&token), SaveArg<1>(&bitmap), MoveArg<2>(&timer)));
 
+  auto descriptors =
+      side_panel::customize_chrome::mojom::ResultDescriptors::New();
+  descriptors->subject = "foo";
   handler->SetBackgroundToWallpaperSearchResult(
-      images[1]->id, (base::Time::Now() + base::Milliseconds(123))
-                         .InMillisecondsFSinceUnixEpoch());
+      images[1]->id,
+      (base::Time::Now() + base::Milliseconds(123))
+          .InMillisecondsFSinceUnixEpoch(),
+      std::move(descriptors));
   task_environment().AdvanceClock(base::Milliseconds(123));
 
   // Check that the 2nd bitmap was selected by comparing color, since the
@@ -1287,6 +1307,7 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
 
   // Set background saves on destruction.
   EXPECT_EQ(history_entry_arg.id, token);
+  EXPECT_EQ("foo", history_entry_arg.subject);
 }
 
 TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
