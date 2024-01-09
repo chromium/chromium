@@ -38,9 +38,10 @@ suite('ComposeApp', () => {
 
   function mockResponse(
       result: string = 'some response',
-      status: ComposeStatus = ComposeStatus.kOk): Promise<void> {
+      status: ComposeStatus = ComposeStatus.kOk,
+      onDeviceEvaluationUsed = false): Promise<void> {
     testProxy.remote.responseReceived(
-        {status: status, undoAvailable: false, result});
+        {status: status, undoAvailable: false, result, onDeviceEvaluationUsed});
     return testProxy.remote.$.flushForTesting();
   }
 
@@ -102,6 +103,7 @@ suite('ComposeApp', () => {
     assertFalse(isVisible(app.$.submitButton));
     assertTrue(app.$.textarea.readonly);
     assertTrue(isVisible(app.$.acceptButton));
+    assertFalse(isVisible(app.$.onDeviceUsedFooter));
 
     // Clicking on accept button calls acceptComposeResult.
     app.$.acceptButton.click();
@@ -289,6 +291,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appWithResult.$.resultContainer));
@@ -304,6 +307,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertFalse(appWithUndo.$.undoButton.disabled);
@@ -316,6 +320,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appWithResultAndLoading.$.loading));
@@ -333,6 +338,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     assertTrue(isVisible(appEditingPrompt.$.editTextarea));
@@ -551,6 +557,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     testProxy.setUndoResponse({
@@ -559,6 +566,7 @@ suite('ComposeApp', () => {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'some undone result',
+        onDeviceEvaluationUsed: false,
       },
       webuiState: JSON.stringify({
         input: 'my old input',
@@ -607,7 +615,9 @@ suite('ComposeApp', () => {
     assertEquals(app.$.partialResultText.innerText.trim(), 'partial response');
 
     // The final response hides the partial response text.
-    await mockResponse();
+    await mockResponse(
+        'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/ true);
     assertFalse(isVisible(app.$.partialResultText));
+    assertTrue(isVisible(app.$.onDeviceUsedFooter));
   });
 });

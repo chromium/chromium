@@ -375,6 +375,7 @@ TEST_F(ChromeComposeClientTest, TestCompose) {
 
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, result->status);
   EXPECT_EQ("Cucumbers", result->result);
+  EXPECT_FALSE(result->on_device_evaluation_used);
 
   // Check that a user action for the Compose request was emitted.
   EXPECT_EQ(1, user_action_tester().GetActionCount(
@@ -405,10 +406,11 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             // Start with a partial response.
-            callback.Run(
+            auto opt_guide_response =
                 OptimizationGuideResponse(ComposeResponse(true, "Cucu"),
-                                          /*is_complete=*/false),
-                nullptr);
+                                          /*is_complete=*/false);
+            opt_guide_response.provided_by_on_device = true;
+            callback.Run(std::move(opt_guide_response), nullptr);
             saved_callback = callback;
           })));
   ShowDialogAndBindMojo();
@@ -440,11 +442,14 @@ TEST_F(ChromeComposeClientTest, TestComposeWithIncompleteResponses) {
   EXPECT_TRUE(initial_state->compose_state->has_pending_request);
 
   // Then send the full response.
-  saved_callback.Run(
-      OptimizationGuideResponse(ComposeResponse(true, "Cucumbers")), nullptr);
+  auto full_response =
+      OptimizationGuideResponse(ComposeResponse(true, "Cucumbers"));
+  full_response.provided_by_on_device = true;
+  saved_callback.Run(full_response, nullptr);
   auto complete_result = test_future.Take();
   EXPECT_EQ(compose::mojom::ComposeStatus::kOk, complete_result->status);
   EXPECT_EQ("Cucumbers", complete_result->result);
+  EXPECT_TRUE(complete_result->on_device_evaluation_used);
 
   // Check that a single response result OK metric was emitted.
   histogram_tester.ExpectUniqueSample(compose::kComposeResponseStatus,

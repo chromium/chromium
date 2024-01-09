@@ -450,6 +450,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
       response_error_ = result.error().error();
       return;
     }
+    provided_by_on_device_ = result.value().provided_by_on_device;
     auto response =
         ParsedAnyMetadata<proto::ComposeResponse>(result.value().response);
     if (result.value().is_complete) {
@@ -470,6 +471,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
+  std::optional<bool> provided_by_on_device_;
   std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
@@ -493,6 +495,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelExecutionSuccess) {
   EXPECT_TRUE(response_received_);
   const std::string expected_response = "Input: execute:foo\n";
   EXPECT_EQ(*response_received_, expected_response);
+  EXPECT_TRUE(*provided_by_on_device_);
   EXPECT_THAT(streamed_responses_, ElementsAre(expected_response));
   EXPECT_TRUE(log_entry_received_);
   EXPECT_GT(log_entry_received_->log_ai_data_request()
@@ -1178,6 +1181,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackToServerAfterDelay) {
             "2z");
   EXPECT_FALSE(
       log_ai_data_request_passed_to_remote_->compose().has_response_data());
+  EXPECT_FALSE(provided_by_on_device_.has_value());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,

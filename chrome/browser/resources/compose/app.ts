@@ -61,6 +61,7 @@ export interface ComposeAppElement {
     submitButton: CrButtonElement,
     submitEditButton: CrButtonElement,
     submitFooter: HTMLElement,
+    onDeviceUsedFooter: HTMLElement,
     textarea: ComposeTextareaElement,
     lengthMenu: HTMLSelectElement,
     toneMenu: HTMLSelectElement,
@@ -557,6 +558,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
 
     return this.response_.status !== ComposeStatus.kOk;
+  }
+
+  private onDeviceEvaluationUsed_(): boolean {
+    return Boolean(this.response_?.onDeviceEvaluationUsed);
   }
 
   private acceptButtonText_(): string {

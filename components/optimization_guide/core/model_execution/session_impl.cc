@@ -468,6 +468,7 @@ void SessionImpl::SendResponse(ResponseType response_type) {
       StreamingResponse{
           .response = *output,
           .is_complete = is_complete,
+          .provided_by_on_device = true,
       },
       std::move(log_entry));
 }

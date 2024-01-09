@@ -28,6 +28,9 @@ struct StreamingResponse {
 
   // True if streaming has finished.
   bool is_complete = false;
+
+  // True if the response was computed on-device.
+  bool provided_by_on_device = false;
 };
 
 using OptimizationGuideModelStreamingExecutionResult =

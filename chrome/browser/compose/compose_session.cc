@@ -392,6 +392,7 @@ void ComposeSession::ModelExecutionComplete(
   auto ui_response = compose::mojom::ComposeResponse::New();
   ui_response->status = compose::mojom::ComposeStatus::kOk;
   ui_response->result = response->output();
+  ui_response->on_device_evaluation_used = result->provided_by_on_device;
   current_state_->response = ui_response->Clone();
 
   // Log successful response status.

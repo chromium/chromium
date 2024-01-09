@@ -62,6 +62,8 @@ struct ComposeResponse {
   string result;
   // Whether undo is possible to a prior state before this response.
   bool undo_available;
+  // Whether the response was generated on-device.
+  bool on_device_evaluation_used;
 };
 
 // An intermediate compose response, which is available before the final

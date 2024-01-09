@@ -33,8 +33,12 @@ suite('ComposeApp', function() {
   function mockResponse(
       result: string = 'some response',
       status: ComposeStatus = ComposeStatus.kOk): Promise<void> {
-    testProxy.remote.responseReceived(
-        {status: status, undoAvailable: false, result});
+    testProxy.remote.responseReceived({
+      status: status,
+      undoAvailable: false,
+      result,
+      onDeviceEvaluationUsed: false,
+    });
     return testProxy.remote.$.flushForTesting();
   }
 
@@ -122,6 +126,7 @@ suite('ComposeApp', function() {
         status: ComposeStatus.kOk,
         undoAvailable: true,
         result: 'here is a result',
+        onDeviceEvaluationUsed: false,
       },
     });
     testProxy.setUndoResponse({
@@ -130,6 +135,7 @@ suite('ComposeApp', function() {
         status: ComposeStatus.kOk,
         undoAvailable: false,
         result: 'some undone result',
+        onDeviceEvaluationUsed: false,
       },
       webuiState: JSON.stringify({
         input: 'my old input',

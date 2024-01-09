@@ -153,6 +153,10 @@
     <ph name="BEGIN_SURVEY_LINK">&lt;a href="#" id="surveyLink" role="button"&gt;</ph>survey<ph name="END_SURVEY_LINK">&lt;/a&gt;</ph>
   </message>
 
+  <message name="IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED" desc="A footer indicating that on-device evaluation was used." translateable="false">
+    On-device evaluation used.
+  </message>
+
   <!-- Miscellaneous -->
   <message name="IDS_COMPOSE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for feedback text field" translateable="false">
     Send feedback for Help me write.
