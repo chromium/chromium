@@ -630,9 +630,6 @@ class ASH_EXPORT Shell : public SessionObserver,
     return logout_confirmation_controller_.get();
   }
   MediaControllerImpl* media_controller() { return media_controller_.get(); }
-  MediaNotificationProvider* media_notification_provider() {
-    return media_notification_provider_.get();
-  }
   MessageCenterAshImpl* message_center_ash_impl() {
     return message_center_ash_impl_.get();
   }

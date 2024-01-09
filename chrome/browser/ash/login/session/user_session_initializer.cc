@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/shell.h"
 #include "ash/system/media/media_notification_provider.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -315,7 +314,7 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     CrasAudioHandler::Get()->RefreshNoiseCancellationState();
 
-    Shell::Get()->media_notification_provider()->OnPrimaryUserSessionStarted();
+    MediaNotificationProvider::Get()->OnPrimaryUserSessionStarted();
     if (base::FeatureList::IsEnabled(media::kShowForceRespectUiGainsToggle)) {
       CrasAudioHandler::Get()->RefreshForceRespectUiGainsState();
     }
