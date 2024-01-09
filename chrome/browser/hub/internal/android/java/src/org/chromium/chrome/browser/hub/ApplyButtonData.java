@@ -35,7 +35,13 @@ public final class ApplyButtonData {
             button.setVisibility(View.VISIBLE);
             button.setText(buttonData.resolveText(context));
             button.setContentDescription(buttonData.resolveContentDescription(context));
-            button.setOnClickListener((v) -> buttonData.getOnPressRunnable().run());
+            if (buttonData.getOnPressRunnable() != null) {
+                button.setOnClickListener((v) -> buttonData.getOnPressRunnable().run());
+                button.setEnabled(true);
+            } else {
+                button.setOnClickListener(null);
+                button.setEnabled(false);
+            }
             setStartDrawable(button, buttonData.resolveIcon(context));
         }
     }

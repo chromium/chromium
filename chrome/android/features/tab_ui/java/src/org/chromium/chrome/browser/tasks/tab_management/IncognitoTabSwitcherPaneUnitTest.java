@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -146,47 +147,31 @@ public class IncognitoTabSwitcherPaneUnitTest {
 
     @Test
     @SmallTest
-    public void testNewTabButton() {
-        FullButtonData buttonData = mIncognitoTabSwitcherPane.getActionButtonDataSupplier().get();
+    public void testNewTabButtonData() {
+        checkNewTabButton(/* enabled= */ false);
 
-        assertEquals(mContext.getString(R.string.button_new_tab), buttonData.resolveText(mContext));
-        assertEquals(
-                mContext.getString(R.string.button_new_incognito_tab),
-                buttonData.resolveContentDescription(mContext));
-        assertTrue(
-                AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon)
-                        .getConstantState()
-                        .equals(buttonData.resolveIcon(mContext).getConstantState()));
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
+        ShadowLooper.runUiThreadTasks();
+        verify(mIncognitoReauthController)
+                .addIncognitoReauthCallback(mIncognitoReauthCallbackCaptor.capture());
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
+        mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
 
-        buttonData.getOnPressRunnable().run();
-        verify(mNewTabButtonClickListener).onClick(isNull());
-    }
+        checkNewTabButton(/* enabled= */ true);
 
-    private void checkIncognitoTabModelObserverAndButtonData() {
-        IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
+        when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(true);
+        when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(true);
+        mIncognitoTabSwitcherPane.showAllTabs();
 
-        observer.didBecomeEmpty();
-        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
-
-        // TODO(crbug/1505772): These resources need to be updated.
-        observer.wasFirstTabCreated();
-        DisplayButtonData buttonData =
-                mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();
-        assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
-                buttonData.resolveText(mContext));
-        assertEquals(
-                mContext.getString(R.string.accessibility_tab_switcher),
-                buttonData.resolveContentDescription(mContext));
-        assertNotNull(buttonData.resolveIcon(mContext));
-
-        observer.didBecomeEmpty();
-        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+        checkNewTabButton(/* enabled= */ false);
     }
 
     @Test
     @SmallTest
     public void testIncognitoReauthCallback() {
+        checkNewTabButton(/* enabled= */ false);
+
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthController);
         ShadowLooper.runUiThreadTasks();
         verify(mIncognitoReauthController)
@@ -210,6 +195,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(true);
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.HOT);
         verify(coordinator).resetWithTabList(null);
+        checkNewTabButton(/* enabled= */ false);
 
         when(mIncognitoReauthController.isIncognitoReauthPending()).thenReturn(false);
         when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
@@ -217,6 +203,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator).resetWithTabList(mTabModelFilter);
         verify(coordinator, times(2)).setInitialScrollIndexOffset();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+        checkNewTabButton(/* enabled= */ true);
 
         // Check not called again
         mIncognitoTabSwitcherPane.notifyLoadHint(LoadHint.WARM);
@@ -226,6 +213,7 @@ public class IncognitoTabSwitcherPaneUnitTest {
         verify(coordinator, times(2)).resetWithTabList(mTabModelFilter);
         verify(coordinator, times(3)).setInitialScrollIndexOffset();
         verify(coordinator, times(2)).requestAccessibilityFocusOnCurrentTab();
+        checkNewTabButton(/* enabled= */ true);
 
         when(mTabModelFilter.isCurrentlySelectedFilter()).thenReturn(false);
         callback.onIncognitoReauthSuccess();
@@ -291,5 +279,47 @@ public class IncognitoTabSwitcherPaneUnitTest {
         when(mIncognitoReauthController.isReauthPageShowing()).thenReturn(false);
         mIncognitoTabSwitcherPane.requestAccessibilityFocusOnCurrentTab();
         verify(coordinator).requestAccessibilityFocusOnCurrentTab();
+    }
+
+    private void checkNewTabButton(boolean enabled) {
+        FullButtonData buttonData = mIncognitoTabSwitcherPane.getActionButtonDataSupplier().get();
+        assertEquals(mContext.getString(R.string.button_new_tab), buttonData.resolveText(mContext));
+        assertEquals(
+                mContext.getString(R.string.button_new_incognito_tab),
+                buttonData.resolveContentDescription(mContext));
+        assertTrue(
+                AppCompatResources.getDrawable(mContext, R.drawable.new_tab_icon)
+                        .getConstantState()
+                        .equals(buttonData.resolveIcon(mContext).getConstantState()));
+        if (!enabled) {
+            assertNull(buttonData.getOnPressRunnable());
+        } else {
+            assertNotNull(buttonData.getOnPressRunnable());
+            reset(mNewTabButtonClickListener);
+            buttonData.getOnPressRunnable().run();
+            verify(mNewTabButtonClickListener).onClick(isNull());
+        }
+    }
+
+    private void checkIncognitoTabModelObserverAndButtonData() {
+        IncognitoTabModelObserver observer = mIncognitoTabModelObserverCaptor.getValue();
+
+        observer.didBecomeEmpty();
+        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
+
+        // TODO(crbug/1505772): These resources need to be updated.
+        observer.wasFirstTabCreated();
+        DisplayButtonData buttonData =
+                mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get();
+        assertEquals(
+                mContext.getString(R.string.accessibility_tab_switcher),
+                buttonData.resolveText(mContext));
+        assertEquals(
+                mContext.getString(R.string.accessibility_tab_switcher),
+                buttonData.resolveContentDescription(mContext));
+        assertNotNull(buttonData.resolveIcon(mContext));
+
+        observer.didBecomeEmpty();
+        assertNull(mIncognitoTabSwitcherPane.getReferenceButtonDataSupplier().get());
     }
 }

@@ -14,9 +14,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DrawableButtonData;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -56,9 +58,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
         super(
                 context,
                 factory,
-                newTabButtonClickListener,
                 menuOrKeyboardActionController,
-                R.string.button_new_tab,
                 /* isIncognito= */ false);
         mSharedPreferences = sharedPreferences;
         mTabModelFilterSupplier = tabModelFilterSupplier;
@@ -71,6 +71,14 @@ public class TabSwitcherPane extends TabSwitcherPaneBase {
                         R.string.accessibility_tab_switcher,
                         R.string.accessibility_tab_switcher,
                         tabSwitcherDrawableCoordinator.getTabSwitcherDrawable()));
+
+        mNewTabButtonDataSupplier.set(
+                new DelegateButtonData(
+                        new ResourceButtonData(
+                                R.string.button_new_tab,
+                                R.string.button_new_tab,
+                                R.drawable.new_tab_icon),
+                        () -> newTabButtonClickListener.onClick(null)));
 
         profileProviderSupplier.onAvailable(this::onProfileProviderAvailable);
     }

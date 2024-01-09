@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.hub.DelegateButtonData;
+import org.chromium.chrome.browser.hub.FullButtonData;
 import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
@@ -59,6 +61,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                     coordinator.resetWithTabList(incognitoTabModelFilter);
                     coordinator.setInitialScrollIndexOffset();
                     coordinator.requestAccessibilityFocusOnCurrentTab();
+
+                    mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
                 }
 
                 @Override
@@ -69,6 +73,8 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private final @NonNull Supplier<TabModelFilter> mIncognitoTabModelFilterSupplier;
 
     private final @NonNull ResourceButtonData mReferenceButtonData;
+    private final @NonNull FullButtonData mEnabledNewTabButtonData;
+    private final @NonNull FullButtonData mDisabledNewTabButtonData;
 
     private boolean mIsNativeInitialized;
     private @Nullable IncognitoReauthController mIncognitoReauthController;
@@ -93,9 +99,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         super(
                 context,
                 factory,
-                newTabButtonClickListener,
                 menuOrKeyboardActionController,
-                R.string.button_new_incognito_tab,
                 /* isIncognito= */ true);
 
         mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
@@ -108,6 +112,16 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                         R.string.accessibility_tab_switcher,
                         R.drawable.incognito_small);
 
+        ResourceButtonData newTabButtonData =
+                new ResourceButtonData(
+                        R.string.button_new_tab,
+                        R.string.button_new_incognito_tab,
+                        R.drawable.new_tab_icon);
+        mEnabledNewTabButtonData =
+                new DelegateButtonData(
+                        newTabButtonData, () -> newTabButtonClickListener.onClick(null));
+        mDisabledNewTabButtonData = new DelegateButtonData(newTabButtonData, null);
+
         if (incognitoReauthControllerSupplier != null) {
             mCallbackController = new CallbackController();
             incognitoReauthControllerSupplier.onAvailable(
@@ -117,6 +131,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                                 incognitoReauthController.addIncognitoReauthCallback(
                                         mIncognitoReauthCallback);
                             }));
+            mNewTabButtonDataSupplier.set(mDisabledNewTabButtonData);
+        } else {
+            mNewTabButtonDataSupplier.set(mEnabledNewTabButtonData);
         }
     }
 
@@ -172,6 +189,9 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         } else {
             coordinator.resetWithTabList(tabList);
         }
+
+        mNewTabButtonDataSupplier.set(
+                incognitoReauthShowing ? mDisabledNewTabButtonData : mEnabledNewTabButtonData);
         return true;
     }
 

@@ -17,7 +17,6 @@ import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
@@ -25,7 +24,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.DisplayButtonData;
 import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
 import org.chromium.chrome.browser.hub.FullButtonData;
@@ -34,7 +32,6 @@ import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
 import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
-import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.tab_ui.R;
@@ -97,30 +94,17 @@ public abstract class TabSwitcherPaneBase implements Pane, TabSwitcherResetHandl
     /**
      * @param context The activity context.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param menuOrKeyboardActionController Allows access to menu or keyboard actions.
-     * @param newTabButtonContentDescriptionRes The resource for the new tab button content
-     *     description.
      * @param isIncognito Whether the pane is incognito.
      */
     TabSwitcherPaneBase(
             @NonNull Context context,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
-            @NonNull OnClickListener newTabButtonClickListener,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
-            @StringRes int newTabButtonContentDescriptionRes,
             boolean isIncognito) {
         mFactory = factory;
         mMenuOrKeyboardActionController = menuOrKeyboardActionController;
         mIsIncognito = isIncognito;
-
-        mNewTabButtonDataSupplier.set(
-                new DelegateButtonData(
-                        new ResourceButtonData(
-                                org.chromium.chrome.browser.toolbar.R.string.button_new_tab,
-                                newTabButtonContentDescriptionRes,
-                                org.chromium.chrome.browser.toolbar.R.drawable.new_tab_icon),
-                        () -> newTabButtonClickListener.onClick(null)));
 
         mRootView = new FrameLayout(context);
         mIsVisibleSupplier.set(false);
