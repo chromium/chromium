@@ -695,16 +695,12 @@ void ClipboardOzone::WriteText(base::StringPiece text) {
                         kMimeTypeTextUtf8, kMimeTypeLinuxUtf8String});
 }
 
-void ClipboardOzone::WriteHTML(base::StringPiece markup,
-                               absl::optional<base::StringPiece> source_url) {
+void ClipboardOzone::WriteHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> /* source_url */,
+    ClipboardContentType /* content_type */) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
-}
-
-void ClipboardOzone::WriteUnsanitizedHTML(
-    base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
 }
 
 void ClipboardOzone::WriteSvg(base::StringPiece markup) {

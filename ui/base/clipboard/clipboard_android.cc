@@ -686,15 +686,11 @@ void ClipboardAndroid::WriteText(base::StringPiece text) {
   g_map.Get().Set(ClipboardFormatType::PlainTextType(), text);
 }
 
-void ClipboardAndroid::WriteHTML(base::StringPiece markup,
-                                 absl::optional<base::StringPiece> source_url) {
-  g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
-}
-
-void ClipboardAndroid::WriteUnsanitizedHTML(
+void ClipboardAndroid::WriteHTML(
     base::StringPiece markup,
-    absl::optional<base::StringPiece> source_url) {
-  WriteHTML(markup, source_url);
+    absl::optional<base::StringPiece> /* source_url */,
+    ClipboardContentType /* content_type */) {
+  g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 
 void ClipboardAndroid::WriteSvg(base::StringPiece markup) {

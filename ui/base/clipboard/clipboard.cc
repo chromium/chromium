@@ -240,11 +240,7 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
               return;
             }
 
-            if (params.content_type == ClipboardContentType::kUnsanitized) {
-              WriteUnsanitizedHTML(data.markup, data.source_url);
-            } else {
-              WriteHTML(data.markup, data.source_url);
-            }
+            WriteHTML(data.markup, data.source_url, params.content_type);
           },
           [&](const RtfData& data) {
             if (data.data.empty()) {
