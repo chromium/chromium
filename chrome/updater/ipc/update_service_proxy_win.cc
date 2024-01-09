@@ -318,7 +318,7 @@ class UpdaterAppStatesCallback
 
   static UpdateService::AppState IUpdaterAppStateToAppState(
       Microsoft::WRL::ComPtr<IUpdaterAppState> updater_app_state) {
-    DCHECK(updater_app_state);
+    CHECK(updater_app_state);
 
     UpdateService::AppState app_state;
     {
