@@ -163,8 +163,13 @@ bool IsChoiceScreenFlagEnabled(ChoicePromo promo) {
 }
 
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs) {
-  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny) &&
-         IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs));
+#if BUILDFLAG(IS_IOS)
+  // TODO(b/318820137): There should not be a dependency on the country here.
+  if (!IsEeaChoiceCountry(GetSearchEngineChoiceCountryId(&profile_prefs))) {
+    return false;
+  }
+#endif
+  return IsChoiceScreenFlagEnabled(ChoicePromo::kAny);
 }
 
 #if BUILDFLAG(IS_IOS)

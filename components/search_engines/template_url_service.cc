@@ -1656,6 +1656,12 @@ bool TemplateURLService::IsEeaChoiceCountry() {
       search_engines::GetSearchEngineChoiceCountryId(prefs_));
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool TemplateURLService::ShouldShowUpdatedSettings() {
+  return search_engines::ShouldShowUpdatedSettings(*prefs_);
+}
+#endif
+
 std::string TemplateURLService::GetSessionToken() {
   base::TimeTicks current_time(base::TimeTicks::Now());
   // Renew token if it expired.

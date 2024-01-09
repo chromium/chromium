@@ -145,11 +145,12 @@ enum class RepromptResult {
 };
 
 // Whether the choice screen flag is generally enabled for the specific flow.
+// TODO(b/318824817): To be removed post-launch.
 bool IsChoiceScreenFlagEnabled(ChoicePromo promo);
 
-// Returns which version of the settings screen for the default search engine
-// setting should be shown.
-// TODO(b/306367986): Restrict this function to iOS.
+// Returns whether the version of the search engines settings screen showing
+// additional search engine info should be shown.
+// TODO(b/318824817): To be removed post-launch.
 bool ShouldShowUpdatedSettings(PrefService& profile_prefs);
 
 #if BUILDFLAG(IS_IOS)

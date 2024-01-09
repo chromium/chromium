@@ -444,6 +444,15 @@ public class TemplateUrlService {
         return TemplateUrlServiceJni.get().isEeaChoiceCountry(mNativeTemplateUrlServiceAndroid);
     }
 
+    /**
+     * Whether the version of the search engines settings screen showing additional search engine
+     * info should be shown.
+     */
+    public boolean shouldShowUpdatedSettings() {
+        return TemplateUrlServiceJni.get()
+                .shouldShowUpdatedSettings(mNativeTemplateUrlServiceAndroid);
+    }
+
     @NativeMethods
     public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
@@ -531,5 +540,7 @@ public class TemplateUrlService {
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
 
         boolean isEeaChoiceCountry(long nativeTemplateUrlServiceAndroid);
+
+        boolean shouldShowUpdatedSettings(long nativeTemplateUrlServiceAndroid);
     }
 }
