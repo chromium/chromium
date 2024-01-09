@@ -2622,6 +2622,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ZERO
 [Worker]     getter canvas
 [Worker]     getter drawingBufferColorSpace
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     getter unpackColorSpace
@@ -2702,6 +2703,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method drawElements
 [Worker]     method drawElementsInstanced
 [Worker]     method drawRangeElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method endQuery
@@ -3062,8 +3064,10 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute RGB
 [Worker]     attribute RGB565
 [Worker]     attribute RGB5_A1
+[Worker]     attribute RGB8
 [Worker]     attribute RGBA
 [Worker]     attribute RGBA4
+[Worker]     attribute RGBA8
 [Worker]     attribute SAMPLER_2D
 [Worker]     attribute SAMPLER_CUBE
 [Worker]     attribute SAMPLES
@@ -3178,6 +3182,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     attribute ZERO
 [Worker]     getter canvas
 [Worker]     getter drawingBufferColorSpace
+[Worker]     getter drawingBufferFormat
 [Worker]     getter drawingBufferHeight
 [Worker]     getter drawingBufferWidth
 [Worker]     getter unpackColorSpace
@@ -3228,6 +3233,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method disableVertexAttribArray
 [Worker]     method drawArrays
 [Worker]     method drawElements
+[Worker]     method drawingBufferStorage
 [Worker]     method enable
 [Worker]     method enableVertexAttribArray
 [Worker]     method finish

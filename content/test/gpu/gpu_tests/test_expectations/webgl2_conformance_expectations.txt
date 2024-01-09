@@ -973,6 +973,15 @@ crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conf
 crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 
+#################################################################
+# Temporary suppressions for introduction of drawingBufferStorage
+#################################################################
+crbug.com/1230619 conformance/offscreencanvas/methods-worker.html [ Failure ]
+crbug.com/1230619 conformance/offscreencanvas/methods.html [ Failure ]
+crbug.com/1230619 conformance2/context/constants-and-properties-2.html [ Failure ]
+crbug.com/1230619 conformance2/offscreencanvas/methods-2-worker.html [ Failure ]
+crbug.com/1230619 conformance2/offscreencanvas/methods-2.html [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
