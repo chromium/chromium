@@ -409,6 +409,9 @@ TabletModeController::~TabletModeController() {
 }
 
 void TabletModeController::Shutdown() {
+  // Stop observing any animations and delete any pending screenshots.
+  StopObservingAnimation(/*record_stats=*/false, /*delete_screenshot=*/true);
+
   if (tablet_mode_window_manager_)
     tablet_mode_window_manager_->Shutdown();
   tablet_mode_window_manager_.reset();
