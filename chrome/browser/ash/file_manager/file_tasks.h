@@ -105,7 +105,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -298,15 +297,12 @@ typedef base::OnceCallback<void(
 // profile      - The profile used for making this function call.
 // task         - See the comment at TaskDescriptor struct.
 // file_urls    - URLs of the target files.
-// modal_parent - Certain tasks like the Office setup flow can create WebUIs,
-//                which will be made modal to this parent, if not null.
 // done         - The callback which will be called on completion.
 //                The callback won't be called if the function returns
 //                false.
 bool ExecuteFileTask(Profile* profile,
                      const TaskDescriptor& task,
                      const std::vector<storage::FileSystemURL>& file_urls,
-                     gfx::NativeWindow modal_parent,
                      FileTaskFinishedCallback done);
 
 // See ash::FilesInternalsDebugJSONProvider::FunctionPointerType in

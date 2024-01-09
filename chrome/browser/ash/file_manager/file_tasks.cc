@@ -782,7 +782,6 @@ std::optional<TaskDescriptor> ParseTaskID(const std::string& task_id) {
 bool ExecuteFileTask(Profile* profile,
                      const TaskDescriptor& task,
                      const std::vector<FileSystemURL>& file_urls,
-                     gfx::NativeWindow modal_parent,
                      FileTaskFinishedCallback done) {
   // Save some of the arguments of "the most recent ExecuteFileTask" in JSON
   // (base::Value) format.
@@ -818,7 +817,7 @@ bool ExecuteFileTask(Profile* profile,
       RecordOfficeOpenExtensionDriveMetric(file_url);
     }
     const bool started = ExecuteWebDriveOfficeTask(
-        profile, task, file_urls, modal_parent,
+        profile, task, file_urls,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
             ash::cloud_upload::CloudProvider::kGoogleDrive, file_urls.size()));
     if (done) {
@@ -839,7 +838,7 @@ bool ExecuteFileTask(Profile* profile,
       RecordOfficeOpenExtensionOneDriveMetric(file_url);
     }
     const bool started = ExecuteOpenInOfficeTask(
-        profile, task, file_urls, modal_parent,
+        profile, task, file_urls,
         std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
             ash::cloud_upload::CloudProvider::kOneDrive, file_urls.size()));
     if (done) {
@@ -859,8 +858,7 @@ bool ExecuteFileTask(Profile* profile,
   }
   // TODO(b/284800493): Add a test that VirtualTasks get run.
   if (IsVirtualTask(task)) {
-    const bool started =
-        ExecuteVirtualTask(profile, task, file_urls, modal_parent);
+    const bool started = ExecuteVirtualTask(profile, task, file_urls);
     if (done) {
       if (started) {
         std::move(done).Run(

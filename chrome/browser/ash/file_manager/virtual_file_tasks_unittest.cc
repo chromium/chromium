@@ -91,8 +91,7 @@ TEST_F(VirtualFileTasksTest, IsVirtualTask_OK) {
 TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_WrongApp) {
   TaskDescriptor wrong_app = {"random_app", TASK_TYPE_WEB_APP, task1->id()};
   bool result =
-      ExecuteVirtualTask(/*profile=*/nullptr, wrong_app, /*file_urls=*/{},
-                         /*modal_parent=*/nullptr);
+      ExecuteVirtualTask(/*profile=*/nullptr, wrong_app, /*file_urls=*/{});
   ASSERT_FALSE(result);
   ASSERT_EQ(task1_executed_, 0);
 }
@@ -100,9 +99,8 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_WrongApp) {
 TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_WrongActionId) {
   TaskDescriptor wrong_action_id = {kFileManagerSwaAppId, TASK_TYPE_WEB_APP,
                                     "https://app/wrongaction"};
-  bool result =
-      ExecuteVirtualTask(/*profile=*/nullptr, wrong_action_id, /*file_urls=*/{},
-                         /*modal_parent=*/nullptr);
+  bool result = ExecuteVirtualTask(/*profile=*/nullptr, wrong_action_id,
+                                   /*file_urls=*/{});
   ASSERT_FALSE(result);
   ASSERT_EQ(task1_executed_, 0);
 }
@@ -111,8 +109,7 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_OK) {
   TaskDescriptor ok_task = {kFileManagerSwaAppId, TASK_TYPE_WEB_APP,
                             task1->id()};
   bool result =
-      ExecuteVirtualTask(/*profile=*/nullptr, ok_task, /*file_urls=*/{},
-                         /*modal_parent=*/nullptr);
+      ExecuteVirtualTask(/*profile=*/nullptr, ok_task, /*file_urls=*/{});
   ASSERT_TRUE(result);
   ASSERT_EQ(task1_executed_, 1);
 }
@@ -121,8 +118,7 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_NotEnabled) {
   TaskDescriptor disabled_task = {kFileManagerSwaAppId, TASK_TYPE_WEB_APP,
                                   task2->id()};
   bool result =
-      ExecuteVirtualTask(/*profile=*/nullptr, disabled_task, /*file_urls=*/{},
-                         /*modal_parent=*/nullptr);
+      ExecuteVirtualTask(/*profile=*/nullptr, disabled_task, /*file_urls=*/{});
   ASSERT_FALSE(result);
   ASSERT_EQ(task2_executed_, 0);
 }
@@ -131,8 +127,7 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_ExecuteReturnsFalse) {
   TaskDescriptor execute_false = {kFileManagerSwaAppId, TASK_TYPE_WEB_APP,
                                   task3->id()};
   bool result =
-      ExecuteVirtualTask(/*profile=*/nullptr, execute_false, /*file_urls=*/{},
-                         /*modal_parent=*/nullptr);
+      ExecuteVirtualTask(/*profile=*/nullptr, execute_false, /*file_urls=*/{});
   ASSERT_FALSE(result);
   ASSERT_EQ(task3_executed_, 1);
 }

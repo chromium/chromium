@@ -52,13 +52,11 @@ void ExecuteFileTaskForUrl(Profile* profile,
   storage::FileSystemContext* file_system_context =
       GetFileManagerFileSystemContext(profile);
 
-  // There is no Files app window for spawned WebUI to be modal to.
-  gfx::NativeWindow modal_parent = gfx::NativeWindow();
   file_tasks::ExecuteFileTask(
       profile, task,
       std::vector<FileSystemURL>(
           1, file_system_context->CrackURLInFirstPartyContext(url)),
-      modal_parent, base::BindOnce(&IgnoreFileTaskExecuteResult));
+      base::BindOnce(&IgnoreFileTaskExecuteResult));
 }
 
 // Opens the file manager for the specified |url|. Used to implement

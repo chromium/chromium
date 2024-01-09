@@ -60,7 +60,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -397,11 +396,9 @@ bool CloudOpenTask::Execute(
     Profile* profile,
     const std::vector<storage::FileSystemURL>& file_urls,
     const CloudProvider cloud_provider,
-    gfx::NativeWindow modal_parent,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics) {
-  scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(
-      new CloudOpenTask(profile, file_urls, cloud_provider, modal_parent,
-                        std::move(cloud_open_metrics)));
+  scoped_refptr<CloudOpenTask> upload_task = WrapRefCounted(new CloudOpenTask(
+      profile, file_urls, cloud_provider, std::move(cloud_open_metrics)));
   // Keep `upload_task` alive until `TaskFinished` executes.
   bool status = upload_task->ExecuteInternal();
   return status;
@@ -411,12 +408,10 @@ CloudOpenTask::CloudOpenTask(
     Profile* profile,
     std::vector<storage::FileSystemURL> file_urls,
     const CloudProvider cloud_provider,
-    gfx::NativeWindow modal_parent,
     std::unique_ptr<CloudOpenMetrics> cloud_open_metrics)
     : profile_(profile),
       file_urls_(file_urls),
       cloud_provider_(cloud_provider),
-      modal_parent_(modal_parent),
       cloud_open_metrics_(std::move(cloud_open_metrics)) {}
 
 CloudOpenTask::~CloudOpenTask() = default;
@@ -991,8 +986,9 @@ mojom::DialogArgsPtr CloudOpenTask::CreateDialogArgs(DialogPage dialog_page) {
 // Creates and shows a new dialog for the cloud upload workflow. If there are
 // local file tasks from `resulting_tasks`, include them in the dialog
 // arguments. These tasks are can be selected by the user to open the files
-// instead of using a cloud provider. If no modal_parent was provided, first
-// launches a new Files app window, which we listen for in OnBrowserAdded().
+// instead of using a cloud provider. If there is no Files app window currently
+// open to use as a modal parent for the dialog, first launches a new Files app
+// window, which we listen for in OnBrowserAdded().
 void CloudOpenTask::ShowDialog(
     mojom::DialogArgsPtr args,
     std::unique_ptr<fm_tasks::ResultingTasks> resulting_tasks) {
@@ -1031,7 +1027,13 @@ void CloudOpenTask::ShowDialog(
       std::move(args), base::BindOnce(&CloudOpenTask::OnDialogComplete, this),
       office_move_confirmation_shown);
 
-  if (!modal_parent_) {
+  // Get Files App window, if it exists.
+  Browser* browser =
+      FindSystemWebAppBrowser(profile_, ash::SystemWebAppType::FILE_MANAGER);
+  gfx::NativeWindow modal_parent =
+      browser ? browser->window()->GetNativeWindow() : nullptr;
+
+  if (!modal_parent) {
     BrowserList::AddObserver(this);
     DCHECK(!pending_dialog_);
     pending_dialog_ = dialog;
@@ -1041,7 +1043,7 @@ void CloudOpenTask::ShowDialog(
     file_manager::util::ShowItemInFolder(profile_, file_urls_.at(0).path(),
                                          base::DoNothing());
   } else {
-    dialog->ShowSystemDialog(modal_parent_);
+    dialog->ShowSystemDialog(modal_parent);
   }
 }
 
@@ -1087,8 +1089,7 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
   }
   BrowserList::RemoveObserver(this);
 
-  modal_parent_ = browser->window()->GetNativeWindow();
-  pending_dialog_->ShowSystemDialog(modal_parent_);
+  pending_dialog_->ShowSystemDialog(browser->window()->GetNativeWindow());
   // The dialog is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   pending_dialog_ = nullptr;
 }
@@ -1210,7 +1211,7 @@ void CloudOpenTask::LaunchLocalFileTask(
                                 ? OfficeSetupFileHandler::kQuickOffice
                                 : OfficeSetupFileHandler::kOtherLocalHandler);
   fm_tasks::ExecuteFileTask(
-      profile_, task, file_urls_, nullptr,
+      profile_, task, file_urls_,
       base::BindOnce(&CloudOpenTask::LocalTaskExecuted, this, task));
 }
 

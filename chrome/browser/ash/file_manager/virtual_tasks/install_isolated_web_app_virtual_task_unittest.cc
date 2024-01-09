@@ -88,7 +88,7 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
 
     return ExecuteVirtualTask(
         &profile_, {kFileManagerSwaAppId, TASK_TYPE_WEB_APP, task_.id()},
-        file_system_urls, /*modal_parent=*/nullptr);
+        file_system_urls);
   }
 
  private:

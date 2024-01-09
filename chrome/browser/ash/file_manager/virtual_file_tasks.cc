@@ -108,13 +108,12 @@ void FindVirtualTasks(Profile* profile,
 
 bool ExecuteVirtualTask(Profile* profile,
                         const TaskDescriptor& task,
-                        const std::vector<FileSystemURL>& file_urls,
-                        gfx::NativeWindow modal_parent) {
+                        const std::vector<FileSystemURL>& file_urls) {
   auto* virtual_task = FindVirtualTask(task);
   if (!virtual_task || !virtual_task->IsEnabled(profile)) {
     return false;
   }
-  return virtual_task->Execute(profile, task, file_urls, modal_parent);
+  return virtual_task->Execute(profile, task, file_urls);
 }
 
 bool IsVirtualTask(const TaskDescriptor& task) {

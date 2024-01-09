@@ -17,10 +17,10 @@ FakeVirtualTask::FakeVirtualTask(const std::string& id,
 
 FakeVirtualTask::~FakeVirtualTask() = default;
 
-bool FakeVirtualTask::Execute(Profile* profile,
-                              const TaskDescriptor& task,
-                              const std::vector<FileSystemURL>& file_urls,
-                              gfx::NativeWindow modal_parent) const {
+bool FakeVirtualTask::Execute(
+    Profile* profile,
+    const TaskDescriptor& task,
+    const std::vector<FileSystemURL>& file_urls) const {
   return execute_cb_ ? execute_cb_.Run() : true;
 }
 

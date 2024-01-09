@@ -26,8 +26,7 @@ class FakeVirtualTask : public VirtualTask {
 
   bool Execute(Profile* profile,
                const TaskDescriptor& task,
-               const std::vector<FileSystemURL>& file_urls,
-               gfx::NativeWindow modal_parent) const override;
+               const std::vector<FileSystemURL>& file_urls) const override;
   bool IsEnabled(Profile* profile) const override;
   bool Matches(const std::vector<extensions::EntryInfo>& entries,
                const std::vector<GURL>& file_urls,

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
-#include "ui/gfx/native_widget_types.h"
 
 class GURL;
 class Profile;
@@ -36,10 +35,10 @@ class InstallIsolatedWebAppVirtualTask : public VirtualTask {
 
   GURL icon_url() const override;
 
-  bool Execute(Profile* profile,
-               const TaskDescriptor& task,
-               const std::vector<storage::FileSystemURL>& file_urls,
-               gfx::NativeWindow modal_parent) const override;
+  bool Execute(
+      Profile* profile,
+      const TaskDescriptor& task,
+      const std::vector<storage::FileSystemURL>& file_urls) const override;
 };
 
 }  // namespace file_manager::file_tasks

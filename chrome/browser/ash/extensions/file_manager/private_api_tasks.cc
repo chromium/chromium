@@ -32,7 +32,6 @@
 #include "extensions/browser/entry_info.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace extensions {
 namespace {
@@ -134,14 +133,8 @@ FileManagerPrivateInternalExecuteTaskFunction::Run() {
     urls.push_back(url);
   }
 
-  // Get Files App window, if it exists.
-  Browser* browser =
-      FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
-  gfx::NativeWindow modal_parent =
-      browser ? browser->window()->GetNativeWindow() : nullptr;
-
   const bool result = file_manager::file_tasks::ExecuteFileTask(
-      profile, task, urls, modal_parent,
+      profile, task, urls,
       base::BindOnce(
           &FileManagerPrivateInternalExecuteTaskFunction::OnTaskExecuted,
           this));
