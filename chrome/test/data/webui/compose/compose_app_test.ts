@@ -108,6 +108,14 @@ suite('ComposeApp', () => {
     await testProxy.whenCalled('acceptComposeResult');
   });
 
+  test('OnlyOneErrorShows', async () => {
+    mockInput('x'.repeat(2501));
+    app.$.submitButton.click();
+    assertTrue(app.$.submitButton.disabled);
+    assertTrue(isVisible(app.$.textarea.$.tooLongError));
+    assertFalse(isVisible(app.$.textarea.$.tooShortError));
+  });
+
   test('AcceptButtonText', async () => {
     async function initializeNewAppWithTextSelectedState(textSelected: boolean):
         Promise<ComposeAppElement> {
