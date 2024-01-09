@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -45,6 +46,8 @@ constexpr NSString* kBookmarkTitle = @"Goo";
 
 constexpr NSString* kReadingListUrl = @"https://www.rl.com/";
 constexpr NSString* kReadingListTitle = @"RL";
+
+constexpr NSString* kPassphrase = @"passphrase";
 
 // Waits for `entity_count` entities of type `entity_type` on the fake server,
 // and fails with a GREYAssert if the condition is not met, within a short
@@ -139,7 +142,11 @@ void ClearRelevantData() {
              [self isRunningTest:@selector
                    (testMigrateSyncToSignin_ReadingListDisabled)] ||
              [self isRunningTest:@selector
-                   (testMigrateSyncToSignin_SyncNotActive)]) {
+                   (testMigrateSyncToSignin_SyncNotActive)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_CustomPassphrase)] ||
+             [self isRunningTest:@selector
+                   (testMigrateSyncToSignin_CustomPassphraseMissing)]) {
     // The testMigrateSyncToSignin* tests start with SyncToSignin disabled, but
     // later turn on the appropriate flags and restart Chrome.
     config.features_disabled.push_back(
@@ -882,6 +889,142 @@ void ClearRelevantData() {
   // ...and Sync-the-feature should NOT be enabled anymore.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
+}
+
+- (void)testMigrateSyncToSignin_CustomPassphrase {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Set up a custom passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  // Trigger a sync cycle to ensure Chrome knows about the passphrase.
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::BOOKMARKS];
+
+  // Now Sync is in the "passphrase required" state. Resolve the passphrase
+  // error from Sync settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
+  // Tap "Enter Passphrase" button.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SYNC_ERROR_TITLE)]
+      performAction:grey_tap()];
+  // Enter the passphrase.
+  [SigninEarlGreyUI submitSyncPassphrase:kPassphrase];
+  // Close settings.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Save a bookmark and a password and wait for them to be uploaded.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+  WaitForEntitiesOnFakeServer(2, syncer::BOOKMARKS);
+  WaitForEntitiesOnFakeServer(1, syncer::PASSWORDS);
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
+  // for simplicity, this test skips phase 2, which doesn't change anything
+  // relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The password should have been migrated to the account store.
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should NOT be in the profile store anymore");
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should be in the account store");
+
+  // The bookmark should have been migrated to the account store.
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                  name:kBookmarkTitle
+                             inStorage:bookmarks::StorageType::kAccount];
+}
+
+- (void)testMigrateSyncToSignin_CustomPassphraseMissing {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Set up a custom passphrase.
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
+  // Trigger a sync cycle to ensure Chrome knows about the passphrase.
+  [ChromeEarlGrey triggerSyncCycleForType:syncer::BOOKMARKS];
+
+  // Now Sync is in the "passphrase required" state. Verify this in settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::ManageSyncSettingsButton()];
+  // Check that the "Enter Passphrase" button is there.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_IOS_SYNC_ERROR_TITLE)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  // Close settings.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Save a bookmark and a password. Note that they will not be uploaded to the
+  // server, due to the missing passphrase.
+  [BookmarkEarlGrey
+      addBookmarkWithTitle:kBookmarkTitle
+                       URL:kBookmarkUrl
+                 inStorage:bookmarks::StorageType::kLocalOrSyncable];
+  password_manager_test_utils::SavePasswordFormToProfileStore();
+
+  // Restart Chrome with UNO phase 3 (i.e. the migration) enabled. (Note that
+  // for simplicity, this test skips phase 2, which doesn't change anything
+  // relevant.)
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{syncer::kReplaceSyncPromosWithSignInPromos,
+                              switches::kMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+  // Sync-the-feature should *not* be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+
+  // The password should NOT have been migrated to the account store.
+  GREYAssertEqual(
+      1, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
+      @"Password should still be in the profile store");
+  GREYAssertEqual(
+      0, [PasswordSettingsAppInterface passwordAccountStoreResultsCount],
+      @"Password should NOT be in the account store");
+
+  // The bookmark should NOT have been migrated to the account store.
+  [BookmarkEarlGrey verifyExistenceOfBookmarkWithURL:kBookmarkUrl
+                                                name:kBookmarkTitle
+                                           inStorage:bookmarks::StorageType::
+                                                         kLocalOrSyncable];
+  [BookmarkEarlGrey
+      verifyAbsenceOfBookmarkWithURL:kBookmarkUrl
+                           inStorage:bookmarks::StorageType::kAccount];
 }
 
 @end
