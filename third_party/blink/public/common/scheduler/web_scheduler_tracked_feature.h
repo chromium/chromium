@@ -151,10 +151,16 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // There is a "live" MediaStreamTrack.
   kLiveMediaStreamTrack = 66,
 
+  // Originally kUnloadHandlerExistsInMain/SubFrame were not blocklisted
+  // features but captured in the browser side. By making them blocklisted
+  // features, the source location of the unload handlers will be captured. See
+  // https://crbug.com/1513120 for details.
+  kUnloadHandler = 67,
+
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kLiveMediaStreamTrack,
+  kMaxValue = kUnloadHandler,
 };
 
 using WebSchedulerTrackedFeatures =

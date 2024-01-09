@@ -1214,6 +1214,24 @@ void LocalFrame::UpdateSuddenTerminationStatus(
     bool added_listener,
     mojom::blink::SuddenTerminationDisablerType disabler_type) {
   Platform::Current()->SuddenTerminationChanged(!added_listener);
+  if (features::IsUnloadBlocklisted()) {
+    // Block BFCache for using the unload handler. Originally unload handler was
+    // not a blocklisted feature, but we make them blocklisted so the source
+    // location will be captured. See https://crbug.com/1513120 for details.
+    if (disabler_type ==
+        mojom::blink::SuddenTerminationDisablerType::kUnloadHandler) {
+      if (added_listener) {
+        if (feature_handle_for_scheduler_) {
+          return;
+        }
+        feature_handle_for_scheduler_ = GetFrameScheduler()->RegisterFeature(
+            SchedulingPolicy::Feature::kUnloadHandler,
+            {SchedulingPolicy::DisableBackForwardCache()});
+      } else {
+        feature_handle_for_scheduler_.reset();
+      }
+    }
+  }
   GetLocalFrameHostRemote().SuddenTerminationDisablerChanged(added_listener,
                                                              disabler_type);
 }

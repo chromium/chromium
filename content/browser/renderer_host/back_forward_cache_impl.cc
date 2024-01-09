@@ -199,6 +199,7 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kSharedWorker,
           WebSchedulerTrackedFeature::kSpeechRecognizer,
           WebSchedulerTrackedFeature::kSpeechSynthesis,
+          WebSchedulerTrackedFeature::kUnloadHandler,
           WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
           WebSchedulerTrackedFeature::kWebLocks,
@@ -488,6 +489,10 @@ BlockListedFeatures BackForwardCacheImpl::GetAllowedFeatures(
     }
     result.PutAll(non_sticky);
   }
+  if (IsUnloadAllowed() ||
+      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+    result.Put(WebSchedulerTrackedFeature::kUnloadHandler);
+  }
   // When not under "Cache-Control: no-store" context, the features listed in
   // `GetDisallowedForCacheControlNoStoreFeatures()` should be considered as
   // allowed features.
@@ -510,6 +515,10 @@ BlockListedFeatures BackForwardCacheImpl::GetDisallowedFeatures(
   if (requested_features == RequestedFeatures::kOnlySticky) {
     // Remove all non-sticky features from |result|.
     result = Intersection(result, blink::scheduler::StickyFeatures());
+  }
+  if (IsUnloadAllowed() ||
+      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+    result.Remove(WebSchedulerTrackedFeature::kUnloadHandler);
   }
   // When under "Cache-Control: no-store" context, the features listed in
   // `GetDisallowedForCacheControlNoStoreFeatures()` should be considered as

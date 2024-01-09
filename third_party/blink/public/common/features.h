@@ -1361,6 +1361,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUACHOverrideBlank);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kEmulateLoadStartedForInspectorOncePerResource);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnloadBlocklisted);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kUseImageInsteadOfStorageForStagingBuffer);
 
@@ -1478,6 +1480,10 @@ BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
 // via enterprise policy.
 BLINK_COMMON_EXPORT bool
 IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
+
+// Returns if unload handlers are considered as a blocklisted reason for
+// back/forward cache.
+BLINK_COMMON_EXPORT bool IsUnloadBlocklisted();
 
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 

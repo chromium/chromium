@@ -1180,6 +1180,11 @@ class CORE_EXPORT LocalFrame final
       v8_local_compile_hints_producer_;
 
   bool supports_app_region_ = false;
+
+  // This handle notifies the scheduler of whether the unload handler is used or
+  // not so it can block BFCache.
+  FrameScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

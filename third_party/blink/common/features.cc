@@ -2078,6 +2078,12 @@ BASE_FEATURE(kEnableFileBackedBlobFactory,
              "EnableFileBackedBlobFactory",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the usage of unload handlers causes a blocklisted reason for
+// BFCache. The purpose is to capture their source location.
+BASE_FEATURE(kUnloadBlocklisted,
+             "UnloadBlocklisted",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to use 'TexImage2D' instead of 'TexStorage2DEXT' when creating a
 // staging texture for |DrawingBuffer|. This is a killswitch; remove when
 // launched.
@@ -2321,6 +2327,10 @@ bool IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled() {
          base::FeatureList::IsEnabled(
              features::
                  kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes);
+}
+
+bool IsUnloadBlocklisted() {
+  return base::FeatureList::IsEnabled(kUnloadBlocklisted);
 }
 
 bool ParkableStringsUseSnappy() {

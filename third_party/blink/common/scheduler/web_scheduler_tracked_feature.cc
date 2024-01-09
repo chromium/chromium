@@ -136,6 +136,8 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"SmartCard", "SmartCardContext used"};
     case WebSchedulerTrackedFeature::kLiveMediaStreamTrack:
       return {"LiveMediaStreamTrack", "page has live MediaStreamTrack"};
+    case WebSchedulerTrackedFeature::kUnloadHandler:
+      return {"UnloadHandler", "page contains unload handler"};
   }
   return {};
 }

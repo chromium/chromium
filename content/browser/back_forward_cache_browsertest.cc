@@ -2775,21 +2775,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 class BackForwardCacheBrowserUnloadHandlerTest
     : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<std::tuple<bool, TestFrameType>> {
+      public ::testing::WithParamInterface<
+          std::tuple<bool, bool, TestFrameType>> {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     if (IsUnloadAllowed()) {
-      scoped_feature_list_.InitAndEnableFeature(kBackForwardCacheUnloadAllowed);
+      EnableFeatureAndSetParams(kBackForwardCacheUnloadAllowed, "", "");
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kBackForwardCacheUnloadAllowed);
+      DisableFeature(kBackForwardCacheUnloadAllowed);
     }
+    if (IsUnloadBlocklisted()) {
+      EnableFeatureAndSetParams(blink::features::kUnloadBlocklisted, "", "");
+    } else {
+      DisableFeature(blink::features::kUnloadBlocklisted);
+    }
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 
   bool IsUnloadAllowed() { return std::get<0>(GetParam()); }
+  bool IsUnloadBlocklisted() { return std::get<1>(GetParam()); }
 
-  TestFrameType GetTestFrameType() { return std::get<1>(GetParam()); }
+  TestFrameType GetTestFrameType() { return std::get<2>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -2829,15 +2835,33 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   // 3) Go back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
 
-  // Pages with unload handlers are eligible for bfcache only on Android, or
-  // when unload handlers are deprecated.
-  if (BackForwardCacheImpl::IsUnloadAllowed() ||
-      base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
-    ExpectRestored(FROM_HERE);
-    EXPECT_EQ("0", GetUnloadRunCount());
+  if (IsUnloadBlocklisted()) {
+    // Pages with unload handlers are eligible for bfcache only if it is
+    // specifically allowed (happens on Android), or when unload handlers are
+    // deprecated.
+    if (BackForwardCacheImpl::IsUnloadAllowed() ||
+        base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+      ExpectRestored(FROM_HERE);
+      EXPECT_EQ("0", GetUnloadRunCount());
+    } else {
+      // If unload handlers are a blocklisted feature, the blocklisted feature
+      // gets reported in addition to the not restored reason.
+      ExpectNotRestored(
+          {expected_blocking_reason,
+           BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures},
+          {blink::scheduler::WebSchedulerTrackedFeature::kUnloadHandler}, {},
+          {}, {}, FROM_HERE);
+      EXPECT_EQ("1", GetUnloadRunCount());
+    }
   } else {
-    ExpectNotRestored({expected_blocking_reason}, {}, {}, {}, {}, FROM_HERE);
-    EXPECT_EQ("1", GetUnloadRunCount());
+    if (BackForwardCacheImpl::IsUnloadAllowed() ||
+        base::FeatureList::IsEnabled(blink::features::kDeprecateUnload)) {
+      ExpectRestored(FROM_HERE);
+      EXPECT_EQ("0", GetUnloadRunCount());
+    } else {
+      ExpectNotRestored({expected_blocking_reason}, {}, {}, {}, {}, FROM_HERE);
+      EXPECT_EQ("1", GetUnloadRunCount());
+    }
   }
 
   // 4) Go forward.
@@ -2846,10 +2870,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserUnloadHandlerTest,
   ExpectRestored(FROM_HERE);
 }
 
+// The first param is to check if unload is allowed, and the second one is to
+// check if unload is a blocklisted feature.
 INSTANTIATE_TEST_SUITE_P(
     All,
     BackForwardCacheBrowserUnloadHandlerTest,
     ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
                        ::testing::Values(TestFrameType::kMainFrame,
                                          TestFrameType::kSubFrame)));
 
