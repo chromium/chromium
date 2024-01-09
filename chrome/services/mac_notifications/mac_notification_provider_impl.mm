@@ -38,9 +38,18 @@ void MacNotificationProviderImpl::BindNotificationService(
     return;
   }
 
+// MacNotificationServiceNS implements the Chromium interface to the
+// NSUserNotificationCenter deprecated API. It is in the process of being
+// replaced by UNNotification, above, and warnings about its deprecation are not
+// helpful. https://crbug.com/1127306
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
   service_ = std::make_unique<MacNotificationServiceNS>(
       std::move(service), std::move(handler),
       [NSUserNotificationCenter defaultUserNotificationCenter]);
+
+#pragma clang diagnostic pop
 }
 
 }  // namespace mac_notifications
