@@ -56,8 +56,10 @@ const char kErrorInvalidAllowAllRequestsResourceType[] =
     "\"resourceTypes\" key. It may only include the \"main_frame\" and "
     "\"sub_frame\" resource types.";
 const char kErrorRegexTooLarge[] =
-    "Rule with id * specified a more complex regex than allowed as part of the "
-    "\"*\" key.";
+    "Rule with id * was skipped as the \"*\" value exceeded the 2KB memory "
+    "limit when compiled. Learn more: "
+    "https://developer.chrome.com/docs/extensions/reference/api/"
+    "declarativeNetRequest#regex-rules";
 const char kErrorNoHeaderListsSpecified[] =
     "Rule with id * does not specify a value for \"*\" or \"*\" key. At least "
     "one of these keys must be specified with a non-empty list.";

@@ -264,6 +264,10 @@ inline constexpr int kMaxStaticRulesPerProfile = 300000;
 // The per-extension maximum amount of disabled static rules.
 inline constexpr int kMaxDisabledStaticRules = 5000;
 
+// Maximum size of a compiled RegEx rule in KB. Limited to 2 KB which means
+// that given 1024 rules, the total usage would be 2 MB.
+inline constexpr int kRegexMaxMemKb = 2;
+
 // Identifier for a Flatbuffer containing `flat::EmbedderConditions` as the
 // root.
 extern const char kEmbedderConditionsBufferIdentifier[];
