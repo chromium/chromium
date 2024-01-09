@@ -506,11 +506,15 @@ class BrowserAutofillManager : public AutofillManager {
   // the `trigger_source` on the `field`. The field's type is `field_type`.
   // The `trigger_source` controls which fields are considered for filling and
   // thus influences the suggestion labels.
+  // `form_structure` and `autofill_field` can be null when the `field` from
+  // which Autofill was triggered is not an address field. This means the user
+  // chose the address manual fallback option to fill an arbitrary non address
+  // field.
   std::vector<Suggestion> GetProfileSuggestions(
       const FormData& form,
-      const FormStructure& form_structure,
+      const FormStructure* form_structure,
       const FormFieldData& field,
-      const AutofillField& autofill_field,
+      const AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source) const;
 
   // Returns a list of values from the stored credit cards that match

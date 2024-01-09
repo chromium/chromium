@@ -102,6 +102,8 @@ void TestAutofillExternalDelegate::CheckSuggestions(
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
     EXPECT_EQ(expected_suggestions[i].popup_item_id,
               suggestions_[i].popup_item_id);
+    EXPECT_EQ(expected_suggestions[i].is_acceptable,
+              suggestions_[i].is_acceptable);
   }
 }
 

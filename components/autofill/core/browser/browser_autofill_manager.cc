@@ -2722,28 +2722,44 @@ void BrowserAutofillManager::OnCreditCardFetchedSuccessfully(
 
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormData& form,
-    const FormStructure& form_structure,
+    const FormStructure* form_structure,
     const FormFieldData& field,
-    const AutofillField& autofill_field,
+    const AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
   address_form_event_logger_->OnDidPollSuggestions(field,
                                                    signin_state_for_metrics_);
+  const bool triggering_field_is_not_address_field =
+      !form_structure ||
+      (autofill_field &&
+       !IsAddressType(autofill_field->Type().GetStorableType()));
+
+  if (triggering_field_is_not_address_field) {
+    // Since Autofill was triggered from a field that is not classified as
+    // address, we consider the `field_types` (i.e, the fields found in the
+    // "form") to be a single unclassified field. Note that in this flow it is
+    // not used and only holds semantic value.
+    return suggestion_generator_->GetSuggestionsForProfiles(
+        /*field_types=*/{UNKNOWN_TYPE}, field, UNKNOWN_TYPE,
+        /*last_targeted_fields=*/absl::nullopt, trigger_source);
+  }
+  // If not manual fallback, `form_structure` and `autofill_field` should exist.
+  CHECK(form_structure && autofill_field);
   std::optional<FieldTypeSet> last_address_fields_to_fill_for_section =
       external_delegate_->GetLastFieldTypesToFillForSection(
-          autofill_field.section);
+          autofill_field->section);
   // Getting the filling-relevant fields so that suggestions are based only on
   // those fields. Function BrowserAutofillManager::GetFieldFillingSkipReasons
   // assumes that the passed FormData and FormStructure have the same size. If
   // it's not the case we just assume as a fallback that all fields are
   // relevant.
   std::vector<FieldFillingSkipReason> skip_reasons =
-      form.fields.size() == form_structure.field_count()
+      form.fields.size() == form_structure->field_count()
           ? GetFieldFillingSkipReasons(
-                form, form_structure, field, autofill_field.section,
+                form, *form_structure, field, autofill_field->section,
                 last_address_fields_to_fill_for_section
                     ? GetTargetServerFieldsForTypeAndLastTargetedFields(
                           *last_address_fields_to_fill_for_section,
-                          autofill_field.Type().GetStorableType())
+                          autofill_field->Type().GetStorableType())
                     : kAllFieldTypes,
                 /*optional_type_groups_originally_filled=*/nullptr,
                 FillingProduct::kAddress,
@@ -2751,16 +2767,16 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
                     AutofillSuggestionTriggerSource::kManualFallbackAddress,
                 /*is_refill=*/false, /*is_expired_credit_card=*/false)
           : std::vector<FieldFillingSkipReason>(
-                form_structure.field_count(),
+                form_structure->field_count(),
                 FieldFillingSkipReason::kNotSkipped);
   FieldTypeSet field_types;
-  for (size_t i = 0; i < form_structure.field_count(); ++i) {
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
     if (skip_reasons[i] == FieldFillingSkipReason::kNotSkipped) {
-      field_types.insert(form_structure.field(i)->Type().GetStorableType());
+      field_types.insert(form_structure->field(i)->Type().GetStorableType());
     }
   }
   return suggestion_generator_->GetSuggestionsForProfiles(
-      field_types, field, autofill_field.Type().GetStorableType(),
+      field_types, field, autofill_field->Type().GetStorableType(),
       last_address_fields_to_fill_for_section, trigger_source);
 }
 
@@ -3489,9 +3505,10 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     // through manual fallbacks. As such, suggestion labels differ depending on
     // the `trigger_source`.
     *suggestions =
-        GetProfileSuggestions(form, *context->form_structure, field,
-                              *context->focused_field, trigger_source);
-    if (context->focused_field->Type().group() == FieldTypeGroup::kEmail) {
+        GetProfileSuggestions(form, context->form_structure, field,
+                              context->focused_field, trigger_source);
+    if (context->focused_field &&
+        context->focused_field->Type().group() == FieldTypeGroup::kEmail) {
       std::optional<Suggestion> maybe_plus_address_suggestion =
           MaybeGetPlusAddressSuggestion();
       if (maybe_plus_address_suggestion.has_value()) {

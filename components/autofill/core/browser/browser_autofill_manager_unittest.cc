@@ -1358,7 +1358,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     personal_data().AddCreditCard(credit_card2);
 
     CreditCard credit_card3;
-    test::SetCreditCardInfo(&credit_card3, "", "", "", "", "");
+    test::SetCreditCardInfo(&credit_card3, "", "", "08", "2999", "");
     credit_card3.set_guid(MakeGuid(6));
     personal_data().AddCreditCard(credit_card3);
   }
@@ -2013,7 +2013,99 @@ TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
-// Test that we cull duplicate profile suggestions.
+// Test parameter data for asserting that the expected suggestion types are
+// returned when triggering Autofill using manual fallback. Note that the tests
+// that use this param are only about manual fallback for fields that are not
+// classified as the target `FillingProduct` defined by the chosen
+// `manual_fallback_option`. Therefore, manual fallbacks for `ac=unrecognized`
+// fields are not covered here.
+struct ManualFallbackTestParams {
+  const FormType form_type;
+  const AutofillSuggestionTriggerSource manual_fallback_option;
+  const FillingProduct expected_filling_product;
+  const std::string test_name;
+};
+
+// Test fixture that covers Autofill being triggered from fields that are not
+// classified as the target `FillingProduct`. For example, triggering address
+// manual fallback from an unclassified field.
+class ManualFallbackTest
+    : public BrowserAutofillManagerTest,
+      public ::testing::WithParamInterface<ManualFallbackTestParams> {
+ public:
+  FormData GetFormDataFromTestParam() {
+    const FormType form_type = GetParam().form_type;
+    if (form_type == FormType::kAddressForm) {
+      return test::CreateTestAddressFormData();
+    } else if (form_type == FormType::kCreditCardForm) {
+      return CreateTestCreditCardFormData(/*is_https=*/true,
+                                          /*use_month_type=*/false);
+    } else {
+      CHECK(form_type == FormType::kUnknownFormType);
+      return test::GetFormData(
+          {.fields = {{.label = u"unclassified", .name = u"unclassified"}}});
+    }
+  }
+};
+
+TEST_P(ManualFallbackTest, ReturnsExpectedSuggestionTypes) {
+  base::test::ScopedFeatureList feature(
+      features::kAutofillForUnclassifiedFieldsAvailable);
+
+  const FormData form = GetFormDataFromTestParam();
+  FormsSeen({form});
+  const ManualFallbackTestParams& params = GetParam();
+
+  GetAutofillSuggestions(form, form.fields.back(),
+                         params.manual_fallback_option);
+
+  EXPECT_TRUE(base::ranges::all_of(
+      external_delegate()->suggestions(), [&](const Suggestion& suggestion) {
+        return GetFillingProductFromPopupItemId(suggestion.popup_item_id) ==
+               params.expected_filling_product;
+      }));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    BrowserAutofillManagerTest,
+    ManualFallbackTest,
+    ::testing::ValuesIn(std::vector<ManualFallbackTestParams>(
+        {// Tests that address suggestions are rendered when address manual
+         // fallback is triggered on an unclassified field.
+         {.form_type = FormType::kUnknownFormType,
+          .manual_fallback_option =
+              AutofillSuggestionTriggerSource::kManualFallbackAddress,
+          .expected_filling_product = FillingProduct::kAddress,
+          .test_name = "_UnclassifiedField_AddressFallback"},
+         // Tests that address suggestions are rendered when address manual
+         // fallback is
+         // triggered on a credit card field.
+         {.form_type = FormType::kCreditCardForm,
+          .manual_fallback_option =
+              AutofillSuggestionTriggerSource::kManualFallbackAddress,
+          .expected_filling_product = FillingProduct::kAddress,
+
+          .test_name = "_CreditCardField_AddressFallback"},
+         // Tests that payments suggestions are rendered when payments manual
+         // fallback is triggered on an unclassified field.
+         {.form_type = FormType::kUnknownFormType,
+          .manual_fallback_option =
+              AutofillSuggestionTriggerSource::kManualFallbackPayments,
+          .expected_filling_product = FillingProduct::kCreditCard,
+          .test_name = "_UnclassifiedField_CreditCard"},
+         // Tests that payments suggestions are rendered when payments manual
+         // fallback is
+         // triggered on an address field.
+         {.form_type = FormType::kAddressForm,
+          .manual_fallback_option =
+              AutofillSuggestionTriggerSource::kManualFallbackPayments,
+          .expected_filling_product = FillingProduct::kCreditCard,
+          .test_name = "_AddressField_CreditCard"}})),
+    [](const ::testing::TestParamInfo<ManualFallbackTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
+// Test that we call duplicate profile suggestions.
 TEST_P(SuggestionMatchingTest, GetProfileSuggestions_WithDuplicates) {
   // Set up our form data.
   FormData form = CreateTestAddressFormData();
@@ -2115,7 +2207,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_EmptyValue) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -2131,7 +2224,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_Whitespace) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
@@ -2149,7 +2243,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_StopCharsOnly) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
@@ -2166,7 +2261,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_InvisibleUnicodeOnly) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
@@ -2192,7 +2288,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   personal_data().AddCreditCard(credit_card);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
@@ -2209,7 +2306,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_MatchCharacter) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = CreateTestFormField("Card Number", "cardnumber", "78",
@@ -2227,7 +2325,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
   personal_data().SetNicknameForCardWithGUID(MakeGuid(5), kArbitraryNickname);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   const FormFieldData& credit_card_number_field = form.fields[1];
@@ -2267,7 +2366,8 @@ TEST_F(CreditCardSuggestionTest, GetCreditCardSuggestions_NonCCNumber) {
   // Set nickname with the corresponding guid of the Mastercard 8765.
   personal_data().SetNicknameForCardWithGUID(MakeGuid(5), kArbitraryNickname);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   const FormFieldData& cardholder_name_field = form.fields[0];
@@ -2345,7 +2445,8 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_SecureContext_EmptyFormAction) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
   form.action = GURL();
   FormsSeen({form});
@@ -2363,7 +2464,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
 TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
        GetCreditCardSuggestions_SecureContext_JavascriptFormAction) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Have the form action be a javascript function (which is a valid URL).
   form.action = GURL("javascript:alert('Hello');");
   FormsSeen({form});
@@ -2391,7 +2493,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   personal_data().AddCreditCard(credit_card);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -2420,7 +2523,8 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_EQ(1U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormFieldData field = form.fields[1];
@@ -2469,7 +2573,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   ASSERT_EQ(3U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
   GetAutofillSuggestions(form, form.fields[1]);
 
@@ -2518,7 +2623,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   ASSERT_EQ(3U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Query with empty string only returns card0 and card1. Note expired
@@ -2606,7 +2712,8 @@ TEST_P(BrowserAutofillManagerTestForMetadataCardSuggestions,
   ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Query by card number field.
@@ -2710,7 +2817,8 @@ TEST_F(BrowserAutofillManagerTest,
                              /*for_credit_cards=*/false);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -3071,7 +3179,8 @@ TEST_F(BrowserAutofillManagerTest,
                              /*for_credit_cards=*/true);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[0]);
@@ -3760,7 +3869,8 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_LogFieldWasAutofill) {
 // Test that we correctly fill a credit card form.
 TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_Simple) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3781,7 +3891,8 @@ TEST_F(BrowserAutofillManagerTest,
   credit_card.set_guid(MakeGuid(8));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3803,7 +3914,8 @@ TEST_F(BrowserAutofillManagerTest,
   credit_card.set_guid(MakeGuid(9));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3825,7 +3937,8 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearNoMonth) {
   credit_card.set_guid(MakeGuid(7));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, true);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3847,7 +3960,8 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_NoYearMonth) {
   credit_card.set_guid(MakeGuid(7));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, true);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3870,7 +3984,8 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearNoMonth) {
   credit_card.set_guid(MakeGuid(7));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, true);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -3891,7 +4006,8 @@ TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_YearMonth) {
   credit_card.set_guid(MakeGuid(7));
   personal_data().AddCreditCard(credit_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, true);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/true);
   FormsSeen({form});
 
   FormData response_data = FillAutofillFormDataAndGetResults(
@@ -4326,7 +4442,8 @@ INSTANTIATE_TEST_SUITE_P(
 // attribute set to off.
 TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
 
   // Set the autocomplete=off on all fields.
   for (FormFieldData field : form.fields) {
@@ -4398,7 +4515,8 @@ TEST_F(BrowserAutofillManagerTest, PreviewCreditCardForm_VirtualCard) {
   CreditCard virtual_card = test::GetVirtualCard();
   personal_data().AddServerCreditCard(virtual_card);
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   FormData response_data = PreviewVirtualCardDataAndGetResults(
@@ -6604,7 +6722,8 @@ TEST_F(BrowserAutofillManagerTest,
                                                               false);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(false, false);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
+                                               /*use_month_type=*/false);
   FormsSeen({form});
   // The first field is "Name on card", which should autocomplete.
   FormFieldData field = form.fields[0];
@@ -6633,7 +6752,8 @@ TEST_F(BrowserAutofillManagerTest,
                                                               false);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(false, false);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
+                                               /*use_month_type=*/false);
   FormsSeen({form});
   // The second field is "Card Number", which should not autocomplete.
   FormFieldData field = form.fields[1];
@@ -8243,7 +8363,8 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotFillFormData) {
                                                               false);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Expect no fields filled, no form data sent to renderer.
@@ -8256,7 +8377,8 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
                                                               false);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form,
@@ -8463,7 +8585,8 @@ TEST_F(BrowserAutofillManagerTest,
   CreateTestServerCreditCards();
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -8483,7 +8606,8 @@ TEST_F(BrowserAutofillManagerTest,
   CreateUniqueTestServerAndLocalCreditCards();
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -8503,7 +8627,8 @@ TEST_F(BrowserAutofillManagerTest,
   CreateUniqueTestServerAndLocalCreditCards();
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   GetAutofillSuggestions(form, form.fields[1]);
@@ -8527,7 +8652,8 @@ TEST_F(BrowserAutofillManagerTest, GetCreditCardSuggestions_VirtualCard) {
   personal_data().AddServerCreditCard(masked_server_card);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Card number field.
@@ -9225,7 +9351,8 @@ TEST_F(BrowserAutofillManagerTest,
 
 TEST_F(BrowserAutofillManagerTest,
        DidShowSuggestions_LogAutofillCreditCardShownMetric) {
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   base::HistogramTester histogram_tester;
@@ -10080,7 +10207,8 @@ TEST_P(OnFocusOnFormFieldTest, AddressSuggestions_Ablation) {
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
   form.action = GURL();
   FormsSeen({form});
@@ -10092,7 +10220,8 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_SecureContext) {
 
 TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_NonSecureContext) {
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(false, false);
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/false,
+                                               /*use_month_type=*/false);
   // Clear the form action.
   form.action = GURL();
   FormsSeen({form});
@@ -10110,7 +10239,8 @@ TEST_P(OnFocusOnFormFieldTest, CreditCardSuggestions_Ablation) {
                              /*for_credit_cards=*/true);
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   // Clear the form action.
   form.action = GURL();
   FormsSeen({form});
@@ -10214,7 +10344,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Query by card number field.
@@ -10241,7 +10372,8 @@ TEST_P(BrowserAutofillManagerTestForSharingNickname,
   ASSERT_EQ(2U, personal_data().GetCreditCards().size());
 
   // Set up our form data.
-  FormData form = CreateTestCreditCardFormData(true, false);
+  FormData form =
+      CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
   // Query by card number field.
