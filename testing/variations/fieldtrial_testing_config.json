@@ -15465,6 +15465,21 @@
             ]
         }
     ],
+    "SafeBrowsingNewGmsApiForSubresourceFilterCheck": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafeBrowsingNewGmsApiForSubresourceFilterCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingSevenZipEvaluationEnabled": [
         {
             "platforms": [
