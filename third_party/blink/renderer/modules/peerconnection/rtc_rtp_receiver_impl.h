@@ -116,7 +116,8 @@ class MODULES_EXPORT RTCRtpReceiverImpl : public RTCRtpReceiverPlatform {
   RTCRtpReceiverImpl(rtc::scoped_refptr<webrtc::PeerConnectionInterface>
                          native_peer_connection,
                      RtpReceiverState state,
-                     bool require_encoded_insertable_streams);
+                     bool require_encoded_insertable_streams,
+                     std::unique_ptr<webrtc::Metronome> decode_metronome);
   RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other);
   ~RTCRtpReceiverImpl() override;
 

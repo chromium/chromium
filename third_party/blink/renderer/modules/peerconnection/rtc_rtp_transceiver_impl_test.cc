@@ -250,7 +250,8 @@ TEST_F(RTCRtpTransceiverImplTest, CreateTranceiver) {
 
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   EXPECT_TRUE(transceiver.Mid().IsNull());
   EXPECT_TRUE(transceiver.Sender());
   EXPECT_TRUE(transceiver.Receiver());
@@ -294,7 +295,8 @@ TEST_F(RTCRtpTransceiverImplTest, ModifyTransceiver) {
   // not have affected the transceiver state.
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(initial_transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   EXPECT_TRUE(transceiver.Mid().IsNull());
   EXPECT_TRUE(transceiver.Sender());
   EXPECT_TRUE(transceiver.Receiver());
@@ -337,7 +339,7 @@ TEST_F(RTCRtpTransceiverImplTest, ShallowCopy) {
     transceiver_state.Initialize();
     transceiver = std::make_unique<RTCRtpTransceiverImpl>(
         peer_connection_, track_map_, std::move(transceiver_state),
-        /*encoded_insertable_streams=*/false);
+        /*encoded_insertable_streams=*/false, /*decode_metronome=*/nullptr);
   }
   DCHECK(transceiver);
 
@@ -396,7 +398,8 @@ TEST_F(RTCRtpTransceiverImplTest, TransceiverStateUpdateModeSetDescription) {
   // Construct a transceiver from the initial state.
   RTCRtpTransceiverImpl transceiver(peer_connection_, track_map_,
                                     std::move(initial_transceiver_state),
-                                    /*encoded_insertable_streams=*/false);
+                                    /*encoded_insertable_streams=*/false,
+                                    /*decode_metronome=*/nullptr);
   // Setting the state with TransceiverStateUpdateMode::kSetDescription should
   // make the transceiver state up-to-date, except leaving
   // "transceiver.direction" and "transceiver.sender.track" unmodified.

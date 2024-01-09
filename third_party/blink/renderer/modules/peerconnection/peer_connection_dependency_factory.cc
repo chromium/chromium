@@ -1018,4 +1018,8 @@ void PeerConnectionDependencyFactory::Trace(Visitor* visitor) const {
   visitor->Trace(webrtc_video_perf_reporter_);
 }
 
+std::unique_ptr<webrtc::Metronome>
+PeerConnectionDependencyFactory::CreateDecodeMetronome() {
+  return StaticDeps().metronome_source().CreateWebRtcMetronome();
+}
 }  // namespace blink
