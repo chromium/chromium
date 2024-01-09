@@ -48,7 +48,6 @@ export class EmojiSearch extends PolymerElement {
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
       closeGifNudgeOverlay: {type: Object},
-      useGroupedPreference: {type: Boolean, value: false},
       globalTone: {type: Number, value: null, readonly: true},
       globalGender: {type: Number, value: null, readonly: true},
     };
@@ -61,7 +60,6 @@ export class EmojiSearch extends PolymerElement {
   private gifSupport: boolean;
   private status: Status|null;
   private closeGifNudgeOverlay: () => void;
-  private useGroupedPreference: boolean;
   private globalTone: Tone|null = null;
   private globalGender: Gender|null = null;
 
