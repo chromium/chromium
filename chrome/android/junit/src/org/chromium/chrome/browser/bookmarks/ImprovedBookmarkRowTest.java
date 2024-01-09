@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doAnswer;
@@ -333,5 +334,15 @@ public class ImprovedBookmarkRowTest {
     public void testClick() {
         mImprovedBookmarkRow.performClick();
         verify(mOpenBookmarkCallback).run();
+    }
+
+    @Test
+    public void testLocalAndRemoteBookmarks() {
+        View localBookmarkImageView = mImprovedBookmarkRow.findViewById(R.id.local_bookmark_image);
+        mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
+        assertEquals(View.VISIBLE, localBookmarkImageView.getVisibility());
+
+        mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, false);
+        assertEquals(View.GONE, localBookmarkImageView.getVisibility());
     }
 }

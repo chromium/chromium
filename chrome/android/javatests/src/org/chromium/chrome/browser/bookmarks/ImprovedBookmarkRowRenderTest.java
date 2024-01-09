@@ -223,6 +223,17 @@ public class ImprovedBookmarkRowRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    public void testLocalBookmarkItem() throws IOException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(ImprovedBookmarkRowProperties.IS_LOCAL_BOOKMARK, true);
+                });
+        mRenderTestRule.render(mContentView, "local_bookmark");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
     public void testSelected() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {

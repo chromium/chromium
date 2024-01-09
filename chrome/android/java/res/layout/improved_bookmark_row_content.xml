@@ -18,6 +18,18 @@ found in the LICENSE file.
         android:layout_width="16dp"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/local_bookmark_image"
+        android:visibility="gone"
+        android:layout_width="@dimen/min_touch_target_size"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_cloud_off_24dp"
+        app:tint="@macro/default_icon_color_secondary"
+        android:scaleType="center"
+        android:importantForAccessibility="no"
+        android:focusable="false" />
+
     <org.chromium.ui.listmenu.ListMenuButton
         android:id="@+id/more"
         android:visibility="gone"
