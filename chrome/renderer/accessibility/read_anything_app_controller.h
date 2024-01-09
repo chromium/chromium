@@ -345,12 +345,13 @@ class ReadAnythingAppController
   // TODO(crbug.com/1474951): Use this to assist in navigating forwards /
   // backwards.
   // Previously processed granularities on the current page.
-  std::vector<ReadAloudCurrentGranularity> processed_sentences_on_current_page_;
+  std::vector<ReadAloudCurrentGranularity>
+      processed_granularities_on_current_page_;
 
-  // Our current index within processed_sentences_on_current_page_. If it is
+  // Our current index within processed_granularities_on_current_page_. If it is
   // equal to the size of the triples - 1, we're not navigating through
   // previously processed text.
-  size_t processed_sentence_index_ = -1;
+  size_t processed_granularity_index_ = -1;
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;

@@ -540,8 +540,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // Update Read Aloud state.
   ax_position_ = ui::AXNodePosition::AXPosition::CreateNullPosition();
   current_text_index_ = 0;
-  processed_sentence_index_ = -1;
-  processed_sentences_on_current_page_.clear();
+  processed_granularity_index_ = -1;
+  processed_granularities_on_current_page_.clear();
 
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
@@ -1361,14 +1361,14 @@ void ReadAnythingAppController::InitAXPositionWithNode(
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     current_text_index_ = 0;
-    processed_sentence_index_ = -1;
-    processed_sentences_on_current_page_.clear();
+    processed_granularity_index_ = -1;
+    processed_granularities_on_current_page_.clear();
   }
 }
 
 bool ReadAnythingAppController::NodePreviouslySpoken(ui::AXNodeID id) {
   for (ReadAnythingAppController::ReadAloudCurrentGranularity granularity :
-       processed_sentences_on_current_page_) {
+       processed_granularities_on_current_page_) {
     if (base::Contains(granularity.segments, id)) {
       return true;
     }
@@ -1379,17 +1379,17 @@ bool ReadAnythingAppController::NodePreviouslySpoken(ui::AXNodeID id) {
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
     int max_text_length) {
-  bool was_sentence_previously_processed =
-      processed_sentence_index_ <
-      processed_sentences_on_current_page_.size() - 1;
+  bool was_previously_processed =
+      processed_granularity_index_ <
+      processed_granularities_on_current_page_.size() - 1;
 
   // If we've previously processed the triples at this location, return the
   // previously processed node information. Otherwise, get this information
   // GetNextNodes.
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      (was_sentence_previously_processed)
-          ? processed_sentences_on_current_page_[processed_sentence_index_ + 1]
-          : GetNextNodes(max_text_length);
+      (was_previously_processed) ? processed_granularities_on_current_page_
+                                       [processed_granularity_index_ + 1]
+                                 : GetNextNodes(max_text_length);
 
   // If the list of nodes is empty, don't adjust the processed nodes
   // information.
@@ -1397,10 +1397,10 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetNextText(
     return current_granularity.node_ids;
   }
 
-  if (!was_sentence_previously_processed) {
-    processed_sentences_on_current_page_.push_back(current_granularity);
+  if (!was_previously_processed) {
+    processed_granularities_on_current_page_.push_back(current_granularity);
   }
-  processed_sentence_index_++;
+  processed_granularity_index_++;
 
   return current_granularity.node_ids;
 }
@@ -1428,7 +1428,8 @@ ReadAnythingAppController::GetNextNodes(int max_text_length) {
   //  AXNode: id=1, text = "This is a "
   //  AXNode: id=2, text = "link. "
   // both AXNodes should be added to the current granularity, as the
-  // combined text across the two nodes forms a complete sentence.
+  // combined text across the two nodes forms a complete sentence with sentence
+  // granularity.
   // This allows text to be spoken smoothly across nodes with broken sentences,
   // such as links and formatted text.
   // TODO(crbug.com/1474951): Investigate how much of this can be pulled into
@@ -1579,11 +1580,11 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetPreviousText(
     int max_text_length) {
   // If we've reached the beginning of the content, we should continue to return
   // the text grouping, so don't decrement below 0.
-  if (processed_sentence_index_ > 0) {
-    processed_sentence_index_--;
+  if (processed_granularity_index_ > 0) {
+    processed_granularity_index_--;
   }
 
-  return processed_sentences_on_current_page_[processed_sentence_index_]
+  return processed_granularities_on_current_page_[processed_granularity_index_]
       .node_ids;
 }
 
@@ -1663,12 +1664,12 @@ ReadAnythingAppController::GetNextValidPositionFromCurrentPosition() {
 }
 
 int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
-  if (processed_sentences_on_current_page_.size() < 1) {
+  if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
 
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      processed_sentences_on_current_page_[processed_sentence_index_];
+      processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
@@ -1679,12 +1680,12 @@ int ReadAnythingAppController::GetNextTextStartIndex(ui::AXNodeID node_id) {
 }
 
 int ReadAnythingAppController::GetNextTextEndIndex(ui::AXNodeID node_id) {
-  if (processed_sentences_on_current_page_.size() < 1) {
+  if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
 
   ReadAnythingAppController::ReadAloudCurrentGranularity current_granularity =
-      processed_sentences_on_current_page_[processed_sentence_index_];
+      processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
