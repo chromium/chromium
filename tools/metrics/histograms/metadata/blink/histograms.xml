@@ -2953,7 +2953,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.MemoryCache.CrossDocumentCachedResource2"
-    enum="ResourceType" expires_after="2024-05-05">
+    enum="ResourceType" expires_after="2024-07-07">
   <owner>gjc@chromium.org</owner>
   <owner>blink-network-dev@chromium.org</owner>
   <summary>
