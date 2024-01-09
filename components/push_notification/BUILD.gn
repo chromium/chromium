@@ -14,3 +14,13 @@ source_set("push_notification") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "push_notification_client_manager_unittest.cc" ]
+  deps = [
+    ":push_notification",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

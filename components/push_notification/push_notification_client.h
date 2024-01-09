@@ -6,21 +6,23 @@
 #define COMPONENTS_PUSH_NOTIFICATION_PUSH_NOTIFICATION_CLIENT_H_
 
 #include <string>
+
+#include "base/containers/flat_map.h"
 #include "components/push_notification/push_notification_client_id.h"
 
 namespace push_notification {
 
 // Base class for PushNotificationService clients to. Each feature that uses the
-// PushNotificationService must create it's own PushNotificationClient and
+// PushNotificationService must create its own PushNotificationClient and
 // implement the OnMessageReceived functionality. PushNotificationClient must
 // register with the PushNotificationService to begin receiving messages.
 class PushNotificationClient {
  public:
-  explicit PushNotificationClient(ClientId client_id);
-  virtual ~PushNotificationClient() = 0;
+  explicit PushNotificationClient(ClientId client_id) : client_id_(client_id) {}
+  virtual ~PushNotificationClient() = default;
 
   // Returns the feature's `client_id_`.
-  const ClientId& GetClientId() { return client_id_; }
+  ClientId GetClientId() { return client_id_; }
 
   // Only called when the instance of the `message_data` matches the
   // `client_id_`.

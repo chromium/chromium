@@ -15,11 +15,11 @@ std::optional<std::string> GetClientIdStr(ClientId id) {
   }
 }
 
-ClientId GetClientIdFromStr(const std::string& id_string) {
+std::optional<ClientId> GetClientIdFromStr(const std::string& id_string) {
   if (id_string == kNearbyPresenceClientId) {
     return ClientId::kNearbyPresence;
   }
-  return ClientId::kInvalidClientId;
+  return std::nullopt;
 }
 
 }  // namespace push_notification
