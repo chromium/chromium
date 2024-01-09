@@ -29,6 +29,9 @@ BASE_DECLARE_FEATURE(kPopulateVisitedLinkDatabase);
 // is enabled; do not check `kSyncSegmentsData` directly.
 BASE_DECLARE_FEATURE(kSyncSegmentsData);
 
+// Kill switch for use of the new SQL recovery module in `TopSitesDatabase`.
+BASE_DECLARE_FEATURE(kTopSitesDatabaseUseBuiltInRecoveryIfSupported);
+
 // Returns true when both full history sync and synced segments data are
 // enabled.
 bool IsSyncSegmentsDataEnabled();
