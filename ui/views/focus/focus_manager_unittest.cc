@@ -477,7 +477,7 @@ class FocusInAboutToRequestFocusFromTabTraversalView : public View {
   }
 
  private:
-  raw_ptr<views::View, AcrossTasksDanglingUntriaged> view_to_focus_ = nullptr;
+  raw_ptr<views::View> view_to_focus_ = nullptr;
 };
 
 BEGIN_METADATA(FocusInAboutToRequestFocusFromTabTraversalView)
@@ -488,8 +488,7 @@ END_METADATA
 // Verifies a focus change done during a call to
 // AboutToRequestFocusFromTabTraversal() is honored.
 TEST_F(FocusManagerTest, FocusInAboutToRequestFocusFromTabTraversal) {
-  // Create 3 views focuses the 3 and advances to the second. The 2nd views
-  // implementation of AboutToRequestFocusFromTabTraversal() focuses the first.
+  // Create 3 views.
   views::View* v1 = new View;
   v1->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   GetContentsView()->AddChildView(v1);
@@ -504,9 +503,13 @@ TEST_F(FocusManagerTest, FocusInAboutToRequestFocusFromTabTraversal) {
   v3->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   GetContentsView()->AddChildView(v3);
 
+  // Focus the third view and advances to the second. The second view's
+  // implementation of AboutToRequestFocusFromTabTraversal() focuses the first.
   v3->RequestFocus();
   GetWidget()->GetFocusManager()->AdvanceFocus(true);
   EXPECT_TRUE(v1->HasFocus());
+
+  v2->set_view_to_focus(nullptr);
 }
 
 TEST_F(FocusManagerTest, RotateFocus) {
@@ -1217,18 +1220,17 @@ class RedirectToParentFocusManagerTest : public FocusManagerTest {
   }
 
   void TearDown() override {
+    parent_focus_manager_ = nullptr;
+    bubble_focus_manager_ = nullptr;
+    bubble_ = nullptr;
     FocusManagerFactory::Install(nullptr);
     FocusManagerTest::TearDown();
   }
 
  protected:
-  raw_ptr<FocusManager, AcrossTasksDanglingUntriaged> parent_focus_manager_ =
-      nullptr;
-  raw_ptr<FocusManager, AcrossTasksDanglingUntriaged> bubble_focus_manager_ =
-      nullptr;
-
-  raw_ptr<BubbleDialogDelegateView, AcrossTasksDanglingUntriaged> bubble_ =
-      nullptr;
+  raw_ptr<FocusManager> parent_focus_manager_ = nullptr;
+  raw_ptr<FocusManager> bubble_focus_manager_ = nullptr;
+  raw_ptr<BubbleDialogDelegateView> bubble_ = nullptr;
 };
 
 // Test that when an accelerator is sent to a bubble that isn't registered,
