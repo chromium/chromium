@@ -78,6 +78,8 @@ namespace blink {
 namespace {
 
 const float kCTNormalWeightValue = 0.0;
+CTFontSymbolicTraits TraitsMask = kCTFontTraitItalic | kCTFontTraitBold |
+                                  kCTFontTraitCondensed | kCTFontTraitExpanded;
 
 ScopedCFTypeRef<CTFontRef> CreateCopyWithTraitsAndWeightFromFont(
     CTFontRef font,
@@ -141,6 +143,19 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   return substitute_font;
 }
 
+// Some fonts may have appearance information in the upper 16 bits,
+// for example for "Times Roman" traits = (1 << 28) and for "Helvetica"
+// traits = (1 << 30).
+// We only need to care about typeface information in the lower 16 bits and
+// need to check only whether the traits we care about mismatch (i.e.
+// font-stretch, font-style and font-weight corresponding traits). So that
+// later we can try to find a font within the same family with the desired
+// typeface.
+bool TraitsMismatch(CTFontSymbolicTraits desired_traits,
+                    CTFontSymbolicTraits found_traits) {
+  return (desired_traits & TraitsMask) != (found_traits & TraitsMask);
+}
+
 std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
     const FontDescription& font_description,
     UChar32 character,
@@ -186,8 +201,8 @@ std::unique_ptr<FontPlatformData> GetAlternateFontPlatformData(
       CTFontGetSymbolicTraits(substitute_font.get());
   float substitute_font_weight = get_ct_font_weight(substitute_font.get());
 
-  if (traits != substitute_font_traits || weight != substitute_font_weight ||
-      !ct_font) {
+  if (TraitsMismatch(traits, substitute_font_traits) ||
+      (weight != substitute_font_weight) || !ct_font) {
     ScopedCFTypeRef<CTFontRef> best_variation =
         CreateCopyWithTraitsAndWeightFromFont(substitute_font.get(), traits,
                                               weight, size);
