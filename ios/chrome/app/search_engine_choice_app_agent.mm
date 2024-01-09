@@ -58,19 +58,40 @@ bool IsChoiceEnabledInNormalRun() {
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  switch (level) {
-    case SceneActivationLevelForegroundInactive:
-      break;
-    case SceneActivationLevelForegroundActive:
-      [self maybeShowChoiceSceen:sceneState];
-      break;
-    case SceneActivationLevelBackground:
-    case SceneActivationLevelDisconnected:
-    case SceneActivationLevelUnattached:
-      [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
-      break;
+  // Ignore SceneState activation if the app is not yet ready.
+  if (self.appState.initStage > InitStageFirstRun) {
+    switch (level) {
+      case SceneActivationLevelForegroundInactive:
+        break;
+      case SceneActivationLevelForegroundActive:
+        [self maybeShowChoiceScreen:sceneState];
+        break;
+      case SceneActivationLevelBackground:
+      case SceneActivationLevelDisconnected:
+      case SceneActivationLevelUnattached:
+        [self choiceScreenWillBeDismissed:_searchEngineChoiceCoordinator];
+        break;
+    }
   }
+
   [super sceneState:sceneState transitionedToActivationLevel:level];
+}
+
+#pragma mark - AppStateObserver
+
+- (void)appState:(AppState*)appState
+    didTransitionFromInitStage:(InitStage)previousInitStage {
+  // Instantiate the `SearchEngineChoiceCoordinator` if necessary if any
+  // SceneState reached the `SceneActivationLevelForegroundActive` level
+  // before the app was ready.
+  if (self.appState.initStage > InitStageFirstRun) {
+    for (SceneState* sceneState in self.appState.connectedScenes) {
+      if (sceneState.activationLevel == SceneActivationLevelForegroundActive) {
+        [self maybeShowChoiceScreen:sceneState];
+      }
+    }
+  }
+  [super appState:appState didTransitionFromInitStage:previousInitStage];
 }
 
 #pragma mark - SearchEngineChoiceCoordinatorDelegate
@@ -85,7 +106,10 @@ bool IsChoiceEnabledInNormalRun() {
 
 #pragma mark - Private
 
-- (void)maybeShowChoiceSceen:(SceneState*)sceneState {
+- (void)maybeShowChoiceScreen:(SceneState*)sceneState {
+  // The application needs to be ready (i.e. the Browser created, ...) before
+  // the choice screen can be presented. Assert this is the case.
+  DCHECK_GT(self.appState.initStage, InitStageFirstRun);
   if (_searchEngineChoiceCoordinator) {
     return;
   }
@@ -105,9 +129,6 @@ bool IsChoiceEnabledInNormalRun() {
 
 - (BOOL)shouldShowChoiceScreen:(SceneState*)sceneState {
   if (!IsChoiceEnabledInNormalRun()) {
-    return NO;
-  }
-  if (self.appState.initStage == InitStageFirstRun) {
     return NO;
   }
   ChromeBrowserState* browserState =
