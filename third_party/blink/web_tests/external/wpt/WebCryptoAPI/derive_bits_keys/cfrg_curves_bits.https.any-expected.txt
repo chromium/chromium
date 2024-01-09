@@ -9,6 +9,8 @@ This is a testharness.js-based test.
   assert_false: Private key should be valid. expected false got true
 [FAIL] X448 key derivation checks for all-zero value result with a key of order p+1 (=1, order 1)
   assert_false: Private key should be valid. expected false got true
+[FAIL] X25519 with null length
+  assert_true: Derived correct bits expected true got false
 [FAIL] X25519 mismatched algorithms
   assert_equals: Should throw correct error, not TypeError: Failed to execute 'deriveBits' on 'SubtleCrypto': EcdhKeyDeriveParams: public: Must be a CryptoKey expected "InvalidAccessError" but got "TypeError"
 [FAIL] X448 good parameters
