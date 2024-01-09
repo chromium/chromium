@@ -153,9 +153,9 @@ TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentDefaultGenerator) {
 
 TEST(SignedWebBundleIdTest, CreateRandomForDevelopmentCustomGenerator) {
   auto custom_callback =
-      base::BindLambdaForTesting([](void* ptr, size_t len) -> void {
-        DCHECK_EQ(len, kDevelopmentBytes.size());
-        base::ranges::copy(kDevelopmentBytes, static_cast<uint8_t*>(ptr));
+      base::BindLambdaForTesting([](base::span<uint8_t> buffer) -> void {
+        DCHECK_EQ(buffer.size(), kDevelopmentBytes.size());
+        base::ranges::copy(kDevelopmentBytes, buffer.begin());
       });
 
   SignedWebBundleId id =

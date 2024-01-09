@@ -115,7 +115,7 @@ std::string RandBytesAsString(size_t length) {
 std::vector<uint8_t> RandBytesAsVector(size_t length) {
   std::vector<uint8_t> result(length);
   if (result.size()) {
-    RandBytes(result.data(), result.size());
+    RandBytes(result);
   }
   return result;
 }

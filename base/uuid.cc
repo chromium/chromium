@@ -9,6 +9,7 @@
 
 #include <ostream>
 
+#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -67,7 +68,7 @@ Uuid Uuid::GenerateRandomV4() {
   uint8_t sixteen_bytes[kGuidV4InputLength];
   // Use base::RandBytes instead of crypto::RandBytes, because crypto calls the
   // base version directly, and to prevent the dependency from base/ to crypto/.
-  RandBytes(&sixteen_bytes, sizeof(sixteen_bytes));
+  RandBytes(sixteen_bytes);
   return FormatRandomDataAsV4Impl(sixteen_bytes);
 }
 
