@@ -94,6 +94,7 @@ class CookieCryptoDelegate;
 class HostPortPair;
 class IsolationInfo;
 class NetworkAnonymizationKey;
+class ProxyDelegate;
 class StaticHttpUserAgentSettings;
 class URLRequestContext;
 class URLRequestContextBuilder;
@@ -120,7 +121,6 @@ class MojoBackendFileOperationsFactory;
 class NetworkService;
 class NetworkServiceMemoryCache;
 class NetworkServiceNetworkDelegate;
-class NetworkServiceProxyDelegate;
 class P2PSocketManager;
 class PendingTrustTokenStore;
 class ProxyLookupRequest;
@@ -898,7 +898,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   std::unique_ptr<net::HostResolver::ProbeRequest> doh_probes_request_;
 
   // Owned by URLRequestContext.
-  raw_ptr<NetworkServiceProxyDelegate> proxy_delegate_ = nullptr;
+  raw_ptr<net::ProxyDelegate> proxy_delegate_ = nullptr;
 
   // Used for Signed Exchange certificate verification.
   uint64_t next_cert_verify_id_ = 0;

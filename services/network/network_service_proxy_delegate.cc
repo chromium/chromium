@@ -16,7 +16,6 @@
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
-#include "services/network/masked_domain_list/network_service_proxy_allow_list.h"
 #include "services/network/url_loader.h"
 #include "url/url_constants.h"
 
@@ -108,15 +107,9 @@ NetworkServiceProxyDelegate::NetworkServiceProxyDelegate(
     mojom::CustomProxyConfigPtr initial_config,
     mojo::PendingReceiver<mojom::CustomProxyConfigClient>
         config_client_receiver,
-    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote,
-    NetworkServiceProxyAllowList* network_service_proxy_allow_list)
+    mojo::PendingRemote<mojom::CustomProxyConnectionObserver> observer_remote)
     : proxy_config_(std::move(initial_config)),
-      receiver_(this, std::move(config_client_receiver)),
-      network_service_proxy_allow_list_(network_service_proxy_allow_list),
-      ipp_proxy_delegate_(network_service_proxy_allow_list
-                              ? new IpProtectionProxyDelegate(
-                                    std::move(network_service_proxy_allow_list))
-                              : nullptr) {
+      receiver_(this, std::move(config_client_receiver)) {
   // Make sure there is always a valid proxy config so we don't need to null
   // check it.
   if (!proxy_config_) {
@@ -141,12 +134,6 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
     const std::string& method,
     const net::ProxyRetryInfoMap& proxy_retry_info,
     net::ProxyInfo* result) {
-  if (IsForIpProtection()) {
-    ipp_proxy_delegate_->OnResolveProxy(url, network_anonymization_key, method,
-                                        proxy_retry_info, result);
-    return;
-  }
-
   // At this point, this delegate is not supporting IP protection, so apply the
   // `proxy_config_` as usual.
   if (!EligibleForProxy(*result, method)) {
@@ -169,11 +156,6 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
 
 void NetworkServiceProxyDelegate::OnFallback(const net::ProxyChain& bad_chain,
                                              int net_error) {
-  if (IsForIpProtection()) {
-    ipp_proxy_delegate_->OnFallback(bad_chain, net_error);
-    return;
-  }
-
   if (observer_) {
     observer_->OnFallback(bad_chain, net_error);
   }
@@ -183,12 +165,6 @@ void NetworkServiceProxyDelegate::OnBeforeTunnelRequest(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     net::HttpRequestHeaders* extra_headers) {
-  if (IsForIpProtection()) {
-    ipp_proxy_delegate_->OnBeforeTunnelRequest(proxy_chain, chain_index,
-                                               extra_headers);
-    return;
-  }
-
   if (IsInProxyConfig(proxy_chain)) {
     MergeRequestHeaders(extra_headers, proxy_config_->connect_tunnel_headers);
   }
@@ -210,9 +186,6 @@ net::Error NetworkServiceProxyDelegate::OnTunnelHeadersReceived(
 
 void NetworkServiceProxyDelegate::SetProxyResolutionService(
     net::ProxyResolutionService* proxy_resolution_service) {
-  if (IsForIpProtection()) {
-    ipp_proxy_delegate_->SetProxyResolutionService(proxy_resolution_service);
-  }
   proxy_resolution_service_ = proxy_resolution_service;
 }
 
@@ -267,17 +240,6 @@ bool NetworkServiceProxyDelegate::IsInProxyConfig(
   }
 
   return false;
-}
-
-bool NetworkServiceProxyDelegate::MayProxyURL(const GURL& url) const {
-  return !proxy_config_->rules.empty();
-}
-
-bool NetworkServiceProxyDelegate::IsForIpProtection() {
-  // Only IP protection uses the network service proxy allow list, so this
-  // config represents IP protection if and only if the allow list is in use.
-  return ipp_proxy_delegate_ &&
-         proxy_config_->rules.restrict_to_network_service_proxy_allow_list;
 }
 
 bool NetworkServiceProxyDelegate::EligibleForProxy(
