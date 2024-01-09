@@ -3267,9 +3267,9 @@ void AXObject::OnInheritedCachedValuesChanged() const {
     // tree update in AXObjectCacheImpl::UpdateTreeIfNeeded().
     SetNeedsToUpdateChildren();
     if (!AccessibilityIsIncludedInTree()) {
-      AXObject* parent = ParentObjectIncludedInTree();
-      CHECK(parent);
-      parent->SetNeedsToUpdateChildren();
+      // Make sure that, starting at an included node, children will
+      // recursively be updated until we reach |this|.
+      AXObjectCache().ChildrenChangedOnAncestorOf(const_cast<AXObject*>(this));
     }
   }
 }
