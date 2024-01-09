@@ -75,6 +75,13 @@ bool ViewsDelegate::ShouldCloseMenuIfMouseCaptureLost() const {
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ViewsDelegate::ShouldWindowHaveRoundedCorners(
+    const gfx::NativeWindow window) const {
+  return false;
+}
+#endif
+
 #if BUILDFLAG(IS_WIN)
 HICON ViewsDelegate::GetDefaultWindowIcon() const {
   return nullptr;

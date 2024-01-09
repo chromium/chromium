@@ -129,6 +129,14 @@ class VIEWS_EXPORT ViewsDelegate {
   // this returns true.
   virtual bool ShouldCloseMenuIfMouseCaptureLost() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns true if the native `window` should have rounded corners. The
+  // decision can be based on multiple factors, including the window's current
+  // state.
+  virtual bool ShouldWindowHaveRoundedCorners(
+      const gfx::NativeWindow window) const;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // Retrieves the default window icon to use for windows if none is specified.
   virtual HICON GetDefaultWindowIcon() const;
