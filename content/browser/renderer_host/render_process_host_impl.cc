@@ -138,7 +138,6 @@
 #include "content/common/pseudonymization_salt.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
@@ -173,6 +172,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_switches.h"
 #include "ipc/ipc_channel_mojo.h"
+#include "ipc/ipc_channel_proxy.h"
 #include "ipc/trace_ipc_message.h"
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
@@ -297,6 +297,10 @@
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include "content/public/common/profiling_utils.h"
+#endif
+
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
+#include "content/public/browser/browser_message_filter.h"
 #endif
 
 // VLOG additional statements in Fuchsia release builds.
@@ -4267,10 +4271,12 @@ IPC::ChannelProxy* RenderProcessHostImpl::GetChannel() {
   return channel_.get();
 }
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 void RenderProcessHostImpl::AddFilter(BrowserMessageFilter* filter) {
   filter->RegisterAssociatedInterfaces(channel_.get());
   channel_->AddFilter(filter->GetFilter());
 }
+#endif
 
 bool RenderProcessHostImpl::FastShutdownStarted() {
   return fast_shutdown_started_;

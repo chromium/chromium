@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/aw_content_browser_client.h"
-
 #include "android_webview/browser/aw_browser_context.h"
+#include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_print_manager.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
@@ -19,7 +18,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "content/public/browser/browser_associated_interface.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_context.h"

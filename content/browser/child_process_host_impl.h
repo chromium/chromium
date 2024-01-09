@@ -79,7 +79,9 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   absl::optional<mojo::OutgoingInvitation>& GetMojoInvitation() override;
   void CreateChannelMojo() override;
   bool IsChannelOpening() override;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   void AddFilter(IPC::MessageFilter* filter) override;
+#endif
   void BindReceiver(mojo::GenericPendingReceiver receiver) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -141,10 +143,12 @@ class CONTENT_EXPORT ChildProcessHostImpl : public ChildProcessHost,
   mojo::Remote<mojom::ChildProcess> child_process_;
   mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   // Holds all the IPC message filters.  Since this object lives on the IO
   // thread, we don't have a IPC::ChannelProxy and so we manage filters
   // manually.
   std::vector<scoped_refptr<IPC::MessageFilter>> filters_;
+#endif
 };
 
 }  // namespace content

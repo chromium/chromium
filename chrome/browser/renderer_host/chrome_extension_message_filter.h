@@ -13,12 +13,13 @@
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_l10n_util.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+
+#include "content/public/browser/browser_message_filter.h"
 
 // This class filters out incoming Chrome-specific IPC messages from the
 // extension process on the IPC thread.

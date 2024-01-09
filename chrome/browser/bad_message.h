@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_BAD_MESSAGE_H_
 
 namespace content {
-class BrowserMessageFilter;
 class RenderProcessHost;
 }
 
@@ -44,12 +43,6 @@ enum BadMessageReason {
 // the UI thread. Logs the event, records a histogram metric for the |reason|,
 // and terminates the process for |host|.
 void ReceivedBadMessage(content::RenderProcessHost* host,
-                        BadMessageReason reason);
-
-// Called when a browser message filter receives a bad IPC message from a
-// renderer or other child process. Logs the event, records a histogram metric
-// for the |reason|, and terminates the process for |filter|.
-void ReceivedBadMessage(content::BrowserMessageFilter* filter,
                         BadMessageReason reason);
 
 }  // namespace bad_message

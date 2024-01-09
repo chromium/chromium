@@ -10,7 +10,6 @@
 #include "content/browser/find_in_page_client.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"

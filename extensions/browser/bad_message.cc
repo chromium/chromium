@@ -8,8 +8,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
+#include "content/public/browser/browser_message_filter.h"
+#endif
 
 namespace extensions {
 namespace bad_message {
@@ -49,6 +52,7 @@ void ReceivedBadMessage(int render_process_id, BadMessageReason reason) {
   ReceivedBadMessage(rph, reason);
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_LEGACY_IPC)
 void ReceivedBadMessage(content::BrowserMessageFilter* filter,
                         BadMessageReason reason) {
   base::debug::ScopedCrashKeyString crash_key(GetBadMessageCrashKey(),
@@ -56,6 +60,7 @@ void ReceivedBadMessage(content::BrowserMessageFilter* filter,
   LogBadMessage(reason);
   filter->ShutdownForBadMessage();
 }
+#endif
 
 }  // namespace bad_message
 }  // namespace extensions

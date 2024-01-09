@@ -28,7 +28,6 @@
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_metadata_provider.h"

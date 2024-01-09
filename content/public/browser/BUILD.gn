@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
+import("//content/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
@@ -67,7 +68,6 @@ source_set("browser_sources") {
     "bluetooth_scanning_prompt.cc",
     "bluetooth_scanning_prompt.h",
     "browser_accessibility_state.h",
-    "browser_associated_interface.h",
     "browser_child_process_host.h",
     "browser_child_process_host_delegate.cc",
     "browser_child_process_host_delegate.h",
@@ -79,8 +79,6 @@ source_set("browser_sources") {
     "browser_main_parts.cc",
     "browser_main_parts.h",
     "browser_main_runner.h",
-    "browser_message_filter.cc",
-    "browser_message_filter.h",
     "browser_or_resource_context.cc",
     "browser_or_resource_context.h",
     "browser_plugin_guest_delegate.cc",
@@ -502,6 +500,13 @@ source_set("browser_sources") {
   if (rtc_use_pipewire) {
     configs +=
         [ "//third_party/webrtc/modules/desktop_capture:pipewire_config" ]
+  }
+
+  if (content_enable_legacy_ipc) {
+    sources += [
+      "browser_message_filter.cc",
+      "browser_message_filter.h",
+    ]
   }
 
   public_deps = [

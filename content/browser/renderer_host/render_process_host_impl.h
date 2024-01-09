@@ -36,6 +36,7 @@
 #include "content/browser/renderer_host/render_process_host_internal_observer.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/tracing/tracing_service_controller.h"
+#include "content/common/buildflags.h"
 #include "content/common/child_process.mojom.h"
 #include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom-forward.h"
@@ -264,7 +265,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void SetSuddenTerminationAllowed(bool enabled) override;
   bool SuddenTerminationAllowed() override;
   IPC::ChannelProxy* GetChannel() override;
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
   void AddFilter(BrowserMessageFilter* filter) override;
+#endif
   bool FastShutdownStarted() override;
   base::TimeDelta GetChildProcessIdleTime() override;
   viz::GpuClient* GetGpuClient();

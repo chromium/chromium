@@ -86,7 +86,6 @@
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/context_menu_params.h"

@@ -1057,7 +1057,6 @@ mojom("content_test_mojo_bindings") {
     "../public/test/mojo_capability_control_test_interfaces.mojom",
     "../public/test/test_service.mojom",
     "frame_host_test_interface.mojom",
-    "test_browser_associated_interfaces.mojom",
   ]
   public_deps = [
     "//mojo/public/mojom/base",
@@ -2338,7 +2337,6 @@ test("content_unittests") {
     "../browser/bluetooth/frame_connected_bluetooth_devices_unittest.cc",
     "../browser/bluetooth/web_bluetooth_pairing_manager_impl_unittest.cc",
     "../browser/bluetooth/web_bluetooth_service_impl_unittest.cc",
-    "../browser/browser_associated_interface_unittest.cc",
     "../browser/browser_main_loop_unittest.cc",
     "../browser/browser_thread_unittest.cc",
     "../browser/browser_url_handler_impl_unittest.cc",

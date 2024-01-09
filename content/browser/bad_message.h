@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BAD_MESSAGE_H_
 
 #include "base/debug/crash_logging.h"
+#include "content/common/buildflags.h"
 
 namespace content {
 class BrowserMessageFilter;
@@ -359,10 +360,12 @@ void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason);
 // Equivalent to the above, but callable from any thread.
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 
+#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
 // Called when a browser message filter receives a bad IPC message from a
 // renderer or other child process. Logs the event, records a histogram metric
 // for the |reason|, and terminates the process for |filter|.
 void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason);
+#endif
 
 // Site isolation. These keys help debug renderer kills such as
 // https://crbug.com/773140.
