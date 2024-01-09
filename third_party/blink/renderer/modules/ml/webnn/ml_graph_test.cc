@@ -459,6 +459,18 @@ TEST_P(MLGraphTest, ElementWiseUnaryTest) {
         .expected = {-1.0, 2.0, -3.0, 4.0}}
         .Test(*this, scope);
   }
+  {
+    // Test element-wise sqrt operator for a 4-D tensor.
+    // The expected results should be the square root value of the input
+    // tensor, element-wise.
+    ElementWiseUnaryTester<float>{
+        .kind = ElementWiseUnaryKind::kSqrt,
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1},
+                  .values = {1.0, 4.0, 9.0, 16.0}},
+        .expected = {1.0, 2.0, 3.0, 4.0}}
+        .Test(*this, scope);
+  }
 }
 
 template <typename T>

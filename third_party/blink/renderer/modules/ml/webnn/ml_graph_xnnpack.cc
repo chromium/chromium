@@ -1018,6 +1018,11 @@ xnn_status DefineXnnNodeForElementWiseUnary(
           xnn_define_negate(subgraph, input_id, output_id, flags));
       break;
     }
+    case MLOperator::OperatorKind::kSqrt: {
+      XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+          xnn_define_square_root(subgraph, input_id, output_id, flags));
+      break;
+    }
     default:
       NOTREACHED_NORETURN() << "Unsupported element-wise unary operator.";
   }
@@ -1737,7 +1742,8 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     case MLOperator::OperatorKind::kAbs:
     case MLOperator::OperatorKind::kCeil:
     case MLOperator::OperatorKind::kFloor:
-    case MLOperator::OperatorKind::kNeg: {
+    case MLOperator::OperatorKind::kNeg:
+    case MLOperator::OperatorKind::kSqrt: {
       XNN_CHECK_STATUS(DefineXnnNodeForElementWiseUnary(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
