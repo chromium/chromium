@@ -2343,8 +2343,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // dropdown is closed or the user used paste-and-go.  (In most
   // cases when this happens, the user never modified the omnibox.)
   const bool popup_open = PopupIsOpen();
-  if (input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT ||
-      !pasted_text.empty()) {
+  if (input_.IsZeroSuggest() || !pasted_text.empty()) {
     const base::TimeDelta default_time_delta = base::Milliseconds(-1);
     elapsed_time_since_user_first_modified_omnibox = default_time_delta;
     elapsed_time_since_last_change_to_default_match = default_time_delta;
@@ -2369,9 +2368,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   fake_single_entry_result.AppendMatches(fake_single_entry_matches);
 
   const std::u16string& user_text =
-      input_.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT
-          ? std::u16string()
-          : input_text;
+      input_.IsZeroSuggest() ? std::u16string() : input_text;
   size_t completed_length = match.allowed_to_be_default_match
                                 ? match.inline_autocompletion.length()
                                 : std::u16string::npos;

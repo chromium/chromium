@@ -141,8 +141,9 @@ bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     return false;
 
   // Reject on focus request.
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (input.IsZeroSuggest()) {
     return false;
+  }
 
   // Do not proceed if default search provider is not Google.
   return search::DefaultSearchProviderIsGoogle(

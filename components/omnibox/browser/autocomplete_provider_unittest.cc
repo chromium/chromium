@@ -232,8 +232,9 @@ void TestProvider::Start(const AutocompleteInput& input, bool minimal_changes) {
 
   matches_.clear();
 
-  if (input.focus_type() != metrics::OmniboxFocusType::INTERACTION_DEFAULT)
+  if (input.IsZeroSuggest()) {
     return;
+  }
 
   // Generate 4 results synchronously, the rest later.
   AddResults(0, 1);

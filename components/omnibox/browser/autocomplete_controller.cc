@@ -465,10 +465,8 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
                base::UTF16ToUTF8(input.text()));
 
   // Providers assume synchronous inputs (`omit_asynchronous_matches() ==
-  // true`) have default focus type (`focus_type() == INTERACTION_DEFAULT`). See
-  // crbug.com/1339425.
-  DCHECK(!input.omit_asynchronous_matches() ||
-         input.focus_type() == metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+  // true`) are not zero-suggest ones. See crbug.com/1339425.
+  DCHECK(!input.omit_asynchronous_matches() || !input.IsZeroSuggest());
 
   triggered_feature_service_->ResetInput();
 
