@@ -14512,6 +14512,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "FledgeDelayPostAuctionInterestGroupUpdate",
                         "FledgeUseInterestGroupCache"
                     ]
                 }
