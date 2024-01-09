@@ -948,7 +948,7 @@ void extended_text_input_set_large_surrounding_text(wl_client* client,
   {
     text.resize(size);
     base::ScopedFD fd(raw_fd);
-    if (!base::ReadFromFD(fd.get(), text.data(), size)) {
+    if (!base::ReadFromFD(fd.get(), text)) {
       PLOG(ERROR) << "Failed to read file descriptor for surrounding text";
       return;
     }
