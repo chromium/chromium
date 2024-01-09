@@ -72,7 +72,9 @@ const char kFakeAssetId[] = "FakeAssetId";
 
 class FakeUser : public user_manager::User {
  public:
-  FakeUser() : User(AccountId::FromUserEmail(kFakeUserEmail)) {
+  FakeUser()
+      : User(AccountId::FromUserEmail(kFakeUserEmail),
+             user_manager::USER_TYPE_REGULAR) {
     set_display_email(kFakeUserEmail);
     set_username_hash(kFakeUsernameHash);
   }
@@ -81,11 +83,6 @@ class FakeUser : public user_manager::User {
   FakeUser& operator=(const FakeUser&) = delete;
 
   ~FakeUser() override {}
-
-  // User overrides
-  user_manager::UserType GetType() const override {
-    return user_manager::USER_TYPE_REGULAR;
-  }
 };
 
 class MockPolicyProvidedCertsObserver

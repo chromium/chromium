@@ -61,7 +61,7 @@ bool User::TypeIsKiosk(UserType type) {
 // Also used for regular supervised users.
 class RegularUser : public User {
  public:
-  RegularUser(const AccountId& account_id, const UserType user_type);
+  RegularUser(const AccountId& account_id, UserType type);
 
   RegularUser(const RegularUser&) = delete;
   RegularUser& operator=(const RegularUser&) = delete;
@@ -69,12 +69,7 @@ class RegularUser : public User {
   ~RegularUser() override;
 
   // Overridden from User:
-  UserType GetType() const override;
-  void UpdateType(UserType user_type) override;
   bool CanSyncImage() const override;
-
- private:
-  bool is_child_;
 };
 
 class GuestUser : public User {
@@ -85,9 +80,6 @@ class GuestUser : public User {
   GuestUser& operator=(const GuestUser&) = delete;
 
   ~GuestUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
 };
 
 class DeviceLocalAccountUserBase : public User {
@@ -100,7 +92,8 @@ class DeviceLocalAccountUserBase : public User {
   bool IsAffiliated() const override;
 
  protected:
-  explicit DeviceLocalAccountUserBase(const AccountId& account_id);
+  explicit DeviceLocalAccountUserBase(const AccountId& account_id,
+                                      UserType type);
   ~DeviceLocalAccountUserBase() override;
   // User:
   void SetAffiliation(bool) override;
@@ -115,9 +108,6 @@ class KioskAppUser : public DeviceLocalAccountUserBase {
   KioskAppUser& operator=(const KioskAppUser&) = delete;
 
   ~KioskAppUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
 };
 
 class ArcKioskAppUser : public DeviceLocalAccountUserBase {
@@ -128,9 +118,6 @@ class ArcKioskAppUser : public DeviceLocalAccountUserBase {
   ArcKioskAppUser& operator=(const ArcKioskAppUser&) = delete;
 
   ~ArcKioskAppUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
 };
 
 class WebKioskAppUser : public DeviceLocalAccountUserBase {
@@ -141,9 +128,6 @@ class WebKioskAppUser : public DeviceLocalAccountUserBase {
   WebKioskAppUser& operator=(const WebKioskAppUser&) = delete;
 
   ~WebKioskAppUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
 };
 
 class PublicAccountUser : public DeviceLocalAccountUserBase {
@@ -154,15 +138,12 @@ class PublicAccountUser : public DeviceLocalAccountUserBase {
   PublicAccountUser& operator=(const PublicAccountUser&) = delete;
 
   ~PublicAccountUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
 };
 
-User::User(const AccountId& account_id)
-    : account_id_(account_id), user_image_(new UserImage) {}
+User::User(const AccountId& account_id, UserType type)
+    : account_id_(account_id), type_(type), user_image_(new UserImage) {}
 
-User::~User() {}
+User::~User() = default;
 
 std::string User::GetDisplayEmail() const {
   return display_email();
@@ -186,10 +167,29 @@ const AccountId& User::GetAccountId() const {
   return account_id_;
 }
 
-void User::UpdateType(UserType user_type) {
+void User::UpdateType(UserType new_type) {
+  // Can only change between regular and child.
+  if ((type_ == user_manager::USER_TYPE_CHILD ||
+       type_ == user_manager::USER_TYPE_REGULAR) &&
+      (new_type == user_manager::USER_TYPE_CHILD ||
+       new_type == user_manager::USER_TYPE_REGULAR)) {
+    // We want all the other type changes to crash, that is why this check is
+    // not at the top level.
+    if (type_ == new_type) {
+      return;
+    }
+
+    LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
+    type_ = new_type;
+
+    UMAUserTypeChanged(new_type == user_manager::USER_TYPE_CHILD
+                           ? UserTypeChangeHistogram::REGULAR_TO_CHILD
+                           : UserTypeChangeHistogram::CHILD_TO_REGULAR);
+    return;
+  }
+
   UMAUserTypeChanged(UserTypeChangeHistogram::UNKNOWN_FATAL);
-  LOG(FATAL) << "Unsupported user type change " << GetType() << "=>"
-             << user_type;
+  LOG(FATAL) << "Unsupported user type change " << type_ << "=>" << new_type;
 }
 
 bool User::HasGaiaAccount() const {
@@ -352,10 +352,10 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_is_loading_ = is_loading;
 }
 
-RegularUser::RegularUser(const AccountId& account_id, const UserType user_type)
-    : User(account_id), is_child_(user_type == USER_TYPE_CHILD) {
-  if (user_type != USER_TYPE_CHILD && user_type != USER_TYPE_REGULAR) {
-    LOG(FATAL) << "Invalid user type " << user_type;
+RegularUser::RegularUser(const AccountId& account_id, UserType type)
+    : User(account_id, type) {
+  if (type != USER_TYPE_CHILD && type != USER_TYPE_REGULAR) {
+    LOG(FATAL) << "Invalid user type " << type;
   }
 
   set_can_lock(true);
@@ -365,55 +365,22 @@ RegularUser::RegularUser(const AccountId& account_id, const UserType user_type)
 RegularUser::~RegularUser() {
 }
 
-UserType RegularUser::GetType() const {
-  return is_child_ ? user_manager::USER_TYPE_CHILD :
-                     user_manager::USER_TYPE_REGULAR;
-}
-
-void RegularUser::UpdateType(UserType user_type) {
-  const UserType current_type = GetType();
-  // Can only change between regular and child.
-  if ((user_type == user_manager::USER_TYPE_CHILD ||
-       user_type == user_manager::USER_TYPE_REGULAR) &&
-      (current_type == user_manager::USER_TYPE_CHILD ||
-       current_type == user_manager::USER_TYPE_REGULAR)) {
-    // We want all the other type changes to crash, that is why this check is
-    // not at the top level.
-    if (user_type == current_type)
-      return;
-    const bool old_is_child = is_child_;
-    is_child_ = user_type == user_manager::USER_TYPE_CHILD;
-
-    LOG(WARNING) << "User type has changed: " << current_type
-                 << " (is_child=" << old_is_child << ") => " << user_type
-                 << " (is_child=" << is_child_ << ")";
-    UMAUserTypeChanged(is_child_ ? UserTypeChangeHistogram::REGULAR_TO_CHILD
-                                 : UserTypeChangeHistogram::CHILD_TO_REGULAR);
-    return;
-  }
-  // Fail with LOG(FATAL).
-  User::UpdateType(user_type);
-}
-
 bool RegularUser::CanSyncImage() const {
   return true;
 }
 
 GuestUser::GuestUser(const AccountId& guest_account_id)
-    : User(guest_account_id) {
+    : User(guest_account_id, user_manager::USER_TYPE_GUEST) {
   set_display_email(std::string());
 }
 
 GuestUser::~GuestUser() {
 }
 
-UserType GuestUser::GetType() const {
-  return user_manager::USER_TYPE_GUEST;
-}
-
 DeviceLocalAccountUserBase::DeviceLocalAccountUserBase(
-    const AccountId& account_id) : User(account_id) {
-}
+    const AccountId& account_id,
+    UserType type)
+    : User(account_id, type) {}
 
 DeviceLocalAccountUserBase::~DeviceLocalAccountUserBase() {
 }
@@ -433,51 +400,39 @@ bool DeviceLocalAccountUserBase::IsDeviceLocalAccount() const {
 }
 
 KioskAppUser::KioskAppUser(const AccountId& kiosk_app_account_id)
-    : DeviceLocalAccountUserBase(kiosk_app_account_id) {
+    : DeviceLocalAccountUserBase(kiosk_app_account_id,
+                                 user_manager::USER_TYPE_KIOSK_APP) {
   set_display_email(kiosk_app_account_id.GetUserEmail());
 }
 
 KioskAppUser::~KioskAppUser() {
 }
 
-UserType KioskAppUser::GetType() const {
-  return user_manager::USER_TYPE_KIOSK_APP;
-}
-
 ArcKioskAppUser::ArcKioskAppUser(const AccountId& arc_kiosk_account_id)
-    : DeviceLocalAccountUserBase(arc_kiosk_account_id) {
+    : DeviceLocalAccountUserBase(arc_kiosk_account_id,
+                                 user_manager::USER_TYPE_ARC_KIOSK_APP) {
   set_display_email(arc_kiosk_account_id.GetUserEmail());
 }
 
 ArcKioskAppUser::~ArcKioskAppUser() {
 }
 
-UserType ArcKioskAppUser::GetType() const {
-  return user_manager::USER_TYPE_ARC_KIOSK_APP;
-}
-
 WebKioskAppUser::WebKioskAppUser(const AccountId& web_kiosk_account_id)
-    : DeviceLocalAccountUserBase(web_kiosk_account_id) {
+    : DeviceLocalAccountUserBase(web_kiosk_account_id,
+                                 user_manager::USER_TYPE_WEB_KIOSK_APP) {
   set_display_email(web_kiosk_account_id.GetUserEmail());
 }
 
 WebKioskAppUser::~WebKioskAppUser() {}
 
-UserType WebKioskAppUser::GetType() const {
-  return user_manager::USER_TYPE_WEB_KIOSK_APP;
-}
-
 PublicAccountUser::PublicAccountUser(const AccountId& account_id)
-    : DeviceLocalAccountUserBase(account_id) {
+    : DeviceLocalAccountUserBase(account_id,
+                                 user_manager::USER_TYPE_PUBLIC_ACCOUNT) {
   // Public accounts do not have a real email address, so they do not set
   // |display_email_|.
 }
 
 PublicAccountUser::~PublicAccountUser() {
-}
-
-UserType PublicAccountUser::GetType() const {
-  return user_manager::USER_TYPE_PUBLIC_ACCOUNT;
 }
 
 }  // namespace user_manager
