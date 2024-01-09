@@ -437,7 +437,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
       breadcrumbElement.i18n('seaPenLabel'),
-      'Airbrushed',
+      'Airbrush',
     ]);
 
     const original = PersonalizationRouterElement.instance;
@@ -506,7 +506,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     const selectedElement =
         dropdownMenu.querySelectorAll('button[aria-selected=\'true\']');
     assertEquals(1, selectedElement.length);
-    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
+    assertEquals('Airbrush', (selectedElement[0] as HTMLElement)!.innerText);
   });
 
   test('navigates with SeaPen dropdown', async () => {
