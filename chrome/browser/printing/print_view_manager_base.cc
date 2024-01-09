@@ -402,7 +402,7 @@ void PrintViewManagerBase::OnPrintSettingsDone(
   if (!printer_query->cookie() || !printer_query->settings().dpi()) {
     PRINTER_LOG(ERROR) << "Unable to update print settings";
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-    if (printing::features::kEnableOopPrintDriversJobPrint.Get()) {
+    if (ShouldPrintJobOop()) {
       UnregisterSystemPrintClient();
     }
 #endif

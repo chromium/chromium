@@ -90,7 +90,7 @@ BASE_FEATURE(kEnableOopPrintDrivers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<bool> kEnableOopPrintDriversJobPrint{
-    &kEnableOopPrintDrivers, "JobPrint", false};
+    &kEnableOopPrintDrivers, "JobPrint", true};
 
 const base::FeatureParam<bool> kEnableOopPrintDriversSandbox{
     &kEnableOopPrintDrivers, "Sandbox", false};
