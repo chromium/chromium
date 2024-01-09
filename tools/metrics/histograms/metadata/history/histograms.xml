@@ -1794,24 +1794,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DomainCountQueryTime_V3" units="ms"
-    expires_after="2024-01-28">
-  <owner>mpearson@chromium.org</owner>
-  <owner>mjzhang@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Time spent on a scheduled computation task of domain visit counts. Each such
-    task computes a number of (at least 1 and up to 7) sets of domain counts,
-    where each set includes 3 results, for a 1-day, 7-day and 28-day period
-    respectively. Note that for each computation task, only one query time is
-    reported which covers the entire duration of the task. A task is scheduled
-    once per regular profile (not Incognito, Guest, System, etc. profiles) at
-    startup and every 24 hours per profile thereafter while the profile remains
-    open.
-  </summary>
-</histogram>
-
 <histogram name="History.FaviconDatabaseSizeMB" units="MB" expires_after="M130">
   <owner>rogerm@chromium.org</owner>
   <owner>sky@chromium.org</owner>
