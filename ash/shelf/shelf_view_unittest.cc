@@ -1034,6 +1034,33 @@ TEST_F(ShelfViewTest, NotPinnableItemCantBePinnedByDragging) {
   EXPECT_FALSE(IsAppPinned(id));
 }
 
+// Verifies that a "dialog" item is correctly detected as not pinned when
+// determining the separator position, and that it cannot be dragged to pinned
+// state.
+TEST_F(ShelfViewTest, SeparatorCorrectlyPositionedNextToDialogItem) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  size_t pinned_apps_size = id_map.size();
+
+  const ShelfID dialog_id = AddItem(TYPE_DIALOG, true);
+  id_map.emplace_back(dialog_id, GetButtonByID(dialog_id));
+
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+
+  // Drag an unpinnable dialog item and move it to the beginning of the shelf.
+  // The item cannot be moved across the separator so the dragged item will
+  // remain unpinned after release.
+  views::View* dragged_button =
+      SimulateDrag(ShelfView::MOUSE, id_map.size() - 1, 0, false);
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  ASSERT_NO_FATAL_FAILURE(CheckModelIDs(id_map));
+  shelf_view_->PointerReleasedOnButton(dragged_button, ShelfView::MOUSE, false);
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(1, GetHapticTickEventsCount());
+  EXPECT_EQ(test_api_->GetSeparatorIndex(), pinned_apps_size - 1);
+  EXPECT_FALSE(IsAppPinned(dialog_id));
+}
+
 // Check that separator index updates as expected when a drag view is dragged
 // over it.
 TEST_F(ShelfViewTest, DragAppAroundSeparator) {
