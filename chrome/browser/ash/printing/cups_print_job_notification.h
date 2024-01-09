@@ -53,7 +53,6 @@ class CupsPrintJobNotification : public message_center::NotificationObserver {
   void UpdateNotificationTitle();
   void UpdateNotificationIcon();
   void UpdateNotificationBodyMessage();
-  void UpdateNotificationTimeout();
 
   void CleanUpNotification();
 
