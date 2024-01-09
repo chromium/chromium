@@ -1017,9 +1017,6 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
   }
   const ui::NativeTheme* GetNativeTheme() const;
 
-  // Sets the native theme and informs descendants.
-  void SetNativeThemeForTesting(ui::NativeTheme* theme);
-
   // RTL painting --------------------------------------------------------------
 
   // Returns whether the gfx::Canvas object passed to Paint() needs to be

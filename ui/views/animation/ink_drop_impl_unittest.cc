@@ -44,7 +44,7 @@ class InkDropImplTest : public ViewsTestBase {
   }
 
   void TearDown() override {
-    widget_.reset();
+    DestroyWidget();
     ViewsTestBase::TearDown();
   }
 
@@ -65,6 +65,7 @@ class InkDropImplTest : public ViewsTestBase {
   test::InkDropImplTestApi test_api() {
     return test::InkDropImplTestApi(ink_drop());
   }
+  Widget* widget() { return widget_.get(); }
 
   // Returns true if the ink drop layers have been added to `ink_drop_host()`.
   bool AreLayersAddedToHost() {
@@ -75,6 +76,8 @@ class InkDropImplTest : public ViewsTestBase {
     InkDrop::Get(ink_drop_host())
         ->SetMode(views::InkDropHost::InkDropMode::OFF);
   }
+
+  void DestroyWidget() { widget_.reset(); }
 
  private:
   const InkDropImpl::AutoHighlightMode auto_highlight_mode_;
@@ -300,11 +303,12 @@ TEST_F(InkDropImplTest, RippleAndHighlightRecreatedOnHostThemeChange) {
 
   ui::TestNativeTheme native_theme;
   native_theme.SetDarkMode(true);
-  ink_drop_host()->SetNativeThemeForTesting(&native_theme);
+  widget()->SetNativeThemeForTest(&native_theme);
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_ripples_created());
   EXPECT_EQ(2, ink_drop_host()->num_ink_drop_highlights_created());
   EXPECT_EQ(ink_drop_host()->last_ink_drop_ripple(), ink_drop_ripple());
   EXPECT_EQ(ink_drop_host()->last_ink_drop_highlight(), ink_drop_highlight());
+  DestroyWidget();
 }
 
 // Verifies that the host's GetHighlighted() method reflects the ink drop's

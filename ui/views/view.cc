@@ -1345,9 +1345,6 @@ const ui::ColorProvider* View::GetColorProvider() const {
 }
 
 const ui::NativeTheme* View::GetNativeTheme() const {
-  if (native_theme_)
-    return native_theme_;
-
   if (parent())
     return parent()->GetNativeTheme();
 
@@ -1366,19 +1363,6 @@ const ui::NativeTheme* View::GetNativeTheme() const {
   }
 
   return ui::NativeTheme::GetInstanceForNativeUi();
-}
-
-void View::SetNativeThemeForTesting(ui::NativeTheme* theme) {
-  // In testing, View maybe not have a parent or widget, in this case we set the
-  // `native_theme_` to the global NativeTheme to prevent the DCHECK in
-  // GetNativeTheme().
-  if (!native_theme_ && !parent() && !GetWidget()) {
-    native_theme_ = ui::NativeTheme::GetInstanceForNativeUi();
-  }
-  ui::NativeTheme* original_native_theme = GetNativeTheme();
-  native_theme_ = theme;
-  if (native_theme_ != original_native_theme)
-    PropagateThemeChanged();
 }
 
 // RTL painting ----------------------------------------------------------------
