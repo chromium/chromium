@@ -5,12 +5,12 @@
 import './shimless_rma_shared.css.js';
 import './base_page.js';
 
-import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
-import {mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_wait_for_manual_wp_disable_page.html.js';
-import {HardwareWriteProtectionStateObserverInterface, HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {HardwareWriteProtectionStateObserverReceiver, ShimlessRmaServiceInterface} from './shimless_rma.mojom-webui.js';
 import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
 
 /**
@@ -19,19 +19,12 @@ import {disableAllButtons, focusPageTitle} from './shimless_rma_util.js';
  * to be completed.
  */
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {I18nBehaviorInterface}
- */
-const OnboardingWaitForManualWpDisablePageBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const OnboardingWaitForManualWpDisablePageBase = I18nMixin(PolymerElement);
 
-/** @polymer */
 export class OnboardingWaitForManualWpDisablePage extends
     OnboardingWaitForManualWpDisablePageBase {
   static get is() {
-    return 'onboarding-wait-for-manual-wp-disable-page';
+    return 'onboarding-wait-for-manual-wp-disable-page' as const;
   }
 
   static get template() {
@@ -40,7 +33,6 @@ export class OnboardingWaitForManualWpDisablePage extends
 
   static get properties() {
     return {
-      /** @protected */
       hwwpEnabled: {
         type: Boolean,
         value: true,
@@ -48,63 +40,51 @@ export class OnboardingWaitForManualWpDisablePage extends
     };
   }
 
-  // TODO(gavindodd): battery_status_card.js uses created() and detached() to
-  // create and close observer. Is that the pattern that should be used here?
+  shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
+  private hardwareWriteProtectionStateObserverReceiver: HardwareWriteProtectionStateObserverReceiver;
+  protected hwwpEnabled: boolean;
 
   constructor() {
     super();
-    /** @private {ShimlessRmaServiceInterface} */
-    this.shimlessRmaService = getShimlessRmaService();
-    /** @private {?HardwareWriteProtectionStateObserverReceiver} */
     this.hardwareWriteProtectionStateObserverReceiver =
-        new HardwareWriteProtectionStateObserverReceiver(
-            /** @type {!HardwareWriteProtectionStateObserverInterface} */
-            (this));
+        new HardwareWriteProtectionStateObserverReceiver(this);
 
     this.shimlessRmaService.observeHardwareWriteProtectionState(
         this.hardwareWriteProtectionStateObserverReceiver.$
             .bindNewPipeAndPassRemote());
   }
 
-  /** @override */
-  ready() {
+  override ready() {
     super.ready();
 
     focusPageTitle(this);
   }
 
-  /**
-   * @param {boolean} enabled
-   * @public
-   */
-  onHardwareWriteProtectionStateChanged(enabled) {
+  onHardwareWriteProtectionStateChanged(enabled: boolean) {
     this.hwwpEnabled = enabled;
 
     if(!this.hidden) {
       if (!this.hwwpEnabled) {
         disableAllButtons(this, /*showBusyStateOverlay=*/ false);
-        // TODO(swifton): Hide the cancel button.
       }
     }
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getPageTitle() {
+  protected getPageTitle(): string {
     return this.hwwpEnabled ? this.i18n('manuallyDisableWpTitleText') :
                               this.i18n('manuallyDisableWpTitleTextReboot');
   }
 
-  /**
-   * @return {string}
-   * @protected
-   */
-  getInstructions() {
+  protected getInstructions(): string {
     return this.hwwpEnabled ?
         this.i18n('manuallyDisableWpInstructionsText') :
         this.i18n('manuallyDisableWpInstructionsTextReboot');
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [OnboardingWaitForManualWpDisablePage.is]: OnboardingWaitForManualWpDisablePage;
   }
 }
 
