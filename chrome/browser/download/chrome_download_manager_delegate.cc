@@ -452,6 +452,31 @@ download::DownloadDangerType SavePackageDangerType(
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Events related to ephemeral warning cancellation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CancelEphemeralWarningEvent {
+  // The delayed task is scheduled.
+  kCancellationScheduled = 0,
+  // The delayed task is invoked. The volume should be the sum of all buckets
+  // below.
+  kCancellationTriggered = 1,
+  // The cancellation failed because the download is not found.
+  kCancellationFailedDownloadNotFound = 2,
+  // The cancellation failed because the download is not an ephemeral warning.
+  kCancellationFailedDownloadNotEphemeral = 3,
+  // The cancellation succeeded.
+  kCancellationSucceeded = 4,
+  kMaxValue = kCancellationSucceeded
+};
+
+void LogCancelEphemeralWarningEvent(CancelEphemeralWarningEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.CancelEphemeralWarning",
+                                event);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 ChromeDownloadManagerDelegate::ChromeDownloadManagerDelegate(Profile* profile)
@@ -1919,6 +1944,8 @@ void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
   if (!download::IsDownloadBubbleEnabled()) {
     return;
   }
+  LogCancelEphemeralWarningEvent(
+      CancelEphemeralWarningEvent::kCancellationScheduled);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ChromeDownloadManagerDelegate::CancelForEphemeralWarning,
@@ -1928,16 +1955,25 @@ void ChromeDownloadManagerDelegate::ScheduleCancelForEphemeralWarning(
 
 void ChromeDownloadManagerDelegate::CancelForEphemeralWarning(
     const std::string& guid) {
+  LogCancelEphemeralWarningEvent(
+      CancelEphemeralWarningEvent::kCancellationTriggered);
   download::DownloadItem* download = download_manager_->GetDownloadByGuid(guid);
 
   if (!download) {
+    LogCancelEphemeralWarningEvent(
+        CancelEphemeralWarningEvent::kCancellationFailedDownloadNotFound);
     // The download may have been destroyed since the task was scheduled
     return;
   }
 
   // Confirm that the user has not already acted on the warning.
   if (std::make_unique<DownloadItemModel>(download)->IsEphemeralWarning()) {
+    LogCancelEphemeralWarningEvent(
+        CancelEphemeralWarningEvent::kCancellationSucceeded);
     download->Cancel(/*user_cancel=*/false);
+  } else {
+    LogCancelEphemeralWarningEvent(
+        CancelEphemeralWarningEvent::kCancellationFailedDownloadNotEphemeral);
   }
 }
 

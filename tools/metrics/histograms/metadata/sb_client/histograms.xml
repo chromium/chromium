@@ -49,6 +49,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientDownload.CancelEphemeralWarning"
+    enum="CancelEphemeralWarningEvent" expires_after="2024-07-08">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the events related to ephemeral warning cancellation. Compare the
+    bucket count between CancellationScheduled and CancellationTriggered to see
+    how often the delayed task actually got triggered after one hour. The volume
+    of the rest of the buckets should sum up to the CancellationTriggered
+    bucket.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.CheckDownloadStats"
     enum="SBClientDownloadCheckDownloadStats" expires_after="2024-06-30">
   <owner>vakh@chromium.org</owner>
