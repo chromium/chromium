@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
@@ -10,25 +10,20 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_tile_layout_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/magic_stack_module_container_delegate.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
-#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+#import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_contents_factory.h"
 
 namespace {
 
@@ -72,11 +67,14 @@ const CGFloat kSeparatorHeight = 0.5;
   UIStackView* _stackView;
   UIImageView* _placeholderImage;
   UIStackView* _titleStackView;
+    MagicStackModuleContentsFactory* _magicStackModuleContentsFactory;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _magicStackModuleContentsFactory = [[MagicStackModuleContentsFactory alloc] init];
+
     self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
 
@@ -298,7 +296,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
   _separator.hidden = ![self shouldShowSeparator];
 
-  _contentView = [self contentViewForConfig:config];
+  _contentView = [_magicStackModuleContentsFactory contentViewForConfig:config traitCollection:self.traitCollection];
   [_stackView addArrangedSubview:_contentView];
 
   // Configures `contentView` to be the view willing to expand if needed to
@@ -433,66 +431,6 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 #pragma mark - Helpers
-
-// Returns the module contents of `config`'s module type.
-- (UIView*)contentViewForConfig:(MagicStackModule*)config {
-  switch (config.type) {
-    case ContentSuggestionsModuleType::kMostVisited: {
-      CGFloat horizontalSpacing =
-          ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
-      UIStackView* mostVisitedStackView = [[UIStackView alloc] init];
-      mostVisitedStackView.axis = UILayoutConstraintAxisHorizontal;
-      mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
-      mostVisitedStackView.spacing = horizontalSpacing;
-      mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-
-      MostVisitedTilesConfig* mvtConfig =
-          static_cast<MostVisitedTilesConfig*>(config);
-
-      NSInteger index = 0;
-      for (ContentSuggestionsMostVisitedItem* item in mvtConfig
-               .mostVisitedItems) {
-        ContentSuggestionsMostVisitedTileView* view =
-            [[ContentSuggestionsMostVisitedTileView alloc]
-                initWithConfiguration:item];
-        view.menuProvider = item.menuProvider;
-        view.accessibilityIdentifier = [NSString
-            stringWithFormat:
-                @"%@%li",
-                kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix,
-                index];
-
-        __weak ContentSuggestionsMostVisitedItem* weakItem = item;
-        __weak ContentSuggestionsMostVisitedTileView* weakView = view;
-        void (^completion)(FaviconAttributes*) =
-            ^(FaviconAttributes* attributes) {
-              ContentSuggestionsMostVisitedTileView* strongView = weakView;
-              ContentSuggestionsMostVisitedItem* strongItem = weakItem;
-              if (!strongView || !strongItem) {
-                return;
-              }
-
-              strongItem.attributes = attributes;
-              [strongView.faviconView configureWithAttributes:attributes];
-            };
-        [mvtConfig.imageDataSource fetchFaviconForURL:item.URL
-                                           completion:completion];
-        UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
-            initWithTarget:mvtConfig.commandHandler
-                    action:@selector(mostVisitedTileTapped:)];
-        view.tapRecognizer = tapRecognizer;
-        [view addGestureRecognizer:tapRecognizer];
-        tapRecognizer.enabled = YES;
-        [mostVisitedStackView addArrangedSubview:view];
-        index++;
-      }
-
-      return mostVisitedStackView;
-    }
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
 
 - (void)seeMoreButtonWasTapped:(UIButton*)button {
   [_delegate seeMoreWasTappedForModuleType:_type];

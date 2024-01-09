@@ -20,15 +20,8 @@ source_set("cells") {
     "content_suggestions_selection_actions.h",
     "content_suggestions_shortcut_tile_view.h",
     "content_suggestions_shortcut_tile_view.mm",
-    "content_suggestions_tile_layout_util.h",
-    "content_suggestions_tile_layout_util.mm",
     "content_suggestions_tile_view.h",
     "content_suggestions_tile_view.mm",
-    "magic_stack_module_container.h",
-    "magic_stack_module_container.mm",
-    "magic_stack_module_container_delegate.h",
-    "most_visited_tiles_config.h",
-    "most_visited_tiles_config.mm",
     "multi_row_container_view.h",
     "multi_row_container_view.mm",
     "parcel_tracking_item.h",
@@ -56,7 +49,6 @@ source_set("cells") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/identifier",
-    "//ios/chrome/browser/ui/content_suggestions/magic_stack",
     "//ios/chrome/browser/ui/ntp:constants",
     "//ios/chrome/browser/ui/resources:module_shadow",
     "//ios/chrome/common:string_util",
@@ -79,11 +71,15 @@ source_set("constants") {
     "content_suggestions_cells_constants.mm",
     "content_suggestions_tile_constants.h",
     "content_suggestions_tile_constants.mm",
+    "content_suggestions_tile_layout_util.h",
+    "content_suggestions_tile_layout_util.mm",
   ]
 
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/util",
     "//ui/base:base",
   ]
 }
@@ -93,6 +89,7 @@ source_set("unit_tests") {
   sources = [ "content_suggestions_tile_layout_util_unittest.mm" ]
   deps = [
     ":cells",
+    ":constants",
     "//base",
     "//ios/chrome/common/ui/favicon",
     "//testing/gtest",

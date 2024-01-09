@@ -6,9 +6,31 @@ source_set("magic_stack") {
   sources = [
     "magic_stack_module.h",
     "magic_stack_module.mm",
+    "magic_stack_module_container.h",
+    "magic_stack_module_container.mm",
+    "magic_stack_module_container_delegate.h",
+    "magic_stack_module_contents_factory.h",
+    "magic_stack_module_contents_factory.mm",
+    "most_visited_tiles_config.h",
+    "most_visited_tiles_config.mm",
     "placeholder_config.h",
     "placeholder_config.mm",
   ]
-  deps = [ "//ios/chrome/browser/ui/content_suggestions:constants" ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
+    "//ios/chrome/browser/ui/content_suggestions:public",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/browser/ui/content_suggestions/cells:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
