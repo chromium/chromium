@@ -51,4 +51,28 @@ public class WebauthnModeProviderRobolectricTest {
         assertThat(mProvider.getCredManRequestDecorator())
                 .isInstanceOf(GpmCredManRequestDecorator.class);
     }
+
+    @Test
+    @SmallTest
+    public void testGetFido2ApiCallParams_whenModeApp_thenAppApi() {
+        mProvider.setWebauthnMode(WebauthnMode.APP);
+
+        assertThat(mProvider.getFido2ApiCallParams()).isEqualTo(Fido2ApiCall.APP_API);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetFido2ApiCallParams_whenModeBrowser_thenBrowserApi() {
+        mProvider.setWebauthnMode(WebauthnMode.BROWSER);
+
+        assertThat(mProvider.getFido2ApiCallParams()).isEqualTo(Fido2ApiCall.BROWSER_API);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetFido2ApiCallParams_whenModeChrome_thenBrowserApi() {
+        mProvider.setWebauthnMode(WebauthnMode.CHROME);
+
+        assertThat(mProvider.getFido2ApiCallParams()).isEqualTo(Fido2ApiCall.BROWSER_API);
+    }
 }

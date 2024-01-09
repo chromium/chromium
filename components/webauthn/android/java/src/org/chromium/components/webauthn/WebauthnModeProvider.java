@@ -6,6 +6,7 @@ package org.chromium.components.webauthn;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 import org.chromium.components.webauthn.cred_man.AppCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.BrowserCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.CredManRequestDecorator;
@@ -32,6 +33,17 @@ public class WebauthnModeProvider {
             return GpmCredManRequestDecorator.getInstance();
         } else {
             assert false : "WebauthnMode not set! Please set using WebauthnModeProvider.setMode()";
+        }
+        return null;
+    }
+
+    public Fido2ApiCallParams getFido2ApiCallParams() {
+        if (mMode == WebauthnMode.APP) {
+            return Fido2ApiCall.APP_API;
+        } else if (mMode == WebauthnMode.BROWSER || mMode == WebauthnMode.CHROME) {
+            return Fido2ApiCall.BROWSER_API;
+        } else {
+            assert false : "WebauthnMode not set! Please set using WebAuthnModeProvider.setMode()";
         }
         return null;
     }

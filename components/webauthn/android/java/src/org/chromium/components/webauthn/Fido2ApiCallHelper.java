@@ -17,6 +17,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
+import org.chromium.components.webauthn.Fido2ApiCall.Fido2ApiCallParams;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -81,14 +82,12 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
-        Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options, uri, clientDataHash, args);
+        Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
+
+        params.mMethodInterfaces.makeCredential(options, uri, clientDataHash, args);
 
         Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_REGISTER,
-                        Fido2ApiCall.TRANSACTION_REGISTER,
-                        args,
-                        result);
+                call.run(params.mRegisterMethodId, Fido2ApiCall.TRANSACTION_REGISTER, args, result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }
@@ -105,14 +104,11 @@ public class Fido2ApiCallHelper {
         args.writeStrongBinder(result);
         args.writeInt(1); // This indicates that the following options are present.
 
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
+        Fido2ApiCallParams params = WebauthnModeProvider.getInstance().getFido2ApiCallParams();
+        params.mMethodInterfaces.getAssertion(
                 options, uri, clientDataHash, /* tunnelId= */ null, args);
         Task<PendingIntent> task =
-                call.run(
-                        Fido2ApiCall.METHOD_BROWSER_SIGN,
-                        Fido2ApiCall.TRANSACTION_SIGN,
-                        args,
-                        result);
+                call.run(params.mSignMethodId, Fido2ApiCall.TRANSACTION_SIGN, args, result);
         task.addOnSuccessListener(successCallback);
         task.addOnFailureListener(failureCallback);
     }
