@@ -1,6 +1,6 @@
 [package]
 name = "skrifa"
-version = "0.15.1"
+version = "0.15.2"
 edition = "2021"
 license = "MIT/Apache-2.0"
 description = "Metadata reader and glyph scaler for OpenType fonts."

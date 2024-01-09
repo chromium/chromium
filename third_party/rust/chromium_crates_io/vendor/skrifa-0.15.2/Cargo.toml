@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "skrifa"
-version = "0.15.1"
+version = "0.15.2"
 description = "Metadata reader and glyph scaler for OpenType fonts."
 readme = "README.md"
 categories = [

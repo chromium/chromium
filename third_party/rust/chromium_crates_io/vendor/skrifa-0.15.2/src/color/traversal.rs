@@ -1,4 +1,7 @@
-use std::{cmp::Ordering, collections::HashSet, ops::Range};
+use std::{
+    cmp::Ordering, collections::hash_map::DefaultHasher, collections::HashSet, hash::BuildHasher,
+    ops::Range,
+};
 
 use read_fonts::{
     tables::colr::{CompositeMode, Extend},
@@ -12,6 +15,16 @@ use super::{
     },
     Brush, ColorPainter, ColorStop, PaintCachedColorGlyph, PaintError,
 };
+
+// Workaround for https://bugs.chromium.org/p/chromium/issues/detail?id=1516634.
+pub(crate) struct NonRandomHasherState;
+
+impl BuildHasher for NonRandomHasherState {
+    type Hasher = DefaultHasher;
+    fn build_hasher(&self) -> DefaultHasher {
+        DefaultHasher::new()
+    }
+}
 
 pub(crate) fn get_clipbox_font_units(
     colr_instance: &ColrInstance,
@@ -43,7 +56,7 @@ pub(crate) fn traverse_with_callbacks(
     paint: &ResolvedPaint,
     instance: &ColrInstance,
     painter: &mut impl ColorPainter,
-    visited_set: &mut HashSet<usize>,
+    visited_set: &mut HashSet<usize, NonRandomHasherState>,
 ) -> Result<(), PaintError> {
     match paint {
         ResolvedPaint::ColrLayers { range } => {
