@@ -99,16 +99,6 @@ bool WriteLocalTrustedVaultFile(
   return base::WriteFile(path, file_proto.SerializeAsString());
 }
 
-bool WriteLocalEncryptedTrustedVaultFile(
-    const trusted_vault_pb::LocalTrustedVault& proto,
-    const base::FilePath& path) {
-  std::string encrypted_content;
-  if (!OSCrypt::EncryptString(proto.SerializeAsString(), &encrypted_content)) {
-    return false;
-  }
-  return base::WriteFile(path, encrypted_content);
-}
-
 trusted_vault_pb::LocalTrustedVault ReadLocalTrustedVaultFile(
     const base::FilePath& path) {
   std::string file_content;
@@ -176,10 +166,9 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
 class StandaloneTrustedVaultBackendTest : public testing::Test {
  public:
   StandaloneTrustedVaultBackendTest()
-      : file_path_(CreateUniqueTempDir(&temp_dir_)
-                       .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))),
-        deprecated_file_path_(temp_dir_.GetPath().Append(
-            base::FilePath(FILE_PATH_LITERAL("deprecated_file")))) {
+      : file_path_(
+            CreateUniqueTempDir(&temp_dir_)
+                .Append(base::FilePath(FILE_PATH_LITERAL("some_file")))) {
     clock_.SetNow(base::Time::Now());
     ResetBackend();
   }
@@ -199,8 +188,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     connection_ = connection.get();
 
     backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-        file_path_, deprecated_file_path_, std::move(delegate),
-        std::move(connection));
+        file_path_, std::move(delegate), std::move(connection));
     backend_->SetClockForTesting(&clock_);
     backend_->ReadDataFromDisk();
 
@@ -224,8 +212,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
 
   const base::FilePath& file_path() { return file_path_; }
-
-  const base::FilePath& deprecated_file_path() { return deprecated_file_path_; }
 
   void SetPrimaryAccountWithUnknownAuthError(
       absl::optional<CoreAccountInfo> primary_account) {
@@ -287,7 +273,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
  private:
   base::ScopedTempDir temp_dir_;
   const base::FilePath file_path_;
-  const base::FilePath deprecated_file_path_;
   raw_ptr<testing::NiceMock<MockDelegate>, DanglingUntriaged> delegate_ =
       nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultConnection>, DanglingUntriaged>
@@ -509,40 +494,6 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldReadAndFetchNonEmptyKeys) {
   backend()->FetchKeys(account_info_2, fetch_keys_callback.Get());
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldMigrateDataFromDeprecatedFile) {
-  const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
-  const std::vector<uint8_t> kKey = {0, 1, 2, 3, 4};
-  const int kLastKeyVersion = 1;
-
-  trusted_vault_pb::LocalTrustedVault initial_data;
-  // Migration from version 0 to version 1 makes test more complex, bypass it.
-  initial_data.set_data_version(1);
-
-  trusted_vault_pb::LocalTrustedVaultPerUser* user_data =
-      initial_data.add_user();
-  user_data->set_gaia_id(account_info.gaia);
-  user_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
-  user_data->set_last_vault_key_version(kLastKeyVersion);
-
-  ASSERT_TRUE(WriteLocalEncryptedTrustedVaultFile(initial_data,
-                                                  deprecated_file_path()));
-  backend()->ReadDataFromDisk();
-
-  // Ensure that backend is able to use data from deprecated file.
-  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
-      fetch_keys_callback;
-  EXPECT_CALL(fetch_keys_callback, Run(/*keys=*/ElementsAre(kKey)));
-  backend()->FetchKeys(account_info, fetch_keys_callback.Get());
-
-  // Ensure that backend completed file migration.
-  EXPECT_FALSE(base::PathExists(deprecated_file_path()));
-  trusted_vault_pb::LocalTrustedVault proto =
-      ReadLocalTrustedVaultFile(file_path());
-  ASSERT_THAT(proto.user_size(), Eq(1));
-  EXPECT_THAT(proto.user(0).vault_key(), ElementsAre(KeyMaterialEq(kKey)));
-  EXPECT_THAT(proto.user(0).last_vault_key_version(), Eq(kLastKeyVersion));
-}
-
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user1");
   const std::vector<uint8_t> kKey = {1, 2, 3, 4};
@@ -685,8 +636,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchPreviouslyStoredKeys) {
 
   // Instantiate a second backend to read the file.
   auto other_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(), deprecated_file_path(),
-      std::make_unique<testing::NiceMock<MockDelegate>>(),
+      file_path(), std::make_unique<testing::NiceMock<MockDelegate>>(),
       std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>());
   other_backend->ReadDataFromDisk();
 
@@ -779,7 +729,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   // Mimic browser restart and reset primary account.
   auto new_backend = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      file_path(), deprecated_file_path(),
+      file_path(),
       /*delegate=*/std::make_unique<testing::NiceMock<MockDelegate>>(),
       /*connection=*/nullptr);
   new_backend->ReadDataFromDisk();

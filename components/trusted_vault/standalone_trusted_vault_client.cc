@@ -237,8 +237,6 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
 
 constexpr base::FilePath::CharType kChromeSyncTrustedVaultFilename[] =
     FILE_PATH_LITERAL("trusted_vault.pb");
-constexpr base::FilePath::CharType kChromeSyncDeprecatedTrustedVaultFilename[] =
-    FILE_PATH_LITERAL("Trusted Vault");
 constexpr base::FilePath::CharType kPasskeysTrustedVaultFilename[] =
     FILE_PATH_LITERAL("passkeys_trusted_vault.pb");
 
@@ -249,18 +247,6 @@ base::FilePath GetBackendFilePath(const base::FilePath& base_dir,
       return base_dir.Append(kChromeSyncTrustedVaultFilename);
     case SecurityDomainId::kPasskeys:
       return base_dir.Append(kPasskeysTrustedVaultFilename);
-  }
-  NOTREACHED_NORETURN();
-}
-
-base::FilePath GetBackendDeprecatedFilePath(const base::FilePath& base_dir,
-                                            SecurityDomainId security_domain) {
-  switch (security_domain) {
-    case SecurityDomainId::kChromeSync:
-      return base_dir.Append(kChromeSyncDeprecatedTrustedVaultFilename);
-    case SecurityDomainId::kPasskeys:
-      // There is no legacy file for passkeys that needs to be migrated.
-      return base::FilePath();
   }
   NOTREACHED_NORETURN();
 }
@@ -288,7 +274,6 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
 
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
       GetBackendFilePath(base_dir, security_domain),
-      GetBackendDeprecatedFilePath(base_dir, security_domain),
       std::make_unique<BackendDelegate>(
           base::BindPostTaskToCurrentDefault(
               base::BindRepeating(&StandaloneTrustedVaultClient::

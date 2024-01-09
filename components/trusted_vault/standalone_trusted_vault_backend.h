@@ -72,8 +72,7 @@ class StandaloneTrustedVaultBackend
   // interaction with vault service (such as device registration, keys
   // downloading, etc.) will be disabled.
   StandaloneTrustedVaultBackend(
-      const base::FilePath& md5_hashed_file_path,
-      const base::FilePath& deprecated_encrypted_file_path,
+      const base::FilePath& file_path,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultConnection> connection);
   StandaloneTrustedVaultBackend(const StandaloneTrustedVaultBackend& other) =
@@ -226,8 +225,7 @@ class StandaloneTrustedVaultBackend
 
   void WriteDataToDisk();
 
-  const base::FilePath md5_hashed_file_path_;
-  const base::FilePath deprecated_encrypted_file_path_;
+  const base::FilePath file_path_;
 
   const std::unique_ptr<Delegate> delegate_;
 

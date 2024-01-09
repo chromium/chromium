@@ -27,7 +27,6 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "components/os_crypt/sync/os_crypt.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
@@ -47,27 +46,7 @@ namespace {
 constexpr int kCurrentLocalTrustedVaultVersion = 2;
 constexpr int kCurrentDeviceRegistrationVersion = 1;
 
-trusted_vault_pb::LocalTrustedVault ReadEncryptedFile(
-    const base::FilePath& file_path) {
-  trusted_vault_pb::LocalTrustedVault proto;
-  std::string ciphertext;
-  std::string decrypted_content;
-  if (!base::ReadFileToString(file_path, &ciphertext)) {
-    return proto;
-  }
-
-  const bool decryption_success =
-      OSCrypt::DecryptString(ciphertext, &decrypted_content);
-  base::UmaHistogramBoolean("Sync.TrustedVaultLocalDataDecryptionIsSuccessful",
-                            decryption_success);
-  if (decryption_success) {
-    proto.ParseFromString(decrypted_content);
-  }
-
-  return proto;
-}
-
-trusted_vault_pb::LocalTrustedVault ReadMD5HashedFile(
+trusted_vault_pb::LocalTrustedVault ReadDataFromDiskImpl(
     const base::FilePath& file_path) {
   std::string file_content;
 
@@ -106,8 +85,8 @@ trusted_vault_pb::LocalTrustedVault ReadMD5HashedFile(
   return data_proto;
 }
 
-void WriteMD5HashedFileToDisk(const trusted_vault_pb::LocalTrustedVault& data,
-                              const base::FilePath& file_path) {
+void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
+                         const base::FilePath& file_path) {
   trusted_vault_pb::LocalTrustedVaultFileContent file_proto;
   file_proto.set_serialized_local_trusted_vault(data.SerializeAsString());
   file_proto.set_md5_digest_hex_string(
@@ -118,23 +97,6 @@ void WriteMD5HashedFileToDisk(const trusted_vault_pb::LocalTrustedVault& data,
     DLOG(ERROR) << "Failed to write trusted vault file.";
   }
   base::UmaHistogramBoolean("Sync.TrustedVaultFileWriteSuccess", success);
-}
-
-void MaybeMigrateDataFile(const base::FilePath& old_file_path,
-                          const base::FilePath& new_file_path) {
-  if (old_file_path.empty() || !base::PathExists(old_file_path)) {
-    return;
-  }
-  if (!base::PathExists(new_file_path)) {
-    // Only write to `new_file_path` if it doesn't exist yet to prevent
-    // overwriting the content with stale data.
-    trusted_vault_pb::LocalTrustedVault proto =
-        ReadEncryptedFile(old_file_path);
-    WriteMD5HashedFileToDisk(proto, new_file_path);
-  }
-  if (base::PathExists(new_file_path)) {
-    base::DeleteFile(old_file_path);
-  }
 }
 
 bool HasNonConstantKey(
@@ -334,12 +296,10 @@ StandaloneTrustedVaultBackend::GetDownloadKeysStatusForUMAFromResponse(
 }
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
-    const base::FilePath& md5_hashed_file_path,
-    const base::FilePath& deprecated_encrypted_file_path,
+    const base::FilePath& file_path,
     std::unique_ptr<Delegate> delegate,
     std::unique_ptr<TrustedVaultConnection> connection)
-    : md5_hashed_file_path_(md5_hashed_file_path),
-      deprecated_encrypted_file_path_(deprecated_encrypted_file_path),
+    : file_path_(file_path),
       delegate_(std::move(delegate)),
       connection_(std::move(connection)),
       clock_(base::DefaultClock::GetInstance()) {}
@@ -362,10 +322,7 @@ void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
 }
 
 void StandaloneTrustedVaultBackend::ReadDataFromDisk() {
-  // TODO(crbug.com/1374650): Migration from legacy file was enabled in M108,
-  // clean it up once at least one year passed.
-  MaybeMigrateDataFile(deprecated_encrypted_file_path_, md5_hashed_file_path_);
-  data_ = ReadMD5HashedFile(md5_hashed_file_path_);
+  data_ = ReadDataFromDiskImpl(file_path_);
 
   if (data_.user_size() == 0) {
     // No data, set the current version and omit writing the file.
@@ -1218,7 +1175,7 @@ StandaloneTrustedVaultBackend::FindUserVault(const std::string& gaia_id) {
 }
 
 void StandaloneTrustedVaultBackend::WriteDataToDisk() {
-  WriteMD5HashedFileToDisk(data_, md5_hashed_file_path_);
+  WriteDataToDiskImpl(data_, file_path_);
   delegate_->NotifyStateChanged();
 }
 
