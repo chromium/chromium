@@ -203,6 +203,15 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                    'codec': codec,
                    'acceleration': acc
                }])
+
+    for codec in video_codecs:
+      for source_type in frame_sources:
+        args = (codec, source_type)
+        yield ('WebCodecs_FrameSizeChange_%s_%s' % args,
+               'frame-size-change.html', [{
+                   'codec': codec,
+                   'source_type': source_type
+               }])
 # pylint: enable=too-many-branches
 
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:

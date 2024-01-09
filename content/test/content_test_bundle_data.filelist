@@ -6387,6 +6387,8 @@ data/gpu/webcodecs/encoding-modes.html
 data/gpu/webcodecs/encoding-rate-control.html
 data/gpu/webcodecs/encoding-rate-control.js
 data/gpu/webcodecs/frame-qp-encoding.html
+data/gpu/webcodecs/frame-size-change.html
+data/gpu/webcodecs/frame-size-change.js
 data/gpu/webcodecs/svc.html
 data/gpu/webcodecs/tex-image-2d.html
 data/gpu/webcodecs/webcodecs_common.js
