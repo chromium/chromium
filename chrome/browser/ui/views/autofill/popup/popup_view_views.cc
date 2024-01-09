@@ -205,6 +205,11 @@ bool PopupViewViews::Show(
     absl::get<PopupWarningView*>(rows_[0])->NotifyAccessibilityEvent(
         ax::mojom::Event::kAlert, true);
   }
+  // Compose popups are announced separately.
+  if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
+    AxAnnounce(
+        l10n_util::GetStringUTF16(IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW));
+  }
 
   return true;
 }
