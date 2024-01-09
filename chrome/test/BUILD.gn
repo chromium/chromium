@@ -5526,6 +5526,7 @@ if (!is_android && !is_fuchsia) {
     }
 
     if (enterprise_data_controls) {
+      sources += [ "//chrome/browser/enterprise/data_controls/data_controls_dialog_browsertests.cc" ]
       deps += [ "//chrome/browser/enterprise/data_controls:test_support" ]
     }
 
