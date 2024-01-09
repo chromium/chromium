@@ -37,6 +37,7 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/record_replay_devtools_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -272,17 +273,17 @@ void LocalWindowProxy::Initialize() {
 
   // Add an event listener for the dispatched custom event the devtools uses to register
   // its listener.  Do this outside the recording.
-  SetupRecordReplayEventListener();
+  SetupRecordReplayDevtoolsEventListener();
 
   if (World().IsMainWorld()) {
     GetFrame()->Loader().DispatchDidClearWindowObjectInMainWorld();
   }
 }
 
-void LocalWindowProxy::SetupRecordReplayEventListener() {
+void LocalWindowProxy::SetupRecordReplayDevtoolsEventListener() {
   LocalFrame* localFrame = GetFrame();
 
-  record_replay_listener_ = RecordReplayEventListener::Create(GetIsolate(), localFrame);
+  record_replay_listener_ = RecordReplayDevtoolsEventListener::Create(GetIsolate(), localFrame);
 
   bool added = localFrame->DomWindow()->addEventListener("WebChannelMessageToChrome", record_replay_listener_.Get());
 

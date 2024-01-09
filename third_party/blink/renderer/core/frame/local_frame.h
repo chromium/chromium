@@ -805,8 +805,13 @@ class CORE_EXPORT LocalFrame final
 
   absl::optional<SkColor> GetFrameOverlayColorForTesting() const;
 
-  void RegisterRecordReplayAuthTokenObserver();
-  
+  void RecordReplayRegisterAuthTokenObserver();
+  void RecordReplayLogin();
+  void RecordReplaySetToken(const WTF::String& token);
+  void RecordReplayClearToken();
+  void RecordReplaySetUser(const WTF::String& user);
+  void RecordReplayClearUser();
+
  private:
   friend class FrameNavigationDisabler;
   // LocalFrameMojoHandler is a part of LocalFrame.
