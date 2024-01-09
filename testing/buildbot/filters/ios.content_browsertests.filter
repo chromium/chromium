@@ -8,20 +8,13 @@
 -All/CompositedScrollingMetricTest.PassiveEventHandlers/1
 -All/CompositedScrollingMetricTest.RecordCorrectScrollingThread/0
 -All/CompositedScrollingMetricTest.RecordCorrectScrollingThread/1
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink0
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink1
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink0
--All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink1
--All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink0
--All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink1
--All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink0
--All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink1
--All/DumpAccessibilityTreeTest.AccessibilitySelect/blink0
--All/DumpAccessibilityTreeTest.AccessibilitySelect/blink1
--All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink0
--All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNested/blink
+-All/DumpAccessibilityTreeTest.AccessibilityIframeTransformNestedCrossProcess/blink
+-All/DumpAccessibilityTreeTest.AccessibilityLabelWithSelectedOption/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroup/blink
+-All/DumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelect/blink
+-All/DumpAccessibilityTreeTest.AccessibilityWindowCropsItems/blink
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/0
 -All/ScrollingIntegrationTest.ScrollAfterCrossOriginNavigation/1
 -All/SitePerProcessBrowserTest.FrameOwnerPropertiesPropagationScrolling/0
@@ -167,11 +160,10 @@
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
 # TODO(crbug.com/1477792): This test is flaky.
--All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink0
+-All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink
 
 # TODO(crbug.com/1482265): These consistently fail.
--All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink0
--All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
 
 # TODO(crbug.com/1459221): These WebSockets tests seem to depend on the spawned
 # test server, which is not supported on iOS.
@@ -182,18 +174,11 @@
 -BackForwardCacheBrowserTestWithJavaScriptDetails.MultipleBlocksFromJavaScriptFile
 
 # TODO(crbug.com/1484998): These tests fail by a different width for a frame.
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink0
--All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink1
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink0
--All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink1
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink0
--All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink1
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink0
--All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink1
+-All/DumpAccessibilityTreeTest.AccessibilityLinkTarget/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenScroll/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOffscreenSelect/blink
+-All/DumpAccessibilityTreeTest.ReusedMapChangeUsemap/blink
 
 # TODO(crbug.com/1489278): Audio output unit startup is failing with partition
 # alloc
@@ -265,8 +250,15 @@
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/2
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/3
 -OpenCodec/WebRtcMediaRecorderTest.PeerConnection/4
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/2
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/3
+-OpenCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/4
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/0
 -ProprietaryCodec/WebRtcMediaRecorderTest.PeerConnection/1
+-ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/0
+-ProprietaryCodec/WebRtcMediaRecorderTest.TwoChannelAudioRecording/1
 -WebRtcAudioBrowserTest.CanMakeVideoCallAndThenRenegotiateToAudio
 -WebRtcAudioBrowserTest.EnsureLocalVideoMuteDoesntMuteAudio
 -WebRtcAudioBrowserTest.EnsureRemoteVideoMuteDoesntMuteAudio
@@ -301,17 +293,26 @@
 
 # TODO(crbug.com/1503172): Fails due to video capture issues.
 -*.DoesNotCacheIfDisplayMediaAccessGranted*
+-All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/0
+-All/BackForwardCacheMediaTest.DoesCacheIfMediaStreamTrackUsingGetDisplayMediaEndedButDoesNotWithoutFlags/1
 
 # TODO(crbug.com/1504145): Fails due to incorrect line wrapping.
--All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink*
+-All/YieldingParserDumpAccessibilityTreeTest.AccessibilityPopoverApi/blink
+-All/DumpAccessibilityTreeTestWithIgnoredNodes.AccessibilityInputRadioCheckboxLabel/blink
 
 # TODO(crbug.com/1511011): These emit an extra inlineTextBox
--All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink*
--All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink*
+-All/DumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
+-All/DumpAccessibilityTreeTest.ReusedMapMoveImage/blink
+-All/YieldingParserDumpAccessibilityTreeTest.ReusedMapChangeMapName/blink
+-All/YieldingParserDumpAccessibilityTreeTest.ReusedMapMoveImage/blink
+
+# TODO(crbug.com/1516750): the following consistently crash.
+-SystemTracingEndToEndBrowserTest.PerformanceMark
+-SystemTracingEndToEndBrowserTest.SimpleTraceEvent
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
--All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink1
+-All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/1
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
