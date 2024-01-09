@@ -111,22 +111,6 @@ def download_chromedriver(platform: str, version: Optional[str]) -> str:
   return chromedriver_path
 
 
-def download_chromedriver_linux_host(channel: str, version: str) -> str:
-  """Download the chromedriver that works with the given channel/version."""
-
-  # Find the same or next version of the given channel and version whose
-  # chromedriver is compatible with.
-  # Linux doesn't distribute canary, use dev instead.
-  if channel == 'canary':
-    channel = 'dev'
-  closest_version = find_closest_version(
-    release_os='linux', channel=channel, version=version)
-  downloaded_dir = _download_files_from_gcs(
-    str(closest_version), ['linux64/chromedriver_linux64.zip'])
-
-  return os.path.join(downloaded_dir, "chromedriver_linux64")
-
-
 def download_chrome_mac(version: str) -> str:
   files = ['mac-universal/chrome-mac.zip']
   downloaded_dir = _download_files_from_gcs(version, files)
