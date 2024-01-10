@@ -62,14 +62,14 @@ ButtonOptionsMenu* OverlayViewTestBase::ShowButtonOptionsMenu(Action* action) {
 void OverlayViewTestBase::PressDoneButtonOnButtonOptionsMenu() {
   DCHECK(controller_);
   if (auto* menu = controller_->GetButtonOptionsMenu()) {
-    LeftClickOn(menu->done_button_);
+    menu->OnDoneButtonPressed();
   }
 }
 
 void OverlayViewTestBase::PressDeleteButtonOnButtonOptionsMenu() {
   DCHECK(controller_);
   if (auto* menu = controller_->GetButtonOptionsMenu()) {
-    menu->OnDeleteButtonPressed();
+    LeftClickOn(menu->trash_button_);
   }
 }
 

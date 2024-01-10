@@ -45,7 +45,7 @@ class DisplayOverlayController;
 // ||"key"                            |
 // |----------------------------------|
 // -----------------------------------|
-// ||         Delete button          ||
+// ||           Done button          ||
 // +----------------------------------+
 class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
  public:
@@ -71,10 +71,10 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   void AddEditTitle();
   void AddActionSelection();
   void AddActionEdit();
-  void AddDeleteButton();
+  void AddDoneButton();
 
   // Functions related to buttons.
-  void OnDeleteButtonPressed();
+  void OnTrashButtonPressed();
   void OnDoneButtonPressed();
   void OnButtonLabelAssignmentPressed();
 
@@ -89,7 +89,7 @@ class ButtonOptionsMenu : public ArrowContainer, public TouchInjectorObserver {
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
 
-  raw_ptr<ash::IconButton> done_button_ = nullptr;
+  raw_ptr<ash::IconButton> trash_button_ = nullptr;
   raw_ptr<ActionTypeButtonGroup> button_group_ = nullptr;
   raw_ptr<ActionEditView, DisableDanglingPtrDetection> action_edit_ = nullptr;
   raw_ptr<views::Label> action_name_label_ = nullptr;
