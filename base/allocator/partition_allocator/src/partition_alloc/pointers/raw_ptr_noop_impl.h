@@ -109,8 +109,8 @@ struct RawPtrNoOpImpl {
   }
 
   // This is for accounting only, used by unit tests.
-  PA_ALWAYS_INLINE constexpr static void IncrementSwapCountForTest() {}
-  PA_ALWAYS_INLINE constexpr static void IncrementLessCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementSwapCountForTest() {}
+  PA_ALWAYS_INLINE static constexpr void IncrementLessCountForTest() {}
 };
 
 }  // namespace base::internal

@@ -152,7 +152,7 @@ static_assert([]() constexpr {
     func_taking_ptr_to_ptr(&r.AsEphemeralRawAddr());
     func_taking_ref_to_ptr(r.AsEphemeralRawAddr());
 
-    Int* array = new Int[3]();
+    Int* array = new Int[4]();
     {
       raw_ptr<Int, base::RawPtrTraits::kAllowPtrArithmetic> ra(array);
       ++ra;      // operator++()
@@ -161,6 +161,33 @@ static_assert([]() constexpr {
       ra--;      // operator--(int)
       ra += 1u;  // operator+=()
       ra -= 1u;  // operator-=()
+      ra = ra + 1;                             // operator+(raw_ptr,int)
+      ra = 1 + ra;                             // operator+(int,raw_ptr)
+      ra = ra - 2;                             // operator-(raw_ptr,int)
+      [[maybe_unused]] ptrdiff_t d = ra - ra;  // operator-(raw_ptr,raw_ptr)
+      d = ra - array;                          // operator-(raw_ptr,T*)
+      d = array - ra;                          // operator-(T*,raw_ptr)
+
+      ra[0] = ra[1];  // operator[]()
+
+      b = ra < ra;      // operator<(raw_ptr,raw_ptr)
+      b = ra < array;   // operator<(raw_ptr,T*)
+      b = array < ra;   // operator<(T*,raw_ptr)
+      b = ra <= ra;     // operator<=(raw_ptr,raw_ptr)
+      b = ra <= array;  // operator<=(raw_ptr,T*)
+      b = array <= ra;  // operator<=(T*,raw_ptr)
+      b = ra > ra;      // operator>(raw_ptr,raw_ptr)
+      b = ra > array;   // operator>(raw_ptr,T*)
+      b = array > ra;   // operator>(T*,raw_ptr)
+      b = ra >= ra;     // operator>=(raw_ptr,raw_ptr)
+      b = ra >= array;  // operator>=(raw_ptr,T*)
+      b = array >= ra;  // operator>=(T*,raw_ptr)
+      b = ra == ra;     // operator==(raw_ptr,raw_ptr)
+      b = ra == array;  // operator==(raw_ptr,T*)
+      b = array == ra;  // operator==(T*,raw_ptr)
+      b = ra != ra;     // operator!=(raw_ptr,raw_ptr)
+      b = ra != array;  // operator!=(raw_ptr,T*)
+      b = array != ra;  // operator!=(T*,raw_ptr)
     }
     delete[] array;
   }
