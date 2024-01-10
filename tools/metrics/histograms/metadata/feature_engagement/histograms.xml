@@ -97,6 +97,8 @@ chromium-metrics-reviews@google.com.
                companion side panel"/>
   <variant name="IPH_ComposeMenuNewBadgeFeature"
       summary="New badge shows on compose context menu item"/>
+  <variant name="IPH_ComposeMSBBSettingsFeature"
+      summary="Prompting users to enable MSBB to use the compose feature."/>
   <variant name="IPH_ComposeNewBadgeFeature"
       summary="New badge shows in Autofill popup entry"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"

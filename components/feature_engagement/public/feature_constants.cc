@@ -34,6 +34,9 @@ BASE_FEATURE(kIPHCompanionSidePanelRegionSearchFeature,
 BASE_FEATURE(kIPHComposeMenuNewBadgeFeature,
              "IPH_ComposeMenuNewBadgeFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHComposeMSBBSettingsFeature,
+             "IPH_ComposeMSBBSettingsFeature",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHComposeNewBadgeFeature,
              "IPH_ComposeNewBadgeFeature",
              base::FEATURE_DISABLED_BY_DEFAULT);

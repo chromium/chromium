@@ -157,6 +157,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHCompanionSidePanelFeature,
     &kIPHCompanionSidePanelRegionSearchFeature,
     &kIPHComposeMenuNewBadgeFeature,
+    &kIPHComposeMSBBSettingsFeature,
     &kIPHComposeNewBadgeFeature,
     &kIPHDesktopTabGroupsNewGroupFeature,
     &kIPHDesktopCustomizeChromeFeature,

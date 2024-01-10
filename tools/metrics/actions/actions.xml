@@ -40860,6 +40860,8 @@ should be able to be added at any place in this file.
       label="For companion side panel region search feature."/>
   <suffix name="ComposeMenuNewBadgeFeature"
       label="For Compose new badge in context menu feature"/>
+  <suffix name="ComposeMSBBSettingsFeature"
+      label="For Compose MSBB Settings badge feature"/>
   <suffix name="ComposeNewBadgeFeature" label="For Compose new badge feature"/>
   <suffix name="ContextualPageActions_PriceTracking"
       label="For Contextual page actions price tracking feature."/>

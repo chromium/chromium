@@ -577,6 +577,21 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHComposeMSBBSettingsFeature.name == feature->name) {
+    // A config that allows a toast to be displayed in the Settings page when
+    // opened via the Compose MSBB feature
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->trigger = EventConfig("compose_msbb_settings_feature_trigger",
+                                  Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("compose_msbb_settings_feature_used",
+                               Comparator(ANY, 0), 90, 90);
+    return config;
+  }
+
   if (kIPHTabOrganizationSuccessFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

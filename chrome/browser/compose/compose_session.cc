@@ -22,8 +22,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "chrome/common/compose/type_conversions.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -622,7 +624,17 @@ void ComposeSession::OpenComposeSettings() {
   // triggered from. The session is created when that dialog is opened and it is
   // destroyed if its WebContents is destroyed.
   CHECK(browser);
-  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
+
+  ShowPromoInPage::Params params;
+  params.target_url = chrome::GetSettingsUrl(chrome::kSyncSetupSubPage);
+  params.bubble_anchor_id = kAnonymizedUrlCollectionPersonalizationSettingId;
+  params.bubble_arrow = user_education::HelpBubbleArrow::kBottomRight;
+  params.bubble_text =
+      l10n_util::GetStringUTF16(IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT);
+  params.close_button_alt_text_id =
+      IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT;
+
+  ShowPromoInPage::Start(browser, std::move(params));
 }
 
 void ComposeSession::SaveMostRecentOkStateToUndoStack() {

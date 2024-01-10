@@ -36,6 +36,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/strings/grit/components_strings.h"
@@ -791,6 +792,17 @@ void MaybeRegisterChromeFeaturePromos(
           .SetPromoSubtype(user_education::FeaturePromoSpecification::
                                PromoSubtype::kPerApp)));
 
+  if (base::FeatureList::IsEnabled(compose::features::kEnableCompose)) {
+    // kIPHComposeMSBBSettingsFeature:
+    registry.RegisterFeature(
+        std::move(FeaturePromoSpecification::CreateForToastPromo(
+                      feature_engagement::kIPHComposeMSBBSettingsFeature,
+                      kAnonymizedUrlCollectionPersonalizationSettingId,
+                      IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT,
+                      IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER,
+                      FeaturePromoSpecification::AcceleratorInfo())
+                      .SetBubbleArrow(HelpBubbleArrow::kBottomRight)));
+  }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 }
 

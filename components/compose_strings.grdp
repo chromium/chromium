@@ -54,6 +54,18 @@
     Go to Settings
   </message>
 
+    <!-- In product help bubble dialog for MSBB Settings -->
+    <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT" desc="The text on an In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog" translateable="false">
+      Turn on this setting to use Help me write
+    </message>   
+     <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_TEXT_SCREENREADER" desc="The a11y text for the In-Product-Help bubble that is shown when a user navigates to the security settings page from an MSBB dialog" translateable="false">
+      Turn on the Make searches and browsing better setting to use Help me write
+    </message>
+    <message name="IDS_COMPOSE_MSBB_IPH_BUBBLE_CLOSE_BUTTON_LABEL_TEXT" desc="The accessibility label associated with the MSBB Bubble's close button" translateable="false">
+      Close tip
+    </message>
+
+
   <!-- Input dialog -->
   <message name="IDS_COMPOSE_DIALOG_TITLE" desc="Compose input dialog title.">
     Help me write

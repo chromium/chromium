@@ -9,6 +9,8 @@
 
 // Please keep this list alphabetized.
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(
+    kAnonymizedUrlCollectionPersonalizationSettingId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillCreditCardSuggestionEntryElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kAutofillStandaloneCvcSuggestionElementId);
