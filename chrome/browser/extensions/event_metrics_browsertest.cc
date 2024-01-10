@@ -10,6 +10,7 @@
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -392,6 +393,90 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*sample=*/base::Minutes(5).InMicroseconds(),
       /*expected_count=*/0);
 }
+
+class ServiceWorkerRedundantWorkerStartMetricsBrowserTest
+    : public EventMetricsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ServiceWorkerRedundantWorkerStartMetricsBrowserTest() {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that a running service worker will be redundantly started when it
+// receives an event while it is already started if
+// extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch is
+// disabled. If enabled, the worker is not redundantly started.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
+                       ServiceWorkerRedundantStartCountTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ExtensionTestMessageListener extension_oninstall_listener_fired(
+      "installed listener fired");
+  // Load the extension for the particular context type. The manifest
+  // file is for a legacy event page-based extension. LoadExtension will
+  // modify the extension for the kServiceWorker case.
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("events/metrics/web_navigation"),
+                    {.wait_for_registration_stored = true,
+                     .context_type = ContextType::kServiceWorker});
+  ASSERT_TRUE(extension);
+  // This ensures that we wait until the the browser receives the ack from the
+  // renderer. This prevents unexpected histogram emits later.
+  ASSERT_TRUE(extension_oninstall_listener_fired.WaitUntilSatisfied());
+  ASSERT_TRUE(content::CheckServiceWorkerIsRunning(
+      // The first SW version ID is always 0.
+      GetServiceWorkerContext(), /*service_worker_version_id=*/0));
+
+  base::HistogramTester histogram_tester;
+  ExtensionTestMessageListener test_event_listener_fired("listener fired");
+  // Navigate somewhere to trigger the webNavigation.onBeforeRequest event to
+  // the extension listener.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+  ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
+
+  if (GetParam()) {
+    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch true.
+    // Since feature prevents starting a worker when it is running, the
+    // event/task will not be added as pending and therefore this UMA is not
+    // emitted. But as per the assertions, we still run the event successfully.
+    histogram_tester.ExpectTotalCount(
+        "Extensions.ServiceWorkerBackground."
+        "RequestedWorkerStartForStartedWorker",
+        /*expected_count=*/0);
+  } else {
+    // extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch false
+    // Since the feature is disabled, we will redundantly attempt to start the
+    // worker.
+    histogram_tester.ExpectTotalCount(
+        "Extensions.ServiceWorkerBackground."
+        "RequestedWorkerStartForStartedWorker",
+        /*expected_count=*/1);
+    // Verify that the value is `true` since the without the feature the worker
+    // will be redundantly started.
+    histogram_tester.ExpectBucketCount(
+        "Extensions.ServiceWorkerBackground."
+        "RequestedWorkerStartForStartedWorker",
+        /*sample=*/true, /*expected_count=*/1);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ServiceWorkerRedundantWorkerStartMetricsBrowserTest,
+    /* extensions_features::kExtensionsServiceWorkerOptimizedEventDispatch
+       enabled status */
+    testing::Bool());
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,

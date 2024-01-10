@@ -4079,6 +4079,24 @@ of interesting buckets, such as "internal + external".
 </histogram>
 
 <histogram
+    name="Extensions.ServiceWorkerBackground.RequestedWorkerStartForStartedWorker"
+    enum="Boolean" expires_after="never">
+<!-- expires-never: Monitors core extension system health. -->
+
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    When we're about to request a worker to start to run an event/task this is
+    emitted to indicate if the start was unneeded/redundant. Emitted just before
+    we know that we are going to attempt to start a worker. A `true` value means
+    that we will redundantly reqeust to start a worker when it was already
+    running and could've processed the event without the request to start. A
+    `false` value means that we correctly started the worker because it was not
+    ready to run events.
+  </summary>
+</histogram>
+
+<histogram
     name="Extensions.ServiceWorkerBackground.StartingExternalRequest_Result"
     enum="ServiceWorkerExternalRequestResult" expires_after="never">
 <!-- expires-never: Monitors core extension system health. -->

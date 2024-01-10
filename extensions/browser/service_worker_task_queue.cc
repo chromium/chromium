@@ -9,8 +9,10 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -554,6 +556,8 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
 
   const GURL scope =
       Extension::GetServiceWorkerScopeFromExtensionId(context_id.extension_id);
+
+  EmitWorkerWillBeStartedHistograms(context_id.extension_id);
   service_worker_context->StartWorkerForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
@@ -870,6 +874,17 @@ void ServiceWorkerTaskQueue::DidVerifyRegistration(
 
   RegisterServiceWorker(RegistrationReason::RE_REGISTER_ON_STATE_MISMATCH,
                         context_id, *extension);
+}
+
+void ServiceWorkerTaskQueue::EmitWorkerWillBeStartedHistograms(
+    const ExtensionId& extension_id) {
+  bool worker_is_ready_to_run_tasks = IsReadyToRunTasks(
+      browser_context_, extensions::ExtensionRegistry::Get(browser_context_)
+                            ->GetInstalledExtension(extension_id));
+  base::UmaHistogramBoolean(
+      "Extensions.ServiceWorkerBackground."
+      "RequestedWorkerStartForStartedWorker",
+      worker_is_ready_to_run_tasks);
 }
 
 void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(
