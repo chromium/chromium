@@ -28,15 +28,13 @@ class PrerenderHandleImpl final : public PrerenderHandle {
   base::WeakPtr<PrerenderHandle> GetWeakPtr() override;
   void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) override;
-  bool WasSuccessfullyTriggeredForTesting() const override;
+
   int frame_tree_node_id_for_testing() const { return frame_tree_node_id_; }
 
  private:
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
-
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
-  // page if the corresponding prerender was successfully triggered, or
-  // FrameTreeNode::kFrameTreeNodeInvalidId if not.
+  // page.
   const int frame_tree_node_id_;
 
   const GURL prerendering_url_;

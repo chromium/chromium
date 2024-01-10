@@ -296,8 +296,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderTrigger_ChromeUrl) {
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           content::PreloadingHoldbackStatus::kUnspecified, nullptr);
-  EXPECT_TRUE(prerender_handle);
-  EXPECT_FALSE(prerender_handle->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle);
 
   histogram_tester.ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
