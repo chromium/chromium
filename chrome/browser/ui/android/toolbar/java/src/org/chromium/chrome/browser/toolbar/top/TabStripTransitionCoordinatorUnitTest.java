@@ -54,6 +54,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     private static final int TEST_TAB_STRIP_HEIGHT = 40;
     private static final int TEST_TOOLBAR_HEIGHT = 56;
     private static final int NOTHING_OBSERVED = -1;
+    private static final int NARROW_WINDOW_WIDTH = 411;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -107,12 +108,12 @@ public class TabStripTransitionCoordinatorUnitTest {
                 TEST_TAB_STRIP_HEIGHT,
                 mCoordinator.getTabStripHeight());
 
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         Assert.assertEquals("Tab strip height is wrong.", 0, mObserver.heightRequested);
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void initWithNarrowWindow() {
         Assert.assertEquals(
                 "Init will not change the tab strip height.",
@@ -130,7 +131,7 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void hideTabStrip() {
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
 
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
@@ -146,14 +147,14 @@ public class TabStripTransitionCoordinatorUnitTest {
     public void hideTabStripWithOffsetOverride() {
         // Simulate top controls size change from browser.
         doReturn(true).when(mBrowserControlsVisibilityManager).offsetOverridden();
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         assertTabStripHeightForMargins(0);
         assertObservedHeight(0);
     }
 
     @Test
     public void hideTabStripWhileTopControlsHidden() {
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
 
         // Assume the top control is hidden and content is at the top.
         doReturn(0).when(mBrowserControlsVisibilityManager).getContentOffset();
@@ -165,7 +166,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStrip() {
         settleTransitionDuringInitForNarrowWindow();
         setDeviceWidthDp(600);
@@ -181,7 +182,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStripWithOffsetOverride() {
         settleTransitionDuringInitForNarrowWindow();
         // Simulate top controls size change from browser.
@@ -192,7 +193,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStripWhileTopControlsHidden() {
         settleTransitionDuringInitForNarrowWindow();
         setDeviceWidthDp(600);
@@ -207,7 +208,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStrip_TokenBeforeLayout() {
         settleTransitionDuringInitForNarrowWindow();
         int token = mCoordinator.requestDeferTabStripTransitionToken();
@@ -225,7 +226,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStrip_TokenDuringLayout() {
         settleTransitionDuringInitForNarrowWindow();
         setConfigurationWithNewWidth(600);
@@ -253,7 +254,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     }
 
     @Test
-    @Config(qualifiers = "w480dp")
+    @Config(qualifiers = "w320dp")
     public void showTabStrip_TokenReleaseEarly() {
         settleTransitionDuringInitForNarrowWindow();
         int token = mCoordinator.requestDeferTabStripTransitionToken();
@@ -275,8 +276,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void configurationChangedDuringDelayedTask() {
-        setConfigurationWithNewWidth(480);
-        simulateLayoutChange(480);
+        setConfigurationWithNewWidth(NARROW_WINDOW_WIDTH);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
         // Tab strip still visible before the delayed transition started.
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
@@ -287,8 +288,8 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     @Test
     public void destroyDuringDelayedTask() {
-        setConfigurationWithNewWidth(480);
-        simulateLayoutChange(480);
+        setConfigurationWithNewWidth(NARROW_WINDOW_WIDTH);
+        simulateLayoutChange(NARROW_WINDOW_WIDTH);
         ShadowLooper.idleMainLooper(100, TimeUnit.MILLISECONDS);
         // Tab strip still visible before the delayed transition started.
         assertTabStripHeightForMargins(TEST_TAB_STRIP_HEIGHT);
@@ -308,7 +309,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 .when(mSpyControlContainer)
                 .findViewById(R.id.toolbar_drag_drop_target_view);
 
-        setDeviceWidthDp(480);
+        setDeviceWidthDp(NARROW_WINDOW_WIDTH);
         doReturn(TEST_TOOLBAR_HEIGHT)
                 .when(mBrowserControlsVisibilityManager)
                 .getTopControlsHeight();
@@ -436,7 +437,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         return observer;
     }
 
-    // For test cases init whit w480pd, the initialization will create an transition request.
+    // For test cases init with narrow width, the initialization will create an transition request.
     private void settleTransitionDuringInitForNarrowWindow() {
         mTopControlsContentOffset = TEST_TOOLBAR_HEIGHT;
         doReturn(TEST_TOOLBAR_HEIGHT)

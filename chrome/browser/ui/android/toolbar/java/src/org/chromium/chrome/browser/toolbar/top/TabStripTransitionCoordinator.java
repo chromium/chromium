@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
@@ -36,6 +35,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     // Delay to kickoff the transition to avoid frame drops while application is too busy when the
     // configuration changed.
     private static final int TRANSITION_DELAY_MS = 200;
+    private static final int DEFAULT_DTC_THRESHOLD_DP = 412;
 
     /** Observes height of tab strip that could change during run time. */
     // TODO(crbug.com/1509013): Rework the observer interface.
@@ -394,7 +394,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks {
     private static int getScreenWidthThresholdDp() {
         return sMinScreenWidthForTesting != null
                 ? sMinScreenWidthForTesting
-                : DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
+                : DEFAULT_DTC_THRESHOLD_DP;
     }
 
     private boolean isTopControlAtSteadyState() {
