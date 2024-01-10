@@ -351,11 +351,11 @@ BOOL ShouldDismissKeyboardOnScroll() {
   CGRect omniboxFrame = self.omniboxGuide.layoutFrame;
   CGFloat leftMargin =
       IsRegularXRegularSizeClass(self) ? omniboxFrame.origin.x : 0;
-  CGFloat rightMargin = IsRegularXRegularSizeClass(self)
-                            ? self.view.bounds.size.width -
-                                  omniboxFrame.origin.x -
-                                  omniboxFrame.size.width
-                            : 0;
+  CGFloat rightMargin =
+      (IsRegularXRegularSizeClass(self) && !IsIpadPopoutOmniboxEnabled())
+          ? self.view.bounds.size.width - omniboxFrame.origin.x -
+                omniboxFrame.size.width
+          : 0;
 
   // Adjust the carousel to be aligned with the omnibox textfield.
   UIEdgeInsets margins = self.carouselCell.layoutMargins;
