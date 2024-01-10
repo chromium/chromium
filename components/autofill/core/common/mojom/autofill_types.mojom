@@ -536,6 +536,9 @@ enum AutofillSuggestionTriggerSource {
   // - Focusing a text input using a screen reader.
   // Suggestion of this type can trigger FastCheckout or TouchToFill.
   kFormControlElementClicked,
+  // Suggestions triggered by focusing a textarea without click or tab
+  // interaction. Currently, this only generates suggestions from Compose.
+  kTextareaFocusedWithoutClick,
   // Suggestions triggered as above except that the target is a
   // contenteditable element rather than a form control element.
   kContentEditableClicked,

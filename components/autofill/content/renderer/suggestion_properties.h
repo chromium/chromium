@@ -21,6 +21,10 @@ namespace autofill {
 bool ShouldAutofillOnEmptyValues(
     AutofillSuggestionTriggerSource trigger_source);
 
+// Returns whether to query Autofill (i.e. call `AskForValuesToFill`) for values
+// that exceed `autofill::kMaxStringLength`.
+bool ShouldAutofillOnLongValues(AutofillSuggestionTriggerSource trigger_source);
+
 // Specifies if suggestions should be shown when the caret is not after the last
 // character of the triggering element.
 bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source);

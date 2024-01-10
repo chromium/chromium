@@ -1183,6 +1183,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
       return false;
     }
 
+    if (trigger_source ==
+        AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
+      return false;
+    }
+
     // Do not offer single field form fill suggestions for credit card number,
     // cvc, and expiration date related fields. Standalone cvc fields (used to
     // re-authenticate the use of a credit card the website has on file) will be
@@ -3422,6 +3427,13 @@ void BrowserAutofillManager::GetAvailableSuggestions(
     SuggestionsContext* context) {
   DCHECK(suggestions);
   DCHECK(context);
+
+  // This trigger source is only relevant for Compose, for which suggestions
+  // are not populated here.
+  if (trigger_source ==
+      AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick) {
+    return;
+  }
 
   // Need to refresh models before using the form_event_loggers.
   RefreshDataModels();

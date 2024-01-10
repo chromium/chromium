@@ -38,6 +38,7 @@
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/renderer_save_password_progress_logger.h"
 #include "components/autofill/content/renderer/suggestion_properties.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -1026,16 +1027,23 @@ void AutofillAgent::ShowSuggestions(
     }
   }
 
-  // Don't attempt to autofill with values that are too large or if filling
-  // criteria are not met. Keyboard Accessory may still be shown when the
-  // |value| is empty, do not attempt to hide it.
-  WebString value = element.EditingValue();
-  if (value.length() > kMaxStringLength ||
-      (!ShouldAutofillOnEmptyValues(trigger_source) && value.IsEmpty() &&
-       !UsesKeyboardAccessoryForSuggestions()) ||
-      (RequiresCaretAtEnd(trigger_source) &&
-       (element.SelectionStart() != element.SelectionEnd() ||
-        element.SelectionEnd() != value.length()))) {
+  const bool element_value_valid = [&element, trigger_source] {
+    WebString value = element.EditingValue();
+    // Don't attempt to autofill with values that are too large.
+    if (!ShouldAutofillOnLongValues(trigger_source) &&
+        value.length() > kMaxStringLength) {
+      return false;
+    }
+    // Keyboard Accessory may still be shown when `value` is empty.
+    if (!UsesKeyboardAccessoryForSuggestions() &&
+        !ShouldAutofillOnEmptyValues(trigger_source) && value.IsEmpty()) {
+      return false;
+    }
+    return !(RequiresCaretAtEnd(trigger_source) &&
+             (element.SelectionStart() != element.SelectionEnd() ||
+              element.SelectionEnd() != value.length()));
+  }();
+  if (!element_value_valid) {
     // Any popup currently showing is obsolete.
     HidePopup();
     return;
@@ -1453,14 +1461,28 @@ void AutofillAgent::HandleFocusChangeComplete(
 
   WebElement focused_element =
       unsafe_render_frame()->GetWebFrame()->GetDocument().FocusedElement();
-  if (focused_node_was_last_clicked && !focused_element.IsNull() &&
-      focused_element.IsFormControlElement()) {
+  [&] {
+    if (focused_element.IsNull() || !focused_element.IsFormControlElement()) {
+      return;
+    }
     WebFormControlElement focused_form_control_element =
         focused_element.To<WebFormControlElement>();
-    if (form_util::IsTextAreaElementOrTextInput(focused_form_control_element)) {
-      FormControlElementClicked(focused_form_control_element);
+    if (!form_util::IsTextAreaElementOrTextInput(
+            focused_form_control_element)) {
+      return;
     }
-  }
+    if (focused_node_was_last_clicked) {
+      FormControlElementClicked(focused_form_control_element);
+      return;
+    }
+    if (form_util::IsTextAreaElement(focused_form_control_element)) {
+      // Compose reacts to tab area focus even when not triggered by a click -
+      // therefore call `ShowSuggestions` with a separate trigger source.
+      ShowSuggestions(
+          focused_form_control_element,
+          AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick);
+    }
+  }();
 
   // TODO(crbug.com/1490372, b/308811729): This is not conditioned on
   // `focused_node_was_last_clicked`. This has two advantages:
