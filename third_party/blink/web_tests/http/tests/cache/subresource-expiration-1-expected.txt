@@ -5,6 +5,8 @@ Expires: [now+10s]; Cache-control: must-revalidate; (result=Cached expected=Cach
 Expires: [now+10s]; Cache-control: no-cache; (result=Uncached expected=Uncached) PASS
 Expires: [now+10s]; Cache-control: no-store; (result=Uncached expected=Uncached) PASS
 Expires: [now+10s]; Pragma: no-cache; (result=Uncached expected=Uncached) PASS
+Expires: 0; (result=Uncached expected=Uncached) PASS
+Expires: 0; Last-Modified: [now-10s]; (result=Uncached expected=Uncached) PASS
 Cache-control: max-age=10; (result=Cached expected=Cached) PASS
 Cache-control: max-age=0; (result=Uncached expected=Uncached) PASS
 Cache-control: max-age=1; [delay=1.5s] (result=Uncached expected=Uncached) PASS
