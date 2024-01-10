@@ -452,7 +452,7 @@ void TemplateUrlServiceAndroid::GetTemplateUrls(
   for (TemplateURL* template_url : template_urls) {
     // When Play API template URL supercedes the current template URL, skip it.
     if (play_api_turl && play_api_turl->keyword() == template_url->keyword() &&
-        play_api_turl->IsBetterThanEngineWithConflictingKeyword(template_url)) {
+        play_api_turl->IsBetterThanConflictingEngine(template_url)) {
       continue;
     }
 

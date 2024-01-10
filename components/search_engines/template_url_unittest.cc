@@ -5,6 +5,7 @@
 #include "components/search_engines/template_url.h"
 
 #include <stddef.h>
+
 #include <string>
 
 #include "base/base64.h"
@@ -21,6 +22,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
+#include "components/search_engines/template_url_data.h"
 #include "components/search_engines/testing_search_terms_data.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,7 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 
 using base::ASCIIToUTF16;
+using CreatedByPolicy = TemplateURLData::CreatedByPolicy;
 using RequestSource = SearchTermsData::RequestSource;
 
 namespace {
@@ -2402,4 +2405,154 @@ TEST_F(TemplateURLTest, ImageSearchBrandingLabel) {
   data.image_search_branding_label = u"fooimages";
   TemplateURL image_branding_url(data);
   EXPECT_EQ(u"fooimages", image_branding_url.image_search_branding_label());
+}
+
+struct IsBetterThanEngineTestEngine {
+  std::u16string keyword;
+  CreatedByPolicy created_by_policy = CreatedByPolicy::kNoPolicy;
+  bool enforced_by_policy = false;
+  bool featured_by_policy = false;
+  bool safe_for_autoreplace = false;
+  base::Time last_modified;
+};
+
+TemplateURL CreateEngineFromTestEngine(
+    const IsBetterThanEngineTestEngine& engine) {
+  TemplateURLData template_url_data;
+  template_url_data.SetKeyword(engine.keyword);
+  template_url_data.SetShortName(engine.keyword + u"_name");
+  template_url_data.SetURL("https://" + base::UTF16ToUTF8(engine.keyword) +
+                           ".com/q={searchTerms}");
+  template_url_data.created_by_policy = engine.created_by_policy;
+  template_url_data.enforced_by_policy = engine.enforced_by_policy;
+  template_url_data.featured_by_policy = engine.featured_by_policy;
+  template_url_data.safe_for_autoreplace = engine.safe_for_autoreplace;
+  template_url_data.last_modified = engine.last_modified;
+  return TemplateURL(template_url_data);
+}
+
+struct IsBetterThanEngineTestCase {
+  std::string description;
+  IsBetterThanEngineTestEngine better_engine;
+  IsBetterThanEngineTestEngine worse_engine;
+} kTestCases[] = {
+    {
+        .description = "NonFeaturedByPolicy_SafeForAutoreplace",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = true,
+            },
+    },
+    {
+        .description = "NonFeaturedByPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .safe_for_autoreplace = false,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+    },
+    {
+        .description = "FeaturedByPolicy_EditedByUser",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"@kw",
+                .safe_for_autoreplace = false,
+            },
+    },
+    {
+        .description = "FeaturedByPolicy_NonFeaturedByPolicy",
+        .better_engine =
+            {
+                .keyword = u"@kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .featured_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+            },
+    },
+    {
+        .description = "DefaultSearchProvider_MandatoryPolicy_UserDefined",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .enforced_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kNoPolicy,
+                .safe_for_autoreplace = false,
+            },
+    },
+    {
+        .description = "DefaultSearchProvider_MandatoryPolicy_Recommended",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+                .enforced_by_policy = true,
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kDefaultSearchProvider,
+            },
+    },
+    {
+        .description = "SiteSearchPolicy_Fallback",
+        .better_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .last_modified = base::Time::FromTimeT(2000),
+            },
+        .worse_engine =
+            {
+                .keyword = u"kw",
+                .created_by_policy = CreatedByPolicy::kSiteSearch,
+                .last_modified = base::Time::FromTimeT(1000),
+            },
+    },
+};
+
+class TemplateURLIsBetterThanEngineTest
+    : public TemplateURLTest,
+      public testing::WithParamInterface<IsBetterThanEngineTestCase> {};
+
+std::string ParamToTestSuffix(
+    const ::testing::TestParamInfo<IsBetterThanEngineTestCase>& info) {
+  return info.param.description;
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         TemplateURLIsBetterThanEngineTest,
+                         ::testing::ValuesIn(kTestCases),
+                         &ParamToTestSuffix);
+
+TEST_P(TemplateURLIsBetterThanEngineTest, Compare) {
+  TemplateURL better = CreateEngineFromTestEngine(GetParam().better_engine);
+  TemplateURL worse = CreateEngineFromTestEngine(GetParam().worse_engine);
+  EXPECT_TRUE(better.IsBetterThanConflictingEngine(&worse));
+  EXPECT_FALSE(worse.IsBetterThanConflictingEngine(&better));
 }

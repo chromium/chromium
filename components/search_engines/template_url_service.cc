@@ -565,8 +565,7 @@ const TemplateURL* TemplateURLService::GetTemplateURLForKeyword(
     return std::min_element(
                match_range.first, match_range.second,
                [](const auto& a, const auto& b) {
-                 return a.second->IsBetterThanEngineWithConflictingKeyword(
-                     b.second);
+                 return a.second->IsBetterThanConflictingEngine(b.second);
                })
         ->second;
   }
@@ -2564,7 +2563,7 @@ void TemplateURLService::MergeInSyncTemplateURL(
     }
   }
   base::ranges::sort(local_duplicates, [&](const auto& a, const auto& b) {
-    return a->IsBetterThanEngineWithConflictingKeyword(b);
+    return a->IsBetterThanConflictingEngine(b);
   });
   for (TemplateURL* conflicting_turl : local_duplicates) {
     if (IsFromSync(conflicting_turl, sync_data)) {
@@ -2580,7 +2579,7 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // allow the entry from Sync to overtake it in the model.
     const std::string guid = conflicting_turl->sync_guid();
     if (conflicting_turl == GetDefaultSearchProvider() ||
-        conflicting_turl->IsBetterThanEngineWithConflictingKeyword(sync_turl)) {
+        conflicting_turl->IsBetterThanConflictingEngine(sync_turl)) {
       ResetTemplateURLGUID(conflicting_turl, sync_turl->sync_guid());
       syncer::SyncData updated_sync_data =
           CreateSyncDataFromTemplateURL(*conflicting_turl);
@@ -2627,8 +2626,7 @@ void TemplateURLService::MergeInSyncTemplateURL(
     // the relevant changes in, we give up and leave both intact.
     if (conflicting_built_in_turl &&
         !IsFromSync(conflicting_built_in_turl, sync_data) &&
-        sync_turl->IsBetterThanEngineWithConflictingKeyword(
-            conflicting_built_in_turl)) {
+        sync_turl->IsBetterThanConflictingEngine(conflicting_built_in_turl)) {
       std::string guid = conflicting_built_in_turl->sync_guid();
       if (conflicting_built_in_turl == default_search_provider_) {
         bool pref_matched = GetDefaultSearchProviderPrefValue(*prefs_) ==
@@ -2823,7 +2821,7 @@ bool TemplateURLService::RemoveDuplicateReplaceableEnginesOf(
 
   // Find the BEST engine for |keyword| factoring in the new |candidate|.
   TemplateURL* best = GetTemplateURLForKeyword(keyword);
-  if (!best || candidate->IsBetterThanEngineWithConflictingKeyword(best)) {
+  if (!best || candidate->IsBetterThanConflictingEngine(best)) {
     best = candidate;
   }
 
