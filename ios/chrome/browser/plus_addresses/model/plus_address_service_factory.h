@@ -35,6 +35,11 @@ class PlusAddressServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
+
+  // The service must be created with the browser state, such that data can be
+  // loaded prior to the first use in an autofill flow.
+  bool ServiceIsCreatedWithBrowserState() const override;
+
   // The service is intentionally null when the base::Feature is disabled.
   bool ServiceIsNULLWhileTesting() const override;
 

@@ -54,6 +54,10 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
           identity_manager, browser_state->GetSharedURLLoaderFactory()));
 }
 
+bool PlusAddressServiceFactory::ServiceIsCreatedWithBrowserState() const {
+  return true;
+}
+
 bool PlusAddressServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
