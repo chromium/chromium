@@ -10,12 +10,14 @@
 
 FormInputAccessoryViewTextData* ChromiumAccessoryViewTextData() {
   return [[FormInputAccessoryViewTextData alloc]
-              initWithCloseButtonTitle:l10n_util::GetNSString(
-                                           IDS_IOS_AUTOFILL_INPUT_BAR_DONE)
-         closeButtonAccessibilityLabel:
-             l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD)
-          nextButtonAccessibilityLabel:l10n_util::GetNSString(
-                                           IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)
-      previousButtonAccessibilityLabel:
-          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)];
+                initWithCloseButtonTitle:l10n_util::GetNSString(
+                                             IDS_IOS_AUTOFILL_INPUT_BAR_DONE)
+           closeButtonAccessibilityLabel:
+               l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_HIDE_KEYBOARD)
+            nextButtonAccessibilityLabel:
+                l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_NEXT_FIELD)
+        previousButtonAccessibilityLabel:
+            l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_PREVIOUS_FIELD)
+      manualFillButtonAccessibilityLabel:
+          l10n_util::GetNSString(IDS_IOS_AUTOFILL_ACCNAME_AUTOFILL_DATA)];
 }
