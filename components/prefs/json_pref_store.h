@@ -38,11 +38,10 @@ class WriteCallbacksObserver;
 }  // namespace base
 
 // A writable PrefStore implementation that is used for user preferences.
-class COMPONENTS_PREFS_EXPORT JsonPrefStore
+class COMPONENTS_PREFS_EXPORT JsonPrefStore final
     : public PersistentPrefStore,
       public base::ImportantFileWriter::DataSerializer,
-      public base::ImportantFileWriter::BackgroundDataSerializer,
-      public base::SupportsWeakPtr<JsonPrefStore> {
+      public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
   struct ReadResult;
 
@@ -123,6 +122,10 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
       base::OnceClosure on_next_successful_write_reply);
 
   void OnStoreDeletionFromDisk() override;
+
+  base::WeakPtr<JsonPrefStore> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
 #if defined(UNIT_TEST)
   base::ImportantFileWriter& get_writer() { return writer_; }
@@ -212,6 +215,8 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
   base::OnceClosure on_next_successful_write_reply_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<JsonPrefStore> weak_ptr_factory_{this};
 };
 
 #endif  // COMPONENTS_PREFS_JSON_PREF_STORE_H_
