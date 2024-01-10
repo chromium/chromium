@@ -378,11 +378,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "video_decode_accelerator_tests",
-    label = "//media/gpu/test:video_decode_accelerator_tests",
-)
-
-targets.compile_target(
     name = "video_decode_accelerator_perf_tests",
     label = "//media/gpu/test:video_decode_accelerator_perf_tests",
 )

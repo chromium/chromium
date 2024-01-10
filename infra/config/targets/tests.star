@@ -990,6 +990,20 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "video_decode_accelerator_tests",
+    args = [
+        "--env-var",
+        "LIBVA_DRIVERS_PATH",
+        "./",
+        "--env-var",
+        "LIBVA_DRIVER_NAME",
+        "libfake",
+        "test-25fps.vp9",
+        "test-25fps.vp9.json",
+    ],
+)
+
+targets.tests.gtest_test(
     name = "filesystem_service_unittests",
 )
 

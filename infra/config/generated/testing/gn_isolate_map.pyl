@@ -1797,7 +1797,7 @@
   },
   "video_decode_accelerator_tests": {
     "label": "//media/gpu/test:video_decode_accelerator_tests",
-    "type": "additional_compile_target",
+    "type": "console_test_launcher",
   },
   "video_encode_accelerator_perf_tests": {
     "label": "//media/gpu/test:video_encode_accelerator_perf_tests",
