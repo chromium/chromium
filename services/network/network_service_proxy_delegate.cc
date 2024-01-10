@@ -144,13 +144,7 @@ void NetworkServiceProxyDelegate::OnResolveProxy(
   if (ApplyProxyConfigToProxyInfo(proxy_config_->rules, proxy_retry_info, url,
                                   &proxy_info)) {
     DCHECK(!proxy_info.is_empty() && !proxy_info.is_direct());
-    if (proxy_config_->should_replace_direct &&
-        !proxy_config_->should_override_existing_config) {
-      result->OverrideProxyList(
-          MergeProxyRules(result->proxy_list(), proxy_info.proxy_list()));
-    } else {
-      result->OverrideProxyList(proxy_info.proxy_list());
-    }
+    result->OverrideProxyList(proxy_info.proxy_list());
   }
 }
 
@@ -219,8 +213,7 @@ bool NetworkServiceProxyDelegate::EligibleForProxy(
   bool has_existing_config =
       !proxy_info.is_direct() || proxy_info.proxy_list().size() > 1u;
 
-  if (!proxy_config_->should_override_existing_config && has_existing_config &&
-      !proxy_config_->should_replace_direct) {
+  if (!proxy_config_->should_override_existing_config && has_existing_config) {
     return false;
   }
 

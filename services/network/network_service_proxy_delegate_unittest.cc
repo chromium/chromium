@@ -342,71 +342,9 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyOverridesExisting) {
   EXPECT_FALSE(result.is_for_ip_protection());
 }
 
-TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyMergesDirect) {
-  auto config = mojom::CustomProxyConfig::New();
-  config->rules.ParseFromString("http=foo");
-  config->should_replace_direct = true;
-  auto delegate = CreateDelegate(std::move(config));
-
-  net::ProxyInfo result;
-  result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
-                           "GET", net::ProxyRetryInfoMap(), &result);
-
-  net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY foo"));
-
-  EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
-  EXPECT_FALSE(result.is_for_ip_protection());
-
-  // Resolve proxy for HTTPS URL and check that proxy list is not modified since
-  // the config rules specify http
-  net::ProxyInfo result_https;
-  result_https.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpsUrl), net::NetworkAnonymizationKey(),
-                           "GET", net::ProxyRetryInfoMap(), &result_https);
-
-  net::ProxyList expected_proxy_list_https;
-  expected_proxy_list_https.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list_https.AddProxyServer(
-      net::PacResultElementToProxyServer("DIRECT"));
-
-  EXPECT_TRUE(result_https.proxy_list().Equals(expected_proxy_list_https));
-  EXPECT_FALSE(result_https.is_for_ip_protection());
-}
-
-TEST_F(NetworkServiceProxyDelegateTest,
-       OnResolveProxyMergesConfigsThatIncludeDirect) {
-  auto config = mojom::CustomProxyConfig::New();
-  config->rules.ParseFromString("http=foo, direct://");
-  config->should_replace_direct = true;
-  auto delegate = CreateDelegate(std::move(config));
-
-  net::ProxyInfo result;
-  result.UsePacString("PROXY bar; DIRECT");
-  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
-                           "GET", net::ProxyRetryInfoMap(), &result);
-
-  net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY foo"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("DIRECT"));
-
-  EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
-  EXPECT_FALSE(result.is_for_ip_protection());
-}
-
 TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("https=foo");
-  config->should_replace_direct = false;
   auto delegate = CreateDelegate(std::move(config));
 
   net::ProxyInfo result;
@@ -419,27 +357,6 @@ TEST_F(NetworkServiceProxyDelegateTest, OnResolveProxyDoesNotMergeDirect) {
       net::PacResultElementToProxyServer("PROXY bar"));
   expected_proxy_list.AddProxyServer(
       net::PacResultElementToProxyServer("DIRECT"));
-  EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
-  EXPECT_FALSE(result.is_for_ip_protection());
-}
-
-TEST_F(NetworkServiceProxyDelegateTest,
-       OnResolveProxyDoesNotMergeWhenDirectIsNotSet) {
-  auto config = mojom::CustomProxyConfig::New();
-  config->rules.ParseFromString("https=foo");
-  config->should_replace_direct = true;
-  auto delegate = CreateDelegate(std::move(config));
-
-  net::ProxyInfo result;
-  result.UsePacString("PROXY bar; PROXY baz");
-  delegate->OnResolveProxy(GURL(kHttpUrl), net::NetworkAnonymizationKey(),
-                           "GET", net::ProxyRetryInfoMap(), &result);
-
-  net::ProxyList expected_proxy_list;
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY bar"));
-  expected_proxy_list.AddProxyServer(
-      net::PacResultElementToProxyServer("PROXY baz"));
   EXPECT_TRUE(result.proxy_list().Equals(expected_proxy_list));
   EXPECT_FALSE(result.is_for_ip_protection());
 }
@@ -448,7 +365,6 @@ TEST_F(NetworkServiceProxyDelegateTest,
        OnResolveProxyDoesNotMergeWhenOverrideExistingConfigFlagIsEnabled) {
   auto config = mojom::CustomProxyConfig::New();
   config->rules.ParseFromString("https=foo");
-  config->should_replace_direct = true;
   config->should_override_existing_config = true;
   auto delegate = CreateDelegate(std::move(config));
 
