@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+
 #include <memory>
 
 #include "base/scoped_observation.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display.h"
@@ -210,5 +212,10 @@ TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {
   EXPECT_FALSE(
       PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
           GURL("about:blank")));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  EXPECT_TRUE(
+      PictureInPictureWindowManager::IsSupportedForDocumentPictureInPicture(
+          GURL("chrome-extension://foocom")));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 #endif

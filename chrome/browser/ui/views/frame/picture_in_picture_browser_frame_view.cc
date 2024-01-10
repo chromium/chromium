@@ -27,6 +27,7 @@
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -75,6 +76,10 @@
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
 #endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -469,6 +474,13 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   auto elide_behavior = location_bar_model_->GetURL().SchemeIsFile()
                             ? gfx::ELIDE_TAIL
                             : gfx::ELIDE_HEAD;
+
+  // Similarly for extension URLs, the tail is more important to elide.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (location_bar_model_->GetURL().SchemeIs(extensions::kExtensionScheme)) {
+    elide_behavior = gfx::ELIDE_TAIL;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Creates the window title.
   top_bar_container_view_->AddChildView(
