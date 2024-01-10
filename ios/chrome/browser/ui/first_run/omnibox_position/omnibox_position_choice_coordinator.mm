@@ -86,6 +86,7 @@
     [self.baseNavigationController setViewControllers:@[ _viewController ]
                                              animated:animated];
   } else {
+    _viewController.modalInPresentation = NO;
     [self.baseViewController presentViewController:_viewController
                                           animated:YES
                                         completion:nil];
@@ -126,6 +127,13 @@
   if (_firstRun) {
     [_mediator skipSelection];
   } else {
+    [_mediator discardSelectedPosition];
+  }
+  [self dismissScreen];
+}
+
+- (void)didDismissViewController {
+  if (!_firstRun) {
     [_mediator discardSelectedPosition];
   }
   [self dismissScreen];

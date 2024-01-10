@@ -510,6 +510,14 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   _canUpdateViewsOnScroll = NO;
 }
 
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  if (self.isBeingDismissed &&
+      [self.delegate respondsToSelector:@selector(didDismissViewController)]) {
+    [self.delegate didDismissViewController];
+  }
+}
+
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
