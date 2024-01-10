@@ -399,7 +399,7 @@ void SessionRestorationServiceImpl::LoadSession(Browser* browser) {
   }
 
   // Record the time spent blocking the main thread to load the session.
-  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+  base::UmaHistogramTimes(kSessionHistogramLoadingTime,
                           base::TimeTicks::Now() - start_time);
 }
 
@@ -705,6 +705,6 @@ void SessionRestorationServiceImpl::SaveDirtySessions() {
   dirty_web_state_lists_.clear();
 
   // Record the time spent blocking the main thread to save the session.
-  base::UmaHistogramTimes("Session.WebStates.SavingTimeOnMainThread",
+  base::UmaHistogramTimes(kSessionHistogramSavingTime,
                           base::TimeTicks::Now() - start_time);
 }

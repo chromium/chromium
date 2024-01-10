@@ -39,3 +39,9 @@ const char kSessionStorageFormatPref[] = "ios.session.storage.format";
 
 const char kSessionStorageMigrationStatusPref[] =
     "ios.session.storage.migration-status";
+
+const char kSessionHistogramSavingTime[] =
+    "Session.WebStates.SavingTimeOnMainThread";
+
+const char kSessionHistogramLoadingTime[] =
+    "Session.WebStates.LoadingTimeOnMainThread";

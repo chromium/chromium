@@ -312,7 +312,7 @@ void SessionRestorationBrowserAgent::RestoreSession() {
                      directory:browser_->GetBrowserState()->GetStatePath()];
 
   RestoreSessionWindow(session_window);
-  base::UmaHistogramTimes("Session.WebStates.LoadingTimeOnMainThread",
+  base::UmaHistogramTimes(kSessionHistogramLoadingTime,
                           base::TimeTicks::Now() - start_time);
 }
 

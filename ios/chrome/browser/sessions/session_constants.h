@@ -62,4 +62,9 @@ enum class SessionStorageMigrationStatus {
   kInProgressToOptimized,
 };
 
+// Name of the histogram used to record the time spent blocking the main
+// thread to save/load the session from storage.
+extern const char kSessionHistogramSavingTime[];
+extern const char kSessionHistogramLoadingTime[];
+
 #endif  // IOS_CHROME_BROWSER_SESSIONS_SESSION_CONSTANTS_H_
