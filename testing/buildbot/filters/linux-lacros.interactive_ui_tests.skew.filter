@@ -3,3 +3,28 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
+# TODO(crbug.com/1336691) These tests are flaky because of a Wayland race
+# condition. They're not flaky for the non-skew tests because an Ash-side fix
+# was recently merged, but that fix has not yet landed in stable.
+-TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsLeftIntoGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsLeftIntoGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragMultipleTabsRightIntoGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragOnlyTabInGroupRemovesGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragOnlyTabInGroupRemovesGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragPinnedTabDoesNotGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragPinnedTabDoesNotGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragSingleTabRightOfRightmostGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragSingleTabRightOfRightmostGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragTabLeftPastCollapsedGroupHeader/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragTabLeftPastCollapsedGroupHeader/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragWindowIntoGroup/2
+-TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/0
+-TabDragging/DetachToBrowserTabDragControllerTest.SelectTabDuringDrag/2
+-TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/0
+-TabDragging/DetachToBrowserTabDragControllerTest.TabDragContextOwnsDraggedTabs/2

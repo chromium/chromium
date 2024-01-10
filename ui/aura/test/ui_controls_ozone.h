@@ -67,10 +67,17 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
   // Use |optional_host| to specify the host.
   // When |optional_host| is not null, event will be sent to |optional_host|.
   // When |optional_host| is null, event will be sent to the default host.
+  //
+  // By default, the closure is posted at the beginning of this method. Set
+  // |post_task_after_dispatch| to true to post the closure at the end instead.
+  // This is useful for controlling the order of outbound Wayland messages.
+  // This should only be used if it is known that the event to be dispatched
+  // will not result in a nested message loop.
   void SendEventToSink(ui::Event* event,
                        int64_t display_id,
                        base::OnceClosure closure,
-                       WindowTreeHost* optional_host = nullptr);
+                       WindowTreeHost* optional_host = nullptr,
+                       bool post_task_after_dispatch = false);
 
   void PostKeyEvent(ui::EventType type,
                     ui::KeyboardCode key_code,
