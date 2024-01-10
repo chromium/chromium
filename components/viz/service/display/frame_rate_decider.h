@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
@@ -22,9 +23,10 @@ class SurfaceManager;
 enum class ToggleFrameRateCase : uint8_t {
   kNone = 0,
   kHardwareSupported = 1,
-  kSingleVideoPerfectCadence = 2,
-  kSingleVideoNoPerfectCadence = 3,
-  kMultipleVideos = 4,
+  kSingleVideoPerfectCadenceMatchesDisplay = 2,
+  kSingleVideoPerfectCadenceDiffersFromDisplay = 3,
+  kSingleVideoNoPerfectCadence = 4,
+  kMultipleVideos = 5,
   kMaxValue = kMultipleVideos
 };
 
@@ -110,6 +112,8 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   base::TimeDelta current_preferred_frame_interval_;
 
   size_t min_num_of_frames_to_toggle_interval_;
+
+  base::MetricsSubSampler metrics_subsampler_;
 
   const raw_ptr<SurfaceManager> surface_manager_;
   const raw_ptr<Client> client_;
