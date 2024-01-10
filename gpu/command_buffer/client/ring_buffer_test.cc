@@ -139,8 +139,11 @@ TEST_F(RingBufferTest, TestBasic) {
 // unaligned buffer could cause an alloc using the value returned by
 // GetLargestFreeOrPendingSize to try to allocate more memory than was allowed.
 TEST_F(RingBufferTest, TestCanAllocGetLargestFreeOrPendingSize) {
-  // Make sure we aren't actually aligned
+  // Nullifying |buffer_start_| here, to prevent dangling this raw_ptr when
+  // buffer_ is subsequently reset.
   buffer_start_ = nullptr;
+
+  // Make sure we aren't actually aligned
   buffer_.reset(new int8_t[kBufferSize + 2 + kBaseOffset]);
   buffer_start_ = buffer_.get() + kBaseOffset;
   allocator_.reset(new RingBuffer(kAlignment, kBaseOffset, kBufferSize + 2,
