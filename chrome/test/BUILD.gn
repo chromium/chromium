@@ -11531,6 +11531,15 @@ if (!is_android && !is_chromeos_device && !is_fuchsia) {
         "//components/enterprise/data_controls",
       ]
     }
+
+    if (enable_compose) {
+      sources += [ "../browser/ui/views/compose/compose_interactive_uitest.cc" ]
+
+      deps += [
+        "//components/compose/core/browser",
+        "//components/compose/core/browser:features",
+      ]
+    }
   }
 }
 

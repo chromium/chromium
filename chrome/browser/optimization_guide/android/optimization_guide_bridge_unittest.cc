@@ -27,6 +27,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::An;
 using ::testing::ByRef;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -101,9 +102,10 @@ TEST_F(OptimizationGuideBridgeTest, CanApplyOptimizationHasHint) {
   optimization_guide::OptimizationMetadata metadata;
   metadata.SetAnyMetadataForTesting(hints_metadata);
   EXPECT_CALL(*optimization_guide_keyed_service_,
-              CanApplyOptimization(GURL("https://example.com/"),
-                                   optimization_guide::proto::LOADING_PREDICTOR,
-                                   base::test::IsNotNullCallback()))
+              CanApplyOptimization(
+                  GURL("https://example.com/"),
+                  optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(metadata)));

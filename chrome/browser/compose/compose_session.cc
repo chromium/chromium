@@ -620,6 +620,15 @@ void ComposeSession::SetUserFeedback(compose::mojom::UserFeedback feedback) {
 
 void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
                                         const bool text_selected) {
+  // In some cases (FRE not shown, MSBB not accepted), we wait to extract the
+  // inner text until all conditions are met to enable the feature.  However, if
+  // we want to extract the inner text content later, we still need to store the
+  // selected text.
+  text_selected_ = text_selected;
+  if (text.has_value()) {
+    initial_input_ = text.value();
+  }
+
   if (!fre_complete_) {
     fre_dialog_shown_count_ += 1;
     return;
@@ -632,18 +641,11 @@ void ComposeSession::InitializeWithText(const std::optional<std::string>& text,
   // Session is initialized at the main dialog UI state.
   dialog_shown_count_ += 1;
 
-  text_selected_ = text_selected;
   RefreshInnerText();
 
   // If no text provided (even an empty string), then we are reopening without
-  // calling compose again, or updating the input text..
-  if (!text.has_value()) {
-    return;
-  }
-
-  initial_input_ = text.value();
-
-  if (IsValidComposePrompt(initial_input_) &&
+  // calling compose again, or updating the input text, so skip autocompose.
+  if (text.has_value() && IsValidComposePrompt(initial_input_) &&
       compose::GetComposeConfig().auto_submit_with_selection) {
     Compose(initial_input_, false);
   }
@@ -756,6 +758,9 @@ void ComposeSession::SetFirstRunCloseReason(
 void ComposeSession::SetFirstRunCompleted() {
   fre_completed_in_session_ = true;
   fre_complete_ = true;
+
+  // Start inner text capture which was skipped until FRE was complete.
+  InitializeWithText(std::make_optional(initial_input_), text_selected_);
 }
 
 void ComposeSession::SetMSBBCloseReason(

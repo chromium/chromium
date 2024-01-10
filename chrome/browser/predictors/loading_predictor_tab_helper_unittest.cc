@@ -29,6 +29,7 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 
 using ::testing::_;
+using ::testing::An;
 using ::testing::ByRef;
 using ::testing::DoAll;
 using ::testing::Eq;
@@ -333,10 +334,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
 
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(0);
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org/otherpage");
 
@@ -368,10 +369,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource2");
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -417,10 +418,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -481,10 +482,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .Times(3)
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
@@ -524,10 +525,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
        DocumentOnLoadCompletedOptimizationGuidePredictionHasNotArrived) {
   base::HistogramTester histogram_tester;
 
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()));
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()));
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
 
   // Adding subframe navigation to ensure that the committed main frame url will
@@ -563,10 +564,10 @@ TEST_F(
   lp_metadata.add_subresources()->set_url("http://other.org/resource3");
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
   optimization_guide::OptimizationGuideDecisionCallback callback;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(WithArg<2>(
           Invoke([&](optimization_guide::OptimizationGuideDecisionCallback
                          got_callback) -> void {
@@ -608,10 +609,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   optimization_guide::OptimizationMetadata optimization_metadata;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kFalse,
           ByRef(optimization_metadata)));
@@ -648,10 +649,10 @@ TEST_F(
   // TOOO(ahemery): Consider refactoring this to rely on loading events
   // in NavigationSimulator.
   optimization_guide::OptimizationMetadata optimization_metadata;
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));
@@ -712,10 +713,10 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
   preconnect_only_resource->set_url("http://preconnectonly.com/");
   preconnect_only_resource->set_preconnect_only(true);
   optimization_metadata.set_loading_predictor_metadata(lp_metadata);
-  EXPECT_CALL(
-      *mock_optimization_guide_keyed_service_,
-      CanApplyOptimization(_, optimization_guide::proto::LOADING_PREDICTOR,
-                           base::test::IsNotNullCallback()))
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_,
+              CanApplyOptimization(
+                  _, optimization_guide::proto::LOADING_PREDICTOR,
+                  An<optimization_guide::OptimizationGuideDecisionCallback>()))
       .WillOnce(base::test::RunOnceCallback<2>(
           optimization_guide::OptimizationGuideDecision::kTrue,
           ByRef(optimization_metadata)));

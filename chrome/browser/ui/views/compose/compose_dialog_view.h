@@ -11,9 +11,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kComposeWebviewElementId);
+
 // A view for the contents area of the Compose dialog.
 class ComposeDialogView : public WebUIBubbleDialogView {
   METADATA_HEADER(ComposeDialogView, WebUIBubbleDialogView)
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kComposeDialogId);
 
  public:
   explicit ComposeDialogView(

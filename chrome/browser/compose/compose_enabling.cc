@@ -95,9 +95,12 @@ compose::ComposeHintDecision ComposeEnabling::GetOptimizationGuidanceForUrl(
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
   }
 
-  absl::optional<compose::ComposeHintMetadata> compose_metadata =
-      optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
-          metadata.any_metadata().value());
+  absl::optional<compose::ComposeHintMetadata> compose_metadata;
+  if (metadata.any_metadata().has_value()) {
+    compose_metadata =
+        optimization_guide::ParsedAnyMetadata<compose::ComposeHintMetadata>(
+            metadata.any_metadata().value());
+  }
   if (!compose_metadata.has_value()) {
     DVLOG(2) << "Optimization guide has no metadata, returns unspecified";
     return compose::ComposeHintDecision::COMPOSE_HINT_DECISION_UNSPECIFIED;
