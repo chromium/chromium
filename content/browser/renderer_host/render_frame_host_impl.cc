@@ -5360,18 +5360,11 @@ void RenderFrameHostImpl::ProcessBeforeUnloadCompletedFromFrame(
     }
 
     if (for_legacy) {
-      base::UmaHistogramTimes(
-          "Navigation.OnBeforeUnloadLegacyPostTaskTime",
-          before_unload_completed_time - renderer_before_unload_end_time);
       // When `for_legacy` is true callers should supply
       // `send_before_unload_start_time_` as the value for
       // `renderer_before_unload_start_time`, which means
       // `browser_to_renderer_ipc_time_delta` should be 0.
       DCHECK(browser_to_renderer_ipc_time_delta.is_zero());
-    } else {
-      base::UmaHistogramTimes(
-          "Navigation.OnBeforeUnloadBrowserToRendererIpcTime",
-          browser_to_renderer_ipc_time_delta);
     }
 
     base::TimeDelta on_before_unload_overhead_time =
@@ -14034,13 +14027,6 @@ void RenderFrameHostImpl::SendBeforeUnload(
       },
       rfh, for_legacy);
   if (for_legacy) {
-    if (frame_tree_node_->navigation_request()) {
-      base::UmaHistogramTimes(
-          "Navigation.NavigationStartToBeforeUnloadForLegacy",
-          base::TimeTicks::Now() - frame_tree_node_->navigation_request()
-                                       ->common_params()
-                                       .navigation_start);
-    }
     // Use a high-priority task to continue the navigation. This is safe as it
     // happens early in the navigation flow and shouldn't race with any other
     // tasks associated with this navigation.
