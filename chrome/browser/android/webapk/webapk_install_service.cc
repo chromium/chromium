@@ -70,42 +70,6 @@ void WebApkInstallService::InstallAsync(
                      shortcut_info, primary_icon));
 }
 
-void WebApkInstallService::RetryInstallAsync(
-    std::unique_ptr<std::string> serialized_proto,
-    const SkBitmap& primary_icon,
-    bool is_primary_icon_maskable,
-    ServiceInstallFinishCallback finish_callback) {
-  auto proto = std::make_unique<webapk::WebApk>();
-  if (!proto->ParseFromString(*serialized_proto.get())) {
-    std::move(finish_callback).Run(webapps::WebApkInstallResult::FAILURE);
-    return;
-  }
-
-  GURL manifest_url(proto->manifest_url());
-  GURL manifest_id(proto->manifest().id());
-  if (IsInstallInProgress(manifest_id)) {
-    std::move(finish_callback)
-        .Run(webapps::WebApkInstallResult::INSTALL_ALREADY_IN_PROGRESS);
-    return;
-  }
-  install_ids_.insert(manifest_id);
-  std::u16string short_name = base::UTF8ToUTF16(proto->manifest().short_name());
-  GURL manifest_start_url = GURL(proto->manifest().start_url());
-
-  ShowInstallInProgressNotification(manifest_id, short_name, manifest_start_url,
-                                    primary_icon, is_primary_icon_maskable);
-
-  WebApkInstaller::InstallWithProtoAsync(
-      browser_context_, std::move(serialized_proto), short_name,
-      webapps::ShortcutInfo::SOURCE_INSTALL_RETRY, primary_icon, manifest_url,
-      base::BindOnce(&WebApkInstallService::OnFinishedInstallWithProto,
-                     weak_ptr_factory_.GetWeakPtr(), manifest_id,
-                     manifest_start_url, short_name, primary_icon,
-                     is_primary_icon_maskable,
-                     webapps::ShortcutInfo::SOURCE_INSTALL_RETRY,
-                     std::move(finish_callback)));
-}
-
 void WebApkInstallService::UpdateAsync(
     const base::FilePath& update_request_path,
     FinishCallback finish_callback) {

@@ -76,11 +76,6 @@ class WebApkInstallService : public KeyedService {
                     const SkBitmap& primary_icon,
                     webapps::WebappInstallSource install_source);
 
-  void RetryInstallAsync(std::unique_ptr<std::string> serialized_web_apk,
-                         const SkBitmap& primary_icon,
-                         bool is_primary_icon_maskable,
-                         ServiceInstallFinishCallback finish_callback);
-
   // Talks to the Chrome WebAPK server to update a WebAPK on the server and to
   // the Google Play server to install the downloaded WebAPK.
   // |update_request_path| is the path of the file with the update request.

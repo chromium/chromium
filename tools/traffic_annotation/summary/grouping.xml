@@ -30,7 +30,6 @@ after discussions on the right group.
       <annotation id="partner_bookmarks_reader_get_favicon"/>
       <annotation id="rlz"/>
       <annotation id="webapk_create"/>
-      <annotation id="webapk_create_for_service"/>
       <annotation id="webapk_update"/>
       <annotation id="webview_proxy_config"/>
     </sender>
