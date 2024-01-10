@@ -65,9 +65,13 @@ export class TabOrganizationNotStartedElement extends
   }
 
   private setSync_(sync: SyncInfo) {
-    this.sync_ = sync;
-    this.dispatchEvent(
-        new CustomEvent('sync-change', {bubbles: true, composed: true}));
+    if (!this.sync_ || sync.paused !== this.sync_.paused ||
+        sync.syncing !== this.sync_.syncing ||
+        sync.syncingHistory !== this.sync_.syncingHistory) {
+      this.sync_ = sync;
+      this.dispatchEvent(
+          new CustomEvent('sync-change', {bubbles: true, composed: true}));
+    }
   }
 
   private getSyncState_(): SyncState {

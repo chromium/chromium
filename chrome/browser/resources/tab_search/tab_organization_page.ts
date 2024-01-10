@@ -123,22 +123,16 @@ export class TabOrganizationPageElement extends PolymerElement {
     let contentsHeight = 0;
     switch (this.state_) {
       case TabOrganizationState.kNotStarted:
-        // Subtract padding out here and below as this is variable during
-        // animation and should not affect contents height.
-        contentsHeight = this.$.notStarted.scrollHeight -
-            this.getPaddingTopValue_(this.$.notStarted) + BODY_VERTICAL_MARGIN;
+        contentsHeight = this.$.notStarted.scrollHeight + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kInProgress:
-        contentsHeight = this.$.inProgress.scrollHeight -
-            this.getPaddingTopValue_(this.$.inProgress) + BODY_VERTICAL_MARGIN;
+        contentsHeight = this.$.inProgress.scrollHeight + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kSuccess:
-        contentsHeight = this.$.results.scrollHeight -
-            this.getPaddingTopValue_(this.$.results) + BODY_VERTICAL_MARGIN;
+        contentsHeight = this.$.results.scrollHeight + BODY_VERTICAL_MARGIN;
         break;
       case TabOrganizationState.kFailure:
-        contentsHeight = this.$.failure.scrollHeight -
-            this.getPaddingTopValue_(this.$.failure) + BODY_VERTICAL_MARGIN;
+        contentsHeight = this.$.failure.scrollHeight + BODY_VERTICAL_MARGIN;
         if (this.showFRE_) {
           // If the failure footer is shown, exclude bottom margin as the
           // footer should extend to the bottom of the bubble.
@@ -172,12 +166,13 @@ export class TabOrganizationPageElement extends PolymerElement {
     });
   }
 
-  private getPaddingTopValue_(element: HTMLElement): number {
-    const pxValue = getComputedStyle(element).getPropertyValue('padding-top');
-    return Number.parseInt(pxValue.trim().slice(0, -2), 10);
-  }
-
   private setSession_(session: TabOrganizationSession) {
+    const prevError = this.error_;
+    const prevName = this.name_;
+    const prevTabs = this.tabs_;
+    const prevIsLastOrganization = this.isLastOrganization_;
+    const prevState = this.state_;
+
     this.sessionId_ = session.sessionId;
     this.error_ = session.error;
     if (session.state === TabOrganizationState.kSuccess) {
@@ -190,6 +185,16 @@ export class TabOrganizationPageElement extends PolymerElement {
       this.organizationId_ = -1;
     }
     this.setState_(session.state);
+
+    const visualChange = prevError !== this.error_ || prevName !== this.name_ ||
+        prevTabs !== this.tabs_ ||
+        prevIsLastOrganization !== this.isLastOrganization_ ||
+        prevState !== this.state_;
+    if (visualChange) {
+      // Wait for a rendering pass so the new scroll height is up to date
+      // with any new data.
+      this.updateContentsHeightAfterNextRender();
+    }
   }
 
   private setState_(state: TabOrganizationState) {
@@ -203,9 +208,6 @@ export class TabOrganizationPageElement extends PolymerElement {
     this.classList.toggle(
         'from-failure', this.state_ === TabOrganizationState.kFailure);
     this.state_ = state;
-    // Wait for a rendering pass so the new state's scroll height is up to date
-    // with any new data.
-    this.updateContentsHeightAfterNextRender();
   }
 
   private isState_(state: TabOrganizationState): boolean {
