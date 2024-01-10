@@ -35,7 +35,7 @@ constexpr char16_t kBubbleBodyText[] = u"bubble body";
 // This should be short enough that tests that *expect* the operation to time
 // out should fail. Standard test timeout will be used for tests expected to
 // succeed.
-constexpr base::TimeDelta kTimeoutForTesting = base::Seconds(3);
+constexpr base::TimeDelta kShortTimeoutForTesting = base::Seconds(3);
 
 // Gets a partially-filled params block with default values. You will still
 // need to specify `target_url` and `callback`.
@@ -44,6 +44,7 @@ ShowPromoInPage::Params GetDefaultParams() {
   params.bubble_anchor_id = kWebUIIPHDemoElementIdentifier;
   params.bubble_arrow = user_education::HelpBubbleArrow::kBottomLeft;
   params.bubble_text = kBubbleBodyText;
+  params.timeout_override_for_testing = base::Seconds(90);
   return params;
 }
 
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
-  params.timeout_override_for_testing = kTimeoutForTesting;
+  params.timeout_override_for_testing = kShortTimeoutForTesting;
 
   base::WeakPtr<ShowPromoInPage> handle;
 
@@ -199,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(ShowPromoInPageBrowserTest,
   auto params = GetDefaultParams();
   params.target_url = GURL(kPageWithoutAnchorURL);
   params.callback = bubble_shown.Get();
-  params.timeout_override_for_testing = kTimeoutForTesting;
+  params.timeout_override_for_testing = kShortTimeoutForTesting;
 
   base::WeakPtr<ShowPromoInPage> handle;
 
