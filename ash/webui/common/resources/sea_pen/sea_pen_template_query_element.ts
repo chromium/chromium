@@ -10,16 +10,24 @@
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/sea_pen/sea_pen_icons.html.js';
 
-import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen.mojom-webui.js';
-import {isNonEmptyArray} from './sea_pen_utils.js';
+import {DomRepeat} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
 import {getSeaPenTemplates, parseTemplateText, SeaPenOption, SeaPenTemplate} from './constants.js';
+import {SeaPenQuery, SeaPenTemplateChip, SeaPenTemplateId, SeaPenTemplateOption} from './sea_pen.mojom-webui.js';
 import {searchSeaPenThumbnails} from './sea_pen_controller.js';
 import {getSeaPenProvider} from './sea_pen_interface_provider.js';
 import {SeaPenPaths, SeaPenRouterElement} from './sea_pen_router_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import {getTemplate} from './sea_pen_template_query_element.html.js';
+import {isNonEmptyArray} from './sea_pen_utils.js';
+
+export interface SeaPenTemplateQueryElement {
+  $: {
+    optionList: DomRepeat,
+  };
+}
 
 /**
  * Returns a random number between [0, max).
@@ -127,6 +135,18 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         this.seaPenTemplate_.options.has(this.selectedChip_.id),
         'options must exist');
     this.options_ = this.seaPenTemplate_.options.get(this.selectedChip_.id)!;
+    this.$.optionList.render();
+    this.showOptionMenu_(event);
+  }
+
+  private showOptionMenu_(event: Event&{model: {token: ChipToken}}) {
+    const targetElement = event.currentTarget as HTMLElement;
+    const config = {
+      anchorAlignmentX: AnchorAlignment.AFTER_START,
+      anchorAlignmentY: AnchorAlignment.AFTER_START,
+    };
+    const menuElement = this.shadowRoot!.querySelector('cr-action-menu');
+    menuElement!.showAt(targetElement.parentElement!, config);
   }
 
   private onClickOption_(event: Event&{model: {option: SeaPenOption}}) {
@@ -138,7 +158,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         this.seaPenTemplate_, this.selectedOptions_);
   }
 
-  // TODO(b/309679850): Query for actual images.
   private onClickInspire_() {
     this.seaPenTemplate_.options.forEach((options, chip) => {
       if (isNonEmptyArray(options)) {

@@ -1,6 +1,9 @@
 <style include="common cros-button-style">
   .main {
+    display: flex;
+    flex-direction: column;
     height: 100%;
+    justify-content: center;
     margin-inline-start: 8px;
   }
 
@@ -14,9 +17,8 @@
     color: var(--cros-text-color-primary);
     display: flex;
     font: var(--cros-display-6_regular-font);
-    height: 33%;
     justify-content: center;
-    padding: 2px 0;
+    padding: 12px 0;
   }
 
   #template .unselected {
@@ -63,47 +65,36 @@
     z-index: -1;
   }
 
-  #options {
-    display: flex;
-    height: 33%;
-    justify-content: center;
-  }
-
-  /* This makes the options scrollable. */
-  #optionSubcontainer {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    padding: 4px;
-  }
-
   #searchButtons {
-    height: 33%;
     display: flex;
     justify-content: center;
+    padding: 12px 0;
   }
 
   #searchButtons cr-button {
     margin: 0 4px;
   }
 
-  cr-button[aria-pressed='false'] iron-icon {
-    display: none;
-  }
-
-  cr-button[aria-pressed='true'] iron-icon {
-    --iron-icon-height: 20px;
-    --iron-icon-width: 20px;
-    display: block;
-  }
-
   cr-button {
     font: var(--cros-button-2-font);
   }
 
-  #options cr-button.unselected-option {
-    background-color: var(--cros-sys-system_on_base);
-    color: var(--cros-sys-on_surface);
+  .dropdown-check {
+    margin-inline-end: 16px;
+  }
+
+  button:not([aria-selected='true']) iron-icon.dropdown-check {
+    visibility: hidden;
+  }
+
+  button {
+    font: var(--cros-button-2-font);
+    padding: 8px 32px 8px 16px;
+  }
+
+  cr-action-menu::part(dialog) {
+    /* The menu only takes up half of the screen. */
+    max-height: calc(100vh / 2);
   }
 </style>
 <div class="main">
@@ -124,22 +115,6 @@
       </template>
     </template>
   </div>
-  <div id="options">
-    <div id="optionSubcontainer">
-      <template is="dom-repeat" items="[[options_]]" as="option">
-        <cr-button
-            class$="[[getOptionClass_(option, selectedChip_.translation)]]"
-            on-click="onClickOption_"
-            aria-pressed$="[[isOptionSelected_(option, selectedChip_.translation)]]">
-          <iron-icon
-              icon="personalization-shared:circle-checkmark"
-              slot="prefix-icon">
-          </iron-icon>
-          [[option.translation]]
-        </cr-button>
-      </template>
-    </div>
-  </div>
   <div id="searchButtons">
     <cr-button id="inspire" on-click="onClickInspire_">
       <iron-icon icon="sea-pen:inspire" slot="prefix-icon"></iron-icon>
@@ -154,4 +129,16 @@
       [[getSearchButtonText_(path)]]
     </cr-button>
   </div>
+  <cr-action-menu>
+    <template id="optionList"is="dom-repeat" items="[[options_]]" as="option">
+      <button
+          aria-selected$="[[isOptionSelected_(option, selectedChip_.translation)]]"
+          class="dropdown-item"
+          data-id$="[[template.id]]"
+          on-click="onClickOption_">
+        <iron-icon class="dropdown-check" icon="cr:check"></iron-icon>
+        [[option.translation]]
+      </button>
+    </template>
+  </cr-action-menu>
 </div>
