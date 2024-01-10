@@ -410,6 +410,8 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
   for (auto& tracker : removal_trackers_) {
     tracker->AddSortedFrame(args, frame_info);
   }
+
+  DestroyTrackers();
 }
 
 }  // namespace cc

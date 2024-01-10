@@ -35,6 +35,7 @@
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/video_layer.h"
 #include "cc/layers/view_transition_content_layer.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/ukm_smoothness_data.h"
 #include "cc/paint/image_animation_count.h"
@@ -9144,11 +9145,18 @@ class LayerTreeHostTopControlsDeltaTriggersViewportUpdate
 
 MULTI_THREAD_TEST_F(LayerTreeHostTopControlsDeltaTriggersViewportUpdate);
 
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that custom sequence throughput tracking result is reported to
 // LayerTreeHostClient.
 constexpr MutatorHost::TrackedAnimationSequenceId kSequenceId = 1u;
 class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
  public:
+  // Custom sequences are only supported for ChromeOS UI, which is
+  // Single-Threaded.
+  void InitializeSettings(LayerTreeSettings* settings) override {
+    settings->is_layer_tree_for_ui = true;
+  }
+
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
 
   void DidCommit() override {
@@ -9178,9 +9186,18 @@ class LayerTreeHostCustomThroughputTrackerTest : public LayerTreeHostTest {
 
     EndTest();
   }
+
+  // FrameSorter only tracks for BeginMainFrame which have provided metrics.
+  std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics() override {
+    std::unique_ptr<BeginMainFrameMetrics> metrics =
+        std::make_unique<BeginMainFrameMetrics>();
+    metrics->should_measure_smoothness = true;
+    return metrics;
+  }
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostCustomThroughputTrackerTest);
+SINGLE_THREAD_TEST_F(LayerTreeHostCustomThroughputTrackerTest);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class LayerTreeHostTestDelegatedInkMetadataBase
     : public LayerTreeHostTest,

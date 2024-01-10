@@ -225,7 +225,6 @@ test("compositor_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
-    "animation_throughput_reporter_unittest.cc",
     "callback_layer_animation_observer_unittest.cc",
     "canvas_painter_unittest.cc",
     "compositor_lock_unittest.cc",
@@ -238,7 +237,6 @@ test("compositor_unittests") {
     "presentation_time_recorder_unittest.cc",
     "run_all_unittests.cc",
     "throughput_tracker_unittest.cc",
-    "total_animation_throughput_reporter_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]
 
@@ -276,6 +274,13 @@ test("compositor_unittests") {
 
   if (is_linux || is_chromeos) {
     deps += [ "//third_party/mesa_headers" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "animation_throughput_reporter_unittest.cc",
+      "total_animation_throughput_reporter_unittest.cc",
+    ]
   }
 
   if (is_fuchsia) {

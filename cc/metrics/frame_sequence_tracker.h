@@ -241,6 +241,10 @@ class CC_EXPORT FrameSequenceTracker {
 
   // Frame id of the last ended frame when the tracker is active.
   viz::BeginFrameId last_ended_frame_id_;
+  // Frame id of the last sorted frame that the tracker was notified. If this is
+  // at least equal to `last_ended_frame_id_` then we are no longer awaiting
+  // frame feedback and can terminate immediately.
+  viz::BeginFrameId last_sorted_frame_id_;
 
 #if DCHECK_IS_ON()
   // This stringstream represents a sequence of frame reporting activities on
