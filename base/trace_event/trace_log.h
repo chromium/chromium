@@ -389,6 +389,7 @@ class BASE_EXPORT TraceLog :
 
   // Processes can have labels in addition to their names. Use labels, for
   // instance, to list out the web page titles that a process is handling.
+  int GetNewProcessLabelId();
   void UpdateProcessLabel(int label_id, const std::string& current_label);
   void RemoveProcessLabel(int label_id);
 
@@ -580,6 +581,7 @@ class BASE_EXPORT TraceLog :
   std::vector<raw_ptr<IncrementalStateObserver, VectorExperimental>>
       incremental_state_observers_ GUARDED_BY(observers_lock_);
 
+  int next_process_label_id_ GUARDED_BY(lock_) = 0;
   std::unordered_map<int, std::string> process_labels_;
   int process_sort_index_;
   std::unordered_map<PlatformThreadId, int> thread_sort_indices_;

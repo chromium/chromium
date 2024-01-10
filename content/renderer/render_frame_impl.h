@@ -1247,6 +1247,7 @@ class CONTENT_EXPORT RenderFrameImpl
   bool in_frame_tree_;
 
   const int routing_id_;
+  const int process_label_id_;
 
   // Keeps track of which future subframes the browser process has history items
   // for during a history navigation, as well as whether those items are for

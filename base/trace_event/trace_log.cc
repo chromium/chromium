@@ -2099,6 +2099,11 @@ void TraceLog::OnSetProcessName(const std::string& process_name) {
 #endif
 }
 
+int TraceLog::GetNewProcessLabelId() {
+  AutoLock lock(lock_);
+  return next_process_label_id_++;
+}
+
 void TraceLog::UpdateProcessLabel(int label_id,
                                   const std::string& current_label) {
   if (!current_label.length())

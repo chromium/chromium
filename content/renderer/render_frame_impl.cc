@@ -1852,6 +1852,8 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       unique_name_helper_(&unique_name_frame_adapter_),
       in_frame_tree_(false),
       routing_id_(params.routing_id),
+      process_label_id_(
+          base::trace_event::TraceLog::GetInstance()->GetNewProcessLabelId()),
       selection_text_offset_(0),
       selection_range_(gfx::Range::InvalidRange()),
       render_accessibility_manager_(
@@ -1922,7 +1924,8 @@ RenderFrameImpl::~RenderFrameImpl() {
   if (initialized_ && is_main_frame_)
     MainFrameCounter::DecrementCount();
 
-  base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(routing_id_);
+  base::trace_event::TraceLog::GetInstance()->RemoveProcessLabel(
+      process_label_id_);
   g_routing_id_frame_map.Get().erase(routing_id_);
   agent_scheduling_group_->RemoveFrameRoute(routing_id_);
 }
@@ -4032,7 +4035,7 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
   // Ignore all but top level navigations.
   if (!frame_->Parent() && !title.IsEmpty()) {
     base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
-        routing_id_, title.Utf8());
+        process_label_id_, title.Utf8());
   } else {
     // Set process title for sub-frames and title-less frames in traces.
     GURL loading_url = GetLoadingUrl();
@@ -4044,7 +4047,7 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
       }
       frame_title += loading_url.DeprecatedGetOriginAsURL().spec();
       base::trace_event::TraceLog::GetInstance()->UpdateProcessLabel(
-          routing_id_, frame_title);
+          process_label_id_, frame_title);
     }
   }
 
