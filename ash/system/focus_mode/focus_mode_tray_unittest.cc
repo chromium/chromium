@@ -4,13 +4,16 @@
 
 #include "ash/system/focus_mode/focus_mode_tray.h"
 
+#include "ash/accessibility/accessibility_controller.h"
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
@@ -18,6 +21,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/scoped_feature_list.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/controls/button/image_button.h"
@@ -241,6 +245,55 @@ TEST_F(FocusModeTrayTest, ProgressIndicatorCentered) {
             GetProgressIndicator()->layer()->bounds().CenterPoint());
   EXPECT_EQ(gfx::Size(32, 32),
             GetProgressIndicator()->layer()->bounds().size());
+}
+
+// Tests that the bubble and all of its focusable components are keyboard
+// traversable and have the correct accessible names.
+TEST_F(FocusModeTrayTest, BubbleTabbingAndAccessibility) {
+  AccessibilityController* accessibility_controller =
+      Shell::Get()->accessibility_controller();
+  accessibility_controller->spoken_feedback().SetEnabled(true);
+  EXPECT_TRUE(accessibility_controller->spoken_feedback().enabled());
+
+  FocusModeController* controller = FocusModeController::Get();
+  const std::string task_name = "Podcast interview script";
+  const base::TimeDelta session_duration = base::Minutes(40);
+  const std::u16string time_remaining = focus_mode_util::GetDurationString(
+      session_duration, /*digital_format=*/false);
+  controller->SetSessionDuration(session_duration);
+  controller->SetSelectedTask(std::make_unique<api::Task>(
+                                  /*id=*/base::NumberToString(1), task_name,
+                                  /*completed=*/false,
+                                  /*due=*/absl::nullopt, /*has_subtasks=*/false,
+                                  /*has_email_link=*/false,
+                                  /*has_notes=*/false,
+                                  /*updated=*/base::Time::Now())
+                                  .get());
+  controller->ToggleFocusMode();
+
+  LeftClickOn(focus_mode_tray_);
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME,
+                time_remaining, base::UTF8ToUTF16(task_name)),
+            focus_mode_tray_->GetAccessibleNameForBubble());
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  views::FocusManager* focus_manager =
+      GetBubbleView()->GetWidget()->GetFocusManager();
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_END_BUTTON),
+            focus_manager->GetFocusedView()->GetAccessibleName());
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_EQ(
+      l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME),
+      focus_manager->GetFocusedView()->GetAccessibleName());
+
+  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_NONE);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_RADIO_BUTTON),
+            focus_manager->GetFocusedView()->GetAccessibleName());
 }
 
 }  // namespace ash

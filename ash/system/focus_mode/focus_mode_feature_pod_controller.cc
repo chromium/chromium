@@ -106,14 +106,17 @@ void FocusModeFeaturePodController::UpdateUI() {
       in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL
                        : IDS_ASH_STATUS_TRAY_FOCUS_MODE);
   tile_->SetLabel(label_text);
-  tile_->SetIconButtonTooltipText(label_text);
-  tile_->SetTooltipText(label_text);
 
   // As part of the first time user flow, if the user has never started a
   // session before, we hide the session duration sublabel since they are not
   // able to start a focus session immediately anyway.
   if (!controller->HasStartedSessionBefore()) {
+    const std::u16string tooltip_text =
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INITIAL);
+    tile_->SetTooltipText(tooltip_text);
+    tile_->SetIconButtonTooltipText(tooltip_text);
     tile_->SetSubLabelVisibility(false);
+    tile_->SetIconClickable(false);
     return;
   }
 
@@ -127,6 +130,15 @@ void FocusModeFeaturePodController::UpdateUI() {
           ? l10n_util::GetStringFUTF16(
                 IDS_ASH_STATUS_TRAY_FOCUS_MODE_TIME_SUBLABEL, duration_string)
           : duration_string);
+  tile_->SetTooltipText(l10n_util::GetStringFUTF16(
+      in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_ACTIVE
+                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_INACTIVE,
+      duration_string));
+  tile_->SetIconClickable(true);
+  tile_->SetIconButtonTooltipText(l10n_util::GetStringFUTF16(
+      in_focus_session ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_ACTIVE
+                       : IDS_ASH_STATUS_TRAY_FOCUS_MODE_TILE_BUTTON_INACTIVE,
+      duration_string));
 }
 
 }  // namespace ash

@@ -143,6 +143,8 @@ FocusModeCountdownView::FocusModeCountdownView(bool include_end_button)
           include_end_button_ ? PillButton::Type::kSecondaryWithoutIcon
                               : PillButton::Type::kSecondaryLargeWithoutIcon,
           /*icon=*/nullptr));
+  extend_session_duration_button_->SetAccessibleName(l10n_util::GetStringUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_EXTEND_TEN_MINUTES_BUTTON_ACCESSIBLE_NAME));
   views::InkDrop::Get(extend_session_duration_button_)
       ->SetMode(views::InkDropHost::InkDropMode::OFF);
 }

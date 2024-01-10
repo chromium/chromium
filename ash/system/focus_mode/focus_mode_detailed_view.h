@@ -60,6 +60,10 @@ class ASH_EXPORT FocusModeDetailedView : public TrayDetailedView,
   // Creates the row with functionality to start and stop focus mode.
   void CreateToggleView();
 
+  // Updates the accessibility text of the toggle button based on whether focus
+  // is in session and the current session duration.
+  void UpdateToggleButtonAccessibility(bool in_focus_session);
+
   // Creates the row with the timer and functionality to add time to the focus
   // session.
   void CreateTimerView();

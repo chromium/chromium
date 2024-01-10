@@ -11,6 +11,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
+#include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
@@ -188,6 +189,22 @@ std::u16string FocusModeTray::GetAccessibleNameForTray() {
   // TODO(b/288975135): Update once we get UX writing.
   return l10n_util::GetStringUTF16(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_TOGGLE_ACTIVE_LABEL);
+}
+
+std::u16string FocusModeTray::GetAccessibleNameForBubble() {
+  auto* focus_mode_controller = FocusModeController::Get();
+  const std::u16string time_remaining = focus_mode_util::GetDurationString(
+      focus_mode_controller->end_time() - base::Time::Now(),
+      /*digital_format=*/false);
+  const std::u16string task_title =
+      base::UTF8ToUTF16(focus_mode_controller->selected_task_title());
+  return task_title.empty()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_ACCESSIBLE_NAME,
+                   time_remaining)
+             : l10n_util::GetStringFUTF16(
+                   IDS_ASH_STATUS_TRAY_FOCUS_MODE_TRAY_BUBBLE_TASK_ACCESSIBLE_NAME,
+                   time_remaining, task_title);
 }
 
 void FocusModeTray::HideBubbleWithView(const TrayBubbleView* bubble_view) {

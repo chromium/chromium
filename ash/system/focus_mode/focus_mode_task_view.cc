@@ -426,6 +426,13 @@ void FocusModeTaskView::UpdateStyle(bool show_selected_state) {
                                      cros_tokens::kCrosSysPrimary, kIconSize));
 
   textfield_->set_show_selected_state(show_selected_state);
+  textfield_->SetAccessibleName(
+      show_selected_state
+          ? l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_SELECTED_ACCESSIBLE_NAME,
+                task_title_)
+          : l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_FOCUS_MODE_TASK_TEXTFIELD_UNSELECTED_ACCESSIBLE_NAME));
   textfield_->SetBorder(views::CreateEmptyBorder(
       show_selected_state ? kSelectedStateTextfieldInsets
                           : kUnselectedStateTextfieldInsets));
