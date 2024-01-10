@@ -2004,40 +2004,45 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.PinAction" enum="BooleanPinned"
-    expires_after="2022-04-24">
+    expires_after="2024-04-30">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    Record each time user pins/unpins CrOS global media controls.
+    Record each time user pins/unpins CrOS global media controls. Warning: this
+    histogram was expired from 2022-04-24 to 2024-01-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.QuickSettingUserAction"
-    enum="MediaSessionAction" expires_after="2022-04-24">
+    enum="MediaSessionAction" expires_after="2024-04-30">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
-    The action user clicked on the media controls in quick settings.
+    The action user clicked on the media controls in quick settings. Warning:
+    this histogram was expired from 2022-04-24 to 2024-01-04; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageInQuickSetting"
-    enum="BooleanIsRepeat" expires_after="2022-05-01">
+    enum="BooleanIsRepeat" expires_after="2024-04-30">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time media controls' sub-menu in quick settings is opened. True
-    if it is a repeat usage.
+    if it is a repeat usage. Warning: this histogram was expired from 2022-05-01
+    to 2024-01-04; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.CrosGlobalMediaControls.RepeatUsageOnShelf"
-    enum="BooleanIsRepeat" expires_after="2022-04-24">
+    enum="BooleanIsRepeat" expires_after="2024-04-30">
   <owner>jazzhsue@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     Record each time global media controls on the shelf is opened. True if it is
-    a repeat usage.
+    a repeat usage. Warning: this histogram was expired from 2022-04-24 to
+    2024-01-04; data may be missing.
   </summary>
 </histogram>
 
