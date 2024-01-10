@@ -9,10 +9,10 @@
     Powered by Google
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Progress saved
+    Resume writing
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Re-open to continue
+    Open to continue
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW" desc="The message read out by a screen reader whtn the Compose nudge is shown.">
     Resume Help me write. Tab and press enter to open
