@@ -2080,7 +2080,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
     ~DropFrameVerifier() override = default;
 
     void OnDroppedFrame(DropReason reason) override {
-      EXPECT_EQ(reason, DropReason::kDroppedByMediaOptimizations);
+      EXPECT_EQ(reason, DropReason::kDroppedByEncoder);
       num_dropped_frames_++;
       CHECK(event_);
       event_->Signal();

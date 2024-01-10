@@ -921,8 +921,7 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     base::AutoLock lock(lock_);
     if (encoded_image_callback_) {
       encoded_image_callback_->OnDroppedFrame(
-          webrtc::EncodedImageCallback::DropReason::
-              kDroppedByMediaOptimizations);
+          webrtc::EncodedImageCallback::DropReason::kDroppedByEncoder);
     }
     return;
   }
