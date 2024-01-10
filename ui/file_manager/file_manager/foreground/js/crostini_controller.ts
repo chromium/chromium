@@ -6,7 +6,7 @@
 import type {Crostini} from '../../background/js/crostini.js';
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
 import {isNewDirectoryTreeEnabled} from '../../common/js/flags.js';
-import {getPluralString, str, strf} from '../../common/js/translations.js';
+import {str, strf} from '../../common/js/translations.js';
 import {RootType} from '../../common/js/volume_manager_types.js';
 import {addUiEntry, removeUiEntry} from '../../state/ducks/ui_entries.js';
 import {crostiniPlaceHolderKey} from '../../state/ducks/volumes.js';
@@ -86,18 +86,19 @@ export class CrostiniController {
     };
 
     const toast =
-        (count: number, msg: string, action: string, subPage: string,
-         umaItem: MenuCommandsForUma) => {
+        (count: number, msgSingle: string, msgPlural: string, action: string,
+         subPage: string, umaItem: MenuCommandsForUma) => {
           if (!showToast || count === 0) {
             return;
           }
-          filesToast.show(msg, {
-            text: str(action),
-            callback: () => {
-              chrome.fileManagerPrivate.openSettingsSubpage(subPage);
-              recordMenuItemSelected(umaItem);
-            },
-          });
+          filesToast.show(
+              count === 1 ? str(msgSingle) : strf(msgPlural, count), {
+                text: str(action),
+                callback: () => {
+                  chrome.fileManagerPrivate.openSettingsSubpage(subPage);
+                  recordMenuItemSelected(umaItem);
+                },
+              });
         };
 
     const [crostiniShareCount, pluginVmShareCount, bruschettaVmShareCount] =
@@ -106,29 +107,22 @@ export class CrostiniController {
           getSharedPaths(PLUGIN_VM),
           getSharedPaths(DEFAULT_BRUSCHETTA_VM),
         ]);
-    const crostiniMsg = await getPluralString(
-        'FOLDER_SHARED_WITH_CROSTINI', crostiniShareCount);
-    const pluginVmMsg = await getPluralString(
-        'FOLDER_SHARED_WITH_PLUGIN_VM', pluginVmShareCount);
-    // TODO(b/317335793): Bruschetta strings are processed in C++ first before
-    // passing back to the front end, need to figure out a way to accommodate
-    // that.
-    const bruschettaVmMsg = bruschettaVmShareCount === 1 ?
-        str('FOLDER_SHARED_WITH_BRUSCHETTA') :
-        strf('FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', bruschettaVmShareCount);
 
     // Toasts are queued and shown one-at-a-time if multiple apply.
     // TODO(b/260521400): Or at least, they will once this bug is fixed.
     toast(
-        crostiniShareCount, crostiniMsg, 'MANAGE_TOAST_BUTTON_LABEL',
+        crostiniShareCount, 'FOLDER_SHARED_WITH_CROSTINI',
+        'FOLDER_SHARED_WITH_CROSTINI_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'crostini/sharedPaths',
         MenuCommandsForUma.MANAGE_LINUX_SHARING_TOAST_STARTUP);
     toast(
-        pluginVmShareCount, pluginVmMsg, 'MANAGE_TOAST_BUTTON_LABEL',
+        pluginVmShareCount, 'FOLDER_SHARED_WITH_PLUGIN_VM',
+        'FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'app-management/pluginVm/sharedPaths',
         MenuCommandsForUma.MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
     toast(
-        bruschettaVmShareCount, bruschettaVmMsg, 'MANAGE_TOAST_BUTTON_LABEL',
+        bruschettaVmShareCount, 'FOLDER_SHARED_WITH_BRUSCHETTA',
+        'FOLDER_SHARED_WITH_BRUSCHETTA_PLURAL', 'MANAGE_TOAST_BUTTON_LABEL',
         'bruschetta/sharedPaths',
         MenuCommandsForUma.MANAGE_BRUSCHETTA_SHARING_TOAST_STARTUP);
   }

@@ -2037,6 +2037,7 @@ export class GuestOsShareCommand extends FilesCommand {
       return;
     }
     const translations = [
+      `FOLDER_SHARED_WITH_${this.typeForStrings_}`,
       `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_TITLE`,
       `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}`,
       `SHARE_ROOT_FOLDER_WITH_${this.typeForStrings_}_DRIVE`,

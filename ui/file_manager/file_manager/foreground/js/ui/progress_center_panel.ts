@@ -5,7 +5,7 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 
 import {PolicyErrorType, ProgressCenterItem, type ProgressItemExtraButton, ProgressItemState, ProgressItemType} from '../../../common/js/progress_center_common.js';
-import {getPluralString, secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
+import {secondsToRemainingTimeString, str, strf} from '../../../common/js/translations.js';
 import {DisplayPanel} from '../../elements/xf_display_panel.js';
 import {PanelType, type UserData} from '../../elements/xf_panel_item.js';
 
@@ -363,8 +363,7 @@ export class ProgressCenterPanel {
    * @param item Item we're generating a message for.
    * @return Secondary string message.
    */
-  private async generateSecondaryString_(item: ProgressCenterItem):
-      Promise<string> {
+  private generateSecondaryString_(item: ProgressCenterItem): string {
     if (item.state === ProgressItemState.PAUSED) {
       if (!item.policyFileCount) {
         console.warn('Policy file count missing');
@@ -443,7 +442,11 @@ export class ProgressCenterPanel {
     }
 
     if (item.state === ProgressItemState.SCANNING) {
-      return getPluralString('SCANNING_LABEL', item.itemCount);
+      if (item.itemCount === 1) {
+        return str('SCANNING_LABEL');
+      } else {
+        return str('SCANNING_LABEL_PLURAL');
+      }
     }
 
     // Check if remaining time is valid (ie finite and positive).
@@ -463,7 +466,7 @@ export class ProgressCenterPanel {
    * @param item Item being updated.
    * @param newItem Item updating with new content.
    */
-  async updateFeedbackPanelItem(
+  updateFeedbackPanelItem(
       item: ProgressCenterItem, newItem: null|ProgressCenterItem) {
     let panelItem = this.feedbackHost_.findPanelItemById(item.id);
     if (newItem) {
@@ -490,7 +493,7 @@ export class ProgressCenterPanel {
       }
 
       const primaryText = this.generatePrimaryString_(item, panelItem.userData);
-      panelItem.secondaryText = await this.generateSecondaryString_(item);
+      panelItem.secondaryText = this.generateSecondaryString_(item);
       panelItem.primaryText = primaryText;
       panelItem.setAttribute('data-progress-id', item.id);
 

@@ -11,7 +11,7 @@ import {crInjectTypeAndInit} from '../../../common/js/cr_ui.js';
 import {queryDecoratedElement, queryRequiredElement} from '../../../common/js/dom_utils.js';
 import {FilesAppEntry} from '../../../common/js/files_app_entry_types.js';
 import {isDlpEnabled, isNewDirectoryTreeEnabled} from '../../../common/js/flags.js';
-import {getPluralStringWithPlaceHolders, str} from '../../../common/js/translations.js';
+import {str, strf} from '../../../common/js/translations.js';
 import {AllowedPaths} from '../../../common/js/volume_manager_types.js';
 import {BreadcrumbContainer} from '../../../containers/breadcrumb_container.js';
 import {CloudPanelContainer} from '../../../containers/cloud_panel_container.js';
@@ -709,7 +709,7 @@ export class FileManagerUI {
       return;
     }
     chrome.fileManagerPrivate.getProfiles(
-        async (response: chrome.fileManagerPrivate.ProfilesResponse) => {
+        (response: chrome.fileManagerPrivate.ProfilesResponse) => {
           //  Find strings.
           let displayName;
           for (const profile of response.profiles) {
@@ -726,9 +726,10 @@ export class FileManagerUI {
           const title = entries.length > 1 ?
               entries[0]!.name + '\u2026' /* ellipsis */ :
               entries[0]!.name;
-          const message = await getPluralStringWithPlaceHolders(
-              'OPEN_IN_OTHER_DESKTOP_MESSAGE', entries.length, displayName,
-              response.currentProfileId);
+          const message = strf(
+              entries.length > 1 ? 'OPEN_IN_OTHER_DESKTOP_MESSAGE_PLURAL' :
+                                   'OPEN_IN_OTHER_DESKTOP_MESSAGE',
+              displayName, response.currentProfileId);
 
           // Show the dialog.
           this.alertDialog.showWithTitle(title, message);

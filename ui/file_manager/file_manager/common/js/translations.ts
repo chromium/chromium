@@ -315,8 +315,8 @@ export async function getPluralString(
  *
  * ```
  * {NUM_FILE, plural,
- *    =1 {1 file with <ph name="FILE_SIZE">{1}<ex>44 MB</ex></ph> size.},
- *    other {# files with <ph name="FILE_SIZE">{1}<ex>44 MB</ex></ph> size.}}
+ *    = 1 {1 file with <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> size.},
+ *    other {# files with <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> size.}}
  *
  * await getPluralStringWithPlaceHolders(id, 2, '44 MB')
  * => "2 files with 44 MB size"
@@ -324,20 +324,12 @@ export async function getPluralString(
  *
  * @param id The translation string resource id.
  * @param count The number count to get the plural.
- * @param replacements The replacement value to replace the placeholders.
+ * @param placeholders The placeholder value to replace.
  */
 export async function getPluralStringWithPlaceHolders(
     id: string, count: number,
-    ...replacements: Array<string|number>): Promise<string> {
-  const strWithNumberedPlaceholders =
+    ...placeholders: Array<string|number>): Promise<string> {
+  const strWithPlaceholders =
       await PluralStringProxyImpl.getInstance().getPluralString(id, count);
-  return strWithNumberedPlaceholders.replace(/\{([1-9])\}/g, (match) => {
-    const substitute = replacements[Number(match[1]) - 1];
-    if (substitute === undefined || substitute === null) {
-      // Not all callers actually provide values for all substitutes. Return
-      // an empty value for this case.
-      return '';
-    }
-    return substitute.toString();
-  });
+  return loadTimeData.substituteString(strWithPlaceholders, ...placeholders);
 }

@@ -1050,8 +1050,10 @@ NotificationPtr
 SystemNotificationManager::MakeDataProtectionPolicyProgressNotification(
     const std::string& notification_id,
     const ProgressStatus& status) {
-  std::u16string message = l10n_util::GetPluralStringFUTF16(
-      IDS_FILE_BROWSER_SCANNING_LABEL, status.sources.size());
+  std::u16string message =
+      status.sources.size() > 1
+          ? GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL_PLURAL)
+          : GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL);
   int progress = status.sources_scanned * 100.0 / status.sources.size();
   return CreateIOTaskProgressNotification(status.task_id, notification_id,
                                           app_name_, message, /*paused=*/false,

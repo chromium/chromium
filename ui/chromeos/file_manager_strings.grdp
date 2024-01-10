@@ -854,10 +854,11 @@
   <message name="IDS_FILE_BROWSER_PENDING_LABEL" desc="Pending label.">
     Pending
   </message>
-  <message name="IDS_FILE_BROWSER_SCANNING_LABEL" desc="Scanning label for files.">
-    {NUM_FILE, plural,
-        =1 {Checking file against your organization's security policies…}
-        other {Checking files against your organization's security policies…}}
+  <message name="IDS_FILE_BROWSER_SCANNING_LABEL" desc="Scanning label for single file.">
+    Checking file against your organization's security policies...
+  </message>
+  <message name="IDS_FILE_BROWSER_SCANNING_LABEL_PLURAL" desc="Scanning label for multiple files.">
+    Checking files against your organization's security policies...
   </message>
   <message name="IDS_FILE_BROWSER_SEARCH_TEXT_LABEL" desc="Search text field label.">
     Search
@@ -1218,10 +1219,11 @@
   <message name="IDS_FILE_BROWSER_OFFLINE_HEADER" desc="Message informing the user that the browser is offline.">
     You are offline
   </message>
-  <message name="IDS_FILE_BROWSER_OFFLINE_MESSAGE" desc="Message informing the user how to make the selected files available offline.">
-    {NUM_FILE, plural,
-        =1 {To save this file for offline use, get back online, right-click the file, and select the <ph name="OFFLINE_CHECKBOX_NAME">'{1}'<ex>'Available offline'</ex></ph> option.}
-        other {To save these files for offline use, get back online, right-click the files, and select the <ph name="OFFLINE_CHECKBOX_NAME">'{1}'<ex>'Available offline'</ex></ph> option.}}
+  <message name="IDS_FILE_BROWSER_OFFLINE_MESSAGE" desc="Message informing the user how to make the selected file available offline.">
+    To save this file for offline use, get back online, right-click the file, and select the <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> option.
+  </message>
+  <message name="IDS_FILE_BROWSER_OFFLINE_MESSAGE_PLURAL" desc="Message informing the user how to make multiple selected files available offline.">
+    To save these files for offline use, get back online, right-click the files, and select the <ph name="OFFLINE_CHECKBOX_NAME">'$1'<ex>'Available offline'</ex></ph> option.
   </message>
   <message name="IDS_FILE_BROWSER_OFFLINE_BANNER_MESSAGE" desc="Message informing the user that they can make files available offline.">
     You can make files available offline for access when you don't have an internet connection.
@@ -1250,26 +1252,29 @@
   <message name="IDS_FILE_BROWSER_QUICK_VIEW_NO_PREVIEW_AVAILABLE" desc="Massage for user to notify no preview is available.">
     No preview available
   </message>
-  <message name="IDS_FILE_BROWSER_HOSTED_OFFLINE_MESSAGE" desc="Message informing the user that the selected files are only available online.">
-    {NUM_FILE, plural,
-        =1 {You must be online to access this file.}
-        other {You must be online to access these files.}}
+  <message name="IDS_FILE_BROWSER_HOSTED_OFFLINE_MESSAGE" desc="Message informing the user that the selected file is only available online.">
+    You must be online to access this file.
   </message>
-  <message name="IDS_FILE_BROWSER_CONFIRM_MOBILE_DATA_USE" desc="Message informing the user that opening files from Google Drive will use mobile data.">
-    {NUM_FILE, plural,
-        =1 {Fetching this file will use approximately <ph name="FILE_SIZE">{1}<ex>44 MB</ex></ph> of mobile data.}
-        other {Fetching these files will use approximately <ph name="FILE_SIZE">{1}<ex>44 MB</ex></ph> of mobile data.}}
+  <message name="IDS_FILE_BROWSER_HOSTED_OFFLINE_MESSAGE_PLURAL" desc="Message informing the user that the selected files are only available online.">
+    You must be online to access these files.
+  </message>
+  <message name="IDS_FILE_BROWSER_CONFIRM_MOBILE_DATA_USE" desc="Message informing the user that opening the file from Google Drive will use mobile data.">
+    Fetching this file will use approximately <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> of mobile data.
+  </message>
+  <message name="IDS_FILE_BROWSER_CONFIRM_MOBILE_DATA_USE_PLURAL" desc="Message informing the user that opening several files from Google Drive will use mobile data.">
+    Fetching these files will use approximately <ph name="FILE_SIZE">$1<ex>44 MB</ex></ph> of mobile data.
   </message>
   <message name="IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE" desc="Notification message shown when the drive sync is needed on mobile network, but it is disabled.">
     Google Drive sync is disabled by default, when using mobile data.
   </message>
-  <message name="IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON" desc="Button label to enable drive sync over, on the notification of |IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE|.">
+  <message name="IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON" desc="Button label to enable drive sync over, on the notifcation of |IDS_FILE_BROWSER_DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE|.">
     Enable syncing over mobile data
   </message>
-  <message name="IDS_FILE_BROWSER_OPEN_IN_OTHER_DESKTOP_MESSAGE" desc="Message of an alert dialog that is shown when a user opens files in a desktop of another profile but the files are opened in the original desktop.">
-    {NUM_FILE, plural,
-        =1 {This file opened on a different desktop. Move to <ph name="USER_NAME">{1}<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">{2}<ex>xxxxxx@gmail.com</ex></ph>) to view it.}
-        other {These files opened on a different desktop. Move to <ph name="USER_NAME">{1}<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">{2}<ex>xxxxxx@gmail.com</ex></ph>) to view it.}}
+  <message name="IDS_FILE_BROWSER_OPEN_IN_OTHER_DESKTOP_MESSAGE" desc="Message of an alert dialog that is shown when a user opens a file in a desktop of another profile but the file is opened in the original desktop.">
+    This file opened on a different desktop. Move to <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">$2<ex>xxxxxx@gmail.com</ex></ph>) to view it.
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_IN_OTHER_DESKTOP_MESSAGE_PLURAL" desc="Prural verson of the message of an alert dialog that is shown when a user opens a file in a desktop of another profile but the file is opened in the original desktop.">
+    These files opened on a different desktop. Move to <ph name="USER_NAME">$1<ex>John Doe</ex></ph> (<ph name="MAIL_ADDRESS">$2<ex>xxxxxx@gmail.com</ex></ph>) to view it.
   </message>
   <message name="IDS_FILE_BROWSER_DRIVE_METERED_CONNECTION_OPTION" desc="Option that determines if we will allow Google Drive content sync over metered connections.">
     Allow sync on metered networks
@@ -1387,10 +1392,11 @@
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_CROSTINI_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with the crostini container.">
     Give Linux apps permission to access files in your Google Drive. Changes will sync to your other devices.
   </message>
-  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI" desc="Confirmation message shown when a user shares folders with the crostini container.">
-    {NUM_FOLDER, plural,
-        =1 {1 folder shared with Linux}
-        other {# folders shared with Linux}}
+  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI" desc="Confirmation message shown when a user shares a folder with the crostini container.">
+    1 folder shared with Linux
+  </message>
+  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_CROSTINI_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with the crostini container.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Linux
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the Parallels.">
     Share folder with Parallels Desktop
@@ -1401,10 +1407,11 @@
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_PLUGIN_VM_DRIVE" desc="Confirmation message shown when a user shares the root of a Drive volume (My Drive, Team Drives, Computers) with Parallels.">
     Give Parallels Desktop permission to access files in your Google Drive. Changes will sync to your other devices.
   </message>
-  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares folders with Parallels.">
-    {NUM_FOLDER, plural,
-        =1 {1 folder shared with Parallels Desktop}
-        other {# folders shared with Parallels Desktop}}
+  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM" desc="Confirmation message shown when a user shares a folder with Parallels.">
+    1 folder shared with Parallels Desktop
+  </message>
+  <message name="IDS_FILE_BROWSER_FOLDER_SHARED_WITH_PLUGIN_VM_PLURAL" desc="Confirmation message shown when a user shares more than 1 folder with Parallels.">
+    <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> folders shared with Parallels Desktop
   </message>
   <message name="IDS_FILE_BROWSER_SHARE_ROOT_FOLDER_WITH_BRUSCHETTA_TITLE" desc="Message title shown when a user shares the root of a volume such as 'My files' with the VM type codenamed Bruschetta.">
     Share folder with <ph name="VM_NAME">$1<ex>MyVm</ex></ph>
@@ -1611,10 +1618,11 @@
   <message name="IDS_FILE_BROWSER_SEE_MENU_FOR_ACTIONS" desc="Text to be used by screen reader to indicate users that there are more options on the action bar.">
     More options available on the action bar. Press Alt + A to focus the action bar.
   </message>
-  <message name="IDS_FILE_BROWSER_OPEN_A11Y" desc="Text to be used by screen reader to indicate users that the opening files are being executed.">
-    {NUM_FILE, plural,
-        =1 {Opening file <ph name="FILE_NAME">{1}<ex>file_name.txt</ex></ph>.}
-        other {Opening # files.}}
+  <message name="IDS_FILE_BROWSER_OPEN_A11Y" desc="Text to be used by screen reader to indicate users that the opening one single file is being executed.">
+    Opening file <ph name="FILE_NAME">$1<ex>file_name.txt</ex></ph>.
+  </message>
+  <message name="IDS_FILE_BROWSER_OPEN_A11Y_PLURAL" desc="Text to be used by screen reader to indicate users that the opening multiple files is being executed.">
+    Opening <ph name="NUMBER_OF_FILES">$1<ex>3</ex></ph> files.
   </message>
   <message name="IDS_FILE_BROWSER_A11Y_VOLUME_EJECT" desc="Text to be used by screen reader to indicate users that the eject volume action has finished.">
     <ph name="VOLUME_NAME">$1<ex>file_name.rar</ex></ph> has been ejected.
@@ -1622,7 +1630,7 @@
   <message name="IDS_FILE_BROWSER_GRID_VIEW_FOLDERS_TITLE" desc="Title displayed in Grid View above the folders.">
     Folders
   </message>
-  <message name="IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE" desc="Title displayed in Grid View above the files.">
+  <message name="IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE" desc="Title dislayed in Grid View above the files.">
     Files
   </message>
   <message name="IDS_FILE_BROWSER_LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL" desc="Label for the breadcrumb sub-folder elider button in the Files app folder location line.">

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
 
-import {bytesToString, getFileErrorString, getPluralStringWithPlaceHolders, str} from './translations.js';
+import {bytesToString, getFileErrorString, str} from './translations.js';
 
 /**
  * Tests the formatting of bytesToString.
@@ -155,34 +153,4 @@ export function testGetFileErrorString() {
 
   i18nErrorName = getFileErrorString('PathExistsError');
   assertEquals(i18nErrorName, str('FILE_ERROR_PATH_EXISTS'));
-}
-
-// Tests getting plural strings with placeholders.
-export async function testGetPluralStringWithPlaceholders() {
-  const testPluralStringProxy = new TestPluralStringProxy();
-  PluralStringProxyImpl.setInstance(testPluralStringProxy);
-
-  // Expect placeholders will be correctly replaced.
-  testPluralStringProxy.text = 'Copying 3 files with size {1} from account {2}';
-  assertEquals(
-      'Copying 3 files with size 44 MB from account abc@google.com',
-      await getPluralStringWithPlaceHolders(
-          'TEST_STRING', 3, '44 MB', 'abc@google.com'));
-
-  /**
-   * It's okay that the string and replacements have different length.
-   * For example: for Message
-   * {NUM_FILE, plural,
-   *    =1 {Copying file <ph name="FILE_NAME">{1}<ex>movie.avi</ex></ph>},
-   *    other {Copying # files}}
-   *
-   * When we call `getPluralString(id, count, 'abc.png')`, since the `count` is
-   * an variable it can be 1 or larger, say 3, when it's 3, there's no
-   * placeholder inside, the function shouldn't throw error with a replacement
-   * string passed (e.g. `abc.png`).
-   */
-  testPluralStringProxy.text = 'Copying 3 files';
-  assertEquals(
-      'Copying 3 files',
-      await getPluralStringWithPlaceHolders('TEST_STRING', 3, 'abc.png'));
 }
