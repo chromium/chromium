@@ -42,6 +42,10 @@ NotificationCenterView::NotificationCenterView()
       // breaking ARC.
       scroller_(new views::ScrollView()),
       notification_list_view_(new NotificationListView(this)) {
+  notification_list_view_tracker_.SetView(notification_list_view_);
+  notification_list_view_tracker_.SetOnViewIsDeletingCallback(
+      base::BindOnce(&NotificationCenterView::ClearNotificationListViewPtr,
+                     base::Unretained(this)));
   auto* scroll_bar = new MessageCenterScrollBar();
   scroll_bar->SetInsets(kScrollBarInsets);
   scroll_bar_ = scroll_bar;
@@ -89,6 +93,10 @@ void NotificationCenterView::Init() {
 }
 
 bool NotificationCenterView::UpdateNotificationBar() {
+  if (!notification_list_view_) {
+    return false;
+  }
+
   return notification_bar_->Update(
       notification_list_view_->GetTotalNotificationCount(),
       notification_list_view_->GetTotalPinnedNotificationCount(),
@@ -96,6 +104,10 @@ bool NotificationCenterView::UpdateNotificationBar() {
 }
 
 void NotificationCenterView::ClearAllNotifications() {
+  if (!notification_list_view_) {
+    return;
+  }
+
   base::RecordAction(
       base::UserMetricsAction("StatusArea_Notifications_StackingBarClearAll"));
 
@@ -127,12 +139,20 @@ void NotificationCenterView::OnViewBoundsChanged(views::View* observed_view) {
   UpdateNotificationBar();
 }
 
+void NotificationCenterView::ClearNotificationListViewPtr() {
+  notification_list_view_ = nullptr;
+}
+
 void NotificationCenterView::OnContentsScrolled() {
   UpdateNotificationBar();
 }
 
 std::vector<message_center::Notification*>
 NotificationCenterView::GetStackedNotifications() const {
+  if (!notification_list_view_) {
+    return std::vector<message_center::Notification*>{};
+  }
+
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty()) {
@@ -145,6 +165,10 @@ NotificationCenterView::GetStackedNotifications() const {
 
 std::vector<std::string>
 NotificationCenterView::GetNonVisibleNotificationIdsInViewHierarchy() const {
+  if (!notification_list_view_) {
+    return std::vector<std::string>{};
+  }
+
   // CountNotificationsAboveY() only works after SetBoundsRect() is called at
   // least once.
   if (scroller_->bounds().IsEmpty()) {
