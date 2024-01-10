@@ -26,13 +26,6 @@ class CORE_EXPORT CompositingReasonFinder {
       const LayoutObject&,
       CompositingReasons reasons_except_scrolling);
 
-  // This must be called after
-  // |DirectReasonsForPaintPropertiesExceptForScrolling()| and
-  // |PaintLayerScrollableArea::UpdateNeedsCompositedScrolling()|.
-  static CompositingReasons DirectReasonsForPaintProperties(
-      const LayoutObject&,
-      CompositingReasons reasons_except_scrolling);
-
   static CompositingReasons CompositingReasonsForAnimation(const LayoutObject&);
   // Some LayoutObject types do not support transforms (see:
   // |LayoutObject::HasTransformRelatedProperty|) so this can return reasons
