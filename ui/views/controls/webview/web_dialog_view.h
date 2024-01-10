@@ -28,6 +28,10 @@ class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
 
+namespace gfx {
+class RoundedCornersF;
+}  // namespace gfx
+
 namespace views {
 
 // A kind of webview that can notify its delegate when its content is ready.
@@ -131,6 +135,7 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   bool ShouldCenterDialogTitleText() const override;
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override;
+  FrameKind GetWebDialogFrameKind() const override;
 
   // content::WebContentsDelegate:
   void SetContentsBounds(content::WebContents* source,
@@ -167,6 +172,8 @@ class WEBVIEW_EXPORT WebDialogView : public ClientView,
   bool CheckMediaAccessPermission(content::RenderFrameHost* render_frame_host,
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) override;
+
+  void SetWebViewCornersRadii(const gfx::RoundedCornersF& radii);
 
  private:
   friend class WebDialogViewUnitTest;

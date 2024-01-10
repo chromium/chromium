@@ -3570,6 +3570,8 @@ static_library("ui") {
       "webui/ash/sys_internals/sys_internals_ui.h",
       "webui/ash/system_web_dialog_delegate.cc",
       "webui/ash/system_web_dialog_delegate.h",
+      "webui/ash/system_web_dialog_view.cc",
+      "webui/ash/system_web_dialog_view.h",
       "webui/ash/user_image_source.cc",
       "webui/ash/user_image_source.h",
       "webui/ash/vc_tray_tester/vc_tray_tester_ui.cc",

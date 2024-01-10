@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -54,8 +55,15 @@ gfx::NativeWindow ShowWebDialogWithParams(
     ui::WebDialogDelegate* delegate,
     std::optional<views::Widget::InitParams> extra_params,
     bool show) {
-  views::WebDialogView* view = new views::WebDialogView(
+  views::WebDialogView* view = nullptr;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  view = new ash::SystemWebDialogView(
       context, delegate, std::make_unique<ChromeWebContentsHandler>());
+#else
+  view = new views::WebDialogView(context, delegate,
+                                  std::make_unique<ChromeWebContentsHandler>());
+#endif
+
   // If the corner radius is specified, set it to |views::DialogDelegate|.
   if (extra_params && extra_params->corner_radius)
     view->set_corner_radius(*(extra_params->corner_radius));

@@ -104,11 +104,11 @@ content::WebContents* WebDialogView::web_contents() {
 
 void WebDialogView::AddedToWidget() {
   gfx::RoundedCornersF corner_radii(
-      delegate_ && delegate_->GetWebDialogFrameKind() ==
-                       WebDialogDelegate::FrameKind::kDialog
+      GetWebDialogFrameKind() == WebDialogDelegate::FrameKind::kDialog
           ? GetCornerRadius()
           : 0);
-  web_view_->holder()->SetCornerRadii(corner_radii);
+
+  SetWebViewCornersRadii(corner_radii);
 }
 
 gfx::Size WebDialogView::CalculatePreferredSize() const {
@@ -354,6 +354,14 @@ bool WebDialogView::HandleContextMenu(
                                                          params);
 }
 
+WebDialogView::FrameKind WebDialogView::GetWebDialogFrameKind() const {
+  if (delegate_) {
+    return delegate_->GetWebDialogFrameKind();
+  }
+
+  return WebDialogDelegate::GetWebDialogFrameKind();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // content::WebContentsDelegate implementation:
 
@@ -452,6 +460,13 @@ bool WebDialogView::CheckMediaAccessPermission(
                                                  security_origin, type);
   }
   return false;
+}
+
+void WebDialogView::SetWebViewCornersRadii(const gfx::RoundedCornersF& radii) {
+  views::NativeViewHost* host = web_view_->holder();
+  DCHECK(host);
+
+  host->SetCornerRadii(radii);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

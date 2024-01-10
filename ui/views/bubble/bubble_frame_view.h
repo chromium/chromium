@@ -93,6 +93,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
   void InsertClientView(ClientView* client_view) override;
+  void UpdateWindowRoundedCorners() override;
 
   // Sets a custom view to be the dialog title instead of the |default_title_|
   // label. If there is an existing title view it will be deleted.
@@ -217,6 +218,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
   void ResetViewShownTimeStampForTesting();
 
   BubbleBorder* bubble_border() const { return bubble_border_; }
+
+  // Returns the client_view insets from the frame view.
+  gfx::Insets GetClientViewInsets() const;
 
  protected:
   // Returns the available screen bounds if the frame were to show in |rect|.
