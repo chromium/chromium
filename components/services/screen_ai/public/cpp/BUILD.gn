@@ -11,6 +11,7 @@ source_set("utilities") {
   deps = [
     "//base",
     "//components/component_updater",
+    "//ui/accessibility:ax_base",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
