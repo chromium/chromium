@@ -7,6 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_view_delegate.h"
+#include "base/scoped_observation.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
 namespace ash {
@@ -15,7 +17,9 @@ class PickerClient;
 class PickerInsertMediaRequest;
 
 // Controls a Picker widget.
-class ASH_EXPORT PickerController : public PickerViewDelegate {
+class ASH_EXPORT PickerController
+    : public PickerViewDelegate,
+      public ash::input_method::ImeKeyboard::Observer {
  public:
   PickerController();
   PickerController(const PickerController&) = delete;
@@ -55,11 +59,18 @@ class ASH_EXPORT PickerController : public PickerViewDelegate {
   void InsertResultOnNextFocus(const PickerSearchResult& result) override;
   bool ShouldPaint() override;
 
+  // ash::input_method::ImeKeyboard::Observer:
+  void OnCapsLockChanged(bool enabled) override;
+  void OnLayoutChanging(const std::string& layout_name) override {}
+
  private:
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
   bool should_paint_ = false;
   std::unique_ptr<PickerInsertMediaRequest> insert_media_request_;
+  base::ScopedObservation<ash::input_method::ImeKeyboard,
+                          ash::input_method::ImeKeyboard::Observer>
+      observation_{this};
 };
 
 }  // namespace ash

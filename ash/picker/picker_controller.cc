@@ -18,6 +18,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace ash {
 namespace {
@@ -60,6 +61,9 @@ PickerFeatureKeyType MatchPickerFeatureKeyHash() {
 
 PickerController::PickerController()
     : should_paint_(MatchPickerFeatureKeyHash() == PickerFeatureKeyType::kDev) {
+  if (auto* manager = ash::input_method::InputMethodManager::Get()) {
+    observation_.Observe(manager->GetImeKeyboard());
+  }
 }
 
 PickerController::~PickerController() {
@@ -146,6 +150,11 @@ void PickerController::InsertResultOnNextFocus(
 
 bool PickerController::ShouldPaint() {
   return should_paint_;
+}
+
+void PickerController::OnCapsLockChanged(bool enabled) {
+  // TODO: b/319301963 - Remove this behaviour once the experiment is over.
+  ToggleWidget();
 }
 
 }  // namespace ash
