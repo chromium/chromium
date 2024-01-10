@@ -248,6 +248,15 @@ const float kMaxModuleEngagementIndex = 50;
   set_up_list_metrics::RecordItemSelected(type);
 }
 
+- (void)recordContentNotificationSnackbarEvent:
+    (ContentNotificationSnackbarEvent)event {
+  UMA_HISTOGRAM_ENUMERATION(kContentNotificationSnackbarEventHistogram, event);
+  if (event == ContentNotificationSnackbarEvent::kActionButtonTapped) {
+    base::RecordAction(
+        base::UserMetricsAction(kContentNotificationSnackbarAction));
+  }
+}
+
 #pragma mark - Private
 
 // Returns the visual type of a favicon for metrics logging.

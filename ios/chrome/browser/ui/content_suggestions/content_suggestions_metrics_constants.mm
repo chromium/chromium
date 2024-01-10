@@ -17,6 +17,8 @@ const char kMostVisitedUrlBlacklistedAction[] = "MostVisited_UrlBlacklisted";
 const char kShowReturnToRecentTabTileAction[] =
     "IOS.StartSurface.ShowReturnToRecentTabTile";
 const char kOpenMostRecentTabAction[] = "IOS.StartSurface.OpenMostRecentTab";
+const char kContentNotificationSnackbarAction[] =
+    "ContentNotifications.Promo.Snackbar.ActionButtonTapped";
 
 #pragma mark - Histograms
 
@@ -37,3 +39,5 @@ const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[] =
     "IOS.MagicStack.Module.Click.SafetyCheck";
 const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[] =
     "IOS.MagicStack.Module.Click.ParcelTracking";
+const char kContentNotificationSnackbarEventHistogram[] =
+    "ContentNotifications.Promo.Snackbar.Event";

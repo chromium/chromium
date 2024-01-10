@@ -41,6 +41,11 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Profile"/>
 </enum>
 
+<enum name="ContentNotificationPromptAction">
+  <int value="0" label="Go to Settings tapped"/>
+  <int value="1" label="No Thanks tapped"/>
+</enum>
+
 <enum name="ContentNotificationSetUpListPromoAction">
   <int value="0" label="Accept"/>
   <int value="1" label="Cancel"/>
@@ -51,6 +56,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Notification promo Sheet shown"/>
   <int value="1" label="Notification promo Sheet dismissed"/>
   <int value="2" label="OS Notification permission prompt shown"/>
+</enum>
+
+<enum name="ContentNotificationSnackbarEvent">
+  <int value="0" label="Notification confirmation snackbar shown"/>
+  <int value="1"
+      label="Notification confirmation snackbar action button tapped"/>
 </enum>
 
 <enum name="ContentNotificationTopOfFeedPromoAction">

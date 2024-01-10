@@ -742,9 +742,17 @@
                        l10n_util::GetNSString(
                            IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
                 messageAction:^{
+                  [weakSelf.contentSuggestionsMetricsRecorder
+                      recordContentNotificationSnackbarEvent:
+                          ContentNotificationSnackbarEvent::
+                              kActionButtonTapped];
                   [weakSelf showNotificationSettings];
                 }
              completionAction:nil];
+
+  [self.contentSuggestionsMetricsRecorder
+      recordContentNotificationSnackbarEvent:ContentNotificationSnackbarEvent::
+                                                 kShown];
 }
 
 #pragma mark - Helpers

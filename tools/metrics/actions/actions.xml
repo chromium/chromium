@@ -7266,6 +7266,22 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="ContentNotifications.Promo.Prompt.GoToSettingsTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped 'Go to Settings' on the OS notification permission prompt.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.Prompt.NoThanksTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped 'No Thanks' on the OS notification permission prompt.
+  </description>
+</action>
+
 <action name="ContentNotifications.Promo.SetUpList.Accepted">
   <owner>tinazwang@chromium.org</owner>
   <owner>chrome-sherlock@google.com</owner>
@@ -7289,6 +7305,15 @@ should be able to be added at any place in this file.
   <description>
     The user tapped 'Remind Me Later' in the SetUpList content notification
     promo and it dismissed.
+  </description>
+</action>
+
+<action name="ContentNotifications.Promo.Snackbar.ActionButtonTapped">
+  <owner>tinazwang@chromium.org</owner>
+  <owner>chrome-sherlock@google.com</owner>
+  <description>
+    The user tapped the action button in the confirmation snackbar when
+    successfully opt-in content notification.
   </description>
 </action>
 

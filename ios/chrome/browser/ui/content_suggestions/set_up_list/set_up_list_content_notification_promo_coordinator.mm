@@ -179,6 +179,11 @@ using base::UserMetricsAction;
       addItemWithTitle:cancelTitle
                 action:^{
                   [weakSelf
+                      logHistogramForPromptAction:
+                          ContentNotificationPromptAction::kNoThanksTapped];
+                  RecordAction(UserMetricsAction(
+                      "ContentNotifications.Promo.Prompt.NoThanksTapped"));
+                  [weakSelf
                           .delegate setUpListContentNotificationPromoDidFinish];
                 }
                  style:UIAlertActionStyleCancel];
@@ -189,6 +194,11 @@ using base::UserMetricsAction;
                                 openURL:[NSURL URLWithString:settingURL]
                                 options:{}
                       completionHandler:nil];
+                  [weakSelf
+                      logHistogramForPromptAction:
+                          ContentNotificationPromptAction::kGoToSettingsTapped];
+                  RecordAction(UserMetricsAction(
+                      "ContentNotifications.Promo.Prompt.GoToSettingsTapped"));
                   [weakSelf
                           .delegate setUpListContentNotificationPromoDidFinish];
                 }
@@ -208,6 +218,10 @@ using base::UserMetricsAction;
 - (void)logHistogramForAction:(ContentNotificationSetUpListPromoAction)action {
   UmaHistogramEnumeration("ContentNotifications.Promo.SetUpList.Action",
                           action);
+}
+
+- (void)logHistogramForPromptAction:(ContentNotificationPromptAction)action {
+  UmaHistogramEnumeration("ContentNotifications.Promo.Prompt.Action", action);
 }
 
 - (void)logHistogramForEvent:(ContentNotificationSetUpListPromoEvent)event {

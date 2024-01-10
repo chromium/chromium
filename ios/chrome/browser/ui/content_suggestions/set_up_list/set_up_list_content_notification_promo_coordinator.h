@@ -39,6 +39,18 @@ enum class ContentNotificationSetUpListPromoEvent {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
+// Enum for content notification prompt actions UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationPromptAction enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationPromptAction {
+  kGoToSettingsTapped = 0,
+  kNoThanksTapped = 1,
+  kMaxValue = kNoThanksTapped,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
 // A coordinator that handles the display of the Content Notification Promo for
 // the Set Up List.
 @interface SetUpListContentNotificationPromoCoordinator

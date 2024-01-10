@@ -17,6 +17,7 @@ extern const char kMostVisitedAction[];
 extern const char kMostVisitedUrlBlacklistedAction[];
 extern const char kShowReturnToRecentTabTileAction[];
 extern const char kOpenMostRecentTabAction[];
+extern const char kContentNotificationSnackbarAction[];
 
 #pragma mark - Histograms
 
@@ -29,5 +30,6 @@ extern const char kMagicStackModuleEngagementSetUpListIndexHistogram[];
 extern const char kMagicStackModuleEngagementTabResumptionIndexHistogram[];
 extern const char kMagicStackModuleEngagementSafetyCheckIndexHistogram[];
 extern const char kMagicStackModuleEngagementParcelTrackingIndexHistogram[];
+extern const char kContentNotificationSnackbarEventHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_METRICS_CONSTANTS_H_

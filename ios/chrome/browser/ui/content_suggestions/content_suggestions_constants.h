@@ -34,6 +34,18 @@ enum class ContentSuggestionsModuleType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// Enum for content notification promo events UMA metrics. Entries should not
+// be renumbered and numeric values should never be reused. This should align
+// with the ContentNotificationSnackbarEvent enum in enums.xml.
+//
+// LINT.IfChange
+enum class ContentNotificationSnackbarEvent {
+  kShown = 0,
+  kActionButtonTapped = 1,
+  kMaxValue = kActionButtonTapped,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
+
 // Represents the content suggestions collection view.
 extern NSString* const kContentSuggestionsCollectionIdentifier;
 

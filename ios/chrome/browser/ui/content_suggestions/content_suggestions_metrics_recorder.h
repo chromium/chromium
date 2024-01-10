@@ -17,6 +17,7 @@ class WebState;
 typedef NS_ENUM(NSInteger, NTPCollectionShortcutType);
 
 @class ContentSuggestionsMostVisitedItem;
+enum class ContentNotificationSnackbarEvent;
 enum class ContentSuggestionsModuleType;
 enum class SetUpListItemType;
 
@@ -76,6 +77,9 @@ enum class SetUpListItemType;
 
 // Logs a Set Up List item being selected.
 - (void)recordSetUpListItemSelected:(SetUpListItemType)type;
+
+- (void)recordContentNotificationSnackbarEvent:
+    (ContentNotificationSnackbarEvent)event;
 
 @end
 
