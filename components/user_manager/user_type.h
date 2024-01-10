@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_USER_MANAGER_USER_TYPE_H_
 #define COMPONENTS_USER_MANAGER_USER_TYPE_H_
 
+#include <ostream>
+#include <string_view>
+
+#include "components/user_manager/user_manager_export.h"
+
 namespace user_manager {
 
 // The user type. Used in a histogram; do not modify existing types.
@@ -50,6 +55,16 @@ typedef enum {
   kMaxValue = USER_TYPE_WEB_KIOSK_APP,
 
 } UserType;
+
+// Stringifies UserType. Returns a C-style (i.e. \0-terminated) string literal.
+// The returned value is for logging or also to be used for crash key in
+// UserManager.
+USER_MANAGER_EXPORT const char* UserTypeToString(UserType user_type);
+
+// Operator overloading for logging.
+inline std::ostream& operator<<(std::ostream& os, UserType user_type) {
+  return os << UserTypeToString(user_type);
+}
 
 }  // namespace user_manager
 

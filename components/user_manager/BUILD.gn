@@ -15,6 +15,7 @@ component("user_manager") {
     "user_manager_export.h",
     "user_names.cc",
     "user_names.h",
+    "user_type.cc",
     "user_type.h",
   ]
 

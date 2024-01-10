@@ -106,25 +106,6 @@ UserType GetStoredUserType(const base::Value::Dict& prefs_user_types,
   return static_cast<UserType>(int_user_type);
 }
 
-std::string UserTypeToString(UserType user_type) {
-  switch (user_type) {
-    case USER_TYPE_REGULAR:
-      return "regular";
-    case USER_TYPE_CHILD:
-      return "child";
-    case USER_TYPE_GUEST:
-      return "guest";
-    case USER_TYPE_PUBLIC_ACCOUNT:
-      return "managed-guest-session";
-    case USER_TYPE_KIOSK_APP:
-      return "chrome-app-kiosk";
-    case USER_TYPE_ARC_KIOSK_APP:
-      return "arc-kiosk";
-    case USER_TYPE_WEB_KIOSK_APP:
-      return "web-kiosk";
-  }
-}
-
 }  // namespace
 
 // static
