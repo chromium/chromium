@@ -33,6 +33,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/omaha/android:java",
@@ -51,7 +52,6 @@ android_library("java") {
     "//components/favicon/android:java",
     "//components/location/android:location_java",
     "//components/search_engines/android:java",
-    "//components/version_info/android:version_constants_java",
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//third_party/android_deps:guava_android_java",

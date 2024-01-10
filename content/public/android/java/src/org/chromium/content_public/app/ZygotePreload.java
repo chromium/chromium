@@ -15,8 +15,8 @@ import androidx.annotation.RequiresApi;
 import org.chromium.base.Log;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.process_launcher.ChildProcessService;
+import org.chromium.base.version_info.VersionConstants;
 import org.chromium.build.BuildConfig;
-import org.chromium.components.version_info.VersionConstants;
 
 /**
  * Class used in android:zygotePreloadName attribute of manifest.
