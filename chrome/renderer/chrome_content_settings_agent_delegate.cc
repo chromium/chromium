@@ -75,8 +75,7 @@ bool ChromeContentSettingsAgentDelegate::IsSchemeAllowlisted(
 #endif
 }
 
-absl::optional<bool>
-ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
+bool ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScriptContext* current_context =
       extension_dispatcher_->script_context_set().GetCurrent();
@@ -90,11 +89,10 @@ ChromeContentSettingsAgentDelegate::AllowReadFromClipboard() {
     return true;
   }
 #endif
-  return absl::nullopt;
+  return false;
 }
 
-absl::optional<bool>
-ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
+bool ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // All blessed extension pages could historically write to the clipboard, so
   // preserve that for compatibility.
@@ -112,7 +110,7 @@ ChromeContentSettingsAgentDelegate::AllowWriteToClipboard() {
     }
   }
 #endif
-  return absl::nullopt;
+  return false;
 }
 
 absl::optional<bool> ChromeContentSettingsAgentDelegate::AllowMutationEvents() {

@@ -70,14 +70,10 @@ class WebContentSettingsClient {
   }
 
   // Controls whether access to read the clipboard is allowed for this frame.
-  virtual bool AllowReadFromClipboard(bool default_value) {
-    return default_value;
-  }
+  virtual bool AllowReadFromClipboard() { return false; }
 
   // Controls whether access to write the clipboard is allowed for this frame.
-  virtual bool AllowWriteToClipboard(bool default_value) {
-    return default_value;
-  }
+  virtual bool AllowWriteToClipboard() { return false; }
 
   // Controls whether enabling Web Components API for this frame.
   virtual bool AllowWebComponents(bool default_value) { return default_value; }

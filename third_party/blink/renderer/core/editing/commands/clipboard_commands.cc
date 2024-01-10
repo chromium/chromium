@@ -116,13 +116,12 @@ bool ClipboardCommands::CanReadClipboard(LocalFrame& frame,
   if (source == EditorCommandSource::kMenuOrKeyBinding)
     return true;
   Settings* const settings = frame.GetSettings();
-  const bool default_value = settings &&
-                             settings->GetJavaScriptCanAccessClipboard() &&
-                             settings->GetDOMPasteAllowed();
-  if (!frame.GetContentSettingsClient())
-    return default_value;
-  return frame.GetContentSettingsClient()->AllowReadFromClipboard(
-      default_value);
+  if (settings && settings->GetJavaScriptCanAccessClipboard() &&
+      settings->GetDOMPasteAllowed()) {
+    return true;
+  }
+  return frame.GetContentSettingsClient() &&
+         frame.GetContentSettingsClient()->AllowReadFromClipboard();
 }
 
 bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
@@ -130,12 +129,12 @@ bool ClipboardCommands::CanWriteClipboard(LocalFrame& frame,
   if (source == EditorCommandSource::kMenuOrKeyBinding)
     return true;
   Settings* const settings = frame.GetSettings();
-  const bool default_value =
-      (settings && settings->GetJavaScriptCanAccessClipboard()) ||
-      LocalFrame::HasTransientUserActivation(&frame);
-  if (!frame.GetContentSettingsClient())
-    return default_value;
-  return frame.GetContentSettingsClient()->AllowWriteToClipboard(default_value);
+  if ((settings && settings->GetJavaScriptCanAccessClipboard()) ||
+      LocalFrame::HasTransientUserActivation(&frame)) {
+    return true;
+  }
+  return frame.GetContentSettingsClient() &&
+         frame.GetContentSettingsClient()->AllowWriteToClipboard();
 }
 
 bool ClipboardCommands::IsExecutingCutOrCopy(ExecutionContext& context) {
@@ -296,13 +295,12 @@ void ClipboardCommands::WriteSelectionToClipboard(LocalFrame& frame) {
 
 bool ClipboardCommands::PasteSupported(LocalFrame* frame) {
   const Settings* const settings = frame->GetSettings();
-  const bool default_value = settings &&
-                             settings->GetJavaScriptCanAccessClipboard() &&
-                             settings->GetDOMPasteAllowed();
-  if (!frame->GetContentSettingsClient())
-    return default_value;
-  return frame->GetContentSettingsClient()->AllowReadFromClipboard(
-      default_value);
+  if (settings && settings->GetJavaScriptCanAccessClipboard() &&
+      settings->GetDOMPasteAllowed()) {
+    return true;
+  }
+  return frame->GetContentSettingsClient() &&
+         frame->GetContentSettingsClient()->AllowReadFromClipboard();
 }
 
 bool ClipboardCommands::ExecuteCopy(LocalFrame& frame,
