@@ -746,7 +746,7 @@ bool IsAImageReaderEnabled() {
   }
 
   return base::FeatureList::IsEnabled(kAImageReader) &&
-         base::android::AndroidImageReader::GetInstance().IsSupported();
+         base::android::EnableAndroidImageReader();
 }
 
 bool IsAndroidSurfaceControlEnabled() {

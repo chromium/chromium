@@ -64,7 +64,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/android_image_reader_compat.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
 

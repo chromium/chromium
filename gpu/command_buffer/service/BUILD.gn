@@ -587,6 +587,9 @@ target(link_target_type, "gles2_sources") {
       "texture_owner.h",
     ]
 
+    # For AImageReader.
+    libs = [ "mediandk" ]
+
     if (use_dawn) {
       sources += [
         "shared_image/dawn_ahardwarebuffer_image_representation.cc",
@@ -674,6 +677,9 @@ if (is_android) {
       "surface_texture_gl_owner_unittest.cc",
       "surface_texture_transform_unittest.cc",
     ]
+
+    # For AImageReader_getFormat()
+    libs = [ "mediandk" ]
 
     deps = [
       ":android_texture_owner_test_support",
