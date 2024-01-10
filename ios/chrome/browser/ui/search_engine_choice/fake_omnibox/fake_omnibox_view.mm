@@ -119,9 +119,6 @@ CALayer* CreateOmniboxFieldLayer(BOOL isEmpty) {
                             faviconImage:(UIImage*)image {
   self = [super initWithFrame:CGRectMake(0, 0, 0, 0)];
   if (self) {
-    CHECK((!name && !image) || (name && image))
-        << "name: " << name << ", image: " << image;
-
     _isEmptyFakeOmnibox = !name && !image;
 
     self.bounds = CGRectMake(0, 0, kFakeOmniboxWidth, kFakeOmniboxHeight);
