@@ -5,14 +5,26 @@
 #ifndef COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 #define COMPONENTS_DATA_SHARING_PUBLIC_DATA_SHARING_SERVICE_H_
 
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace data_sharing {
 
 // The core class for managing data sharing.
-class DataSharingService : public KeyedService {
+class DataSharingService : public KeyedService, public base::SupportsUserData {
  public:
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a Java object of the type DataSharingService for the given
+  // DataSharingService.
+  static base::android::ScopedJavaLocalRef<jobject> GetJavaObject(
+      DataSharingService* data_sharing_service);
+#endif  // BUILDFLAG(IS_ANDROID)
+
   DataSharingService() = default;
   ~DataSharingService() override = default;
 
