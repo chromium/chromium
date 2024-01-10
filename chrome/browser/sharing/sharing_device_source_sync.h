@@ -57,8 +57,8 @@ class SharingDeviceSourceSync : public SharingDeviceSource,
   // name otherwise. The returned list is sorted in (not strictly) descending
   // order by last_updated_timestamp.
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-  RenameAndDeduplicateDevices(
-      std::vector<std::unique_ptr<syncer::DeviceInfo>> devices) const;
+  ConvertAndDeduplicateDevices(
+      std::vector<const syncer::DeviceInfo*> devices) const;
 
   std::vector<const syncer::DeviceInfo*> FilterDeviceCandidates(
       std::vector<const syncer::DeviceInfo*> devices,

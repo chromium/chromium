@@ -277,7 +277,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_Expired) {
   task_environment_.FastForwardBy(kSharingDeviceExpiration +
                                   base::Milliseconds(1));
 
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> candidates =
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
       device_source->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::CLICK_TO_CALL_V2);
 
@@ -293,7 +293,7 @@ TEST_F(SharingDeviceSourceSyncTest, GetDeviceCandidates_MissingRequirements) {
   fake_device_info_tracker_.Add(device_info.get());
 
   // Requires shared clipboard feature.
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> candidates =
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> candidates =
       device_source->GetDeviceCandidates(
           sync_pb::SharingSpecificFields::SHARED_CLIPBOARD_V2);
 

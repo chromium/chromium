@@ -15,7 +15,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/sharing_constants.h"
@@ -77,8 +76,12 @@ class ClickToCallContextMenuObserverTest : public testing::Test {
       int count) {
     std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
     for (int i = 0; i < count; i++) {
-      devices.emplace_back(CreateFakeDeviceInfo(
-          base::StrCat({"guid", base::NumberToString(i)}), "name"));
+      devices.emplace_back(std::make_unique<SharingTargetDeviceInfo>(
+          base::StrCat({"guid", base::NumberToString(i)}), "name",
+          SharingDevicePlatform::kUnknown,
+          /*pulse_interval=*/base::TimeDelta(),
+          syncer::DeviceInfo::FormFactor::kUnknown,
+          /*last_updated_timestamp=*/base::Time()));
     }
     return devices;
   }

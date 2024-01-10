@@ -142,7 +142,7 @@ class DeviceInfo {
              const std::string& fcm_registration_token,
              const ModelTypeSet& interested_data_types);
 
-  DeviceInfo(DeviceInfo&&) = delete;
+  DeviceInfo(const DeviceInfo&) = delete;
   DeviceInfo& operator=(const DeviceInfo&) = delete;
 
   ~DeviceInfo();
@@ -233,12 +233,7 @@ class DeviceInfo {
 
   void set_interested_data_types(const ModelTypeSet& data_types);
 
-  // TODO(b/316374607): Remove this API once all deep copies are avoided.
-  std::unique_ptr<DeviceInfo> Clone() const;
-
  private:
-  DeviceInfo(const DeviceInfo& other);
-
   const std::string guid_;
 
   std::string client_name_;

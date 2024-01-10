@@ -45,15 +45,21 @@ bool IsStale(const syncer::DeviceInfo& device) {
   return device.last_updated_timestamp() < min_updated_time;
 }
 
-// TODO(b/316374607): Avoid deep copies once signatures adhere to raw pointers
-// instead of returning ownership of copies.
-std::vector<std::unique_ptr<SharingTargetDeviceInfo>> CloneDevices(
-    const std::vector<const SharingTargetDeviceInfo*> devices) {
-  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> result;
-  for (const SharingTargetDeviceInfo* device : devices) {
-    result.push_back(device->Clone());
-  }
-  return result;
+std::unique_ptr<SharingTargetDeviceInfo> ConvertDeviceInfo(
+    const syncer::DeviceInfo* device,
+    bool use_short_name) {
+  CHECK(device);
+
+  const send_tab_to_self::SharingDeviceNames device_names =
+      send_tab_to_self::GetSharingDeviceNames(device);
+
+  const std::string& client_name =
+      use_short_name ? device_names.short_name : device_names.full_name;
+
+  return std::make_unique<SharingTargetDeviceInfo>(
+      device->guid(), client_name, GetDevicePlatform(*device),
+      device->pulse_interval(), device->form_factor(),
+      device->last_updated_timestamp());
 }
 
 }  // namespace
@@ -99,11 +105,7 @@ SharingDeviceSourceSync::GetDeviceByGuid(const std::string& guid) {
   if (!device_info)
     return nullptr;
 
-  std::unique_ptr<SharingTargetDeviceInfo> device_info_copy =
-      device_info->Clone();
-  device_info_copy->set_client_name(
-      send_tab_to_self::GetSharingDeviceNames(device_info).full_name);
-  return device_info_copy;
+  return ConvertDeviceInfo(device_info, /*use_short_name=*/false);
 }
 
 std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
@@ -112,8 +114,8 @@ SharingDeviceSourceSync::GetDeviceCandidates(
   if (!IsSyncEnabledForSharing(sync_service_) || !IsReady())
     return {};
 
-  return RenameAndDeduplicateDevices(CloneDevices(FilterDeviceCandidates(
-      device_info_tracker_->GetAllDeviceInfo(), required_feature)));
+  return ConvertAndDeduplicateDevices(FilterDeviceCandidates(
+      device_info_tracker_->GetAllDeviceInfo(), required_feature));
 }
 
 bool SharingDeviceSourceSync::IsReady() {
@@ -170,7 +172,7 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
 
   base::EraseIf(devices, [accepted_features, can_send_via_vapid,
                           can_send_via_sender_id](
-                             const SharingTargetDeviceInfo* device) {
+                             const syncer::DeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
     if (IsStale(*device)) {
       return true;
@@ -204,8 +206,8 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
 }
 
 std::vector<std::unique_ptr<SharingTargetDeviceInfo>>
-SharingDeviceSourceSync::RenameAndDeduplicateDevices(
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices) const {
+SharingDeviceSourceSync::ConvertAndDeduplicateDevices(
+    std::vector<const syncer::DeviceInfo*> devices) const {
   // Sort the devices so the most recently modified devices are first.
   std::sort(devices.begin(), devices.end(),
             [](const auto& device1, const auto& device2) {
@@ -226,9 +228,9 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
   // To prevent M78- instances of Chrome with same device model from showing up.
   full_names.insert(*personalizable_local_device_name_);
 
-  for (const auto& device : devices) {
+  for (const syncer::DeviceInfo* device : devices) {
     send_tab_to_self::SharingDeviceNames device_names =
-        send_tab_to_self::GetSharingDeviceNames(device.get());
+        send_tab_to_self::GetSharingDeviceNames(device);
 
     // Only insert the first occurrence of each device name.
     auto inserted = full_names.insert(device_names.full_name);
@@ -236,22 +238,25 @@ SharingDeviceSourceSync::RenameAndDeduplicateDevices(
       continue;
 
     short_names_counter[device_names.short_name]++;
-    device_names_map.insert({device.get(), std::move(device_names)});
+    device_names_map.insert({device, std::move(device_names)});
   }
 
-  // Filter duplicates and rename devices.
-  base::EraseIf(devices, [&device_names_map,
-                          &short_names_counter](auto& device) {
-    auto it = device_names_map.find(device.get());
-    if (it == device_names_map.end())
-      return true;
+  // Filter duplicates and convert devices.
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> converted_devices;
+
+  for (const syncer::DeviceInfo* device : devices) {
+    auto it = device_names_map.find(device);
+    if (it == device_names_map.end()) {
+      continue;
+    }
 
     const send_tab_to_self::SharingDeviceNames& device_names = it->second;
     bool unique_short_name = short_names_counter[device_names.short_name] == 1;
-    device->set_client_name(unique_short_name ? device_names.short_name
-                                              : device_names.full_name);
-    return false;
-  });
 
-  return devices;
+    converted_devices.push_back(
+        ConvertDeviceInfo(device,
+                          /*use_short_name=*/unique_short_name));
+  }
+
+  return converted_devices;
 }

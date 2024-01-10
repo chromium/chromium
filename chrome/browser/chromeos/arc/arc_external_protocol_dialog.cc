@@ -17,6 +17,7 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
+#include "chrome/browser/sharing/sharing_target_device_info.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -58,7 +59,7 @@ constexpr char kActivityForOpeningArcImeSettingsPage[] =
 constexpr int kDeviceIconSize = 16;
 
 using IntentPickerResponseWithDevices = base::OnceCallback<void(
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
     apps::IntentPickerBubbleType intent_picker_type,
     const std::string& launch_name,
     apps::PickerEntryType entry_type,
@@ -78,7 +79,7 @@ ui::ImageModel CreateDeviceIcon(
 // Adds |devices| to |picker_entries| and returns the new list. The devices are
 // added to the beginning of the list.
 std::vector<apps::IntentPickerAppInfo> AddDevices(
-    const std::vector<std::unique_ptr<syncer::DeviceInfo>>& devices,
+    const std::vector<std::unique_ptr<SharingTargetDeviceInfo>>& devices,
     std::vector<apps::IntentPickerAppInfo> picker_entries) {
   DCHECK(!devices.empty());
 
@@ -119,7 +120,7 @@ bool MaybeAddDevicesAndShowPicker(
 
   auto bubble_type = apps::IntentPickerBubbleType::kExternalProtocol;
   ClickToCallUiController* controller = nullptr;
-  std::vector<std::unique_ptr<syncer::DeviceInfo>> devices;
+  std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
   if (ShouldOfferClickToCallForURL(web_contents->GetBrowserContext(), url)) {
     bubble_type = apps::IntentPickerBubbleType::kClickToCall;
@@ -372,7 +373,7 @@ bool GetAndResetSafeToRedirectToArcWithoutUserConfirmationFlag(
 
 void HandleDeviceSelection(
     WebContents* web_contents,
-    const std::vector<std::unique_ptr<syncer::DeviceInfo>>& devices,
+    const std::vector<std::unique_ptr<SharingTargetDeviceInfo>>& devices,
     const std::string& device_guid,
     const GURL& url) {
   if (!web_contents) {
@@ -380,7 +381,7 @@ void HandleDeviceSelection(
   }
 
   const auto it =
-      base::ranges::find(devices, device_guid, &syncer::DeviceInfo::guid);
+      base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
   DCHECK(it != devices.end());
   auto* device = it->get();
 
@@ -480,7 +481,7 @@ void OnIntentPickerClosed(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
     apps::IntentPickerBubbleType intent_picker_type,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
@@ -816,7 +817,7 @@ void OnIntentPickerClosedForTesting(
     bool safe_to_bypass_ui,
     std::vector<ArcIntentHelperMojoDelegate::IntentHandlerInfo> handlers,
     std::unique_ptr<ArcIntentHelperMojoDelegate> mojo_delegate,
-    std::vector<std::unique_ptr<syncer::DeviceInfo>> devices,
+    std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices,
     const std::string& selected_app_package,
     apps::PickerEntryType entry_type,
     apps::IntentPickerCloseReason reason,

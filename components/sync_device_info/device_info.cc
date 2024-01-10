@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -213,11 +212,5 @@ void DeviceInfo::set_fcm_registration_token(const std::string& fcm_token) {
 void DeviceInfo::set_interested_data_types(const ModelTypeSet& data_types) {
   interested_data_types_ = data_types;
 }
-
-std::unique_ptr<DeviceInfo> DeviceInfo::Clone() const {
-  return base::WrapUnique(new DeviceInfo(*this));
-}
-
-DeviceInfo::DeviceInfo(const DeviceInfo& other) = default;
 
 }  // namespace syncer

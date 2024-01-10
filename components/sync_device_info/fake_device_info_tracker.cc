@@ -87,6 +87,11 @@ void FakeDeviceInfoTracker::Add(const std::vector<const DeviceInfo*>& devices) {
   }
 }
 
+void FakeDeviceInfoTracker::Add(std::unique_ptr<DeviceInfo> device) {
+  owned_devices_.push_back(std::move(device));
+  Add(owned_devices_.back().get());
+}
+
 void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
   const auto remove_it = base::ranges::remove(devices_, device);
   CHECK(remove_it != devices_.end());

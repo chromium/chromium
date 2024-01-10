@@ -1574,6 +1574,7 @@ static_library("browser") {
     "sharing/sharing_service_factory.h",
     "sharing/sharing_sync_preference.cc",
     "sharing/sharing_sync_preference.h",
+    "sharing/sharing_target_device_info.cc",
     "sharing/sharing_target_device_info.h",
     "sharing/sharing_utils.cc",
     "sharing/sharing_utils.h",

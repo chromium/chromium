@@ -43,6 +43,7 @@ enum class SharingDeviceRegistrationResult;
 // sharing messages to other devices.
 class SharingService : public KeyedService, public syncer::SyncServiceObserver {
  public:
+  // TODO(b/5173408): Avoid unique_ptr and lean on move semantics.
   using SharingDeviceList =
       std::vector<std::unique_ptr<SharingTargetDeviceInfo>>;
   using NotificationActionCallback =

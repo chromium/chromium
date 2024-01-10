@@ -9,9 +9,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/sharing/fake_device_info.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/sharing/sharing_target_device_info.h"
@@ -47,6 +47,16 @@ MockSharingService* CreateSharingService(content::BrowserContext* context) {
 
 url::Origin GetOriginForURL(const std::string url) {
   return url::Origin::Create(GURL(url));
+}
+
+std::unique_ptr<SharingTargetDeviceInfo> CreateFakeSharingTargetDeviceInfo(
+    const std::string& guid,
+    const std::string& client_name) {
+  return std::make_unique<SharingTargetDeviceInfo>(
+      guid, client_name, SharingDevicePlatform::kUnknown,
+      /*pulse_interval=*/base::TimeDelta(),
+      syncer::DeviceInfo::FormFactor::kUnknown,
+      /*last_updated_timestamp=*/base::Time());
 }
 
 TEST(SmsRemoteFetcherTest, NoDevicesAvailable) {
@@ -93,7 +103,7 @@ TEST(SmsRemoteFetcherTest, OneDevice) {
 
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -138,7 +148,7 @@ TEST(SmsRemoteFetcherTest, OneDeviceTimesOut) {
 
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -177,7 +187,7 @@ TEST(SmsRemoteFetcherTest, RequestCancelled) {
 
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid-abc"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid-abc", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -278,7 +288,7 @@ TEST(SmsRemoteFetcherTest, SendSharingMessageFailure) {
 
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
@@ -323,7 +333,7 @@ TEST(SmsRemoteFetcherTest, UserDecline) {
 
   std::vector<std::unique_ptr<SharingTargetDeviceInfo>> devices;
 
-  devices.push_back(CreateFakeDeviceInfo("guid", "name"));
+  devices.push_back(CreateFakeSharingTargetDeviceInfo("guid", "name"));
 
   EXPECT_CALL(*service, GetDeviceCandidates(_))
       .WillOnce(Return(ByMove(std::move(devices))));
