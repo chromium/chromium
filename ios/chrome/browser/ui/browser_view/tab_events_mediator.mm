@@ -28,7 +28,7 @@
 
 @interface TabEventsMediator () <CRWWebStateObserver,
                                  WebStateListObserving,
-                                 URLLoadingObserver>
+                                 URLLoadingObserving>
 
 @end
 
@@ -287,9 +287,10 @@
   }
 }
 
-#pragma mark - URLLoadingObserver
+#pragma mark - URLLoadingObserving
 
-- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
+- (void)newTabWillLoadURL:(const GURL&)URL
+          isUserInitiated:(BOOL)isUserInitiated {
   if (isUserInitiated) {
     // Send either the "New Tab Opened" or "New Incognito Tab" opened to the
     // feature_engagement::Tracker based on `inIncognito`.
@@ -298,7 +299,7 @@
   }
 }
 
-- (void)tabWillLoadURL:(GURL)URL
+- (void)tabWillLoadURL:(const GURL&)URL
         transitionType:(ui::PageTransition)transitionType {
   [self.consumer dismissBookmarkModalController];
 
@@ -309,7 +310,7 @@
         _browserState->IsOffTheRecord(), currentWebState, URL, transitionType);
   }
 }
-- (void)willSwitchToTabWithURL:(GURL)URL
+- (void)willSwitchToTabWithURL:(const GURL&)URL
               newWebStateIndex:(NSInteger)newWebStateIndex {
   base::WeakPtr<web::WebState> weakWebStateBeingActivated =
       _webStateList->GetWebStateAt(newWebStateIndex)->GetWeakPtr();

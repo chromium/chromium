@@ -12,6 +12,8 @@ source_set("model") {
     "url_loading_browser_agent.mm",
     "url_loading_notifier_browser_agent.h",
     "url_loading_notifier_browser_agent.mm",
+    "url_loading_observer.h",
+    "url_loading_observer.mm",
     "url_loading_observer_bridge.h",
     "url_loading_observer_bridge.mm",
     "url_loading_params.h",
@@ -86,6 +88,7 @@ source_set("unit_tests") {
   sources = [
     "image_search_param_generator_unittest.mm",
     "url_loading_browser_agent_unittest.mm",
+    "url_loading_observer_bridge_unittest.mm",
   ]
   deps = [
     ":model",

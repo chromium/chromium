@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
 
-UrlLoadingObserverBridge::UrlLoadingObserverBridge(id<URLLoadingObserver> owner)
+UrlLoadingObserverBridge::UrlLoadingObserverBridge(
+    id<URLLoadingObserving> owner)
     : owner_(owner) {}
 
 UrlLoadingObserverBridge::~UrlLoadingObserverBridge() {

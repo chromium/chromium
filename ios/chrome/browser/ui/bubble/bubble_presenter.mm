@@ -72,7 +72,7 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
 
 @interface BubblePresenter () <CRWWebStateObserver,
                                SceneStateObserver,
-                               URLLoadingObserver>
+                               URLLoadingObserving>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -916,9 +916,9 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   }
 }
 
-#pragma mark - URLLoadingObserver
+#pragma mark - URLLoadingObserving
 
-- (void)tabDidLoadURL:(GURL)URL
+- (void)tabDidLoadURL:(const GURL&)URL
        transitionType:(ui::PageTransition)transitionType {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
   if (currentWebState) {
@@ -935,7 +935,8 @@ BOOL CanSideSwipeBubbleViewFitInGuide(SideSwipeBubbleView* view,
   }
 }
 
-- (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
+- (void)newTabDidLoadURL:(const GURL&)URL
+         isUserInitiated:(BOOL)isUserInitiated {
   if (isUserInitiated) {
     [self presentTabGridToolbarItemBubble];
   }

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 
-#import "ios/chrome/browser/url_loading/model/url_loading_observer_bridge.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_observer.h"
 
 BROWSER_USER_DATA_KEY_IMPL(UrlLoadingNotifierBrowserAgent)
 
@@ -13,13 +13,12 @@ UrlLoadingNotifierBrowserAgent::UrlLoadingNotifierBrowserAgent(
 
 UrlLoadingNotifierBrowserAgent::~UrlLoadingNotifierBrowserAgent() {}
 
-void UrlLoadingNotifierBrowserAgent::AddObserver(
-    UrlLoadingObserverBridge* observer) {
+void UrlLoadingNotifierBrowserAgent::AddObserver(UrlLoadingObserver* observer) {
   observers_.AddObserver(observer);
 }
 
 void UrlLoadingNotifierBrowserAgent::RemoveObserver(
-    UrlLoadingObserverBridge* observer) {
+    UrlLoadingObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
