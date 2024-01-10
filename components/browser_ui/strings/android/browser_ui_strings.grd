@@ -1091,6 +1091,21 @@
       <message name="IDS_SEARCH_RESUMPTION_MODULE_SUBTITLE" desc="Subtitle of the search resumption module on NTP or Start surface.">
         Based on your last tab
       </message>
+
+      <!-- Tab resumption module strings -->
+      <message name="IDS_TAB_RESUMPTION_MODULE_TITLE" desc="Title of the tab resumption module on NTP or Start surface.">
+        Continue browsing
+      </message>
+      <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_PRE_INFO" desc="Pre-info text template for the singleton item of the tab resumption module, showing foreign session name.">
+        From <ph name="FROM_DEVICE">%1$s<ex>My Pixel 7</ex></ph>
+      </message>
+      <message name="IDS_TAB_RESUMPTION_MODULE_SINGLE_POST_INFO" desc="Post-info text template for the singleton item of the tab resumption module, showing access time and host name.">
+        <ph name="ACCESS_TIME">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> <ph name="HOST_NAME">%2$s<ex>wikipedia.org</ex></ph>
+      </message>
+      <message name="IDS_TAB_RESUMPTION_MODULE_MULTI_INFO" desc="Info text template for each item of the tab resumption module, showing access time and foreign session name.">
+        <ph name="ACCESS_TIME">%1$s<ex>2h ago</ex></ph> <ph name="SEPARATOR">•</ph> From <ph name="FROM_DEVICE">%2$s<ex>My Pixel 7</ex></ph>
+      </message>
+
       <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
         Expanded
       </message>

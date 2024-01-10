@@ -260,6 +260,12 @@ https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_text` appears to be unused"/>
     <ignore regexp="The resource `R.string.iph_translate_message_dismissed_accessibility_text` appears to be unused"/>
 
+    <!--TODO(crbug.com/1515325): Remove suppressions once implementation is ready. -->
+    <ignore regexp="The resource `R.string.tab_resumption_module_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_resumption_module_single_pre_info` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_resumption_module_single_post_info` appears to be unused"/>
+    <ignore regexp="The resource `R.string.tab_resumption_module_multi_info` appears to be unused"/>
+
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
