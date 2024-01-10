@@ -37,6 +37,8 @@ These builders must pass before a CL may land that affects files outside of
 
 * [android_cronet](https://ci.chromium.org/p/chromium/builders/try/android_cronet) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""android_cronet""))
 
+* [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-gtest""))
+
 * [chromeos-amd64-generic-rel-renamed](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-renamed) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-renamed""))
 
 * [chromeos-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-arm-generic-rel""))
@@ -607,9 +609,6 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chromium
-* [chromeos-amd64-generic-rel-gtest](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-rel-gtest) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-rel-gtest""))
-  * Experiment percentage: 100.0
-
 * [chromeos-amd64-generic-siso-rel](https://ci.chromium.org/p/chromium/builders/try/chromeos-amd64-generic-siso-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-amd64-generic-siso-rel""))
   * Experiment percentage: 10.0
 
