@@ -1616,7 +1616,7 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables Isolated context APIs (Coralfish/IWA APIs) in web kiosk sessions.
+// Enables Isolated Web App context APIs in web kiosk sessions.
 // When enabled, Web App (PWA) kiosk session passes an isolated context check,
 // which makes blink expose IWA APIs to be used by the web app.
 BASE_FEATURE(kWebKioskEnableIwaApis,
