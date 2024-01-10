@@ -305,8 +305,7 @@ TEST_F(SmbFsMounterTest, MountOptions) {
         base::ScopedFD fd =
             mojo::UnwrapPlatformHandle(std::move(options->password->fd))
                 .TakeFD();
-        EXPECT_TRUE(base::ReadFromFD(fd.get(), &(password_buf.front()),
-                                     options->password->length));
+        EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
         EXPECT_TRUE(options->allow_ntlm);
         EXPECT_FALSE(options->skip_connect);
@@ -628,8 +627,7 @@ MULTIPROCESS_TEST_MAIN(SmbFsMain) {
         base::ScopedFD fd =
             mojo::UnwrapPlatformHandle(std::move(options->password->fd))
                 .TakeFD();
-        EXPECT_TRUE(base::ReadFromFD(fd.get(), &(password_buf.front()),
-                                     options->password->length));
+        EXPECT_TRUE(base::ReadFromFD(fd.get(), password_buf));
         EXPECT_EQ(password_buf, kPassword);
 
         EXPECT_FALSE(options->allow_ntlm);
