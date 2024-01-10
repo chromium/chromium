@@ -77,6 +77,7 @@ import org.chromium.components.webauthn.InternalAuthenticatorJni;
 import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.components.webauthn.WebauthnModeProvider.WebauthnMode;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
@@ -743,7 +744,8 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin);
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -772,7 +774,12 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+                        mContext,
+                        mIntentSender,
+                        createConfirmationUiDelegate,
+                        mFrameHost,
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -802,7 +809,12 @@ public class Fido2CredentialRequestTest {
                 };
         AuthenticatorImpl authenticator =
                 new AuthenticatorImpl(
-                        mContext, mIntentSender, createConfirmationUiDelegate, mFrameHost, mOrigin);
+                        mContext,
+                        mIntentSender,
+                        createConfirmationUiDelegate,
+                        mFrameHost,
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(
@@ -828,7 +840,8 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin);
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1306,7 +1319,8 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin);
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.extensions.userVerificationMethods = true;
@@ -1333,7 +1347,8 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin);
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithPrf());
         PrfValues prfValues = new PrfValues();
@@ -1368,7 +1383,8 @@ public class Fido2CredentialRequestTest {
                         mIntentSender,
                         /* createConfirmationUiDelegate= */ null,
                         mFrameHost,
-                        mOrigin);
+                        mOrigin,
+                        WebauthnMode.CHROME);
         mIntentSender.setNextResult(Activity.RESULT_CANCELED, null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
