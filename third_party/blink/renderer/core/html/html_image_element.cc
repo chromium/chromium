@@ -823,7 +823,6 @@ int HTMLImageElement::x() const {
   if (!r)
     return 0;
 
-  // FIXME: This doesn't work correctly with transforms.
   PhysicalOffset abs_pos =
       r->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
   return abs_pos.left.ToInt();
@@ -836,7 +835,6 @@ int HTMLImageElement::y() const {
   if (!r)
     return 0;
 
-  // FIXME: This doesn't work correctly with transforms.
   PhysicalOffset abs_pos =
       r->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms);
   return abs_pos.top.ToInt();
