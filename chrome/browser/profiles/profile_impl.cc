@@ -460,25 +460,6 @@ ProfileImpl::ProfileImpl(
     delegate_->OnProfileCreationStarted(this, create_mode);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1325210): Move this into
-  // ChromeUserManager::OnProfileCreationStarted().
-  const bool is_user_profile = ash::ProfileHelper::IsUserProfile(this);
-
-  if (is_user_profile) {
-    const user_manager::User* user =
-        ash::ProfileHelper::Get()->GetUserByProfile(this);
-    // A |User| instance should always exist for a profile which is not the
-    // initial, the sign-in or the lock screen app profile.
-    CHECK(user);
-    LOG_IF(FATAL,
-           !session_manager::SessionManager::Get()->HasSessionForAccountId(
-               user->GetAccountId()))
-        << "Attempting to construct the profile before starting the user "
-           "session";
-  }
-#endif
-
   // The ProfileImpl can be created both synchronously and asynchronously.
   bool async_prefs = create_mode == CREATE_MODE_ASYNCHRONOUS;
 
@@ -506,7 +487,7 @@ ProfileImpl::ProfileImpl(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1325210): Move this into
   // ChromeUserManager::OnProfileCreationStarted().
-  if (is_user_profile) {
+  if (ash::ProfileHelper::IsUserProfile(this)) {
     // |ash::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.
     // This invocation of |ash::InitializeAccountManager| is used only during
