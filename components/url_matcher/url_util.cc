@@ -343,6 +343,17 @@ bool FilterToComponents(const std::string& filter,
     std::replace(path->begin(), path->end(), '\\', '/');
     *path = "/" + *path;
 #endif
+    query->clear();
+    return true;
+  }
+
+  if (url_scheme == url::kDataScheme) {
+    *scheme = url::kDataScheme;
+    host->clear();
+    *match_subdomains = true;
+    *port = 0;
+    *path = GURL(filter).GetContent();
+    query->clear();
     return true;
   }
 
