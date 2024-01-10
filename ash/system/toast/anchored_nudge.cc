@@ -81,6 +81,7 @@ AnchoredNudge::AnchoredNudge(AnchoredNudgeData& nudge_data)
                                       nudge_data.arrow,
                                       views::BubbleBorder::NO_SHADOW),
       id_(nudge_data.id),
+      catalog_name_(nudge_data.catalog_name),
       anchored_to_shelf_(nudge_data.anchored_to_shelf),
       is_corner_anchored_(CalculateIsCornerAnchored(nudge_data.arrow)),
       click_callback_(std::move(nudge_data.click_callback)),

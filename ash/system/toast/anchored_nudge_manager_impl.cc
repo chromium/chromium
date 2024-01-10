@@ -510,6 +510,12 @@ AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
   return base::Contains(shown_nudges_, id) ? shown_nudges_[id] : nullptr;
 }
 
+NudgeCatalogName AnchoredNudgeManagerImpl::GetNudgeCatalogNameForTest(
+    const std::string& id) {
+  CHECK(base::Contains(shown_nudges_, id));
+  return shown_nudges_[id]->catalog_name();
+}
+
 AnchoredNudge* AnchoredNudgeManagerImpl::GetNudgeIfShown(
     const std::string& nudge_id) const {
   const auto iter = shown_nudges_.find(nudge_id);

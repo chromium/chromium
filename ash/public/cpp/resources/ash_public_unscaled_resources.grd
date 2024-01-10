@@ -54,6 +54,9 @@
       <structure type="lottie" name="IDR_SCREEN_CAPTURE_EDUCATION_NUDGE_IMAGE" file="unscaled_resources/screen_capture_education_nudge.json" compress="gzip" />
       <!-- Game Dashboard Controls Setup Nudge -->
       <structure type="lottie" name="IDR_GAME_DASHBOARD_CONTROLS_SETUP_NUDGE" file="unscaled_resources/game_dashboard_controls_setup_nudge.json" compress="gzip" />
+      <!-- Clipboard Nudge -->
+      <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_COPIED_IMAGE" file="unscaled_resources/clipboard_nudge_copied.json" compress="gzip" />
+      <structure type="lottie" name="IDR_CLIPBOARD_NUDGE_SELECT_IMAGE" file="unscaled_resources/clipboard_nudge_select.json" compress="gzip" />
     </structures>
   </release>
 </grit>

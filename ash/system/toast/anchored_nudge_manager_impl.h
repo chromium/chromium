@@ -65,6 +65,7 @@ class ASH_EXPORT AnchoredNudgeManagerImpl : public AnchoredNudgeManager,
   views::LabelButton* GetNudgePrimaryButtonForTest(const std::string& id);
   views::LabelButton* GetNudgeSecondaryButtonForTest(const std::string& id);
   AnchoredNudge* GetShownNudgeForTest(const std::string& id);
+  NudgeCatalogName GetNudgeCatalogNameForTest(const std::string& id);
 
   // TODO(b/297619385): Move constants to a new constants file.
   // Nudges with a body text that has at least this number of characters will

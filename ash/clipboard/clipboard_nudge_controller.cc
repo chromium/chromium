@@ -8,10 +8,15 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge.h"
 #include "ash/clipboard/clipboard_nudge_constants.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/public/cpp/system/anchored_nudge_manager.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -20,6 +25,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 namespace {
@@ -44,12 +51,28 @@ constexpr char kShownCountOnboardingNudge[] = "shown_count";
 
 // Constants -------------------------------------------------------------------
 
+// The id used for clipboard nudges.
+constexpr char kClipboardNudgeId[] = "ClipboardContextualNudge";
+
 // The maximum number of 1 second buckets, used to record the time delta between
 // when a nudge shows and when the clipboard history menu shows or clipboard
 // history data is pasted.
 constexpr int kMaxSeconds = 61;
 
 // Helpers ---------------------------------------------------------------------
+
+int GetBodyTextStringId(ClipboardNudgeType nudge_type) {
+  switch (nudge_type) {
+    case ClipboardNudgeType::kDuplicateCopyNudge:
+      return IDS_ASH_MULTIPASTE_DUPLICATE_COPY_NUDGE;
+    case ClipboardNudgeType::kOnboardingNudge:
+      return IDS_ASH_MULTIPASTE_CONTEXTUAL_NUDGE;
+    case ClipboardNudgeType::kScreenshotNotificationNudge:
+      return IDS_ASH_MULTIPASTE_SCREENSHOT_NOTIFICATION_NUDGE;
+    case ClipboardNudgeType::kZeroStateNudge:
+      return IDS_ASH_MULTIPASTE_ZERO_STATE_CONTEXTUAL_NUDGE;
+  }
+}
 
 NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
   switch (type) {
@@ -64,6 +87,19 @@ NudgeCatalogName GetCatalogName(ClipboardNudgeType type) {
       return NudgeCatalogName::kClipboardHistoryDuplicateCopy;
   }
   return NudgeCatalogName::kTestCatalogName;
+}
+
+ui::ImageModel GetImage(ClipboardNudgeType type) {
+  switch (type) {
+    case kDuplicateCopyNudge:
+    case kOnboardingNudge:
+      return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_CLIPBOARD_NUDGE_COPIED_IMAGE);
+    case kScreenshotNotificationNudge:
+    case kZeroStateNudge:
+      return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
+          IDR_CLIPBOARD_NUDGE_SELECT_IMAGE);
+  }
 }
 
 base::Time GetTime() {
@@ -318,15 +354,27 @@ void ClipboardNudgeController::OnClipboardHistoryMenuShown(
   zero_state_nudge_recorder_.OnClipboardHistoryMenuShown();
   screenshot_nudge_recorder_.OnClipboardHistoryMenuShown();
 
-  SystemNudgeController::MaybeRecordNudgeAction(
-      NudgeCatalogName::kClipboardHistoryOnboarding);
-  SystemNudgeController::MaybeRecordNudgeAction(
-      NudgeCatalogName::kClipboardHistoryZeroState);
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryOnboarding);
+    AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryZeroState);
+  } else {
+    SystemNudgeController::MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryOnboarding);
+    SystemNudgeController::MaybeRecordNudgeAction(
+        NudgeCatalogName::kClipboardHistoryZeroState);
+  }
 
   if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     duplicate_copy_nudge_recorder_.OnClipboardHistoryMenuShown();
-    SystemNudgeController::MaybeRecordNudgeAction(
-        NudgeCatalogName::kClipboardHistoryDuplicateCopy);
+    if (features::IsSystemNudgeMigrationEnabled()) {
+      AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+          NudgeCatalogName::kClipboardHistoryDuplicateCopy);
+    } else {
+      SystemNudgeController::MaybeRecordNudgeAction(
+          NudgeCatalogName::kClipboardHistoryDuplicateCopy);
+    }
   }
 }
 
@@ -342,7 +390,21 @@ void ClipboardNudgeController::OnClipboardHistoryPasted() {
 
 void ClipboardNudgeController::ShowNudge(ClipboardNudgeType nudge_type) {
   current_nudge_type_ = nudge_type;
-  SystemNudgeController::ShowNudge();
+
+  if (features::IsSystemNudgeMigrationEnabled()) {
+    const std::u16string shortcut_key =
+        clipboard_history_util::GetShortcutKeyName();
+    const std::u16string body_text = l10n_util::GetStringFUTF16(
+        GetBodyTextStringId(current_nudge_type_), shortcut_key);
+
+    AnchoredNudgeData nudge_data(
+        kClipboardNudgeId, GetCatalogName(current_nudge_type_), body_text);
+    nudge_data.image_model = GetImage(current_nudge_type_);
+
+    AnchoredNudgeManager::Get()->Show(nudge_data);
+  } else {
+    SystemNudgeController::ShowNudge();
+  }
 
   switch (nudge_type) {
     case ClipboardNudgeType::kOnboardingNudge:
