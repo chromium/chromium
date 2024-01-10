@@ -172,31 +172,40 @@ def main():
       # TODO(crbug.com/1496426): Migrate the image download folder away from the
       # following hack.
       prod, board = board + '-release', prod
-    image_dir = os.path.join(
-        common.INTERNAL_IMAGES_ROOT if args.internal else common.IMAGES_ROOT,
-        prod, board)
+    if args.internal:
+      # sdk_override.txt does not work for internal images.
+      override_url = None
+      image_dir = os.path.join(common.INTERNAL_IMAGES_ROOT, prod, board)
+    else:
+      override_url = update_sdk.GetSDKOverrideGCSPath()
+      if override_url:
+        logging.debug('Using override file')
+        # TODO(zijiehe): Convert to removesuffix once python 3.9 is supported.
+        if override_url.endswith('/sdk'):
+          override_url = override_url[:-len('/sdk')]
+      image_dir = os.path.join(common.IMAGES_ROOT, prod, board)
     curr_signature = get_current_signature(image_dir)
 
-    if curr_signature != new_hash:
-      common.make_clean_directory(image_dir)
-      logging.debug('Checking for override file')
-      override_file = os.path.join(os.path.dirname(__file__),
-                                   'sdk_override.txt')
-      if os.path.isfile(override_file):
-        base_url = update_sdk.GetSDKOverrideGCSPath().replace('/sdk', '')
-      else:
-        bucket = 'fuchsia-sdk' if args.internal else 'fuchsia'
-        base_url = f'gs://{bucket}/development/{new_hash}'
-      lookup_output = common.run_ffx_command(
-          cmd=['--machine', 'json', 'product', 'lookup', product, new_hash, '--base-url', base_url] +
-          auth_args,
-          check=True,
-          capture_output=True).stdout.strip()
-      download_url = json.loads(lookup_output)['transfer_manifest_url']
-      logging.info(f'Downloading {product} from {base_url}.')
-      common.run_ffx_command(
-          cmd=['product', 'download', download_url, image_dir] + auth_args,
-          check=True)
+    if not override_url and curr_signature == new_hash:
+      continue
+
+    common.make_clean_directory(image_dir)
+    base_url = 'gs://{bucket}/development/{new_hash}'.format(
+        bucket='fuchsia-sdk' if args.internal else 'fuchsia', new_hash=new_hash)
+    lookup_output = common.run_ffx_command(cmd=[
+        '--machine', 'json', 'product', 'lookup', product, new_hash,
+        '--base-url', override_url or base_url
+    ] + auth_args,
+                                           check=True,
+                                           capture_output=True).stdout.strip()
+    download_url = json.loads(lookup_output)['transfer_manifest_url']
+    # The download_url is purely a timestamp based gs location and is fairly
+    # meaningless, so we log the base_url instead which contains the sdk version
+    # if it's not coming from the sdk_override.txt file.
+    logging.info(f'Downloading {product} from {base_url} and {download_url}.')
+    common.run_ffx_command(
+        cmd=['product', 'download', download_url, image_dir] + auth_args,
+        check=True)
 
   return 0
 

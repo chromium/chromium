@@ -20,6 +20,8 @@ import common
 
 class TestUpdateProductBundles(unittest.TestCase):
   def setUp(self):
+    # By default, test in attended mode.
+    os.environ.pop('SWARMING_SERVER', None)
     ffx_mock = mock.Mock()
     ffx_mock.returncode = 0
     self._ffx_patcher = mock.patch('common.run_ffx_command',
@@ -105,6 +107,7 @@ class TestUpdateProductBundles(unittest.TestCase):
   @mock.patch('update_product_bundles.running_unattended', return_value=True)
   # Disallow reading sdk_override.
   @mock.patch('os.path.isfile', return_value=False)
+  @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
   def testLookupAndDownloadWithAuth(self, *_):
     try:
       common.get_host_os()
@@ -124,11 +127,11 @@ class TestUpdateProductBundles(unittest.TestCase):
         'sys.argv',
         ['update_product_bundles.py', 'terminal.x64', '--internal']):
       update_product_bundles.main()
-    new_hash = update_product_bundles.internal_hash()
     self._ffx_mock.assert_has_calls([
         mock.call(cmd=[
-            '--machine', 'json', 'product', 'lookup', 'terminal.x64', new_hash, '--base-url',
-            f'gs://fuchsia-sdk/development/{new_hash}', '--auth', auth_file
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
+            '--base-url', f'gs://fuchsia-sdk/development/1.1.1', '--auth',
+            auth_file
         ],
                   check=True,
                   capture_output=True),
@@ -136,6 +139,176 @@ class TestUpdateProductBundles(unittest.TestCase):
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64'),
             '--auth', auth_file
+        ],
+                  check=True)
+    ])
+
+  @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
+  @mock.patch('update_product_bundles.get_current_signature',
+              return_value='2.2.2')
+  def testIgnoreDownloadImagesWithSameHash(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    with mock.patch('sys.argv', ['update_product_bundles.py', 'terminal.x64']):
+      update_product_bundles.main()
+    self.assertFalse(self._ffx_mock.called)
+
+  @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
+  @mock.patch('update_product_bundles.get_current_signature',
+              return_value='0.0')
+  def testDownloadImagesWithDifferentHash(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    self._ffx_mock.return_value.stdout = json.dumps({
+        "name":
+        "core.x64",
+        "product_version":
+        "17.20240106.2.1",
+        "transfer_manifest_url":
+        "http://download-url"
+    })
+    with mock.patch('sys.argv', ['update_product_bundles.py', 'terminal.x64']):
+      update_product_bundles.main()
+    self._ffx_mock.assert_has_calls([
+        mock.call(cmd=[
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
+            '--base-url', 'gs://fuchsia/development/2.2.2'
+        ],
+                  check=True,
+                  capture_output=True),
+        mock.call(cmd=[
+            'product', 'download', 'http://download-url',
+            os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
+        ],
+                  check=True)
+    ])
+
+  @mock.patch('update_sdk.GetSDKOverrideGCSPath',
+              return_value='gs://my-bucket/sdk')
+  @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
+  def testSDKOverrideForSDKImages(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    self._ffx_mock.return_value.stdout = json.dumps({
+        "name":
+        "core.x64",
+        "product_version":
+        "17.20240106.2.1",
+        "transfer_manifest_url":
+        "http://download-url"
+    })
+    with mock.patch('sys.argv', ['update_product_bundles.py', 'terminal.x64']):
+      update_product_bundles.main()
+    self._ffx_mock.assert_has_calls([
+        mock.call(cmd=[
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
+            '--base-url', 'gs://my-bucket'
+        ],
+                  check=True,
+                  capture_output=True),
+        mock.call(cmd=[
+            'product', 'download', 'http://download-url',
+            os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
+        ],
+                  check=True)
+    ])
+
+  @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
+  @mock.patch('update_product_bundles.get_current_signature',
+              return_value='1.1.1')
+  def testIgnoreDownloadInternalImagesWithSameHash(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    with mock.patch(
+        'sys.argv',
+        ['update_product_bundles.py', 'terminal.x64', '--internal']):
+      update_product_bundles.main()
+    self.assertFalse(self._ffx_mock.called)
+
+  @mock.patch('update_product_bundles.get_current_signature',
+              return_value='0.0')
+  @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
+  def testDownloadInternalImagesWithDifferentHash(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    self._ffx_mock.return_value.stdout = json.dumps({
+        "name":
+        "core.x64",
+        "product_version":
+        "17.20240106.2.1",
+        "transfer_manifest_url":
+        "http://download-url"
+    })
+    with mock.patch(
+        'sys.argv',
+        ['update_product_bundles.py', 'terminal.x64', '--internal']):
+      update_product_bundles.main()
+    self._ffx_mock.assert_has_calls([
+        mock.call(cmd=[
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
+            '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
+        ],
+                  check=True,
+                  capture_output=True),
+        mock.call(cmd=[
+            'product', 'download', 'http://download-url',
+            os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
+        ],
+                  check=True)
+    ])
+
+  @mock.patch('update_sdk.GetSDKOverrideGCSPath',
+              return_value='gs://my-bucket/sdk')
+  @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
+  def testIgnoreSDKOverrideForInternalImages(self, *_):
+    try:
+      common.get_host_os()
+    except:
+      # Ignore unsupported platforms. common.get_host_os used in
+      # update_product_bundles.main throws an unsupported exception.
+      return
+    self._ffx_mock.return_value.stdout = json.dumps({
+        "name":
+        "core.x64",
+        "product_version":
+        "17.20240106.2.1",
+        "transfer_manifest_url":
+        "http://download-url"
+    })
+    with mock.patch(
+        'sys.argv',
+        ['update_product_bundles.py', 'terminal.x64', '--internal']):
+      update_product_bundles.main()
+    self._ffx_mock.assert_has_calls([
+        mock.call(cmd=[
+            '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
+            '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
+        ],
+                  check=True,
+                  capture_output=True),
+        mock.call(cmd=[
+            'product', 'download', 'http://download-url',
+            os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
         ],
                   check=True)
     ])

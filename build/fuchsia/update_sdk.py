@@ -35,19 +35,14 @@ def _GetHostArch():
   raise Exception('Unsupported host architecture: %s' % host_arch)
 
 
-def GetSDKOverrideGCSPath(path: Optional[str] = None) -> Optional[str]:
+def GetSDKOverrideGCSPath() -> Optional[str]:
   """Fetches the sdk override path from a file.
-
-  Args:
-    path: the full file path to read the data from.
-      defaults to sdk_override.txt in the directory of this file.
 
   Returns:
     The contents of the file, stripped of white space.
       Example: gs://fuchsia-artifacts/development/some-id/sdk
   """
-  if not path:
-    path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
+  path = os.path.join(os.path.dirname(__file__), 'sdk_override.txt')
 
   if not os.path.isfile(path):
     return None
