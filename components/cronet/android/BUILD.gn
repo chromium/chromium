@@ -2006,6 +2006,7 @@ group("cronet_test_package") {
   # Don't build for MIPS where tests aren't run.
   if (current_cpu != "mipsel" && current_cpu != "mips64el") {
     deps = [
+      ":api_static_checks",
       ":cronet_package_copy_native_test_lib",
       ":cronet_package_copy_native_test_lib_unstripped",
       ":cronet_package_copy_test_assets",
