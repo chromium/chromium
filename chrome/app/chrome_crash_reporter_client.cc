@@ -43,6 +43,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_paths.h"
 #include "chromeos/startup/browser_params_proxy.h"  // nogncheck
 #include "chromeos/startup/startup.h"               // nogncheck
 #endif
@@ -89,6 +90,16 @@ bool ChromeCrashReporterClient::ShouldPassCrashLoopBefore(
   return true;
 }
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+bool ChromeCrashReporterClient::GetCollectStatsConsentFromAshDir() {
+  base::FilePath consent_dir;
+  CHECK(base::PathService::Get(chromeos::lacros_paths::ASH_DATA_DIR,
+                               &consent_dir));
+  return GoogleUpdateSettings::GetCollectStatsConsentFromDir(consent_dir);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 ChromeCrashReporterClient::ChromeCrashReporterClient() {}
 
@@ -202,8 +213,7 @@ bool ChromeCrashReporterClient::GetCollectStatsConsent() {
   // we use the same consent file as Ash until login.
   if (chromeos::IsLaunchedWithPostLoginParams() &&
       !chromeos::BrowserParamsProxy::IsLoggedIn()) {
-    settings_consent = GoogleUpdateSettings::GetCollectStatsConsentFromDir(
-        base::FilePath("/home/chronos"));
+    settings_consent = GetCollectStatsConsentFromAshDir();
   } else {
     settings_consent = GoogleUpdateSettings::GetCollectStatsConsent();
   }

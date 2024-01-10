@@ -49,6 +49,12 @@ bool PathProvider(int key, base::FilePath* result) {
         *result = base::GetHomeDir().Append(".config").Append("lacros");
       }
       return true;
+    case chromeos::lacros_paths::ASH_DATA_DIR:
+      if (!base::SysInfo::IsRunningOnChromeOS()) {
+        return false;
+      }
+      *result = base::FilePath(crosapi::kAshDataDir);
+      return true;
     default:
       return false;
   }
