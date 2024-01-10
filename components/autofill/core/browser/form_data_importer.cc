@@ -145,17 +145,16 @@ FormDataImporter::ExtractedFormData::operator=(
 
 FormDataImporter::ExtractedFormData::~ExtractedFormData() = default;
 
-FormDataImporter::FormDataImporter(
-    AutofillClient* client,
-    payments::PaymentsNetworkInterface* payments_network_interface,
-    PersonalDataManager* personal_data_manager,
-    const std::string& app_locale)
+FormDataImporter::FormDataImporter(AutofillClient* client,
+                                   PersonalDataManager* personal_data_manager,
+                                   const std::string& app_locale)
     : client_(client),
-      credit_card_save_manager_(
-          std::make_unique<CreditCardSaveManager>(client,
-                                                  payments_network_interface,
-                                                  app_locale,
-                                                  personal_data_manager)),
+      credit_card_save_manager_(std::make_unique<CreditCardSaveManager>(
+          client,
+          // `client` is guaranteed to be present as it owns `this`.
+          client->GetPaymentsNetworkInterface(),
+          app_locale,
+          personal_data_manager)),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client,
                                                       personal_data_manager)),
@@ -164,7 +163,7 @@ FormDataImporter::FormDataImporter(
           std::make_unique<IbanSaveManager>(personal_data_manager, client)),
       local_card_migration_manager_(std::make_unique<LocalCardMigrationManager>(
           client,
-          payments_network_interface,
+          client->GetPaymentsNetworkInterface(),
           app_locale,
           personal_data_manager)),
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -173,7 +172,7 @@ FormDataImporter::FormDataImporter(
       virtual_card_enrollment_manager_(
           std::make_unique<VirtualCardEnrollmentManager>(
               personal_data_manager,
-              payments_network_interface,
+              client->GetPaymentsNetworkInterface(),
               client)),
       multistep_importer_(app_locale,
                           client_->GetVariationConfigCountryCode()) {

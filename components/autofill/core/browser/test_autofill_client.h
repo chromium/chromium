@@ -192,7 +192,7 @@ class TestAutofillClientTemplate : public T {
   FormDataImporter* GetFormDataImporter() override {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
-          /*client=*/this, /*payments_network_interface=*/nullptr,
+          /*client=*/this,
           /*personal_data_manager=*/nullptr, /*app_locale=*/"en-US"));
     }
 

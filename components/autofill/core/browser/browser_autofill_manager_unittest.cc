@@ -725,8 +725,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
     autofill_client_.set_test_form_data_importer(
         std::make_unique<autofill::TestFormDataImporter>(
-            &autofill_client_, autofill_client_.GetPaymentsNetworkInterface(),
-            std::move(credit_card_save_manager),
+            &autofill_client_, std::move(credit_card_save_manager),
             /*iban_save_manager=*/nullptr, &personal_data(), "en-US"));
 
     ResetBrowserAutofillManager();

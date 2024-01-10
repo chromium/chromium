@@ -29,10 +29,6 @@ namespace autofill {
 class AddressProfileSaveManager;
 class CreditCardSaveManager;
 
-namespace payments {
-class PaymentsNetworkInterface;
-}
-
 // Manages logic for importing address profiles and credit card information from
 // web forms into the user's Autofill profile via the PersonalDataManager.
 // Owned by `ChromeAutofillClient`.
@@ -60,7 +56,6 @@ class FormDataImporter : public PersonalDataManagerObserver {
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(
       AutofillClient* client,
-      payments::PaymentsNetworkInterface* payments_network_interface,
       PersonalDataManager* personal_data_manager,
       const std::string& app_locale);
 

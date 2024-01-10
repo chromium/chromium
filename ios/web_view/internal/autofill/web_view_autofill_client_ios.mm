@@ -87,7 +87,6 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
               web_state_->GetBrowserState()->IsOffTheRecord())),
       form_data_importer_(
           std::make_unique<FormDataImporter>(this,
-                                             payments_network_interface_.get(),
                                              personal_data_manager_,
                                              locale)),
       strike_database_(strike_database),

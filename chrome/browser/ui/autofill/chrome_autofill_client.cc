@@ -357,8 +357,7 @@ signin::IdentityManager* ChromeAutofillClient::GetIdentityManager() {
 FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
   if (!form_data_importer_) {
     form_data_importer_ = std::make_unique<FormDataImporter>(
-        this, GetPaymentsNetworkInterface(), GetPersonalDataManager(),
-        GetPersonalDataManager()->app_locale());
+        this, GetPersonalDataManager(), GetPersonalDataManager()->app_locale());
   }
   return form_data_importer_.get();
 }

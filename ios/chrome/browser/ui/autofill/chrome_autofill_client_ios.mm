@@ -107,7 +107,6 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
               browser_state_->IsOffTheRecord())),
       form_data_importer_(std::make_unique<FormDataImporter>(
           this,
-          payments_network_interface_.get(),
           personal_data_manager_,
           GetApplicationContext()->GetApplicationLocale())),
       infobar_manager_(infobar_manager),
