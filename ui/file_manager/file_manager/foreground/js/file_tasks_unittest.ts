@@ -13,6 +13,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {installMockChrome, MockMetrics} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
 import {ProgressItemState} from '../../common/js/progress_center_common.js';
+import {mockPluralStringProxy} from '../../common/js/unittest_util.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -110,6 +111,7 @@ export function setUp() {
   };
 
   installMockChrome(mockChrome);
+  mockPluralStringProxy();
 }
 
 /**

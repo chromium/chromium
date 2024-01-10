@@ -15,6 +15,7 @@ import {queryDecoratedElement} from '../../common/js/dom_utils.js';
 import {isSameEntries} from '../../common/js/entry_utils.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {mockPluralStringProxy} from '../../common/js/unittest_util.js';
 import {descriptorEqual} from '../../common/js/util.js';
 import {RootType, VolumeType} from '../../common/js/volume_manager_types.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
@@ -56,6 +57,7 @@ export function setUp() {
 
   setupFileManagerPrivate();
   installMockChrome(mockChrome);
+  mockPluralStringProxy();
 
   // Install <command> elements on the page.
   document.body.innerHTML = getTrustedHTML`

@@ -1113,8 +1113,8 @@ TEST_F(SystemNotificationManagerTest, HandleIOTaskProgressPolicyScanning) {
 
   // Check: the expected strings match.
   EXPECT_EQ(strings.title, u"Files");
-  EXPECT_EQ(strings.message,
-            l10n_util::GetStringUTF16(IDS_FILE_BROWSER_SCANNING_LABEL));
+  EXPECT_EQ(strings.message, l10n_util::GetPluralStringFUTF16(
+                                 IDS_FILE_BROWSER_SCANNING_LABEL, 1));
 
   // Send the success progress status.
   status.bytes_transferred = 100;

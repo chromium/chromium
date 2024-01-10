@@ -16,7 +16,7 @@ import {getExtension} from '../../common/js/file_type.js';
 import {FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {recordEnum, recordTime} from '../../common/js/metrics.js';
 import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
-import {bytesToString, str, strf} from '../../common/js/translations.js';
+import {bytesToString, getPluralString, getPluralStringWithPlaceHolders, str, strf} from '../../common/js/translations.js';
 import {LEGACY_FILES_EXTENSION_ID} from '../../common/js/url_constants.js';
 import {descriptorEqual, extractFilePath, isTeleported, makeTaskID, splitExtension} from '../../common/js/util.js';
 import {RootType, RootTypesForUMA, VolumeError, VolumeType} from '../../common/js/volume_manager_types.js';
@@ -478,9 +478,8 @@ export class FileTasks {
       return;
     }
     this.taskHistory_.recordTaskExecuted(task.descriptor);
-    const msg = (entries.length === 1) ?
-        strf('OPEN_A11Y', entries[0]!.name) :
-        strf('OPEN_A11Y_PLURAL', entries.length);
+    const msg = await getPluralStringWithPlaceHolders(
+        'OPEN_A11Y', entries.length, entries[0]!.name);
     this.ui_.speakA11yMessage(msg);
     if (FileTasks.isInternalTask_(task.descriptor)) {
       this.executeInternalTask_(task.descriptor);
@@ -561,11 +560,10 @@ export class FileTasks {
         return;
       }
       const msg = props[0]!.hosted ?
-          str(this.entries_.length === 1 ? 'HOSTED_OFFLINE_MESSAGE' :
-                                           'HOSTED_OFFLINE_MESSAGE_PLURAL') :
-          strf(
-              this.entries_.length === 1 ? 'OFFLINE_MESSAGE' :
-                                           'OFFLINE_MESSAGE_PLURAL',
+          await getPluralString(
+              'HOSTED_OFFLINE_MESSAGE', this.entries_.length) :
+          await getPluralStringWithPlaceHolders(
+              'OFFLINE_MESSAGE', this.entries_.length,
               str('OFFLINE_COLUMN_LABEL'));
 
       this.ui_.alertDialog.showHtml(str('OFFLINE_HEADER'), msg);
@@ -604,9 +602,8 @@ export class FileTasks {
         sizeToDownload += (props[i]!.size || 0);
       }
     }
-    const msg = strf(
-        this.entries_.length === 1 ? 'CONFIRM_MOBILE_DATA_USE' :
-                                     'CONFIRM_MOBILE_DATA_USE_PLURAL',
+    const msg = await getPluralStringWithPlaceHolders(
+        'CONFIRM_MOBILE_DATA_USE', this.entries_.length,
         bytesToString(sizeToDownload));
     return new Promise(
         (resolve, reject) => this.ui_.confirmDialog.show(msg, resolve, reject));
