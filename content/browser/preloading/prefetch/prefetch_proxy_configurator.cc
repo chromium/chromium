@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/default_clock.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/proxy_chain.h"
@@ -24,6 +25,10 @@ std::unique_ptr<PrefetchProxyConfigurator>
 PrefetchProxyConfigurator::MaybeCreatePrefetchProxyConfigurator(
     const GURL& proxy_url,
     const std::string& api_key) {
+  if (!base::FeatureList::IsEnabled(features::kPrefetchProxy)) {
+    return nullptr;
+  }
+
   if (!proxy_url.is_valid())
     return nullptr;
 

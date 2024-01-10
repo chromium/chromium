@@ -38,6 +38,9 @@ BASE_DECLARE_FEATURE(kPrefetchDocumentManagerEarlyCookieCopySkipped);
 // whenever possible.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchUsesHTTPCache);
 
+// If explicitly disabled, prefetch proxy is not used.
+BASE_DECLARE_FEATURE(kPrefetchProxy);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_
