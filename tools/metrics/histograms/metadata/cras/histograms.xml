@@ -455,12 +455,13 @@ This collects each top-level device metric type. For example,
 </histogram>
 
 <histogram name="Cras.HfpMicSuperResolutionStatus.{Device}"
-    enum="CrasHfpMicSuperResolutionStatus" expires_after="2023-09-30">
+    enum="CrasHfpMicSuperResolutionStatus" expires_after="2024-04-30">
   <owner>cranelw@google.com</owner>
   <owner>chromeos-audio@google.com</owner>
   <summary>
     Record the status of Super Resolution for the bluetooth microphone audio. It
-    is recorded when the device is opened.
+    is recorded when the device is opened. Expired Sept 2023 and revived Jan
+    2024.
   </summary>
   <token key="Device">
     <variant name="BluetoothNarrowBandMic"/>
