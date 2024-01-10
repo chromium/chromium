@@ -381,6 +381,15 @@ const FeatureEntry::Choice kPullToRefreshChoices[] = {
      switches::kPullToRefresh, "2"}};
 #endif  // USE_AURA
 
+const FeatureEntry::Choice kEnableBenchmarkingChoices[] = {
+    {flag_descriptions::kEnableBenchmarkingChoiceDisabled, "", ""},
+    {flag_descriptions::kEnableBenchmarkingChoiceDefaultFeatureStates,
+     variations::switches::kEnableBenchmarking, ""},
+    {flag_descriptions::kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig,
+     variations::switches::kEnableBenchmarking,
+     variations::switches::kEnableFieldTrialTestingConfig},
+};
+
 const FeatureEntry::Choice kOverlayStrategiesChoices[] = {
     {flag_descriptions::kOverlayStrategiesDefault, "", ""},
     {flag_descriptions::kOverlayStrategiesNone,
@@ -3709,7 +3718,7 @@ const FeatureEntry kFeatureEntries[] = {
     {variations::switches::kEnableBenchmarking,
      flag_descriptions::kEnableBenchmarkingName,
      flag_descriptions::kEnableBenchmarkingDescription, kOsAll,
-     SINGLE_VALUE_TYPE(variations::switches::kEnableBenchmarking)},
+     MULTI_VALUE_TYPE(kEnableBenchmarkingChoices)},
     {"ignore-gpu-blocklist", flag_descriptions::kIgnoreGpuBlocklistName,
      flag_descriptions::kIgnoreGpuBlocklistDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIgnoreGpuBlocklist)},

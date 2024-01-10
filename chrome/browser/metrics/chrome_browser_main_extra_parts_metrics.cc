@@ -20,6 +20,7 @@
 #include "base/metrics/sparse_histogram.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -1181,10 +1182,14 @@ void ChromeBrowserMainExtraPartsMetrics::HandleEnableBenchmarkingCountdown(
   std::set<std::string> flags = storage->GetFlags();
 
   // The implicit assumption here is that chrome://flags are stored in
-  // flags_ui::PrefServiceFlagsStorage and the string matches the command line
-  // flag. If the flag is not found (which should be the case for almost all
-  // users) then this method short-circuits and does nothing.
-  if (flags.find(variations::switches::kEnableBenchmarking) == flags.end()) {
+  // flags_ui::PrefServiceFlagsStorage and the multi-value switch has format
+  // enable-benchmarking@<n>.
+  std::string prefix =
+      base::StrCat({variations::switches::kEnableBenchmarking, "@"});
+  auto it = std::find_if(
+      flags.begin(), flags.end(),
+      [&prefix](std::string flag) { return base::StartsWith(flag, prefix); });
+  if (it == flags.end()) {
     return;
   }
 
@@ -1195,7 +1200,7 @@ void ChromeBrowserMainExtraPartsMetrics::HandleEnableBenchmarkingCountdown(
     pref_service->ClearPref(kEnableBenchmarkingPrefId);
 
     // Clear the flag storage.
-    flags.erase(variations::switches::kEnableBenchmarking);
+    flags.erase(it);
     storage->SetFlags(std::move(flags));
   } else {
     pref_service->SetInteger(kEnableBenchmarkingPrefId, countdown);

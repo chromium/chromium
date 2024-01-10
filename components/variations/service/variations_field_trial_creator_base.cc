@@ -123,17 +123,22 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
 // testing/variations/fieldtrial_testing_config.json should be applied. If the
 // "disable_fieldtrial_testing_config" GN flag is set to true, then the testing
 // config should never be applied. Otherwise, if the build is a Chrome-branded
-// build, then the testing config should only be applied if the
-// "--enable-field-trial-config" switch is passed. For non-Chrome branded
-// builds, by default, the testing config is applied, unless the
-// "--disable-field-trial-config" and/or "--variations-server-url" switches are
-// passed. It is however possible to apply the testing config by using the
-// "--enable-field-trial-config" switch.
+// build, then the testing config should only be applied if either the
+// "--enable-field-trial-config" or
+// "--enable-benchmarking=enable-field-trial-config" switch is passed. For
+// non-Chrome branded builds, by default, the testing config is applied, unless
+// the "--disable-field-trial-config" and/or "--variations-server-url" switches
+// are passed and no enabling switches are set.
 bool ShouldUseFieldTrialTestingConfig(const base::CommandLine* command_line) {
+  bool is_enable_switch_set =
+      command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig) ||
+      command_line->GetSwitchValueASCII(
+          variations::switches::kEnableBenchmarking) ==
+          switches::kEnableFieldTrialTestingConfig;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  return command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig);
+  return is_enable_switch_set;
 #else
-  return command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig) ||
+  return is_enable_switch_set ||
          (!command_line->HasSwitch(switches::kDisableFieldTrialTestingConfig) &&
           !command_line->HasSwitch(switches::kVariationsServerURL));
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

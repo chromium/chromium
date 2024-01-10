@@ -26,6 +26,7 @@ namespace {
 
 const char kSupportsHDRHistogramName[] = "Hardware.Display.SupportsHDR";
 constexpr char kEnableBenchmarkingPrefId[] = "enable_benchmarking_countdown";
+constexpr char kFlagMultiValue[] = "enable-benchmarking@1";
 
 // This is a fake that causes HandleEnableBenchmarkingCountdownAsync() to do
 // nothing. A full implementation of HandleEnableBenchmarkingCountdownAsync
@@ -135,8 +136,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
   // Once a flag is set we should see an effect.
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
   ChromeBrowserMainExtraPartsMetricsFake::
       HandleEnableBenchmarkingCountdownPublic(
           &pref_service,
@@ -156,8 +156,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
 
   // Set initial state:
   pref_service.SetInteger(kEnableBenchmarkingPrefId, 2);
@@ -181,8 +180,7 @@ TEST_F(ChromeBrowserMainExtraPartsMetricsTest,
 
   flags_ui::PrefServiceFlagsStorage storage(&pref_service);
 
-  std::set<std::string> flags = {variations::switches::kEnableBenchmarking};
-  storage.SetFlags(flags);
+  storage.SetFlags({kFlagMultiValue});
 
   // Set initial state:
   pref_service.SetInteger(kEnableBenchmarkingPrefId, 1);

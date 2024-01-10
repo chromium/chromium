@@ -277,12 +277,20 @@ const char kDownloadWarningImprovementsDescription[] =
 
 const char kEnableBenchmarkingName[] = "Enable benchmarking";
 const char kEnableBenchmarkingDescription[] =
-    "Sets all features to their default state; that is, disables randomization "
-    "for feature states. This is used by developers and testers to "
-    "diagnose whether an observed problem is caused by a non-default "
+    "Sets all features to a fixed state; that is, disables randomization for "
+    "feature states. If '(Default Feature States)' is selected, sets all "
+    "features to their default state. If '(Match Field Trial Testing Config)' "
+    "is selected, sets all features to the state configured in the field trial "
+    "testing config. This is used by developers and testers "
+    "to diagnose whether an observed problem is caused by a non-default "
     "base::Feature configuration. This flag is automatically reset "
-    "after 3 restarts. On the third restart, the flag will appear to be off "
-    "but the effect is still active.";
+    "after 3 restarts and will be off from the 4th restart. On the 3rd "
+    "restart, the flag will appear to be off but the effect is still active.";
+const char kEnableBenchmarkingChoiceDisabled[] = "Disabled";
+const char kEnableBenchmarkingChoiceDefaultFeatureStates[] =
+    "Default Feature States";
+const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[] =
+    "Match Field Trial Testing Config";
 
 const char kPreloadingOnPerformancePageName[] =
     "Preloading Settings on Performance Page";
