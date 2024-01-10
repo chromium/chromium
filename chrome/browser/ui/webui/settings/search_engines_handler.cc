@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -238,14 +237,9 @@ base::Value::Dict SearchEnginesHandler::CreateDictionaryForEngine(
       search_engines::GetSearchEngineChoiceCountryId(profile_->GetPrefs()));
   if (is_search_engine_choice_settings_ui && is_eea_region &&
       template_url->prepopulate_id() != 0) {
-    std::string_view icon_path =
-        GetSearchEngineGeneratedIconPath(template_url->keyword());
-    CHECK(!icon_path.empty());
-    // The search engine icon path are 24px, but displayed at 16px, or 32px on
-    // HiDPI screens. Use the 2x version (48px) for a large enough icon.
-    // Note that this icon path is used in `site-favicon` which does not support
-    // `image-set`.
-    dict.Set("iconPath", base::StrCat({icon_path, "@2x"}));
+    const std::u16string icon_path = GetGeneratedIconPath(
+        template_url->keyword(), /*parent_directory_path=*/u"images/");
+    dict.Set("iconPath", icon_path);
   }
 
   dict.Set("modelIndex", base::checked_cast<int>(index));
