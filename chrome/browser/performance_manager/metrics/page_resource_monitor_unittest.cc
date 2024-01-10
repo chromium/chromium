@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -483,27 +483,23 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
   // `child_frame` (all of `other_process`).
   // See the diagram in
   // components/performance_manager/test_support/mock_graphs.h.
-  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-  const auto kExpectedResidentSetSize =
-      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
-          {mock_source_id, 1230 / 2},
-          {mock_source_id2, 1230 / 2 + 4560},
-      });
-  const auto kExpectedPrivateFootprint =
-      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
-          {mock_source_id, 0},
-          {mock_source_id2, 7890},
-      });
+  const base::flat_map<ukm::SourceId, int64_t> expected_resident_set_size{
+      {mock_source_id, 1230 / 2},
+      {mock_source_id2, 1230 / 2 + 4560},
+  };
+  const base::flat_map<ukm::SourceId, int64_t> expected_private_footprint{
+      {mock_source_id, 0},
+      {mock_source_id2, 7890},
+  };
   // The SimulatedCPUMeasurementDelegate returns 50% of the CPU is used.
   // `process` contains `frame` and `other_frame` -> each gets 25%
   // `other_process` contains `child_frame` -> 50%
-  const auto kExpectedCPUUsage =
-      base::MakeFixedFlatMapNonConsteval<ukm::SourceId, int64_t>({
-          // `page` contains `frame`
-          {mock_source_id, 2500},
-          // `other_page` gets the sum of `other_frame` and `child_frame`
-          {mock_source_id2, 7500},
-      });
+  const base::flat_map<ukm::SourceId, int64_t> expected_cpu_usage{
+      // `page` contains `frame`
+      {mock_source_id, 2500},
+      // `other_page` gets the sum of `other_frame` and `child_frame`
+      {mock_source_id2, 7500},
+  };
   const auto kExpectedAllCPUUsage = 2500 + 7500;
 
   // Each SourceId should record an entry for each algorithm.
@@ -520,12 +516,12 @@ TEST_P(PageResourceMonitorUnitTest, TestResourceUsage) {
   for (const ukm::mojom::UkmEntry* entry : entries) {
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "ResidentSetSizeEstimate",
-        kExpectedResidentSetSize.at(entry->source_id));
+        expected_resident_set_size.at(entry->source_id));
     test_ukm_recorder()->ExpectEntryMetric(
         entry, "PrivateFootprintEstimate",
-        kExpectedPrivateFootprint.at(entry->source_id));
+        expected_private_footprint.at(entry->source_id));
     test_ukm_recorder()->ExpectEntryMetric(
-        entry, "RecentCPUUsage", kExpectedCPUUsage.at(entry->source_id));
+        entry, "RecentCPUUsage", expected_cpu_usage.at(entry->source_id));
     test_ukm_recorder()->ExpectEntryMetric(entry, "TotalRecentCPUUsageAllPages",
                                            kExpectedAllCPUUsage);
     const int64_t* algorithm =
