@@ -51,12 +51,6 @@ bool NeedsOnboardingForExperiment() {
 
 }  // namespace
 
-// TODO(b/302798031): This flag is needed to deflake
-// ExperimentManagerImplSyntheticTrialTest on CQ. Remove once test is fixed.
-const base::FeatureParam<bool> kForceProfilesEligibleForTesting{
-    &features::kCookieDeprecationFacilitatedTesting, "force_profiles_eligible",
-    false};
-
 // static
 ExperimentManagerImpl* ExperimentManagerImpl::GetForProfile(Profile* profile) {
   if (!base::FeatureList::IsEnabled(
@@ -136,9 +130,7 @@ void ExperimentManagerImpl::SetClientEligibility(
 
   // Wait to run callback when decision is made in
   // `CaptureEligibilityInLocalStatePref`
-  if (!kForceProfilesEligibleForTesting.Get()) {
-    client_is_eligible_ = client_is_eligible_ && is_eligible;
-  }
+  client_is_eligible_ = client_is_eligible_ && is_eligible;
   callbacks_.push_back(std::move(on_eligibility_decision_callback));
 }
 
