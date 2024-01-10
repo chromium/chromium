@@ -101,7 +101,7 @@ void OnCookieCopyComplete(int frame_tree_node_id,
                           PrefetchProbeResult probe_result,
                           base::TimeTicks cookie_copy_start_time) {
   base::TimeDelta wait_time = base::TimeTicks::Now() - cookie_copy_start_time;
-  CHECK_GT(wait_time, base::TimeDelta());
+  CHECK_GE(wait_time, base::TimeDelta());
   RecordCookieWaitTime(wait_time);
   OnComplete(frame_tree_node_id, std::move(get_prefetch_callback),
              std::move(reader), probe_result);
