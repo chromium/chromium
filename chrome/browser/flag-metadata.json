@@ -3000,21 +3000,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "enable-lens-in-home-screen-widget",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "enable-lens-in-keyboard",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
-    "name": "enable-lens-in-ntp",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "enable-lens-in-omnibox-copied-image",
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125
@@ -4901,11 +4886,6 @@
     "name": "ios-large-fakebox",
     "owners": ["scottyoder@google.com", "bling-get-set-up@google.com"],
     "expiry_milestone": 124
-  },
-  {
-    "name": "ios-lens-use-direct-upload",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 120
   },
   {
     "name": "ios-magic-stack-segmentation-ranking",
