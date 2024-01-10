@@ -1113,24 +1113,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 #pragma mark - TabGridViewControllerDelegate
 
-- (TabGridPage)activePageForTabGridViewController:
-    (TabGridViewController*)tabGridViewController {
-  return [self.delegate activePageForTabGrid:self];
-}
-
-- (void)tabGridViewControllerDidDismiss:
-    (TabGridViewController*)tabGridViewController {
-  [self.delegate tabGridDismissTransitionDidEnd:self];
-}
-
 - (void)openLinkWithURL:(const GURL&)URL {
   id<ApplicationCommands> handler =
       HandlerForProtocol(self.dispatcher, ApplicationCommands);
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:URL]];
-}
-
-- (void)setBVCAccessibilityViewModal:(BOOL)modal {
-  self.bvcContainer.view.accessibilityViewIsModal = modal;
 }
 
 - (void)openSearchResultsPageForSearchText:(NSString*)searchText {
