@@ -11,10 +11,17 @@
 #include "chromeos/ash/services/nearby/public/cpp/nearby_process_manager.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/push_notification/push_notification_client.h"
+#include "components/push_notification/push_notification_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+namespace {
+const char kNearbyPresencePushNotificationTypeId[] = "nearby_presence";
+const char kNearbyPresencePushNotificationClientId[] = "nearby";
+}  // namespace
 
 class PrefService;
 
@@ -26,6 +33,10 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace push_notification {
+class PushNotificationService;
+}  // namespace push_notification
+
 namespace ash::nearby::presence {
 
 class NearbyPresenceCredentialManager;
@@ -33,13 +44,15 @@ class NearbyPresenceCredentialManager;
 class NearbyPresenceServiceImpl
     : public NearbyPresenceService,
       public KeyedService,
-      public ::ash::nearby::presence::mojom::ScanObserver {
+      public ::ash::nearby::presence::mojom::ScanObserver,
+      public push_notification::PushNotificationClient {
  public:
   NearbyPresenceServiceImpl(
       PrefService* pref_service,
       ash::nearby::NearbyProcessManager* process_manager,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      push_notification::PushNotificationService* push_notification_service);
   NearbyPresenceServiceImpl(const NearbyPresenceServiceImpl&) = delete;
   NearbyPresenceServiceImpl& operator=(const NearbyPresenceServiceImpl&) =
       delete;
@@ -55,6 +68,19 @@ class NearbyPresenceServiceImpl
   void UpdateCredentials() override;
 
  private:
+  // KeyedService:
+  void Shutdown() override;
+
+  // ScanObserver:
+  void OnDeviceFound(mojom::PresenceDevicePtr device) override;
+  void OnDeviceChanged(mojom::PresenceDevicePtr device) override;
+  void OnDeviceLost(mojom::PresenceDevicePtr device) override;
+
+  // PushNotificationClient:
+  void OnMessageReceived(
+      base::flat_map<std::string, std::string> message) override;
+
+  bool SetProcessReference();
   void OnScanStarted(
       ScanDelegate* scan_delegate,
       base::OnceCallback<void(std::unique_ptr<ScanSession>, StatusCode)>
@@ -65,16 +91,6 @@ class NearbyPresenceServiceImpl
   void OnNearbyProcessStopped(
       ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason);
 
-  // KeyedService:
-  void Shutdown() override;
-
-  bool SetProcessReference();
-
-  // ScanObserver:
-  void OnDeviceFound(mojom::PresenceDevicePtr device) override;
-  void OnDeviceChanged(mojom::PresenceDevicePtr device) override;
-  void OnDeviceLost(mojom::PresenceDevicePtr device) override;
-
   void OnCredentialManagerInitialized(
       base::OnceClosure on_initialized_callback,
       std::unique_ptr<NearbyPresenceCredentialManager>
@@ -82,9 +98,11 @@ class NearbyPresenceServiceImpl
   void UpdateCredentialsAfterCredentialManagerInitialized();
 
   const raw_ptr<PrefService> pref_service_ = nullptr;
+  const raw_ptr<ash::nearby::NearbyProcessManager> process_manager_ = nullptr;
   const raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  const raw_ptr<ash::nearby::NearbyProcessManager> process_manager_ = nullptr;
+  const raw_ptr<push_notification::PushNotificationService>
+      push_notification_service_;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
   std::unique_ptr<NearbyPresenceCredentialManager> credential_manager_;

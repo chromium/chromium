@@ -3838,6 +3838,7 @@ source_set("ash") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/printing/common:mojo_interfaces",
+    "//components/push_notification:push_notification",
     "//components/quirks",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_configuration",
