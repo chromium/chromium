@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -690,6 +691,7 @@ void AttributionManagerImpl::MaybeEnqueueEvent(SourceOrTriggerRFH event) {
 
 void AttributionManagerImpl::ProcessEvents() {
   if (!IsReady()) {
+    DLOG(WARNING) << "Still waiting for attestations loading";
     return;
   }
 
@@ -1415,6 +1417,7 @@ void AttributionManagerImpl::HandleOsRegistration(OsRegistration registration) {
 
 void AttributionManagerImpl::ProcessOsEvents() {
   if (!IsReady()) {
+    DLOG(WARNING) << "Still waiting for attestations loading";
     return;
   }
 
