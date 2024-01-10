@@ -8396,6 +8396,11 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="Crosh_Run_top">
+  <owner>yuholong@google.com</owner>
+  <description>The user ran the command top in crosh.</description>
+</action>
+
 <action name="Crow.EntryPointShown">
   <owner>skare@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
