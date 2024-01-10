@@ -230,6 +230,10 @@ class PictureInPictureBrowserFrameView
     close_reason_ = close_reason;
   }
 
+  AutoPipSettingOverlayView* get_auto_pip_setting_overlay_view_for_testing() {
+    return auto_pip_setting_overlay_;
+  }
+
  private:
   CloseReason close_reason_ = CloseReason::kOther;
 

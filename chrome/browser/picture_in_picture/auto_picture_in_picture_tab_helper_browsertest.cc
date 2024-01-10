@@ -16,7 +16,10 @@
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
 #include "chrome/browser/ui/views/overlay/video_overlay_window_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -483,17 +486,24 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
   GetUserMediaAndAccept(browser()->tab_strip_model()->GetActiveWebContents());
   OpenNewTab(browser());
 
-  // Use the setting helper as a proxy for "did return an overlay view", since
-  // the window manager won't keep it.
-  auto* setting_helper = window_manager->get_setting_helper_for_testing();
-  ASSERT_TRUE(setting_helper);
+  // Fetch the overlay view from the browser window.
+  auto* pip_contents = window_manager->GetChildWebContents();
+  auto* browser_view = BrowserView::GetBrowserViewForNativeWindow(
+      pip_contents->GetTopLevelNativeWindow());
+  ASSERT_TRUE(browser_view);
+  auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
+      browser_view->frame()->GetFrameView());
+  ASSERT_TRUE(pip_frame_view);
+  auto* overlay_view =
+      pip_frame_view->get_auto_pip_setting_overlay_view_for_testing();
+  // The overlay should be shown.
+  ASSERT_TRUE(overlay_view);
 
   // Verify that input has been blocked.
-  auto* pip_contents = window_manager->GetChildWebContents();
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/false);
 
   // Verify that acknowledging the helper restores it.
-  setting_helper->take_result_cb_for_testing().Run(
+  overlay_view->get_view_for_testing()->simulate_button_press_for_testing(
       AutoPipSettingView::UiResult::kAllowOnce);
   CheckIfEventsAreForwarded(pip_contents, /*expect_events=*/true);
 }

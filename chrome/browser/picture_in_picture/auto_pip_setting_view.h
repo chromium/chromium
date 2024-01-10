@@ -90,6 +90,11 @@ class AutoPipSettingView : public views::BubbleDialogDelegate {
   // just be a regular view.  That would fix several event / focus issues.
   bool WantsEvent(const gfx::Point& point_in_screen);
 
+  // Pretend that a button was pressed.
+  void simulate_button_press_for_testing(UiResult result) {
+    OnButtonPressed(result);
+  }
+
  private:
   // AnchorViewObserver observes the anchor widget view. When the anchor view is
   // removed from from the widget or the view is being deleted, the observer
