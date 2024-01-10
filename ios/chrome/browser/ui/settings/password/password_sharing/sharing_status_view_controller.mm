@@ -278,6 +278,8 @@ NSString* const kSharingStatusFooterId = @"SharingStatusViewFooter";
   UIImageView* recipientImageView =
       [[UIImageView alloc] initWithImage:self.recipientImage];
   recipientImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  recipientImageView.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
   self.recipientImageView = recipientImageView;
   return recipientImageView;
 }
