@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 
@@ -70,6 +71,14 @@ class MetricProvider {
   void OnJankStarted();
   void OnJankStopped();
 
+  // Updates the known device thermal state.
+  void SetThermalState(
+      base::PowerThermalObserver::DeviceThermalState new_state) {
+    thermal_state_ = new_state;
+  }
+  // Updates the known cpu speed limit.
+  void SetSpeedLimit(int new_limit) { cpu_speed_limit_percent_ = new_limit; }
+
  protected:
   // Enumeration representing the various outcomes of saving the collected
   // profile to local cache. These values are persisted to logs. Entries should
@@ -120,6 +129,12 @@ class MetricProvider {
   // Name of the histogram that tracks the various outcomes of saving the
   // collected profile to local cache.
   const std::string record_uma_histogram_;
+
+  // The last known device thermal state.
+  base::PowerThermalObserver::DeviceThermalState thermal_state_ =
+      base::PowerThermalObserver::DeviceThermalState::kUnknown;
+  // The last known cpu speed limit.
+  int cpu_speed_limit_percent_ = base::PowerThermalObserver::kSpeedLimitMax;
 
   // Use a dedicated sequence for the collector. Thread safe. Initialized at
   // construction time, then immutable.
