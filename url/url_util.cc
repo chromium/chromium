@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
 #include "url/url_constants.h"
+#include "url/url_features.h"
 #include "url/url_file.h"
 #include "url/url_util_internal.h"
 
@@ -282,18 +283,29 @@ bool DoCanonicalize(const CHAR* spec,
     success = CanonicalizeStandardURL(spec, parsed_input, scheme_type,
                                       charset_converter, output, output_parsed);
 
-  } else if (DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
+  } else if (!url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+             DoCompareSchemeComponent(spec, scheme, url::kMailToScheme)) {
     // Mailto URLs are treated like standard URLs, with only a scheme, path,
     // and query.
+    //
+    // TODO(crbug.com/1416006): Remove the special handling of 'mailto:" scheme
+    // URLs. "mailto:" is simply one of non-special URLs.
     ParseMailtoURL(spec, spec_len, &parsed_input);
     success = CanonicalizeMailtoURL(spec, spec_len, parsed_input, output,
                                     output_parsed);
 
   } else {
-    // "Weird" URLs like data: and javascript:.
-    ParsePathURL(spec, spec_len, trim_path_end, &parsed_input);
-    success = CanonicalizePathURL(spec, spec_len, parsed_input, output,
-                                  output_parsed);
+    // Non-special scheme URLs like data: and javascript:.
+    if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+      ParseNonSpecialURL(spec, spec_len, &parsed_input);
+      success =
+          CanonicalizeNonSpecialURL(spec, spec_len, parsed_input,
+                                    charset_converter, *output, *output_parsed);
+    } else {
+      ParsePathURL(spec, spec_len, trim_path_end, &parsed_input);
+      success = CanonicalizePathURL(spec, spec_len, parsed_input, output,
+                                    output_parsed);
+    }
   }
   return success;
 }
