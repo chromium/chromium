@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 
+#include <vector>
+
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -70,31 +72,24 @@ bool IsNetworkManagedByPolicy(
          network_properties->source == OncSource::kUserPolicy;
 }
 
-template <typename Lambda>
-void EraseIf(std::vector<NetworkStatePropertiesPtr>& networks,
-             Lambda predicate) {
-  networks.erase(std::remove_if(networks.begin(), networks.end(), predicate),
-                 networks.end());
-}
-
 // Returns if the ChromeOS device is in a managed environment or not.
 bool IsInManagedEnvironment(std::vector<NetworkStatePropertiesPtr> networks) {
   LogNetworks(networks, "active");
 
   // Filter out the unmanaged networks.
-  EraseIf(networks, [](const auto& network) {
+  std::erase_if(networks, [](const auto& network) {
     return !IsNetworkManagedByPolicy(network);
   });
 
   // Filter out vpns, as a vpn might be used even while the device is inside the
   // user's home.
-  EraseIf(networks, [](const auto& network) {
+  std::erase_if(networks, [](const auto& network) {
     return network->type == NetworkType::kVPN;
   });
 
   // Filter out cellular networks, as managed cellular networks might
   // be found even at the user's home.
-  EraseIf(networks, [](const auto& network) {
+  std::erase_if(networks, [](const auto& network) {
     return network->type == NetworkType::kCellular;
   });
 

@@ -1259,11 +1259,9 @@ void BookmarkBridge::AddBookmarkNodesToBookmarkIdList(
 
 void BookmarkBridge::FilterUnreachableBookmarks(
     std::vector<const bookmarks::BookmarkNode*>* nodes) {
-  nodes->erase(std::remove_if(nodes->begin(), nodes->end(),
-                              [this](const bookmarks::BookmarkNode* node) {
-                                return !IsReachable(node);
-                              }),
-               nodes->end());
+  std::erase_if(*nodes, [this](const bookmarks::BookmarkNode* node) {
+    return !IsReachable(node);
+  });
 }
 
 // ------------- Observer-related methods ------------- //

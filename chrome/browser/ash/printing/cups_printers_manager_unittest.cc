@@ -10,6 +10,7 @@
 #include <string>
 #include <unordered_set>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
@@ -183,12 +184,9 @@ class FakeSyncedPrintersManager : public SyncedPrintersManager {
  private:
   void RemovePrinters(const std::unordered_set<std::string>& ids,
                       std::vector<Printer>* target) {
-    auto new_end = std::remove_if(target->begin(), target->end(),
-                                  [&ids](const Printer& printer) -> bool {
-                                    return base::Contains(ids, printer.id());
-                                  });
-
-    target->resize(new_end - target->begin());
+    std::erase_if(*target, [&ids](const Printer& printer) {
+      return base::Contains(ids, printer.id());
+    });
   }
 
   bool IsPrinterAlreadySaved(const Printer& printer) const {
@@ -238,13 +236,9 @@ class FakePrinterDetector : public PrinterDetector {
 
   // Remove printers that have ids in ids.
   void RemoveDetections(const std::unordered_set<std::string>& ids) {
-    auto new_end =
-        std::remove_if(detections_.begin(), detections_.end(),
-                       [&ids](const DetectedPrinter& detection) -> bool {
-                         return base::Contains(ids, detection.printer.id());
-                       });
-
-    detections_.resize(new_end - detections_.begin());
+    std::erase_if(detections_, [&ids](const DetectedPrinter& detection) {
+      return base::Contains(ids, detection.printer.id());
+    });
     on_printers_found_callback_.Run(detections_);
   }
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/mac/stub_notification_dispatcher_mac.h"
 
-#include <algorithm>
 #include <memory>
 #include <set>
 #include <string>
@@ -12,8 +11,8 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
+#include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/origin.h"
 
@@ -34,29 +33,23 @@ void StubNotificationDispatcherMac::DisplayNotification(
 
 void StubNotificationDispatcherMac::CloseNotificationWithId(
     const MacNotificationIdentifier& identifier) {
-  notifications_.erase(
-      std::remove_if(notifications_.begin(), notifications_.end(),
-                     [&identifier](const auto& notification) {
-                       const auto& notification_id = notification->meta->id->id;
-                       const auto& profile = notification->meta->id->profile;
-                       return notification_id == identifier.notification_id &&
-                              profile->id == identifier.profile_id &&
-                              profile->incognito == identifier.incognito;
-                     }),
-      notifications_.end());
+  std::erase_if(notifications_, [&identifier](const auto& notification) {
+    const auto& notification_id = notification->meta->id->id;
+    const auto& profile = notification->meta->id->profile;
+    return notification_id == identifier.notification_id &&
+           profile->id == identifier.profile_id &&
+           profile->incognito == identifier.incognito;
+  });
 }
 
 void StubNotificationDispatcherMac::CloseNotificationsWithProfileId(
     const std::string& profile_id,
     bool incognito) {
-  notifications_.erase(
-      std::remove_if(notifications_.begin(), notifications_.end(),
-                     [&profile_id, incognito](const auto& notification) {
-                       const auto& profile = notification->meta->id->profile;
-                       return profile->id == profile_id &&
-                              profile->incognito == incognito;
-                     }),
-      notifications_.end());
+  std::erase_if(
+      notifications_, [&profile_id, incognito](const auto& notification) {
+        const auto& profile = notification->meta->id->profile;
+        return profile->id == profile_id && profile->incognito == incognito;
+      });
 }
 
 void StubNotificationDispatcherMac::CloseAllNotifications() {

@@ -1063,13 +1063,10 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
   DCHECK(entry_definition_list);
 
   // Remove all directories entries.
-  entry_definition_list->erase(
-      std::remove_if(entry_definition_list->begin(),
-                     entry_definition_list->end(),
-                     [](const file_manager::util::EntryDefinition& e) {
-                       return e.is_directory == true;
-                     }),
-      entry_definition_list->end());
+  std::erase_if(*entry_definition_list,
+                [](const file_manager::util::EntryDefinition& e) {
+                  return e.is_directory;
+                });
 
   Respond(
       WithArguments(file_manager::util::ConvertEntryDefinitionListToListValue(

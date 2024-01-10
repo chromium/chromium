@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -35,7 +36,6 @@ namespace app_list {
 namespace {
 
 using ::ash::string_matching::TokenizedString;
-using ::std::remove_if;
 
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
@@ -64,13 +64,9 @@ std::vector<std::pair<KeyboardShortcutData, double>> Search(
 // Remove disabled shortcuts and leave enabled ones only.
 void RemoveDisabledShortcuts(
     ash::shortcut_customization::mojom::SearchResultPtr& search_result) {
-  search_result->accelerator_infos.erase(
-      remove_if(search_result->accelerator_infos.begin(),
-                search_result->accelerator_infos.end(),
-                [](const auto& x) {
-                  return x->state != ash::mojom::AcceleratorState::kEnabled;
-                }),
-      search_result->accelerator_infos.end());
+  std::erase_if(search_result->accelerator_infos, [](const auto& x) {
+    return x->state != ash::mojom::AcceleratorState::kEnabled;
+  });
 }
 
 }  // namespace

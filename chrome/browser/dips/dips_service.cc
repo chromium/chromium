@@ -5,6 +5,7 @@
 #include "chrome/browser/dips/dips_service.h"
 
 #include <set>
+#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -497,9 +498,7 @@ void DIPSService::DeleteDIPSEligibleState(
   // Do not clear sites from currently open tabs.
   for (const std::pair<std::string, int> site_ctr : open_sites_) {
     CHECK(site_ctr.second > 0);
-    sites_to_clear.erase(std::remove(sites_to_clear.begin(),
-                                     sites_to_clear.end(), site_ctr.first),
-                         sites_to_clear.end());
+    std::erase(sites_to_clear, site_ctr.first);
   }
 
   if (sites_to_clear.empty()) {

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 
+#include <vector>
+
 #include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
@@ -175,17 +177,14 @@ void MockRenderViewContextMenu::UpdateMenuIcon(int command_id,
 }
 
 void MockRenderViewContextMenu::RemoveMenuItem(int command_id) {
-  auto old_end = items_.end();
-  auto new_end = std::remove_if(
-      items_.begin(), old_end,
+  size_t deleted_item_count = std::erase_if(
+      items_,
       [command_id](const auto& item) { return item.command_id == command_id; });
 
-  if (new_end == old_end) {
+  if (deleted_item_count == 0) {
     FAIL() << "Menu observer is trying to remove a menu item it doesn't own."
            << " command_id: " << command_id;
   }
-
-  items_.erase(new_end, old_end);
 }
 
 void MockRenderViewContextMenu::RemoveAdjacentSeparators() {}

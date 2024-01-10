@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/openscreen/discovery/open_screen_listener.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/ranges/algorithm.h"
 
@@ -108,8 +109,7 @@ void OpenScreenListener::AddObserver(ServiceListener::Observer* observer) {
 
 void OpenScreenListener::RemoveObserver(ServiceListener::Observer* observer) {
   CHECK(observer);
-  observers_.erase(std::remove(observers_.begin(), observers_.end(), observer),
-                   observers_.end());
+  std::erase(observers_, observer);
 }
 
 void OpenScreenListener::OnDeviceChanged(
