@@ -61,14 +61,15 @@ class SharesheetService : public KeyedService {
   SharesheetService& operator=(const SharesheetService&) = delete;
 
   // Displays the dialog (aka bubble) for sharing content (or files) with
-  // other applications and targets. |intent| contains the list of the
+  // other applications and targets. `intent` contains the list of the
   // files/content to be shared. If the files to share contains Google
   // Drive hosted document, only drive share action will be shown.
   //
-  // |delivered_callback| is run to signify that the intent has been
+  // `delivered_callback` is run to signify that the intent has been
   // delivered to the target selected by the user (which may then show its own
-  // separate UI, e.g. for Nearby Sharing).
-  // |close_callback| is run to signify that the share flow has finished and the
+  // separate UI, e.g. for Nearby Sharing). `delivered_callback` must be
+  // non-null.
+  // `close_callback` is run to signify that the share flow has finished and the
   // dialog has closed (this includes separate UI, e.g. Nearby Sharing).
   void ShowBubble(content::WebContents* web_contents,
                   apps::IntentPtr intent,
