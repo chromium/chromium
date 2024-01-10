@@ -147,7 +147,8 @@ void LocaleChangeGuard::Check() {
 
   LocaleUpdateController::Get()->ConfirmLocaleChange(
       cur_locale, from_locale_, to_locale_,
-      base::BindOnce(&LocaleChangeGuard::OnResult, AsWeakPtr()));
+      base::BindOnce(&LocaleChangeGuard::OnResult,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void LocaleChangeGuard::OnResult(LocaleNotificationResult result) {
