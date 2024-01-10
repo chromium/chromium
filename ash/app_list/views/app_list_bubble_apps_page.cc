@@ -782,6 +782,12 @@ void AppListBubbleAppsPage::HandleFocusAfterSort() {
   if (view_delegate_->IsInTabletMode())
     return;
 
+  // Focusing toast button may show the tooltip anchored on the button - make
+  // sure the toast button bounds are correctly set before tooltip is shown.
+  if (GetWidget()) {
+    GetWidget()->LayoutRootViewIfNecessary();
+  }
+
   // If the sort is done and the toast is visible and not fading out, request
   // the focus on the undo button on the toast. Otherwise request the focus on
   // the search box.
