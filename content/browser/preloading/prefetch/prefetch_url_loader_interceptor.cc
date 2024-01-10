@@ -80,6 +80,19 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
 
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node->IsOutermostMainFrame()) {
+    // The prefetch code does not currently deal with prefetching within a frame
+    // (i.e., where the partition which should be assigned to the request is not
+    // the same as the partition belonging to its site at the top level).
+    //
+    // This could be made smarter in the future (to do those prefetches within
+    // the right partition, or at minimum to use it from that partition if they
+    // happen to be the same, i.e., the URL remains within the same site as the
+    // top-level document).
+    std::move(loader_callback_).Run({});
+    return;
+  }
+
   // During the lifetime of the PrefetchUrlLoaderInterceptor there is only one
   // cross-document navigation waiting for its final response.
   // We only need to worry about one active navigation while trying to match
