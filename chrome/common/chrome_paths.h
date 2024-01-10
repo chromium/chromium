@@ -25,6 +25,7 @@ enum {
 
   DIR_LOGS = PATH_START,  // Directory where logs should be written.
   DIR_USER_DATA,          // Directory where user data can be written.
+  DIR_CRASH_METRICS,      // Directory where crash metrics are written.
   DIR_CRASH_DUMPS,        // Directory where crash dumps are written.
   DIR_LOCAL_TRACES,       // Directory where local traces are written.
 #if BUILDFLAG(IS_WIN)

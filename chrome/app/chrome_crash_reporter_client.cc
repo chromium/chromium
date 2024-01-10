@@ -166,7 +166,7 @@ bool ChromeCrashReporterClient::GetCrashMetricsLocation(
     base::FilePath* metrics_dir) {
   if (!GetCollectStatsConsent())
     return false;
-  return base::PathService::Get(chrome::DIR_USER_DATA, metrics_dir);
+  return base::PathService::Get(chrome::DIR_CRASH_METRICS, metrics_dir);
 }
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
