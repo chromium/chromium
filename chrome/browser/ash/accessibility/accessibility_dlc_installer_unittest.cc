@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/accessibility/accessibility_dlc_installer.h"
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace {
@@ -19,8 +21,16 @@ constexpr char kInstallationMetricName[] =
 
 namespace ash {
 
+using DlcType = AccessibilityDlcInstaller::DlcType;
+
 class AccessibilityDlcInstallerTest : public testing::Test {
  protected:
+  struct InstallData {
+    bool success = false;
+    std::string dlc_root_path = std::string();
+    std::string last_error = std::string();
+  };
+
   void SetUp() override {
     installer_ = std::make_unique<AccessibilityDlcInstaller>();
   }
@@ -28,40 +38,79 @@ class AccessibilityDlcInstallerTest : public testing::Test {
   void TearDown() override { installer_.reset(); }
 
   void MaybeInstallPumpkin() {
+    DlcType type = DlcType::kPumpkin;
+
+    install_data_.insert_or_assign(type, InstallData());
     installer_->MaybeInstall(
-        AccessibilityDlcInstaller::DlcType::kPumpkin,
+        type,
         base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
-                       base::Unretained(this)),
+                       base::Unretained(this), type),
         base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
                             base::Unretained(this)),
         base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
-        base::Unretained(this)));
+                       base::Unretained(this), type));
   }
 
   void MaybeInstallPumpkinAndWait() {
+    DlcType type = DlcType::kPumpkin;
+
+    install_data_.insert_or_assign(type, InstallData());
     installer_->MaybeInstall(
-        AccessibilityDlcInstaller::DlcType::kPumpkin,
+        type,
         base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
-                       base::Unretained(this)),
+                       base::Unretained(this), type),
         base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
                             base::Unretained(this)),
         base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
-        base::Unretained(this)));
-    task_environment_.RunUntilIdle();
+                       base::Unretained(this), type));
+    RunUntilIdle();
+  }
+
+  void MaybeInstallFaceGazeAssets() {
+    DlcType type = DlcType::kFaceGazeAssets;
+
+    install_data_.insert_or_assign(type, InstallData());
+    installer_->MaybeInstall(
+        type,
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
+                       base::Unretained(this), type),
+        base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
+                            base::Unretained(this)),
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
+                       base::Unretained(this), type));
+  }
+
+  void MaybeInstallFaceGazeAssetsAndWait() {
+    DlcType type = DlcType::kFaceGazeAssets;
+
+    install_data_.insert_or_assign(type, InstallData());
+    installer_->MaybeInstall(
+        type,
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnInstalled,
+                       base::Unretained(this), type),
+        base::BindRepeating(&AccessibilityDlcInstallerTest::OnProgress,
+                            base::Unretained(this)),
+        base::BindOnce(&AccessibilityDlcInstallerTest::OnError,
+                       base::Unretained(this), type));
+    RunUntilIdle();
+  }
+
+  bool IsFaceGazeAssetsInstalled() {
+    return installer_->IsFaceGazeAssetsInstalled();
   }
 
   bool IsPumpkinInstalled() {
     return installer_->IsPumpkinInstalled();
   }
 
-  void OnInstalled(bool success, const std::string& root_path) {
-    install_succeeded_ = success;
-    dlc_root_path_ = root_path;
+  void OnInstalled(DlcType type, bool success, const std::string& root_path) {
+    install_data_[type].success = success;
+    install_data_[type].dlc_root_path = root_path;
   }
   void OnProgress(double progress) {}
-  void OnError(const std::string& error) {
-    install_failed_ = true;
-    last_error_ = error;
+  void OnError(DlcType type, const std::string& error) {
+    install_data_[type].success = false;
+    install_data_[type].last_error = error;
   }
 
   void SetDlcRootPath(const std::string& root_path) {
@@ -89,23 +138,27 @@ class AccessibilityDlcInstallerTest : public testing::Test {
     fake_dlcservice_client_.set_get_dlc_state_error("Test error");
   }
 
-  void ExpectSuccessHistogramCount(int expected_count) {
+  void ExpectPumpkinSuccessHistogramCount(int expected_count) {
     histogram_tester_.ExpectBucketCount(/*name=*/kInstallationMetricName,
                                         /*sample=*/true, expected_count);
   }
 
-  void ExpectFailureHistogramCount(int expected_count) {
+  void ExpectPumpkinFailureHistogramCount(int expected_count) {
     histogram_tester_.ExpectBucketCount(/*name=*/kInstallationMetricName,
                                         /*sample=*/false, expected_count);
   }
 
-  bool install_succeeded() { return install_succeeded_; }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  bool install_failed() { return install_failed_; }
+  bool GetInstallSuccess(DlcType type) { return install_data_[type].success; }
 
-  std::string dlc_root_path() { return dlc_root_path_; }
+  std::string GetDlcRootPath(DlcType type) {
+    return install_data_[type].dlc_root_path;
+  }
 
-  std::string last_error() { return last_error_; }
+  std::string GetLastError(DlcType type) {
+    return install_data_[type].last_error;
+  }
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -113,114 +166,167 @@ class AccessibilityDlcInstallerTest : public testing::Test {
   std::unique_ptr<AccessibilityDlcInstaller> installer_;
   FakeDlcserviceClient fake_dlcservice_client_;
   base::HistogramTester histogram_tester_;
-  bool install_succeeded_ = false;
-  bool install_failed_ = false;
-  std::string dlc_root_path_ = std::string();
-  std::string last_error_ = std::string();
+  base::flat_map<DlcType, InstallData> install_data_;
 };
 
 // Verifies that AccessibilityDlcInstaller can successfully download the Pumpkin
 // DLC.
-TEST_F(AccessibilityDlcInstallerTest, Install) {
-  ASSERT_FALSE(install_succeeded());
+TEST_F(AccessibilityDlcInstallerTest, InstallPumpkin) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
 
   SetDlcRootPath("/fake/root/path");
   MaybeInstallPumpkinAndWait();
 
-  ASSERT_TRUE(install_succeeded());
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_TRUE(IsPumpkinInstalled());
-  ASSERT_EQ(dlc_root_path(), "/fake/root/path");
-  ASSERT_FALSE(install_failed());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kPumpkin), "/fake/root/path");
 
-  ExpectSuccessHistogramCount(1);
-  ExpectFailureHistogramCount(0);
+  ExpectPumpkinSuccessHistogramCount(1);
+  ExpectPumpkinFailureHistogramCount(0);
 }
 
 // Verifies that AccessibilityDlcInstaller handles the case where the DLC fails
 // to download.
-TEST_F(AccessibilityDlcInstallerTest, InstallError) {
-  ASSERT_FALSE(install_succeeded());
+TEST_F(AccessibilityDlcInstallerTest, PumpkinInstallError) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
   SetInstallError();
   MaybeInstallPumpkinAndWait();
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  ASSERT_TRUE(install_failed());
-  EXPECT_EQ(dlcservice::kErrorNeedReboot, last_error());
+  EXPECT_EQ(dlcservice::kErrorNeedReboot, GetLastError(DlcType::kPumpkin));
 
-  ExpectSuccessHistogramCount(0);
-  ExpectFailureHistogramCount(1);
+  ExpectPumpkinSuccessHistogramCount(0);
+  ExpectPumpkinFailureHistogramCount(1);
 }
 
 // Verifies that AccessibilityDlcInstaller handles the case where the DLC is
 // already installed.
-TEST_F(AccessibilityDlcInstallerTest, AlreadyInstalled) {
-  ASSERT_FALSE(install_succeeded());
+TEST_F(AccessibilityDlcInstallerTest, PumpkinAlreadyInstalled) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
 
   SetDlcAlreadyInstalled("/fake/root/path");
 
   MaybeInstallPumpkinAndWait();
-  ASSERT_TRUE(install_succeeded());
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_TRUE(IsPumpkinInstalled());
-  ASSERT_EQ(dlc_root_path(), "/fake/root/path");
-  ASSERT_FALSE(install_failed());
-  EXPECT_EQ("", last_error());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kPumpkin), "/fake/root/path");
+  EXPECT_EQ("", GetLastError(DlcType::kPumpkin));
 
   // Pumpkin was already installed, so we shouldn't record any additional
   // metrics.
-  ExpectSuccessHistogramCount(0);
-  ExpectFailureHistogramCount(0);
+  ExpectPumpkinSuccessHistogramCount(0);
+  ExpectPumpkinFailureHistogramCount(0);
 }
 
 // Verifies that AccessibilityDlcInstaller handles the case where the DLC is
 // currently installing.
-TEST_F(AccessibilityDlcInstallerTest, CurrentlyInstalling) {
-  ASSERT_FALSE(install_succeeded());
+TEST_F(AccessibilityDlcInstallerTest, PumpkinCurrentlyInstalling) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
   SetDlcCurrentlyInstalling();
   MaybeInstallPumpkinAndWait();
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  ASSERT_TRUE(install_failed());
-  EXPECT_EQ("Pumpkin already installing.", last_error());
+  EXPECT_EQ("pumpkin already installing.", GetLastError(DlcType::kPumpkin));
 
-  ExpectSuccessHistogramCount(0);
-  ExpectFailureHistogramCount(0);
+  ExpectPumpkinSuccessHistogramCount(0);
+  ExpectPumpkinFailureHistogramCount(0);
 }
 
 // Verifies that AccessibilityDlcInstaller handles the case where it can't
 // retrieve the DLC state from the DLC service.
 TEST_F(AccessibilityDlcInstallerTest, GetDlcError) {
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
   SetGetDlcStateError();
   MaybeInstallPumpkinAndWait();
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  ASSERT_TRUE(install_failed());
-  EXPECT_EQ("Test error", last_error());
+  EXPECT_EQ("Test error", GetLastError(DlcType::kPumpkin));
 
-  ExpectSuccessHistogramCount(0);
-  ExpectFailureHistogramCount(0);
+  ExpectPumpkinSuccessHistogramCount(0);
+  ExpectPumpkinFailureHistogramCount(0);
 }
 
-TEST_F(AccessibilityDlcInstallerTest, PendingDlcRequest) {
+TEST_F(AccessibilityDlcInstallerTest, PumpkinPendingDlcRequest) {
   // Ensures that an error occurs if `MaybeInstall` is called in rapid
   // succession.
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
   MaybeInstallPumpkin();
-  ASSERT_FALSE(install_succeeded());
+
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  EXPECT_EQ("", last_error());
+  EXPECT_EQ("", GetLastError(DlcType::kPumpkin));
   // Calling `MaybeInstall` again before the DlcserviceClient has responded
   // will cause an error.
   MaybeInstallPumpkin();
-  ASSERT_FALSE(install_succeeded());
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
   ASSERT_FALSE(IsPumpkinInstalled());
-  EXPECT_EQ("Cannot install Pumpkin, DLC request in progress.", last_error());
+  EXPECT_EQ("Cannot install pumpkin, DLC request in progress.",
+            GetLastError(DlcType::kPumpkin));
+}
+
+TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssets) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_FALSE(IsFaceGazeAssetsInstalled());
+
+  SetDlcRootPath("/fake/root/path");
+  MaybeInstallFaceGazeAssetsAndWait();
+
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_TRUE(IsFaceGazeAssetsInstalled());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
+
+  // We shouldn't record Pumpkin metrics if we didn't install it.
+  ExpectPumpkinSuccessHistogramCount(0);
+  ExpectPumpkinFailureHistogramCount(0);
+}
+
+// Verifies that multiple installs can be handled simultaneously.
+TEST_F(AccessibilityDlcInstallerTest, InstallMultipleDlcs) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_FALSE(IsFaceGazeAssetsInstalled());
+  ASSERT_FALSE(IsPumpkinInstalled());
+
+  SetDlcRootPath("/fake/root/path");
+  MaybeInstallFaceGazeAssets();
+  MaybeInstallPumpkin();
+
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_FALSE(IsFaceGazeAssetsInstalled());
+  ASSERT_FALSE(IsPumpkinInstalled());
+  RunUntilIdle();
+
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kPumpkin));
+  ASSERT_TRUE(IsFaceGazeAssetsInstalled());
+  ASSERT_TRUE(IsPumpkinInstalled());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
+  ASSERT_EQ(GetDlcRootPath(DlcType::kPumpkin), "/fake/root/path");
+}
+
+TEST_F(AccessibilityDlcInstallerTest, InstallFaceGazeAssetsTwice) {
+  ASSERT_FALSE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_FALSE(IsFaceGazeAssetsInstalled());
+  SetDlcRootPath("/fake/root/path");
+  MaybeInstallFaceGazeAssetsAndWait();
+
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_TRUE(IsFaceGazeAssetsInstalled());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
+
+  // Call this codepath again to verify that it can be called multiple times
+  // without failing.
+  MaybeInstallFaceGazeAssetsAndWait();
+  ASSERT_TRUE(GetInstallSuccess(DlcType::kFaceGazeAssets));
+  ASSERT_TRUE(IsFaceGazeAssetsInstalled());
+  ASSERT_EQ(GetDlcRootPath(DlcType::kFaceGazeAssets), "/fake/root/path");
 }
 
 }  // namespace ash

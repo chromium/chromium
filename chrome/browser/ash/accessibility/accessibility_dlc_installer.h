@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_DLC_INSTALLER_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_DLC_INSTALLER_H_
 
+#include <memory>
 #include <set>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
@@ -23,8 +25,29 @@ class AccessibilityDlcInstaller {
   using ErrorCallback = base::OnceCallback<void(const std::string& error)>;
 
  public:
-  // TODO(b/309121742): Add support for the FaceGaze DLC.
-  enum class DlcType { kPumpkin };
+  enum class DlcType { kFaceGazeAssets, kPumpkin };
+
+  class Callbacks {
+   public:
+    Callbacks(InstalledCallback on_installed,
+              ProgressCallback on_progress,
+              ErrorCallback on_error);
+    ~Callbacks();
+    Callbacks(const Callbacks&) = delete;
+    Callbacks& operator=(const Callbacks&) = delete;
+
+    void RunOnInstalled(const bool success, std::string root_path);
+    void RunOnProgress(double progress);
+    void RunOnError(const std::string& error);
+
+   private:
+    // A callback that is run when a DLC is installed.
+    InstalledCallback on_installed_;
+    // A callback that is run when DLC download progress is updated.
+    ProgressCallback on_progress_;
+    // A callback that is run when a DLC download encounters an error.
+    ErrorCallback on_error_;
+  };
 
   AccessibilityDlcInstaller();
   ~AccessibilityDlcInstaller();
@@ -38,6 +61,7 @@ class AccessibilityDlcInstaller {
                     ProgressCallback on_progress,
                     ErrorCallback on_error);
 
+  bool IsFaceGazeAssetsInstalled() const;
   bool IsPumpkinInstalled() const;
 
  private:
@@ -48,8 +72,9 @@ class AccessibilityDlcInstaller {
                           const dlcservice::DlcState& dlc_state);
   void OnInstalled(DlcType type,
                    const DlcserviceClient::InstallResult& install_result);
-  void OnProgress(double progress);
-  void OnError(const std::string& error);
+  void OnProgress(DlcType type, double progress);
+
+  Callbacks* GetCallbacks(DlcType type);
 
   std::string GetDlcName(DlcType type);
   std::string GetDlcInstallingErrorMessage(DlcType type);
@@ -58,16 +83,10 @@ class AccessibilityDlcInstaller {
   base::WeakPtr<AccessibilityDlcInstaller> GetWeakPtr();
 
   std::set<DlcType> installed_dlcs_;
-
-  // A callback that is run when a DLC is installed.
-  InstalledCallback on_installed_;
-  // A callback that is run when DLC download progress is updated.
-  ProgressCallback on_progress_;
-  // A callback that is run when a DLC download encounters an error.
-  ErrorCallback on_error_;
+  base::flat_map<DlcType, std::unique_ptr<Callbacks>> callbacks_;
   // Requests to DlcserviceClient are async. This is true if we've made a
   // request and are still waiting for a response.
-  bool pending_dlc_request_ = false;
+  base::flat_map<DlcType, bool> pending_requests_;
 
   base::WeakPtrFactory<AccessibilityDlcInstaller> weak_ptr_factory_{this};
 };
