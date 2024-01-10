@@ -55,6 +55,25 @@ std::vector<Suggestion> CreateAutofillProfileSuggestions() {
   return suggestions;
 }
 
+std::vector<Suggestion> CreateCreditCardSuggestions() {
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+                           Suggestion::Icon::kCardUnionPay,
+                           PopupItemId::kCreditCardEntry);
+  suggestions.emplace_back("Credit card main text", "Credit card minor text",
+                           Suggestion::Icon::kCardVisa,
+                           PopupItemId::kCreditCardEntry);
+  suggestions.emplace_back(PopupItemId::kSeparator);
+
+  Suggestion settings(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_PAYMENT_METHODS));
+  settings.popup_item_id = PopupItemId::kAutofillOptions;
+  settings.icon = Suggestion::Icon::kSettings;
+  suggestions.push_back(std::move(settings));
+
+  return suggestions;
+}
+
 std::vector<Suggestion> CreateAutocompleteSuggestions() {
   return {Suggestion("Autocomplete entry 1", "", Suggestion::Icon::kNoIcon,
                      PopupItemId::kAutocompleteEntry),
@@ -145,20 +164,20 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autocomplete) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Autofill_Profile) {
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_AutofillProfile) {
   PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Profile) {
+                       InvokeUi_AutofillProfile_Selected_Profile) {
   PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{0, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Content_WithSubpoup) {
+                       InvokeUi_AutofillProfile_Selected_Content_WithSubpoup) {
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
@@ -168,7 +187,7 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Control_WithSubpoup) {
+                       InvokeUi_AutofillProfile_Selected_Control_WithSubpoup) {
   std::vector<Suggestion> suggestions = CreateAutofillProfileSuggestions();
   suggestions[0].children = CreateAutofillProfileSuggestions();
 
@@ -178,14 +197,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_Profile_Selected_Footer) {
+                       InvokeUi_AutofillProfile_Selected_Footer) {
   PrepareSuggestions(CreateAutofillProfileSuggestions(), PopupType::kAddresses);
   PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
-                       InvokeUi_Autofill_MultipleLabels) {
+                       InvokeUi_AutofillProfile_MultipleLabels) {
   std::vector<std::vector<Suggestion::Text>> labels = {
       {Suggestion::Text(
            u"Fill full address - Main Second First Third Street 123"),
@@ -194,6 +213,23 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
   Suggestion suggestion("Google", std::move(labels), Suggestion::Icon::kAccount,
                         PopupItemId::kAddressEntry);
   PrepareSuggestions({suggestion}, PopupType::kAddresses);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
+  PrepareSuggestions(CreateCreditCardSuggestions(), PopupType::kCreditCards);
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_CreditCard_MultipleLabels) {
+  std::vector<std::vector<Suggestion::Text>> labels = {
+      {Suggestion::Text(u"Filling credit card - your card for payments"),
+       Suggestion::Text(u"Alexander Joseph Ricardo Park")},
+      {Suggestion::Text(u"Full credit card"), Suggestion::Text(u"Alex Park")}};
+  Suggestion suggestion("Visa", std::move(labels), Suggestion::Icon::kCardVisa,
+                        PopupItemId::kCreditCardEntry);
+  PrepareSuggestions({suggestion}, PopupType::kCreditCards);
   ShowAndVerifyUi();
 }
 
