@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell_experimental.h"
 
 #import "base/check.h"
 #import "base/i18n/rtl.h"
@@ -25,6 +25,7 @@
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
@@ -39,14 +40,16 @@ const CGFloat kMultilineTextTrailingMargin = 4.0;
 const CGFloat kMultilineLineSpacing = 2.0;
 const CGFloat kTrailingButtonSize = 24;
 const CGFloat kTrailingButtonTrailingMargin = 14;
-const CGFloat kTrailingButtonTrailingMarginPopoutOmnibox = 30;
 const CGFloat kTopGradientColorOpacity = 0.85;
 const CGFloat kTextSpacing = 2.0f;
+const CGFloat kLeadingIconViewWidth = 30.0f;
+const CGFloat kContentViewLeadingSpace = 17.0f;
+const CGFloat kTextIconSpace = 14.0f;
 /// In Variation 2, the images and the text in the popup don't align with the
 /// omnibox image. If Variation 2 becomes default, probably we don't need the
 /// fancy layout guide setup and can get away with simple margins.
 const CGFloat kTrailingButtonPointSize = 17.0f;
-/// Maximum number of lines displayed.
+/// Maximum number of lines displayed for search suggestion.
 const NSInteger kSearchSuggestNumberOfLines = 2;
 
 /// Name of the histogram recording the number of lines in search suggestions.
@@ -55,10 +58,7 @@ const char kOmniboxSearchSuggestionNumberOfLines[] =
 
 }  // namespace
 
-NSString* const OmniboxPopupRowCellReuseIdentifier = @"OmniboxPopupRowCell";
-const CGFloat kOmniboxPopupCellMinimumHeight = 58;
-
-@interface OmniboxPopupRowCell ()
+@interface OmniboxPopupRowCellExperimental ()
 
 /// The suggestion that this cell is currently displaying.
 @property(nonatomic, strong) id<AutocompleteSuggestion> suggestion;
@@ -81,17 +81,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 /// Separator line for adjacent cells.
 @property(nonatomic, strong) UIView* separator;
 
-/// Stores the extra constraints activated when the cell enters deletion mode.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* deletingLayoutGuideConstraints;
-/// Stores the extra constrants activated when the cell is not in deletion mode.
-@property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* nonDeletingLayoutGuideConstraints;
-
-/// The layout guides tracking external views to base layout off of.
-@property(nonatomic, strong) UILayoutGuide* imageLayoutGuide;
-@property(nonatomic, strong) UILayoutGuide* textLayoutGuide;
-
 /// Constraints that changes when the text is a multi-lines search suggestion.
 @property(nonatomic, strong) NSLayoutConstraint* textTopConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* textTrailingToButtonConstraint;
@@ -99,7 +88,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 @end
 
-@implementation OmniboxPopupRowCell
+@implementation OmniboxPopupRowCellExperimental
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
@@ -178,29 +167,15 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     if (suggestionNeedsTrailingButton && !self.trailingButton.superview) {
       [self setupTrailingButtonLayout];
     }
-    [self attachToLayoutGuides];
-  }
-}
-
-- (void)willTransitionToState:(UITableViewCellStateMask)state {
-  // `UITableViewCellStateDefaultMask` is actually 0, so it must be checked
-  // manually, and can't be checked with bitwise AND.
-  if (state == UITableViewCellStateDefaultMask) {
-    for (NSLayoutConstraint* constraint in self
-             .deletingLayoutGuideConstraints) {
-      DCHECK(constraint.active);
-    }
-    [self unfreezeLayoutGuidePositions];
-  } else if (state & UITableViewCellStateShowingDeleteConfirmationMask) {
-    for (NSLayoutConstraint* constraint in self
-             .nonDeletingLayoutGuideConstraints) {
-      DCHECK(constraint.active);
-    }
-    [self freezeLayoutGuidePositions];
   }
 }
 
 #pragma mark - UITableViewCell
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+  [super setSelected:selected animated:animated];
+  [self setupWithCurrentData];
+}
 
 - (void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
   [super setHighlighted:highlighted animated:animated];
@@ -209,7 +184,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   self.textTruncatingLabel.textColor = textColor;
   self.detailTruncatingLabel.textColor = textColor;
   self.detailAnswerLabel.textColor = textColor;
-
   self.leadingIconView.highlighted = highlighted;
   self.trailingButton.tintColor =
       highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
@@ -233,15 +207,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   _omniboxSemanticContentAttribute = omniboxSemanticContentAttribute;
   self.contentView.semanticContentAttribute = omniboxSemanticContentAttribute;
   self.textStackView.semanticContentAttribute = omniboxSemanticContentAttribute;
-  // The layout guides may have been repositioned before this, so re-freeze.
-  if (self.showingDeleteConfirmation) {
-    [self unfreezeLayoutGuidePositions];
-    [self freezeLayoutGuidePositions];
-  } else if (self.window) {
-    // The layout guides may have been repositioned, so remove the constraints
-    // and add them again.
-    [self attachToLayoutGuides];
-  }
 }
 
 - (BOOL)showsSeparator {
@@ -261,13 +226,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   [self.contentView addSubview:self.textStackView];
   [self.contentView addSubview:self.separator];
 
-  self.imageLayoutGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxLeadingImageGuide];
-  [self.contentView addLayoutGuide:self.imageLayoutGuide];
-  self.textLayoutGuide =
-      [self.layoutGuideCenter makeLayoutGuideNamed:kOmniboxTextFieldGuide];
-  [self.contentView addLayoutGuide:self.textLayoutGuide];
-
   // Top space should be at least the given top margin, but can be more if
   // the row is short enough to use the minimum height constraint above.
   self.textTopConstraint = [self.textStackView.topAnchor
@@ -281,26 +239,35 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
                      constant:kTextTrailingMargin];
   self.textTrailingConstraint.priority = UILayoutPriorityRequired - 1;
 
+  NSLayoutAnchor* contentViewLeadingAnchor =
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+          ? self.contentView.layoutMarginsGuide.leadingAnchor
+          : self.contentView.leadingAnchor;
+
   [NSLayoutConstraint activateConstraints:@[
     // Row has a minimum height.
     [self.contentView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kOmniboxPopupCellMinimumHeight],
 
     // Position leadingIconView at the leading edge of the view.
-    // Leave the horizontal position unconstrained as that will be added via a
-    // layout guide once the cell has been added to the view hierarchy.
+    [self.leadingIconView.widthAnchor
+        constraintEqualToConstant:kLeadingIconViewWidth],
     [self.leadingIconView.heightAnchor
         constraintEqualToAnchor:self.leadingIconView.widthAnchor],
     [self.leadingIconView.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
+    [self.leadingIconView.leadingAnchor
+        constraintEqualToAnchor:contentViewLeadingAnchor
+                       constant:kContentViewLeadingSpace],
 
-    // Position textStackView "after" leadingIconView. The horizontal position
-    // is actually left off because it will be added via a
-    // layout guide once the cell has been added to the view hierarchy.
+    // Position textStackView "after" leadingIconView.
     self.textTopConstraint,
     self.textTrailingConstraint,
     [self.textStackView.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
+    [self.textStackView.leadingAnchor
+        constraintEqualToAnchor:self.leadingIconView.trailingAnchor
+                       constant:kTextIconSpace],
 
     [self.separator.bottomAnchor
         constraintEqualToAnchor:self.contentView.bottomAnchor],
@@ -329,98 +296,14 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   self.textTrailingToButtonConstraint = [self.trailingButton.leadingAnchor
       constraintEqualToAnchor:self.textStackView.trailingAnchor
                      constant:kTextTrailingMargin];
-
-  CGFloat trailingConstant = kTrailingButtonTrailingMargin;
-  if (IsIpadPopoutOmniboxEnabled()) {
-    trailingConstant = kTrailingButtonTrailingMarginPopoutOmnibox;
-  }
-
   [NSLayoutConstraint activateConstraints:@[
     [self.trailingButton.centerYAnchor
         constraintEqualToAnchor:self.contentView.centerYAnchor],
     [self.contentView.trailingAnchor
         constraintEqualToAnchor:self.trailingButton.trailingAnchor
-                       constant:trailingConstant],
+                       constant:kTrailingButtonTrailingMargin],
     self.textTrailingToButtonConstraint,
   ]];
-}
-
-- (void)attachToLayoutGuides {
-  // Layout guides should both exist.
-  DCHECK(self.imageLayoutGuide);
-  DCHECK(self.textLayoutGuide);
-
-  // These constraints need to be removed when freezing the position of these
-  // views. See -freezeLayoutGuidePositions for the reason why.
-  [NSLayoutConstraint
-      deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
-  self.nonDeletingLayoutGuideConstraints = @[
-    [self.leadingIconView.centerXAnchor
-        constraintEqualToAnchor:self.imageLayoutGuide.centerXAnchor],
-    [self.leadingIconView.widthAnchor
-        constraintEqualToAnchor:self.imageLayoutGuide.widthAnchor],
-    [self.textStackView.leadingAnchor
-        constraintEqualToAnchor:self.textLayoutGuide.leadingAnchor],
-  ];
-
-  [NSLayoutConstraint
-      activateConstraints:self.nonDeletingLayoutGuideConstraints];
-}
-
-/// Freezes the position of any view that is positioned relative to the layout
-/// guides. When the view enters deletion mode (swipe-to-delete), the layout
-/// guides do not move. This means that the views in this cell positioned
-/// relative to the layout guide also do not move with the swipe. This method
-/// freezes those views with constraints relative to the cell content view so
-/// they do move with the swipe-to-delete.
-- (void)freezeLayoutGuidePositions {
-  [NSLayoutConstraint
-      deactivateConstraints:self.nonDeletingLayoutGuideConstraints];
-
-  // Layout guides should both be tracking their external view.
-  DCHECK(!CGRectEqualToRect(self.imageLayoutGuide.layoutFrame, CGRectZero));
-  DCHECK(!CGRectEqualToRect(self.textLayoutGuide.layoutFrame, CGRectZero));
-
-  self.deletingLayoutGuideConstraints = @[
-    [self.leadingIconView.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:[self leadingSpaceForLayoutGuide:
-                                          self.imageLayoutGuide]],
-    [self.textStackView.leadingAnchor
-        constraintEqualToAnchor:self.contentView.leadingAnchor
-                       constant:[self leadingSpaceForLayoutGuide:
-                                          self.textLayoutGuide]],
-  ];
-
-  [NSLayoutConstraint activateConstraints:self.deletingLayoutGuideConstraints];
-}
-
-/// Helper method for -freezeLayoutGuidePositions to calculate the actual
-/// distance between the leading edge of a layout guide and the leading edge
-/// of the cell's content view.
-- (CGFloat)leadingSpaceForLayoutGuide:(UILayoutGuide*)layoutGuide {
-  CGRect layoutGuideFrame =
-      [layoutGuide.owningView convertRect:layoutGuide.layoutFrame
-                                   toView:self.contentView];
-  CGFloat leadingSpace = self.omniboxSemanticContentAttribute ==
-                                 UISemanticContentAttributeForceRightToLeft
-                             ? self.contentView.bounds.size.width -
-                                   layoutGuideFrame.origin.x -
-                                   layoutGuideFrame.size.width
-                             : layoutGuideFrame.origin.x;
-
-  return leadingSpace;
-}
-
-/// Unfreezes the position of any view that is positioned relative to a layout
-/// guide. See the comment on -freezeLayoutGuidePositions for why that is
-/// necessary.
-- (void)unfreezeLayoutGuidePositions {
-  [NSLayoutConstraint
-      deactivateConstraints:self.deletingLayoutGuideConstraints];
-  self.deletingLayoutGuideConstraints = @[];
-  [NSLayoutConstraint
-      activateConstraints:self.nonDeletingLayoutGuideConstraints];
 }
 
 - (void)prepareForReuse {
@@ -494,21 +377,26 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 - (void)setupWithCurrentData {
   id<AutocompleteSuggestion> suggestion = self.suggestion;
 
+  // Highlighting elements of a cell can be updated when the cell is selected or
+  // highlighted. Checking both properties ensures that the cell is properly
+  // highlighted until the navigation is complete upon cell selection.
+  bool allowHighlight = self.selected || self.highlighted;
   self.textTruncatingLabel.attributedText =
-      self.highlighted
+      allowHighlight
           ? [self highlightedAttributedStringWithString:suggestion.text]
           : suggestion.text;
+
   if (suggestion.isWrapping) {
     [self logNumberOfLinesSearchSuggestions:self.textTruncatingLabel
                                                 .attributedText];
-      self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
-      base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
-          base::SysNSStringToUTF16(self.textTruncatingLabel.text));
-      if (textDirection == base::i18n::RIGHT_TO_LEFT) {
-        self.textTruncatingLabel.semanticContentAttribute =
-            UISemanticContentAttributeForceRightToLeft;
-        self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
-      }
+    self.textTruncatingLabel.numberOfLines = kSearchSuggestNumberOfLines;
+    base::i18n::TextDirection textDirection = base::i18n::GetStringDirection(
+        base::SysNSStringToUTF16(self.textTruncatingLabel.text));
+    if (textDirection == base::i18n::RIGHT_TO_LEFT) {
+      self.textTruncatingLabel.semanticContentAttribute =
+          UISemanticContentAttributeForceRightToLeft;
+      self.textTruncatingLabel.truncateMode = FadeTruncatingHead;
+    }
   } else {
     // Default values for FadeTruncatingLabel.
     self.textTruncatingLabel.lineBreakMode = NSLineBreakByClipping;
@@ -537,7 +425,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
   }
   [self updateTextConstraints:suggestion.isWrapping];
 
-  self.leadingIconView.highlighted = self.highlighted;
+  self.leadingIconView.highlighted = allowHighlight;
   self.trailingButton.tintColor =
       self.highlighted ? [UIColor whiteColor] : [UIColor colorNamed:kBlueColor];
 }
@@ -596,7 +484,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 }
 
 - (void)trailingButtonTapped {
-  [self.delegate trailingButtonTappedForCell:self];
+  [self.delegate trailingButtonTappedForCell:((OmniboxPopupRowCell*)self)];
 }
 
 #pragma mark - Metrics

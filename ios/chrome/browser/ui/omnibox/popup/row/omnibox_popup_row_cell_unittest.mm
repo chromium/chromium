@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion.h"
 #import "testing/gtest_mac.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_
 
 #import <UIKit/UIKit.h>
-#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_row_cell.h"
+#import "ios/chrome/browser/ui/omnibox/popup/row/omnibox_popup_row_cell.h"
 
 @protocol AutocompleteSuggestion;
 @protocol FaviconRetriever;
@@ -48,4 +48,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_ROW_OMNIBOX_POPUP_ROW_CELL_EXPERIMENTAL_H_

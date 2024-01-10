@@ -54,6 +54,7 @@ source_set("popup") {
     "remote_suggestions_service_observer_bridge.mm",
   ]
   deps = [
+    ":popup_icon",
     ":popup_internal",
     ":popup_swift",
     ":popup_ui",
@@ -130,60 +131,55 @@ source_set("popup_accessibility_identifier_constants") {
 
 source_set("popup_ui") {
   sources = [
-    "favicon_retriever.h",
-    "image_retriever.h",
-    "omnibox_icon_view.h",
-    "omnibox_icon_view.mm",
-    "omnibox_popup_row_cell.h",
-    "omnibox_popup_row_cell.mm",
-    "omnibox_popup_row_cell_experimental.h",
-    "omnibox_popup_row_cell_experimental.mm",
     "omnibox_popup_view_controller.h",
     "omnibox_popup_view_controller.mm",
     "popup_table_view.h",
     "popup_table_view.mm",
-    "simple_omnibox_icon.h",
-    "simple_omnibox_icon.mm",
   ]
   deps = [
     ":popup_accessibility_identifier_constants",
     ":popup_ui_protocols",
-    "resources:background_color_swiftui_ios14",
-    "resources:grouped_primary_background_color_swiftui_ios14",
-    "resources:omnibox_suggestion_answer_icon_color",
-    "resources:omnibox_suggestion_answer_icon_dark_color",
-    "resources:omnibox_suggestion_icon_color",
-    "resources:omnibox_suggestion_icon_dark_color",
-    "resources:omnibox_suggestion_row_highlight_color",
-    "resources:omnibox_suggestion_row_separator_color",
     "//base",
-    "//base:i18n",
     "//components/favicon/core",
     "//components/omnibox/common",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/app/theme",
     "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/shared/ui/elements",
-    "//ios/chrome/browser/shared/ui/symbols",
-    "//ios/chrome/browser/shared/ui/symbols:symbols_views",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/favicon",
     "//ios/chrome/browser/ui/omnibox:features",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
-    "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/ui/omnibox:omnibox_util",
     "//ios/chrome/browser/ui/omnibox/popup/carousel",
+    "//ios/chrome/browser/ui/omnibox/popup/row",
     "//ios/chrome/browser/ui/toolbar/buttons",
     "//ios/chrome/common/ui/colors",
-    "//ios/chrome/common/ui/elements:elements",
-    "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
+  ]
+}
+
+source_set("popup_icon") {
+  sources = [
+    "favicon_retriever.h",
+    "image_retriever.h",
+    "omnibox_icon_view.h",
+    "omnibox_icon_view.mm",
+    "simple_omnibox_icon.h",
+    "simple_omnibox_icon.mm",
+  ]
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:symbols_views",
+    "//ios/chrome/browser/ui/omnibox:features",
+    "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//url",
   ]
 }
@@ -198,6 +194,7 @@ source_set("popup_internal") {
     "omnibox_icon_formatter.mm",
   ]
   deps = [
+    ":popup_icon",
     ":popup_swift",
     ":popup_ui",
     ":popup_ui_protocols",
@@ -229,13 +226,13 @@ source_set("unit_tests") {
   sources = [
     "omnibox_pedal_annotator_unittest.mm",
     "omnibox_popup_mediator_unittest.mm",
-    "omnibox_popup_row_cell_unittest.mm",
     "omnibox_popup_view_controller_unittest.mm",
     "pedal_section_extractor_unittest.mm",
   ]
   deps = [
     ":popup",
     ":popup_accessibility_identifier_constants",
+    ":popup_icon",
     ":popup_internal",
     ":popup_ui",
     ":popup_ui_protocols",
