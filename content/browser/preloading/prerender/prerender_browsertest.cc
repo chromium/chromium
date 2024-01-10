@@ -6165,8 +6165,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderEmbedderHostBlocklistedBrowserTest,
   std::unique_ptr<PrerenderHandle> prerender_handle =
       AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerender);
 
-  EXPECT_TRUE(prerender_handle);
-  EXPECT_FALSE(prerender_handle->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle);
   EXPECT_EQ(GetHostForUrl(kEmbedderPrerender),
             RenderFrameHost::kNoFrameTreeNodeId);
   histogram_tester().ExpectUniqueSample(
@@ -6922,8 +6921,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, EmbedderPrerenderToNonHttpUrl) {
       AddEmbedderTriggeredPrerenderAsync(kPrerenderUrl);
 
   // Both the creation of PrerenderHandle and PrerenderHost should fail.
-  EXPECT_TRUE(prerender_handle);
-  EXPECT_FALSE(prerender_handle->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle);
   EXPECT_EQ(GetHostForUrl(kPrerenderUrl), RenderFrameHost::kNoFrameTreeNodeId);
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -9218,8 +9216,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, StartByEmbeddersMultipleTimes) {
   // limit.
   std::unique_ptr<PrerenderHandle> prerender_handle3 =
       AddEmbedderTriggeredPrerenderAsync(kThirdPrerenderingUrl);
-  EXPECT_TRUE(prerender_handle3);
-  EXPECT_FALSE(prerender_handle3->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle3);
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -9273,8 +9270,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   // Start the third embedder triggered prerendering; this should hit the limit.
   std::unique_ptr<PrerenderHandle> prerender_handle3 =
       AddEmbedderTriggeredPrerenderAsync(kEmbedderPrerenderingUrl3);
-  EXPECT_TRUE(prerender_handle3);
-  EXPECT_FALSE(prerender_handle3->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle3);
 
   histogram_tester().ExpectBucketCount(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
@@ -9937,8 +9933,7 @@ void PrerenderBrowserTest::TestEmbedderTriggerWithUnsupportedScheme(
   // Start prerendering by embedder triggered prerendering.
   std::unique_ptr<PrerenderHandle> prerender_handle =
       AddEmbedderTriggeredPrerenderAsync(prerendering_url, preloading_attempt);
-  EXPECT_TRUE(prerender_handle);
-  EXPECT_FALSE(prerender_handle->WasSuccessfullyTriggeredForTesting());
+  EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"

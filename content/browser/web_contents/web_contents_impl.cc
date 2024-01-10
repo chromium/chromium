@@ -10360,9 +10360,12 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
   int frame_tree_node_id = GetPrerenderHostRegistry()->CreateAndStartHost(
       attributes, preloading_attempt);
 
-  return std::make_unique<PrerenderHandleImpl>(
-      GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
-      prerendering_url);
+  if (frame_tree_node_id != FrameTreeNode::kFrameTreeNodeInvalidId) {
+    return std::make_unique<PrerenderHandleImpl>(
+        GetPrerenderHostRegistry()->GetWeakPtr(), frame_tree_node_id,
+        prerendering_url);
+  }
+  return nullptr;
 }
 
 void WebContentsImpl::BackNavigationLikely(PreloadingPredictor predictor,
