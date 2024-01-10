@@ -258,6 +258,7 @@ class CONTENT_EXPORT RenderFrameImpl
   struct CONTENT_EXPORT CreateParams {
     CreateParams(
         AgentSchedulingGroup& agent_scheduling_group,
+        const blink::LocalFrameToken& frame_token,
         int32_t routing_id,
         mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
         mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -272,6 +273,7 @@ class CONTENT_EXPORT RenderFrameImpl
     CreateParams& operator=(CreateParams&&);
 
     raw_ptr<AgentSchedulingGroup, ExperimentalRenderer> agent_scheduling_group;
+    blink::LocalFrameToken frame_token;
     int32_t routing_id;
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver;
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -870,6 +872,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // to the RenderFrame.
   static RenderFrameImpl* Create(
       AgentSchedulingGroup& agent_scheduling_group,
+      const blink::LocalFrameToken& frame_token,
       int32_t routing_id,
       mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1246,6 +1249,7 @@ class CONTENT_EXPORT RenderFrameImpl
   // Blink Web* layer to check for provisional frames.
   bool in_frame_tree_;
 
+  blink::LocalFrameToken frame_token_;
   const int routing_id_;
   const int process_label_id_;
 

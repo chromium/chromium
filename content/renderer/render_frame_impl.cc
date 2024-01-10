@@ -1476,6 +1476,7 @@ blink::WebLocalFrame* RenderFrameImpl::UniqueNameFrameAdapter::GetWebFrame()
 // static
 RenderFrameImpl* RenderFrameImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
+    const blink::LocalFrameToken& frame_token,
     int32_t routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1485,7 +1486,7 @@ RenderFrameImpl* RenderFrameImpl::Create(
     const base::UnguessableToken& devtools_frame_token,
     bool is_for_nested_main_frame) {
   DCHECK(routing_id != MSG_ROUTING_NONE);
-  CreateParams params(agent_scheduling_group, routing_id,
+  CreateParams params(agent_scheduling_group, frame_token, routing_id,
                       std::move(frame_receiver),
                       std::move(browser_interface_broker),
                       std::move(associated_interface_provider),
@@ -1528,8 +1529,8 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   DCHECK_NE(MSG_ROUTING_NONE, params->widget_params->routing_id);
 
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
-      agent_scheduling_group, params->routing_id, std::move(params->frame),
-      std::move(params->interface_broker),
+      agent_scheduling_group, params->frame_token, params->routing_id,
+      std::move(params->frame), std::move(params->interface_broker),
       std::move(params->associated_interface_provider_remote),
       devtools_frame_token, is_for_nested_main_frame);
 
@@ -1668,8 +1669,8 @@ void RenderFrameImpl::CreateFrame(
 
     // Create the RenderFrame and WebLocalFrame, linking the two.
     render_frame = RenderFrameImpl::Create(
-        agent_scheduling_group, routing_id, std::move(frame_receiver),
-        std::move(browser_interface_broker),
+        agent_scheduling_group, frame_token, routing_id,
+        std::move(frame_receiver), std::move(browser_interface_broker),
         std::move(associated_interface_provider), devtools_frame_token,
         is_for_nested_main_frame);
     render_frame->unique_name_helper_.set_propagated_name(
@@ -1715,8 +1716,8 @@ void RenderFrameImpl::CreateFrame(
       web_view = previous_web_frame->View();
     }
     render_frame = RenderFrameImpl::Create(
-        agent_scheduling_group, routing_id, std::move(frame_receiver),
-        std::move(browser_interface_broker),
+        agent_scheduling_group, frame_token, routing_id,
+        std::move(frame_receiver), std::move(browser_interface_broker),
         std::move(associated_interface_provider), devtools_frame_token,
         is_for_nested_main_frame);
     web_frame = blink::WebLocalFrame::CreateProvisional(
@@ -1824,6 +1825,7 @@ blink::WebURL RenderFrameImpl::OverrideFlashEmbedWithHTML(
 
 RenderFrameImpl::CreateParams::CreateParams(
     AgentSchedulingGroup& agent_scheduling_group,
+    const blink::LocalFrameToken& frame_token,
     int32_t routing_id,
     mojo::PendingAssociatedReceiver<mojom::Frame> frame_receiver,
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>
@@ -1833,6 +1835,7 @@ RenderFrameImpl::CreateParams::CreateParams(
     const base::UnguessableToken& devtools_frame_token,
     bool is_for_nested_main_frame)
     : agent_scheduling_group(&agent_scheduling_group),
+      frame_token(frame_token),
       routing_id(routing_id),
       frame_receiver(std::move(frame_receiver)),
       browser_interface_broker(std::move(browser_interface_broker)),
@@ -1851,6 +1854,7 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       unique_name_frame_adapter_(this),
       unique_name_helper_(&unique_name_frame_adapter_),
       in_frame_tree_(false),
+      frame_token_(params.frame_token),
       routing_id_(params.routing_id),
       process_label_id_(
           base::trace_event::TraceLog::GetInstance()->GetNewProcessLabelId()),
@@ -1936,8 +1940,8 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   if (is_main_frame_)
     MainFrameCounter::IncrementCount();
 
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "routing_id",
-               routing_id_);
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::Initialize", "frame_token",
+               frame_token_);
 
 #if BUILDFLAG(ENABLE_PPAPI)
   new PepperBrowserConnection(this);
@@ -2114,8 +2118,8 @@ void RenderFrameImpl::Unload(
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "id",
-               routing_id_);
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::UnloadFrame", "frame_token",
+               frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
   // Send an UpdateState message before we get deleted.
@@ -2921,7 +2925,8 @@ void RenderFrameImpl::CommitFailedNavigation(
     mojom::AlternativeErrorPageOverrideInfoPtr alternative_error_page_info,
     mojom::NavigationClient::CommitFailedNavigationCallback callback) {
   TRACE_EVENT1("navigation,benchmark,rail",
-               "RenderFrameImpl::CommitFailedNavigation", "id", routing_id_);
+               "RenderFrameImpl::CommitFailedNavigation", "frame_token",
+               frame_token_);
   DCHECK(navigation_client_impl_);
   DCHECK(!NavigationTypeUtils::IsSameDocument(common_params->navigation_type));
   // `origin_to_commit` must be set on failed navigations.
@@ -3505,16 +3510,17 @@ namespace {
 // b) we want to emit the new child routing id as an argument.
 // c) child routing id becomes available only after a sync call.
 struct CreateChildFrameTraceEvent {
-  explicit CreateChildFrameTraceEvent(int routing_id) {
+  explicit CreateChildFrameTraceEvent(
+      const blink::LocalFrameToken& frame_token) {
     TRACE_EVENT_BEGIN("navigation,rail", "RenderFrameImpl::createChildFrame",
-                      "routing_id", routing_id);
+                      "frame_token", frame_token);
   }
 
   ~CreateChildFrameTraceEvent() {
-    TRACE_EVENT_END("navigation,rail", "child_routing_id", child_routing_id);
+    TRACE_EVENT_END("navigation,rail", "child_frame_token", child_frame_token);
   }
 
-  int child_routing_id = -1;
+  blink::LocalFrameToken child_frame_token;
 };
 
 }  // namespace
@@ -3531,7 +3537,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
     FinishChildFrameCreationFn finish_creation) {
   // Tracing analysis uses this to find main frames when this value is
   // MSG_ROUTING_NONE, and build the frame tree otherwise.
-  CreateChildFrameTraceEvent trace_event(routing_id_);
+  CreateChildFrameTraceEvent trace_event(frame_token_);
 
   // Allocate child routing ID. This is a synchronous call.
   int child_routing_id;
@@ -3543,7 +3549,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
           document_token)) {
     return nullptr;
   }
-  trace_event.child_routing_id = child_routing_id;
+  trace_event.child_frame_token = frame_token;
 
   // The unique name generation logic was moved out of Blink, so for historical
   // reasons, unique name generation needs to take something called the
@@ -3586,7 +3592,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
 
   // Create the RenderFrame and WebLocalFrame, linking the two.
   RenderFrameImpl* child_render_frame = RenderFrameImpl::Create(
-      *agent_scheduling_group_, child_routing_id,
+      *agent_scheduling_group_, frame_token, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       std::move(associated_interface_provider), devtools_frame_token,
       /*is_for_nested_main_frame=*/false);
@@ -3820,8 +3826,9 @@ void RenderFrameImpl::DidCommitNavigation(
   DCHECK(!navigation_state->WasWithinSameDocument());
 
   TRACE_EVENT2("navigation,benchmark,rail",
-               "RenderFrameImpl::didStartProvisionalLoad", "id", routing_id_,
-               "url", document_loader->GetUrl().GetString().Utf8());
+               "RenderFrameImpl::didStartProvisionalLoad", "frame_token",
+               frame_token_, "url",
+               document_loader->GetUrl().GetString().Utf8());
 
   // Install factories as early as possible - it needs to happen before the
   // newly committed document starts any subresource fetches.  In particular,
@@ -3853,7 +3860,7 @@ void RenderFrameImpl::DidCommitNavigation(
   DVLOG(1) << "Committed provisional load: "
            << TrimURL(GetLoadingUrl().possibly_invalid_spec());
   TRACE_EVENT2("navigation,rail", "RenderFrameImpl::didCommitProvisionalLoad",
-               "id", routing_id_, "url",
+               "frame_token", frame_token_, "url",
                GetLoadingUrl().possibly_invalid_spec());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWaitForDebuggerOnNavigation)) {
@@ -4057,8 +4064,8 @@ void RenderFrameImpl::DidReceiveTitle(const blink::WebString& title) {
 
 void RenderFrameImpl::DidDispatchDOMContentLoadedEvent() {
   TRACE_EVENT1("navigation,benchmark,rail",
-               "RenderFrameImpl::DidDispatchDOMContentLoadedEvent", "id",
-               routing_id_);
+               "RenderFrameImpl::DidDispatchDOMContentLoadedEvent",
+               "frame_token", frame_token_);
   for (auto& observer : observers_)
     observer.DidDispatchDOMContentLoadedEvent();
 
@@ -4083,7 +4090,7 @@ void RenderFrameImpl::DidHandleOnloadEvents() {
 
 void RenderFrameImpl::DidFinishLoad() {
   TRACE_EVENT1("navigation,benchmark,rail", "RenderFrameImpl::didFinishLoad",
-               "id", routing_id_);
+               "frame_token", frame_token_);
   if (!frame_->Parent()) {
     TRACE_EVENT_INSTANT1("WebCore,benchmark,rail", "LoadFinished",
                          TRACE_EVENT_SCOPE_PROCESS, "isOutermostMainFrame",
@@ -4105,8 +4112,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     blink::mojom::SameDocumentNavigationType same_document_navigation_type,
     bool is_client_redirect) {
   TRACE_EVENT1("navigation,rail",
-               "RenderFrameImpl::didFinishSameDocumentNavigation", "id",
-               routing_id_);
+               "RenderFrameImpl::didFinishSameDocumentNavigation",
+               "frame_token", frame_token_);
   WebDocumentLoader* document_loader = frame_->GetDocumentLoader();
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(document_loader);
@@ -4215,8 +4222,8 @@ bool RenderFrameImpl::SwapOutAndDeleteThis(
     const blink::RemoteFrameToken& proxy_frame_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::SwapOutAndDeleteThis", "id",
-               routing_id_);
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::SwapOutAndDeleteThis",
+               "frame_token", frame_token_);
   DCHECK(!base::RunLoop::IsNestedOnCurrentThread());
 
   // Create a WebRemoteFrame so we can pass it into `Swap`.
@@ -5183,13 +5190,13 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
 
 void RenderFrameImpl::DidStartLoading() {
   // TODO(dgozman): consider removing this callback.
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::didStartLoading", "id",
-               routing_id_);
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::didStartLoading",
+               "frame_token", frame_token_);
 }
 
 void RenderFrameImpl::DidStopLoading() {
-  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::didStopLoading", "id",
-               routing_id_);
+  TRACE_EVENT1("navigation,rail", "RenderFrameImpl::didStopLoading",
+               "frame_token", frame_token_);
 
   // Any subframes created after this point won't be considered part of the
   // current history navigation (if this was one), so we don't need to track
