@@ -221,6 +221,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kNewTabSearchEngineUrlAndroid,
     &kNotificationPermissionVariant,
     &kNotificationPermissionBottomSheet,
+    &kOpenDownloadDialog,
     &kPageAnnotationsService,
     &kPaintPreviewNewColdStartHeuristic,
     &kPreconnectOnTabCreation,

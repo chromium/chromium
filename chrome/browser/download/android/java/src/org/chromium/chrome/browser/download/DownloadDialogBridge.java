@@ -17,11 +17,10 @@ import org.chromium.chrome.browser.download.dialogs.DownloadDialogUtils;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogController;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.download.interstitial.NewDownloadTab;
+import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.prefs.PrefService;
-import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -99,7 +98,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
                             showDialog(
                                     activity,
                                     modalDialogManager,
-                                    getPrefService(),
+                                    DownloadSettings.getPrefService(),
                                     totalBytes,
                                     connectionType,
                                     suggestedDialogType,
@@ -188,14 +187,14 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
      * @return The status of prompt for download pref, defined by {@link DownloadPromptStatus}.
      */
     public static @DownloadPromptStatus int getPromptForDownloadAndroid() {
-        return getPrefService().getInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID);
+        return DownloadSettings.getPrefService().getInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID);
     }
 
     /**
      * @param status New status to update the prompt for download preference.
      */
     public static void setPromptForDownloadAndroid(@DownloadPromptStatus int status) {
-        getPrefService().setInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID, status);
+        DownloadSettings.getPrefService().setInteger(Pref.PROMPT_FOR_DOWNLOAD_ANDROID, status);
     }
 
     /**
@@ -203,7 +202,7 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
      * enterprise policy.
      */
     public static boolean getPromptForDownloadPolicy() {
-        return getPrefService().getBoolean(Pref.PROMPT_FOR_DOWNLOAD);
+        return DownloadSettings.getPrefService().getBoolean(Pref.PROMPT_FOR_DOWNLOAD);
     }
 
     /**
@@ -211,10 +210,6 @@ public class DownloadDialogBridge implements DownloadLocationDialogController {
      */
     public static boolean isLocationDialogManaged() {
         return DownloadDialogBridgeJni.get().isLocationDialogManaged();
-    }
-
-    private static PrefService getPrefService() {
-        return UserPrefs.get(Profile.getLastUsedRegularProfile());
     }
 
     @NativeMethods
