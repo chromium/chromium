@@ -15,7 +15,6 @@
 #include "chrome/browser/vr/renderers/radial_gradient_quad_renderer.h"
 #include "chrome/browser/vr/renderers/texture_copy_renderer.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
-#include "chrome/browser/vr/renderers/transparent_quad_renderer.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
@@ -34,7 +33,6 @@ UiElementRenderer::UiElementRenderer(bool use_gl) {
 UiElementRenderer::~UiElementRenderer() = default;
 
 void UiElementRenderer::Init() {
-  transparent_quad_renderer_ = std::make_unique<TransparentQuadRenderer>();
   textured_quad_renderer_ = std::make_unique<TexturedQuadRenderer>();
   radial_gradient_quad_renderer_ =
       std::make_unique<RadialGradientQuadRenderer>();
@@ -57,21 +55,10 @@ void UiElementRenderer::DrawTexturedQuad(
       corner_radius * 2.0 > element_size.height()) {
     return;
   }
-  TexturedQuadRenderer* renderer = textured_quad_renderer_.get();
-  if (!texture_data_handle && !overlay_texture_data_handle) {
-    // TODO(https://crbug.com/913607): Per SkiaSurfaceProvider's helper method
-    // GetTextureIDFromSurface, it appears as though texture_data_handle cannot
-    // be null, and therefore this should be unused. However, in case another
-    // path was missed, removal of the transparent_quad_renderer should be done
-    // in its own change.
-    // If we're blending, why are we even drawing a transparent quad?
-    DCHECK(!blend);
-    renderer = transparent_quad_renderer_.get();
-  }
-  FlushIfNecessary(renderer);
-  renderer->AddQuad(texture_data_handle, overlay_texture_data_handle,
-                    model_view_proj_matrix, clip_rect, opacity, element_size,
-                    corner_radius, blend);
+  FlushIfNecessary(textured_quad_renderer_.get());
+  textured_quad_renderer_->AddQuad(
+      texture_data_handle, overlay_texture_data_handle, model_view_proj_matrix,
+      clip_rect, opacity, element_size, corner_radius, blend);
 }
 
 void UiElementRenderer::DrawRadialGradientQuad(

@@ -14,12 +14,10 @@
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_element_name.h"
 #include "chrome/browser/vr/elements/vector_icon.h"
-#include "chrome/browser/vr/input_event.h"
 #include "chrome/browser/vr/model/model.h"
 #include "chrome/browser/vr/target_property.h"
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
-#include "chrome/browser/vr/test/mock_ui_browser_interface.h"
 #include "chrome/browser/vr/test/ui_test.h"
 #include "chrome/browser/vr/ui_renderer.h"
 #include "chrome/browser/vr/ui_scene.h"
@@ -45,17 +43,6 @@ void VerifyNoHitTestableElementInSubtree(UiElement* element) {
 }
 
 }  // namespace
-
-TEST_F(UiTest, WebXrToastTransience) {
-  auto browser_ui = ui_->GetBrowserUiWeakPtr();
-  ui_->GetSchedulerUiPtr()->OnWebXrFrameAvailable();
-  browser_ui->SetCapturingState(CapturingStateModel(), CapturingStateModel(),
-                                CapturingStateModel());
-  EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
-  EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
-                            kSmallDelaySeconds));
-  EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
-}
 
 TEST_F(UiTest, CaptureToasts) {
   auto browser_ui = ui_->GetBrowserUiWeakPtr();
@@ -107,11 +94,9 @@ TEST_F(UiTest, CaptureToasts) {
                                     potential_capturing);
       // Advance the frame to ensure that the capturing state has propagated.
       AdvanceFrame();
-      EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
       EXPECT_TRUE(IsVisible(spec.webvr_name) == (string_id != 0));
       EXPECT_TRUE(RunForSeconds(kWindowsInitialIndicatorsTimeoutSeconds +
                                 kSmallDelaySeconds));
-      EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
     }
   }
 }
@@ -186,53 +171,6 @@ TEST_F(UiTest, WebXrTimeout) {
        kWebVrTimeoutMessageIcon, kWebVrTimeoutMessageText},
       true);
 }
-
-TEST_F(UiTest, ExitPresentAndFullscreenOnMenuButtonClick) {
-  // Clicking menu button should trigger to exit presentation.
-  EXPECT_CALL(*browser_, ExitPresent());
-  InputEventList events;
-  events.push_back(
-      std::make_unique<InputEvent>(InputEvent::kMenuButtonClicked));
-  ui_->HandleMenuButtonEvents(&events);
-  base::RunLoop().RunUntilIdle();
-}
-
-// Ensures that permissions appear on long press, and that when the menu button
-// is released that we do not show the exclusive screen toast. Distinguishing
-// these cases requires knowledge of the previous state.
-#if !BUILDFLAG(IS_WIN)
-TEST_F(UiTest, LongPressMenuButtonInWebXrMode) {
-  auto browser_ui = ui_->GetBrowserUiWeakPtr();
-  EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
-  ui_->GetSchedulerUiPtr()->OnWebXrFrameAvailable();
-  browser_ui->SetCapturingState(CapturingStateModel(), CapturingStateModel(),
-                                CapturingStateModel());
-  AdvanceFrame();
-  EXPECT_TRUE(IsVisible(kWebVrExclusiveScreenToast));
-  RunForSeconds(8);
-  EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
-  model_->active_capturing.audio_capture_enabled = true;
-  EXPECT_FALSE(model_->menu_button_long_pressed);
-  InputEventList events;
-  events.push_back(
-      std::make_unique<InputEvent>(InputEvent::kMenuButtonLongPressStart));
-  ui_->HandleMenuButtonEvents(&events);
-  AdvanceFrame();
-  EXPECT_TRUE(model_->menu_button_long_pressed);
-  EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
-  EXPECT_TRUE(IsVisible(kWebVrAudioCaptureIndicator));
-  RunForSeconds(8);
-  AdvanceFrame();
-  EXPECT_TRUE(model_->menu_button_long_pressed);
-  EXPECT_FALSE(IsVisible(kWebVrAudioCaptureIndicator));
-  EXPECT_FALSE(IsVisible(kWebVrAudioCaptureIndicator));
-  EXPECT_FALSE(IsVisible(kWebVrExclusiveScreenToast));
-  events.push_back(
-      std::make_unique<InputEvent>(InputEvent::kMenuButtonLongPressEnd));
-  ui_->HandleMenuButtonEvents(&events);
-  EXPECT_FALSE(model_->menu_button_long_pressed);
-}
-#endif
 
 TEST_F(UiTest, SteadyState) {
   RunForSeconds(10.0f);

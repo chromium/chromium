@@ -14,7 +14,6 @@
 namespace vr {
 
 class BrowserRenderer;
-class BrowserTestBrowserRendererBrowserInterface;
 class VRBrowserRendererThreadWin;
 
 // Port of the equivalent NativeUiUtils.java for instrumentation tests. Contains
@@ -38,17 +37,11 @@ class UiUtils {
 
   ~UiUtils();
 
-  // Runs |action| and waits until the native UI reports that |element_name|'s
-  // visibility matches |visible|. Fails if the visibility is not matched in
-  // an allotted amount of time.
-  void PerformActionAndWaitForVisibilityStatus(
-      const UserFriendlyElementName& element_name,
-      const bool& visible,
-      base::OnceCallback<void()> action);
-
-  // Not meant to be called directly by a test.
-  void ReportUiOperationResult(const UiTestOperationType& action_type,
-                               const UiTestOperationResult& result);
+  // Waits until the native UI reports that |element_name|'s visibility matches
+  // |visible|. Fails if the visibility is not matched in an allotted amount of
+  // time.
+  void WaitForVisibilityStatus(const UserFriendlyElementName& element_name,
+                               const bool& visible);
 
   static void DisableFrameTimeoutForTesting();
 
@@ -58,12 +51,7 @@ class UiUtils {
   static BrowserRenderer* GetBrowserRenderer();
 
   void WatchElementForVisibilityStatusForTesting(
-      VisibilityChangeExpectation visibility_expectation);
-  std::string UiTestOperationResultToString(UiTestOperationResult& result);
-
-  std::unique_ptr<BrowserTestBrowserRendererBrowserInterface> interface_;
-  std::vector<UiTestOperationResult> ui_operation_results_;
-  std::vector<base::OnceCallback<void()>> ui_operation_callbacks_;
+      std::optional<UiVisibilityState> visibility_expectation);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 };
