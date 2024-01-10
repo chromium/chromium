@@ -12,7 +12,7 @@ namespace blink {
 
 namespace bindings {
 
-v8::MaybeLocal<v8::Value> DictionaryBase::ToV8Value(
+v8::MaybeLocal<v8::Value> DictionaryBase::ToV8(
     ScriptState* script_state) const {
   v8::Local<v8::Object> v8_dictionary;
   {

@@ -230,7 +230,7 @@ namespace bindings {
   CHECK(script_wrappable);
   v8::Local<v8::Value> wrapper =
       DOMDataStore::GetWrapper(script_wrappable, script_state->GetIsolate());
-  if (!wrapper.IsEmpty()) {
+  if (LIKELY(!wrapper.IsEmpty())) {
     return wrapper;
   }
 
@@ -245,7 +245,7 @@ namespace bindings {
   CHECK(script_wrappable);
   v8::Local<v8::Value> wrapper =
       DOMDataStore::GetWrapper(script_wrappable, isolate);
-  if (!wrapper.IsEmpty()) {
+  if (LIKELY(!wrapper.IsEmpty())) {
     return wrapper;
   }
 
@@ -288,7 +288,7 @@ struct ToV8Traits<
   [[nodiscard]] static v8::MaybeLocal<v8::Value> ToV8(ScriptState* script_state,
                                                       const T* dictionary) {
     DCHECK(dictionary);
-    return dictionary->ToV8Value(script_state);
+    return dictionary->ToV8(script_state);
   }
 };
 
@@ -876,7 +876,7 @@ struct ToV8Traits<
     // DCHECK(value);
     if (!value)
       return v8::Null(script_state->GetIsolate());
-    return value->ToV8Value(script_state);
+    return value->ToV8(script_state);
   }
 };
 

@@ -50,7 +50,7 @@ v8::Local<v8::Value> BuildDetails(
           get_assertion_authentication_response->authenticator_attachment,
           ConvertTo<AuthenticationExtensionsClientOutputs*>(
               get_assertion_authentication_response->extensions));
-      return result->Wrap(script_state).ToLocalChecked();
+      return result->ToV8(script_state).ToLocalChecked();
     }
   }
   if (secure_payment_confirmation) {
@@ -69,7 +69,7 @@ v8::Local<v8::Value> BuildDetails(
         authenticator_response,
         secure_payment_confirmation->authenticator_attachment,
         AuthenticationExtensionsClientOutputs::Create());
-    return result->Wrap(script_state).ToLocalChecked();
+    return result->ToV8(script_state).ToLocalChecked();
   }
 
   if (json.empty()) {
