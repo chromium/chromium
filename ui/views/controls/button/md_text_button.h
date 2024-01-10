@@ -37,11 +37,6 @@ class VIEWS_EXPORT MdTextButton : public LabelButton {
 
   ~MdTextButton() override;
 
-  // TODO(crbug.com/1406008): Remove the use of Prominent state and use button
-  // style state instead.
-  void SetProminent(bool is_prominent);
-  bool GetProminent() const;
-
   void SetStyle(ui::ButtonStyle button_style);
   ui::ButtonStyle GetStyle() const;
 
@@ -116,7 +111,6 @@ class VIEWS_EXPORT MdTextButtonActionViewInterface
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MdTextButton, LabelButton)
-VIEW_BUILDER_PROPERTY(bool, Prominent)
 VIEW_BUILDER_PROPERTY(absl::optional<float>, CornerRadius)
 VIEW_BUILDER_PROPERTY(absl::optional<SkColor>, BgColorOverride)
 VIEW_BUILDER_PROPERTY(absl::optional<gfx::Insets>, CustomPadding)

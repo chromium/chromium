@@ -86,19 +86,6 @@ MdTextButton::MdTextButton(PressedCallback callback,
 
 MdTextButton::~MdTextButton() = default;
 
-void MdTextButton::SetProminent(bool is_prominent) {
-  if (is_prominent == (style_ == ui::ButtonStyle::kProminent)) {
-    return;
-  }
-  SetStyle(is_prominent ? ui::ButtonStyle::kProminent
-                        : ui::ButtonStyle::kDefault);
-  UpdateColors();
-}
-
-bool MdTextButton::GetProminent() const {
-  return style_ == ui::ButtonStyle::kProminent;
-}
-
 void MdTextButton::SetStyle(ui::ButtonStyle button_style) {
   if (style_ == button_style) {
     return;
@@ -203,7 +190,10 @@ void MdTextButton::SetText(const std::u16string& text) {
 }
 
 PropertyEffects MdTextButton::UpdateStyleToIndicateDefaultStatus() {
-  SetProminent(style_ == ui::ButtonStyle::kProminent || GetIsDefault());
+  SetStyle(style_ == ui::ButtonStyle::kProminent || GetIsDefault()
+               ? ui::ButtonStyle::kProminent
+               : ui::ButtonStyle::kDefault);
+  UpdateColors();
   return kPropertyEffectsNone;
 }
 
@@ -369,7 +359,6 @@ void MdTextButtonActionViewInterface::ActionItemChangedImpl(
 }
 
 BEGIN_METADATA(MdTextButton)
-ADD_PROPERTY_METADATA(bool, Prominent)
 ADD_PROPERTY_METADATA(absl::optional<float>, CornerRadius)
 ADD_PROPERTY_METADATA(absl::optional<SkColor>, BgColorOverride)
 ADD_PROPERTY_METADATA(absl::optional<gfx::Insets>, CustomPadding)
