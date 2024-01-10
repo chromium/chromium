@@ -5467,6 +5467,13 @@
        {}
       ]
      ],
+     "insertimage-with-replacing-selection-in-picture-element.html": [
+      "aaae4c7c9fd1ca95ca3b0e71dbed32bd2e660ccf",
+      [
+       null,
+       {}
+      ]
+     ],
      "insertlinebreak-around-comment-node.html": [
       "dc2d5e2bd4b43b382034e78dfea317d69fbf5738",
       [
@@ -7453,6 +7460,13 @@
      ],
      "selection-modify-around-input.html": [
       "24b9ae7d35bea3510bb21ca03787436db64cbc47",
+      [
+       null,
+       {}
+      ]
+     ],
+     "selection-modify-per-word-in-table-header-group.html": [
+      "66a57381eda5db2c3bba532cad9f9ef8423072f3",
       [
        null,
        {}
@@ -354228,6 +354242,22 @@
       "b87f29659cd1dfc4f1057af2f19b8987f6ed8290",
       []
      ],
+     "location.tentative.https.window_include=from-private-expected.txt": [
+      "83276515eb1b8c6d337b27cb666c3c7275a1fdbf",
+      []
+     ],
+     "location.tentative.https.window_include=from-public-expected.txt": [
+      "98f69280759e8d06e5da800b341f507772362c7a",
+      []
+     ],
+     "location.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "1cb440871ece58a09a6a65ff223bb5eae2d92e39",
+      []
+     ],
+     "location.tentative.window-expected.txt": [
+      "06cd1f13ec8f52bf10fdfd2a6bfcc6e0578c4753",
+      []
+     ],
      "mixed-content-fetch.tentative.https.window-expected.txt": [
       "5940c02244b96a866161a46591178fa55f1fc3a2",
       []
@@ -354334,7 +354364,11 @@
        []
       ],
       "support.sub.js": [
-       "46a9d9e0764c06c640adb0f463e8ea432f032e60",
+       "308e86b08ac2b6fd638e533f7538ed641fca1ccd",
+       []
+      ],
+      "update-location.html": [
+       "a0f2b43856abc4518ecd37b8d2c4aa59ee3aa48d",
        []
       ],
       "worker-blob-fetcher.html": [
@@ -354380,6 +354414,22 @@
      ],
      "shared-worker.tentative.window-expected.txt": [
       "34e0ed452a0c1e0ed380e677ecafbfc2cf54390c",
+      []
+     ],
+     "top-location.tentative.https.window_include=from-private-expected.txt": [
+      "83276515eb1b8c6d337b27cb666c3c7275a1fdbf",
+      []
+     ],
+     "top-location.tentative.https.window_include=from-public-expected.txt": [
+      "98f69280759e8d06e5da800b341f507772362c7a",
+      []
+     ],
+     "top-location.tentative.https.window_include=from-treat-as-public-expected.txt": [
+      "1cb440871ece58a09a6a65ff223bb5eae2d92e39",
+      []
+     ],
+     "top-location.tentative.window-expected.txt": [
+      "06cd1f13ec8f52bf10fdfd2a6bfcc6e0578c4753",
       []
      ],
      "websocket.tentative.window-expected.txt": [
@@ -354666,7 +354716,7 @@
        []
       ],
       "worklet-helpers.js": [
-       "dd3b9a7dd518a0dd2d6b1d9b63315f427562f35a",
+       "2147a026aec6818cb3204971037d8cebd14e9d30",
        []
       ]
      }
@@ -425498,6 +425548,13 @@
     ],
     "clipboard-item.https.html": [
      "b50a1c97d746168fd4166726ead0964faa03aa39",
+     [
+      null,
+      {}
+     ]
+    ],
+    "dataTransfer-clearData.html": [
+     "6db7fa44e23ffde9585bc46682cedf5954159b46",
      [
       null,
       {}
@@ -514252,6 +514309,212 @@
        }
       ]
      ],
+     "location.tentative.https.window.js": [
+      "2d839e060d48adce03e35c37e333317341e34874",
+      [
+       "fetch/private-network-access/location.tentative.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/location.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/location.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/location.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "location.tentative.window.js": [
+      "180c2a4658ecfc5f645e0504bcc1d7750dad0d02",
+      [
+       "fetch/private-network-access/location.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "mixed-content-fetch.tentative.https.window.js": [
       "dbae5193b5cb02e3b0eba3531483aac372ba8700",
       [
@@ -514568,6 +514831,212 @@
           "resources/support.sub.js"
          ]
         ]
+       }
+      ]
+     ],
+     "top-location.tentative.https.window.js": [
+      "c22b76385ff3dab5526ab96bcd3d77d1c44b7ed5",
+      [
+       "fetch/private-network-access/top-location.tentative.https.window.html?include=from-local",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/top-location.tentative.https.window.html?include=from-private",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/top-location.tentative.https.window.html?include=from-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fetch/private-network-access/top-location.tentative.https.window.html?include=from-treat-as-public",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/subset-tests-by-key.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?include=from-local"
+         ],
+         [
+          "variant",
+          "?include=from-private"
+         ],
+         [
+          "variant",
+          "?include=from-public"
+         ],
+         [
+          "variant",
+          "?include=from-treat-as-public"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "top-location.tentative.window.js": [
+      "a759852393b6e1a6543cf188409eb445b0053f21",
+      [
+       "fetch/private-network-access/top-location.tentative.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
        }
       ]
      ],
@@ -518278,7 +518747,7 @@
       ]
      ],
      "interest-group-passed-to-generate-bid.https.window.js": [
-      "cf46855a3d1d879a2a1d64c7252ef7aaf8d7786f",
+      "6e7ac3d35aa62bbf99c1d33e2a16495706406324",
       [
        "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?1-5",
        {
@@ -518317,7 +518786,19 @@
          ],
          [
           "variant",
-          "?16-last"
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
          ]
         ],
         "timeout": "long"
@@ -518361,14 +518842,26 @@
          ],
          [
           "variant",
-          "?16-last"
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
          ]
         ],
         "timeout": "long"
        }
       ],
       [
-       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?16-last",
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?16-20",
        {
         "script_metadata": [
          [
@@ -518405,7 +518898,187 @@
          ],
          [
           "variant",
-          "?16-last"
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?21-25",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?26-30",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "fledge/tentative/interest-group-passed-to-generate-bid.https.window.html?31-last",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/fledge-util.sub.js"
+         ],
+         [
+          "script",
+          "/common/subset-tests.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?1-5"
+         ],
+         [
+          "variant",
+          "?6-10"
+         ],
+         [
+          "variant",
+          "?11-15"
+         ],
+         [
+          "variant",
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
          ]
         ],
         "timeout": "long"
@@ -518449,7 +519122,19 @@
          ],
          [
           "variant",
-          "?16-last"
+          "?16-20"
+         ],
+         [
+          "variant",
+          "?21-25"
+         ],
+         [
+          "variant",
+          "?26-30"
+         ],
+         [
+          "variant",
+          "?31-last"
          ]
         ],
         "timeout": "long"
