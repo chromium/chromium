@@ -141,28 +141,29 @@ makeTest({
 makeTest({
   name: 'InterestGroup.enableBiddingSignalsPrioritization not set.',
   fieldName: 'enableBiddingSignalsPrioritization',
-  fieldValue: undefined
+  fieldValue: false,
+  interestGroupOverrides: { enableBiddingSignalsPrioritization: undefined }
 });
 
 makeTest({
   name: 'InterestGroup.enableBiddingSignalsPrioritization unrecognized.',
   fieldName: 'enableBiddingSignalsPrioritization',
-  fieldValue: undefined,
+  // Non-empty strings are treated as true by Javascript. This test is serves
+  // to make sure that the 'foo' isn't preserved.
+  fieldValue: true,
   interestGroupOverrides: { enableBiddingSignalsPrioritization: 'foo' }
 });
 
 makeTest({
   name: 'InterestGroup.enableBiddingSignalsPrioritization false.',
   fieldName: 'enableBiddingSignalsPrioritization',
-  fieldValue: undefined,
-  interestGroupOverrides: { enableBiddingSignalsPrioritization: false }
+  fieldValue: false
 });
 
 makeTest({
   name: 'InterestGroup.enableBiddingSignalsPrioritization true.',
   fieldName: 'enableBiddingSignalsPrioritization',
-  fieldValue: undefined,
-  interestGroupOverrides: { enableBiddingSignalsPrioritization: true }
+  fieldValue: true
 });
 
 makeTest({

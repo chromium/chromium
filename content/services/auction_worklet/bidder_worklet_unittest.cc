@@ -2307,13 +2307,13 @@ TEST_F(BidderWorkletTest, GenerateBidInterestGroupName) {
 }
 
 TEST_F(BidderWorkletTest,
-       GenerateBidInterestGroupUseBiddingSignalsPrioritization) {
+       GenerateBidInterestGroupEnableBiddingSignalsPrioritization) {
   RunGenerateBidExpectingExpressionIsTrue(
-      "interestGroup.useBiddingSignalsPrioritization === false");
+      "interestGroup.enableBiddingSignalsPrioritization === false");
 
   interest_group_enable_bidding_signals_prioritization_ = true;
   RunGenerateBidExpectingExpressionIsTrue(
-      "interestGroup.useBiddingSignalsPrioritization === true");
+      "interestGroup.enableBiddingSignalsPrioritization === true");
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupPriorityVector) {
