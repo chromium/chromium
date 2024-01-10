@@ -1971,6 +1971,12 @@ const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerover{
 const base::FeatureParam<bool> kSpeculativeServiceWorkerWarmUpOnPointerdown{
     &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_on_pointerdown", true};
 
+// Warms up service workers from bookmarks, omnibox, etc.
+const base::FeatureParam<bool>
+    kSpeculativeServiceWorkerWarmUpFromLoadingPredictor{
+        &kSpeculativeServiceWorkerWarmUp, "sw_warm_up_from_loading_predictor",
+        true};
+
 BASE_FEATURE(kStartMediaStreamCaptureIndicatorInBrowser,
              "StartMediaStreamCaptureIndicatorInBrowser",
              base::FEATURE_ENABLED_BY_DEFAULT);

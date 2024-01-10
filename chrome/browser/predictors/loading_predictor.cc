@@ -97,7 +97,9 @@ bool IsPreconnectExpensive() {
 
 void MaybeWarmUpServiceWorker(const GURL& url, Profile* profile) {
   if (!base::FeatureList::IsEnabled(
-          blink::features::kSpeculativeServiceWorkerWarmUp)) {
+          blink::features::kSpeculativeServiceWorkerWarmUp) ||
+      !blink::features::kSpeculativeServiceWorkerWarmUpFromLoadingPredictor
+           .Get()) {
     return;
   }
 
