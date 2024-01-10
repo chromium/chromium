@@ -251,6 +251,21 @@
   #footer a {
     color: var(--cr-link-color);
   }
+
+  .inspirations-content {
+    margin: 8px 16px 8px;
+  }
+
+  .inspirations-title {
+    /* TODO(b/317382384): Replace color variable with something
+    specific to Inspirations. */
+    color: var(--color-side-panel-filter-chip-icon);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 16px;
+    width: 100%;
+    margin-bottom: 8px;
+  }
 </style>
 <div class="sp-card">
   <sp-heading id="heading" on-back-button-click="onBackClick_"
@@ -405,6 +420,20 @@
     <sp-heading hide-back-button>
       <h2 slot="heading">$i18n{wallpaperSearchInspirationHeader}</h2>
     </sp-heading>
+    <div class="inspirations-content">
+      <div class="inspirations-title">
+        $i18n{wallpaperSearchMeadowInspirationTitle}
+      </div>
+      <cr-grid columns="3" disable-arrow-navigation>
+        <template is="dom-repeat" items="[[inspirations_.inspirationA]]">
+          <div class="tile result" tabindex="0" role="button">
+            <div class="image-container">
+            <img is="cr-auto-img" auto-src="[[item.thumbnailUrl.url]]"></img>
+            </div>
+          </div>
+        </template>
+      </cr-grid>
+    </div>
   </div>
 </template>
 <hr class="sp-cards-separator" hidden$="[[!shouldShowHistory_(history_)]]">

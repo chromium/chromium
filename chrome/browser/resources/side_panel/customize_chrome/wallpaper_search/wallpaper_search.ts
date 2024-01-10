@@ -35,7 +35,7 @@ import {Debouncer, DomRepeatEvent, PolymerElement, timeOut} from 'chrome://resou
 import {CustomizeChromeAction, recordCustomizeChromeAction} from '../common.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerInterface, Theme} from '../customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from '../customize_chrome_api_proxy.js';
-import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
+import {DescriptorA, DescriptorB, DescriptorDValue, Descriptors, Inspirations, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchHandlerInterface, WallpaperSearchResult, WallpaperSearchStatus} from '../wallpaper_search.mojom-webui.js';
 import {WindowProxy} from '../window_proxy.js';
 
 import {ComboboxGroup, ComboboxItem, CustomizeChromeCombobox} from './combobox/customize_chrome_combobox.js';
@@ -153,6 +153,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
         value: () =>
             loadTimeData.getBoolean('wallpaperSearchInspirationCardEnabled'),
       },
+      inspirations_: Object,
       resultsDescriptors_: Object,
       results_: Object,
       selectedFeedbackOption_: {
@@ -200,6 +201,7 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
   private errorState_: ErrorState|null = null;
   private expandedCategories_: {[categoryIndex: number]: boolean} = {};
   private history_: WallpaperSearchResult[] = [];
+  private inspirations_: Inspirations|null;
   private inspirationCardEnabled_: boolean;
   private loading_: boolean;
   private results_: WallpaperSearchResult[] = [];
@@ -231,6 +233,9 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
     this.wallpaperSearchCallbackRouter_ =
         WallpaperSearchProxy.getInstance().callbackRouter;
     this.fetchDescriptors_();
+    this.wallpaperSearchHandler_.getInspirations().then(({inspirations}) => {
+      this.inspirations_ = inspirations;
+    });
   }
 
   override connectedCallback() {

@@ -8,11 +8,12 @@ import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import {CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
-import {Descriptors, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
+import {Descriptors, Inspirations, ResultDescriptors, UserFeedback, WallpaperSearchClientCallbackRouter, WallpaperSearchClientRemote, WallpaperSearchHandlerInterface, WallpaperSearchHandlerRemote, WallpaperSearchStatus} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search.mojom-webui.js';
 import {CustomizeChromeCombobox} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/combobox/customize_chrome_combobox.js';
 import {DESCRIPTOR_D_VALUE, WallpaperSearchElement} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search.js';
 import {WallpaperSearchProxy} from 'chrome://customize-chrome-side-panel.top-chrome/wallpaper_search/wallpaper_search_proxy.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -34,8 +35,10 @@ suite('WallpaperSearchTest', () => {
   let windowProxy: TestMock<WindowProxy>;
 
   async function createWallpaperSearchElement(
-      descriptors: Descriptors|null = null): Promise<WallpaperSearchElement> {
+      descriptors: Descriptors|null = null,
+      inspirations: Inspirations|null = null): Promise<WallpaperSearchElement> {
     handler.setResultFor('getDescriptors', Promise.resolve({descriptors}));
+    handler.setResultFor('getInspirations', Promise.resolve({inspirations}));
     wallpaperSearchElement =
         document.createElement('customize-chrome-wallpaper-search');
     document.body.appendChild(wallpaperSearchElement);
@@ -101,6 +104,19 @@ suite('WallpaperSearchTest', () => {
       await handler.whenCalled('openHelpArticle');
       assertTrue(clickEvent.defaultPrevented);
     });
+
+    test(
+        'inspiration card is not shown if inspiration is disabled',
+        async () => {
+          loadTimeData.overrideValues(
+              {wallpaperSearchInspirationCardEnabled: false});
+
+          createWallpaperSearchElement();
+          await flushTasks();
+
+          assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
+              '#inspirationCard'));
+        });
   });
 
   suite('Descriptors', () => {
@@ -1359,28 +1375,50 @@ suite('WallpaperSearchTest', () => {
   });
 
   suite('Inspiration', () => {
-    test(
-        'inspiration card is not shown if inspiration is disabled',
-        async () => {
-          loadTimeData.overrideValues(
-              {wallpaperSearchInspirationCardEnabled: false});
-
-          createWallpaperSearchElementWithDescriptors();
-          await flushTasks();
-
-          assertFalse(!!wallpaperSearchElement.shadowRoot!.querySelector(
-              '#inspirationCard'));
-        });
-
-    test('inspiration card shows if inspiration is enabled', async () => {
+    suiteSetup(() => {
       loadTimeData.overrideValues(
           {wallpaperSearchInspirationCardEnabled: true});
+    });
 
-      createWallpaperSearchElementWithDescriptors();
+    test('inspiration card shows if inspiration is enabled', async () => {
+      createWallpaperSearchElement();
       await flushTasks();
 
       assertTrue(!!wallpaperSearchElement.shadowRoot!.querySelector(
           '#inspirationCard'));
+    });
+
+    test('inspirations are fetched from the backend', () => {
+      createWallpaperSearchElement();
+
+      assertEquals(1, handler.getCallCount('getInspirations'));
+    });
+
+    test('inspirations populate correctly', async () => {
+      createWallpaperSearchElement(/*descriptors=*/ null, {
+        inspirationA: [
+          {
+            backgroundUrl: {url: 'https://example.com/foo_1.png'},
+            thumbnailUrl: {url: 'https://example.com/foo_2.png'},
+          },
+          {
+            backgroundUrl: {url: 'https://example.com/bar_1.png'},
+            thumbnailUrl: {url: 'https://example.com/bar_2.png'},
+          },
+        ],
+      });
+      await flushTasks();
+
+      const inspirations = wallpaperSearchElement.shadowRoot!.querySelectorAll(
+          '#inspirationCard .tile.result');
+      assertTrue(!!inspirations);
+      assertEquals(2, inspirations.length);
+      assertEquals(
+          'https://example.com/foo_2.png',
+          (inspirations[0]!.querySelector('img')! as CrAutoImgElement).autoSrc);
+      assertEquals(
+          'https://example.com/bar_2.png',
+          (inspirations[1]!.querySelector('img')! as CrAutoImgElement).autoSrc);
     });
   });
 });
